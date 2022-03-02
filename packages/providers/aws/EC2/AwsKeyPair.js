@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, get, tap, not, pick } = require("rubico");
-const { defaultsDeep, pluck, first, includes, isEmpty } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 const fs = require("fs").promises;
 const path = require("path");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsKp" });

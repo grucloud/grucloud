@@ -25,6 +25,9 @@ const { DomainName } = require("./DomainName");
 const { Authorizer } = require("./Authorizer");
 const { ApiKey } = require("./ApiKey");
 const { Account } = require("./Account");
+const { Method } = require("./Method");
+const { Resource } = require("./Resource");
+//const { Integration } = require("./Integration");
 
 const GROUP = "APIGateway";
 
@@ -110,6 +113,26 @@ module.exports = pipe([
         pipe([
           omit(["name", "id", "createdDate", "lastUpdatedDate", "stageKeys"]),
         ]),
+    },
+    {
+      type: "Resource",
+      Client: Resource,
+      dependsOnList: ["APIGateway::RestApi"],
+      dependencies: {
+        restApi: { type: "RestApi", group: "APIGateway", parent: true },
+      },
+      ignoreResource: () => true,
+      cannotBeDeleted: () => true,
+    },
+    {
+      type: "Method",
+      Client: Method,
+      dependsOnList: ["APIGateway::Resource"],
+      dependencies: {
+        resource: { type: "Resource", group: "APIGateway", parent: true },
+      },
+      ignoreResource: () => true,
+      cannotBeDeleted: () => true,
     },
     {
       type: "RestApi",

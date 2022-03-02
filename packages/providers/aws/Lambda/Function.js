@@ -87,49 +87,23 @@ exports.Function = ({ spec, config }) => {
     },
   ];
 
-  const listFunctions = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`listFunctions ${tos(params)}`);
-      }),
-      () => lambda().listFunctions(params),
-      get("Functions"),
-      map((fun) =>
-        pipe([
-          () => fun,
-          tryCatch(
-            pipe([
-              pick(["FunctionName"]),
-              lambda().getFunction,
-              pick(["Configuration", "Code", "Tags"]),
-              assign({
-                Code: pipe([
-                  get("Code"),
-                  assign({
-                    Data: pipe([fetchZip()]),
-                  }),
-                ]),
-              }),
-            ]),
-            (error) => pipe([() => ({ error })])()
-          ),
-        ])()
-      ),
-      map(
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
+  const getById = client.getById({
+    pickId,
+    method: "getFunction",
+    ignoreErrorCodes: ["ResourceNotFoundException"],
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
+  const getList = client.getList({
+    method: "listFunctions",
+    getParam: "Functions",
+    decorate: () =>
+      pipe([
+        pick(["FunctionName"]),
+        lambda().getFunction,
+        pick(["Configuration", "Code", "Tags"]),
         assign({
-          //TODO
-          // CodeSigningConfigArn: pipe([
-          //   get("Configuration"),
-          //   pick(["FunctionName"]),
-          //   lambda().getFunctionCodeSigningConfig,
-          //   get("CodeSigningConfigArn"),
-          // ]),
-          // ReservedConcurrentExecutions: pipe([
-          //   get("Configuration"),
-          //   pick(["FunctionName"]),
-          //   lambda().getFunctionConcurrency,
-          //   get("ReservedConcurrentExecutions"),
-          // ]),
           Policy: tryCatch(
             pipe([
               get("Configuration"),
@@ -154,21 +128,27 @@ exports.Function = ({ spec, config }) => {
               ]),
             ])
           ),
-        })
-      ),
-      tap((results) => {
-        logger.debug(`listFunctions: result: ${tos(results)}`);
-      }),
-    ])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
-  const getList = () => pipe([listFunctions])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
-  const getById = client.getById({
-    pickId,
-    method: "getFunction",
-    ignoreErrorCodes: ["ResourceNotFoundException"],
+          Code: pipe([
+            get("Code"),
+            assign({
+              Data: pipe([fetchZip()]),
+            }),
+          ]),
+          //TODO
+          // CodeSigningConfigArn: pipe([
+          //   get("Configuration"),
+          //   pick(["FunctionName"]),
+          //   lambda().getFunctionCodeSigningConfig,
+          //   get("CodeSigningConfigArn"),
+          // ]),
+          // ReservedConcurrentExecutions: pipe([
+          //   get("Configuration"),
+          //   pick(["FunctionName"]),
+          //   lambda().getFunctionConcurrency,
+          //   get("ReservedConcurrentExecutions"),
+          // ]),
+        }),
+      ]),
   });
 
   const getByName = pipe([

@@ -75,6 +75,7 @@ exports.EKSCluster = ({ spec, config }) => {
         () => !process.env.CONTINUOUS_INTEGRATION,
         pipe([
           () => `aws eks update-kubeconfig --name ${name}`,
+          //TODO shell exec
           (command) =>
             pipe([
               () =>
@@ -103,6 +104,7 @@ exports.EKSCluster = ({ spec, config }) => {
         pipe([
           () =>
             `kubectl config delete-context ${arn}; kubectl config delete-cluster ${arn}`,
+          //TODO shell exec
           (command) =>
             pipe([
               () =>

@@ -85,22 +85,20 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listInstanceProfiles-property
-  const getList = () =>
-    pipe([
-      () => ({}),
-      iam().listInstanceProfiles,
-      get("InstanceProfiles"),
-      map.pool(
-        mapPoolSize,
+  const getList = client.getList({
+    method: "listInstanceProfiles",
+    getParam: "InstanceProfiles",
+    decorate: () =>
+      pipe([
         assign({
           Tags: pipe([
             pick(["InstanceProfileName"]),
             iam().listInstanceProfileTags,
             get("Tags"),
           ]),
-        })
-      ),
-    ])();
+        }),
+      ]),
+  });
 
   //TODO getById should be getByName
   const getByName = getByNameCore({ getList, findName });

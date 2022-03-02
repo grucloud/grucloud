@@ -40,6 +40,7 @@ const kubeConfigUpdate = ({ id, name }) =>
             tap((params) => {
               logger.info(`kubeConfigUpdate: command: ${command}`);
             }),
+            //TODO shell exec
             () =>
               shell.exec(command, {
                 silent: true,
@@ -65,6 +66,7 @@ const kubeConfigRemove = ({ name }) =>
       pipe([
         () =>
           `kubectl config delete-context ${name}; kubectl config delete-cluster ${name}`,
+        //TODO shell exec
         (command) =>
           pipe([
             () =>

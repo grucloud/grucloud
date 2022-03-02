@@ -1018,6 +1018,7 @@ const getAuthTokenExec = pipe([
       tap(() => {
         logger.debug(`getAuthTokenExec: ${fullCommand}`);
       }),
+      //TODO shell exec
       () =>
         shell.exec(fullCommand, {
           silent: true,
@@ -1049,6 +1050,7 @@ const getAuthTokenAuthProvider = pipe([
       tap(() => {
         logger.debug(`getAuthTokenAuthProvider: ${fullCommand}`);
       }),
+      //TODO shell exec
       () =>
         shell.exec(fullCommand, {
           silent: true,

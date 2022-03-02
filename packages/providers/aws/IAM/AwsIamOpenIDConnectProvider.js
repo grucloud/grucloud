@@ -3,7 +3,6 @@ const {
   map,
   pipe,
   tap,
-  tryCatch,
   get,
   switchCase,
   eq,
@@ -17,14 +16,14 @@ const tls = require("tls");
 const logger = require("@grucloud/core/logger")({
   prefix: "IamOIDC",
 });
-const { tos } = require("@grucloud/core/tos");
+
 const {
   IAMNew,
   buildTags,
   findNameInTagsOrId,
   findNamespaceInTags,
 } = require("../AwsCommon");
-const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -81,6 +80,8 @@ const fetchThumbprint = ({ Url }) =>
   ])();
 exports.fetchThumbprint = fetchThumbprint;
 
+const ignoreErrorCodes = ["NoSuchEntity"];
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -88,8 +89,13 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const iam = IAMNew(config);
 
   const findId = get("live.Arn");
-  const pickId = pick(["OpenIDConnectProviderArn"]);
-
+  const pickId = pipe([
+    tap(({ Arn }) => {
+      assert(Arn);
+    }),
+    ({ Arn }) => ({ OpenIDConnectProviderArn: Arn }),
+  ]);
+  //TODO look for cluster name
   const findName = findNameInTagsOrId({ findId });
 
   const findDependencies = ({ live, lives }) => [
@@ -120,60 +126,40 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
       }),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listOpenIDConnectProviders-property
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.debug(`getList iam oidc`);
-      }),
-      () => iam().listOpenIDConnectProviders(params),
-      get("OpenIDConnectProviderList"),
-      tap((oidcs) => {
-        logger.debug(`getList oidcs: ${tos(oidcs)}`);
-      }),
-      map.pool(
-        mapPoolSize,
-        tryCatch(
-          ({ Arn }) =>
-            pipe([
-              () =>
-                iam().getOpenIDConnectProvider({
-                  OpenIDConnectProviderArn: Arn,
-                }),
-              pick(["ClientIDList", "ThumbprintList", "Url", "CreateDate"]),
-              assign({
-                Arn: () => Arn,
-                Tags: pipe([
-                  () =>
-                    iam().listOpenIDConnectProviderTags({
-                      OpenIDConnectProviderArn: Arn,
-                    }),
-                  get("Tags"),
-                ]),
-              }),
-            ])(),
-          (error, oidc) =>
-            pipe([
-              tap(() => {
-                logger.error(`getList iam oidc error: ${tos({ error, oidc })}`);
-              }),
-              () => ({ error, oidc }),
-            ])()
-        )
-      ),
-      tap.if(find(get("error")), (oidcs) => {
-        throw oidcs;
-      }),
-    ])();
-
-  const getByName = getByNameCore({ getList, findName });
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#getOpenIDConnectProvider-property
   const getById = client.getById({
     pickId,
     method: "getOpenIDConnectProvider",
-    ignoreErrorCodes: ["NoSuchEntity"],
+    ignoreErrorCodes,
   });
+  //TODO decorate
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listOpenIDConnectProviders-property
+  const getList = client.getList({
+    method: "listOpenIDConnectProviders",
+    getParam: "OpenIDConnectProviderList",
+    decorate:
+      () =>
+      ({ Arn }) =>
+        pipe([
+          () =>
+            iam().getOpenIDConnectProvider({
+              OpenIDConnectProviderArn: Arn,
+            }),
+          pick(["ClientIDList", "ThumbprintList", "Url", "CreateDate"]),
+          assign({
+            Arn: () => Arn,
+            Tags: pipe([
+              () =>
+                iam().listOpenIDConnectProviderTags({
+                  OpenIDConnectProviderArn: Arn,
+                }),
+              get("Tags"),
+            ]),
+          }),
+        ])(),
+  });
+
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createOpenIDConnectProvider-property
   const create = client.create({
@@ -198,6 +184,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     method: "deleteOpenIDConnectProvider",
     getById,
     config,
+    ignoreErrorCodes,
   });
 
   const clusterProperties = ({ cluster }) =>

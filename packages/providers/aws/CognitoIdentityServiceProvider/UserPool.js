@@ -29,6 +29,7 @@ exports.UserPool = ({ spec, config }) => {
     createEndpoint({ endpointName: "CognitoIdentityServiceProvider" })(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listUserPools-property
+  //TODO getList
   const getList = () =>
     pipe([
       tap(() => {

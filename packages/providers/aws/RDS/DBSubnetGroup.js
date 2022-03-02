@@ -2,12 +2,6 @@ const assert = require("assert");
 const { map, pipe, tap, get, eq, not, assign, pick } = require("rubico");
 const { defaultsDeep, pluck } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "DBSubnetGroup",
-});
-const { retryCall } = require("@grucloud/core/Retry");
-const { tos } = require("@grucloud/core/tos");
-const { isUpByIdCore } = require("@grucloud/core/Common");
 const { createEndpoint, buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -29,23 +23,20 @@ exports.DBSubnetGroup = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBSubnetGroups-property
-  const getList = async ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList ${tos(params)}`);
-      }),
-      () => rds().describeDBSubnetGroups(params),
-      get("DBSubnetGroups"),
-      map(
+  const getList = client.getList({
+    method: "describeDBSubnetGroups",
+    getParam: "DBSubnetGroups",
+    decorate: () =>
+      pipe([
         assign({
           Tags: pipe([
-            ({ DBSubnetGroupArn }) =>
-              rds().listTagsForResource({ ResourceName: DBSubnetGroupArn }),
+            ({ DBSubnetGroupArn }) => ({ ResourceName: DBSubnetGroupArn }),
+            rds().listTagsForResource,
             get("TagList"),
           ]),
-        })
-      ),
-    ])();
+        }),
+      ]),
+  });
 
   const getById = client.getById({
     pickId,
@@ -54,46 +45,38 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     ignoreErrorCodes: ["DBSubnetGroupNotFoundFault"],
   });
 
-  const getByName = ({ name }) => getById({ id: name });
+  const getByName = pipe([
+    ({ name }) => ({ DBSubnetGroupName: name }),
+    getById,
+  ]);
 
   const isInstanceUp = pipe([eq(get("SubnetGroupStatus"), "Complete")]);
-  const isUpById = isUpByIdCore({ isInstanceUp, getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBSubnetGroup-property
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { subnets },
   }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         DBSubnetGroupName: name,
         SubnetIds: map((subnet) => getField(subnet, "SubnetId"))(subnets),
-        Tags: buildTags({ config, namespace, name }),
+        Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
     ])();
 
-  const create = ({ name, payload }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () => rds().createDBSubnetGroup(payload),
-      get("DBSubnetGroup"),
-      tap(({ DBSubnetGroupName }) =>
-        retryCall({
-          name: `key isUpById: ${name} id: ${DBSubnetGroupName}`,
-          fn: () => isUpById({ name, id: DBSubnetGroupName }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`created`);
-      }),
-    ])();
+  const create = client.create({
+    pickCreated: () => pick(["DBSubnetGroup"]),
+    method: "createDBSubnetGroup",
+    pickId,
+    getById,
+    isInstanceUp,
+    config: { ...config, retryCount: 100 },
+    configIsUp: { ...config, retryCount: 500 },
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyDBSubnetGroup-property
   const update = client.update({

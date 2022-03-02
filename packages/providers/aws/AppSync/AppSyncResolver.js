@@ -1,9 +1,6 @@
 const assert = require("assert");
-const { map, pipe, tap, tryCatch, get, eq, pick, flatMap } = require("rubico");
-const { defaultsDeep, pluck } = require("rubico/x");
-
-const logger = require("@grucloud/core/logger")({ prefix: "AppSyncResolver" });
-const { tos } = require("@grucloud/core/tos");
+const { map, pipe, tap, get, eq, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -54,48 +51,23 @@ exports.AppSyncResolver = ({ spec, config }) => {
   const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listResolvers-property
-
-  const getList = ({ lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "GraphqlApi",
-          group: "AppSync",
-        }),
-      pluck("live"),
-      flatMap(({ apiId, tags }) =>
-        tryCatch(
+  const getList = client.getListWithParent({
+    parent: { type: "GraphqlApi", group: "AppSync" },
+    pickKey: pipe([pick(["apiId"]), defaultsDeep({ format: "SDL" })]),
+    method: "listTypes",
+    getParam: "types",
+    config,
+    decorate: ({ parent: { apiId, tags } }) =>
+      pipe([
+        ({ name }) =>
           pipe([
-            tap(() => {
-              assert(apiId);
-            }),
-            () => ({ apiId, format: "SDL" }),
-            appSync().listTypes,
-            get("types"),
-            flatMap(({ name }) =>
-              pipe([
-                () => ({ apiId, typeName: name }),
-                appSync().listResolvers,
-                get("resolvers"),
-                map(pipe([defaultsDeep({ apiId, tags })])),
-              ])()
-            ),
-          ]),
-          (error) =>
-            pipe([
-              tap(() => {
-                logger.error(
-                  `error getList listResolvers: ${tos({ apiId, error })}`
-                );
-              }),
-              () => ({
-                error,
-              }),
-            ])()
-        )()
-      ),
-    ])();
+            () => ({ apiId, typeName: name }),
+            appSync().listResolvers,
+            get("resolvers"),
+            map(pipe([defaultsDeep({ apiId, tags })])),
+          ])(),
+      ]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -141,6 +113,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
       () => otherProps,
       defaultsDeep({
         apiId: getField(graphqlApi, "apiId"),
+        // TODO optional or not ?
         ...(dataSource && {
           dataSourceName: getField(dataSource, "name"),
         }),

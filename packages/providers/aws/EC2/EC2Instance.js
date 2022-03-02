@@ -261,19 +261,19 @@ exports.EC2Instance = ({ spec, config }) => {
     }),
   ]);
 
-  //TODO
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList ec2 ${JSON.stringify(params)}`);
+  const getList = client.getList({
+    method: "describeInstances",
+    getParam: "Reservations",
+    transformList: pipe([
+      tap((params) => {
+        assert(true);
       }),
-      () => ec2().describeInstances(params),
-      get("Reservations"),
       pluck("Instances"),
       flatten,
       filter(not(isInstanceTerminated)),
-      map(decorate),
-    ])();
+    ]),
+    decorate: () => decorate,
+  });
 
   const getByName = getByNameCore({ getList, findName });
   const getById = pipe([

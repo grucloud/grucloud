@@ -136,7 +136,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     method: "createLoadBalancer",
     pickId,
     getById,
-    config,
     isInstanceUp: eq(get("State.Code"), "active"),
     pickCreated: () => pipe([get("LoadBalancers"), first]),
     config: { retryCount: 40 * 10, retryDelay: 10e3 },

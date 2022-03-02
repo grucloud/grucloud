@@ -1,15 +1,6 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  switchCase,
-  not,
-  filter,
-  flatMap,
-  pick,
-} = require("rubico");
-const { defaultsDeep, isEmpty, pluck } = require("rubico/x");
+const { pipe, tap, get, switchCase, pick } = require("rubico");
+const { defaultsDeep, pluck } = require("rubico/x");
 
 const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -48,24 +39,6 @@ exports.ECSTaskSet = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
-  //TODO remove
-  const describeTaskSets = (params = {}) =>
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      () => params,
-      defaultsDeep({ include: ["TAGS"] }),
-      ecs().describeTaskSets,
-      tap((params) => {
-        assert(true);
-      }),
-      get("taskSets"),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-
   const getById = client.getById({
     pickId,
     method: "describeTaskSets",
@@ -74,40 +47,29 @@ exports.ECSTaskSet = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
-  const getList = ({ lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "Service",
-          group: "ECS",
-        }),
-      flatMap(
-        pipe([
-          get("live"),
-          switchCase([
-            get("taskSets"),
-            pipe([
-              ({ clusterArn, serviceName, taskSets = [] }) => ({
-                cluster: clusterArn,
-                service: serviceName,
-                taskSets: pluck("taskSetArn")(taskSets),
-              }),
-              describeTaskSets,
-              tap((params) => {
-                assert(true);
-              }),
-            ]),
-            () => [],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
+  const getList = client.getListWithParent({
+    parent: { type: "Service", group: "ECS" },
+    pickKey: pipe([({ clusterName }) => ({ cluster: clusterName })]),
+    method: "listServices",
+    getParam: "serviceArns",
+    config,
+    decorate: ({ lives, parent }) =>
+      pipe([
+        switchCase([
+          get("taskSets"),
+          pipe([
+            ({ clusterArn, serviceName, taskSets = [] }) => ({
+              cluster: clusterArn,
+              service: serviceName,
+              taskSets: pluck("taskSetArn")(taskSets),
+            }),
+            getById,
           ]),
-        ])
-      ),
-      filter(not(isEmpty)),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+          () => [],
+        ]),
+      ]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 

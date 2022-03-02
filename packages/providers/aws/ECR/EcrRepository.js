@@ -1,6 +1,5 @@
 const assert = require("assert");
 const {
-  map,
   pipe,
   tap,
   tryCatch,
@@ -11,10 +10,8 @@ const {
   assign,
   omit,
 } = require("rubico");
-const { defaultsDeep, first } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "EcrRepository" });
-const { tos } = require("@grucloud/core/tos");
 const { buildTags, createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -68,43 +65,25 @@ exports.EcrRepository = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#describeRepositories-property
-  const describeRepositories = (params = {}) =>
-    pipe([
-      () => params,
-      ecr().describeRepositories,
-      get("repositories"),
-      map(
-        assign({
-          policyText: getRepositoryPolicy,
-          lifecyclePolicyText: getLifecyclePolicy,
-          tags: getTags,
-        })
-      ),
-      tap((repositories) => {
-        logger.debug(`describeRepositories ${tos(repositories)}`);
+  const getList = client.getList({
+    method: "describeRepositories",
+    getParam: "repositories",
+    decorate: () =>
+      assign({
+        policyText: getRepositoryPolicy,
+        lifecyclePolicyText: getLifecyclePolicy,
+        tags: getTags,
       }),
-    ])();
+  });
 
-  const getList = () => pipe([describeRepositories])();
+  const getById = client.getById({
+    pickId: ({ repositoryName }) => ({ repositoryNames: [repositoryName] }),
+    method: "describeRepositories",
+    getField: "repositories",
+    ignoreErrorCodes: ["RepositoryNotFoundException"],
+  });
 
-  const getByName = pipe([
-    ({ name }) => ({ repositoryNames: [name] }),
-    tryCatch(pipe([describeRepositories, first]), (error, params) =>
-      pipe([
-        () => error,
-        switchCase([
-          eq(get("code"), "RepositoryNotFoundException"),
-          () => undefined,
-          () => {
-            logger.error(
-              `error describeRepositories ${tos({ params, error })}`
-            );
-            throw error;
-          },
-        ]),
-      ])()
-    ),
-  ]);
+  const getByName = pipe([({ name }) => ({ repositoryName: name }), getById]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#setRepositoryPolicy-property
   const setRepositoryPolicy = ({ payload }) =>

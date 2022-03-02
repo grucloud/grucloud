@@ -23,16 +23,14 @@ describe("IamOpenIDConnectProvider", async function () {
       }),
     ])
   );
-  //TODO
-  it.skip(
+  it(
     "delete with invalid id",
     pipe([
       () =>
         iamOpenIDConnectProvider.destroy({
           live: {
-            //TODO
             OpenIDConnectProviderArn:
-              "iamOpenIDConnectProvider-08744497940acc9c5",
+              "arn:aws:iam::840541460064:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/D37114C060BC22C04E5BE2E1BF4717A2",
           },
         }),
       tap((params) => {

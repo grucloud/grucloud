@@ -32,6 +32,7 @@ exports.IdentityProvider = ({ spec, config }) => {
     createEndpoint({ endpointName: "CognitoIdentityServiceProvider" })(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listIdentityProviders-property
+  //TODO getList
   const getList = ({ lives }) =>
     pipe([
       tap(() => {

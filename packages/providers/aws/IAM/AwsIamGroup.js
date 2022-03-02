@@ -26,7 +26,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroups-property
-  //TODO
+
   const getList = client.getList({
     method: "listGroups",
     getParam: "Groups",

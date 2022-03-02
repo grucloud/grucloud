@@ -42,13 +42,13 @@ exports.Resource = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     findDependenciesRestApi({ live }),
   ];
-  const cannotBeDeleted = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    get("live.parentId"),
-    isEmpty,
-  ]);
+  // const cannotBeDeleted = pipe([
+  //   tap((params) => {
+  //     assert(true);
+  //   }),
+  //   get("live.parentId"),
+  //   isEmpty,
+  // ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getResource-property
   const getById = client.getById({
@@ -58,15 +58,20 @@ exports.Resource = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getResources-property
-  const getList = client.getListWithParent({
-    parent: { type: "RestApi", group: "APIGateway" },
-    pickKey: pipe([({ id }) => ({ restApiId: id })]),
-    method: "getResources",
-    getParam: "items",
-    config,
-    decorate: ({ lives, parent: { id: restApiId, name, Tags } }) =>
-      defaultsDeep({ restApiName: name, restApiId, Tags }),
-  });
+  const getList = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    client.getListWithParent({
+      parent: { type: "RestApi", group: "APIGateway" },
+      pickKey: pipe([({ id }) => ({ restApiId: id })]),
+      method: "getResources",
+      getParam: "items",
+      config,
+      decorate: ({ lives, parent: { id: restApiId, name, Tags } }) =>
+        pipe([defaultsDeep({ restApiName: name, restApiId, Tags })]),
+    }),
+  ]);
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -124,6 +129,6 @@ exports.Resource = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    cannotBeDeleted,
+    cannotBeDeleted: () => true,
   };
 };

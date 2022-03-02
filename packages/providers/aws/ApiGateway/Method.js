@@ -88,6 +88,8 @@ exports.Method = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getMethod-property
+  //TODO getListByParent
+
   const getList = ({ lives }) =>
     pipe([
       tap(() => {
@@ -226,5 +228,6 @@ exports.Method = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    cannotBeDeleted: () => true,
   };
 };

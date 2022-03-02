@@ -11,7 +11,6 @@ const { AwsClient } = require("../AwsClient");
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
 exports.AwsNetworkInterface = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const ec2 = Ec2New(config);
   const awsSecurityGroup = AwsSecurityGroup({ config, spec });
   const findId = get("live.NetworkInterfaceId");
   const pickId = pick(["NetworkInterfaceId"]);
@@ -58,14 +57,10 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
     },
   ];
 
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList network interfaces ${JSON.stringify(params)}`);
-      }),
-      () => ec2().describeNetworkInterfaces(params),
-      get("NetworkInterfaces"),
-    ])();
+  const getList = client.getList({
+    method: "describeNetworkInterfaces",
+    getParam: "NetworkInterfaces",
+  });
 
   const destroy = client.destroy({
     pickId,

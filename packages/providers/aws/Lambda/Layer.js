@@ -99,38 +99,27 @@ exports.Layer = ({ spec, config }) => {
       ]),
   });
 
-  const listLayers = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`listLayers ${tos(params)}`);
-      }),
-      () => lambda().listLayers(params),
-      get("Layers"),
-      map(({ LatestMatchingVersion, ...other }) => ({
-        ...LatestMatchingVersion,
-        ...other,
-      })),
-      map(decorate),
-      tap((results) => {
-        logger.debug(`listLayers: result: ${tos(results)}`);
-      }),
-    ])();
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listLayers-property
-  const getList = () =>
-    pipe([
-      tap(() => {
-        logger.info(`getList layer`);
-      }),
-      listLayers,
-    ])();
+  const getList = client.getList({
+    method: "listLayers",
+    getParam: "Layers",
+    decorate: () =>
+      pipe([
+        ({ LatestMatchingVersion, ...other }) => ({
+          ...LatestMatchingVersion,
+          ...other,
+        }),
+        decorate,
+      ]),
+  });
 
   const getByName = ({ name }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
       }),
-      () => listLayers({ LayerName: name }),
+      () => ({ LayerName: name }),
+      getList,
       first,
       tap((result) => {
         logger.debug(`getByName result: ${tos(result)}`);
@@ -138,23 +127,25 @@ exports.Layer = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#publishLayerVersion-property
-  const create = ({ name, payload }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create layer: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () => payload,
-      omit(["Tags"]),
-      assign({
-        Description: ({ Description }) =>
-          `${Description} tags:${JSON.stringify(payload.Tags)}`,
-      }),
-      lambda().publishLayerVersion,
-      tap((xxx) => {
-        logger.info(`created layer ${name}`);
-      }),
-    ])();
+
+  const create = client.create({
+    filterPayload: (payload) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        () => payload,
+        omit(["Tags"]),
+        assign({
+          Description: ({ Description }) =>
+            `${Description} tags:${JSON.stringify(payload.Tags)}`,
+        }),
+      ])(),
+    method: "publishLayerVersion",
+    //pickId,
+    //getById,
+    config,
+  });
 
   // TODO update
   const update = client.update({
