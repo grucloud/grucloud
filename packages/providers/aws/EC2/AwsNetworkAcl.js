@@ -1,4 +1,6 @@
 const { get, pipe, tap } = require("rubico");
+const { findDependenciesVpc, findDependenciesSubnet } = require("./EC2Common");
+
 const { findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
