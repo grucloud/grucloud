@@ -97,7 +97,7 @@ exports.ECSTask = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTasks-property
   const getList = client.getListWithParent({
     parent: { type: "Cluster", group: "ECS" },
-    pickKey: pipe([({ id }) => ({ cluster: id })]),
+    pickKey: pipe([({ clusterName }) => ({ cluster: clusterName })]),
     method: "listTasks",
     getParam: "taskArns",
     config,

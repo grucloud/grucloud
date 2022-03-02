@@ -74,12 +74,7 @@ exports.ECSService = ({ spec, config }) => {
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listServices-property
   const getList = client.getListWithParent({
     parent: { type: "Cluster", group: "ECS" },
-    pickKey: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      ({ clusterName }) => ({ cluster: clusterName }),
-    ]),
+    pickKey: pipe([({ clusterName }) => ({ cluster: clusterName })]),
     method: "listServices",
     getParam: "serviceArns",
     config,

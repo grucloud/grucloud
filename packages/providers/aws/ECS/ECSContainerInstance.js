@@ -51,7 +51,8 @@ exports.ECSContainerInstance = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listContainerInstances-property
   const getList = client.getListWithParent({
     parent: { type: "Cluster", group: "ECS" },
-    pickKey: pipe([({ id }) => ({ cluster: id })]),
+    pickKey: ({ clusterName }) => ({ cluster: clusterName }),
+
     method: "listContainerInstances",
     getParam: "containerInstanceArns",
     config,
