@@ -45,28 +45,6 @@ exports.EKSCluster = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const eks = EKSNew(config);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listClusters-property
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList cluster ${JSON.stringify({ params })}`);
-      }),
-      () => eks().listClusters(params),
-      get("clusters"),
-      tap((clusters) => {
-        logger.info(`getList clusters: ${tos(clusters)}`);
-      }),
-      map(
-        pipe([
-          (name) =>
-            eks().describeCluster({
-              name,
-            }),
-          get("cluster"),
-        ])
-      ),
-    ])();
-
   const getById = client.getById({
     pickId,
     method: "describeCluster",
@@ -74,6 +52,19 @@ exports.EKSCluster = ({ spec, config }) => {
     ignoreErrorCodes: ["ResourceNotFoundException"],
   });
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listClusters-property
+  const getList = client.getList({
+    method: "listClusters",
+    getParam: "clusters",
+    decorate: () =>
+      pipe([
+        tap((name) => {
+          assert(name);
+        }),
+        (name) => ({ name }),
+        getById,
+      ]),
+  });
   const getByName = getById;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property

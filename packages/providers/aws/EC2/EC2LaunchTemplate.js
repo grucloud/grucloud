@@ -1,9 +1,8 @@
 const assert = require("assert");
-const { pipe, tap, get, map, omit, pick } = require("rubico");
+const { pipe, tap, get, or, omit, pick, eq } = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
-  size,
   first,
   unless,
   prepend,
@@ -98,6 +97,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     config,
     key: "eks:cluster-name",
   });
+
   const decorate = () => (launchTemplate) =>
     pipe([
       () => launchTemplate,
@@ -116,22 +116,13 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeLaunchTemplates-property
-  const describeLaunchTemplates = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    ec2().describeLaunchTemplates,
-    get("LaunchTemplates"),
-    tap((launchTemplates) => {
-      logger.debug(
-        `describeLaunchTemplates #launchTemplates ${size(launchTemplates)}`
-      );
-    }),
-    map(decorate()),
-  ]);
+  const getList = client.getList({
+    method: "describeLaunchTemplates",
+    getParam: "LaunchTemplates",
+    decorate,
+  });
 
-  const getList = pipe([() => ({}), describeLaunchTemplates]);
-
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeLaunchTemplates-property
   const getById = client.getById({
     pickId: ({ LaunchTemplateName }) => ({
       LaunchTemplateNames: [LaunchTemplateName],
@@ -151,6 +142,8 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
   const create = client.create({
     method: "createLaunchTemplate",
     config,
+    //TODO
+    // getById
   });
 
   // Update https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createLaunchTemplateVersion-property

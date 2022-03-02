@@ -1,11 +1,7 @@
 const assert = require("assert");
-const { map, pipe, tap, get, not, flatMap, filter } = require("rubico");
-const { defaultsDeep, isEmpty, unless, callProp, when } = require("rubico/x");
+const { pipe, tap, get } = require("rubico");
+const { defaultsDeep, callProp, when } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "ECSTask",
-});
-const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
@@ -57,9 +53,6 @@ exports.ECSTask = ({ spec, config }) => {
         pipe([
           () => live,
           get("group"),
-          tap((params) => {
-            assert(true);
-          }),
           when(
             callProp("startsWith", "service:"),
             pipe([
@@ -82,12 +75,7 @@ exports.ECSTask = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   const managedByOther = ({ live }) =>
     pipe([() => live, get("group"), callProp("startsWith", "service:")])();
@@ -98,18 +86,13 @@ exports.ECSTask = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTasks-property
-  const describeTasks = pipe([
-    tap(({ tasks, cluster }) => {
-      assert(Array.isArray(tasks));
-      assert(cluster);
-    }),
-    defaultsDeep({ include: ["TAGS"] }),
-    ecs().describeTasks,
-    get("tasks"),
-    tap((tasks) => {
-      logger.debug(`describeTasks ${tos(tasks)}`);
-    }),
-  ]);
+  const getById = client.getById({
+    pickId,
+    method: "describeTasks",
+    getField: "tasks",
+    extraParams: { include: ["TAGS"] },
+    ignoreErrorCodes,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTasks-property
   const getList = client.getListWithParent({
@@ -118,19 +101,11 @@ exports.ECSTask = ({ spec, config }) => {
     method: "listTasks",
     getParam: "taskArns",
     config,
-    decorate: ({ lives, parent: { id: cluster, Tags } }) =>
-      unless(isEmpty, pipe([(tasks) => ({ cluster, tasks }), describeTasks])),
+    decorate: ({ lives, parent: { clusterArn } }) =>
+      pipe([(taskArn) => ({ taskArn, clusterArn }), getById]),
   });
 
   const getByName = getByNameCore({ getList, findName });
-
-  const getById = client.getById({
-    pickId,
-    method: "describeTasks",
-    getField: "tasks",
-    extraParams: { include: ["TAGS"] },
-    ignoreErrorCodes,
-  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#runTask-property
   const create = ({ payload, name, namespace }) =>

@@ -1,16 +1,5 @@
 const assert = require("assert");
-const {
-  assign,
-  filter,
-  pipe,
-  tap,
-  get,
-  eq,
-  not,
-  or,
-  flatMap,
-  omit,
-} = require("rubico");
+const { assign, pipe, tap, get, eq, or, omit } = require("rubico");
 const { defaultsDeep, isEmpty, unless, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
@@ -82,49 +71,29 @@ exports.ECSService = ({ spec, config }) => {
     ignoreErrorCodes: ["ClusterNotFoundException", "InvalidParameterException"],
   });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeServices-property
-  const describeServices = pipe([
-    tap(({ cluster, services }) => {
-      assert(cluster);
-      assert(Array.isArray(services));
-    }),
-    defaultsDeep({ include: ["TAGS"] }),
-    ecs().describeServices,
-    get("services"),
-    tap((services) => {
-      logger.debug(`describeServices ${tos(services)}`);
-    }),
-  ]);
-
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listServices-property
-  const getList = ({ lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "Cluster",
-          group: "ECS",
+  const getList = client.getListWithParent({
+    parent: { type: "Cluster", group: "ECS" },
+    pickKey: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      ({ clusterName }) => ({ cluster: clusterName }),
+    ]),
+    method: "listServices",
+    getParam: "serviceArns",
+    config,
+    decorate: ({ lives, parent: { clusterArn } }) =>
+      pipe([
+        tap((params) => {
+          assert(clusterArn);
         }),
-      flatMap(
         pipe([
-          get("id"),
-          tap((cluster) => {
-            assert(cluster);
-          }),
-          (cluster) =>
-            pipe([
-              () => ({ cluster }),
-              ecs().listServices,
-              get("serviceArns"),
-              unless(
-                isEmpty,
-                pipe([(services) => ({ cluster, services }), describeServices])
-              ),
-            ])(),
-        ])
-      ),
-      filter(not(isEmpty)),
-    ])();
+          (serviceArn) => ({ clusterArn, serviceName: serviceArn }),
+          getById,
+        ]),
+      ]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 

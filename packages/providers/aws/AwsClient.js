@@ -103,8 +103,9 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       getParam,
       decorate = () => identity,
       filterResource = () => true,
+      extraParam = {},
     }) =>
-    ({ lives, params } = {}) =>
+    ({ lives, params = {} } = {}) =>
       pipe([
         tap(() => {
           logger.info(`getList ${type}`);
@@ -113,6 +114,10 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           assert(isFunction(endpoint()[method]));
         }),
         () => params,
+        defaultsDeep(extraParam),
+        tap((params) => {
+          logger.debug(`getList ${type}, params: ${JSON.stringify(params)}`);
+        }),
         endpoint()[method],
         tap((params) => {
           assert(true);

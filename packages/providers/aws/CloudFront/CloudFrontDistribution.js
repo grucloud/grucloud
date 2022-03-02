@@ -109,6 +109,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#listDistributions-property
+  //TODO
   const getList = ({ params } = {}) =>
     pipe([
       tap(() => {

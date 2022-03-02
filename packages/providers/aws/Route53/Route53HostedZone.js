@@ -130,33 +130,30 @@ exports.Route53HostedZone = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
-  const getList = () =>
-    pipe([
-      tap(() => {
-        logger.debug(`getList hostedZone`);
-      }),
-      () => route53().listHostedZones({}),
-      get("HostedZones"),
-      map(
+  const getList = client.getList({
+    method: "listHostedZones",
+    getParam: "HostedZones",
+    decorate: () =>
+      pipe([
         assign({
           RecordSet: pipe([
-            (hostedZone) =>
-              route53().listResourceRecordSets({
-                HostedZoneId: hostedZone.Id,
-              }),
+            (hostedZone) => ({
+              HostedZoneId: hostedZone.Id,
+            }),
+            route53().listResourceRecordSets,
             get("ResourceRecordSets"),
           ]),
           Tags: pipe([
-            (hostedZone) =>
-              route53().listTagsForResource({
-                ResourceId: hostedZone.Id,
-                ResourceType: "hostedzone",
-              }),
+            (hostedZone) => ({
+              ResourceId: hostedZone.Id,
+              ResourceType: "hostedzone",
+            }),
+            route53().listTagsForResource,
             get("ResourceTagSet.Tags"),
           ]),
-        })
-      ),
-    ])();
+        }),
+      ]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 

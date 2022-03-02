@@ -184,7 +184,7 @@ exports.SQSQueue = ({ spec, config }) => {
     pickId,
     method: "deleteQueue",
     getById,
-    ignoreErrorCodes: ["AWS.SimpleQueueService.NonExistentQueue"],
+    ignoreErrorCodes,
     config,
   });
 

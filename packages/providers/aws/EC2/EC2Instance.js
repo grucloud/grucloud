@@ -261,6 +261,7 @@ exports.EC2Instance = ({ spec, config }) => {
     }),
   ]);
 
+  //TODO
   const getList = ({ params } = {}) =>
     pipe([
       tap(() => {

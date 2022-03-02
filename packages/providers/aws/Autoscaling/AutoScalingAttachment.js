@@ -76,7 +76,7 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
     ])();
 
   const getByName = getByNameCore({ getList, findName });
-
+  //TODO
   // const getById = client.getById({
   //   pickId: ({ AutoScalingGroupName }) => ({
   //     AutoScalingGroupNames: [AutoScalingGroupName],

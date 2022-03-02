@@ -116,6 +116,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     pickId: ({ name }) => ({ capacityProvider: name }),
     preDestroy: deleteAutoScalingGroup,
     method: "deleteCapacityProvider",
+
     isInstanceDown: switchCase([
       eq(get("updateStatus"), "DELETE_FAILED"),
       () => {

@@ -64,70 +64,46 @@ exports.AwsIamUser = ({ spec, config }) => {
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listUsers-property
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.debug(`getList iam user`);
-      }),
-      () => iam().listUsers(params),
-      get("Users"),
-      tap((users) => {
-        logger.debug(`getList users: ${tos(users)}`);
-      }),
-      map.pool(
-        mapPoolSize,
-        tryCatch(
-          pipe([
-            ({ UserName }) =>
-              iam().getUser({
-                UserName,
-              }),
-            get("User"),
-            assign({
-              AttachedPolicies: pipe([
-                ({ UserName }) =>
-                  iam().listAttachedUserPolicies({
-                    UserName,
-                    MaxItems: 1e3,
-                  }),
-                get("AttachedPolicies"),
-              ]),
-              Policies: pipe([
-                ({ UserName }) =>
-                  iam().listUserPolicies({
-                    UserName,
-                    MaxItems: 1e3,
-                  }),
-                get("Policies"),
-              ]),
-              Groups: pipe([
-                ({ UserName }) => iam().listGroupsForUser({ UserName }),
-                get("Groups"),
-              ]),
-              AccessKeys: pipe([
-                ({ UserName }) => iam().listAccessKeys({ UserName }),
-                get("AccessKeyMetadata"),
-              ]),
-              LoginProfile: fetchLoginProfile,
-              Tags: pipe([
-                ({ UserName }) => iam().listUserTags({ UserName }),
-                get("Tags"),
-              ]),
+  const getList = client.getList({
+    method: "listUsers",
+    getParam: "Users",
+    decorate: () =>
+      pipe([
+        pick(["UserName"]),
+        iam().getUser,
+        get("User"),
+        assign({
+          AttachedPolicies: pipe([
+            ({ UserName }) => ({
+              UserName,
+              MaxItems: 1e3,
             }),
+            iam().listAttachedUserPolicies,
+            get("AttachedPolicies"),
           ]),
-          (error, user) =>
-            pipe([
-              tap(() => {
-                logger.error(`getList iam user error: ${tos({ error, user })}`);
-              }),
-              () => ({ error, user }),
-            ])()
-        )
-      ),
-      tap.if(find(get("error")), (users) => {
-        throw users;
-      }),
-    ])();
+          Policies: pipe([
+            ({ UserName }) => ({
+              UserName,
+              MaxItems: 1e3,
+            }),
+            iam().listUserPolicies,
+            get("Policies"),
+          ]),
+          Groups: pipe([
+            pick(["UserName"]),
+            iam().listGroupsForUser,
+            get("Groups"),
+          ]),
+          AccessKeys: pipe([
+            pick(["UserName"]),
+            iam().listAccessKeys,
+            get("AccessKeyMetadata"),
+          ]),
+          LoginProfile: fetchLoginProfile,
+          Tags: pipe([pick(["UserName"]), iam().listUserTags, get("Tags")]),
+        }),
+      ]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 

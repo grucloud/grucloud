@@ -2,21 +2,27 @@ const assert = require("assert");
 const { map, pipe, tap, get } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
 
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { buildTagsEcs } = require("./ECSCommon");
 
 const findId = get("live.taskDefinitionArn");
 const findName = get("live.family");
-const pickId = ({ taskDefinitionArn }) => ({
-  taskDefinition: taskDefinitionArn,
-});
+const pickId = pipe([
+  tap(({ taskDefinitionArn }) => {
+    assert(taskDefinitionArn);
+  }),
+  ({ taskDefinitionArn }) => ({
+    taskDefinition: taskDefinitionArn,
+  }),
+]);
+
+const ignoreErrorMessages = ["The specified task definition does not exist."];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSTaskDefinition = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
   const findDependencies = ({ live }) => [
     // efsVolumeConfiguration
@@ -30,27 +36,29 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
 
   const findNamespace = pipe([() => ""]);
 
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTaskDefinitions-property
-  const listTaskDefinitions = (params = {}) =>
-    pipe([
-      tap((params) => {
-        assert(true);
+  const getById = client.getById({
+    pickId: pipe([
+      tap(({ taskDefinitionArn }) => {
+        assert(taskDefinitionArn);
       }),
-      () => params,
-      defaultsDeep({ sort: "DESC" }),
-      ecs().listTaskDefinitions,
-      get("taskDefinitionArns"),
-      map(
-        pipe([
-          (taskDefinition) => ({ taskDefinition, include: ["TAGS"] }),
-          //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskDefinition-property
-          ecs().describeTaskDefinition,
-          ({ taskDefinition, tags }) => ({ ...taskDefinition, tags }),
-        ])
-      ),
-    ])();
+      ({ taskDefinitionArn }) => ({ taskDefinition: taskDefinitionArn }),
+    ]),
+    extraParams: { include: ["TAGS"] },
+    method: "describeTaskDefinition",
+    ignoreErrorMessages,
+    decorate: () =>
+      pipe([({ taskDefinition, tags }) => ({ ...taskDefinition, tags })]),
+  });
 
-  const getList = ({ lives }) => pipe([listTaskDefinitions])();
+  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTaskDefinitions-property
+  const getList = client.getList({
+    method: "listTaskDefinitions",
+    getParam: "taskDefinitionArns",
+    extraParam: { sort: "DESC" },
+    decorate: () =>
+      pipe([(taskDefinitionArn) => ({ taskDefinitionArn }), getById]),
+  });
+  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskDefinition-property
 
   const getByName = ({ name }) =>
     pipe([
@@ -58,7 +66,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
         assert(name);
       }),
       () => ({ familyPrefix: name }),
-      listTaskDefinitions,
+      getList,
       tap((params) => {
         assert(true);
       }),
@@ -89,7 +97,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     method: "deregisterTaskDefinition",
     //getById,
     ignoreErrorCodes: ["InvalidParameterException"],
-    ignoreErrorMessages: ["The specified task definition does not exist."],
+    ignoreErrorMessages,
     config,
   });
 
