@@ -147,7 +147,6 @@ exports.Layer = ({ spec, config }) => {
     config,
   });
 
-  // TODO update
   const update = client.update({
     pickId,
     method: "publishLayerVersion",

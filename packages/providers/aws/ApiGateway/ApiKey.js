@@ -69,7 +69,6 @@ exports.ApiKey = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteApiKey-property
-  //TODO ignoreErrorCodes instead
   const destroy = client.destroy({
     pickId,
     method: "deleteApiKey",

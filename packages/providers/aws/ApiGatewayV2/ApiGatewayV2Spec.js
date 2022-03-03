@@ -193,12 +193,12 @@ module.exports = pipe([
     {
       type: "Deployment",
       //TODO
-      // dependsOn: [
-      //   "ApiGatewayV2::Api",
-      //   "ApiGatewayV2::Route",
-      //   "ApiGatewayV2::Stage",
-      //   "ApiGatewayV2::Integration",
-      // ],
+      dependsOn: [
+        "ApiGatewayV2::Api",
+        "ApiGatewayV2::Route",
+        "ApiGatewayV2::Stage",
+        "ApiGatewayV2::Integration",
+      ],
       Client: Deployment,
       inferName: ({ properties, dependencies }) =>
         pipe([dependencies, ({ api }) => `deployment::${api.name}`])(),

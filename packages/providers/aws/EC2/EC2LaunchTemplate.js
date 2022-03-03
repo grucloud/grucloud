@@ -9,10 +9,6 @@ const {
   includes,
 } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "EC2LaunchTemplate",
-});
-const { tos } = require("@grucloud/core/tos");
 const {
   createEndpoint,
   buildTags,
@@ -147,19 +143,13 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
 
   // Update https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createLaunchTemplateVersion-property
   //TODO update
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update launchTemplate: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      omit(["TagSpecifications"]),
-      ec2().createLaunchTemplateVersion,
-      tap(() => {
-        logger.info(`updated launchTemplate ${name}`);
-      }),
-    ])();
+  const update = client.update({
+    filterParams: ({ payload }) =>
+      pipe([() => payload, omit(["TagSpecifications"])])(),
+    method: "createLaunchTemplateVersion",
+    config,
+    //getById,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteLaunchTemplate-property
   const destroy = client.destroy({

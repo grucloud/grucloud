@@ -127,9 +127,6 @@ exports.ACMNew = (config) => () =>
 exports.EKSNew = (config) => () =>
   createEndpoint({ endpointName: "EKS" })(config);
 
-exports.ELBNew = (config) => () =>
-  createEndpoint({ endpointName: "ELB" })(config);
-
 exports.ELBv2New = (config) => () =>
   createEndpoint({ endpointName: "ELBv2" })(config);
 
@@ -138,20 +135,6 @@ exports.AutoScalingNew = (config) => () =>
 
 exports.KmsNew = (config) => () =>
   createEndpoint({ endpointName: "KMS" })(config);
-
-exports.shouldRetryOnException = ({ error, name }) =>
-  pipe([
-    tap(() => {
-      logger.error(`aws shouldRetryOnException ${tos({ name, error })}`);
-      error.stack && logger.error(error.stack);
-    }),
-    () => error,
-    //TODO find out error code we can retry on
-    or([eq(get("statusCode"), 503)]),
-    tap((retry) => {
-      logger.error(`aws shouldRetryOnException ${name}, retry: ${retry}`);
-    }),
-  ])();
 
 exports.DecodeUserData = when(
   get("UserData"),
@@ -162,18 +145,6 @@ exports.DecodeUserData = when(
     ]),
   })
 );
-
-exports.shouldRetryOnExceptionDelete = ({ error, name }) =>
-  pipe([
-    () => error,
-    //TODO not for IamPolicy
-    eq(get("code"), "DeleteConflict"),
-    tap((retry) => {
-      logger.debug(
-        `aws shouldRetryOnExceptionDelete ${tos({ name, error, retry })}`
-      );
-    }),
-  ])();
 
 const hasKeyValueInTags =
   ({ key, value }) =>

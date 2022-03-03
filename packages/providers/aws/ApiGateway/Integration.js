@@ -108,25 +108,11 @@ exports.Integration = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getIntegration-property
-  //TODO getListByParent
-  const getList = ({ lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`getList integration`);
-      }),
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "Method",
-          group: "APIGateway",
-        }),
-      pluck("live"),
-      map(getById),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+  const getList = client.getListWithParent({
+    parent: { type: "Method", group: "APIGateway" },
+    config,
+    decorate: ({ lives, parent }) => pipe([getById]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
