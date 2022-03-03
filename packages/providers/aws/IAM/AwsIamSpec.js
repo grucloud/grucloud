@@ -66,6 +66,16 @@ module.exports = () =>
         cluster: { type: "Cluster", group: "EKS" },
         role: { type: "Role", group: "IAM" },
       },
+      inferName: ({ properties, dependenciesSpec }) =>
+        pipe([
+          () => dependenciesSpec,
+          switchCase([
+            get("cluster"),
+            pipe([get("cluster"), prepend("EKS::Cluster::")]),
+            () => "",
+          ]),
+          prepend("oidp::"),
+        ])(),
       hasNoProperty: ({ lives, resource }) =>
         pipe([
           () => resource,

@@ -178,23 +178,19 @@ exports.Function = ({ spec, config }) => {
     getById,
     config,
   });
-
-  // TODO update
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update function: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => ({
-        FunctionName: payload.FunctionName,
-        ZipFile: payload.Code.ZipFile,
-      }),
-      lambda().updateFunctionCode,
-      tap(() => {
-        logger.info(`updated function ${name}`);
-      }),
-    ])();
+  //TODO update
+  const update = client.update({
+    filterParams: ({ payload, live, diff }) =>
+      pipe([
+        () => ({
+          FunctionName: payload.FunctionName,
+          ZipFile: payload.Code.ZipFile,
+        }),
+      ])(),
+    method: "updateFunctionCode",
+    config,
+    //getById,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
   const destroy = client.destroy({

@@ -1,17 +1,11 @@
 ## Bugs
 
+-inferName OpenIDConnectProvider
+
 - ✖ Deploying  
    ✖ AppRunner::Service 0/1 Error in assuming access role arn:aws:iam::840541460064:role/service-role/AppRunnerECRAccessRole
-- example vpc-use stull using make and use
+- example vpc-use still using make and use
 - check stage for all providers
-
-## Diagram
-
-- check git repo from frontend https://isomorphic-git.org/docs/en/getRemoteInfo
-  add k8s
-  backup data.
-  privacy policy
-  resource table styling
 
 ## Common:
 
@@ -94,10 +88,10 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 ## Aws2gc
 
 - ec2 image
-- EKS cluster tags
 
 ## Aws
 
+- aws user tags for all resources
 - compare refactor
 - compare Tags
 - RDS DBCluster AvailabilityZones
@@ -200,4 +194,10 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## Nice to have
 
-## Bugs
+## Diagram
+
+- check git repo from frontend https://isomorphic-git.org/docs/en/getRemoteInfo
+  add k8s
+  backup data.
+  privacy policy
+  resource table styling

@@ -104,6 +104,7 @@ exports.ECSTask = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#runTask-property
+  //TODO create
   const create = ({ payload, name, namespace }) =>
     pipe([() => payload, ecs().runTask])();
 

@@ -2,7 +2,6 @@ const assert = require("assert");
 const { pipe, tap, get, switchCase, pick } = require("rubico");
 const { defaultsDeep, pluck } = require("rubico/x");
 
-const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
@@ -15,7 +14,6 @@ const pickId = pick(["cluster", "service", "taskSet"]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSTaskSet = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
   // findDependencies for ECSTaskSet
   const findDependencies = ({ live }) => [
@@ -51,8 +49,6 @@ exports.ECSTaskSet = ({ spec, config }) => {
   const getList = client.getListWithParent({
     parent: { type: "Service", group: "ECS" },
     pickKey: pipe([({ clusterName }) => ({ cluster: clusterName })]),
-    method: "listServices",
-    getParam: "serviceArns",
     config,
     decorate: ({ lives, parent }) =>
       pipe([

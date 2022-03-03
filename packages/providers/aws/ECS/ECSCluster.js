@@ -199,13 +199,21 @@ exports.ECSCluster = ({ spec, config }) => {
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCluster-property
-  const update = ({ payload, name, namespace }) =>
-    pipe([
-      () => payload,
-      assign({ cluster: get("clusterName") }),
-      pick(["cluster", "settings", "configuration"]),
-      ecs().updateCluster,
-    ])();
+  //TODO update
+  const update = client.update({
+    filterParams: ({ payload }) =>
+      pipe([
+        tap((param) => {
+          assert(payload.clusterName);
+        }),
+        () => payload,
+        assign({ cluster: get("clusterName") }),
+        pick(["cluster", "settings", "configuration"]),
+      ])(),
+    method: "updateCluster",
+    config,
+    getById,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCluster-property
   const destroy = client.destroy({

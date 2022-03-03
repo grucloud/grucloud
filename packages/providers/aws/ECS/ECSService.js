@@ -108,31 +108,31 @@ exports.ECSService = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateService-property
   // TODO update
-
-  const update = ({
-    payload,
-    name,
-    namespace,
-    resolvedDependencies: { cluster },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(cluster.live.clusterArn);
-      }),
-      () => payload,
-      assign({
-        service: get("serviceName"),
-        cluster: () => cluster.live.clusterArn,
-      }),
-      omit([
-        "launchType",
-        "schedulingStrategy",
-        "enableECSManagedTags",
-        "serviceName",
-        "tags",
-      ]),
-      ecs().updateService,
-    ])();
+  const update = client.update({
+    filterParams: ({ payload, live }) =>
+      pipe([
+        tap((param) => {
+          assert(live);
+          assert(live.clusterArn);
+          assert(payload.serviceName);
+        }),
+        () => payload,
+        assign({
+          service: get("serviceName"),
+          cluster: () => live.clusterArn,
+        }),
+        omit([
+          "launchType",
+          "schedulingStrategy",
+          "enableECSManagedTags",
+          "serviceName",
+          "tags",
+        ]),
+      ])(),
+    method: "updateService",
+    config,
+    getById,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteService-property
   const destroy = client.destroy({

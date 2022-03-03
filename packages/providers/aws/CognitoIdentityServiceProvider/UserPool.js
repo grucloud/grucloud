@@ -77,6 +77,7 @@ exports.UserPool = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPool-property
+  //TODO create
   const create = ({ name, payload, resolvedDependencies: {} }) =>
     pipe([
       tap(() => {

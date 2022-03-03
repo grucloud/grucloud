@@ -100,6 +100,7 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#attachLoadBalancerTargetGroups-property
+  //TODO create
   const create = ({ payload, name, dependencies, lives }) =>
     pipe([
       tap(() => {
