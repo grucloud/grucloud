@@ -1,13 +1,14 @@
 {
-  "name": "txt-record",
+  "name": "@grucloud/example-aws-eks-load-balancer-controller",
   "version": "5.6.0",
+  "description": "Example for the AWS EKS with a load balancer controller",
+  "main": "iac.js",
   "private": true,
-  "description": "",
-  "main": "index.js",
   "scripts": {
+    "graph-target": "gc graph --title 'EKS Load Balancer Controller'",
+    "list": "gc list --graph --title 'EKS Balancer' --default-exclude -e Key",
     "test": "mocha",
-    "tree": "gc tree",
-    "list": "gc list -g",
+    "plan": "gc plan",
     "gencode": "gc gencode"
   },
   "author": "",
