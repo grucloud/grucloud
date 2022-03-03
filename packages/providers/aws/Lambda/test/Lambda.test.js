@@ -1,6 +1,4 @@
 const assert = require("assert");
-const { pipe, tap, eq, get, and } = require("rubico");
-const { find } = require("rubico/x");
 const AdmZip = require("adm-zip");
 
 describe("Lambda", async function () {

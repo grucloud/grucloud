@@ -176,6 +176,7 @@ module.exports = () =>
     {
       type: "Volume",
       Client: AwsVolume,
+      dependsOnList: ["EC2::Instance"],
       isOurMinion,
       setupEbsVolume,
       compare: compareAws({
@@ -236,7 +237,7 @@ module.exports = () =>
     {
       type: "Vpc",
       //TODO only for delete
-      //dependsOn: ["IAM::User", "IAM::Group"],
+      //dependsOnDelete: ["IAM::User", "IAM::Group"],
       Client: AwsVpc,
       isOurMinion,
       compare: compareAws({
@@ -268,7 +269,6 @@ module.exports = () =>
     },
     {
       type: "InternetGateway",
-      dependsOn: ["EC2::Vpc"],
       Client: AwsInternetGateway,
       isOurMinion,
       compare: compareAws({
@@ -284,7 +284,6 @@ module.exports = () =>
     },
     {
       type: "NatGateway",
-      dependsOn: ["EC2::ElasticIpAddress", "EC2::Subnet"],
       Client: AwsNatGateway,
       isOurMinion,
       compare: compareAws({
@@ -315,7 +314,6 @@ module.exports = () =>
     },
     {
       type: "Subnet",
-      dependsOn: ["EC2::Vpc", "EC2::InternetGateway"],
       Client: AwsSubnet,
       isOurMinion,
       compare: compareAws({
@@ -370,14 +368,15 @@ module.exports = () =>
             AvailabilityZone: buildAvailabilityZone,
           }),
         ]),
-      dependencies: { vpc: { type: "Vpc", group: "EC2" } },
+      dependencies: {
+        vpc: { type: "Vpc", group: "EC2" },
+        internetGateway: { type: "InternetGateway", group: "EC2" },
+      },
       //TODO remove ?
       ignoreResource: () => get("isDefault"),
     },
     {
       type: "RouteTable",
-      dependsOn: ["EC2::Vpc"],
-      dependsOnList: ["EC2::Vpc"],
       Client: EC2RouteTable,
       isOurMinion,
       compare: compareAws({
@@ -418,9 +417,6 @@ module.exports = () =>
     },
     {
       type: "RouteTableAssociation",
-      dependsOn: ["EC2::RouteTable", "EC2::Subnet"],
-      dependsOnList: ["EC2::RouteTable"],
-
       Client: EC2RouteTableAssociation,
       isOurMinion: () => () => true,
       compare: compareAws({
@@ -447,12 +443,9 @@ module.exports = () =>
     },
     {
       type: "Route",
-      dependsOn: ["EC2::RouteTable", "EC2::InternetGateway", "EC2::NatGateway"],
-      dependsOnList: ["EC2::RouteTable"],
       Client: EC2Route,
       isOurMinion,
       compare: compareAws({
-        //filterTarget: filterTargetDefault,
         filterLive: () =>
           pipe([
             omit([
@@ -495,7 +488,7 @@ module.exports = () =>
         ])(),
       includeDefaultDependencies: true,
       dependencies: {
-        routeTable: { type: "RouteTable", group: "EC2" },
+        routeTable: { type: "RouteTable", group: "EC2", parent: true },
         ig: { type: "InternetGateway", group: "EC2" },
         natGateway: { type: "NatGateway", group: "EC2" },
       },
@@ -514,6 +507,7 @@ module.exports = () =>
       filterLive: () => pick(["Description"]),
       dependencies: {
         vpc: { type: "Vpc", group: "EC2" },
+        subnet: { type: "Subnet", group: "EC2" },
         eksCluster: {
           type: "Cluster",
           group: "EKS",
@@ -556,8 +550,6 @@ module.exports = () =>
     },
     {
       type: "SecurityGroupRuleIngress",
-      dependsOn: ["EC2::SecurityGroup"],
-      dependsOnList: ["EC2::SecurityGroup"],
       Client: AwsSecurityGroupRuleIngress,
       compare: compareSecurityGroupRule,
       isOurMinion,
@@ -596,8 +588,6 @@ module.exports = () =>
     },
     {
       type: "SecurityGroupRuleEgress",
-      dependsOn: ["EC2::SecurityGroup"],
-      dependsOnList: ["EC2::SecurityGroup"],
       Client: AwsSecurityGroupRuleEgress,
       compare: compareSecurityGroupRule,
       isOurMinion,
@@ -609,7 +599,9 @@ module.exports = () =>
     },
     {
       type: "ElasticIpAddress",
-      dependsOn: ["EC2::InternetGateway", "EC2::InternetGateway"],
+      dependencies: {
+        internetGateway: { type: "InternetGateway", group: "EC2" },
+      },
       Client: AwsElasticIpAddress,
       isOurMinion,
       compare: compareAws({
@@ -634,16 +626,7 @@ module.exports = () =>
     },
     {
       type: "Instance",
-      dependsOn: [
-        "EC2::KeyPair",
-        "EC2::SecurityGroup",
-        "EC2::Subnet",
-        "EC2::ElasticIpAddress",
-        "EC2::Volume",
-        /*"EC2::NetworkInterface",*/
-        "EC2::InternetGateway",
-        "IAM::InstanceProfile",
-      ],
+
       Client: EC2Instance,
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
       propertiesDefault: {
@@ -673,12 +656,6 @@ module.exports = () =>
     },
     {
       type: "LaunchTemplate",
-      dependsOn: [
-        "EC2::KeyPair",
-        "EC2::SecurityGroup",
-        "IAM::Role",
-        "IAM::InstanceProfile",
-      ],
       Client: EC2LaunchTemplate,
       includeDefaultDependencies: true,
       isOurMinion,
@@ -729,17 +706,6 @@ module.exports = () =>
         ]),
       dependencies: ec2InstanceDependencies,
     },
-
-    // {
-    //   type: "NetworkInterface",
-    //   //dependsOn: ["EC2::Subnet", "EC2::SecurityGroup"],
-    //   Client: AwsNetworkInterface,
-    //   isOurMinion,
-    //   compare: compareAws({
-    //     filterTarget: () => pipe([filterTargetDefault]),
-    //     filterLive: () => pipe([filterLiveDefault]),
-    //   }),
-    // },
     {
       type: "NetworkAcl",
       Client: AwsNetworkAcl,

@@ -17,7 +17,7 @@ const { defaultsDeep, callProp, when } = require("rubico/x");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.name");
@@ -245,9 +245,6 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
             )(),
         ]),
       }),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   return {
@@ -263,6 +260,5 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

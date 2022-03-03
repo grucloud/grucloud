@@ -25,6 +25,9 @@ const { DomainName } = require("./DomainName");
 const { Authorizer } = require("./Authorizer");
 const { ApiKey } = require("./ApiKey");
 const { Account } = require("./Account");
+const { Method } = require("./Method");
+const { Resource } = require("./Resource");
+//const { Integration } = require("./Integration");
 
 const GROUP = "APIGateway";
 
@@ -35,11 +38,6 @@ const writeRestApiSchema =
   ({ programOptions, commandOptions }) =>
   ({ lives, resource }) =>
     pipe([
-      tap((params) => {
-        assert(programOptions);
-        assert(lives);
-        assert(resource);
-      }),
       () => resource,
       get("live.schema"),
       (json) => JSON.stringify(json, null, 4),
@@ -60,28 +58,12 @@ const writeRestApiSchema =
         )(),
     ])();
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "DomainName",
-      dependsOn: ["ACM::Certificate"],
       Client: DomainName,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.tags, config }),
-      compare: compareAws({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-      }),
+      compare: compareAws({}),
       filterLive: () =>
         pipe([
           tap((params) => {
@@ -95,26 +77,16 @@ module.exports = () =>
     },
     {
       type: "Account",
-      dependsOn: ["IAM::Role"],
       Client: Account,
       isOurMinion: ({ live, config }) => true,
       compare: compareAws({
         filterTarget: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             defaultsDeep({
               features: ["UsagePlans"],
             }),
           ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["throttleSettings", "apiKeyVersion"]),
-          ]),
+        filterLive: () => pipe([omit(["throttleSettings", "apiKeyVersion"])]),
       }),
       filterLive: () =>
         pipe([
@@ -132,40 +104,43 @@ module.exports = () =>
     {
       type: "ApiKey",
       Client: ApiKey,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.tags, config }),
       omitProperties: ["id", "createdDate", "lastUpdatedDate", "stageKeys"],
       compare: compareAws(),
       propertiesDefault: { enabled: true },
       filterLive: () =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           omit(["name", "id", "createdDate", "lastUpdatedDate", "stageKeys"]),
         ]),
     },
     {
+      type: "Resource",
+      Client: Resource,
+      dependencies: {
+        restApi: { type: "RestApi", group: "APIGateway", parent: true },
+      },
+      ignoreResource: () => true,
+      cannotBeDeleted: () => true,
+    },
+    {
+      type: "Method",
+      Client: Method,
+      dependencies: {
+        resource: { type: "Resource", group: "APIGateway", parent: true },
+      },
+      ignoreResource: () => true,
+      cannotBeDeleted: () => true,
+    },
+    {
       type: "RestApi",
       Client: RestApi,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.tags, config }),
       compare: compareAws({
         filterTarget: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             omit(["schemaFile", "deployment"]),
             defaultsDeep({ disableExecuteApiEndpoint: false }),
           ]),
         filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["id", "createdDate", "deployments", "version"]),
-          ]),
+          pipe([omit(["id", "createdDate", "deployments", "version"])]),
       }),
       filterLive: (input) => (live) =>
         pipe([
@@ -176,9 +151,6 @@ module.exports = () =>
           tap(writeRestApiSchema(input)),
           () => live,
           pick(["apiKeySource", "endpointConfiguration"]),
-          tap(() => {
-            assert(true);
-          }),
           assign({
             schemaFile: () => `${live.name}.oas30.json`,
             deployment: pipe([
@@ -206,11 +178,7 @@ module.exports = () =>
     },
     {
       type: "Stage",
-      dependsOn: ["APIGateway::RestApi"],
-      dependsOnList: ["APIGateway::RestApi"],
       Client: Stage,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.tags, config }),
       compare: compareAws({
         filterTarget: () =>
           pipe([
@@ -219,9 +187,6 @@ module.exports = () =>
           ]),
         filterLive: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             omit([
               "deploymentId",
               "clientCertificateId",
@@ -234,9 +199,6 @@ module.exports = () =>
       }),
       filterLive: () =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           pick([
             "description",
             "StageName",
@@ -248,9 +210,6 @@ module.exports = () =>
             "tracingEnabled",
           ]),
           omitIfEmpty(["methodSettings"]),
-          tap((params) => {
-            assert(true);
-          }),
         ]),
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
@@ -258,36 +217,22 @@ module.exports = () =>
     },
     {
       type: "Authorizer",
-      dependsOn: ["APIGateway::RestApi"],
-      dependsOnList: ["APIGateway::RestApi"],
       Client: Authorizer,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.tags, config }),
-      compare: compareAws({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-      }),
+      compare: compareAws({}),
       filterLive: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["id", "name", "restApiId", "providerARNs"]),
-        ]),
+        pipe([omit(["id", "name", "restApiId", "providerARNs"])]),
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
         lambdaFunction: { type: "Function", group: "Lambda" },
         userPool: { type: "UserPool", group: "Cognito" },
       },
     },
-  ]);
+  ],
+  map(
+    defaultsDeep({
+      group: GROUP,
+      isOurMinion: ({ live, config }) =>
+        isOurMinionObject({ tags: live.tags, config }),
+    })
+  ),
+]);

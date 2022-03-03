@@ -1,28 +1,11 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  pick,
-  map,
-  assign,
-} = require("rubico");
-const {
-  defaultsDeep,
-  isEmpty,
-  size,
-  first,
-  includes,
-  callProp,
-} = require("rubico/x");
+const { pipe, tap, get, switchCase, pick, map, assign } = require("rubico");
+const { defaultsDeep, isEmpty, size, includes, callProp } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "EC2LaunchConfiguration",
 });
-const { tos } = require("@grucloud/core/tos");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -92,41 +75,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
 
   const findNamespace = pipe([() => ""]);
 
-  const notFound = pipe([
-    get("message"),
-    includes("Launch configuration name not found"),
-  ]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeLaunchConfigurations-property
-  const describeLaunchConfigurations = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    autoScaling().describeLaunchConfigurations,
-    tap((params) => {
-      assert(true);
-    }),
-    get("LaunchConfigurations"),
-    tap((launchConfigurations) => {
-      logger.debug(
-        `describeLaunchConfigurations #launchConfigurations ${size(
-          launchConfigurations
-        )}`
-      );
-    }),
-  ]);
-
-  const getList = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => ({}),
-    describeLaunchConfigurations,
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
-
   const getById = client.getById({
     pickId: ({ LaunchConfigurationName }) => ({
       LaunchConfigurationNames: [LaunchConfigurationName],
@@ -134,6 +83,11 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     method: "describeLaunchConfigurations",
     getField: "LaunchConfigurations",
     ignoreErrorMessages: ["Launch configuration name not found"],
+  });
+
+  const getList = client.getList({
+    method: "describeLaunchConfigurations",
+    getParam: "LaunchConfigurations",
   });
 
   const getByName = pipe([
@@ -202,6 +156,5 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

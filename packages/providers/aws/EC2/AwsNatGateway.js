@@ -20,7 +20,6 @@ const {
   Ec2New,
   getByIdCore,
   findNameInTagsOrId,
-  shouldRetryOnException,
   buildTags,
   findNamespaceInTags,
 } = require("../AwsCommon");
@@ -58,19 +57,17 @@ exports.AwsNatGateway = ({ spec, config }) => {
         () => live,
         get("NatGatewayAddresses"),
         pluck("AllocationId"),
-        map(
-          (AllocationId) =>
-            pipe([
-              () =>
-                lives.getByType({
-                  type: "ElasticIpAddress",
-                  group: "EC2",
-                  providerName: config.providerName,
-                }),
-              find(eq(get("live.AllocationId"), AllocationId)),
-              get("id"),
-            ])(),
-          filter(not(isEmpty))
+        map((AllocationId) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "ElasticIpAddress",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            find(eq(get("live.AllocationId"), AllocationId)),
+            get("id"),
+          ])()
         ),
       ])(),
     },
@@ -185,6 +182,5 @@ exports.AwsNatGateway = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    shouldRetryOnException,
   };
 };

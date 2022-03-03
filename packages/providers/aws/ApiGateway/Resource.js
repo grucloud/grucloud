@@ -1,14 +1,11 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, tryCatch, flatMap } = require("rubico");
-const { pluck, defaultsDeep, size, isEmpty } = require("rubico/x");
-const logger = require("@grucloud/core/logger")({
-  prefix: "Resource",
-});
+const { pipe, tap, get } = require("rubico");
+const { defaultsDeep, isEmpty } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { findDependenciesRestApi } = require("./ApiGatewayCommon");
 
 const pickId = ({ restApiId, id }) => ({
   restApiId,
@@ -17,8 +14,6 @@ const pickId = ({ restApiId, id }) => ({
 
 exports.Resource = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "APIGateway" })(config);
 
   const findName = ({ live, lives }) =>
     pipe([
@@ -45,19 +40,15 @@ exports.Resource = ({ spec, config }) => {
   const findId = get("live.id");
 
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "RestApi",
-      group: "APIGateway",
-      ids: [live.restApiId],
-    },
+    findDependenciesRestApi({ live }),
   ];
-  const cannotBeDeleted = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    get("live.parentId"),
-    isEmpty,
-  ]);
+  // const cannotBeDeleted = pipe([
+  //   tap((params) => {
+  //     assert(true);
+  //   }),
+  //   get("live.parentId"),
+  //   isEmpty,
+  // ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getResource-property
   const getById = client.getById({
@@ -67,45 +58,41 @@ exports.Resource = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getResources-property
-  const getList = ({ lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`getList resource`);
-      }),
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "RestApi",
-          group: "APIGateway",
-        }),
-      tap((params) => {
-        assert(true);
-      }),
-      pluck("live"),
-      flatMap(({ id: restApiId, name, tags }) =>
-        tryCatch(
-          pipe([
-            () => apiGateway().getResources({ restApiId }),
-            get("items"),
-            map(defaultsDeep({ restApiId, restApiName: name, tags })),
-          ]),
-          (error) =>
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              () => ({
-                error,
-              }),
-            ])()
-        )()
-      ),
-    ])();
+  const getList = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    client.getListWithParent({
+      parent: { type: "RestApi", group: "APIGateway" },
+      pickKey: pipe([({ id }) => ({ restApiId: id })]),
+      method: "getResources",
+      getParam: "items",
+      config,
+      decorate: ({ lives, parent: { id: restApiId, name, Tags } }) =>
+        pipe([defaultsDeep({ restApiName: name, restApiId, Tags })]),
+    }),
+  ]);
 
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createResource-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties,
+    dependencies: { restApi },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(restApi, "missing 'restApi' dependency");
+      }),
+      () => properties,
+      defaultsDeep({
+        pathPart: name,
+        restApiId: getField(restApi, "id"),
+      }),
+    ])();
+
   const create = client.create({
     method: "createResource",
     getById,
@@ -130,23 +117,6 @@ exports.Resource = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({
-    name,
-    namespace,
-    properties,
-    dependencies: { restApi },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(restApi, "missing 'restApi' dependency");
-      }),
-      () => properties,
-      defaultsDeep({
-        pathPart: name,
-        restApiId: getField(restApi, "id"),
-      }),
-    ])();
-
   return {
     spec,
     findName,
@@ -158,8 +128,7 @@ exports.Resource = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
-    cannotBeDeleted,
+    cannotBeDeleted: () => true,
   };
 };

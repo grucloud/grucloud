@@ -1,17 +1,5 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  eq,
-  assign,
-  tryCatch,
-  switchCase,
-  filter,
-  not,
-  pick,
-} = require("rubico");
+const { map, pipe, tap, get, eq, assign, filter, pick } = require("rubico");
 const {
   isEmpty,
   includes,
@@ -19,21 +7,14 @@ const {
   defaultsDeep,
   pluck,
   callProp,
-  identity,
+  unless,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "LoadBalancerV2",
-});
-const { retryCall } = require("@grucloud/core/Retry");
-const { tos } = require("@grucloud/core/tos");
-const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
 const {
   ELBv2New,
   buildTags,
   findNamespaceInTagsOrEksCluster,
-  shouldRetryOnException,
   hasKeyInTags,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
@@ -91,8 +72,8 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     key: "elbv2.k8s.aws/cluster",
   });
 
-  const assignTags = switchCase([
-    not(isEmpty),
+  const assignTags = unless(
+    isEmpty,
     assign({
       Tags: pipe([
         ({ LoadBalancerArn }) =>
@@ -101,86 +82,29 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
         first,
         get("Tags"),
       ]),
-    }),
-    identity,
-  ]);
+    })
+  );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
-
-  const describeLoadBalancers = (params) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          logger.info(`describeLoadBalancers ${JSON.stringify(params)}`);
-        }),
-        () => elb().describeLoadBalancers(params),
-        get("LoadBalancers"),
-        tap((results) => {
-          logger.debug(`describeLoadBalancers: result: ${tos(results)}`);
-        }),
-        map(assignTags),
-      ]),
-      switchCase([
-        eq(get("code"), "LoadBalancerNotFound"),
-        () => [],
-        (error) => {
-          logger.error(
-            `describeLoadBalancers, ${params}, error: ${tos(error)}`
-          );
-          throw error;
-        },
-      ])
-    )();
-
-  const getList = () =>
-    pipe([
-      tap(() => {
-        logger.info(`getList load balancer`);
-      }),
-      describeLoadBalancers,
-    ])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
-  const getByName = ({ name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getByName ${name}`);
-      }),
-      () => ({ Names: [name] }),
-      describeLoadBalancers,
-      first,
-      tap((result) => {
-        logger.debug(`getByName ${name}: ${tos(result)}`);
-      }),
-    ])();
 
   const getById = client.getById({
-    pickId: ({ LoadBalancerArn }) => ({ LoadBalancerArns: [LoadBalancerArn] }),
+    pickId: ({ LoadBalancerName }) => ({ Names: [LoadBalancerName] }),
     method: "describeLoadBalancers",
     getField: "LoadBalancers",
     ignoreErrorCodes: ["LoadBalancerNotFound"],
+    decorate: () => pipe([assignTags]),
   });
+
+  const getList = client.getList({
+    method: "describeLoadBalancers",
+    getParam: "LoadBalancers",
+    decorate: () => pipe([assignTags]),
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
+  const getByName = pipe([({ name }) => ({ LoadBalancerName: name }), getById]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createLoadBalancer-property
-  const create = client.create({
-    method: "createLoadBalancer",
-    pickId,
-    getById,
-    config,
-    isInstanceUp: eq(get("State.Code"), "active"),
-    pickCreated: () => pipe([get("LoadBalancers"), first]),
-    config: { retryCount: 40 * 10, retryDelay: 10e3 },
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteLoadBalancer-property
-  const destroy = client.destroy({
-    pickId,
-    method: "deleteLoadBalancer",
-    getById,
-    ignoreErrorCodes: ["LoadBalancerNotFound"],
-    config,
-  });
-
   const configDefault = ({
     name,
     namespace,
@@ -208,6 +132,24 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       }),
     ])();
 
+  const create = client.create({
+    method: "createLoadBalancer",
+    pickId,
+    getById,
+    isInstanceUp: eq(get("State.Code"), "active"),
+    pickCreated: () => pipe([get("LoadBalancers"), first]),
+    config: { retryCount: 40 * 10, retryDelay: 10e3 },
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteLoadBalancer-property
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteLoadBalancer",
+    getById,
+    ignoreErrorCodes: ["LoadBalancerNotFound"],
+    config,
+  });
+
   return {
     spec,
     findId,
@@ -219,7 +161,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     managedByOther,
   };
 };

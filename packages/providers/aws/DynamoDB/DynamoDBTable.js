@@ -2,11 +2,7 @@ const assert = require("assert");
 const { map, pipe, tap, get, eq, not, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  buildTags,
-} = require("../AwsCommon");
+const { createEndpoint, buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.TableName");
@@ -26,12 +22,7 @@ exports.DynamoDBTable = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   const tableArn = ({ TableName, config }) =>
     `arn:aws:dynamodb:${
@@ -126,6 +117,5 @@ exports.DynamoDBTable = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

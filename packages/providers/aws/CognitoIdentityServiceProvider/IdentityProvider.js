@@ -19,11 +19,7 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { buildTagsObject } = require("@grucloud/core/Common");
-const {
-  shouldRetryOnException,
-  findNamespaceInTagsObject,
-} = require("../AwsCommon");
+const { findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("ProviderName");
@@ -36,6 +32,7 @@ exports.IdentityProvider = ({ spec, config }) => {
     createEndpoint({ endpointName: "CognitoIdentityServiceProvider" })(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listIdentityProviders-property
+  //TODO getList
   const getList = ({ lives }) =>
     pipe([
       tap(() => {
@@ -120,6 +117,7 @@ exports.IdentityProvider = ({ spec, config }) => {
   const isDownByName = pipe([getByName, isEmpty]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createIdentityProvider-property
+  //TODO create
   const create = ({ name, payload, resolvedDependencies: {} }) =>
     pipe([
       tap(() => {
@@ -189,6 +187,5 @@ exports.IdentityProvider = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

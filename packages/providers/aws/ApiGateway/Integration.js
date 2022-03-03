@@ -18,7 +18,7 @@ const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint, lambdaAddPermission } = require("../AwsCommon");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -51,9 +51,6 @@ exports.Integration = ({ spec, config }) => {
       group: "APIGateway",
       ids: [
         pipe([
-          tap(() => {
-            assert(live);
-          }),
           () =>
             lives.getByType({
               providerName: config.providerName,
@@ -67,9 +64,6 @@ exports.Integration = ({ spec, config }) => {
               eq(get("live.httpMethod"), live.httpMethod),
             ])
           ),
-          tap((params) => {
-            assert(true);
-          }),
           get("id"),
         ])(),
       ],
@@ -114,24 +108,11 @@ exports.Integration = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getIntegration-property
-  const getList = ({ lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`getList integration`);
-      }),
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "Method",
-          group: "APIGateway",
-        }),
-      pluck("live"),
-      map(getById),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+  const getList = client.getListWithParent({
+    parent: { type: "Method", group: "APIGateway" },
+    config,
+    decorate: ({ lives, parent }) => pipe([getById]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -149,27 +130,22 @@ exports.Integration = ({ spec, config }) => {
     config,
     postCreate: ({ resolvedDependencies: { restApi, lambdaFunction } }) =>
       pipe([
-        tap.if(
-          () => lambdaFunction,
-          ({ IntegrationId }) =>
-            pipe([
-              () => ({
-                Action: "lambda:InvokeFunction",
-                FunctionName: lambdaFunction.resource.name,
-                Principal: "apigateway.amazonaws.com",
-                StatementId: IntegrationId,
-                SourceArn: `arn:aws:execute-api:${
-                  config.region
-                }:${config.accountId()}:${getField(restApi, "id")}/*/*/${
-                  lambdaFunction.resource.name
-                }`,
-              }),
-              lambda().addPermission,
-            ])()
-        ),
+        tap(() => {
+          assert(restApi);
+        }),
+        lambdaAddPermission({
+          lambda,
+          lambdaFunction,
+          SourceArn: `arn:aws:execute-api:${
+            config.region
+          }:${config.accountId()}:${getField(restApi, "id")}/*/*/${
+            lambdaFunction.resource.name
+          }`,
+        }),
       ]),
   });
 
+  //TODO update
   const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
@@ -250,7 +226,6 @@ exports.Integration = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

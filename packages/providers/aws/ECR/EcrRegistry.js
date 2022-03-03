@@ -14,7 +14,7 @@ const { defaultsDeep, isEmpty, when, isDeepEqual } = require("rubico/x");
 const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EcrRegistry" });
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findName = () => "default";
@@ -196,7 +196,6 @@ exports.EcrRegistry = ({ spec, config }) => {
     update,
     getList,
     configDefault,
-    shouldRetryOnException,
     cannotBeDeleted: () => true,
   };
 };

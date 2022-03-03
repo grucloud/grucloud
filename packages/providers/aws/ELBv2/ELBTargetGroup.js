@@ -1,31 +1,13 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  not,
-  and,
-  assign,
-  eq,
-  switchCase,
-  tryCatch,
-  pick,
-} = require("rubico");
-const { first, find, defaultsDeep, isEmpty, identity } = require("rubico/x");
+const { pipe, tap, get, assign, pick } = require("rubico");
+const { first, defaultsDeep, isEmpty, unless } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const logger = require("@grucloud/core/logger")({ prefix: "ELBTargetGroup" });
-
-const { retryCall } = require("@grucloud/core/Retry");
-const { tos } = require("@grucloud/core/tos");
-const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const {
   ELBv2New,
-  AutoScalingNew,
   buildTags,
   findNamespaceInTagsOrEksCluster,
-  shouldRetryOnException,
   hasKeyInTags,
 } = require("../AwsCommon");
 
@@ -36,7 +18,6 @@ const findId = get("live.TargetGroupArn");
 const pickId = pick(["TargetGroupArn"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
-
 exports.ELBTargetGroup = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const elb = ELBv2New(config);
@@ -57,9 +38,8 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     key: "elbv2.k8s.aws/cluster",
   });
 
-  //TODO rubico unless
-  const assignTags = switchCase([
-    not(isEmpty),
+  const assignTags = unless(
+    isEmpty,
     assign({
       Tags: pipe([
         tap(({ TargetGroupArn }) => {
@@ -71,35 +51,18 @@ exports.ELBTargetGroup = ({ spec, config }) => {
         first,
         get("Tags"),
       ]),
-    }),
-    identity,
-  ]);
+    })
+  );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeTargetGroups-property
-  const getList = () =>
-    pipe([
-      tap(() => {
-        logger.info(`getList target group`);
-      }),
-      elb().describeTargetGroups,
-      get("TargetGroups"),
-      map(assignTags),
-    ])();
+  const getList = client.getList({
+    method: "describeTargetGroups",
+    getParam: "TargetGroups",
+    decorate: () => pipe([assignTags]),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeTargetGroups-property
-  const getByName = ({ name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getByName ${name}`);
-      }),
-      () => elb().describeTargetGroups({}),
-      get("TargetGroups"),
-      find(eq((live) => findName({ live }), name)),
-      assignTags,
-      tap((result) => {
-        logger.debug(`getByName ${name}, result: ${tos(result)}`);
-      }),
-    ])();
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = client.getById({
     pickId: ({ TargetGroupArn }) => ({ TargetGroupArns: [TargetGroupArn] }),
@@ -157,7 +120,6 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     managedByOther,
   };
 };

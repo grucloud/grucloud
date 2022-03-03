@@ -23,7 +23,6 @@ const {
   buildTags,
   findNamespaceInTags,
   findNameInTagsOrId,
-  shouldRetryOnException,
 } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
@@ -319,6 +318,5 @@ exports.AwsVpc = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    shouldRetryOnException,
   };
 };

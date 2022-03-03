@@ -32,7 +32,7 @@ const { retryCall } = require("@grucloud/core/Retry");
 
 const { findNamespaceInTags, buildTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { Ec2New, shouldRetryOnException } = require("../AwsCommon");
+const { Ec2New } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 exports.EC2Route = ({ spec, config }) => {
@@ -399,7 +399,6 @@ exports.EC2Route = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    shouldRetryOnException,
     isDefault,
     managedByOther: isDefault,
     cannotBeDeleted: isDefault,

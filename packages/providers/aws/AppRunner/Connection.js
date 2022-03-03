@@ -2,11 +2,7 @@ const assert = require("assert");
 const { map, pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const {
-  buildTags,
-  findNamespaceInTags,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.ConnectionName");
@@ -91,6 +87,5 @@ exports.AppRunnerConnection = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

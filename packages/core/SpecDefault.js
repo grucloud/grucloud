@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { tap, pipe, assign, eq, get, tryCatch } = require("rubico");
+const { map, tap, pipe, assign, eq, get, filter } = require("rubico");
 const {
   defaultsDeep,
   find,
@@ -8,6 +8,7 @@ const {
   unless,
   prepend,
   identity,
+  values,
 } = require("rubico/x");
 
 const logger = require("./logger")({
@@ -128,6 +129,7 @@ const SpecDefault = ({ providerName }) => ({
         tap(provider.targetResourcesAdd),
       ])(),
 });
+const buildGroupType = ({ group, type }) => `${group}::${type}`;
 
 exports.createSpec =
   ({ config, defaultOptions = { group: "" } }) =>
@@ -136,8 +138,25 @@ exports.createSpec =
       () => spec,
       defaultsDeep(defaultOptions),
       assign({
-        groupType: ({ group, type }) => `${group}::${type}`,
+        groupType: buildGroupType,
       }),
+      unless(
+        get("dependsOn"),
+        assign({
+          dependsOn: pipe([get("dependencies"), values, map(buildGroupType)]),
+        })
+      ),
+      unless(
+        get("dependsOnList"),
+        assign({
+          dependsOnList: pipe([
+            get("dependencies"),
+            filter(get("parent")),
+            values,
+            map(buildGroupType),
+          ]),
+        })
+      ),
       defaultsDeep(SpecDefault(config)),
       tap((params) => {
         assert(true);

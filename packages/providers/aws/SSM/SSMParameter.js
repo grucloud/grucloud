@@ -1,13 +1,8 @@
 const assert = require("assert");
 const { map, pipe, tap, get, not, pick, assign } = require("rubico");
-const { defaultsDeep, isEmpty, includes } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "SSMParameter" });
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  buildTags,
-} = require("../AwsCommon");
+const { createEndpoint, buildTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
 
@@ -67,6 +62,20 @@ exports.SSMParameter = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html#putParameter-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Name: name,
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+    ])();
+
   const create = client.create({
     method: "putParameter",
     pickId,
@@ -91,20 +100,6 @@ exports.SSMParameter = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        Name: name,
-        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-      }),
-    ])();
-
   return {
     spec,
     findId,
@@ -117,6 +112,5 @@ exports.SSMParameter = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

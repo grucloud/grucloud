@@ -21,7 +21,6 @@ const {
   Ec2New,
   getByIdCore,
   findNameInTagsOrId,
-  shouldRetryOnException,
   buildTags,
   findNamespaceInTags,
 } = require("../AwsCommon");
@@ -226,6 +225,5 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    shouldRetryOnException,
   };
 };

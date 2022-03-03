@@ -1,23 +1,8 @@
 const assert = require("assert");
-const shell = require("shelljs");
-
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  not,
-  filter,
-  eq,
-  omit,
-  pick,
-} = require("rubico");
+const { pipe, tap, get, switchCase, eq } = require("rubico");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { retryCall } = require("@grucloud/core/Retry");
-const { tos } = require("@grucloud/core/tos");
 
 exports.waitForUpdate =
   ({ eks }) =>

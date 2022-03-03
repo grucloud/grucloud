@@ -66,6 +66,16 @@ module.exports = () =>
         cluster: { type: "Cluster", group: "EKS" },
         role: { type: "Role", group: "IAM" },
       },
+      inferName: ({ properties, dependenciesSpec }) =>
+        pipe([
+          () => dependenciesSpec,
+          switchCase([
+            get("cluster"),
+            pipe([get("cluster"), prepend("EKS::Cluster::")]),
+            () => "",
+          ]),
+          prepend("oidp::"),
+        ])(),
       hasNoProperty: ({ lives, resource }) =>
         pipe([
           () => resource,
@@ -74,7 +84,6 @@ module.exports = () =>
     },
     {
       type: "User",
-      dependsOn: ["IAM::Policy", "IAM::Group"],
       Client: AwsIamUser,
       isOurMinion,
       compare: compareAws({
@@ -102,7 +111,6 @@ module.exports = () =>
     },
     {
       type: "Group",
-      dependsOn: ["IAM::Policy"],
       Client: AwsIamGroup,
       isOurMinion: isOurMinionIamGroup,
       compare: compareAws({
@@ -125,7 +133,6 @@ module.exports = () =>
     },
     {
       type: "Role",
-      dependsOn: ["IAM::Policy"],
       Client: AwsIamRole,
       isOurMinion,
       compare: compareAws({
@@ -293,7 +300,6 @@ module.exports = () =>
     },
     {
       type: "InstanceProfile",
-      dependsOn: ["IAM::Role"],
       Client: AwsIamInstanceProfile,
       isOurMinion,
       compare: compareAws({

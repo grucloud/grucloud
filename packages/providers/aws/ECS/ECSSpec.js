@@ -26,7 +26,6 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "CapacityProvider",
-      dependsOn: ["AutoScaling::AutoScalingGroup"],
       Client: ECSCapacityProvider,
       isOurMinion,
       compare: compareAws({
@@ -48,7 +47,6 @@ module.exports = () =>
     },
     {
       type: "Cluster",
-      dependsOn: ["ECS::CapacityProvider", "EC2::Instance"],
       Client: ECSCluster,
       isOurMinion,
       compare: compareAws({
@@ -92,7 +90,9 @@ module.exports = () =>
     },
     {
       type: "TaskDefinition",
-      dependsOn: ["IAM::Role"],
+      dependencies: {
+        role: { type: "Role", group: "IAM" },
+      },
       Client: ECSTaskDefinition,
       isOurMinion,
       compare: compareAws({
@@ -120,8 +120,6 @@ module.exports = () =>
     },
     {
       type: "Service",
-      dependsOn: ["ECS::Cluster", "ECS::TaskDefinition"],
-      dependsOnList: ["ECS::Cluster"],
       Client: ECSService,
       isOurMinion,
       compare: compareAws({
@@ -173,8 +171,6 @@ module.exports = () =>
     },
     {
       type: "TaskSet",
-      dependsOn: ["ECS::Cluster", "ECS::Service"],
-      dependsOnList: ["ECS::Service"],
       dependencies: {
         cluster: { type: "Cluster", group: "ECS" },
         service: { type: "Service", group: "ECS", parent: true },
@@ -188,14 +184,6 @@ module.exports = () =>
     },
     {
       type: "Task",
-      dependsOn: [
-        "ECS::Cluster",
-        "ECS::TaskDefinition",
-        "ECS::Service",
-        "EC2::Subnet",
-        "EC2::SecurityGroup",
-      ],
-      dependsOnList: ["ECS::Cluster"],
       Client: ECSTask,
       isOurMinion,
       compare: compareAws({
@@ -213,7 +201,9 @@ module.exports = () =>
     },
     {
       type: "ContainerInstance",
-      dependsOn: ["ECS::Cluster"],
+      dependencies: {
+        cluster: { type: "Cluster", group: "ECS" },
+      },
       Client: ECSContainerInstance,
       isOurMinion,
     },

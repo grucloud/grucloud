@@ -2,12 +2,8 @@ const assert = require("assert");
 const { assign, pipe, tap, get, eq, pick } = require("rubico");
 const { defaultsDeep, callProp, last } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "EventSourceMapping",
-});
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -17,9 +13,6 @@ const pickId = pick(["UUID"]);
 const nameFromArn = pipe([callProp("split", ":"), last]);
 
 const findName = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   get("live"),
   ({ FunctionArn, EventSourceArn }) =>
     `mapping-${nameFromArn(FunctionArn)}-${nameFromArn(EventSourceArn)}`,
@@ -165,7 +158,6 @@ exports.EventSourceMapping = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

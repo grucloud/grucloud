@@ -1,21 +1,13 @@
 const assert = require("assert");
-const { map, pipe, tap, get, not, flatMap, filter } = require("rubico");
-const { defaultsDeep, isEmpty, unless, callProp, when } = require("rubico/x");
+const { pipe, tap, get } = require("rubico");
+const { defaultsDeep, callProp, when } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "ECSTask",
-});
-const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  buildTags,
-  findNameInTagsOrId,
-} = require("../AwsCommon");
+const { createEndpoint, findNameInTagsOrId } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { buildTagsEcs, findDependenciesCluster } = require("./ECSCommon");
 
 const findId = get("live.taskArn");
 const findName = findNameInTagsOrId({ findId });
@@ -37,12 +29,9 @@ exports.ECSTask = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
+  // findDependencies for ECSTask
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "Cluster",
-      group: "ECS",
-      ids: [live.clusterArn],
-    },
+    findDependenciesCluster({ live }),
     {
       type: "TaskDefinition",
       group: "ECS",
@@ -60,9 +49,6 @@ exports.ECSTask = ({ spec, config }) => {
         pipe([
           () => live,
           get("group"),
-          tap((params) => {
-            assert(true);
-          }),
           when(
             callProp("startsWith", "service:"),
             pipe([
@@ -85,12 +71,7 @@ exports.ECSTask = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   const managedByOther = ({ live }) =>
     pipe([() => live, get("group"), callProp("startsWith", "service:")])();
@@ -101,48 +82,6 @@ exports.ECSTask = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTasks-property
-  const describeTasks = pipe([
-    tap(({ tasks, cluster }) => {
-      assert(Array.isArray(tasks));
-      assert(cluster);
-    }),
-    defaultsDeep({ include: ["TAGS"] }),
-    ecs().describeTasks,
-    get("tasks"),
-    tap((tasks) => {
-      logger.debug(`describeTasks ${tos(tasks)}`);
-    }),
-  ]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTasks-property
-  const getList = ({ lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "Cluster",
-          group: "ECS",
-        }),
-      flatMap(
-        pipe([
-          get("id"),
-          (cluster) =>
-            pipe([
-              () => ({ cluster }),
-              ecs().listTasks,
-              get("taskArns"),
-              unless(
-                isEmpty,
-                pipe([(tasks) => ({ cluster, tasks }), describeTasks])
-              ),
-            ])(),
-        ])
-      ),
-      filter(not(isEmpty)),
-    ])();
-
-  const getByName = getByNameCore({ getList, findName });
-
   const getById = client.getById({
     pickId,
     method: "describeTasks",
@@ -151,7 +90,21 @@ exports.ECSTask = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listTasks-property
+  const getList = client.getListWithParent({
+    parent: { type: "Cluster", group: "ECS" },
+    pickKey: pipe([({ clusterName }) => ({ cluster: clusterName })]),
+    method: "listTasks",
+    getParam: "taskArns",
+    config,
+    decorate: ({ lives, parent: { clusterArn } }) =>
+      pipe([(taskArn) => ({ taskArn, clusterArn }), getById]),
+  });
+
+  const getByName = getByNameCore({ getList, findName });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#runTask-property
+  //TODO create
   const create = ({ payload, name, namespace }) =>
     pipe([() => payload, ecs().runTask])();
 
@@ -183,13 +136,11 @@ exports.ECSTask = ({ spec, config }) => {
           taskDefinition,
           "revision"
         )}`,
-        tags: buildTags({
+        tags: buildTagsEcs({
           name,
           config,
           namespace,
-          UserTags: Tags,
-          key: "key",
-          value: "value",
+          Tags,
         }),
       }),
     ])();
@@ -207,6 +158,5 @@ exports.ECSTask = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

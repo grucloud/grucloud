@@ -17,12 +17,10 @@ const logger = require("@grucloud/core/logger")({
 });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const {
   IAMNew,
   buildTags,
-  shouldRetryOnException,
-  shouldRetryOnExceptionDelete,
   findNamespaceInTags,
   removeRoleFromInstanceProfile,
 } = require("../AwsCommon");
@@ -87,22 +85,20 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listInstanceProfiles-property
-  const getList = () =>
-    pipe([
-      () => ({}),
-      iam().listInstanceProfiles,
-      get("InstanceProfiles"),
-      map.pool(
-        mapPoolSize,
+  const getList = client.getList({
+    method: "listInstanceProfiles",
+    getParam: "InstanceProfiles",
+    decorate: () =>
+      pipe([
         assign({
           Tags: pipe([
             pick(["InstanceProfileName"]),
             iam().listInstanceProfileTags,
             get("Tags"),
           ]),
-        })
-      ),
-    ])();
+        }),
+      ]),
+  });
 
   //TODO getById should be getByName
   const getByName = getByNameCore({ getList, findName });
@@ -115,6 +111,25 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createInstanceProfile-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        InstanceProfileName: name,
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
+        }),
+      }),
+    ])();
+
   const create = ({ name, payload = {}, dependencies }) =>
     pipe([
       tap(() => {
@@ -174,25 +189,6 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        InstanceProfileName: name,
-        Tags: buildTags({
-          name,
-          config,
-          namespace,
-          UserTags: Tags,
-        }),
-      }),
-    ])();
-
   return {
     spec,
     findId,
@@ -225,8 +221,6 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
-    shouldRetryOnExceptionDelete,
     managedByOther,
   };
 };

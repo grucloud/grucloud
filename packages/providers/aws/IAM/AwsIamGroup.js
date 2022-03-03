@@ -1,26 +1,11 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  eq,
-  any,
-  assign,
-  pick,
-} = require("rubico");
+const { pipe, tap, get, eq, any, assign, pick } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamGroup" });
 const { tos } = require("@grucloud/core/tos");
-const { getByNameCore, mapPoolSize } = require("@grucloud/core/Common");
-const {
-  IAMNew,
-  buildTags,
-  shouldRetryOnException,
-  shouldRetryOnExceptionDelete,
-} = require("../AwsCommon");
+const { getByNameCore } = require("@grucloud/core/Common");
+const { IAMNew } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.GroupName");
@@ -41,46 +26,32 @@ exports.AwsIamGroup = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroups-property
-  const getList = async ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList group ${tos(params)}`);
-      }),
-      () => iam().listGroups(params),
-      get("Groups"),
-      map.pool(
-        mapPoolSize,
-        tryCatch(
-          assign({
-            AttachedPolicies: pipe([
-              ({ GroupName }) =>
-                iam().listAttachedGroupPolicies({
-                  GroupName,
-                  MaxItems: 1e3,
-                }),
-              get("AttachedPolicies"),
-            ]),
-            Policies: pipe([
-              ({ GroupName }) =>
-                iam().listGroupPolicies({
-                  GroupName,
-                  MaxItems: 1e3,
-                }),
-              get("Policies"),
-            ]),
-          }),
-          (error, group) =>
-            pipe([
-              tap(() => {
-                logger.error(
-                  `getList iam group error: ${tos({ error, group })}`
-                );
+
+  const getList = client.getList({
+    method: "listGroups",
+    getParam: "Groups",
+    decorate: () =>
+      pipe([
+        assign({
+          AttachedPolicies: pipe([
+            ({ GroupName }) =>
+              iam().listAttachedGroupPolicies({
+                GroupName,
+                MaxItems: 1e3,
               }),
-              () => ({ error, group }),
-            ])()
-        )
-      ),
-    ])();
+            get("AttachedPolicies"),
+          ]),
+          Policies: pipe([
+            ({ GroupName }) =>
+              iam().listGroupPolicies({
+                GroupName,
+                MaxItems: 1e3,
+              }),
+            get("Policies"),
+          ]),
+        }),
+      ]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -91,6 +62,26 @@ exports.AwsIamGroup = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createGroup-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        GroupName: name,
+        Path: "/",
+        // Tags: buildTags({
+        //   name,
+        //   config,
+        //   namespace,
+        //   UserTags: Tags,
+        // }),
+      }),
+    ])();
+
   const create = client.create({
     method: "createGroup",
     pickId,
@@ -174,26 +165,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        GroupName: name,
-        Path: "/",
-        // Tags: buildTags({
-        //   name,
-        //   config,
-        //   namespace,
-        //   UserTags: Tags,
-        // }),
-      }),
-    ])();
-
   return {
     spec,
     findId,
@@ -204,8 +175,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
-    shouldRetryOnExceptionDelete,
   };
 };
 

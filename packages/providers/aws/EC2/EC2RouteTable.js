@@ -5,14 +5,13 @@ const {
   pipe,
   filter,
   map,
-  not,
   eq,
   any,
   tryCatch,
   switchCase,
   pick,
 } = require("rubico");
-const { isEmpty, defaultsDeep, pluck, prepend } = require("rubico/x");
+const { defaultsDeep, prepend } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EC2RouteTable" });
 const { tos } = require("@grucloud/core/tos");
@@ -21,11 +20,11 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const {
   Ec2New,
   findNameInTagsOrId,
-  shouldRetryOnException,
   findNamespaceInTags,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { findDependenciesVpc, findDependenciesSubnet } = require("./EC2Common");
 
 exports.EC2RouteTable = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
@@ -68,17 +67,8 @@ exports.EC2RouteTable = ({ spec, config }) => {
   ]);
 
   const findDependencies = ({ live }) => [
-    { type: "Vpc", group: "EC2", ids: [live.VpcId] },
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("Associations"),
-        pluck("SubnetId"),
-        filter(not(isEmpty)),
-      ])(),
-    },
+    findDependenciesVpc({ live }),
+    findDependenciesSubnet({ live }),
   ];
 
   const routesDelete = ({ live }) =>
@@ -188,6 +178,5 @@ exports.EC2RouteTable = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    shouldRetryOnException,
   };
 };

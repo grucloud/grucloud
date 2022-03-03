@@ -1,16 +1,11 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, tryCatch, flatMap } = require("rubico");
-const { pluck, defaultsDeep } = require("rubico/x");
+const { map, pipe, tap, get, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "Authorizer",
-});
-
-const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { findDependenciesRestApi } = require("./ApiGatewayCommon");
 
 const findId = get("live.id");
 const findName = get("live.name");
@@ -18,15 +13,9 @@ const pickId = ({ restApiId, id }) => ({ restApiId, authorizerId: id });
 
 exports.Authorizer = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "APIGateway" })(config);
 
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "RestApi",
-      group: "APIGateway",
-      ids: [live.restApiId],
-    },
+    findDependenciesRestApi({ live }),
     // {
     //   type: "Function",
     //   group: "Lambda",
@@ -47,42 +36,37 @@ exports.Authorizer = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getAuthorizers-property
-  const getList = ({ lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`getList authorizer`);
-      }),
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "RestApi",
-          group: "APIGateway",
-        }),
-      pluck("live"),
-      flatMap(({ id: restApiId, tags }) =>
-        tryCatch(
-          pipe([
-            () => apiGateway().getAuthorizers({ restApiId }),
-            get("items"),
-            map(defaultsDeep({ restApiId, tags })),
-          ]),
-          (error) =>
-            pipe([
-              tap(() => {
-                logger.error(`error getList authorizer ${tos({ error })}`);
-              }),
-              () => ({
-                error,
-              }),
-            ])()
-        )()
-      ),
-    ])();
+  //TODO test
+  const getList = client.getListWithParent({
+    parent: { type: "RestApi", group: "APIGateway" },
+    pickKey: pipe([({ id }) => ({ restApiId: id })]),
+    method: "getAuthorizers",
+    getParam: "items",
+    config,
+    decorate: ({ lives, parent: { id: restApiId, Tags } }) =>
+      defaultsDeep({ restApiId, Tags }),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createAuthorizer-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties,
+    dependencies: { restApi },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(restApi, "missing 'restApi' dependency");
+      }),
+      () => properties,
+      defaultsDeep({
+        name,
+        restApiId: getField(restApi, "id"),
+      }),
+    ])();
+
   const create = client.create({
     method: "createAuthorizer",
     pickId,
@@ -107,23 +91,6 @@ exports.Authorizer = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({
-    name,
-    namespace,
-    properties,
-    dependencies: { restApi },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(restApi, "missing 'restApi' dependency");
-      }),
-      () => properties,
-      defaultsDeep({
-        name,
-        restApiId: getField(restApi, "id"),
-      }),
-    ])();
-
   return {
     spec,
     findName,
@@ -135,7 +102,6 @@ exports.Authorizer = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

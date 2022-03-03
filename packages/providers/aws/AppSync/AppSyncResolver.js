@@ -1,25 +1,18 @@
 const assert = require("assert");
-const { map, pipe, tap, tryCatch, get, eq, pick, flatMap } = require("rubico");
-const { defaultsDeep, pluck } = require("rubico/x");
+const { map, pipe, tap, get, eq, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "AppSyncResolver" });
-const { tos } = require("@grucloud/core/tos");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
+const { createEndpoint } = require("../AwsCommon");
+const { findDependenciesGraphqlApi } = require("./AppSyncCommon");
 
 const findId = get("live.resolverArn");
 
 const findName = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   get("live"),
   ({ typeName, fieldName }) => `resolver::${typeName}::${fieldName}`,
-  tap((params) => {
-    assert(true);
-  }),
 ]);
 
 const pickId = pick(["apiId", "fieldName", "typeName"]);
@@ -29,12 +22,9 @@ exports.AppSyncResolver = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
 
+  // findDependencies for AppSyncResolver
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "GraphqlApi",
-      group: "AppSync",
-      ids: [live.apiId],
-    },
+    findDependenciesGraphqlApi({ live }),
     {
       type: "Type",
       group: "AppSync",
@@ -61,48 +51,23 @@ exports.AppSyncResolver = ({ spec, config }) => {
   const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listResolvers-property
-
-  const getList = ({ lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "GraphqlApi",
-          group: "AppSync",
-        }),
-      pluck("live"),
-      flatMap(({ apiId, tags }) =>
-        tryCatch(
+  const getList = client.getListWithParent({
+    parent: { type: "GraphqlApi", group: "AppSync" },
+    pickKey: pipe([pick(["apiId"]), defaultsDeep({ format: "SDL" })]),
+    method: "listTypes",
+    getParam: "types",
+    config,
+    decorate: ({ parent: { apiId, tags } }) =>
+      pipe([
+        ({ name }) =>
           pipe([
-            tap(() => {
-              assert(apiId);
-            }),
-            () => ({ apiId, format: "SDL" }),
-            appSync().listTypes,
-            get("types"),
-            flatMap(({ name }) =>
-              pipe([
-                () => ({ apiId, typeName: name }),
-                appSync().listResolvers,
-                get("resolvers"),
-                map(pipe([defaultsDeep({ apiId, tags })])),
-              ])()
-            ),
-          ]),
-          (error) =>
-            pipe([
-              tap(() => {
-                logger.error(
-                  `error getList listResolvers: ${tos({ apiId, error })}`
-                );
-              }),
-              () => ({
-                error,
-              }),
-            ])()
-        )()
-      ),
-    ])();
+            () => ({ apiId, typeName: name }),
+            appSync().listResolvers,
+            get("resolvers"),
+            map(pipe([defaultsDeep({ apiId, tags })])),
+          ])(),
+      ]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -121,9 +86,6 @@ exports.AppSyncResolver = ({ spec, config }) => {
     pickId,
     config,
     shouldRetryOnException: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       eq(get("error.code"), "ConcurrentModificationException"),
     ]),
   });
@@ -151,6 +113,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
       () => otherProps,
       defaultsDeep({
         apiId: getField(graphqlApi, "apiId"),
+        // TODO optional or not ?
         ...(dataSource && {
           dataSourceName: getField(dataSource, "name"),
         }),
@@ -168,6 +131,5 @@ exports.AppSyncResolver = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

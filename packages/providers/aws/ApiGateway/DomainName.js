@@ -7,7 +7,7 @@ const logger = require("@grucloud/core/logger")({
 });
 
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -20,6 +20,7 @@ exports.DomainName = ({ spec, config }) => {
   const apiGateway = () =>
     createEndpoint({ endpointName: "APIGateway" })(config);
 
+  // Find dependencies for APIGateway::DomainName
   const findDependencies = ({ live, lives }) => [
     {
       type: "Certificate",
@@ -113,7 +114,6 @@ exports.DomainName = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

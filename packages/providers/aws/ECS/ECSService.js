@@ -1,30 +1,12 @@
 const assert = require("assert");
-const {
-  assign,
-  filter,
-  pipe,
-  tap,
-  get,
-  eq,
-  not,
-  or,
-  flatMap,
-  omit,
-} = require("rubico");
+const { assign, pipe, tap, get, eq, or, omit } = require("rubico");
 const { defaultsDeep, isEmpty, unless, pluck } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "ECSService",
-});
-const { tos } = require("@grucloud/core/tos");
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  buildTags,
-} = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
+const { buildTagsEcs, findDependenciesCluster } = require("./ECSCommon");
 
 const findId = get("live.serviceArn");
 const findName = get("live.serviceName");
@@ -34,12 +16,9 @@ exports.ECSService = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
+  // findDependencies for ECSService
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "Cluster",
-      group: "ECS",
-      ids: [live.clusterArn],
-    },
+    findDependenciesCluster({ live }),
     {
       type: "TaskDefinition",
       group: "ECS",
@@ -88,49 +67,24 @@ exports.ECSService = ({ spec, config }) => {
     ignoreErrorCodes: ["ClusterNotFoundException", "InvalidParameterException"],
   });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeServices-property
-  const describeServices = pipe([
-    tap(({ cluster, services }) => {
-      assert(cluster);
-      assert(Array.isArray(services));
-    }),
-    defaultsDeep({ include: ["TAGS"] }),
-    ecs().describeServices,
-    get("services"),
-    tap((services) => {
-      logger.debug(`describeServices ${tos(services)}`);
-    }),
-  ]);
-
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listServices-property
-  const getList = ({ lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "Cluster",
-          group: "ECS",
+  const getList = client.getListWithParent({
+    parent: { type: "Cluster", group: "ECS" },
+    pickKey: pipe([({ clusterName }) => ({ cluster: clusterName })]),
+    method: "listServices",
+    getParam: "serviceArns",
+    config,
+    decorate: ({ lives, parent: { clusterArn } }) =>
+      pipe([
+        tap((params) => {
+          assert(clusterArn);
         }),
-      flatMap(
         pipe([
-          get("id"),
-          tap((cluster) => {
-            assert(cluster);
-          }),
-          (cluster) =>
-            pipe([
-              () => ({ cluster }),
-              ecs().listServices,
-              get("serviceArns"),
-              unless(
-                isEmpty,
-                pipe([(services) => ({ cluster, services }), describeServices])
-              ),
-            ])(),
-        ])
-      ),
-      filter(not(isEmpty)),
-    ])();
+          (serviceArn) => ({ clusterArn, serviceName: serviceArn }),
+          getById,
+        ]),
+      ]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -153,30 +107,32 @@ exports.ECSService = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateService-property
-  const update = ({
-    payload,
-    name,
-    namespace,
-    resolvedDependencies: { cluster },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(cluster.live.clusterArn);
-      }),
-      () => payload,
-      assign({
-        service: get("serviceName"),
-        cluster: () => cluster.live.clusterArn,
-      }),
-      omit([
-        "launchType",
-        "schedulingStrategy",
-        "enableECSManagedTags",
-        "serviceName",
-        "tags",
-      ]),
-      ecs().updateService,
-    ])();
+  // TODO update
+  const update = client.update({
+    filterParams: ({ payload, live }) =>
+      pipe([
+        tap((param) => {
+          assert(live);
+          assert(live.clusterArn);
+          assert(payload.serviceName);
+        }),
+        () => payload,
+        assign({
+          service: get("serviceName"),
+          cluster: () => live.clusterArn,
+        }),
+        omit([
+          "launchType",
+          "schedulingStrategy",
+          "enableECSManagedTags",
+          "serviceName",
+          "tags",
+        ]),
+      ])(),
+    method: "updateService",
+    config,
+    getById,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteService-property
   const destroy = client.destroy({
@@ -208,17 +164,12 @@ exports.ECSService = ({ spec, config }) => {
         serviceName: name,
         cluster: getField(cluster, "clusterArn"),
         taskDefinition: getField(taskDefinition, "taskDefinitionArn"),
-        tags: buildTags({
+        tags: buildTagsEcs({
           name,
           config,
           namespace,
-          UserTags: Tags,
-          key: "key",
-          value: "value",
+          Tags,
         }),
-      }),
-      tap((params) => {
-        assert(true);
       }),
     ])();
 
@@ -235,6 +186,5 @@ exports.ECSService = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

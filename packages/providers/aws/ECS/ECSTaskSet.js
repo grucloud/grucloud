@@ -1,43 +1,21 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  not,
-  filter,
-  flatMap,
-  pick,
-} = require("rubico");
-const { defaultsDeep, isEmpty, first, pluck, when } = require("rubico/x");
+const { pipe, tap, get, switchCase, pick } = require("rubico");
+const { defaultsDeep, pluck } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "ECSTaskSet",
-});
-const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  buildTags,
-} = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
+const { buildTagsEcs } = require("./ECSCommon");
 
 const findId = get("live.taskSetArn");
 const findName = get("live.taskDefinition");
 const pickId = pick(["cluster", "service", "taskSet"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
-
 exports.ECSTaskSet = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
 
+  // findDependencies for ECSTaskSet
   const findDependencies = ({ live }) => [
     {
       type: "Cluster",
@@ -51,12 +29,7 @@ exports.ECSTaskSet = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   const ignoreErrorCodes = [
     "ClusterNotFoundException",
@@ -64,23 +37,6 @@ exports.ECSTaskSet = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
-  const describeTaskSets = (params = {}) =>
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      () => params,
-      defaultsDeep({ include: ["TAGS"] }),
-      ecs().describeTaskSets,
-      tap((params) => {
-        assert(true);
-      }),
-      get("taskSets"),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-
   const getById = client.getById({
     pickId,
     method: "describeTaskSets",
@@ -89,40 +45,27 @@ exports.ECSTaskSet = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
-  const getList = ({ lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "Service",
-          group: "ECS",
-        }),
-      flatMap(
-        pipe([
-          get("live"),
-          switchCase([
-            get("taskSets"),
-            pipe([
-              ({ clusterArn, serviceName, taskSets = [] }) => ({
-                cluster: clusterArn,
-                service: serviceName,
-                taskSets: pluck("taskSetArn")(taskSets),
-              }),
-              describeTaskSets,
-              tap((params) => {
-                assert(true);
-              }),
-            ]),
-            () => [],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskSets-property
+  const getList = client.getListWithParent({
+    parent: { type: "Service", group: "ECS" },
+    pickKey: pipe([({ clusterName }) => ({ cluster: clusterName })]),
+    config,
+    decorate: ({ lives, parent }) =>
+      pipe([
+        switchCase([
+          get("taskSets"),
+          pipe([
+            ({ clusterArn, serviceName, taskSets = [] }) => ({
+              cluster: clusterArn,
+              service: serviceName,
+              taskSets: pluck("taskSetArn")(taskSets),
+            }),
+            getById,
           ]),
-        ])
-      ),
-      filter(not(isEmpty)),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+          () => [],
+        ]),
+      ]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -167,13 +110,11 @@ exports.ECSTaskSet = ({ spec, config }) => {
         taskDefinition: name,
         cluster: getField(cluster, "clusterArn"),
         service: getField(service, "serviceArn"),
-        tags: buildTags({
+        tags: buildTagsEcs({
           name,
           config,
           namespace,
-          UserTags: Tags,
-          key: "key",
-          value: "value",
+          Tags,
         }),
       }),
     ])();
@@ -190,6 +131,5 @@ exports.ECSTaskSet = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

@@ -59,7 +59,6 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
         () => live,
         get("ViewerCertificate.ACMCertificateArn"),
         (arn) => [arn],
-        filter(not(isEmpty)),
       ])(),
     },
     {
@@ -81,7 +80,6 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
             get("id"),
           ])()
         ),
-        filter(not(isEmpty)),
       ])(),
     },
     {
@@ -106,34 +104,35 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
             get("id"),
           ])
         ),
-        filter(not(isEmpty)),
       ])(),
     },
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#listDistributions-property
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList distributions`);
-      }),
-      () => cloudfront().listDistributions(params),
-      get("DistributionList.Items"),
-      map(async (distribution) => ({
-        ...distribution,
-        ...(await pipe([
-          () => cloudfront().getDistributionConfig({ Id: distribution.Id }),
-          get("DistributionConfig"),
-        ])()),
-        Tags: await pipe([
-          (distribution) =>
-            cloudfront().listTagsForResource({
+  const getList = client.getList({
+    method: "listDistributions",
+    getParam: "DistributionList.Items",
+    decorate: () => (distribution) =>
+      pipe([
+        tap((params) => {
+          assert(distribution.ARN);
+        }),
+        () => distribution,
+        pickId,
+        cloudfront().getDistributionConfig,
+        get("DistributionConfig"),
+        assign({
+          Tags: pipe([
+            () => ({
               Resource: distribution.ARN,
             }),
-          get("Tags.Items"),
-        ])(distribution),
-      })),
-    ])();
+            cloudfront().listTagsForResource,
+            get("Tags.Items"),
+          ]),
+        }),
+        defaultsDeep(distribution),
+      ])(),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -188,6 +187,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     config,
   });
 
+  // TODO update
   const update = ({ name, id, payload }) =>
     pipe([
       tap(() => {

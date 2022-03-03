@@ -3,9 +3,10 @@ const { pipe, tap, get, eq, filter, pick } = require("rubico");
 const { pluck, defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { findDependenciesApi } = require("./ApiGatewayCommon");
+
 const findId = get("live.DeploymentId");
 const pickId = pick(["ApiId", "DeploymentId"]);
 const findName = pipe([
@@ -27,11 +28,7 @@ exports.Deployment = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
 
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "Api",
-      group: "ApiGatewayV2",
-      ids: [live.ApiId],
-    },
+    findDependenciesApi({ live }),
     {
       type: "Stage",
       group: "ApiGatewayV2",
@@ -131,7 +128,6 @@ exports.Deployment = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

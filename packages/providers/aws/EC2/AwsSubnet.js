@@ -12,7 +12,7 @@ const {
   pick,
   filter,
 } = require("rubico");
-const { defaultsDeep, first, identity, isEmpty, prepend } = require("rubico/x");
+const { defaultsDeep, first, identity, prepend } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSubnet" });
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -22,11 +22,11 @@ const {
   Ec2New,
   findNameInTagsOrId,
   findNamespaceInTags,
-  shouldRetryOnException,
   buildTags,
   destroyNetworkInterfaces,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { findDependenciesVpc } = require("./EC2Common");
 
 const SubnetAttributes = [
   "MapPublicIpOnLaunch",
@@ -52,13 +52,7 @@ exports.AwsSubnet = ({ spec, config }) => {
     findNameInTagsOrId({ findId }),
   ]);
 
-  const findDependencies = ({ live }) => [
-    {
-      type: "Vpc",
-      group: "EC2",
-      ids: [live.VpcId],
-    },
-  ];
+  const findDependencies = ({ live }) => [findDependenciesVpc({ live })];
 
   const getList = client.getList({
     method: "describeSubnets",
@@ -164,11 +158,6 @@ exports.AwsSubnet = ({ spec, config }) => {
     pickId,
     preDestroy: ({ live: { SubnetId } }) =>
       destroyNetworkInterfaces({ ec2, Name: "subnet-id", Values: [SubnetId] }),
-    shouldRetryOnException: switchCase([
-      eq(get("error.code"), "DependencyViolation"),
-      () => true,
-      () => false,
-    ]),
     method: "deleteSubnet",
     getById,
     ignoreErrorCodes: ["InvalidSubnetID.NotFound"],
@@ -209,6 +198,5 @@ exports.AwsSubnet = ({ spec, config }) => {
     update,
     destroy,
     configDefault,
-    shouldRetryOnException,
   };
 };

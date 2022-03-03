@@ -11,7 +11,6 @@ const {
 } = require("rubico/x");
 
 const {
-  shouldRetryOnException,
   findNamespaceInTagsOrEksCluster,
   hasKeyInTags,
   buildTags,
@@ -239,7 +238,6 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     managedByOther,
   };
 };

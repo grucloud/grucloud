@@ -11,7 +11,7 @@ const {
   assign,
 } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
 
@@ -142,7 +142,6 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
     cannotBeDeleted,
     managedByOther: cannotBeDeleted,

@@ -4,7 +4,6 @@ const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { shouldRetryOnException } = require("../AwsCommon");
 
 const findId = get("live.ApiId");
 const findName = get("live.Name");
@@ -29,6 +28,21 @@ exports.Api = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createApi-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Name: name,
+        ProtocolType: "HTTP",
+        Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
+      }),
+    ])();
+
   const create = client.create({
     method: "createApi",
     pickCreated: () => (result) =>
@@ -60,21 +74,6 @@ exports.Api = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        Name: name,
-        ProtocolType: "HTTP",
-        Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
-      }),
-    ])();
-
   return {
     spec,
     findName,
@@ -86,6 +85,5 @@ exports.Api = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

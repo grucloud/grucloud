@@ -1,41 +1,19 @@
 const assert = require("assert");
-const {
-  flatMap,
-  pipe,
-  tap,
-  get,
-  not,
-  eq,
-  filter,
-  tryCatch,
-  switchCase,
-  assign,
-  map,
-  or,
-  pick,
-} = require("rubico");
+const { pipe, tap, get, not, switchCase, assign, or, pick } = require("rubico");
 const {
   first,
   defaultsDeep,
   isEmpty,
   pluck,
-  find,
   identity,
   prepend,
   append,
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { getByNameCore } = require("@grucloud/core/Common");
 const logger = require("@grucloud/core/logger")({ prefix: "ELBRule" });
-const { retryCall } = require("@grucloud/core/Retry");
-const { tos } = require("@grucloud/core/tos");
-const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
-const {
-  ELBv2New,
-  buildTags,
-  findNamespaceInTags,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { ELBv2New, buildTags, findNamespaceInTags } = require("../AwsCommon");
 
 const findId = get("live.RuleArn");
 
@@ -43,13 +21,10 @@ const pickId = pick(["RuleArn"]);
 
 const { AwsClient } = require("../AwsClient");
 
-const { ELBListener } = require("./ELBListener");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 exports.ELBRule = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const elb = ELBv2New(config);
-  const elbListener = ELBListener({ spec, config });
-  const { providerName } = config;
 
   const findName = ({ live, lives }) =>
     pipe([
@@ -62,7 +37,7 @@ exports.ELBRule = ({ spec, config }) => {
           type: "Listener",
           group: "ELBv2",
           id: live.ListenerArn,
-          providerName,
+          providerName: config.providerName,
         }),
       tap((listener) => {
         assert(listener);
@@ -97,7 +72,7 @@ exports.ELBRule = ({ spec, config }) => {
             lives.getById({
               type: "Listener",
               group: "ELBv2",
-              providerName,
+              providerName: config.providerName,
               id: live.ListenerArn,
             }),
           tap((listener) => {
@@ -111,7 +86,7 @@ exports.ELBRule = ({ spec, config }) => {
             lives.getById({
               type: "LoadBalancer",
               group: "ELBv2",
-              providerName,
+              providerName: config.providerName,
               id: LoadBalancerArn,
             }),
           get("managedByOther"),
@@ -127,12 +102,7 @@ exports.ELBRule = ({ spec, config }) => {
     {
       type: "TargetGroup",
       group: "ELBv2",
-      ids: pipe([
-        () => live,
-        get("Actions"),
-        pluck("TargetGroupArn"),
-        filter(not(isEmpty)),
-      ])(),
+      ids: pipe([() => live, get("Actions"), pluck("TargetGroupArn"), ,])(),
     },
   ];
 
@@ -171,52 +141,29 @@ exports.ELBRule = ({ spec, config }) => {
       }),
     ])();
 
-  const describeAllRules = pipe([
-    () => elbListener.getList({}),
-    pluck("ListenerArn"),
-    flatMap((ListenerArn) =>
+  const getList = client.getListWithParent({
+    parent: { type: "Listener", group: "ELBv2" },
+    pickKey: pick(["ListenerArn"]),
+    method: "describeRules",
+    getParam: "Rules",
+    config,
+    decorate: ({ lives, parent: { ListenerArn } }) =>
       pipe([
-        () => elb().describeRules({ ListenerArn }),
-        get("Rules"),
-        map(assign({ ListenerArn: () => ListenerArn })),
-      ])()
-    ),
-    filter(not(isEmpty)),
-    map(
-      assign({
-        Tags: pipe([
-          ({ RuleArn }) => elb().describeTags({ ResourceArns: [RuleArn] }),
-          get("TagDescriptions"),
-          first,
-          get("Tags"),
-        ]),
-      })
-    ),
-  ]);
+        assign({
+          Tags: pipe([
+            ({ RuleArn }) => ({ ResourceArns: [RuleArn] }),
+            elb().describeTags,
+            get("TagDescriptions"),
+            first,
+            get("Tags"),
+          ]),
+          ListenerArn: () => ListenerArn,
+        }),
+      ]),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeRules-property
-  const getList = () =>
-    pipe([
-      tap(() => {
-        logger.info(`getList rule`);
-      }),
-      describeAllRules,
-    ])();
-
-  const getByName = ({ name, lives }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getByName ${name}`);
-      }),
-      describeAllRules,
-      tap((rules) => {
-        logger.debug(`getByName rules ${name}, #rules: ${tos(rules)}`);
-      }),
-      find(eq((live) => findName({ live, lives }), name)),
-      tap((result) => {
-        logger.debug(`getByName ${name}, result: ${tos(result)}`);
-      }),
-    ])();
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = client.getById({
     pickId: ({ RuleArn }) => ({ RuleArns: [RuleArn] }),
@@ -302,7 +249,6 @@ exports.ELBRule = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     isDefault,
     cannotBeDeleted,
     managedByOther,

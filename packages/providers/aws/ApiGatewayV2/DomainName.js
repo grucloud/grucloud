@@ -7,7 +7,6 @@ const logger = require("@grucloud/core/logger")({
 
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -118,7 +117,6 @@ exports.DomainName = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

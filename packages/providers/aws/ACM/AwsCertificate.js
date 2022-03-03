@@ -3,12 +3,7 @@ const { pipe, tap, get, assign, pick } = require("rubico");
 const { first, defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const {
-  ACMNew,
-  buildTags,
-  findNamespaceInTags,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { ACMNew, buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findName = get("live.DomainName");
@@ -106,7 +101,6 @@ exports.AwsCertificate = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     cannotBeDeleted: () => true,
   };
 };

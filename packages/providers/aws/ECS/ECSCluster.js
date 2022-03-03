@@ -12,19 +12,17 @@ const {
   pick,
   assign,
 } = require("rubico");
-const { defaultsDeep, isEmpty, unless, size } = require("rubico/x");
+const { defaultsDeep, isEmpty, size } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ECSCluster" });
-const {
-  createEndpoint,
-  shouldRetryOnException,
-  buildTags,
-} = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+
+const { createEndpoint, destroyAutoScalingGroupById } = require("../AwsCommon");
 const {
   AutoScalingAutoScalingGroup,
 } = require("../Autoscaling/AutoScalingAutoScalingGroup");
 const { AwsClient } = require("../AwsClient");
+const { buildTagsEcs } = require("./ECSCommon");
 
 const findName = get("live.clusterName");
 const findId = get("live.clusterArn");
@@ -109,6 +107,29 @@ exports.ECSCluster = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createCluster-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { capacityProviders = [] },
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        clusterName: name,
+        capacityProviders: pipe([
+          () => capacityProviders,
+          map((capacityProvider) => getField(capacityProvider, "name")),
+        ])(),
+        tags: buildTagsEcs({
+          name,
+          config,
+          namespace,
+          Tags,
+        }),
+      }),
+    ])();
+
   const create = client.create({
     method: "createCluster",
     filterPayload: omit(["Tags"]),
@@ -140,21 +161,7 @@ exports.ECSCluster = ({ spec, config }) => {
               providerName: config.providerName,
             }),
           get("autoScalingGroupProvider.autoScalingGroupArn"),
-          (id) =>
-            lives.getById({
-              id,
-              providerName: config.providerName,
-              type: "AutoScalingGroup",
-              group: "AutoScaling",
-            }),
-          get("name"),
-          unless(
-            isEmpty,
-            pipe([
-              (AutoScalingGroupName) => ({ live: { AutoScalingGroupName } }),
-              autoScalingGroup.destroy,
-            ])
-          ),
+          destroyAutoScalingGroupById({ autoScalingGroup, lives, config }),
         ])()
       ),
     ])();
@@ -192,13 +199,21 @@ exports.ECSCluster = ({ spec, config }) => {
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCluster-property
-  const update = ({ payload, name, namespace }) =>
-    pipe([
-      () => payload,
-      assign({ cluster: get("clusterName") }),
-      pick(["cluster", "settings", "configuration"]),
-      ecs().updateCluster,
-    ])();
+  //TODO update
+  const update = client.update({
+    filterParams: ({ payload }) =>
+      pipe([
+        tap((param) => {
+          assert(payload.clusterName);
+        }),
+        () => payload,
+        assign({ cluster: get("clusterName") }),
+        pick(["cluster", "settings", "configuration"]),
+      ])(),
+    method: "updateCluster",
+    config,
+    getById,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCluster-property
   const destroy = client.destroy({
@@ -217,31 +232,6 @@ exports.ECSCluster = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: { capacityProviders = [] },
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        clusterName: name,
-        capacityProviders: pipe([
-          () => capacityProviders,
-          map((capacityProvider) => getField(capacityProvider, "name")),
-        ])(),
-        tags: buildTags({
-          name,
-          config,
-          namespace,
-          UserTags: Tags,
-          key: "key",
-          value: "value",
-        }),
-      }),
-    ])();
-
   return {
     spec,
     findId,
@@ -254,6 +244,5 @@ exports.ECSCluster = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

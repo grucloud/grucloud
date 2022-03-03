@@ -12,21 +12,14 @@ const {
   or,
   pick,
 } = require("rubico");
-const {
-  find,
-  first,
-  defaultsDeep,
-  isEmpty,
-  size,
-  callProp,
-} = require("rubico/x");
+const { find, first, defaultsDeep, isEmpty, callProp } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "KmsKey",
 });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { KmsNew, buildTags, shouldRetryOnException } = require("../AwsCommon");
+const { KmsNew, buildTags } = require("../AwsCommon");
 const { configProviderDefault } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
@@ -144,13 +137,25 @@ exports.KmsKey = ({ spec, config }) => {
       () => live,
       tap.if(
         isInstanceDown,
-        tryCatch(pipe([pickId, kms().cancelKeyDeletion]), (error) =>
+        tryCatch(
           pipe([
-            tap(() => {
-              // Ignore error
-              logger.error(`cancelKeyDeletion: ${JSON.stringify(error)}`);
-            }),
-          ])()
+            pickId,
+            kms().cancelKeyDeletion,
+            tap(({ KeyId }) =>
+              retryCall({
+                name: `key isInstanceDisabled: ${name} id: ${KeyId}`,
+                fn: pipe([() => getById({ KeyId }), isInstanceDisabled]),
+                config,
+              })
+            ),
+          ]),
+          (error) =>
+            pipe([
+              tap(() => {
+                // Ignore error
+                logger.error(`cancelKeyDeletion: ${JSON.stringify(error)}`);
+              }),
+            ])()
         )
       ),
       tap.if(
@@ -249,6 +254,5 @@ exports.KmsKey = ({ spec, config }) => {
     cannotBeDeleted,
     isDefault,
     managedByOther: isDefault,
-    shouldRetryOnException,
   };
 };

@@ -1,12 +1,9 @@
 const assert = require("assert");
 const { map, pipe, tap, get, eq, pick, assign, omit } = require("rubico");
-const { first, defaultsDeep, isEmpty, pluck, includes } = require("rubico/x");
+const { defaultsDeep, isEmpty, pluck, includes } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const logger = require("@grucloud/core/logger")({
-  prefix: "DBInstance",
-});
 const { getByNameCore } = require("@grucloud/core/Common");
-const { buildTags, shouldRetryOnException } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
 
@@ -52,6 +49,31 @@ exports.DBInstance = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBInstance-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties,
+    dependencies: { dbSubnetGroup, securityGroups, kmsKey },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(
+          !isEmpty(properties.MasterUserPassword),
+          "MasterUserPassword is empty"
+        );
+      }),
+      () => properties,
+      defaultsDeep({
+        DBInstanceIdentifier: name,
+        DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
+        VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
+          securityGroups
+        ),
+        ...(kmsKey && { KmsKeyId: getField(kmsKey, "Arn") }),
+        Tags: buildTags({ config, namespace, name }),
+      }),
+    ])();
+
   const create = client.create({
     pickCreated: () => pick(["DBInstance"]),
     method: "createDBInstance",
@@ -84,31 +106,6 @@ exports.DBInstance = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({
-    name,
-    namespace,
-    properties,
-    dependencies: { dbSubnetGroup, securityGroups, kmsKey },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(
-          !isEmpty(properties.MasterUserPassword),
-          "MasterUserPassword is empty"
-        );
-      }),
-      () => properties,
-      defaultsDeep({
-        DBInstanceIdentifier: name,
-        DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
-        VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
-          securityGroups
-        ),
-        ...(kmsKey && { KmsKeyId: getField(kmsKey, "Arn") }),
-        Tags: buildTags({ config, namespace, name }),
-      }),
-    ])();
-
   return {
     spec,
     findName,
@@ -119,7 +116,6 @@ exports.DBInstance = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

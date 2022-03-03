@@ -62,8 +62,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -72,6 +70,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -149,8 +148,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -159,6 +156,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -225,8 +223,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -235,6 +231,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -306,8 +303,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -316,6 +311,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -396,8 +392,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -406,6 +400,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -477,8 +472,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -487,6 +480,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -560,8 +554,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -570,6 +562,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -637,8 +630,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -647,6 +638,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -718,8 +710,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -728,6 +718,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -791,8 +782,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -801,6 +790,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -874,8 +864,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -884,6 +872,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -947,8 +936,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -957,6 +944,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1029,8 +1017,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1039,6 +1025,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1111,8 +1098,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1121,6 +1106,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1193,8 +1179,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1203,6 +1187,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1270,8 +1255,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1280,6 +1263,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1362,8 +1346,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1372,6 +1354,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1444,8 +1427,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1454,6 +1435,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1542,8 +1524,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1552,6 +1532,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1624,8 +1605,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1634,6 +1613,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1718,8 +1698,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1728,6 +1706,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1798,8 +1777,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1808,6 +1785,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1871,8 +1849,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1881,6 +1857,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -1939,8 +1916,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -1949,6 +1924,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -2016,8 +1992,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -2026,6 +2000,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -2108,8 +2083,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -2118,6 +2091,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -2185,8 +2159,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -2195,6 +2167,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -2283,8 +2256,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -2293,6 +2264,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -2364,8 +2336,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -2374,6 +2344,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -2444,8 +2415,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -2454,6 +2423,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -2548,8 +2518,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -2558,6 +2526,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -2628,8 +2597,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -2638,6 +2605,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -2711,8 +2679,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnets: ["mySubnet"],
-      networkInterfaces: ["myNetworkInterface"],
       disks: ["myDisk"],
       managedIdentities: ["myUserAssignedIdentity"],
       sshPublicKeys: ["mySshPublicKey"],
@@ -2721,6 +2687,7 @@ exports.createResources = () => [
       proximityPlacementGroup: "myProximityPlacementGroup",
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
+      subnets: ["mySubnet"],
       loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
       applicationGateways: ["myApplicationGateway"],
     }),
@@ -2730,8 +2697,6 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Subnet](../Network/Subnet.md)
-- [NetworkInterface](../Network/NetworkInterface.md)
 - [Disk](../Compute/Disk.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [SshPublicKey](../Compute/SshPublicKey.md)
@@ -2740,6 +2705,7 @@ exports.createResources = () => [
 - [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
 - [DedicatedHostGroup](../Compute/DedicatedHostGroup.md)
 - [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)
+- [Subnet](../Network/Subnet.md)
 - [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
 - [ApplicationGateway](../Network/ApplicationGateway.md)
 ## Swagger Schema

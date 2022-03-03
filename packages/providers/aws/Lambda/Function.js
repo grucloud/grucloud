@@ -12,7 +12,7 @@ const {
   switchCase,
   pick,
 } = require("rubico");
-const { pluck, defaultsDeep, includes } = require("rubico/x");
+const { pluck, defaultsDeep, includes, callProp } = require("rubico/x");
 const path = require("path");
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
 
@@ -20,8 +20,8 @@ const logger = require("@grucloud/core/logger")({
   prefix: "Function",
 });
 const { tos } = require("@grucloud/core/tos");
-const { compare, buildTagsObject } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { buildTagsObject } = require("@grucloud/core/Common");
+const { compareAws, createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -37,6 +37,11 @@ const pickId = pipe([
   ({ Configuration: { FunctionArn } }) => ({
     FunctionName: FunctionArn,
   }),
+]);
+const removeVersion = pipe([
+  callProp("split", ":"),
+  callProp("slice", 0, -1),
+  callProp("join", ":"),
 ]);
 
 exports.Function = ({ spec, config }) => {
@@ -67,8 +72,13 @@ exports.Function = ({ spec, config }) => {
             filter(
               pipe([
                 get("live.LayerVersionArn"),
+                removeVersion,
                 (layerVersionArn) =>
-                  pipe([() => layersArn, includes(layerVersionArn)])(),
+                  pipe([
+                    () => layersArn,
+                    map(removeVersion),
+                    includes(layerVersionArn),
+                  ])(),
               ])
             ),
           ])(),
@@ -77,49 +87,23 @@ exports.Function = ({ spec, config }) => {
     },
   ];
 
-  const listFunctions = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`listFunctions ${tos(params)}`);
-      }),
-      () => lambda().listFunctions(params),
-      get("Functions"),
-      map((fun) =>
-        pipe([
-          () => fun,
-          tryCatch(
-            pipe([
-              pick(["FunctionName"]),
-              lambda().getFunction,
-              pick(["Configuration", "Code", "Tags"]),
-              assign({
-                Code: pipe([
-                  get("Code"),
-                  assign({
-                    Data: pipe([fetchZip()]),
-                  }),
-                ]),
-              }),
-            ]),
-            (error) => pipe([() => ({ error })])()
-          ),
-        ])()
-      ),
-      map(
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
+  const getById = client.getById({
+    pickId,
+    method: "getFunction",
+    ignoreErrorCodes: ["ResourceNotFoundException"],
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
+  const getList = client.getList({
+    method: "listFunctions",
+    getParam: "Functions",
+    decorate: () =>
+      pipe([
+        pick(["FunctionName"]),
+        lambda().getFunction,
+        pick(["Configuration", "Code", "Tags"]),
         assign({
-          //TODO
-          // CodeSigningConfigArn: pipe([
-          //   get("Configuration"),
-          //   pick(["FunctionName"]),
-          //   lambda().getFunctionCodeSigningConfig,
-          //   get("CodeSigningConfigArn"),
-          // ]),
-          // ReservedConcurrentExecutions: pipe([
-          //   get("Configuration"),
-          //   pick(["FunctionName"]),
-          //   lambda().getFunctionConcurrency,
-          //   get("ReservedConcurrentExecutions"),
-          // ]),
           Policy: tryCatch(
             pipe([
               get("Configuration"),
@@ -144,21 +128,27 @@ exports.Function = ({ spec, config }) => {
               ]),
             ])
           ),
-        })
-      ),
-      tap((results) => {
-        logger.debug(`listFunctions: result: ${tos(results)}`);
-      }),
-    ])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
-  const getList = () => pipe([listFunctions])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getFunction-property
-  const getById = client.getById({
-    pickId,
-    method: "getFunction",
-    ignoreErrorCodes: ["ResourceNotFoundException"],
+          Code: pipe([
+            get("Code"),
+            assign({
+              Data: pipe([fetchZip()]),
+            }),
+          ]),
+          //TODO
+          // CodeSigningConfigArn: pipe([
+          //   get("Configuration"),
+          //   pick(["FunctionName"]),
+          //   lambda().getFunctionCodeSigningConfig,
+          //   get("CodeSigningConfigArn"),
+          // ]),
+          // ReservedConcurrentExecutions: pipe([
+          //   get("Configuration"),
+          //   pick(["FunctionName"]),
+          //   lambda().getFunctionConcurrency,
+          //   get("ReservedConcurrentExecutions"),
+          // ]),
+        }),
+      ]),
   });
 
   const getByName = pipe([
@@ -188,22 +178,19 @@ exports.Function = ({ spec, config }) => {
     getById,
     config,
   });
-
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update function: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => ({
-        FunctionName: payload.FunctionName,
-        ZipFile: payload.Code.ZipFile,
-      }),
-      lambda().updateFunctionCode,
-      tap(() => {
-        logger.info(`updated function ${name}`);
-      }),
-    ])();
+  //TODO update
+  const update = client.update({
+    filterParams: ({ payload, live, diff }) =>
+      pipe([
+        () => ({
+          FunctionName: payload.FunctionName,
+          ZipFile: payload.Code.ZipFile,
+        }),
+      ])(),
+    method: "updateFunctionCode",
+    config,
+    //getById,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
   const destroy = client.destroy({
@@ -258,7 +245,6 @@ exports.Function = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };
@@ -267,8 +253,7 @@ exports.compareFunction = pipe([
   tap((params) => {
     assert(true);
   }),
-  compare({
-    filterAll: pipe([omit(["Tags"])]),
+  compareAws({
     filterTarget: () =>
       pipe([
         assign({ CodeSha256: pipe([get("Code.ZipFile"), computeHash256]) }),

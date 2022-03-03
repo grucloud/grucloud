@@ -19,9 +19,10 @@ const logger = require("@grucloud/core/logger")({
 
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
+const { createEndpoint, lambdaAddPermission } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { findDependenciesApi } = require("./ApiGatewayCommon");
 
 const findId = get("live.IntegrationId");
 
@@ -51,12 +52,9 @@ exports.Integration = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
 
+  // Integration findDependencies
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "Api",
-      group: "ApiGatewayV2",
-      ids: [live.ApiId],
-    },
+    findDependenciesApi({ live }),
     {
       type: "Function",
       group: "Lambda",
@@ -67,7 +65,6 @@ exports.Integration = ({ spec, config }) => {
           () => live.IntegrationUri
         ),
         (id) => [id],
-        filter(not(isEmpty)),
       ])(),
     },
   ];
@@ -112,24 +109,19 @@ exports.Integration = ({ spec, config }) => {
     config,
     postCreate: ({ resolvedDependencies: { api, lambdaFunction } }) =>
       pipe([
-        tap.if(
-          () => lambdaFunction,
-          ({ IntegrationId }) =>
-            pipe([
-              () => ({
-                Action: "lambda:InvokeFunction",
-                FunctionName: lambdaFunction.resource.name,
-                Principal: "apigateway.amazonaws.com",
-                StatementId: IntegrationId,
-                SourceArn: `arn:aws:execute-api:${
-                  config.region
-                }:${config.accountId()}:${getField(api, "ApiId")}/*/*/${
-                  lambdaFunction.resource.name
-                }`,
-              }),
-              lambda().addPermission,
-            ])()
-        ),
+        tap(() => {
+          assert(api);
+          assert(lambdaFunction);
+        }),
+        lambdaAddPermission({
+          lambda,
+          lambdaFunction,
+          SourceArn: `arn:aws:execute-api:${
+            config.region
+          }:${config.accountId()}:${getField(api, "ApiId")}/*/*/${
+            lambdaFunction.resource.name
+          }`,
+        }),
       ]),
   });
 
@@ -213,7 +205,6 @@ exports.Integration = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

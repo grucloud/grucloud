@@ -12,10 +12,9 @@ const {
   filter,
   any,
   or,
-  eq,
 } = require("rubico");
 const {
-  pluck,
+  flatten,
   isFunction,
   defaultsDeep,
   size,
@@ -78,9 +77,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                   any((ignoreMessage) =>
                     pipe([() => message, includes(ignoreMessage)])()
                   ),
-                  tap((params) => {
-                    assert(true);
-                  }),
                 ])(),
               ({ code }) => pipe([() => ignoreErrorCodes, includes(code)])(),
             ]),
@@ -104,10 +100,12 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
     ({
       method,
       getParam,
+      transformList = identity,
       decorate = () => identity,
       filterResource = () => true,
+      extraParam = {},
     }) =>
-    ({ lives, params } = {}) =>
+    ({ lives, params = {} } = {}) =>
       pipe([
         tap(() => {
           logger.info(`getList ${type}`);
@@ -116,11 +114,17 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           assert(isFunction(endpoint()[method]));
         }),
         () => params,
+        defaultsDeep(extraParam),
+        tap((params) => {
+          logger.debug(`getList ${type}, params: ${JSON.stringify(params)}`);
+        }),
         endpoint()[method],
         tap((params) => {
           assert(true);
         }),
         get(getParam, []),
+        transformList,
+        filter(filterResource),
         map(decorate({ lives })),
         tap((params) => {
           assert(true);
@@ -131,7 +135,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
           logger.info(`getList ${type} #items ${size(items)}`);
         }),
         filter(not(isEmpty)),
-        filter(filterResource),
       ])();
 
   const getListWithParent =
@@ -147,9 +150,6 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       pipe([
         tap(() => {
           logger.debug(`getListWithParent ${type}`);
-          assert(method);
-          assert(getParam);
-          assert(isFunction(endpoint()[method]));
           assert(lives);
           assert(config);
         }),
@@ -158,25 +158,35 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
         tap((parents) => {
           logger.info(`getListWithParent ${type} #parents: ${size(parents)}`);
         }),
-        pluck("live"),
-        flatMap((live) =>
+        flatMap(({ live, name }) =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             () => live,
-            pickKey,
+            switchCase([
+              () => !isEmpty(method),
+              pipe([
+                pickKey,
+                tap((params) => {
+                  assert(true);
+                }),
+                (param) => endpoint()[method](param),
+                tap((params) => {
+                  assert(true);
+                }),
+                when(() => getParam, get(getParam)),
+                map(decorate({ name, parent: live, lives })),
+                tap((params) => {
+                  assert(true);
+                }),
+                when(pipe([first, Array.isArray]), flatten),
+              ]),
+              pipe([decorate({ name, parent: live, lives })]),
+            ]),
             tap((params) => {
               assert(true);
             }),
-            endpoint()[method],
-            tap((params) => {
-              assert(true);
-            }),
-            get(getParam),
-            map(decorate({ parent: live, lives })),
           ])()
         ),
+        filter(not(isEmpty)),
         tap((items) => {
           logger.info(`getListWithParent ${type} #items ${size(items)}`);
         }),
@@ -327,12 +337,11 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                 isExpectedException,
                 shouldRetryOnException,
               }),
-            () => live,
-            (params) =>
+            () =>
               retryCall({
                 name: `isUpById: ${name}`,
                 fn: pipe([
-                  () => params,
+                  () => live,
                   getById,
                   tap((params) => {
                     assert(true);
@@ -391,7 +400,18 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
       ignoreError = () => false,
       ignoreErrorCodes = [],
       ignoreErrorMessages = [],
-      shouldRetryOnException = eq(get("error.code"), "ResourceInUseException"),
+      shouldRetryOnException = pipe([
+        get("error.code"),
+        (code) =>
+          pipe([
+            () => [
+              "ResourceInUseException",
+              "DeleteConflict",
+              "DependencyViolation",
+            ],
+            includes(code),
+          ])(),
+      ]),
       isExpectedResult,
       config,
     }) =>
@@ -459,7 +479,7 @@ exports.AwsClient = ({ spec: { type, group }, config }) => {
                   pipe([
                     () => ignoreErrorMessages,
                     any((message) =>
-                      pipe([() => error.message, includes(message)])
+                      pipe([() => error.message, includes(message)])()
                     ),
                   ]),
                 ]),

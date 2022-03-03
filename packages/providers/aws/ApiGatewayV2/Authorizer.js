@@ -4,8 +4,8 @@ const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { findDependenciesApi } = require("./ApiGatewayCommon");
 
 const findId = get("live.AuthorizerId");
 const findName = get("live.Name");
@@ -14,13 +14,7 @@ const pickId = pick(["ApiId", "AuthorizerId"]);
 exports.Authorizer = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
 
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Api",
-      group: "ApiGatewayV2",
-      ids: [live.ApiId],
-    },
-  ];
+  const findDependencies = ({ live, lives }) => [findDependenciesApi({ live })];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getAuthorizer-property
   const getById = client.getById({
@@ -40,6 +34,7 @@ exports.Authorizer = ({ spec, config }) => {
       pipe([defaultsDeep({ ApiId, ApiName, Tags })]),
   });
 
+  // Get Authorizer by name
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createAuthorizer-property
@@ -105,7 +100,6 @@ exports.Authorizer = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };

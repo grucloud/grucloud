@@ -1,28 +1,13 @@
 const assert = require("assert");
-const {
-  map,
-  flatMap,
-  pipe,
-  tap,
-  get,
-  switchCase,
-  pick,
-  filter,
-  eq,
-  not,
-} = require("rubico");
-const { defaultsDeep, isEmpty, pluck, find } = require("rubico/x");
+const { map, pipe, tap, get, switchCase, pick, eq } = require("rubico");
+const { defaultsDeep, pluck, find } = require("rubico/x");
 const { AwsClient } = require("../AwsClient");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSNodeGroup" });
 const { tos } = require("@grucloud/core/tos");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const {
-  EKSNew,
-  shouldRetryOnException,
-  findNamespaceInTagsObject,
-} = require("../AwsCommon");
+const { EKSNew, findNamespaceInTagsObject } = require("../AwsCommon");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { waitForUpdate } = require("./EKSCommon");
@@ -67,42 +52,6 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     },
   ];
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listNodegroups-property
-  const getList = ({ resources = [] } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList nodeGroup`);
-      }),
-      //TODO
-      // () =>
-      // lives.getByType({
-      //   providerName: config.providerName,
-      //   type: "Cluster",
-      //   group: "EKS",
-      // }),
-      eks().listClusters,
-      get("clusters"),
-      flatMap((clusterName) =>
-        pipe([
-          () =>
-            eks().listNodegroups({
-              clusterName,
-            }),
-          get("nodegroups"),
-          map(
-            pipe([
-              (nodegroupName) =>
-                eks().describeNodegroup({ clusterName, nodegroupName }),
-              get("nodegroup"),
-            ])
-          ),
-        ])()
-      ),
-      filter(not(isEmpty)),
-    ])();
-
-  const getByName = getByNameCore({ getList, findName });
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeNodegroup-property
   const getById = client.getById({
     pickId,
@@ -111,17 +60,30 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     ignoreErrorCodes: ["ResourceNotFoundException"],
   });
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listNodegroups-property
+  const getList = client.getListWithParent({
+    parent: { type: "Cluster", group: "EKS" },
+    pickKey: ({ name }) => ({ clusterName: name }),
+    method: "listNodegroups",
+    getParam: "nodegroups",
+    config,
+    decorate: ({ lives, parent: { name } }) =>
+      pipe([
+        tap(() => {
+          assert(name);
+        }),
+        (nodegroupName) => ({ clusterName: name, nodegroupName }),
+        getById,
+      ]),
+  });
+
+  const getByName = getByNameCore({ getList, findName });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createNodegroup-property
   const create = client.create({
     method: "createNodegroup",
     pickId,
-    pickCreated: () =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("nodegroup"),
-      ]),
+    pickCreated: () => pipe([get("nodegroup")]),
     isInstanceUp: eq(get("status"), "ACTIVE"),
     getById,
     configIsUp: { retryCount: 12 * 25, retryDelay: 5e3 },
@@ -144,6 +106,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   // TODO instanceTypes needs a destroy
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateNodegroupConfig-property
+  // TODO update
   const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
@@ -235,6 +198,5 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

@@ -119,28 +119,6 @@ const buildDefaultSpec = fork({
         assert(name, "missing name");
       }),
     ]),
-  dependsOn: ({ dependencies, type }) =>
-    pipe([
-      tap((params) => {
-        assert(type);
-        if (!dependencies) {
-          assert(dependencies);
-        }
-      }),
-      () => dependencies,
-      values,
-      map(({ group, type }) => `${group}::${type}`),
-    ])(),
-  dependsOnList: ({ dependencies }) =>
-    pipe([
-      tap(() => {
-        assert(dependencies);
-      }),
-      () => dependencies,
-      values,
-      filter(get("parent")),
-      map(({ group, type }) => `${group}::${type}`),
-    ])(),
   inferName:
     ({ dependencies }) =>
     (resource) =>

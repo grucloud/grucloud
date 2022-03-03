@@ -28,7 +28,6 @@ const {
   unless,
   when,
 } = require("rubico/x");
-const shell = require("shelljs");
 const os = require("os");
 const path = require("path");
 const fs = require("fs").promises;
@@ -37,7 +36,7 @@ const yaml = require("js-yaml");
 const logger = require("@grucloud/core/logger")({ prefix: "K8sProvider" });
 const { tos } = require("@grucloud/core/tos");
 const CoreProvider = require("@grucloud/core/CoreProvider");
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty, shellRun } = require("@grucloud/core/Common");
 
 const {
   compareK8s,
@@ -1013,26 +1012,7 @@ const readKubeConfig = ({
 const getAuthTokenExec = pipe([
   get("exec"),
   ({ command, args }) => `${command} ${args.join(" ")}`,
-  (fullCommand) =>
-    pipe([
-      tap(() => {
-        logger.debug(`getAuthTokenExec: ${fullCommand}`);
-      }),
-      () =>
-        shell.exec(fullCommand, {
-          silent: true,
-        }),
-      switchCase([
-        eq(get("code"), 0),
-        get("stdout"),
-        (result) => {
-          throw {
-            message: `command '${fullCommand}' failed`,
-            ...result,
-          };
-        },
-      ]),
-    ])(),
+  shellRun,
   JSON.parse,
   get("status.token"),
   tap((params) => {
@@ -1044,32 +1024,7 @@ const getAuthTokenExec = pipe([
 const getAuthTokenAuthProvider = pipe([
   get("auth-provider.config"),
   (cmd) => `${cmd["cmd-path"]} ${cmd["cmd-args"]}`,
-  (fullCommand) =>
-    pipe([
-      tap(() => {
-        logger.debug(`getAuthTokenAuthProvider: ${fullCommand}`);
-      }),
-      () =>
-        shell.exec(fullCommand, {
-          silent: true,
-        }),
-      tap((params) => {
-        assert(true);
-      }),
-      switchCase([
-        eq(get("code"), 0),
-        get("stdout"),
-        (result) => {
-          throw {
-            message: `command '${fullCommand}' failed`,
-            ...result,
-          };
-        },
-      ]),
-    ])(),
-  tap((params) => {
-    assert(true);
-  }),
+  shellRun,
   JSON.parse,
   get("credential.access_token"),
 ]);

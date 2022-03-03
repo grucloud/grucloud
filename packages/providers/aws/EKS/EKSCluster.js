@@ -1,5 +1,4 @@
 const assert = require("assert");
-const shell = require("shelljs");
 
 const { map, pipe, tap, get, not, eq, omit, pick } = require("rubico");
 const { defaultsDeep, includes, isEmpty } = require("rubico/x");
@@ -8,12 +7,8 @@ const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { buildTagsObject } = require("@grucloud/core/Common");
-const {
-  EKSNew,
-  shouldRetryOnException,
-  findNamespaceInTagsObject,
-} = require("../AwsCommon");
+const { buildTagsObject, shellRun } = require("@grucloud/core/Common");
+const { EKSNew, findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const { waitForUpdate } = require("./EKSCommon");
@@ -45,28 +40,6 @@ exports.EKSCluster = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
   const eks = EKSNew(config);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listClusters-property
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList cluster ${JSON.stringify({ params })}`);
-      }),
-      () => eks().listClusters(params),
-      get("clusters"),
-      tap((clusters) => {
-        logger.info(`getList clusters: ${tos(clusters)}`);
-      }),
-      map(
-        pipe([
-          (name) =>
-            eks().describeCluster({
-              name,
-            }),
-          get("cluster"),
-        ])
-      ),
-    ])();
-
   const getById = client.getById({
     pickId,
     method: "describeCluster",
@@ -74,6 +47,19 @@ exports.EKSCluster = ({ spec, config }) => {
     ignoreErrorCodes: ["ResourceNotFoundException"],
   });
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listClusters-property
+  const getList = client.getList({
+    method: "listClusters",
+    getParam: "clusters",
+    decorate: () =>
+      pipe([
+        tap((name) => {
+          assert(name);
+        }),
+        (name) => ({ name }),
+        getById,
+      ]),
+  });
   const getByName = getById;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
@@ -86,22 +72,7 @@ exports.EKSCluster = ({ spec, config }) => {
       }),
       tap.if(
         () => !process.env.CONTINUOUS_INTEGRATION,
-        pipe([
-          () => `aws eks update-kubeconfig --name ${name}`,
-          (command) =>
-            pipe([
-              () =>
-                shell.exec(command, {
-                  silent: true,
-                }),
-              tap.if(not(eq(get("code"), 0)), (result) => {
-                throw {
-                  message: `command '${command}' failed`,
-                  ...result,
-                };
-              }),
-            ])(),
-        ])
+        pipe([() => `aws eks update-kubeconfig --name ${name}`, shellRun])
       ),
     ])();
 
@@ -116,22 +87,7 @@ exports.EKSCluster = ({ spec, config }) => {
         pipe([
           () =>
             `kubectl config delete-context ${arn}; kubectl config delete-cluster ${arn}`,
-          (command) =>
-            pipe([
-              () =>
-                shell.exec(command, {
-                  silent: true,
-                }),
-              tap.if(not(eq(get("code"), 0)), (result) => {
-                logger.error(
-                  `command '${command}' failed, ${JSON.stringify(
-                    result,
-                    4,
-                    null
-                  )}`
-                );
-              }),
-            ])(),
+          shellRun,
         ])
       ),
     ])();
@@ -163,6 +119,7 @@ exports.EKSCluster = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#updateClusterConfig-property
+  // TODO update
   const update = ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
@@ -245,6 +202,5 @@ exports.EKSCluster = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

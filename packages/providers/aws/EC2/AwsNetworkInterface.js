@@ -1,32 +1,16 @@
-const {
-  get,
-  pipe,
-  filter,
-  map,
-  tap,
-  eq,
-  switchCase,
-  not,
-  tryCatch,
-} = require("rubico");
-const { defaultsDeep, isEmpty, first, identity, pluck } = require("rubico/x");
 const assert = require("assert");
+const { get, pipe, filter, map, tap, switchCase } = require("rubico");
+const { isEmpty, first, identity, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "AwsNetworkInterface",
 });
-const { tos } = require("@grucloud/core/tos");
-const {
-  Ec2New,
-  findNameInTagsOrId,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { Ec2New, findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
 exports.AwsNetworkInterface = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
-  const ec2 = Ec2New(config);
   const awsSecurityGroup = AwsSecurityGroup({ config, spec });
   const findId = get("live.NetworkInterfaceId");
   const pickId = pick(["NetworkInterfaceId"]);
@@ -73,14 +57,10 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
     },
   ];
 
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList network interfaces ${JSON.stringify(params)}`);
-      }),
-      () => ec2().describeNetworkInterfaces(params),
-      get("NetworkInterfaces"),
-    ])();
+  const getList = client.getList({
+    method: "describeNetworkInterfaces",
+    getParam: "NetworkInterfaces",
+  });
 
   const destroy = client.destroy({
     pickId,
@@ -99,6 +79,5 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
     findName,
     getList,
     destroy,
-    shouldRetryOnException,
   };
 };

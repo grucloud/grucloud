@@ -1,11 +1,7 @@
 const assert = require("assert");
 const { assign, pipe, tap, get, eq, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const {
-  createEndpoint,
-  buildTags,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { createEndpoint, buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
 const findId = get("live.Arn");
@@ -24,6 +20,7 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
     createEndpoint({ endpointName: "CloudWatchEvents" })(config);
   const client = AwsClient({ spec, config });
 
+  // findDependencies for CloudWatchEventBus
   const findDependencies = ({ live, lives }) => [];
 
   const decorate = () =>
@@ -36,9 +33,6 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
           cloudWatchEvents().listTagsForResource,
           get("Tags"),
         ]),
-      }),
-      tap((params) => {
-        assert(true);
       }),
     ]);
 
@@ -98,7 +92,6 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
     cannotBeDeleted: isDefault,
     managedByOther: isDefault,

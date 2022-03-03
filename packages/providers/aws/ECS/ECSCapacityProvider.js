@@ -1,14 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, get, switchCase, eq, pick, omit } = require("rubico");
-const { defaultsDeep, isEmpty, includes, unless } = require("rubico/x");
-
-const { shouldRetryOnException, buildTags } = require("../AwsCommon");
+const { defaultsDeep, isEmpty, includes } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { destroyAutoScalingGroupById } = require("../AwsCommon");
 const {
   AutoScalingAutoScalingGroup,
 } = require("../Autoscaling/AutoScalingAutoScalingGroup");
 const { AwsClient } = require("../AwsClient");
-
+const { buildTagsEcs } = require("./ECSCommon");
 const findId = get("live.capacityProviderArn");
 const findName = get("live.name");
 const pickId = pick(["capacityProviderArn"]);
@@ -51,6 +50,33 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createCapacityProvider-property
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { autoScalingGroup },
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        name,
+        ...(autoScalingGroup && {
+          autoScalingGroupProvider: {
+            autoScalingGroupArn: getField(
+              autoScalingGroup,
+              "AutoScalingGroupARN"
+            ),
+          },
+        }),
+        tags: buildTagsEcs({
+          name,
+          config,
+          namespace,
+          Tags,
+        }),
+      }),
+    ])();
+
   const create = client.create({
     method: "createCapacityProvider",
     pickCreated:
@@ -79,21 +105,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     pipe([
       () => live,
       get("autoScalingGroupProvider.autoScalingGroupArn"),
-      (id) =>
-        lives.getById({
-          id,
-          providerName: config.providerName,
-          type: "AutoScalingGroup",
-          group: "AutoScaling",
-        }),
-      get("name"),
-      unless(
-        isEmpty,
-        pipe([
-          (AutoScalingGroupName) => ({ live: { AutoScalingGroupName } }),
-          autoScalingGroup.destroy,
-        ])
-      ),
+      destroyAutoScalingGroupById({ autoScalingGroup, lives, config }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteCapacityProvider-property
@@ -101,6 +113,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     pickId: ({ name }) => ({ capacityProvider: name }),
     preDestroy: deleteAutoScalingGroup,
     method: "deleteCapacityProvider",
+
     isInstanceDown: switchCase([
       eq(get("updateStatus"), "DELETE_FAILED"),
       () => {
@@ -119,35 +132,6 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: { autoScalingGroup },
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        name,
-        ...(autoScalingGroup && {
-          autoScalingGroupProvider: {
-            autoScalingGroupArn: getField(
-              autoScalingGroup,
-              "AutoScalingGroupARN"
-            ),
-          },
-        }),
-        tags: buildTags({
-          name,
-          config,
-          namespace,
-          UserTags: Tags,
-          key: "key",
-          value: "value",
-        }),
-      }),
-    ])();
-
   const cannotBeDeleted = ({ live }) =>
     pipe([() => ["FARGATE", "FARGATE_SPOT"], includes(live.name)])();
 
@@ -163,7 +147,6 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
     cannotBeDeleted,
     managedByOther: cannotBeDeleted,
     isDefault: cannotBeDeleted,

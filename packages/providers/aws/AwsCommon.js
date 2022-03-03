@@ -12,6 +12,7 @@ const {
   or,
   any,
   not,
+  omit,
 } = require("rubico");
 const {
   callProp,
@@ -38,9 +39,9 @@ exports.compareAws = ({ filterAll, filterTarget, filterLive } = {}) =>
     compare({
       filterAll,
       filterTarget,
-      //filterTargetDefault,
+      filterTargetDefault: omit(["Tags"]),
       filterLive,
-      //filterLiveDefault,
+      filterLiveDefault: omit(["Tags"]),
     }),
   ]);
 
@@ -126,9 +127,6 @@ exports.ACMNew = (config) => () =>
 exports.EKSNew = (config) => () =>
   createEndpoint({ endpointName: "EKS" })(config);
 
-exports.ELBNew = (config) => () =>
-  createEndpoint({ endpointName: "ELB" })(config);
-
 exports.ELBv2New = (config) => () =>
   createEndpoint({ endpointName: "ELBv2" })(config);
 
@@ -137,20 +135,6 @@ exports.AutoScalingNew = (config) => () =>
 
 exports.KmsNew = (config) => () =>
   createEndpoint({ endpointName: "KMS" })(config);
-
-exports.shouldRetryOnException = ({ error, name }) =>
-  pipe([
-    tap(() => {
-      logger.error(`aws shouldRetryOnException ${tos({ name, error })}`);
-      error.stack && logger.error(error.stack);
-    }),
-    () => error,
-    //TODO find out error code we can retry on
-    or([eq(get("statusCode"), 503)]),
-    tap((retry) => {
-      logger.error(`aws shouldRetryOnException ${name}, retry: ${retry}`);
-    }),
-  ])();
 
 exports.DecodeUserData = when(
   get("UserData"),
@@ -161,18 +145,6 @@ exports.DecodeUserData = when(
     ]),
   })
 );
-
-exports.shouldRetryOnExceptionDelete = ({ error, name }) =>
-  pipe([
-    () => error,
-    //TODO not for IamPolicy
-    eq(get("code"), "DeleteConflict"),
-    tap((retry) => {
-      logger.debug(
-        `aws shouldRetryOnExceptionDelete ${tos({ name, error, retry })}`
-      );
-    }),
-  ])();
 
 const hasKeyValueInTags =
   ({ key, value }) =>
@@ -690,3 +662,40 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
       )
     ),
   ])();
+
+exports.lambdaAddPermission = ({ lambda, lambdaFunction, SourceArn }) =>
+  pipe([
+    tap.if(
+      () => lambdaFunction,
+      ({ IntegrationId }) =>
+        pipe([
+          () => ({
+            Action: "lambda:InvokeFunction",
+            FunctionName: lambdaFunction.resource.name,
+            Principal: "apigateway.amazonaws.com",
+            StatementId: IntegrationId,
+            SourceArn,
+          }),
+          lambda().addPermission,
+        ])()
+    ),
+  ]);
+
+exports.destroyAutoScalingGroupById = ({ autoScalingGroup, lives, config }) =>
+  pipe([
+    (id) =>
+      lives.getById({
+        id,
+        providerName: config.providerName,
+        type: "AutoScalingGroup",
+        group: "AutoScaling",
+      }),
+    get("name"),
+    unless(
+      isEmpty,
+      pipe([
+        (AutoScalingGroupName) => ({ live: { AutoScalingGroupName } }),
+        autoScalingGroup.destroy,
+      ])
+    ),
+  ]);

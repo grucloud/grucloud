@@ -45,7 +45,6 @@ module.exports = () =>
       type: "Record",
       //TODO
       dependsOn: ["Route53::HostedZone", "ACM::Certificate"],
-      dependsOnList: ["Route53::HostedZone"],
       dependencies: {
         hostedZone: { type: "HostedZone", group: "Route53", parent: true },
         elasticIpAddress: { type: "ElasticIpAddress", group: "EC2" },
@@ -58,36 +57,32 @@ module.exports = () =>
       Client: Route53Record,
       isOurMinion: () => true,
       compare: compareRoute53Record,
-      inferName: ({ properties, dependencies, dependenciesSpec }) =>
+      inferName: ({ properties, dependenciesSpec }) =>
         pipe([
-          //TODO use dependenciesSpec
-          dependencies,
+          () => dependenciesSpec,
           tap((params) => {
             assert(dependenciesSpec);
           }),
           switchCase([
             get("elasticIpAddress"),
             pipe([
-              get("elasticIpAddress.name", "noName"),
+              get("elasticIpAddress", "noName"),
               prepend("EC2::ElasticIpAddress::"),
             ]),
             get("certificate"),
-            pipe([get("certificate.name"), prepend("ACM::Certificate::")]),
+            pipe([get("certificate"), prepend("ACM::Certificate::")]),
             get("loadBalancer"),
-            pipe([get("loadBalancer.name"), prepend("ELBv2::LoadBalancer::")]),
+            pipe([get("loadBalancer"), prepend("ELBv2::LoadBalancer::")]),
             get("distribution"),
-            pipe([
-              get("distribution.name"),
-              prepend("CloudFront::Distribution::"),
-            ]),
+            pipe([get("distribution"), prepend("CloudFront::Distribution::")]),
             get("apiGatewayDomainName"),
             pipe([
-              get("apiGatewayDomainName.name"),
+              get("apiGatewayDomainName"),
               prepend("APIGateway::DomainName::"),
             ]),
             get("apiGatewayV2DomainName"),
             pipe([
-              get("apiGatewayV2DomainName.name"),
+              get("apiGatewayV2DomainName"),
               prepend("ApiGatewayV2::DomainName::"),
             ]),
             () => "",

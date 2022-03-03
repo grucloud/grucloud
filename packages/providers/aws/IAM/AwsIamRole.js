@@ -11,6 +11,7 @@ const {
   assign,
   pick,
   omit,
+  and,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -30,11 +31,9 @@ const {
   IAMNew,
   buildTags,
   findNamespaceInTags,
-  shouldRetryOnExceptionDelete,
-  shouldRetryOnException,
   removeRoleFromInstanceProfile,
 } = require("../AwsCommon");
-const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 
@@ -114,65 +113,46 @@ exports.AwsIamRole = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listRoles-property
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList role ${params}`);
+  const getList = client.getList({
+    method: "listRoles",
+    getParam: "Roles",
+    filterResource: pipe([
+      tap((params) => {
+        assert(true);
       }),
-      () => iam().listRoles(params),
-      get("Roles"),
-      filter((role) => moment(role.CreateDate).isAfter("2020-09-11")),
-      filter((role) => !role.RoleName.includes("AWSServiceRole")),
-      tap((roles) => {
-        assert(roles);
+      and([
+        ({ CreateDate }) => moment(CreateDate).isAfter("2021-09-11"),
+        ({ RoleName }) => !RoleName.includes("AWSServiceRole"),
+      ]),
+      tap((params) => {
+        assert(true);
       }),
-      map.pool(
-        mapPoolSize,
-        tryCatch(
-          assign({
-            AssumeRolePolicyDocument: pipe([
-              ({ AssumeRolePolicyDocument }) =>
-                querystring.unescape(AssumeRolePolicyDocument),
-              JSON.parse,
-            ]),
-            Policies: listInlinePolicies,
-            AttachedPolicies: listAttachedRolePolicies,
-            InstanceProfiles: pipe([
-              ({ RoleName }) =>
-                iam().listInstanceProfilesForRole({
-                  RoleName,
-                  MaxItems: 1e3,
-                }),
-              get("InstanceProfiles"),
-              map(
-                pick([
-                  "InstanceProfileName",
-                  "InstanceProfileId",
-                  "Arn",
-                  "Path",
-                ])
-              ),
-            ]),
-            Tags: pipe([pick(["RoleName"]), iam().listRoleTags, get("Tags")]),
-          }),
-          (error, role) =>
-            pipe([
-              tap(() => {
-                logger.error(
-                  `getList role error: ${tos({
-                    error,
-                    role,
-                  })}`
-                );
-              }),
-              () => ({ error, role }),
-            ])()
-        )
-      ),
-      tap.if(find(get("error")), (roles) => {
-        throw roles;
-      }),
-    ])();
+    ]),
+    decorate: () =>
+      pipe([
+        assign({
+          AssumeRolePolicyDocument: pipe([
+            ({ AssumeRolePolicyDocument }) =>
+              querystring.unescape(AssumeRolePolicyDocument),
+            JSON.parse,
+          ]),
+          Policies: listInlinePolicies,
+          AttachedPolicies: listAttachedRolePolicies,
+          InstanceProfiles: pipe([
+            ({ RoleName }) => ({
+              RoleName,
+              MaxItems: 1e3,
+            }),
+            iam().listInstanceProfilesForRole,
+            get("InstanceProfiles"),
+            map(
+              pick(["InstanceProfileName", "InstanceProfileId", "Arn", "Path"])
+            ),
+          ]),
+          Tags: pipe([pick(["RoleName"]), iam().listRoleTags, get("Tags")]),
+        }),
+      ]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
@@ -357,7 +337,5 @@ exports.AwsIamRole = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
-    shouldRetryOnExceptionDelete,
   };
 };

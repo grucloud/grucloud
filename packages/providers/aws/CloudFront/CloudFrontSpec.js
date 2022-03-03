@@ -29,12 +29,6 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "Distribution",
-      //TODO remove dependsOn
-      dependsOn: [
-        "ACM::Certificate",
-        "S3::Bucket",
-        "CloudFront::OriginAccessIdentity",
-      ],
       dependencies: {
         buckets: { type: "Bucket", group: "S3", list: true },
         certificate: { type: "Certificate", group: "ACM" },

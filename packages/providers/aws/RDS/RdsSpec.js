@@ -10,11 +10,15 @@ const { DBSubnetGroup } = require("./DBSubnetGroup");
 
 const GROUP = "RDS";
 
+const environmentVariables = [
+  { path: "MasterUsername", suffix: "MASTER_USERNAME" },
+  { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
+];
+
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "DBSubnetGroup",
-      dependsOn: ["EC2::Subnet"],
       Client: DBSubnetGroup,
       isOurMinion,
       compare: compareAws({
@@ -32,8 +36,15 @@ module.exports = () =>
     },
     {
       type: "DBCluster",
-      dependsOn: ["RDS::DBSubnetGroup", "EC2::SecurityGroup", "KMS::Key"],
       Client: DBCluster,
+      dependencies: {
+        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        key: {
+          type: "Key",
+          group: "KMS",
+        },
+      },
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
       compare: compareAws({
         filterAll: pipe([omit(["SubnetIds", "Tags"])]),
@@ -111,29 +122,15 @@ module.exports = () =>
           assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
           omit(["ScalingConfigurationInfo"]),
         ]),
-      environmentVariables: [
-        { path: "MasterUsername", suffix: "MASTER_USERNAME" },
-        { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
-      ],
-      dependencies: {
-        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-        key: {
-          type: "Key",
-          group: "KMS",
-        },
-      },
+      environmentVariables,
     },
     {
       type: "DBInstance",
-      dependsOn: [
-        "RDS::DBSubnetGroup",
-        "RDS::DBCluster",
-        "EC2::InternetGateway",
-        "EC2::SecurityGroup",
-        //"EC2::NetworkInterface",
-      ],
       Client: DBInstance,
+      dependencies: {
+        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+      },
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
       compare: compareAws({
         filterAll: omit(["TagList"]),
@@ -211,13 +208,6 @@ module.exports = () =>
           "PreferredMaintenanceWindow",
           "BackupRetentionPeriod",
         ]),
-      environmentVariables: [
-        { path: "MasterUsername", suffix: "MASTER_USERNAME" },
-        { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
-      ],
-      dependencies: {
-        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-      },
+      environmentVariables,
     },
   ]);

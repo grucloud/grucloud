@@ -14,7 +14,7 @@ module.exports = () =>
       Client: AwsCertificate,
       isOurMinion,
       compare: compareAws({
-        filterTarget: () => pipe([omit(["ValidationMethod", "Tags"])]),
+        filterTarget: () => pipe([omit(["ValidationMethod"])]),
         filterLive: () => pipe([pick(["DomainName"])]),
       }),
       ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),

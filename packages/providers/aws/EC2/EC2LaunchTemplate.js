@@ -1,22 +1,16 @@
 const assert = require("assert");
-const { pipe, tap, get, map, omit, pick } = require("rubico");
+const { pipe, tap, get, or, omit, pick, eq } = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
-  size,
   first,
   unless,
   prepend,
   includes,
 } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "EC2LaunchTemplate",
-});
-const { tos } = require("@grucloud/core/tos");
 const {
   createEndpoint,
-  shouldRetryOnException,
   buildTags,
   findValueInTags,
   findNamespaceInTagsOrEksCluster,
@@ -98,6 +92,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     config,
     key: "eks:cluster-name",
   });
+
   const decorate = () => (launchTemplate) =>
     pipe([
       () => launchTemplate,
@@ -116,22 +111,13 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeLaunchTemplates-property
-  const describeLaunchTemplates = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    ec2().describeLaunchTemplates,
-    get("LaunchTemplates"),
-    tap((launchTemplates) => {
-      logger.debug(
-        `describeLaunchTemplates #launchTemplates ${size(launchTemplates)}`
-      );
-    }),
-    map(decorate()),
-  ]);
+  const getList = client.getList({
+    method: "describeLaunchTemplates",
+    getParam: "LaunchTemplates",
+    decorate,
+  });
 
-  const getList = pipe([() => ({}), describeLaunchTemplates]);
-
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeLaunchTemplates-property
   const getById = client.getById({
     pickId: ({ LaunchTemplateName }) => ({
       LaunchTemplateNames: [LaunchTemplateName],
@@ -151,23 +137,19 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
   const create = client.create({
     method: "createLaunchTemplate",
     config,
+    //TODO
+    // getById
   });
 
   // Update https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createLaunchTemplateVersion-property
   //TODO update
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update launchTemplate: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      omit(["TagSpecifications"]),
-      ec2().createLaunchTemplateVersion,
-      tap(() => {
-        logger.info(`updated launchTemplate ${name}`);
-      }),
-    ])();
+  const update = client.update({
+    filterParams: ({ payload }) =>
+      pipe([() => payload, omit(["TagSpecifications"])])(),
+    method: "createLaunchTemplateVersion",
+    config,
+    //getById,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteLaunchTemplate-property
   const destroy = client.destroy({
@@ -224,6 +206,5 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
   };
 };

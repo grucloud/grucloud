@@ -4,8 +4,8 @@ const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { findDependenciesApi } = require("./ApiGatewayCommon");
 
 const findId = get("live.ApiMappingId");
 const findName = pipe([
@@ -25,11 +25,7 @@ exports.ApiMapping = ({ spec, config }) => {
   const client = AwsClient({ spec, config });
 
   const findDependencies = ({ live, lives }) => [
-    {
-      type: "Api",
-      group: "ApiGatewayV2",
-      ids: [live.ApiId],
-    },
+    findDependenciesApi({ live }),
     {
       type: "DomainName",
       group: "ApiGatewayV2",
@@ -156,7 +152,6 @@ exports.ApiMapping = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    shouldRetryOnException,
     findDependencies,
   };
 };
