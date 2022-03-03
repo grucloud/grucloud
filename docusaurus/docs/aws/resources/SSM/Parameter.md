@@ -32,7 +32,7 @@ exports.createResources = () => [
 
 ## Code Examples
 
-- [Simple Example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ssm/ssm-param)
+- [Simple Example](https://github.com/grucloud/grucloud/blob/main/examples/aws/SSM/ssm-param)
 
 ## Properties
 

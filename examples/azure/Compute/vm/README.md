@@ -92,7 +92,7 @@ npm i
 
 ### Target Diagram
 
-Based on the infrastructure code [iac.js](./iac.js), GruCloud is able to create a diagram of the target resources showing their dependencies.
+Based on the infrastructure code [resources.js](./resources.js), GruCloud is able to create a diagram of the target resources showing their dependencies.
 
 ```sh
 gc graph

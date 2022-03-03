@@ -191,9 +191,9 @@ const server = provider.compute.makeVmInstance({
 
 ## Examples Code
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm/iac.js#L9)
-- [VM with SSH keys in metadata](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-ssh-keys/iac.js#L9)
-- [full example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-network/iac.js#L9)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm)
+- [VM with SSH keys in metadata](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-ssh-keys)
+- [full example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-network)
 
 ## Properties
 

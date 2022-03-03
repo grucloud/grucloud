@@ -16,7 +16,7 @@ This deployment is composed of the resources depicted in the following diagram:
 
 ![GraphTarget](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/artifacts/diagram-target.svg)
 
-> The command `gc graph` generates this diagram from the code [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/iac.js).
+> The command `gc graph` generates this diagram from the code [resources.js](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/resources.js).
 
 Below are the links to the resource documentation:
 

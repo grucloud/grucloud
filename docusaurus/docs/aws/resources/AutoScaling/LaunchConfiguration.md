@@ -162,4 +162,4 @@ Command "gc l -t LaunchConfiguration" executed in 7s
 
 ## Example
 
-- [Simple ECS](https://github.com/grucloud/grucloud/tree/main/examples/aws/ecs/ecs-simple)
+- [Simple ECS](https://github.com/grucloud/grucloud/tree/main/examples/aws/ECS/ecs-simple)

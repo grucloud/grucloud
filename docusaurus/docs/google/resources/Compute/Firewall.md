@@ -38,8 +38,8 @@ provider.compute.makeFirewall({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm/iac.js)
-- [full example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-network/iac.js)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm)
+- [full example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-network)
 
 ### Properties
 

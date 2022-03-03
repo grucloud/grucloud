@@ -25,7 +25,7 @@ exports.createResources = () => [
 
 ## Code Examples
 
-- [stateless postgres](https://github.com/grucloud/grucloud/blob/main/examples/aws/rds/iac.js)
+- [stateless postgres](https://github.com/grucloud/grucloud/blob/main/examples/aws/RDS)
 
 ## Properties
 

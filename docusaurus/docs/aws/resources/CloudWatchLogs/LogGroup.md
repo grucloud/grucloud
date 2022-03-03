@@ -19,7 +19,7 @@ exports.createResources = () => [
 
 ## Full Examples
 
-- [simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/cloudWatchLogs/logs)
+- [simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatchLogs/logs)
 
 ## List
 

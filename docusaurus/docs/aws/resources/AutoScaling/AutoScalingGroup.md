@@ -45,9 +45,9 @@ exports.createResources = () => [
 
 ## Full Examples
 
-- [AutoScaling Group example](https://github.com/grucloud/grucloud/tree/main/examples/aws/autoScaling/autoScalingGroup)
+- [AutoScaling Group example](https://github.com/grucloud/grucloud/tree/main/examples/aws/AutoScaling/autoScalingGroup)
 - [AutoScalingGroup attached to a load balancer](https://github.com/grucloud/grucloud/tree/main/examples/aws/ELBv2/load-balancer)
-- [AutoScaling Group in ECS with Launch Configuration](https://github.com/grucloud/grucloud/tree/main/examples/aws/ecs/ecs-simple)
+- [AutoScaling Group in ECS with Launch Configuration](https://github.com/grucloud/grucloud/tree/main/examples/aws/ECS/ecs-simple)
 
 ## List
 

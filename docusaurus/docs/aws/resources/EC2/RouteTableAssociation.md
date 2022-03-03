@@ -24,8 +24,7 @@ exports.createResources = () => [
 
 ## Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-vpc/iac.js)
-- [EKS](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/eks/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
 
 ## Dependencies
 

@@ -39,7 +39,7 @@ provider.compute.makeVmInstance({
 
 ### Examples
 
-- [create and attach a disk to an instance](https://github.com/grucloud/grucloud/blob/main/examples/google/vm/iac.js)
+- [create and attach a disk to an instance](https://github.com/grucloud/grucloud/blob/main/examples/google/vm)
 
 ### Properties
 

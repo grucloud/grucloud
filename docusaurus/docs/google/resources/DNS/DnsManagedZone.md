@@ -30,7 +30,7 @@ provider.dns.makeManagedZone({
 
 ### Example Code
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/iac.js#L7)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https)
 
 ## Properties
 

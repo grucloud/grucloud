@@ -86,7 +86,7 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [hello world lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/lambda/nodejs/helloworkd/iac.js)
+- [hello world lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Lambda/nodejs/hellowork)
 
 ## Properties
 

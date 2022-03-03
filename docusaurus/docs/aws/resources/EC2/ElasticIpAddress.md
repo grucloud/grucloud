@@ -29,8 +29,8 @@ exports.createResources = () => [
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2/resources.js)
-- [example with internet gateway and routing table](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-vpc/resources.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2/resources.js)
+- [example with internet gateway and routing table](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc/resources.js)
 
 ### Used By
 

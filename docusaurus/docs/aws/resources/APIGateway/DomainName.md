@@ -28,7 +28,7 @@ exports.createResources = () => [
 
 ## Full Examples
 
-- [RestAPI with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/api-gateway/restapi-lambda)
+- [RestAPI with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/APIGateway/restapi-lambda)
 
 ## List
 

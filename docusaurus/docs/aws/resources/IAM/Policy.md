@@ -188,8 +188,8 @@ exports.createResources = () => [
 
 ### Examples
 
-- [Policies attached to a role](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iam-policy/resources.js)
-- [Policies attached to roles, users and groups](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iam/iac.js)
+- [Policies attached to a role](https://github.com/grucloud/grucloud/blob/main/examples/aws/IAM/iam-policy/)
+- [Policies attached to roles, users and groups](https://github.com/grucloud/grucloud/blob/main/examples/aws/IAM/iam)
 
 ### Properties
 

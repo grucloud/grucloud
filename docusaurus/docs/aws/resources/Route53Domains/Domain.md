@@ -32,7 +32,7 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [https static website ](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/iac.js)
+- [https static website ](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https)
 
 ## Used By
 

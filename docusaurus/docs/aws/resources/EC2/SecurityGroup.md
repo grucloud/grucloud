@@ -25,7 +25,7 @@ exports.createResources = () => [
 
 ### Examples
 
-- [ec2-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-vpc/iac.js#L26)
+- [ec2-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
 
 ### Properties
 

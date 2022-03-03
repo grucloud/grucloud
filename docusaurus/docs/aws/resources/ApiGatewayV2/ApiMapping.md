@@ -71,7 +71,7 @@ exports.createResources = () => [
 
 ## Full Examples
 
-- [Http with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/api-gateway-v2/http-lambda)
+- [Http with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/http-lambda)
 
 ## List
 
