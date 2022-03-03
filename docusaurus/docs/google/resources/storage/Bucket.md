@@ -42,8 +42,8 @@ provider.storage.makeBucket({
 
 ## Example Code
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/simple/iac.js#L7)
-- [https static website](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/iac.js#L7)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/simple)
+- [https static website](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https)
 
 ## Properties
 

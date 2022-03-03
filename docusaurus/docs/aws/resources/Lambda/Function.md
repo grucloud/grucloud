@@ -80,7 +80,7 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [hello world lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/lambda/nodejs/helloworkd/resources.js)
+- [hello world lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Lambda/nodejs/helloworkd/resources.js)
 
 - [lambda called by an Api gateway](https://github.com/grucloud/grucloud/blob/main/example/aws/api-gateway/lambda/resources.js)
 

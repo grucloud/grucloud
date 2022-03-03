@@ -14,7 +14,7 @@ exports.createResources = () => [
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/keyPair/iac.js#L10)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/keyPair)
 
 ### Used By
 

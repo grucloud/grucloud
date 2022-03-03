@@ -38,7 +38,7 @@ exports.createResources = () => [
 
 ## Code Examples
 
-- [postgres](https://github.com/grucloud/grucloud/blob/main/examples/aws/rds/postgres/iac.js)
+- [postgres](https://github.com/grucloud/grucloud/blob/main/examples/aws/RDS/postgres)
 
 ## Properties
 

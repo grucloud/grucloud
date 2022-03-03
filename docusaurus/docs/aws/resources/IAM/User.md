@@ -91,7 +91,7 @@ exports.createResources = () => [
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iam/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/IAM/iam)
 
 ### Properties
 

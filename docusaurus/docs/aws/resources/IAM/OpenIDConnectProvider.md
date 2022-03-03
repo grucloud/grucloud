@@ -22,7 +22,7 @@ exports.createResources = () => [
 
 ### Examples
 
-- [load balancer controller module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer-controller/iac.js#)
+- [load balancer controller module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer-controller)
 
 ### Properties
 

@@ -23,7 +23,7 @@ exports.createResources = () => [
 
 ## Full Examples
 
-- [simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/cloudWatchEvent/event)
+- [simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatchEvent/event)
 
 ## List
 

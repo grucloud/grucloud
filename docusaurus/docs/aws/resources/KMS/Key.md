@@ -19,8 +19,7 @@ exports.createResources = () => [
 
 ## Code Examples
 
-- [simple symmetric key](https://github.com/grucloud/grucloud/blob/main/examples/aws/kms/symmetric/iac.js)
-- [symmetric key used by an EKS cluster](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/kms/eks/iac.js)
+- [simple symmetric key](https://github.com/grucloud/grucloud/blob/main/examples/aws/kms/symmetric/resources.js)
 
 ## Properties
 

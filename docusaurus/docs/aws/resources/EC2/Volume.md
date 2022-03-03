@@ -24,7 +24,7 @@ exports.createResources = () => [
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/volume/resources.js)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/volume/resources.js)
 
 ### Properties
 

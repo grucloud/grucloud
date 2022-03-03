@@ -103,7 +103,7 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [sqs lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/lambda/nodejs/sqs-lambda/resources.js)
+- [sqs lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Lambda/nodejs/sqs-lambda/resources.js)
 
 ## Properties
 

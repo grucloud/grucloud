@@ -17,7 +17,7 @@ const sa = provider.iam.makeServiceAccount({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm/iac.js)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm)
 
 ### Properties
 

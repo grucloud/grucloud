@@ -35,9 +35,8 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [https static website ](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/iac.js)
-- [starhack.it](https://github.com/FredericHeem/starhackit/blob/master/deploy/grucloud-aws/iac.js)
-- [A record and hosted zone ](https://github.com/grucloud/grucloud/blob/main/examples/aws/route53/dns-validation-record-txt/iac.js)
+- [https static website ](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https)
+- [A record and hosted zone ](https://github.com/grucloud/grucloud/blob/main/examples/aws/Route53/dns-validation-record-txt)
 
 ## Properties
 

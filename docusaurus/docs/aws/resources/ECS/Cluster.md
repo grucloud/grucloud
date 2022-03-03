@@ -39,7 +39,7 @@ exports.createResources = () => [
 
 ## Full Examples
 
-- [Simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/ecs/ecs-simple)
+- [Simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/ECS/ecs-simple)
 
 ## List
 

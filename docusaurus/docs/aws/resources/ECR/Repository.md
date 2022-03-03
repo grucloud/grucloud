@@ -66,7 +66,7 @@ exports.createResources = () => [
 
 ### Full Examples
 
-- [Registry and Repository](https://github.com/grucloud/grucloud/tree/main/examples/aws/ecr/repository)
+- [Registry and Repository](https://github.com/grucloud/grucloud/tree/main/examples/aws/ECR/repository)
 
 ### Properties
 

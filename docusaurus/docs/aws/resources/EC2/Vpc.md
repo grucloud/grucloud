@@ -70,7 +70,7 @@ const vpc = provider.EC2.makeVpc({
 
 ## Code Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/ec2-vpc/resources.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc/resources.js)
 
 ## Used By
 

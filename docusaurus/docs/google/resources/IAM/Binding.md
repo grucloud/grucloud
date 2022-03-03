@@ -36,7 +36,7 @@ const iamBinding = provider.iam.makeBinding({
 
 ### Example Code
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/iam/iam-binding/iac.js#L7)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/iam/iam-binding)
 
 ### Used By
 
