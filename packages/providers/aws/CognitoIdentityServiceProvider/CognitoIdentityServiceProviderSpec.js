@@ -23,6 +23,7 @@ module.exports = () =>
     {
       type: "IdentityProvider",
       dependsOn: ["CognitoIdentityServiceProvider::UserPool"],
+      //TODO dependencies
       Client: IdentityProvider,
       isOurMinion,
       compareIdentity: compareIdentityProvider,

@@ -22,7 +22,6 @@ module.exports = () =>
     {
       type: "Bucket",
       Client: AwsS3Bucket,
-      dependsOn: ["CloudFront::OriginAccessIdentity"],
       dependencies: {
         originAccessIdentities: {
           type: "OriginAccessIdentity",
@@ -160,8 +159,6 @@ module.exports = () =>
     },
     {
       type: "Object",
-      dependsOn: ["S3::Bucket"],
-      dependsOnList: ["S3::Bucket"],
       dependencies: {
         bucket: { type: "Bucket", group: "S3", parent: true },
       },

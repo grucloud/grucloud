@@ -15,13 +15,13 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "LoadBalancer",
-      dependsOn: [
-        "EC2::Subnet",
-        "EC2::InternetGateway",
-        //"EC2::NetworkInterface",
-        "EC2::SecurityGroup",
-      ],
-
+      dependencies: {
+        subnets: { type: "Subnet", group: "EC2", list: true },
+        internetGateway: { type: "InternetGateway", group: "EC2" },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        role: { type: "Role", group: "IAM" },
+        key: { type: "Key", group: "KMS" },
+      },
       Client: ELBLoadBalancerV2,
       isOurMinion,
       compare: compareAws({
@@ -43,17 +43,18 @@ module.exports = () =>
       }),
       includeDefaultDependencies: true,
       filterLive: () => pick(["Scheme", "Type", "IpAddressType"]),
-      dependencies: {
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-        role: { type: "Role", group: "IAM" },
-        key: { type: "Key", group: "KMS" },
-      },
     },
     {
       type: "TargetGroup",
-      dependsOn: ["EC2::Vpc"],
       Client: ELBTargetGroup,
+      dependencies: {
+        vpc: { type: "Vpc", group: "EC2" },
+        nodeGroup: {
+          type: "NodeGroup",
+          group: "EKS",
+        },
+        //TODO autoScalingGroup
+      },
       isOurMinion,
       compare: compareAws({
         filterTarget: () =>
@@ -98,24 +99,15 @@ module.exports = () =>
           "TargetType",
           "ProtocolVersion",
         ]),
-      dependencies: {
-        vpc: { type: "Vpc", group: "EC2" },
-        nodeGroup: {
-          type: "NodeGroup",
-          group: "EKS",
-        },
-        //TODO autoScalingGroup
-      },
     },
     {
       type: "Listener",
-      dependsOn: [
-        "ELBv2::LoadBalancer",
-        "ELBv2::TargetGroup",
-        "ACM::Certificate",
-      ],
-      dependsOnList: ["ELBv2::LoadBalancer"],
       Client: ELBListener,
+      dependencies: {
+        loadBalancer: { type: "LoadBalancer", group: "ELBv2", parent: true },
+        targetGroup: { type: "TargetGroup", group: "ELBv2" },
+        certificate: { type: "Certificate", group: "ACM" },
+      },
       isOurMinion,
       compare: compareAws({
         filterTarget: () => pipe([omit(["Tags"])]),
@@ -158,17 +150,14 @@ module.exports = () =>
               pick(["Port", "Protocol", "DefaultActions"]),
             ])(),
       ]),
-      dependencies: {
-        loadBalancer: { type: "LoadBalancer", group: "ELBv2", parent: true },
-        targetGroup: { type: "TargetGroup", group: "ELBv2" },
-        certificate: { type: "Certificate", group: "ACM" },
-      },
     },
     {
       type: "Rule",
-      dependsOn: ["ELBv2::Listener", "ELBv2::TargetGroup"],
-      dependsOnList: ["ELBv2::Listener"],
       Client: ELBRule,
+      dependencies: {
+        listener: { type: "Listener", group: "ELBv2", parent: true },
+        targetGroup: { type: "TargetGroup", group: "ELBv2" },
+      },
       isOurMinion,
       compare: compareAws({
         filterTarget: () =>
@@ -251,9 +240,5 @@ module.exports = () =>
       //     () =>
       //       `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`,
       //   ])(),
-      dependencies: {
-        listener: { type: "Listener", group: "ELBv2", parent: true },
-        targetGroup: { type: "TargetGroup", group: "ELBv2" },
-      },
     },
   ]);

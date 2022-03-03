@@ -14,7 +14,6 @@ exports.fnSpecs = ({ config }) => {
       {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
         type: "KubeEnvironment",
-        dependsOnList: ["Resources::ResourceGroup"],
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
@@ -128,7 +127,6 @@ exports.fnSpecs = ({ config }) => {
       {
         // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
         type: "ContainerApp",
-        dependsOnList: ["Resources::ResourceGroup"],
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",

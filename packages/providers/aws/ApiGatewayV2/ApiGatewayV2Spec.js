@@ -19,7 +19,6 @@ module.exports = pipe([
   () => [
     {
       type: "DomainName",
-      dependsOn: ["ACM::Certificate"],
       Client: DomainName,
       compare: compareAws({
         filterTarget: () =>
@@ -63,8 +62,6 @@ module.exports = pipe([
     },
     {
       type: "Stage",
-      dependsOn: ["ApiGatewayV2::Api", "CloudWatchLogs::LogGroup"],
-      dependsOnList: ["ApiGatewayV2::Api"],
       Client: Stage,
       compare: compareAws({
         filterTarget: () =>
@@ -96,8 +93,6 @@ module.exports = pipe([
     },
     {
       type: "Authorizer",
-      dependsOn: ["ApiGatewayV2::Api"],
-      dependsOnList: ["ApiGatewayV2::Api"],
       Client: Authorizer,
       compare: compareAws({
         filterLive: () => pipe([omit(["AuthorizerId", "ApiName"])]),
@@ -118,12 +113,6 @@ module.exports = pipe([
     },
     {
       type: "ApiMapping",
-      dependsOn: [
-        "ApiGatewayV2::Api",
-        "ApiGatewayV2::Stage",
-        "ApiGatewayV2::DomainName",
-      ],
-      dependsOnList: ["ApiGatewayV2::DomainName", "ApiGatewayV2::Api"],
       Client: ApiMapping,
       inferName: ({ properties, dependencies }) =>
         pipe([
@@ -148,8 +137,6 @@ module.exports = pipe([
     },
     {
       type: "Integration",
-      dependsOn: ["ApiGatewayV2::Api", "Lambda::Function"],
-      dependsOnList: ["ApiGatewayV2::Api"],
       Client: Integration,
       inferName: ({ properties, dependencies }) =>
         pipe([
@@ -182,12 +169,6 @@ module.exports = pipe([
     },
     {
       type: "Route",
-      dependsOn: [
-        "ApiGatewayV2::Api",
-        "ApiGatewayV2::Integration",
-        "ApiGatewayV2::Authorizer",
-      ],
-      dependsOnList: ["ApiGatewayV2::Api", "ApiGatewayV2::Integration"],
       Client: Route,
       inferName: ({ properties, dependencies }) =>
         pipe([
@@ -211,13 +192,13 @@ module.exports = pipe([
     },
     {
       type: "Deployment",
-      dependsOn: [
-        "ApiGatewayV2::Api",
-        "ApiGatewayV2::Route",
-        "ApiGatewayV2::Stage",
-        "ApiGatewayV2::Integration",
-      ],
-      dependsOnList: ["ApiGatewayV2::Api", "ApiGatewayV2::Stage"],
+      //TODO
+      // dependsOn: [
+      //   "ApiGatewayV2::Api",
+      //   "ApiGatewayV2::Route",
+      //   "ApiGatewayV2::Stage",
+      //   "ApiGatewayV2::Integration",
+      // ],
       Client: Deployment,
       inferName: ({ properties, dependencies }) =>
         pipe([dependencies, ({ api }) => `deployment::${api.name}`])(),

@@ -49,7 +49,6 @@ module.exports = pipe([
     },
     {
       type: "UrlMap",
-      dependsOn: ["compute::BackendBucket"],
       dependencies: {
         backendBucket: { type: "BackendBucket", group: "compute" },
       },
@@ -57,7 +56,6 @@ module.exports = pipe([
     },
     {
       type: "HttpsTargetProxy",
-      dependsOn: ["compute::UrlMap", "compute::SslCertificate"],
       dependencies: {
         urlMap: { type: "UrlMap", group: "compute" },
         certificate: { type: "SslCertificate", group: "compute" },
@@ -66,7 +64,6 @@ module.exports = pipe([
     },
     {
       type: "GlobalForwardingRule",
-      dependsOn: ["compute::HttpsTargetProxy"],
       dependencies: {
         httpsTargetProxy: { type: "HttpsTargetProxy", group: "compute" },
       },
@@ -80,7 +77,6 @@ module.exports = pipe([
     },
     {
       type: "SubNetwork",
-      dependsOn: ["compute::Network"],
       filterLive: () =>
         pipe([
           pick(["ipCidrRange"]),
@@ -97,7 +93,6 @@ module.exports = pipe([
     },
     {
       type: "Firewall",
-      dependsOn: ["compute::Network"],
       Client: GcpFirewall,
       dependencies: {
         network: { type: "Network", group: "compute" },
@@ -160,13 +155,6 @@ module.exports = pipe([
     },
     {
       type: "VmInstance",
-      dependsOn: [
-        "iam::ServiceAccount",
-        "compute::Address",
-        "compute::SubNetwork",
-        "compute::Firewall",
-        "compute::Disk",
-      ],
       Client: GoogleVmInstance,
       compare: compareVmInstance,
       omitProperties: [

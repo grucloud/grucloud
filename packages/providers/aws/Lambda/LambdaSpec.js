@@ -18,7 +18,6 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "Layer",
-      dependsOn: ["IAM::Role"],
       Client: Layer,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -59,7 +58,6 @@ module.exports = () =>
     },
     {
       type: "Function",
-      dependsOn: ["IAM::Role", "Lambda::Layer"],
       Client: Function,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
@@ -118,8 +116,6 @@ module.exports = () =>
     },
     {
       type: "EventSourceMapping",
-      dependsOn: ["Lambda::Function", "SQS::Queue"],
-      dependsOnList: ["Lambda::Function"],
       Client: EventSourceMapping,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),

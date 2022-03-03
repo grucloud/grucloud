@@ -26,7 +26,6 @@ module.exports = () =>
     {
       type: "Service",
       Client: AppRunnerService,
-      dependsOn: ["AppRunner::Connection", "IAM::Role", "ECR::Repository"],
       dependencies: {
         connection: { type: "Connection", group: "AppRunner" },
         accessRole: { type: "Role", group: "IAM" },

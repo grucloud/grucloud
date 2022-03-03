@@ -62,7 +62,6 @@ module.exports = pipe([
   () => [
     {
       type: "DomainName",
-      dependsOn: ["ACM::Certificate"],
       Client: DomainName,
       compare: compareAws({}),
       filterLive: () =>
@@ -78,7 +77,6 @@ module.exports = pipe([
     },
     {
       type: "Account",
-      dependsOn: ["IAM::Role"],
       Client: Account,
       isOurMinion: ({ live, config }) => true,
       compare: compareAws({
@@ -117,7 +115,6 @@ module.exports = pipe([
     {
       type: "Resource",
       Client: Resource,
-      dependsOnList: ["APIGateway::RestApi"],
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
       },
@@ -127,7 +124,6 @@ module.exports = pipe([
     {
       type: "Method",
       Client: Method,
-      dependsOnList: ["APIGateway::Resource"],
       dependencies: {
         resource: { type: "Resource", group: "APIGateway", parent: true },
       },
@@ -182,8 +178,6 @@ module.exports = pipe([
     },
     {
       type: "Stage",
-      dependsOn: ["APIGateway::RestApi"],
-      dependsOnList: ["APIGateway::RestApi"],
       Client: Stage,
       compare: compareAws({
         filterTarget: () =>
@@ -223,8 +217,6 @@ module.exports = pipe([
     },
     {
       type: "Authorizer",
-      dependsOn: ["APIGateway::RestApi"],
-      dependsOnList: ["APIGateway::RestApi"],
       Client: Authorizer,
       compare: compareAws({}),
       filterLive: () =>

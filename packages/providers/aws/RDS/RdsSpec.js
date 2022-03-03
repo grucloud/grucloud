@@ -19,7 +19,6 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "DBSubnetGroup",
-      dependsOn: ["EC2::Subnet"],
       Client: DBSubnetGroup,
       isOurMinion,
       compare: compareAws({
@@ -37,8 +36,15 @@ module.exports = () =>
     },
     {
       type: "DBCluster",
-      dependsOn: ["RDS::DBSubnetGroup", "EC2::SecurityGroup", "KMS::Key"],
       Client: DBCluster,
+      dependencies: {
+        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        key: {
+          type: "Key",
+          group: "KMS",
+        },
+      },
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
       compare: compareAws({
         filterAll: pipe([omit(["SubnetIds", "Tags"])]),
@@ -117,25 +123,14 @@ module.exports = () =>
           omit(["ScalingConfigurationInfo"]),
         ]),
       environmentVariables,
-      dependencies: {
-        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-        key: {
-          type: "Key",
-          group: "KMS",
-        },
-      },
     },
     {
       type: "DBInstance",
-      dependsOn: [
-        "RDS::DBSubnetGroup",
-        "RDS::DBCluster",
-        "EC2::InternetGateway",
-        "EC2::SecurityGroup",
-        //"EC2::NetworkInterface",
-      ],
       Client: DBInstance,
+      dependencies: {
+        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+      },
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
       compare: compareAws({
         filterAll: omit(["TagList"]),
@@ -214,9 +209,5 @@ module.exports = () =>
           "BackupRetentionPeriod",
         ]),
       environmentVariables,
-      dependencies: {
-        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-      },
     },
   ]);

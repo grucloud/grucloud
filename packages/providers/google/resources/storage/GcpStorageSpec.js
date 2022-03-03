@@ -34,7 +34,6 @@ module.exports = () =>
     },
     {
       type: "Object",
-      dependsOn: ["storage::Bucket"],
       dependencies: {
         bucket: { type: "Bucket", group: "storage" },
       },

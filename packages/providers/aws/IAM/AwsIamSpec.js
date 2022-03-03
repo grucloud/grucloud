@@ -74,7 +74,6 @@ module.exports = () =>
     },
     {
       type: "User",
-      dependsOn: ["IAM::Policy", "IAM::Group"],
       Client: AwsIamUser,
       isOurMinion,
       compare: compareAws({
@@ -102,7 +101,6 @@ module.exports = () =>
     },
     {
       type: "Group",
-      dependsOn: ["IAM::Policy"],
       Client: AwsIamGroup,
       isOurMinion: isOurMinionIamGroup,
       compare: compareAws({
@@ -125,7 +123,6 @@ module.exports = () =>
     },
     {
       type: "Role",
-      dependsOn: ["IAM::Policy"],
       Client: AwsIamRole,
       isOurMinion,
       compare: compareAws({
@@ -293,7 +290,6 @@ module.exports = () =>
     },
     {
       type: "InstanceProfile",
-      dependsOn: ["IAM::Role"],
       Client: AwsIamInstanceProfile,
       isOurMinion,
       compare: compareAws({

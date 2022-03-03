@@ -34,15 +34,31 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "AutoScalingGroup",
-      dependsOn: [
-        "AutoScaling::LaunchConfiguration",
-        "EC2::LaunchTemplate",
-        "EC2::Subnet",
-        "ELBv2::LoadBalancer",
-        "ELBv2::TargetGroup",
-        "EKS::Cluster",
-        "IAM::Role",
-      ],
+      //TODO dependsOn: ["ELBv2::LoadBalancer", "EKS::Cluster"],
+      dependencies: {
+        subnets: { type: "Subnet", group: "EC2", list: true },
+        launchTemplate: { type: "LaunchTemplate", group: "EC2" },
+        launchConfiguration: {
+          type: "LaunchConfiguration",
+          group: "AutoScaling",
+        },
+        serviceLinkedRole: {
+          type: "Role",
+          group: "IAM",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                tap(() => {
+                  assert(resource);
+                  assert(resource.live);
+                }),
+                () => resource,
+                get("live.ServiceLinkedRoleARN"),
+                not(includes("AWSServiceRoleForAutoScaling")),
+              ])(),
+        },
+      },
       Client: AutoScalingAutoScalingGroup,
       isOurMinion,
       compare: compareAws({
@@ -91,36 +107,9 @@ module.exports = () =>
           "HealthCheckType",
           "HealthCheckGracePeriod",
         ]),
-      dependencies: {
-        targetGroups: { type: "TargetGroup", group: "ELBv2", list: true },
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        launchTemplate: { type: "LaunchTemplate", group: "EC2" },
-        launchConfiguration: {
-          type: "LaunchConfiguration",
-          group: "AutoScaling",
-        },
-        serviceLinkedRole: {
-          type: "Role",
-          group: "IAM",
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                tap(() => {
-                  assert(resource);
-                  assert(resource.live);
-                }),
-                () => resource,
-                get("live.ServiceLinkedRoleARN"),
-                not(includes("AWSServiceRoleForAutoScaling")),
-              ])(),
-        },
-      },
     },
     {
       type: "AutoScalingAttachment",
-      dependsOn: ["AutoScaling::AutoScalingGroup", "ELBv2::TargetGroup"],
-      dependsOnList: ["AutoScaling::AutoScalingGroup"],
       Client: AutoScalingAttachment,
       isOurMinion: () => true,
       compare: compareAws({
@@ -151,12 +140,6 @@ module.exports = () =>
     },
     {
       type: "LaunchConfiguration",
-      dependsOn: [
-        "EC2::KeyPair",
-        "EC2::SecurityGroup",
-        "EC2::Subnet",
-        "IAM::InstanceProfile",
-      ],
       Client: AutoScalingLaunchConfiguration,
       isOurMinion: () => true,
       compare: compareAws({

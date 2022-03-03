@@ -57,7 +57,7 @@ const showLive =
         (resource) => (options.canBeDeleted ? !resource.cannotBeDeleted : true),
       ]),
       tap((show) => {
-        logger.debug(`showLive ${resource.name} show: ${show}`);
+        //logger.debug(`showLive ${resource.name} show: ${show}`);
       }),
     ])();
 

@@ -16,7 +16,6 @@ module.exports = () =>
     {
       type: "LogGroup",
       Client: CloudWatchLogsGroup,
-      dependsOn: ["kms::Key"],
       isOurMinion,
       compare: compareAws({
         filterAll: pipe([

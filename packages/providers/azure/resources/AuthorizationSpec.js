@@ -51,6 +51,7 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "RoleAssignment",
         apiVersion: "2021-04-01-preview",
+        //TODO
         dependsOnList: [
           "Authorization::RoleDefinition",
           "Resource::ResourceGroup",

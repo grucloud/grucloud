@@ -28,8 +28,6 @@ module.exports = () =>
     },
     {
       type: "Rule",
-      dependsOn: ["CloudWatchEvents::EventBus"],
-      dependsOnList: ["CloudWatchEvents::EventBus"],
       Client: CloudWatchEventRule,
       isOurMinion,
       compare: compareAws({

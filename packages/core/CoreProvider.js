@@ -93,6 +93,9 @@ const createResourceMakers = ({
   programOptions,
 }) =>
   pipe([
+    tap((params) => {
+      assert(true);
+    }),
     () => specs,
     filter(filterResource),
     reduce(
