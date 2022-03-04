@@ -349,7 +349,9 @@ const createClient = ({
               ])(),
             pipe([
               tap((error) => {
-                logger.error(`list error ${error.stack} `);
+                logger.error(
+                  `list error ${client.spec.groupType}, ${error.stack} `
+                );
               }),
               pick(["message", "code", "stack", "config", "response"]),
               (error) => ({ error }),

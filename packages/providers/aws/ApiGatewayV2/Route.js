@@ -45,6 +45,15 @@ exports.Route = ({ spec, config }) => {
     pickId,
     method: "getRoute",
     ignoreErrorCodes: ["NotFoundException"],
+    decorate: ({ ApiId }) =>
+      pipe([
+        tap((params) => {
+          assert(xxx);
+        }),
+        defaultsDeep({
+          ApiId,
+        }),
+      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getRoutes-property
@@ -55,7 +64,13 @@ exports.Route = ({ spec, config }) => {
     getParam: "Items",
     config,
     decorate: ({ parent: { ApiId, Name: ApiName, Tags } }) =>
-      pipe([defaultsDeep({ ApiId, ApiName, Tags })]),
+      pipe([
+        tap((params) => {
+          assert(ApiId);
+          assert(ApiName);
+        }),
+        defaultsDeep({ ApiId, ApiName, Tags }),
+      ]),
   });
 
   // Get Route by name

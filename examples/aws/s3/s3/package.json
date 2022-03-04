@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
+    "list": "gc list",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
     "gencode": "gc gencode --no-inventory-fetch"

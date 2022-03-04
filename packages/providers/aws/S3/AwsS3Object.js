@@ -25,6 +25,10 @@ const {
   flatten,
   unless,
 } = require("rubico/x");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+
 const logger = require("@grucloud/core/logger")({ prefix: "S3Object" });
 const { compareAws } = require("../AwsCommon");
 
@@ -116,14 +120,18 @@ exports.AwsS3Object = ({ spec, config }) => {
         }),
       map.pool(mapPoolSize, (bucket) =>
         pipe([
-          () =>
-            s3().listObjectsV2({
-              Bucket: bucket.name,
-              MaxKeys: 1e3,
-            }),
-          get("Contents"),
-          map.pool(mapPoolSize, ({ Key }) =>
-            getByKey({ Key, Bucket: bucket.name })
+          () => ({
+            Bucket: bucket.name,
+            MaxKeys: 1e3,
+          }),
+          s3().listObjectsV2,
+          get("Contents", []),
+          tap((params) => {
+            assert(true);
+          }),
+          map.pool(
+            mapPoolSize,
+            pipe([({ Key }) => ({ Key, Bucket: bucket.name }), getByKey])
           ),
         ])()
       ),
@@ -147,7 +155,18 @@ exports.AwsS3Object = ({ spec, config }) => {
           fork({
             ACL: pipe([s3().getObjectAcl, pick(["Grants", "Owner"])]),
             signedUrl: pipe([
-              (params) => s3().getSignedUrl("getObject", params),
+              tap((params) => {
+                assert(true);
+              }),
+              (input) =>
+                getSignedUrl(
+                  new S3Client(config),
+                  new GetObjectCommand(input),
+                  {}
+                ),
+              tap((params) => {
+                assert(true);
+              }),
             ]),
             content: pipe([s3().headObject]),
             Tags: pipe([
@@ -170,7 +189,7 @@ exports.AwsS3Object = ({ spec, config }) => {
           pipe([
             () => ["NoSuchBucket", "NoSuchKey", "NotFound"],
             switchCase([
-              includes(error.code),
+              includes(error.name),
               () => null,
               () =>
                 pipe([

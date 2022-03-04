@@ -35,14 +35,14 @@ exports.createResources = () => [
       description: "dev",
       methodSettings: {
         "*/*": {
-          metricsEnabled: false,
+          cacheDataEncrypted: false,
+          cacheTtlInSeconds: 300,
+          cachingEnabled: false,
           dataTraceEnabled: false,
+          metricsEnabled: false,
+          requireAuthorizationForCacheControl: true,
           throttlingBurstLimit: 5000,
           throttlingRateLimit: 10000,
-          cachingEnabled: false,
-          cacheTtlInSeconds: 300,
-          cacheDataEncrypted: false,
-          requireAuthorizationForCacheControl: true,
           unauthorizedCacheControlHeaderStrategy:
             "SUCCEED_WITH_RESPONSE_HEADER",
         },

@@ -46,9 +46,9 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const fetchLoginProfile = ({ UserName }) =>
     tryCatch(
-      pipe([() => iam().getLoginProfile({ UserName }), get("LoginProfile")]),
+      pipe([() => ({ UserName }), iam().getLoginProfile, get("LoginProfile")]),
       switchCase([
-        eq(get("code"), "NoSuchEntity"),
+        eq(get("name"), "NoSuchEntity"),
         () => undefined,
         (error) => {
           throw error;
@@ -227,8 +227,8 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const deleteLoginProfile = ({ UserName }) =>
     tryCatch(
-      pipe([() => iam().deleteLoginProfile({ UserName })]),
-      tap.if(not(eq(get("code"), "NoSuchEntity")), (error) => {
+      pipe([() => ({ UserName }), iam().deleteLoginProfile]),
+      tap.if(not(eq(get("name"), "NoSuchEntity")), (error) => {
         throw error;
       })
     )();

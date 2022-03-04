@@ -26,6 +26,7 @@ const {
   when,
   unless,
 } = require("rubico/x");
+const util = require("util");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
@@ -52,25 +53,40 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
     return (...args) =>
       retryCall({
         name: `${endpointName}.${name} ${JSON.stringify(args)}`,
-        fn: () => endpoint[name](...args),
+        fn: pipe([
+          () => endpoint[name](...args),
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["$metadata", "Status"]),
+        ]),
         isExpectedResult: () => true,
         config: { retryDelay: 30e3 },
         shouldRetryOnException: ({ error, name }) =>
           pipe([
             tap(() => {
               logger.info(
-                `shouldRetryOnException: ${name}, name: ${error.name}`
+                `shouldRetryOnException: ${name}, error: ${util.inspect(error)}`
+              );
+              logger.info(
+                `shouldRetryOnException: name: ${error.name}, code: ${error.code}`
               );
             }),
-            () => [
-              "Throttling",
-              "UnknownEndpoint",
-              "TooManyRequestsException",
-              "OperationAborted",
-              "TimeoutError",
-              "ServiceUnavailable",
-            ],
-            includes(error.name),
+            or([
+              pipe([() => ["ECONNRESET", "ENETDOWN"], includes(error.code)]),
+              pipe([
+                () => [
+                  "Throttling",
+                  "UnknownEndpoint",
+                  "TooManyRequestsException",
+                  "OperationAborted",
+                  "TimeoutError",
+                  "ServiceUnavailable",
+                ],
+                includes(error.name),
+              ]),
+            ]),
+
             tap.if(identity, () => {
               logger.info(
                 `shouldRetryOnException: ${name}: retrying, name: ${error.name}`
@@ -515,8 +531,8 @@ exports.revokeSecurityGroupIngress =
     tryCatch(
       () => ec2().revokeSecurityGroupIngress(params),
       tap.if(
-        ({ code }) =>
-          !includes(code)([
+        ({ name }) =>
+          !includes(name)([
             "InvalidPermission.NotFound",
             "InvalidGroup.NotFound",
           ]),
@@ -530,15 +546,9 @@ exports.removeRoleFromInstanceProfile =
   ({ iam }) =>
   (params) =>
     tryCatch(
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => params,
-        iam().removeRoleFromInstanceProfile,
-      ]),
+      pipe([() => params, iam().removeRoleFromInstanceProfile]),
       switchCase([
-        eq(get("code"), "NoSuchEntity"),
+        eq(get("name"), "NoSuchEntity"),
         () => undefined,
         (error) => {
           logger.error(`iam role removeRoleFromInstanceProfile ${tos(error)}`);

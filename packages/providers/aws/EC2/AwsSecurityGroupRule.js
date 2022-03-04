@@ -451,7 +451,7 @@ const SecurityGroupRuleBase = ({ config }) => {
           }),
         ]),
         switchCase([
-          eq(get("code"), "InvalidPermission.Duplicate"),
+          eq(get("name"), "InvalidPermission.Duplicate"),
           () => {},
           (error) => {
             throw error;
