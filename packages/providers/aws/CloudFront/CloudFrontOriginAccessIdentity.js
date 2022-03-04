@@ -5,6 +5,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getNewCallerReference } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createCloudFront } = require("./CloudFrontCommon");
 
 const findName = pipe([
   tap((params) => {
@@ -24,7 +25,8 @@ const pickId = pipe([
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.CloudFrontOriginAccessIdentity = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const cloudFront = createCloudFront(config);
+  const client = AwsClient({ spec, config })(cloudFront);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#getCloudFrontOriginAccessIdentity-property
   const getById = client.getById({

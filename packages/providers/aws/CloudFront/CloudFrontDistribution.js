@@ -33,13 +33,13 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
-  CloudFrontNew,
   buildTags,
   findNameInTagsOrId,
   findNamespaceInTags,
   getNewCallerReference,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { createCloudFront } = require("./CloudFrontCommon");
 
 //TODO look in spec.type instead
 const RESOURCE_TYPE = "Distribution";
@@ -48,9 +48,8 @@ const findName = findNameInTagsOrId({ findId });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.CloudFrontDistribution = ({ spec, config }) => {
-  const cloudfront = CloudFrontNew(config);
-  const client = AwsClient({ spec, config });
-
+  const cloudFront = createCloudFront(config);
+  const client = AwsClient({ spec, config })(cloudFront);
   const findDependencies = ({ live, lives }) => [
     {
       type: "Certificate",
@@ -163,12 +162,12 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
           logger.info(
             `createDistributionWithTags shouldRetryOnException ${tos({
               name,
-              error,
+              errorName: error.name,
             })}`
           );
         }),
         () => error,
-        eq(get("code"), "InvalidViewerCertificate"),
+        eq(get("name"), "InvalidViewerCertificate"),
         tap((retry) => {
           logger.info(
             `createDistributionWithTags shouldRetryOnException retry: ${retry}`
@@ -287,7 +286,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
           );
         }),
         () => error,
-        eq(get("code"), "DistributionNotDisabled"),
+        eq(get("name"), "DistributionNotDisabled"),
         tap((result) => {
           logger.info(
             `deleteDistribution shouldRetryOnException result: ${result}`
@@ -394,24 +393,6 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     getList,
     configDefault,
     onDeployed,
-    //TODO
-    shouldRetryOnException: ({ name, error }) =>
-      pipe([
-        tap(() => {
-          logger.info(
-            `distribution shouldRetryOnException ${tos({ name, error })}`
-          );
-        }),
-        or([
-          not(eq(get("statusCode"), 400)),
-          eq(get("code"), "InvalidViewerCertificate"),
-        ]),
-        tap((result) => {
-          logger.info(
-            `distribution shouldRetryOnException result: ${tos(result)}`
-          );
-        })(error),
-      ]),
   };
 };
 

@@ -7,16 +7,18 @@ const logger = require("@grucloud/core/logger")({ prefix: "ELBListener" });
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { tos } = require("@grucloud/core/tos");
-const { ELBv2New, buildTags, findNamespaceInTags } = require("../AwsCommon");
+const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createELB } = require("./ELBCommon");
 
 const findId = get("live.ListenerArn");
 const pickId = pick(["ListenerArn"]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 
 exports.ELBListener = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const elb = ELBv2New(config);
+  const elb = createELB(config);
+  const client = AwsClient({ spec, config })(elb);
+
   const { providerName } = config;
 
   const findName = ({ live, lives }) =>
@@ -136,7 +138,7 @@ exports.ELBListener = ({ spec, config }) => {
           logger.info(`listener create isExpectedException ${tos(error)}`);
         }),
         () => error,
-        eq(get("code"), "UnsupportedCertificate"),
+        eq(get("name"), "UnsupportedCertificate"),
       ])(),
     config: { retryCount: 40 * 10, retryDelay: 10e3 },
   });

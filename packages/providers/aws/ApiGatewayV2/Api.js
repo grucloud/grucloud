@@ -4,13 +4,14 @@ const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-
+const { createApiGatewayV2 } = require("./ApiGatewayCommon");
 const findId = get("live.ApiId");
 const findName = get("live.Name");
 const pickId = pick(["ApiId"]);
 
 exports.Api = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const apiGateway = createApiGatewayV2(config);
+  const client = AwsClient({ spec, config })(apiGateway);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApi-property
   const getById = client.getById({

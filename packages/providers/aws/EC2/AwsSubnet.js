@@ -19,14 +19,13 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
-  Ec2New,
   findNameInTagsOrId,
   findNamespaceInTags,
   buildTags,
   destroyNetworkInterfaces,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { findDependenciesVpc } = require("./EC2Common");
+const { createEC2, findDependenciesVpc } = require("./EC2Common");
 
 const SubnetAttributes = [
   "MapPublicIpOnLaunch",
@@ -36,8 +35,8 @@ const SubnetAttributes = [
 ];
 
 exports.AwsSubnet = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const ec2 = Ec2New(config);
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const isDefault = get("live.DefaultForAz");
   const cannotBeDeleted = isDefault;

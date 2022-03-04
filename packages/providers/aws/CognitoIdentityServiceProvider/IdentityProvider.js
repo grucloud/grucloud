@@ -21,15 +21,16 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-
+const {
+  createCognitoIdentityProvider,
+} = require("./CognitoIdentityServiceProviderCommon");
 const findId = get("ProviderName");
 const findName = get("ProviderName");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html
 exports.IdentityProvider = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const cognitoIdentityServiceProvider = () =>
-    createEndpoint({ endpointName: "CognitoIdentityServiceProvider" })(config);
+  const cognitoIdentityServiceProvider = createCognitoIdentityProvider(config);
+  const client = AwsClient({ spec, config })(cognitoIdentityServiceProvider);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listIdentityProviders-property
   //TODO getList

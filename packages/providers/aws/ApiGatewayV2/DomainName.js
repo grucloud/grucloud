@@ -9,13 +9,16 @@ const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { createApiGatewayV2 } = require("./ApiGatewayCommon");
 
 const findId = get("live.DomainName");
 const findName = get("live.DomainName");
 const pickId = pick(["DomainName"]);
 
 exports.DomainName = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const apiGateway = createApiGatewayV2(config);
+
+  const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -56,7 +59,7 @@ exports.DomainName = ({ spec, config }) => {
           logger.error(`create domainName isExpectedException ${tos(error)}`);
         }),
         () => ["UnsupportedCertificate", "BadRequestException"],
-        includes(error.code),
+        includes(error.name),
       ])(),
     pickCreated:
       ({ payload }) =>

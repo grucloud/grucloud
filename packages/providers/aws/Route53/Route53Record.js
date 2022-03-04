@@ -35,8 +35,8 @@ const logger = require("@grucloud/core/logger")({ prefix: "Route53Record" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { Route53New } = require("../AwsCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
+const { createRoute53, hostedZoneIdToResourceId } = require("./Route53Common");
 
 const omitFieldRecord = omit(["Tags", "HostedZoneId", "namespace"]);
 
@@ -96,7 +96,8 @@ const removeLastCharacter = callProp("slice", 0, -1);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53Record = ({ spec, config }) => {
   const { providerName } = config;
-  const route53 = Route53New(config);
+  const route53 = createRoute53(config);
+  //const client = AwsClient({ spec, config })(route53);
 
   const findDependencies = ({ live, lives }) => [
     { type: "HostedZone", group: "Route53", ids: [live.HostedZoneId] },
@@ -449,7 +450,7 @@ exports.Route53Record = ({ spec, config }) => {
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
       () =>
         route53().changeTagsForResource({
-          ResourceId: hostedZone.live.Id,
+          ResourceId: hostedZoneIdToResourceId(hostedZone.live.Id),
           AddTags: [
             {
               Key: buildRecordTagKey(name),
@@ -478,25 +479,25 @@ exports.Route53Record = ({ spec, config }) => {
         not(isEmpty),
         tryCatch(
           pipe([
-            (live) =>
-              route53().changeResourceRecordSets({
-                HostedZoneId: live.HostedZoneId,
-                ChangeBatch: {
-                  Changes: [
-                    {
-                      Action: "DELETE",
-                      ResourceRecordSet: liveToResourceSet(live),
-                    },
-                  ],
-                },
-              }),
+            (live) => ({
+              HostedZoneId: live.HostedZoneId,
+              ChangeBatch: {
+                Changes: [
+                  {
+                    Action: "DELETE",
+                    ResourceRecordSet: liveToResourceSet(live),
+                  },
+                ],
+              },
+            }),
+            route53().changeResourceRecordSets,
             // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
-            () =>
-              route53().changeTagsForResource({
-                ResourceId: live.HostedZoneId,
-                RemoveTagKeys: [buildRecordTagKey(name)],
-                ResourceType: "hostedzone",
-              }),
+            () => ({
+              ResourceId: hostedZoneIdToResourceId(live.HostedZoneId),
+              RemoveTagKeys: [buildRecordTagKey(name)],
+              ResourceType: "hostedzone",
+            }),
+            route53().changeTagsForResource,
           ]),
           (error) =>
             pipe([

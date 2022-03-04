@@ -39,7 +39,6 @@ const {
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
-  Ec2New,
   getByIdCore,
   findNameInTags,
   buildTags,
@@ -50,7 +49,7 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags } = require("../AwsCommon");
-const { findDependenciesVpc } = require("./EC2Common");
+const { createEC2, findDependenciesVpc } = require("./EC2Common");
 
 const StateRunning = "running";
 const StateTerminated = "terminated";
@@ -120,7 +119,8 @@ const configDefault =
 exports.configDefault = configDefault;
 
 exports.EC2Instance = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const { providerName } = config;
   assert(providerName);
@@ -130,8 +130,6 @@ exports.EC2Instance = ({ spec, config }) => {
     retryDelay: 5e3,
     repeatCount: 1,
   };
-
-  const ec2 = Ec2New(config);
 
   const managedByOther = or([
     hasKeyInTags({
@@ -340,7 +338,10 @@ exports.EC2Instance = ({ spec, config }) => {
     pipe([
       tap(() => {
         logger.error(
-          `ec2 shouldRetryOnExceptionCreate ${tos({ name, error })}`
+          `ec2 shouldRetryOnExceptionCreate ${tos({
+            name,
+            errorName: error.name,
+          })}`
         );
       }),
       () => error,

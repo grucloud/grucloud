@@ -17,6 +17,7 @@ const {
   or,
   transform,
   fork,
+  gte,
 } = require("rubico");
 
 const {
@@ -37,7 +38,7 @@ const {
   when,
   values,
 } = require("rubico/x");
-
+const util = require("util");
 const logger = require("./logger")({ prefix: "CoreResources" });
 const { tos } = require("./tos");
 const { retryCall } = require("./Retry");
@@ -287,17 +288,20 @@ exports.ResourceMaker = ({
         }),
       tap((diff) => {
         assert(diff);
-        //logger.debug(`planUpdate diff ${tos(diff)}`);
+        logger.debug(`planUpdate diff ${tos(diff)}`);
       }),
       (diff) =>
         pipe([
           () => diff,
           switchCase([
-            or([
-              pipe([get("liveDiff.needUpdate")]),
-              pipe([get("liveDiff.added"), not(isEmpty)]),
-              pipe([get("liveDiff.updated"), not(isEmpty)]),
-              pipe([get("liveDiff.deleted"), not(isEmpty)]),
+            and([
+              gte(pipe([get("jsonDiff"), size]), 2),
+              or([
+                pipe([get("liveDiff.needUpdate")]),
+                pipe([get("liveDiff.added"), not(isEmpty)]),
+                pipe([get("liveDiff.updated"), not(isEmpty)]),
+                pipe([get("liveDiff.deleted"), not(isEmpty)]),
+              ]),
             ]),
             () =>
               pipe([
@@ -689,7 +693,7 @@ exports.ResourceMaker = ({
             ]),
             (error) => {
               logger.error(
-                `error updating: ${toString()}, error: ${tos(error)}`
+                `error updating: ${toString()}, error: ${util.inspect(error)}`
               );
               throw error;
             }

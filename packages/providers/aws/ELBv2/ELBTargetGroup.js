@@ -5,13 +5,13 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
-  ELBv2New,
   buildTags,
   findNamespaceInTagsOrEksCluster,
   hasKeyInTags,
 } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
+const { createELB } = require("./ELBCommon");
 
 const findName = get("live.TargetGroupName");
 const findId = get("live.TargetGroupArn");
@@ -19,8 +19,8 @@ const pickId = pick(["TargetGroupArn"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 exports.ELBTargetGroup = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const elb = ELBv2New(config);
+  const elb = createELB(config);
+  const client = AwsClient({ spec, config })(elb);
 
   const managedByOther = hasKeyInTags({
     key: "elbv2.k8s.aws/cluster",

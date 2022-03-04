@@ -60,21 +60,21 @@ const writeRestApiSchema =
 
 module.exports = pipe([
   () => [
-    {
-      type: "DomainName",
-      Client: DomainName,
-      compare: compareAws({}),
-      filterLive: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["DomainName"]),
-        ]),
-      dependencies: {
-        certificate: { type: "Certificate", group: "ACM" },
-      },
-    },
+    // {
+    //   type: "DomainName",
+    //   Client: DomainName,
+    //   compare: compareAws({}),
+    //   filterLive: () =>
+    //     pipe([
+    //       tap((params) => {
+    //         assert(true);
+    //       }),
+    //       omit(["DomainName"]),
+    //     ]),
+    //   dependencies: {
+    //     certificate: { type: "Certificate", group: "ACM" },
+    //   },
+    // },
     {
       type: "Account",
       Client: Account,

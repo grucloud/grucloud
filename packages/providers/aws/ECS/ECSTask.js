@@ -5,9 +5,13 @@ const { defaultsDeep, callProp, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
-const { createEndpoint, findNameInTagsOrId } = require("../AwsCommon");
+const { findNameInTagsOrId } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { buildTagsEcs, findDependenciesCluster } = require("./ECSCommon");
+const {
+  createECS,
+  buildTagsEcs,
+  findDependenciesCluster,
+} = require("./ECSCommon");
 
 const findId = get("live.taskArn");
 const findName = findNameInTagsOrId({ findId });
@@ -26,8 +30,8 @@ const pickId = pipe([
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
 exports.ECSTask = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
+  const ecs = createECS(config);
+  const client = AwsClient({ spec, config })(ecs);
 
   // findDependencies for ECSTask
   const findDependencies = ({ live, lives }) => [

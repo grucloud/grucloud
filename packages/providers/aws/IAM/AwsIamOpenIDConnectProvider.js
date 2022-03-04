@@ -18,7 +18,6 @@ const logger = require("@grucloud/core/logger")({
 });
 
 const {
-  IAMNew,
   buildTags,
   findNameInTagsOrId,
   findNamespaceInTags,
@@ -26,6 +25,7 @@ const {
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { createIAM } = require("./AwsIamCommon");
 
 const formatThumbPrint = pipe([
   get("fingerprint"),
@@ -84,9 +84,9 @@ const ignoreErrorCodes = ["NoSuchEntity"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const iam = createIAM(config);
+  const client = AwsClient({ spec, config })(iam);
   const { providerName } = config;
-  const iam = IAMNew(config);
 
   const findId = get("live.Arn");
   const pickId = pipe([

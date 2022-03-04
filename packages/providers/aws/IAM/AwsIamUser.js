@@ -16,20 +16,16 @@ const { defaultsDeep, forEach, pluck, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamUser" });
 const { tos } = require("@grucloud/core/tos");
-const {
-  IAMNew,
-  findNameInTagsOrId,
-  findNamespaceInTags,
-} = require("../AwsCommon");
-const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
+const { findNameInTagsOrId, findNamespaceInTags } = require("../AwsCommon");
+const { getByNameCore } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
+const { createIAM } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamUser = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-
-  const iam = IAMNew(config);
+  const iam = createIAM(config);
+  const client = AwsClient({ spec, config })(iam);
 
   const findId = get("live.UserName");
   const pickId = pick(["UserName"]);

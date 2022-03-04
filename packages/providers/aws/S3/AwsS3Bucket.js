@@ -33,17 +33,18 @@ const { tos } = require("@grucloud/core/tos");
 const { mapPoolSize } = require("@grucloud/core/Common");
 const { CheckAwsTags } = require("../AwsTagCheck");
 const {
-  S3New,
   buildTags,
   shouldRetryOnException,
   findNamespaceInTags,
 } = require("../AwsCommon");
 
+const { createS3 } = require("./AwsS3Common");
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
-  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
+  const s3 = createS3(config);
 
-  const s3 = S3New(config);
+  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 
   const findName = get("live.Name");
   const findId = findName;
@@ -311,7 +312,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                 or([
                   () => [503].includes(error.statusCode),
                   // TODO check that
-                  eq(get("code"), "NoSuchBucket"),
+                  eq(get("name"), "NoSuchBucket"),
                 ]),
               ])(),
             config: { retryCount: 5, retryDelay: 1e3 },
@@ -333,6 +334,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList s3Bucket deep:${deep}`);
       }),
+      () => ({}),
       s3().listBuckets,
       get("Buckets"),
       tap((Buckets) => {

@@ -18,7 +18,6 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsVpc" });
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
-  Ec2New,
   getByIdCore,
   buildTags,
   findNamespaceInTags,
@@ -26,10 +25,11 @@ const {
 } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 exports.AwsVpc = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const ec2 = Ec2New(config);
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const isDefault = get("live.IsDefault");
   const cannotBeDeleted = isDefault;

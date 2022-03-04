@@ -37,13 +37,9 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
 const { findValueInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const {
-  Ec2New,
-  buildTags,
-  findNameInTags,
-  findEksCluster,
-} = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
+const { buildTags, findNameInTags, findEksCluster } = require("../AwsCommon");
+//const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 const findProperty = (property) =>
   pipe([
@@ -279,7 +275,7 @@ const findDependencies =
     ];
 
 const SecurityGroupRuleBase = ({ config }) => {
-  const ec2 = Ec2New(config);
+  const ec2 = createEC2(config);
   const isDefault =
     ({ IsEgress }) =>
     ({ live, lives }) =>

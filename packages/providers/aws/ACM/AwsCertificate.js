@@ -3,8 +3,9 @@ const { pipe, tap, get, assign, pick } = require("rubico");
 const { first, defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
-const { ACMNew, buildTags, findNamespaceInTags } = require("../AwsCommon");
+const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createACM } = require("./ACMCommon");
 
 const findName = get("live.DomainName");
 const findId = get("live.CertificateArn");
@@ -12,8 +13,8 @@ const pickId = pick(["CertificateArn"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AwsCertificate = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const acm = ACMNew(config);
+  const acm = createACM(config);
+  const client = AwsClient({ spec, config })(acm);
 
   const findDependencies = ({ live, lives }) => [];
 

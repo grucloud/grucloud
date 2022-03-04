@@ -6,9 +6,11 @@ const { getByIdCore, buildTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { findNameInTagsOrId, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 exports.AwsElasticIpAddress = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const findId = get("live.AllocationId");
   const pickId = pick(["AllocationId"]);

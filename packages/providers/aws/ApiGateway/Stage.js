@@ -1,19 +1,15 @@
 const assert = require("assert");
 const { map, pipe, tap, get, pick, omit } = require("rubico");
-const {
-  pluck,
-  defaultsDeep,
-  values,
-  flatten,
-  when,
-  isEmpty,
-} = require("rubico/x");
+const { defaultsDeep, values, flatten, when, isEmpty } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { findDependenciesRestApi } = require("./ApiGatewayCommon");
+const {
+  createAPIGateway,
+  findDependenciesRestApi,
+} = require("./ApiGatewayCommon");
 const findId = get("live.stageName");
 const findName = get("live.stageName");
 
@@ -36,9 +32,8 @@ const translateProperty = (property) =>
   pipe([() => translatePropertyMap[property], when(isEmpty, () => property)])();
 
 exports.Stage = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "APIGateway" })(config);
+  const apiGateway = createAPIGateway(config);
+  const client = AwsClient({ spec, config })(apiGateway);
 
   // Find dependencies for APIGateway::Stage
   const findDependencies = ({ live, lives }) => [

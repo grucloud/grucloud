@@ -19,19 +19,18 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
-  IAMNew,
   buildTags,
   findNamespaceInTags,
   removeRoleFromInstanceProfile,
 } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
+const { createIAM } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamInstanceProfile = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-
-  const iam = IAMNew(config);
+  const iam = createIAM(config);
+  const client = AwsClient({ spec, config })(iam);
 
   const findId = get("live.Arn");
   const pickId = pick(["InstanceProfileName"]);

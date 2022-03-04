@@ -17,19 +17,20 @@ const logger = require("@grucloud/core/logger")({ prefix: "EC2RouteTable" });
 const { tos } = require("@grucloud/core/tos");
 const { getByIdCore, buildTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const {
-  Ec2New,
-  findNameInTagsOrId,
-  findNamespaceInTags,
-} = require("../AwsCommon");
+const { findNameInTagsOrId, findNamespaceInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { findDependenciesVpc, findDependenciesSubnet } = require("./EC2Common");
+const {
+  createEC2,
+  findDependenciesVpc,
+  findDependenciesSubnet,
+} = require("./EC2Common");
 
 exports.EC2RouteTable = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
   const { providerName } = config;
-  const ec2 = Ec2New(config);
+
   const findId = get("live.RouteTableId");
   const pickId = pick(["RouteTableId"]);
 

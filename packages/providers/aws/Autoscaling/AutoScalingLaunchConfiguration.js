@@ -8,6 +8,7 @@ const logger = require("@grucloud/core/logger")({
 const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { createAutoScaling } = require("./AutoScalingCommon");
 
 const findName = get("live.LaunchConfigurationName");
 const findId = get("live.LaunchConfigurationARN");
@@ -16,10 +17,8 @@ const pickId = pick(["LaunchConfigurationName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const autoScaling = () =>
-    createEndpoint({ endpointName: "AutoScaling" })(config);
-
+  const autoScaling = createAutoScaling(config);
+  const client = AwsClient({ spec, config })(autoScaling);
   const findDependencies = ({ live, lives }) => [
     {
       type: "KeyPair",

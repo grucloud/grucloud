@@ -13,18 +13,19 @@ const {
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const logger = require("@grucloud/core/logger")({ prefix: "ELBRule" });
-const { ELBv2New, buildTags, findNamespaceInTags } = require("../AwsCommon");
+const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 
 const findId = get("live.RuleArn");
 
 const pickId = pick(["RuleArn"]);
 
 const { AwsClient } = require("../AwsClient");
+const { createELB } = require("./ELBCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 exports.ELBRule = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const elb = ELBv2New(config);
+  const elb = createELB(config);
+  const client = AwsClient({ spec, config })(elb);
 
   const findName = ({ live, lives }) =>
     pipe([

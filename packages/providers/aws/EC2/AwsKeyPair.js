@@ -6,9 +6,11 @@ const path = require("path");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsKp" });
 const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 exports.AwsClientKeyPair = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const findName = get("live.KeyName");
   const findId = findName;

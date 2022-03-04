@@ -29,7 +29,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "S3Object" });
 const { compareAws } = require("../AwsCommon");
 
 const { retryCall } = require("@grucloud/core/Retry");
-const { S3New, findNamespaceInTags } = require("../AwsCommon");
+const { findNamespaceInTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
 
@@ -39,6 +39,7 @@ const {
   mapPoolSize,
   md5FileBase64,
 } = require("@grucloud/core/Common");
+const { createS3 } = require("./AwsS3Common");
 
 const tagsSerialize = pipe([
   map(({ Key, Value }) => `${Key}=${Value}`),
@@ -70,10 +71,9 @@ exports.buildTagsS3Object = buildTagsS3Object;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Object = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const s3 = createS3(config);
+  const client = AwsClient({ spec, config })(s3);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
-
-  const s3 = S3New(config);
 
   const findName = get("live.Key");
   const findId = findName;

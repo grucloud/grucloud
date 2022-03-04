@@ -2,6 +2,11 @@ const assert = require("assert");
 const { pipe, omit, tap, assign, fork, map, get } = require("rubico");
 const { callProp, values, flatten } = require("rubico/x");
 
+const { APIGateway } = require("@aws-sdk/client-api-gateway");
+const { createEndpoint } = require("../AwsCommon");
+
+exports.createAPIGateway = createEndpoint(APIGateway);
+
 exports.findDependenciesRestApi = ({ live, lives }) => ({
   type: "RestApi",
   group: "APIGateway",

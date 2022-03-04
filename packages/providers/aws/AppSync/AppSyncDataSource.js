@@ -4,9 +4,11 @@ const { defaultsDeep, prepend } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { findDependenciesGraphqlApi } = require("./AppSyncCommon");
+const {
+  createAppSync,
+  findDependenciesGraphqlApi,
+} = require("./AppSyncCommon");
 
 const findId = get("live.dataSourceArn");
 const findName = get("live.name");
@@ -31,8 +33,9 @@ const buildTagKey = pipe([
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncDataSource = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
+  const appSync = createAppSync(config);
+
+  const client = AwsClient({ spec, config })(appSync);
 
   // findDependencies for AppSyncDataSource
   const findDependencies = ({ live, lives }) => [

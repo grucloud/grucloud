@@ -17,17 +17,13 @@ const assert = require("assert");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsImage" });
 
 const { tos } = require("@grucloud/core/tos");
-const {
-  Ec2New,
-  findNameInTagsOrId,
-  getByIdCore,
-  buildTags,
-} = require("../AwsCommon");
+const { findNameInTagsOrId, getByIdCore, buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 exports.AwsImage = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const ec2 = Ec2New(config);
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const findId = get("live.ImageId");
   const findName = findNameInTagsOrId({ findId });

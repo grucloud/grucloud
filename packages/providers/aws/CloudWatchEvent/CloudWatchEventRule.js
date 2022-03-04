@@ -3,8 +3,9 @@ const { assign, pipe, tap, get, eq, pick, omit } = require("rubico");
 const { defaultsDeep, isEmpty, pluck, unless, append } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint, buildTags } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createCloudWatchEvents } = require("./CloudWatchEventCommon");
 
 const findId = get("live.Name");
 const pickId = pick(["Name", "EventBusName"]);
@@ -22,9 +23,8 @@ const buildArn =
     ])();
 
 exports.CloudWatchEventRule = ({ spec, config }) => {
-  const cloudWatchEvents = () =>
-    createEndpoint({ endpointName: "CloudWatchEvents" })(config);
-  const client = AwsClient({ spec, config });
+  const cloudWatchEvents = createCloudWatchEvents(config);
+  const client = AwsClient({ spec, config })(cloudWatchEvents);
 
   // findDependencies for CloudWatchEventRule
   const findDependencies = ({ live, lives }) => [

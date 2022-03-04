@@ -1,11 +1,14 @@
 const assert = require("assert");
 const { pipe, tap, get } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { findDependenciesRestApi } = require("./ApiGatewayCommon");
+const {
+  createAPIGateway,
+  findDependenciesRestApi,
+} = require("./ApiGatewayCommon");
 
 const pickId = ({ restApiId, id }) => ({
   restApiId,
@@ -13,7 +16,8 @@ const pickId = ({ restApiId, id }) => ({
 });
 
 exports.Resource = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const apiGateway = createAPIGateway(config);
+  const client = AwsClient({ spec, config })(apiGateway);
 
   const findName = ({ live, lives }) =>
     pipe([

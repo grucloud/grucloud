@@ -5,8 +5,10 @@ const { defaultsDeep } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createEndpoint } = require("../AwsCommon");
-const { findDependenciesGraphqlApi } = require("./AppSyncCommon");
+const {
+  createAppSync,
+  findDependenciesGraphqlApi,
+} = require("./AppSyncCommon");
 
 const findId = get("live.resolverArn");
 
@@ -19,8 +21,9 @@ const pickId = pick(["apiId", "fieldName", "typeName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncResolver = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
+  const appSync = createAppSync(config);
+
+  const client = AwsClient({ spec, config })(appSync);
 
   // findDependencies for AppSyncResolver
   const findDependencies = ({ live, lives }) => [
@@ -86,7 +89,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
     pickId,
     config,
     shouldRetryOnException: pipe([
-      eq(get("error.code"), "ConcurrentModificationException"),
+      eq(get("error.name"), "ConcurrentModificationException"),
     ]),
   });
 

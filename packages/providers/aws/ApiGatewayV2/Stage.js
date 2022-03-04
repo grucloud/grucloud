@@ -5,14 +5,18 @@ const { defaultsDeep, when } = require("rubico/x");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { findDependenciesApi } = require("./ApiGatewayCommon");
+const {
+  createApiGatewayV2,
+  findDependenciesApi,
+} = require("./ApiGatewayCommon");
 const findId = get("live.StageName");
 const findName = get("live.StageName");
 
 const pickId = pick(["ApiId", "StageName"]);
 
 exports.Stage = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const apiGateway = createApiGatewayV2(config);
+  const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live, lives }) => [
     findDependenciesApi({ live }),

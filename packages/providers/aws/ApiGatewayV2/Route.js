@@ -5,7 +5,10 @@ const { callProp, defaultsDeep, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { findDependenciesApi } = require("./ApiGatewayCommon");
+const {
+  createApiGatewayV2,
+  findDependenciesApi,
+} = require("./ApiGatewayCommon");
 
 const findId = get("live.RouteId");
 const findName = pipe([
@@ -16,7 +19,8 @@ const findName = pipe([
 const pickId = pick(["ApiId", "RouteId"]);
 
 exports.Route = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const apiGateway = createApiGatewayV2(config);
+  const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live, lives }) => [
     findDependenciesApi({ live }),

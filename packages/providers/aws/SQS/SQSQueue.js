@@ -22,8 +22,8 @@ const {
 } = require("rubico/x");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createSQS } = require("./SQSCommon");
 
 const findId = get("live.Attributes.QueueArn");
 const pickId = pick(["QueueUrl"]);
@@ -42,8 +42,8 @@ const findName = pipe([
 const ignoreErrorCodes = ["AWS.SimpleQueueService.NonExistentQueue"];
 
 exports.SQSQueue = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const sqs = () => createEndpoint({ endpointName: "SQS" })(config);
+  const sqs = createSQS(config);
+  const client = AwsClient({ spec, config })(sqs);
 
   const findDependencies = ({ live, lives }) => [];
 
@@ -129,7 +129,7 @@ exports.SQSQueue = ({ spec, config }) => {
     pickCreated: () => pickId,
     method: "createQueue",
     shouldRetryOnException: eq(
-      get("error.code"),
+      get("error.name"),
       "AWS.SimpleQueueService.QueueDeletedRecently"
     ),
     pickId,

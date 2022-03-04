@@ -7,14 +7,15 @@ const {
   AutoScalingAutoScalingGroup,
 } = require("../Autoscaling/AutoScalingAutoScalingGroup");
 const { AwsClient } = require("../AwsClient");
-const { buildTagsEcs } = require("./ECSCommon");
+const { createECS, buildTagsEcs } = require("./ECSCommon");
 const findId = get("live.capacityProviderArn");
 const findName = get("live.name");
 const pickId = pick(["capacityProviderArn"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSCapacityProvider = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const ecs = createECS(config);
+  const client = AwsClient({ spec, config })(ecs);
   const autoScalingGroup = AutoScalingAutoScalingGroup({
     spec: { type: "AutoScalingGroup", group: "AutoScaling" },
     config,

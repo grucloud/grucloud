@@ -2,17 +2,17 @@ const assert = require("assert");
 const { map, pipe, tap, get, eq, not, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { createEndpoint, buildTags } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-
+const { createDynamoDB } = require("./DynamoDBCommon");
 const findName = get("live.TableName");
 const findId = get("live.TableArn");
 const pickId = pick(["TableName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html
 exports.DynamoDBTable = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const dynamoDB = () => createEndpoint({ endpointName: "DynamoDB" })(config);
+  const dynamoDB = createDynamoDB(config);
+  const client = AwsClient({ spec, config })(dynamoDB);
 
   const findDependencies = ({ live }) => [
     {

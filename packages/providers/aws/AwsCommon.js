@@ -1,4 +1,3 @@
-const AWS = require("aws-sdk");
 const assert = require("assert");
 const {
   assign,
@@ -41,36 +40,26 @@ exports.compareAws = ({ filterAll, filterTarget, filterLive } = {}) =>
       filterTarget,
       filterTargetDefault: omit(["Tags"]),
       filterLive,
-      filterLiveDefault: omit(["Tags"]),
+      filterLiveDefault: omit(["Tags", "$metadata"]),
     }),
   ]);
 
 const proxyHandler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
-    assert(endpointName);
+    //assert(endpointName);
     assert(endpoint);
     assert(isFunction(endpoint[name]), `${name} is not a function`);
     return (...args) =>
       retryCall({
         name: `${endpointName}.${name} ${JSON.stringify(args)}`,
-        // s3.getSignedUrl does not have promise
-        fn: () =>
-          new Promise((resolve, reject) => {
-            endpoint[name](...args, (error, result) =>
-              switchCase([
-                () => error,
-                () => reject(error),
-                () => resolve(result),
-              ])()
-            );
-          }),
+        fn: () => endpoint[name](...args),
         isExpectedResult: () => true,
         config: { retryDelay: 30e3 },
         shouldRetryOnException: ({ error, name }) =>
           pipe([
             tap(() => {
               logger.info(
-                `shouldRetryOnException: ${name}, code: ${error.code}`
+                `shouldRetryOnException: ${name}, name: ${error.name}`
               );
             }),
             () => [
@@ -81,10 +70,10 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
               "TimeoutError",
               "ServiceUnavailable",
             ],
-            includes(error.code),
+            includes(error.name),
             tap.if(identity, () => {
               logger.info(
-                `shouldRetryOnException: ${name}: retrying, code: ${error.code}`
+                `shouldRetryOnException: ${name}: retrying, name: ${error.name}`
               );
             }),
           ])(),
@@ -92,49 +81,17 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
   },
 });
 
-const createEndpoint =
-  ({ endpointName }) =>
-  (config) =>
-    pipe([
-      tap(() => AWS.config.update(config)),
-      () => new AWS[endpointName]({ region: config.region }),
-      (endpoint) => new Proxy({}, proxyHandler({ endpointName, endpoint })),
-    ])();
+const createEndpoint = (client) => (config) =>
+  pipe([
+    tap((params) => {
+      assert(client);
+    }),
+    () => new client({ region: config.region }),
+    (endpoint) =>
+      new Proxy({}, proxyHandler({ endpointName: client.name, endpoint })),
+  ]);
 
 exports.createEndpoint = createEndpoint;
-
-exports.Ec2New = (config) => () =>
-  createEndpoint({ endpointName: "EC2" })(config);
-
-exports.IAMNew = (config) => () =>
-  createEndpoint({ endpointName: "IAM" })(config);
-
-exports.S3New = (config) => () =>
-  createEndpoint({ endpointName: "S3" })({ region: "us-east-1" });
-
-exports.Route53New = (config) => () =>
-  createEndpoint({ endpointName: "Route53" })(config);
-
-exports.CloudFrontNew = (config) => () =>
-  createEndpoint({ endpointName: "CloudFront" })(config);
-
-exports.Route53DomainsNew = () => () =>
-  createEndpoint({ endpointName: "Route53Domains" })({ region: "us-east-1" });
-
-exports.ACMNew = (config) => () =>
-  createEndpoint({ endpointName: "ACM" })(config);
-
-exports.EKSNew = (config) => () =>
-  createEndpoint({ endpointName: "EKS" })(config);
-
-exports.ELBv2New = (config) => () =>
-  createEndpoint({ endpointName: "ELBv2" })(config);
-
-exports.AutoScalingNew = (config) => () =>
-  createEndpoint({ endpointName: "AutoScaling" })(config);
-
-exports.KmsNew = (config) => () =>
-  createEndpoint({ endpointName: "KMS" })(config);
 
 exports.DecodeUserData = when(
   get("UserData"),
@@ -173,9 +130,9 @@ const hasKeyInTags =
         assert(live);
       }),
       () => live,
-      get("Tags"),
+      get("Tags", []),
       tap((Tags) => {
-        assert(Tags, `not Tags in ${tos(live)}`);
+        //assert(Tags, `not Tags in ${tos(live)}`);
       }),
       any((tag) => new RegExp(`^${key}*`, "i").test(tag.Key)),
       tap((result) => {

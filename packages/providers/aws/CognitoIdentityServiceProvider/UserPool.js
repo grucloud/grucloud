@@ -18,15 +18,17 @@ const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { findNamespaceInTagsObject, createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const {
+  createCognitoIdentityProvider,
+} = require("./CognitoIdentityServiceProviderCommon");
 
 const findId = get("live.Id");
 const findName = get("live.Name");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html
 exports.UserPool = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const cognitoIdentityServiceProvider = () =>
-    createEndpoint({ endpointName: "CognitoIdentityServiceProvider" })(config);
+  const cognitoIdentityServiceProvider = createCognitoIdentityProvider(config);
+  const client = AwsClient({ spec, config })(cognitoIdentityServiceProvider);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listUserPools-property
   //TODO getList

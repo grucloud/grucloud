@@ -12,9 +12,10 @@ const {
 } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { buildTags, createEndpoint } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { createECR } = require("./ECRCommon");
 
 const findName = get("live.repositoryName");
 const findId = get("live.repositoryArn");
@@ -22,8 +23,8 @@ const pickId = pick(["repositoryName", "registryId"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 exports.EcrRepository = ({ spec, config }) => {
-  const ecr = () => createEndpoint({ endpointName: "ECR" })(config);
-  const client = AwsClient({ spec, config });
+  const ecr = createECR(config);
+  const client = AwsClient({ spec, config })(ecr);
 
   const findDependencies = ({ live }) => [];
   const findNamespace = pipe([() => ""]);

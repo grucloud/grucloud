@@ -1,3 +1,8 @@
+const { AppSync } = require("@aws-sdk/client-appsync");
+const { createEndpoint } = require("../AwsCommon");
+
+exports.createAppSync = createEndpoint(AppSync);
+
 exports.findDependenciesGraphqlApi = ({ live, lives }) => ({
   type: "GraphqlApi",
   group: "AppSync",

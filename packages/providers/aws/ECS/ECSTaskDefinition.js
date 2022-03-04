@@ -4,7 +4,7 @@ const { defaultsDeep, first } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { buildTagsEcs } = require("./ECSCommon");
+const { createECS, buildTagsEcs } = require("./ECSCommon");
 
 const findId = get("live.taskDefinitionArn");
 const findName = get("live.family");
@@ -21,7 +21,8 @@ const ignoreErrorMessages = ["The specified task definition does not exist."];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSTaskDefinition = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const ecs = createECS(config);
+  const client = AwsClient({ spec, config })(ecs);
 
   const findDependencies = ({ live }) => [
     // efsVolumeConfiguration

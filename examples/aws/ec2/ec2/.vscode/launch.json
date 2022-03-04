@@ -24,11 +24,11 @@
       "port": 9229
     },
     {
-      "name": "List -g -o",
+      "name": "List",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "-g", "-o"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "list"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
@@ -39,7 +39,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["gencode", "--input", "artifacts/inventory.json"],
+      "runtimeArgs": ["run", "gencode"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

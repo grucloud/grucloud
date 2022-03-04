@@ -5,13 +5,15 @@ const { defaultsDeep } = require("rubico/x");
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
+const { createAppRunner } = require("./AppRunnerCommon");
 const findName = get("live.ConnectionName");
 const findId = get("live.ConnectionArn");
 const pickId = pick(["ConnectionName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AppRunnerConnection = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const appRunner = createAppRunner(config);
+  const client = AwsClient({ spec, config })(appRunner);
 
   const findDependencies = ({ live, lives }) => [];
 

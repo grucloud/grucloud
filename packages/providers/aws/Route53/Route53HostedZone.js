@@ -33,19 +33,20 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
   getByNameCore,
-  isDownByIdCore,
   logError,
   axiosErrorToJSON,
 } = require("@grucloud/core/Common");
 const {
-  Route53New,
-  Route53DomainsNew,
   buildTags,
   findNamespaceInTags,
   getNewCallerReference,
 } = require("../AwsCommon");
 
 const { filterEmptyResourceRecords } = require("./Route53Utils");
+const { createRoute53, hostedZoneIdToResourceId } = require("./Route53Common");
+const {
+  createRoute53Domains,
+} = require("../Route53Domain/Route53DomainCommon");
 
 //Check for the final dot
 const findName = get("live.Name");
@@ -76,10 +77,10 @@ const findDnsServers = (live) =>
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53HostedZone = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const route53 = createRoute53(config);
+  const route53Domains = createRoute53Domains(config);
+  const client = AwsClient({ spec, config })(route53);
   const { providerName } = config;
-  const route53 = Route53New(config);
-  const route53domains = Route53DomainsNew(config);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -144,7 +145,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
           ]),
           Tags: pipe([
             (hostedZone) => ({
-              ResourceId: hostedZone.Id,
+              ResourceId: hostedZoneIdToResourceId(hostedZone.Id),
               ResourceType: "hostedzone",
             }),
             route53().listTagsForResource,
@@ -186,7 +187,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
       }),
       tap(({ HostedZone }) =>
         route53().changeTagsForResource({
-          ResourceId: HostedZone.Id,
+          ResourceId: hostedZoneIdToResourceId(HostedZone.Id),
           AddTags: buildTags({
             name,
             namespace,
@@ -236,7 +237,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
             pipe([
               //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Domains.html#updateDomainNameservers-property
               (Nameservers) =>
-                route53domains().updateDomainNameservers({
+                route53Domains().updateDomainNameservers({
                   DomainName: domain.live.DomainName,
                   Nameservers,
                 }),
@@ -247,7 +248,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
                 retryCall({
                   name: `updateDomainNameservers: getOperationDetail OperationId: ${OperationId}`,
                   fn: pipe([
-                    () => route53domains().getOperationDetail({ OperationId }),
+                    () => route53Domains().getOperationDetail({ OperationId }),
                     tap(({ Status, Message }) =>
                       pipe([
                         tap(() => {

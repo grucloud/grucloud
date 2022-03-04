@@ -17,7 +17,6 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsNatGateway" });
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
-  Ec2New,
   getByIdCore,
   findNameInTagsOrId,
   buildTags,
@@ -25,10 +24,11 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 exports.AwsNatGateway = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const ec2 = Ec2New(config);
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const findId = get("live.NatGatewayId");
   const pickId = pick(["NatGatewayId"]);

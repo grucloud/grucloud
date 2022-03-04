@@ -8,10 +8,10 @@ const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTagsObject, shellRun } = require("@grucloud/core/Common");
-const { EKSNew, findNamespaceInTagsObject } = require("../AwsCommon");
+const { findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
-const { waitForUpdate } = require("./EKSCommon");
+const { createEKS, waitForUpdate } = require("./EKSCommon");
 
 const findName = get("live.name");
 const findId = findName;
@@ -37,8 +37,8 @@ const findDependencies = ({ live }) => [
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
 exports.EKSCluster = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const eks = EKSNew(config);
+  const eks = createEKS(config);
+  const client = AwsClient({ spec, config })(eks);
 
   const getById = client.getById({
     pickId,

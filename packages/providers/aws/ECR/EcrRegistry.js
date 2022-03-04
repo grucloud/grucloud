@@ -14,15 +14,15 @@ const { defaultsDeep, isEmpty, when, isDeepEqual } = require("rubico/x");
 const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EcrRegistry" });
-const { createEndpoint } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
+const { createECR } = require("./ECRCommon");
 
 const findName = () => "default";
 const findId = get("live.registryId");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 exports.EcrRegistry = ({ spec, config }) => {
-  const ecr = () => createEndpoint({ endpointName: "ECR" })(config);
+  const ecr = createECR(config);
+  //const client = AwsClient({ spec, config })(ecr);
 
   const findDependencies = ({ live }) => [];
 
@@ -32,9 +32,9 @@ exports.EcrRegistry = ({ spec, config }) => {
   const getRegistryPolicy = tryCatch(
     pipe([() => ({}), ecr().getRegistryPolicy, get("policyText"), JSON.parse]),
     switchCase([
-      eq(get("code"), "RegistryPolicyNotFoundException"),
+      eq(get("name"), "RegistryPolicyNotFoundException"),
       () => undefined,
-      () => {
+      (error) => {
         throw error;
       },
     ])

@@ -6,6 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
+const { createRDS } = require("./RDSCommon");
 
 const findId = get("live.DBInstanceIdentifier");
 const pickId = pick(["DBInstanceIdentifier"]);
@@ -13,7 +14,8 @@ const findName = findId;
 const isInstanceUp = pipe([eq(get("DBInstanceStatus"), "available")]);
 
 exports.DBInstance = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const rds = createRDS(config);
+  const client = AwsClient({ spec, config })(rds);
 
   const findDependencies = ({ live, lives }) => [
     {

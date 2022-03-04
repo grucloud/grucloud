@@ -8,6 +8,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { findNameInTagsOrId } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
+const { createAPIGateway } = require("./ApiGatewayCommon");
 
 const findId = get("live.id");
 const findName = findNameInTagsOrId({ findId });
@@ -20,7 +21,8 @@ const pickId = pipe([
 ]);
 
 exports.Deployment = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const apiGateway = createAPIGateway(config);
+  const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live, lives }) => [
     {
