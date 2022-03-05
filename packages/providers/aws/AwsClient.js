@@ -486,7 +486,7 @@ exports.AwsClient =
                 switchCase([
                   or([
                     ignoreError,
-                    pipe([() => ignoreErrorCodes, includes(error.code)]),
+                    pipe([() => ignoreErrorCodes, includes(error.name)]),
                     pipe([
                       () => ignoreErrorMessages,
                       any((message) =>

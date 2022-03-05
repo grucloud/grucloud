@@ -10,10 +10,13 @@ const {
   omit,
   eq,
 } = require("rubico");
-const { defaultsDeep, isEmpty, when, isDeepEqual } = require("rubico/x");
+const { defaultsDeep, isEmpty, when, isDeepEqual, size } = require("rubico/x");
 const { retryCall } = require("@grucloud/core/Retry");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EcrRegistry" });
+const { AwsClient } = require("../AwsClient");
+
 const { createECR } = require("./ECRCommon");
 
 const findName = () => "default";
@@ -22,7 +25,7 @@ const findId = get("live.registryId");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 exports.EcrRegistry = ({ spec, config }) => {
   const ecr = createECR(config);
-  //const client = AwsClient({ spec, config })(ecr);
+  const client = AwsClient({ spec, config })(ecr);
 
   const findDependencies = ({ live }) => [];
 
@@ -45,7 +48,6 @@ exports.EcrRegistry = ({ spec, config }) => {
     pipe([
       () => ({}),
       ecr().describeRegistry,
-      //TODO omit if Empty
       when(
         pipe([get("replicationConfiguration.rules"), isEmpty]),
         omit(["replicationConfiguration"])
@@ -53,7 +55,7 @@ exports.EcrRegistry = ({ spec, config }) => {
       assign({
         policyText: getRegistryPolicy,
       }),
-      when(pipe([get("policyText"), isEmpty]), omit(["policyText"])),
+      omitIfEmpty(["policyText"]),
     ])();
 
   const getList = () => pipe([describeRegistry, (registry) => [registry]])();
@@ -61,69 +63,69 @@ exports.EcrRegistry = ({ spec, config }) => {
   const getByName = pipe([describeRegistry]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putRegistryPolicy-property
-  const putRegistryPolicy = pipe([
-    tap((params) => {
-      logger.debug("putRegistryPolicy");
-    }),
-    get("policyText"),
-    (policyText) =>
-      pipe([
-        () => policyText,
-        JSON.stringify,
-        (policyText) => ({ policyText }),
-        ecr().putRegistryPolicy,
-        () =>
-          retryCall({
-            name: `putRegistryPolicy is updated`,
-            fn: pipe([
-              getRegistryPolicy,
-              (newPolicy) => isDeepEqual(newPolicy, policyText),
-            ]),
-            config: { retryCount: 60, retryDelay: 2e3 },
-          }),
-      ])(),
-  ]);
+  const putRegistryPolicy = ({ compare }) =>
+    pipe([
+      tap((params) => {
+        logger.debug("putRegistryPolicy");
+      }),
+      get("policyText"),
+      (policyText) =>
+        pipe([
+          () => policyText,
+          JSON.stringify,
+          (policyText) => ({ policyText }),
+          ecr().putRegistryPolicy,
+          () =>
+            retryCall({
+              name: `putRegistryPolicy is updated`,
+              fn: pipe([
+                getRegistryPolicy,
+                (newPolicy) => isDeepEqual(newPolicy, policyText),
+              ]),
+              config: { retryCount: 60, retryDelay: 2e3 },
+            }),
+        ])(),
+    ]);
 
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putReplicationConfiguration-property
-  const putReplicationConfiguration = pipe([
-    tap((params) => {
-      logger.debug(`putReplicationConfiguration ${JSON.stringify(params)}`);
-    }),
-    switchCase([
-      get("replicationConfiguration"),
-      pick(["replicationConfiguration"]),
-      () => ({ replicationConfiguration: { rules: [] } }),
-    ]),
-    (param) =>
-      pipe([
-        () => param,
-        ecr().putReplicationConfiguration,
-        () =>
-          retryCall({
-            name: `putReplicationConfiguration is updated ?`,
-            fn: pipe([
-              ecr().describeRegistry,
-              pick(["replicationConfiguration"]),
-              tap((params) => {
-                assert(true);
-              }),
-              (paramUpdated) => isDeepEqual(paramUpdated, param),
-              tap((equal) => {
-                logger.debug(`putReplicationConfiguration equal: ${equal}`);
-              }),
-            ]),
-            config: {
-              repeatCount: 1,
-              repeatDelay: 5e3,
-              retryCount: 60,
-              retryDelay: 2e3,
-            },
-          }),
-      ])(),
-    tap((params) => {
-      logger.debug(`putReplicationConfiguration done`);
-    }),
-  ]);
+  const putReplicationConfiguration = ({ compare }) =>
+    pipe([
+      tap((params) => {
+        logger.debug(`putReplicationConfiguration ${JSON.stringify(params)}`);
+      }),
+      switchCase([
+        get("replicationConfiguration"),
+        pick(["replicationConfiguration"]),
+        () => ({ replicationConfiguration: { rules: [] } }),
+      ]),
+      (live) =>
+        pipe([
+          () => live,
+          ecr().putReplicationConfiguration,
+          () =>
+            retryCall({
+              name: `putReplicationConfiguration is updated ?`,
+              fn: pipe([
+                ecr().describeRegistry,
+                pick(["replicationConfiguration"]),
+                (liveNew) => compare({ live: liveNew, target: live }),
+                eq(pipe([get("jsonDiff"), size]), 1),
+                tap((equal) => {
+                  logger.debug(`putReplicationConfiguration equal: ${equal}`);
+                }),
+              ]),
+              config: {
+                repeatCount: 1,
+                repeatDelay: 5e3,
+                retryCount: 60,
+                retryDelay: 2e3,
+              },
+            }),
+        ])(),
+      tap((params) => {
+        logger.debug(`putReplicationConfiguration done`);
+      }),
+    ]);
 
   const deleteRegistryPolicy = pipe([
     tap((params) => {
@@ -152,7 +154,7 @@ exports.EcrRegistry = ({ spec, config }) => {
           }),
       ]),
       switchCase([
-        eq(get("code"), "RegistryPolicyNotFoundException"),
+        eq(get("name"), "RegistryPolicyNotFoundException"),
         () => undefined,
         (error) => {
           throw error;
@@ -165,18 +167,24 @@ exports.EcrRegistry = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#deleteRegistryPolicy-property
-  const updateOrDeleteRegistryPolicy = pipe([
-    switchCase([get("policyText"), putRegistryPolicy, deleteRegistryPolicy]),
-  ]);
+  const updateOrDeleteRegistryPolicy = ({ compare }) =>
+    pipe([
+      switchCase([
+        get("policyText"),
+        putRegistryPolicy({ compare }),
+        deleteRegistryPolicy,
+      ]),
+    ]);
 
-  const update = ({ payload, name, diff }) =>
+  const update = ({ payload, name, diff, compare }) =>
     pipe([
       tap((params) => {
         logger.debug("registry update");
+        assert(compare);
       }),
       () => payload,
-      tap(updateOrDeleteRegistryPolicy),
-      tap(putReplicationConfiguration),
+      tap(updateOrDeleteRegistryPolicy({ compare })),
+      tap(putReplicationConfiguration({ compare })),
       tap((params) => {
         logger.debug("registry updated");
       }),

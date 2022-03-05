@@ -33,9 +33,9 @@ exports.EcrRepository = ({ spec, config }) => {
   const getRepositoryPolicy = tryCatch(
     pipe([pickId, ecr().getRepositoryPolicy, get("policyText"), JSON.parse]),
     switchCase([
-      eq(get("code"), "RepositoryPolicyNotFoundException"),
+      eq(get("name"), "RepositoryPolicyNotFoundException"),
       () => undefined,
-      () => {
+      (error) => {
         throw error;
       },
     ])
@@ -50,9 +50,9 @@ exports.EcrRepository = ({ spec, config }) => {
       JSON.parse,
     ]),
     switchCase([
-      eq(get("code"), "LifecyclePolicyNotFoundException"),
+      eq(get("name"), "LifecyclePolicyNotFoundException"),
       () => undefined,
-      () => {
+      (error) => {
         throw error;
       },
     ])
@@ -179,4 +179,3 @@ exports.EcrRepository = ({ spec, config }) => {
     configDefault,
   };
 };
-//TODO compare

@@ -713,7 +713,7 @@ exports.Route53Record = ({ spec, config }) => {
 exports.compareRoute53Record = pipe([
   compareAws({
     filterAll: pipe([omit(["Tags"])]),
-    filterTarget: () => pipe([defaultsDeep({ ResourceRecords: [] })]),
+    filterTarget: () => pipe([defaultsDeep({})]),
     filterLive: () => pipe([omitFieldRecord]),
   }),
   tap((diff) => {

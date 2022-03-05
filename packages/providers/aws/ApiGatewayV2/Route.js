@@ -48,7 +48,7 @@ exports.Route = ({ spec, config }) => {
     decorate: ({ ApiId }) =>
       pipe([
         tap((params) => {
-          assert(xxx);
+          assert(true);
         }),
         defaultsDeep({
           ApiId,
