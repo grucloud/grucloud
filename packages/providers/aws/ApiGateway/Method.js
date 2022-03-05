@@ -25,6 +25,7 @@ const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
 const {
+  throwIfNotAwsError,
   tagsExtractFromDescription,
   tagsRemoveFromDescription,
 } = require("../AwsCommon");
@@ -122,20 +123,7 @@ exports.Method = ({ spec, config }) => {
                   apiGateway().getMethod,
                   defaultsDeep({ path }),
                 ]),
-                (error) =>
-                  pipe([
-                    tap((params) => {
-                      assert(true);
-                    }),
-                    () => error,
-                    switchCase([
-                      eq(get("name"), "NotFoundException"),
-                      () => undefined,
-                      () => {
-                        throw error;
-                      },
-                    ]),
-                  ])()
+                throwIfNotAwsError("NotFoundException")
               )()
             ),
             filter(not(isEmpty)),

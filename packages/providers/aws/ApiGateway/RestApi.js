@@ -38,6 +38,7 @@ const logger = require("@grucloud/core/logger")({
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
+const { throwIfNotAwsError } = require("../AwsCommon");
 const { createAPIGateway, diffToPatch } = require("./ApiGatewayCommon");
 
 const findId = get("live.id");
@@ -502,13 +503,7 @@ exports.RestApi = ({ spec, config }) => {
                       }),
                       apiGateway().getMethod,
                     ]),
-                    switchCase([
-                      eq(get("name"), "NotFoundException"),
-                      () => undefined,
-                      (error) => {
-                        throw error;
-                      },
-                    ])
+                    throwIfNotAwsError("NotFoundException")
                   )()
                 ),
                 filter(not(isEmpty)),

@@ -334,24 +334,6 @@ exports.EC2Instance = ({ spec, config }) => {
       }),
     ])();
 
-  const shouldRetryOnExceptionCreate = ({ error, name }) =>
-    pipe([
-      tap(() => {
-        logger.error(
-          `ec2 shouldRetryOnExceptionCreate ${tos({
-            name,
-            errorName: error.name,
-          })}`
-        );
-      }),
-      () => error,
-      get("message"),
-      includes("Invalid IAM Instance Profile ARN"),
-      tap((retry) => {
-        logger.error(`ec2 shouldRetryOnExceptionCreate retry: ${retry}`);
-      }),
-    ])();
-
   const updateInstanceType = ({ InstanceId, updated }) =>
     pipe([
       () => updated,
@@ -440,7 +422,7 @@ exports.EC2Instance = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
   const create = client.create({
     method: "runInstances",
-    shouldRetryOnException: shouldRetryOnExceptionCreate,
+    shouldRetryOnExceptionMessages: ["Invalid IAM Instance Profile ARN"],
     isInstanceUp,
     pickCreated: () =>
       pipe([

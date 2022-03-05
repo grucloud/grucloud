@@ -164,24 +164,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
       DistributionConfigWithTags: payload,
     }),
     isInstanceUp,
-    shouldRetryOnException: ({ error, name }) =>
-      pipe([
-        tap(() => {
-          logger.info(
-            `createDistributionWithTags shouldRetryOnException ${tos({
-              name,
-              errorName: error.name,
-            })}`
-          );
-        }),
-        () => error,
-        eq(get("name"), "InvalidViewerCertificate"),
-        tap((retry) => {
-          logger.info(
-            `createDistributionWithTags shouldRetryOnException retry: ${retry}`
-          );
-        }),
-      ])(),
+    shouldRetryOnExceptionCodes: ["InvalidViewerCertificate"],
     pickCreated: () => (result) =>
       pipe([
         tap((params) => {
@@ -271,24 +254,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
       ])(),
     method: "deleteDistribution",
     isExpectedResult: () => true,
-    shouldRetryOnException: ({ error, name }) =>
-      pipe([
-        tap(() => {
-          logger.info(
-            `deleteDistribution shouldRetryOnException ${tos({
-              name,
-              error,
-            })}`
-          );
-        }),
-        () => error,
-        eq(get("name"), "DistributionNotDisabled"),
-        tap((result) => {
-          logger.info(
-            `deleteDistribution shouldRetryOnException result: ${result}`
-          );
-        }),
-      ])(),
+    shouldRetryOnExceptionCodes: ["DistributionNotDisabled"],
     getById,
     ignoreErrorCodes: ["NoSuchDistribution"],
     config,

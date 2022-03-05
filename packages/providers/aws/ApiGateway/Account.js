@@ -60,14 +60,9 @@ exports.Account = ({ spec, config }) => {
         }),
       ])(),
     method: "updateAccount",
-    shouldRetryOnException: ({ error }) =>
-      pipe([
-        () => error,
-        get("message"),
-        includes(
-          "The role ARN does not have required permissions configured. Please grant trust permission for API Gateway and add the required role policy."
-        ),
-      ])(),
+    shouldRetryOnExceptionMessages: [
+      "The role ARN does not have required permissions configured. Please grant trust permission for API Gateway and add the required role policy.",
+    ],
     config,
     getById,
   });

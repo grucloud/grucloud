@@ -88,9 +88,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
     getById,
     pickId,
     config,
-    shouldRetryOnException: pipe([
-      eq(get("error.name"), "ConcurrentModificationException"),
-    ]),
+    shouldRetryOnExceptionCodes: ["ConcurrentModificationException"],
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#deleteResolver-property

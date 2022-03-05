@@ -17,7 +17,10 @@ const { defaultsDeep, isEmpty, size } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "ECSCluster" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { destroyAutoScalingGroupById } = require("../AwsCommon");
+const {
+  destroyAutoScalingGroupById,
+  throwIfNotAwsError,
+} = require("../AwsCommon");
 const {
   AutoScalingAutoScalingGroup,
 } = require("../Autoscaling/AutoScalingAutoScalingGroup");
@@ -190,13 +193,7 @@ exports.ECSCluster = ({ spec, config }) => {
           ])
         ),
       ]),
-      switchCase([
-        eq(get("code"), "ClusterNotFoundException"),
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
+      throwIfNotAwsError("ClusterNotFoundException")
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCluster-property

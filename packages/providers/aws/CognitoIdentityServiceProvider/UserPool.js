@@ -44,6 +44,7 @@ exports.UserPool = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeUserPool-property
+  //TODO
   const getById = ({ Id: UserPoolId }) =>
     pipe([
       tap(() => {

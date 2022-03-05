@@ -84,6 +84,7 @@ exports.IdentityProvider = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeIdentityProvider-property
+  //TODO
   const getByName = ({ name }) =>
     pipe([
       tap(() => {

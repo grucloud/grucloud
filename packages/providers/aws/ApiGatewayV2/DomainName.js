@@ -13,7 +13,12 @@ const { createApiGatewayV2 } = require("./ApiGatewayCommon");
 
 const findId = get("live.DomainName");
 const findName = get("live.DomainName");
-const pickId = pick(["DomainName"]);
+const pickId = pipe([
+  tap(({ DomainName }) => {
+    assert(DomainName);
+  }),
+  pick(["DomainName"]),
+]);
 
 exports.DomainName = ({ spec, config }) => {
   const apiGateway = createApiGatewayV2(config);
@@ -53,14 +58,10 @@ exports.DomainName = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDomainName-property
   const create = client.create({
     method: "createDomainName",
-    shouldRetryOnException: ({ error }) =>
-      pipe([
-        tap(() => {
-          logger.error(`create domainName isExpectedException ${tos(error)}`);
-        }),
-        () => ["UnsupportedCertificate", "BadRequestException"],
-        includes(error.name),
-      ])(),
+    shouldRetryOnExceptionCodes: [
+      "UnsupportedCertificate",
+      "BadRequestException",
+    ],
     pickCreated:
       ({ payload }) =>
       (result) =>

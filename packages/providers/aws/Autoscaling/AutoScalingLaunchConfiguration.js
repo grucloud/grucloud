@@ -97,10 +97,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createLaunchConfiguration-property
   const create = client.create({
     method: "createLaunchConfiguration",
-    shouldRetryOnException: pipe([
-      get("error.message"),
-      includes("Invalid IamInstanceProfile:"),
-    ]),
+    shouldRetryOnExceptionMessages: ["Invalid IamInstanceProfile:"],
     pickId,
     getById,
     config,

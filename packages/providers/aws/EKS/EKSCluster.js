@@ -98,18 +98,10 @@ exports.EKSCluster = ({ spec, config }) => {
     method: "createCluster",
     pickId,
     isInstanceUp: eq(get("status"), "ACTIVE"),
-    shouldRetryOnException: ({ error }) =>
-      pipe([
-        tap(() => {
-          logger.error(`createCluster isExpectedException ${tos(error)}`);
-        }),
-        () => error,
-        get("message"),
-        or([
-          includes("The KeyArn in encryptionConfig provider"),
-          includes("Role with arn: "),
-        ]),
-      ])(),
+    shouldRetryOnExceptionMessages: [
+      "The KeyArn in encryptionConfig provider",
+      "Role with arn: ",
+    ],
     getById,
     postCreate:
       ({ name }) =>

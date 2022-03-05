@@ -16,7 +16,11 @@ const { defaultsDeep, forEach, pluck, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamUser" });
 const { tos } = require("@grucloud/core/tos");
-const { findNameInTagsOrId, findNamespaceInTags } = require("../AwsCommon");
+const {
+  findNameInTagsOrId,
+  findNamespaceInTags,
+  throwIfNotAwsError,
+} = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
@@ -47,13 +51,7 @@ exports.AwsIamUser = ({ spec, config }) => {
   const fetchLoginProfile = ({ UserName }) =>
     tryCatch(
       pipe([() => ({ UserName }), iam().getLoginProfile, get("LoginProfile")]),
-      switchCase([
-        eq(get("name"), "NoSuchEntity"),
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
+      throwIfNotAwsError("NoSuchEntity")
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listUsers-property
@@ -228,13 +226,10 @@ exports.AwsIamUser = ({ spec, config }) => {
   const deleteLoginProfile = ({ UserName }) =>
     tryCatch(
       pipe([() => ({ UserName }), iam().deleteLoginProfile]),
-      tap.if(not(eq(get("name"), "NoSuchEntity")), (error) => {
-        throw error;
-      })
+      throwIfNotAwsError("NoSuchEntity")
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
-
   const destroy = client.destroy({
     pickId,
     preDestroy: pipe([

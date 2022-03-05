@@ -26,6 +26,7 @@ const {
   tagsExtractFromDescription,
   tagsRemoveFromDescription,
   compareAws,
+  throwIfNotAwsError,
 } = require("../AwsCommon");
 
 const {
@@ -74,17 +75,7 @@ exports.Layer = ({ spec, config }) => {
         }),
         get("Policy"),
       ]),
-      (error) =>
-        pipe([
-          () => error,
-          switchCase([
-            eq(get("name"), "ResourceNotFoundException"),
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
+      throwIfNotAwsError("ResourceNotFoundException")
     ),
   });
 

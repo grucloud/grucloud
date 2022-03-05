@@ -16,6 +16,7 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EcrRegistry" });
 const { AwsClient } = require("../AwsClient");
+const { throwIfNotAwsError } = require("../AwsCommon");
 
 const { createECR } = require("./ECRCommon");
 
@@ -34,13 +35,7 @@ exports.EcrRegistry = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRegistryPolicy-property
   const getRegistryPolicy = tryCatch(
     pipe([() => ({}), ecr().getRegistryPolicy, get("policyText"), JSON.parse]),
-    switchCase([
-      eq(get("name"), "RegistryPolicyNotFoundException"),
-      () => undefined,
-      (error) => {
-        throw error;
-      },
-    ])
+    throwIfNotAwsError("RegistryPolicyNotFoundException")
   );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#describeRegistry-property
@@ -153,13 +148,7 @@ exports.EcrRegistry = ({ spec, config }) => {
             },
           }),
       ]),
-      switchCase([
-        eq(get("name"), "RegistryPolicyNotFoundException"),
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
+      throwIfNotAwsError("RegistryPolicyNotFoundException")
     ),
     tap((params) => {
       logger.debug("deleteRegistryPolicy done");

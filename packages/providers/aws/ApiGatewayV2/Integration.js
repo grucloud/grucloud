@@ -17,7 +17,7 @@ const logger = require("@grucloud/core/logger")({
 
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { lambdaAddPermission } = require("../AwsCommon");
+const { throwIfNotAwsError, lambdaAddPermission } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const {
@@ -142,13 +142,7 @@ exports.Integration = ({ spec, config }) => {
                 logger.error(`lambdaRemovePermission ${tos(error)}`);
               }),
               () => error,
-              switchCase([
-                eq(get("code"), "ResourceNotFoundException"),
-                () => {},
-                () => {
-                  throw error;
-                },
-              ]),
+              throwIfNotAwsError("ResourceNotFoundException"),
             ])()
           ),
         ])

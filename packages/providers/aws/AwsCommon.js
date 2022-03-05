@@ -32,6 +32,25 @@ const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
 const { configProviderDefault, compare } = require("@grucloud/core/Common");
 
+const isAwsError = (code) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    eq(get("name"), code),
+  ]);
+exports.isAwsError = isAwsError;
+
+const throwIfNotAwsError = (code) =>
+  switchCase([
+    isAwsError(code),
+    () => undefined,
+    (error) => {
+      throw error;
+    },
+  ]);
+exports.throwIfNotAwsError = throwIfNotAwsError;
+
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
 exports.compareAws = ({ filterAll, filterTarget, filterLive } = {}) =>
@@ -548,7 +567,7 @@ exports.removeRoleFromInstanceProfile =
     tryCatch(
       pipe([() => params, iam().removeRoleFromInstanceProfile]),
       switchCase([
-        eq(get("name"), "NoSuchEntity"),
+        isAwsError("NoSuchEntity"),
         () => undefined,
         (error) => {
           logger.error(`iam role removeRoleFromInstanceProfile ${tos(error)}`);
@@ -581,7 +600,7 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
             tryCatch(
               (AttachmentId) => ec2().detachNetworkInterface({ AttachmentId }),
               switchCase([
-                eq(get("code"), "AuthFailure"),
+                isAwsError("AuthFailure"),
                 () => undefined,
                 (error) => {
                   logger.error(
@@ -608,9 +627,9 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
               ec2().deleteNetworkInterface({ NetworkInterfaceId }),
             switchCase([
               or([
-                eq(get("code"), "InvalidNetworkInterfaceID.NotFound"),
-                eq(get("code"), "InvalidParameterValue"),
-                eq(get("code"), "OperationNotPermitted"),
+                isAwsError("InvalidNetworkInterfaceID.NotFound"),
+                isAwsError("InvalidParameterValue"),
+                isAwsError("OperationNotPermitted"),
               ]),
               (error) => {
                 logger.error(

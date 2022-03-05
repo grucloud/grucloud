@@ -33,6 +33,43 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { assignTags } = require("./AwsCommon");
 
+const shouldRetryOnExceptionCodesDefault =
+  (shouldRetryOnExceptionCodes) =>
+  ({ error }) =>
+    pipe([
+      tap(() => {
+        assert(error.name);
+        logger.error(
+          `shouldRetryOnExceptionCodesDefault ${util.inspect(error)}`
+        );
+      }),
+      () => shouldRetryOnExceptionCodes,
+      includes(error.name),
+    ])();
+
+const shouldRetryOnExceptionMessagesDefault =
+  (shouldRetryOnExceptionMessages) =>
+  ({ error }) =>
+    pipe([
+      tap(() => {
+        assert(error.message);
+        logger.error(
+          `shouldRetryOnExceptionMessagesDefault ${util.inspect(error)}`
+        );
+      }),
+      () => shouldRetryOnExceptionMessages,
+      any(includes(error.message)),
+    ])();
+
+const shouldRetryOnExceptionDefault = ({
+  shouldRetryOnExceptionCodes,
+  shouldRetryOnExceptionMessages,
+}) =>
+  or([
+    shouldRetryOnExceptionCodesDefault(shouldRetryOnExceptionCodes),
+    shouldRetryOnExceptionMessagesDefault(shouldRetryOnExceptionMessages),
+  ]);
+
 exports.AwsClient =
   ({ spec: { type, group }, config }) =>
   (endpoint) => {
@@ -207,6 +244,8 @@ exports.AwsClient =
         pickId,
         getById,
         isInstanceUp = not(isEmpty),
+        shouldRetryOnExceptionCodes = [],
+        shouldRetryOnExceptionMessages = [],
         shouldRetryOnException = () => false,
         isExpectedException = () => false,
         postCreate = () => identity,
@@ -236,7 +275,13 @@ exports.AwsClient =
               ]),
               config,
               isExpectedException,
-              shouldRetryOnException,
+              shouldRetryOnException: or([
+                shouldRetryOnException,
+                shouldRetryOnExceptionDefault({
+                  shouldRetryOnExceptionCodes,
+                  shouldRetryOnExceptionMessages,
+                }),
+              ]),
             }),
           tap((params) => {
             assert(true);
@@ -291,6 +336,8 @@ exports.AwsClient =
         getById,
         isInstanceUp = identity,
         filterAll = identity,
+        shouldRetryOnExceptionCodes = [],
+        shouldRetryOnExceptionMessages = [],
         shouldRetryOnException = () => false,
         isExpectedException = () => false,
       }) =>
@@ -340,7 +387,13 @@ exports.AwsClient =
                   ]),
                   config,
                   isExpectedException,
-                  shouldRetryOnException,
+                  shouldRetryOnException: or([
+                    shouldRetryOnException,
+                    shouldRetryOnExceptionDefault({
+                      shouldRetryOnExceptionCodes,
+                      shouldRetryOnExceptionMessages,
+                    }),
+                  ]),
                 }),
               () =>
                 retryCall({
@@ -408,6 +461,8 @@ exports.AwsClient =
         ignoreError = () => false,
         ignoreErrorCodes = [],
         ignoreErrorMessages = [],
+        shouldRetryOnExceptionCodes = [],
+        shouldRetryOnExceptionMessages = [],
         shouldRetryOnException = pipe([
           get("error.name"),
           tap((name) => {
@@ -451,7 +506,13 @@ exports.AwsClient =
                   fn: pipe([() => params, endpoint()[method]]),
                   config,
                   isExpectedResult,
-                  shouldRetryOnException,
+                  shouldRetryOnException: or([
+                    shouldRetryOnException,
+                    shouldRetryOnExceptionDefault({
+                      shouldRetryOnExceptionCodes,
+                      shouldRetryOnExceptionMessages,
+                    }),
+                  ]),
                 }),
               () => live,
               tap(postDestroy),

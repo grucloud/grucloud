@@ -33,9 +33,11 @@ const { tos } = require("@grucloud/core/tos");
 const { mapPoolSize, omitIfEmpty } = require("@grucloud/core/Common");
 const { CheckAwsTags } = require("../AwsTagCheck");
 const {
+  throwIfNotAwsError,
   buildTags,
   shouldRetryOnException,
   findNamespaceInTags,
+  isAwsError,
 } = require("../AwsCommon");
 
 const { createS3 } = require("./AwsS3Common");
@@ -136,13 +138,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getCORSConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([() => s3().getBucketCors(params)]),
-      switchCase([
-        eq(get("name"), "NoSuchCORSConfiguration"),
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
+      throwIfNotAwsError("NoSuchCORSConfiguration")
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketEncryption-property
   const getServerSideEncryptionConfiguration = ({ name, params }) =>
@@ -151,13 +147,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         () => s3().getBucketEncryption(params),
         get("ServerSideEncryptionConfiguration"),
       ]),
-      switchCase([
-        eq(get("name"), "ServerSideEncryptionConfigurationNotFoundError"),
-        () => undefined,
-        (err) => {
-          throw err;
-        },
-      ])
+      throwIfNotAwsError("ServerSideEncryptionConfigurationNotFoundError")
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLifecycleConfiguration-property
   const getLifecycleConfiguration = ({ name, params }) =>
@@ -166,13 +156,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         () => s3().getBucketLifecycleConfiguration(params),
         when(isEmpty, () => undefined),
       ]),
-      switchCase([
-        eq(get("name"), "NoSuchLifecycleConfiguration"),
-        () => undefined,
-        (err) => {
-          throw err;
-        },
-      ])
+      throwIfNotAwsError("NoSuchLifecycleConfiguration")
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLocation-property
   const getLocationConstraint = ({ name, params }) =>
@@ -220,25 +204,13 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         get("Policy"),
         tryCatch(JSON.parse, () => undefined),
       ]),
-      switchCase([
-        eq(get("name"), "NoSuchBucketPolicy"),
-        () => undefined,
-        (err) => {
-          throw err;
-        },
-      ])
+      throwIfNotAwsError("NoSuchBucketPolicy")
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicyStatus-property
   const getPolicyStatus = ({ name, params }) =>
     tryCatch(
       pipe([() => s3().getBucketPolicyStatus(params), get("PolicyStatus")]),
-      switchCase([
-        eq(get("name"), "NoSuchBucketPolicy"),
-        () => undefined,
-        (err) => {
-          throw err;
-        },
-      ])
+      throwIfNotAwsError("NoSuchBucketPolicy")
     );
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketReplication-property
   const getReplicationConfiguration = ({ name, params }) =>
@@ -247,13 +219,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         () => s3().getBucketReplication(params),
         get("ReplicationConfiguration"),
       ]),
-      switchCase([
-        eq(get("name"), "ReplicationConfigurationNotFoundError"),
-        () => undefined,
-        (err) => {
-          throw err;
-        },
-      ])
+      throwIfNotAwsError("ReplicationConfigurationNotFoundError")
     );
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketRequestPayment-property
   const getRequestPaymentConfiguration = ({ name, params }) =>
@@ -288,13 +254,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         () => s3().getBucketWebsite(params),
         when(isEmpty, () => undefined),
       ]),
-      switchCase([
-        eq(get("name"), "NoSuchWebsiteConfiguration"),
-        () => undefined,
-        (err) => {
-          throw err;
-        },
-      ])
+      throwIfNotAwsError("NoSuchWebsiteConfiguration")
     );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketTagging-property
@@ -316,26 +276,19 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                 );
               }),
             ]),
-            isExpectedException: eq(get("name"), "NoSuchTagset"),
+            isExpectedException: isAwsError("NoSuchTagset"),
             shouldRetryOnException: ({ error, name }) =>
               pipe([
                 () => error,
                 or([
                   () => [503].includes(error.statusCode),
-                  // TODO check that
-                  eq(get("name"), "NoSuchBucket"),
+                  isAwsError("NoSuchBucket"),
                 ]),
               ])(),
             config: { retryCount: 5, retryDelay: 1e3 },
           }),
       ]),
-      switchCase([
-        eq(get("name"), "NoSuchTagSet"),
-        () => undefined,
-        (err) => {
-          throw err;
-        },
-      ])
+      throwIfNotAwsError("NoSuchTagSet")
     );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listBuckets-property
@@ -447,7 +400,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       switchCase([
         or([
           eq(get("statusCode"), 404),
-          and([eq(get("statusCode"), 400), eq(get("name"), "BadRequest")]),
+          and([eq(get("statusCode"), 400), isAwsError("BadRequest")]),
         ]),
         () => false,
         (error) => {
@@ -779,14 +732,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       },
       tryCatch(
         () => s3().deleteBucket({ Bucket }),
-        switchCase([
-          eq(get("name"), "NoSuchBucket"),
-          () => null,
-          (error) => {
-            logger.error(`destroy s3 bucket ${Bucket}, error: ${tos(error)}`);
-            throw error;
-          },
-        ])
+        throwIfNotAwsError("NoSuchBucket")
       ),
       tap(() => {
         logger.info(`destroyed s3 bucket ${tos({ Bucket })}`);

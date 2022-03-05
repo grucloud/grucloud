@@ -1,18 +1,8 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  pick,
-  assign,
-  omit,
-} = require("rubico");
+const { pipe, tap, tryCatch, get, pick, assign, omit } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { buildTags } = require("../AwsCommon");
+const { throwIfNotAwsError, buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createECR } = require("./ECRCommon");
@@ -32,13 +22,7 @@ exports.EcrRepository = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRepositoryPolicy-property
   const getRepositoryPolicy = tryCatch(
     pipe([pickId, ecr().getRepositoryPolicy, get("policyText"), JSON.parse]),
-    switchCase([
-      eq(get("name"), "RepositoryPolicyNotFoundException"),
-      () => undefined,
-      (error) => {
-        throw error;
-      },
-    ])
+    throwIfNotAwsError("RepositoryPolicyNotFoundException")
   );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getLifecyclePolicy-property
@@ -49,13 +33,7 @@ exports.EcrRepository = ({ spec, config }) => {
       get("lifecyclePolicyText"),
       JSON.parse,
     ]),
-    switchCase([
-      eq(get("name"), "LifecyclePolicyNotFoundException"),
-      () => undefined,
-      (error) => {
-        throw error;
-      },
-    ])
+    throwIfNotAwsError("LifecyclePolicyNotFoundException")
   );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#listTagsForResource-property

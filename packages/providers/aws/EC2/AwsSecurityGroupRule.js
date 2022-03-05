@@ -31,7 +31,7 @@ const {
   when,
 } = require("rubico/x");
 
-const { compareAws } = require("../AwsCommon");
+const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
@@ -450,13 +450,7 @@ const SecurityGroupRuleBase = ({ config }) => {
             logger.info(`created sg rule ${kind}, ${name} ${tos({ result })}`);
           }),
         ]),
-        switchCase([
-          eq(get("name"), "InvalidPermission.Duplicate"),
-          () => {},
-          (error) => {
-            throw error;
-          },
-        ])
+        throwIfNotAwsError("InvalidPermission.Duplicate")
       )();
 
   const destroy =

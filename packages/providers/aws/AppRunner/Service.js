@@ -102,10 +102,7 @@ exports.AppRunnerService = ({ spec, config }) => {
     //isInstanceUp,
     pickCreated: (payload) => (result) =>
       pipe([() => result, get("Service"), pickId])(),
-    shouldRetryOnException: pipe([
-      get("error.message"),
-      includes("Error in assuming access"),
-    ]),
+    shouldRetryOnExceptionMessages: ["Error in assuming access"],
     pickId,
     getById,
     config,

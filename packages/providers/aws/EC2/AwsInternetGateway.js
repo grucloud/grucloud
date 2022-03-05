@@ -22,6 +22,7 @@ const {
   findNameInTagsOrId,
   buildTags,
   findNamespaceInTags,
+  isAwsError,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { createEC2 } = require("./EC2Common");
@@ -135,7 +136,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
                 // "Network vpc-xxxxxxx has some mapped public address(es). Please unmap those public address(es) before detaching the gateway."
                 logger.error(`detachInternetGateway ${name}: ${tos(error)}`);
               }),
-              eq(get("name"), "DependencyViolation"),
+              isAwsError("DependencyViolation"),
             ])(),
           config: { retryCount: 10, retryDelay: 5e3 },
         }),
@@ -182,15 +183,6 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     method: "deleteInternetGateway",
     getById,
     ignoreErrorCodes: ["InvalidInternetGatewayID.NotFound"],
-    // shouldRetryOnException: ({ error, name }) =>
-    //   pipe([
-    //     () => error,
-    //     tap(() => {
-    //       // "The internetGateway 'igw-0913a9915c19844a8' has dependencies and cannot be deleted."
-    //       logger.error(`deleteInternetGateway ${name}: ${tos(error)}`);
-    //     }),
-    //     eq(get("name"), "DependencyViolation"),
-    //   ])(),
     config,
   });
 

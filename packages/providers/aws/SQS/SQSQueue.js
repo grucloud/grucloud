@@ -128,10 +128,9 @@ exports.SQSQueue = ({ spec, config }) => {
   const create = client.create({
     pickCreated: () => pickId,
     method: "createQueue",
-    shouldRetryOnException: eq(
-      get("error.name"),
-      "AWS.SimpleQueueService.QueueDeletedRecently"
-    ),
+    shouldRetryOnExceptionCodes: [
+      "AWS.SimpleQueueService.QueueDeletedRecently",
+    ],
     pickId,
     getById,
     isInstanceUp: pipe([

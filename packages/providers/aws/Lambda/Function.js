@@ -21,7 +21,7 @@ const logger = require("@grucloud/core/logger")({
 });
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { compareAws, createEndpoint } = require("../AwsCommon");
+const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createLambda } = require("./LambdaCommon");
@@ -118,15 +118,7 @@ exports.Function = ({ spec, config }) => {
                 assert(true);
               }),
             ]),
-            pipe([
-              switchCase([
-                eq(get("name"), "ResourceNotFoundException"),
-                () => undefined,
-                (error) => {
-                  throw error;
-                },
-              ]),
-            ])
+            throwIfNotAwsError("ResourceNotFoundException")
           ),
           Code: pipe([
             get("Code"),
@@ -167,14 +159,7 @@ exports.Function = ({ spec, config }) => {
         ({ FunctionArn }) => ({ Configuration: { FunctionArn: FunctionArn } }),
       ]),
     pickId,
-    shouldRetryOnException: ({ error }) =>
-      pipe([
-        tap(() => {
-          logger.error(`createFunction isExpectedException ${tos(error)}`);
-        }),
-        () => error,
-        eq(get("name"), "InvalidParameterValueException"),
-      ])(),
+    shouldRetryOnExceptionCodes: ["InvalidParameterValueException"],
     getById,
     config,
   });

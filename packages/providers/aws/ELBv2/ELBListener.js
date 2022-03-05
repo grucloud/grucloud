@@ -132,14 +132,7 @@ exports.ELBListener = ({ spec, config }) => {
     getById,
     config,
     pickCreated: () => pipe([get("Listeners"), first]),
-    shouldRetryOnException: ({ error }) =>
-      pipe([
-        tap(() => {
-          logger.info(`listener create isExpectedException ${tos(error)}`);
-        }),
-        () => error,
-        eq(get("name"), "UnsupportedCertificate"),
-      ])(),
+    shouldRetryOnExceptionCodes: ["UnsupportedCertificate"],
     config: { retryCount: 40 * 10, retryDelay: 10e3 },
   });
 
