@@ -91,6 +91,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Aws
 
+- propertiesDefault instead of defaultsDeep
 - aws user tags for all resources
 - compare refactor
 - compare Tags
@@ -114,20 +115,9 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 - aws_route53_delegation_set
 
-- https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
-- https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
-
-- https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
-- https://docs.aws.amazon.com/eks/latest/userguide/load-balancing.html
-- https://medium.com/cloudzone/aws-alb-ingress-controller-guide-ec16233f5903
-- https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/
-- aws load balancer ingress https://github.com/stacksimplify/aws-eks-kubernetes-masterclass/blob/f46e2b15533a96b7641662656cf5deebb63d5dae/11-DevOps-with-AWS-Developer-Tools/Application-Manifests/kube-manifests/03-DEVOPS-Nginx-ALB-IngressService.yml
-
 - VpcEndpoint
 - https://medium.com/dev-genius/create-an-amazon-eks-cluster-with-managed-node-group-using-terraform-a3b50d276b13
 - security group update
-
-- aws.config.loadFromPath('./AwsConfig.json');
 
 aws iam create-user --user-name terraform-user
 aws iam put-user-policy --user-name terraform-user --policy-name least-privilege --policy-document file://policy.json

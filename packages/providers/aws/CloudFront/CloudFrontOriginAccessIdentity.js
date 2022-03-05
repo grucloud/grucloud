@@ -14,13 +14,29 @@ const findName = pipe([
   get(
     "live.CloudFrontOriginAccessIdentity.CloudFrontOriginAccessIdentityConfig.Comment"
   ),
+  tap((Comment) => {
+    assert(Comment);
+  }),
 ]);
-const findId = get("live.CloudFrontOriginAccessIdentity.Id");
-const pickId = pipe([
-  tap(({ Id }) => {
+const findId = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  get("live.CloudFrontOriginAccessIdentity.Id"),
+  tap((Id) => {
     assert(Id);
   }),
-  ({ Id }) => ({ Id }),
+]);
+
+const pickId = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  get("CloudFrontOriginAccessIdentity"),
+  pick(["Id"]),
+  tap((Id) => {
+    assert(Id);
+  }),
 ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
@@ -32,14 +48,22 @@ exports.CloudFrontOriginAccessIdentity = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getCloudFrontOriginAccessIdentity",
+    //getField: "CloudFrontOriginAccessIdentity",
     ignoreErrorCodes: ["NotFoundException"],
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#listCloudFrontOriginAccessIdentities-property
   const getList = client.getList({
     method: "listCloudFrontOriginAccessIdentities",
-    getParam: "Items",
-    decorate: () => getById,
+    getParam: "CloudFrontOriginAccessIdentityList.Items",
+    decorate: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        ({ Id }) => ({ CloudFrontOriginAccessIdentity: { Id } }),
+        getById,
+      ]),
   });
 
   const getByName = getByNameCore({ getList, findName });

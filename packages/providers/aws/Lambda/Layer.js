@@ -78,7 +78,7 @@ exports.Layer = ({ spec, config }) => {
         pipe([
           () => error,
           switchCase([
-            eq(get("code"), "ResourceNotFoundException"),
+            eq(get("name"), "ResourceNotFoundException"),
             () => undefined,
             () => {
               throw error;

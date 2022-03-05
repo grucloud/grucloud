@@ -12,7 +12,11 @@ const {
   omit,
 } = require("rubico");
 const { isEmpty, find, when } = require("rubico/x");
-const { buildGetId, replaceWithName } = require("@grucloud/core/Common");
+const {
+  buildGetId,
+  replaceWithName,
+  omitIfEmpty,
+} = require("@grucloud/core/Common");
 
 const { isOurMinion, compareAws } = require("../AwsCommon");
 const { CloudFrontDistribution } = require("./CloudFrontDistribution");
@@ -40,22 +44,29 @@ module.exports = () =>
       },
       Client: CloudFrontDistribution,
       isOurMinion,
+      propertiesDefault: {
+        OriginGroups: { Quantity: 0, Items: [] },
+        CacheBehaviors: { Quantity: 0, Items: [] },
+        CustomErrorResponses: { Quantity: 0, Items: [] },
+        ViewerCertificate: { CloudFrontDefaultCertificate: false },
+        DefaultCacheBehavior: {
+          FunctionAssociations: { Quantity: 0, Items: [] },
+          LambdaFunctionAssociations: { Quantity: 0, Items: [] },
+          TrustedKeyGroups: { Quantity: 0, Items: [] },
+          TrustedSigners: { Quantity: 0, Items: [] },
+        },
+        Restrictions: { GeoRestriction: { Quantity: 0, Items: [] } },
+        HttpVersion: "http2",
+        IsIPV6Enabled: true,
+      },
       compare: compareAws({
         filterTarget: () =>
           pipe([
             get("DistributionConfig"),
             omit([
               "CallerReference",
-              "ViewerCertificate.CloudFrontDefaultCertificate",
+              //"ViewerCertificate.CloudFrontDefaultCertificate",
             ]),
-            defaultsDeep({
-              OriginGroups: { Quantity: 0, Items: [] },
-              CacheBehaviors: { Quantity: 0, Items: [] },
-              CustomErrorResponses: { Quantity: 0, Items: [] },
-              ViewerCertificate: { CloudFrontDefaultCertificate: false },
-              HttpVersion: "http2",
-              IsIPV6Enabled: true,
-            }),
           ]),
         filterLive: () =>
           pipe([
@@ -133,6 +144,10 @@ module.exports = () =>
                   map(
                     pipe([
                       assign({
+                        CustomHeaders: pipe([
+                          get("CustomHeaders"),
+                          omitIfEmpty(["Items"]),
+                        ]),
                         DomainName: ({ DomainName }) =>
                           replaceWithBucketName({
                             lives,

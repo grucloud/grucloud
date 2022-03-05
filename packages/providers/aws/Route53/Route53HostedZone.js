@@ -27,6 +27,7 @@ const {
 } = require("rubico/x");
 
 const { AwsClient } = require("../AwsClient");
+const util = require("util");
 
 const logger = require("@grucloud/core/logger")({ prefix: "HostedZone" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -236,11 +237,11 @@ exports.Route53HostedZone = ({ spec, config }) => {
           tryCatch(
             pipe([
               //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Domains.html#updateDomainNameservers-property
-              (Nameservers) =>
-                route53Domains().updateDomainNameservers({
-                  DomainName: domain.live.DomainName,
-                  Nameservers,
-                }),
+              (Nameservers) => ({
+                DomainName: domain.live.DomainName,
+                Nameservers,
+              }),
+              route53Domains().updateDomainNameservers,
               tap(({ OperationId }) => {
                 logger.debug(`updateDomainNameservers ${tos({ OperationId })}`);
               }),
@@ -248,7 +249,15 @@ exports.Route53HostedZone = ({ spec, config }) => {
                 retryCall({
                   name: `updateDomainNameservers: getOperationDetail OperationId: ${OperationId}`,
                   fn: pipe([
-                    () => route53Domains().getOperationDetail({ OperationId }),
+                    () => ({ OperationId }),
+                    route53Domains().getOperationDetail,
+                    tap((details) => {
+                      logger.debug(
+                        `updateDomainNameservers details: ${util.inspect(
+                          details
+                        )}`
+                      );
+                    }),
                     tap(({ Status, Message }) =>
                       pipe([
                         tap(() => {
@@ -268,7 +277,10 @@ exports.Route53HostedZone = ({ spec, config }) => {
                       ])()
                     ),
                   ]),
-                  isExpectedResult: pipe([eq(get("Status"), "SUCCESSFUL")]),
+                  isExpectedResult: or([
+                    pipe([get("Status"), isEmpty]), //TODO SDK v3 does not have Status
+                    pipe([eq(get("Status"), "SUCCESSFUL")]),
+                  ]),
                   config,
                 }),
               // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Domains.html#getOperationDetail-property

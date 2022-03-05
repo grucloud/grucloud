@@ -94,7 +94,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["destroy", "-f"],
+      "runtimeArgs": ["destroy", "-f", "-a"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
