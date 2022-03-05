@@ -159,7 +159,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeResourceRecordSets-property)
+- [ChangeResourceRecordSetsCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-route-53/interfaces/changeresourcerecordsetscommandinput.html)
 
 ## Dependencies
 

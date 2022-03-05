@@ -74,7 +74,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [ELBv2 createRule](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createRule-property)
+- [CreateRuleCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-elastic-load-balancing-v2/interfaces/createrulecommandinput.html)
 
 ## Source Code
 

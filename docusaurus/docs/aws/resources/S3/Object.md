@@ -45,7 +45,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property)
+- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putobjectcommandinput.html)
 
 ## List
 

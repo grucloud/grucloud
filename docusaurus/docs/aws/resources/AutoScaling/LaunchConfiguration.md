@@ -97,6 +97,10 @@ exports.createResources = () => [
 ];
 ```
 
+## Properties
+
+- [CreateLaunchConfigurationCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-auto-scaling/interfaces/createlaunchconfigurationcommandinput.html)
+
 ## List
 
 The Launch Configuration can be filtered with the _LaunchConfiguration_ type:

@@ -27,7 +27,7 @@ exports.createResources = () => [
 
 ### Subnet with attributes:
 
-The list of attributes can found in [modifySubnetAttribute](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifySubnetAttribute-property) function parameter.
+The list of attributes can found in [ModifySubnetAttributeCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/modifysubnetattributecommandinput.html) function parameter.
 
 ```js
 exports.createResources = () => [
@@ -71,6 +71,10 @@ exports.createResources = () => [
 ## Code Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
+
+## Properties
+
+- [CreateSubnetCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/createsubnetcommandinput.html)
 
 ## Dependencies
 

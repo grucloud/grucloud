@@ -25,7 +25,7 @@ exports.createResources = () => [
 
 ### Properties
 
-- [allocateAddress](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#allocateAddress-property)
+- [AllocateAddressCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/allocateaddresscommandinput.html)
 
 ### Examples
 
@@ -35,4 +35,4 @@ exports.createResources = () => [
 ### Used By
 
 - [EC2](./Instance.md)
-- [NatGateway](./NatGateway.md)
+- [Nat Gateway](./NatGateway.md)

@@ -49,7 +49,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDeployment-property)
+- [CreateDeploymentCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-apigatewayv2/interfaces/createdeploymentcommandinput.html)
 
 ## Dependencies
 

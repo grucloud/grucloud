@@ -44,7 +44,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property)
+- [CreateNodegroupCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-eks/interfaces/createnodegroupcommandinput.html)
 
 ## Dependencies
 

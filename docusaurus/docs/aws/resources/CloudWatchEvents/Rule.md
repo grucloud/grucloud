@@ -39,7 +39,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property)
+- [PutRuleCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-cloudwatch-events/interfaces/putrulecommandinput.html)
 
 ## Dependencies
 

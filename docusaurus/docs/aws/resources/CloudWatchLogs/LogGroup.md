@@ -15,7 +15,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#createLogGroup-property)
+- [CreateLogGroupCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-cloudwatch-logs/interfaces/createloggroupcommandinput.html)
 
 ## Full Examples
 

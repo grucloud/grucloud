@@ -43,7 +43,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#createTable-property)
+- [CreateTableCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-dynamodb/interfaces/createtablecommandinput.html)
 
 ## Dependencies
 

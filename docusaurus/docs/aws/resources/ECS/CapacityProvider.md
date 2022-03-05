@@ -34,7 +34,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createCapacityProvider-property)
+- [CreateCapacityProviderCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecs/interfaces/createcapacityprovidercommandinput.html)
 
 ## Dependencies
 

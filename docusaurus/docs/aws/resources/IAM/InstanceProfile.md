@@ -65,11 +65,11 @@ exports.createResources = () => [
 
 ### Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createInstanceProfile-property)
+- [CreateInstanceProfileCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-iam/interfaces/createinstanceprofilecommandinput.html)
 
 ### Dependencies
 
-- [IamRole](./Role.md)
+- [Iam Role](./Role.md)
 
 ### Used By
 
@@ -79,7 +79,7 @@ exports.createResources = () => [
 ### List
 
 ```sh
-gc l -t IamInstanceProfile
+gc l -t InstanceProfile
 ```
 
 ```sh

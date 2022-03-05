@@ -64,6 +64,10 @@ exports.createResources = () => [
 
 - [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ELBv2/load-balancer/resources.js)
 
+## Properties
+
+The list of properties are defined in [CreateLoadBalancerCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-elastic-load-balancing-v2/interfaces/createloadbalancercommandinput.html)
+
 ## Dependencies
 
 - [Subnet](../EC2/Subnet.md)

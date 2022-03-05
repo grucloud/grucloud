@@ -35,7 +35,7 @@ Every time a new schema is modified and updated, a new deployment is created wit
 
 The remaining input properties:
 
-- [createRestApi input](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-api-gateway/interfaces/createrestapicommandinput.html)
+- [CreateRestApiCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-api-gateway/interfaces/createrestapicommandinput.html)
 
 ## Used By
 

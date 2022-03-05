@@ -70,7 +70,7 @@ kubectl config delete-cluster arn:aws:eks:eu-west-2:840541460064:cluster/myClust
 
 ## Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property)
+- [CreateClusterCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-eks/interfaces/createclustercommandinput.html)
 
 ## Dependencies
 

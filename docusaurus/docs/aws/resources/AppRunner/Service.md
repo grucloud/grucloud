@@ -66,7 +66,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [createService properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#createService-property)
+- [CreateServiceCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-apprunner/interfaces/createservicecommandinput.html)
 
 ## Dependencies
 

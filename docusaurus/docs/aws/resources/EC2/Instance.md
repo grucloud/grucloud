@@ -41,7 +41,7 @@ exports.createResources = () => [
 
 ### Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property)
+- [RunInstancesCommandInput list](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/runinstancescommandinput.html)
 
 ### Dependencies
 

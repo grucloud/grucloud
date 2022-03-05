@@ -64,7 +64,7 @@ exports.createResources = () => [
 
 ## Properties
 
-The list of properties can be found in [describeImages](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeImages-property)
+The list of properties can be found in [DescribeImagesCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/describeimagescommandinput.html)
 
 ## Examples
 

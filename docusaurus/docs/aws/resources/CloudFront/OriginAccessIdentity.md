@@ -21,6 +21,10 @@ exports.createResources = () => [
 
 - [cloudfront distribution with origin access identity](https://github.com/grucloud/grucloud/blob/main/examples/aws/CloudFront/cloudfront-distribution/resources.js)
 
+### Properties
+
+- [CreateCloudFrontOriginAccessIdentityCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-cloudfront/interfaces/createcloudfrontoriginaccessidentitycommandinput.html)
+
 ## Used By
 
 - [CloudFront Distribution](./Distribution.md)

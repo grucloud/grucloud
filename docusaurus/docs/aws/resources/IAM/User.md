@@ -95,16 +95,16 @@ exports.createResources = () => [
 
 ### Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createUser-property)
+- [CreateUserCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-iam/interfaces/createusercommandinput.html)
 
 ### Dependencies
 
-- [IamGroup](./Group.md)
+- [Iam Group](./Group.md)
 
 ### List
 
 ```sh
-gc l -t IamUser
+gc l -t IAM::User
 ```
 
 ```sh
