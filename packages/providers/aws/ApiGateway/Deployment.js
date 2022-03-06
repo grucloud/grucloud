@@ -8,7 +8,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { findNameInTagsOrId } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
-const { createAPIGateway } = require("./ApiGatewayCommon");
+const { createAPIGateway, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findId = get("live.id");
 const findName = findNameInTagsOrId({ findId });
@@ -50,7 +50,7 @@ exports.Deployment = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getDeployment",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getDeployments-property
@@ -96,14 +96,9 @@ exports.Deployment = ({ spec, config }) => {
             id: result.id,
             restApiId: resolvedDependencies.restApi.live.id,
           }),
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
     method: "createDeployment",
     getById,
-    pickId,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateDeployment-property
@@ -111,7 +106,6 @@ exports.Deployment = ({ spec, config }) => {
     pickId,
     method: "updateDeployment",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteDeployment-property
@@ -119,8 +113,7 @@ exports.Deployment = ({ spec, config }) => {
     pickId,
     method: "deleteDeployment",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   return {

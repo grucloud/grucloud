@@ -39,12 +39,21 @@ const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
 const { throwIfNotAwsError } = require("../AwsCommon");
-const { createAPIGateway, diffToPatch } = require("./ApiGatewayCommon");
+const {
+  createAPIGateway,
+  diffToPatch,
+  ignoreErrorCodes,
+} = require("./ApiGatewayCommon");
 
 const findId = get("live.id");
 const findName = get("live.name");
 
-const pickId = ({ id }) => ({ restApiId: id });
+const pickId = pipe([
+  tap(({ id }) => {
+    assert(id);
+  }),
+  ({ id }) => ({ restApiId: id }),
+]);
 
 exports.RestApi = ({ spec, config }) => {
   const apiGateway = createAPIGateway(config);
@@ -571,7 +580,7 @@ exports.RestApi = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getRestApi",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
     decorate,
   });
 
@@ -609,13 +618,9 @@ exports.RestApi = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createRestApi-property
   const create = client.create({
-    //TODO identity ?
-    pickCreated: () => (result) => pipe([() => result])(),
     filterPayload: pipe([omit(["schemaFile", "schema", "deployment"])]),
     method: "createRestApi",
     getById,
-    pickId,
-    config,
     postCreate: (params) =>
       pipe([
         tap(putRestApi(params)),
@@ -629,13 +634,7 @@ exports.RestApi = ({ spec, config }) => {
   const update = client.update({
     preUpdate: ({ name, payload, live, diff, programOptions }) =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
         () => diff,
-        tap((params) => {
-          assert(true);
-        }),
         when(
           or([
             get("liveDiff.updated.schema"),
@@ -643,14 +642,8 @@ exports.RestApi = ({ spec, config }) => {
             get("liveDiff.deleted.schema"),
           ]),
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             () => ({ id: live.id }),
             putRestApi({ name, payload }),
-            tap(() => {
-              logger.info(`updated restApi ${name}`);
-            }),
             () => ({ restApiId: live.id, ...payload.deployment }),
             tap(() => {
               logger.info(`createDeployment ${name}`);
@@ -675,7 +668,6 @@ exports.RestApi = ({ spec, config }) => {
       ])(),
     method: "updateRestApi",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteRestApi-property
@@ -683,8 +675,7 @@ exports.RestApi = ({ spec, config }) => {
     pickId,
     method: "deleteRestApi",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

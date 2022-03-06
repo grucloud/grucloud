@@ -6,6 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getNewCallerReference } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { createCloudFront } = require("./CloudFrontCommon");
+const ignoreErrorCodes = ["NoSuchCloudFrontOriginAccessIdentity"];
 
 const findName = pipe([
   tap((params) => {
@@ -49,7 +50,7 @@ exports.CloudFrontOriginAccessIdentity = ({ spec, config }) => {
     pickId,
     method: "getCloudFrontOriginAccessIdentity",
     //getField: "CloudFrontOriginAccessIdentity",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#listCloudFrontOriginAccessIdentities-property
@@ -71,16 +72,7 @@ exports.CloudFrontOriginAccessIdentity = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createCloudFrontOriginAccessIdentity-property
   const create = client.create({
     method: "createCloudFrontOriginAccessIdentity",
-    pickCreated: () => (result) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => result,
-      ])(),
-    pickId,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#deleteCloudFrontOriginAccessIdentity-property
@@ -96,8 +88,7 @@ exports.CloudFrontOriginAccessIdentity = ({ spec, config }) => {
     ]),
     method: "deleteCloudFrontOriginAccessIdentity",
     getById,
-    ignoreErrorCodes: ["NoSuchCloudFrontOriginAccessIdentity"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({ name, properties, dependencies: {} }) =>

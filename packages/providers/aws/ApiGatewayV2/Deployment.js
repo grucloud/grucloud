@@ -8,6 +8,7 @@ const { AwsClient } = require("../AwsClient");
 const {
   createApiGatewayV2,
   findDependenciesApi,
+  ignoreErrorCodes,
 } = require("./ApiGatewayCommon");
 
 const findId = get("live.DeploymentId");
@@ -53,7 +54,7 @@ exports.Deployment = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getDeployment",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDeployments-property
@@ -77,13 +78,9 @@ exports.Deployment = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDeployment-property
   const create = client.create({
     method: "createDeployment",
-    pickCreated:
-      ({ payload }) =>
-      (result) =>
-        pipe([() => result, defaultsDeep({ ApiId: payload.ApiId })])(),
-    pickId,
+    pickCreated: ({ payload }) =>
+      pipe([defaultsDeep({ ApiId: payload.ApiId })]),
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateDeployment-property
@@ -91,7 +88,6 @@ exports.Deployment = ({ spec, config }) => {
     pickId,
     method: "updateDeployment",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteDeployment-property

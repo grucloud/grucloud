@@ -8,6 +8,7 @@ const { AwsClient } = require("../AwsClient");
 const {
   createAPIGateway,
   findDependenciesRestApi,
+  ignoreErrorCodes,
 } = require("./ApiGatewayCommon");
 
 const findId = get("live.id");
@@ -36,7 +37,7 @@ exports.Authorizer = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getAuthorizer",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getAuthorizers-property
@@ -73,9 +74,7 @@ exports.Authorizer = ({ spec, config }) => {
 
   const create = client.create({
     method: "createAuthorizer",
-    pickId,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateModel-property
@@ -83,7 +82,6 @@ exports.Authorizer = ({ spec, config }) => {
     pickId,
     method: "updateAuthorizer",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteAuthorizer-property
@@ -91,8 +89,7 @@ exports.Authorizer = ({ spec, config }) => {
     pickId,
     method: "deleteAuthorizer",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   return {

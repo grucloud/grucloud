@@ -176,7 +176,6 @@ exports.ELBRule = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createRule-property
   const create = client.create({
     method: "createRule",
-    pickId,
     getById,
     config,
     pickCreated: () => pipe([get("Rules"), first]),
@@ -188,7 +187,6 @@ exports.ELBRule = ({ spec, config }) => {
     method: "deleteRule",
     ignoreErrorCodes: ["RuleNotFound"],
     getById,
-    config,
   });
 
   const targetGroupProperties = ({ targetGroup }) =>

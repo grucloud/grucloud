@@ -41,6 +41,7 @@ const {
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { createCloudFront } = require("./CloudFrontCommon");
 
+const ignoreErrorCodes = ["NoSuchDistribution"];
 //TODO look in spec.type instead
 const RESOURCE_TYPE = "Distribution";
 const findId = get("live.Id");
@@ -150,7 +151,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     pickId,
     method: "getDistribution",
     getField: "Distribution",
-    ignoreErrorCodes: ["NoSuchDistribution"],
+    ignoreErrorCodes,
   });
 
   const isInstanceUp = eq(get("Status"), "Deployed");
@@ -165,17 +166,8 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     }),
     isInstanceUp,
     shouldRetryOnExceptionCodes: ["InvalidViewerCertificate"],
-    pickCreated: () => (result) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => result,
-        get("Distribution"),
-      ])(),
-    pickId,
+    pickCreated: () => get("Distribution"),
     getById,
-    config,
   });
 
   // TODO update
@@ -256,8 +248,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     isExpectedResult: () => true,
     shouldRetryOnExceptionCodes: ["DistributionNotDisabled"],
     getById,
-    ignoreErrorCodes: ["NoSuchDistribution"],
-    config,
+    ignoreErrorCodes,
   });
 
   //TODO Tags

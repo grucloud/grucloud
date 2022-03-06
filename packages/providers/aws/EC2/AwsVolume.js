@@ -134,11 +134,8 @@ exports.AwsVolume = ({ spec, config }) => {
   const create = client.create({
     filterPayload: omit(["Device"]),
     method: "createVolume",
-    pickCreated: () => (result) => pipe([() => result])(),
-    pickId,
     isInstanceUp: eq(get("State"), "available"),
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteVolume-property
@@ -147,7 +144,6 @@ exports.AwsVolume = ({ spec, config }) => {
     method: "deleteVolume",
     getById,
     ignoreErrorCodes: ["InvalidVolume.NotFound"],
-    config,
   });
 
   const configDefault = ({

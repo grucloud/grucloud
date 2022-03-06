@@ -7,6 +7,7 @@ const { AwsClient } = require("../AwsClient");
 const {
   createAPIGateway,
   findDependenciesRestApi,
+  ignoreErrorCodes,
 } = require("./ApiGatewayCommon");
 
 exports.Model = ({ spec, config }) => {
@@ -26,7 +27,7 @@ exports.Model = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getModel",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getModels-property
@@ -47,8 +48,6 @@ exports.Model = ({ spec, config }) => {
   const create = client.create({
     method: "createModel",
     getById,
-    pickId,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateModel-property
@@ -56,7 +55,6 @@ exports.Model = ({ spec, config }) => {
     pickId,
     method: "updateModel",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteModel-property
@@ -64,8 +62,7 @@ exports.Model = ({ spec, config }) => {
     pickId,
     method: "deleteModel",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

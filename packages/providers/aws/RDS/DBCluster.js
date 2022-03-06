@@ -8,8 +8,15 @@ const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { createRDS } = require("./RDSCommon");
 
+const ignoreErrorCodes = ["DBClusterNotFoundFault"];
+
 const findId = get("live.DBClusterIdentifier");
-const pickId = pick(["DBClusterIdentifier"]);
+const pickId = pipe([
+  tap(({ DBClusterIdentifier }) => {
+    assert(DBClusterIdentifier);
+  }),
+  pick(["DBClusterIdentifier"]),
+]);
 const findName = findId;
 const isInstanceUp = pipe([eq(get("Status"), "available")]);
 
@@ -51,12 +58,11 @@ exports.DBCluster = ({ spec, config }) => {
     pickId,
     method: "describeDBClusters",
     getField: "DBClusters",
-    ignoreErrorCodes: ["DBClusterNotFoundFault"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBCluster-property
   //TODO tags
-
   const configDefault = async ({
     name,
     namespace,
@@ -76,9 +82,8 @@ exports.DBCluster = ({ spec, config }) => {
     ])();
 
   const create = client.create({
-    pickCreated: () => pick(["DBCluster"]),
+    pickCreated: () => get("DBCluster"),
     method: "createDBCluster",
-    pickId,
     getById,
     isInstanceUp,
     config: { ...config, retryCount: 100 },
@@ -89,7 +94,6 @@ exports.DBCluster = ({ spec, config }) => {
     pickId,
     method: "modifyDBCluster",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteDBCluster-property
@@ -100,8 +104,7 @@ exports.DBCluster = ({ spec, config }) => {
     },
     method: "deleteDBCluster",
     getById,
-    ignoreErrorCodes: ["DBClusterNotFoundFault"],
-    config,
+    ignoreErrorCodes,
   });
 
   return {

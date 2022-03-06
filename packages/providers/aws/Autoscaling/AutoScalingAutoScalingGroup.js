@@ -4,7 +4,6 @@ const {
   defaultsDeep,
   pluck,
   isEmpty,
-  includes,
   callProp,
   unless,
   prepend,
@@ -22,7 +21,12 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { createAutoScaling } = require("./AutoScalingCommon");
 
 const findId = get("live.AutoScalingGroupARN");
-const pickId = pick(["AutoScalingGroupName"]);
+const pickId = pipe([
+  tap(({ AutoScalingGroupName }) => {
+    assert(AutoScalingGroupName);
+  }),
+  pick(["AutoScalingGroupName"]),
+]);
 
 const findNameEks = pipe([
   tap((params) => {
@@ -150,9 +154,11 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createAutoScalingGroup-property
   const create = client.create({
     method: "createAutoScalingGroup",
-    pickId,
     getById,
-    config,
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
     shouldRetryOnExceptionMessages: ["Invalid IAM Instance Profile ARN"],
   });
 
@@ -161,7 +167,6 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     pickId,
     method: "updateAutoScalingGroup",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property

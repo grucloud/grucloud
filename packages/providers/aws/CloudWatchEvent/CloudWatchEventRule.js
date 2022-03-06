@@ -5,7 +5,10 @@ const { defaultsDeep, isEmpty, pluck, unless, append } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createCloudWatchEvents } = require("./CloudWatchEventCommon");
+const {
+  createCloudWatchEvents,
+  ignoreErrorCodes,
+} = require("./CloudWatchEventCommon");
 
 const findId = get("live.Name");
 const pickId = pick(["Name", "EventBusName"]);
@@ -81,7 +84,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "describeRule",
-    ignoreErrorCodes: ["ResourceNotFoundException"],
+    ignoreErrorCodes,
   });
 
   const getByName = ({ name, dependencies = () => ({}) }) =>
@@ -95,9 +98,11 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
   const create = client.create({
     method: "putRule",
-    pickId,
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
@@ -143,8 +148,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     pickId,
     method: "deleteRule",
     getById,
-    ignoreErrorCodes: ["ResourceNotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = async ({

@@ -3,7 +3,10 @@ const { assign, pipe, tap, get, eq, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createCloudWatchEvents } = require("./CloudWatchEventCommon");
+const {
+  createCloudWatchEvents,
+  ignoreErrorCodes,
+} = require("./CloudWatchEventCommon");
 
 const findId = get("live.Arn");
 const pickId = pick(["Name"]);
@@ -47,7 +50,7 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "describeEventBus",
-    ignoreErrorCodes: ["ResourceNotFoundException"],
+    ignoreErrorCodes,
   });
 
   const getByName = pipe([({ name }) => ({ Name: name }), getById]);
@@ -55,9 +58,7 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#createEventBus-property
   const create = client.create({
     method: "createEventBus",
-    pickId,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#deleteEventBus-property
@@ -65,8 +66,7 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
     pickId,
     method: "deleteEventBus",
     getById,
-    ignoreErrorCodes: ["ResourceNotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = async ({

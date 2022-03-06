@@ -13,7 +13,10 @@ const {
 const { defaultsDeep, callProp } = require("rubico/x");
 const { AwsClient } = require("../AwsClient");
 const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
-const { createCloudWatchLogs } = require("./CloudWatchLogsCommon");
+const {
+  createCloudWatchLogs,
+  ignoreErrorCodes,
+} = require("./CloudWatchLogsCommon");
 
 const findId = pipe([get("live.arn"), callProp("replace", ":*", "")]);
 const pickId = pick(["logGroupName"]);
@@ -95,9 +98,7 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
   const create = client.create({
     filterPayload: omit(["retentionInDays"]),
     method: "createLogGroup",
-    pickId,
     getById,
-    config,
     postCreate: pipe([get("payload"), putRetentionPolicy]),
   });
 
@@ -116,8 +117,7 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
     pickId,
     method: "deleteLogGroup",
     getById,
-    ignoreErrorCodes: ["ResourceNotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({ name, namespace, properties, dependencies: {} }) =>

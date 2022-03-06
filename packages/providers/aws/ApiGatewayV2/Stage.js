@@ -8,7 +8,9 @@ const { AwsClient } = require("../AwsClient");
 const {
   createApiGatewayV2,
   findDependenciesApi,
+  ignoreErrorCodes,
 } = require("./ApiGatewayCommon");
+
 const findId = get("live.StageName");
 const findName = get("live.StageName");
 
@@ -31,7 +33,7 @@ exports.Stage = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getStage",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getStages-property
@@ -49,9 +51,11 @@ exports.Stage = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createStage-property
   const create = client.create({
     method: "createStage",
-    pickId,
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateStage-property
@@ -59,7 +63,6 @@ exports.Stage = ({ spec, config }) => {
     pickId,
     method: "updateStage",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteStage-property
@@ -67,8 +70,7 @@ exports.Stage = ({ spec, config }) => {
     pickId,
     method: "deleteStage",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

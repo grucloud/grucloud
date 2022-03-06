@@ -97,6 +97,10 @@ exports.EKSCluster = ({ spec, config }) => {
   const create = client.create({
     method: "createCluster",
     pickId,
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
     isInstanceUp: eq(get("status"), "ACTIVE"),
     shouldRetryOnExceptionMessages: [
       "The KeyArn in encryptionConfig provider",
@@ -146,7 +150,6 @@ exports.EKSCluster = ({ spec, config }) => {
     getById,
     ignoreErrorCodes: ["ResourceNotFoundException"],
     postDestroy: kubeConfigRemove,
-    config,
   });
 
   const configDefault = ({

@@ -13,7 +13,7 @@ const {
   pick,
   omit,
 } = require("rubico");
-const { isEmpty, defaultsDeep, when, size } = require("rubico/x");
+const { isEmpty, defaultsDeep, size } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsVpc" });
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -90,16 +90,7 @@ exports.AwsVpc = ({ spec, config }) => {
     method: "createVpc",
     isInstanceUp,
     filterPayload: omit(["DnsHostnames", "DnsSupport"]),
-    pickCreated: (payload) => (result) =>
-      pipe([
-        tap((params) => {
-          assert(payload);
-        }),
-        () => result,
-        get("Vpc"),
-        pickId,
-      ])(),
-    pickId,
+    pickCreated: () => get("Vpc"),
     getById,
     postCreate:
       ({ payload }) =>
@@ -141,7 +132,6 @@ exports.AwsVpc = ({ spec, config }) => {
             ])
           ),
         ])(),
-    config,
   });
 
   const destroySubnets = ({ VpcId }) =>
@@ -288,7 +278,6 @@ exports.AwsVpc = ({ spec, config }) => {
     method: "deleteVpc",
     getById,
     ignoreErrorCodes: ["InvalidVpcID.NotFound"],
-    config,
   });
 
   const configDefault = async ({

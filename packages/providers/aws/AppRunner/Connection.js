@@ -4,13 +4,11 @@ const { defaultsDeep } = require("rubico/x");
 
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createAppRunner } = require("./AppRunnerCommon");
+const { createAppRunner, ignoreErrorCodes } = require("./AppRunnerCommon");
 
 const findName = get("live.ConnectionName");
 const findId = get("live.ConnectionArn");
 const pickId = pick(["ConnectionName"]);
-
-const ignoreErrorCodes = ["ResourceNotFoundException"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AppRunnerConnection = ({ spec, config }) => {
@@ -38,17 +36,7 @@ exports.AppRunnerConnection = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#createConnection-property
   const create = client.create({
     method: "createConnection",
-    pickCreated: (payload) => (result) =>
-      pipe([
-        tap((params) => {
-          assert(payload);
-        }),
-        () => result,
-        pickId,
-      ])(),
-    pickId,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#deleteConnection-property
@@ -57,7 +45,6 @@ exports.AppRunnerConnection = ({ spec, config }) => {
     method: "deleteConnection",
     getById,
     ignoreErrorCodes,
-    config,
   });
 
   const configDefault = ({

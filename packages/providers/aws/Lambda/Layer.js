@@ -1,16 +1,5 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  eq,
-  assign,
-  tryCatch,
-  omit,
-  switchCase,
-  pick,
-} = require("rubico");
+const { pipe, tap, get, assign, tryCatch, omit, pick } = require("rubico");
 const { first, defaultsDeep } = require("rubico/x");
 const path = require("path");
 
@@ -137,9 +126,11 @@ exports.Layer = ({ spec, config }) => {
         }),
       ])(),
     method: "publishLayerVersion",
-    //pickId,
-    //getById,
-    config,
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
+    getById,
   });
 
   const update = client.update({
@@ -155,7 +146,6 @@ exports.Layer = ({ spec, config }) => {
   const destroy = client.destroy({
     pickId: ({ Version, LayerName }) => ({ VersionNumber: Version, LayerName }),
     method: "deleteLayerVersion",
-    config,
     //TODO error codes ?
   });
 

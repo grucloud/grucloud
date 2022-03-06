@@ -432,7 +432,7 @@ exports.tagsRemoveFromDescription = pipe([
 
 const findNamespaceInTags =
   (config) =>
-  ({ live }) =>
+  ({ live } = {}) =>
     pipe([
       tap(() => {
         assert(live);

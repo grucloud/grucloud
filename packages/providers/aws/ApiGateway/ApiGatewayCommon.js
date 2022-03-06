@@ -7,6 +7,8 @@ const { createEndpoint } = require("../AwsCommon");
 
 exports.createAPIGateway = createEndpoint(APIGateway);
 
+exports.ignoreErrorCodes = ["NotFoundException"];
+
 exports.findDependenciesRestApi = ({ live, lives }) => ({
   type: "RestApi",
   group: "APIGateway",

@@ -139,16 +139,9 @@ exports.ECSCluster = ({ spec, config }) => {
     filterPayload: omit(["Tags"]),
     pickCreated:
       ({ payload }) =>
-      (result) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => payload,
-        ])(),
-    pickId,
+      () =>
+        payload,
     getById,
-    config,
   });
 
   const destroyAutoScalingGroup = ({ live, lives }) =>

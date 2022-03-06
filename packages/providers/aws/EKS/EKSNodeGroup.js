@@ -84,7 +84,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   const create = client.create({
     method: "createNodegroup",
     pickId,
-    pickCreated: () => pipe([get("nodegroup")]),
+    pickCreated: () => get("nodegroup"),
     isInstanceUp: eq(get("status"), "ACTIVE"),
     getById,
     configIsUp: { retryCount: 12 * 25, retryDelay: 5e3 },

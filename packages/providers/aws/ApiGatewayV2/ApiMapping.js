@@ -8,6 +8,7 @@ const { AwsClient } = require("../AwsClient");
 const {
   createApiGatewayV2,
   findDependenciesApi,
+  ignoreErrorCodes,
 } = require("./ApiGatewayCommon");
 
 const findId = get("live.ApiMappingId");
@@ -47,7 +48,7 @@ exports.ApiMapping = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getApiMapping",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApiMappings-property
@@ -94,19 +95,9 @@ exports.ApiMapping = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createApiMapping-property
   const create = client.create({
     method: "createApiMapping",
-    pickCreated:
-      ({ payload }) =>
-      (result) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => result,
-          defaultsDeep({ DomainName: payload.DomainName }),
-        ])(),
-    pickId,
+    pickCreated: ({ payload }) =>
+      pipe([defaultsDeep({ DomainName: payload.DomainName })]),
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateApiMapping-property
@@ -114,7 +105,6 @@ exports.ApiMapping = ({ spec, config }) => {
     pickId,
     method: "updateApiMapping",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteApiMapping-property
@@ -122,8 +112,7 @@ exports.ApiMapping = ({ spec, config }) => {
     pickId,
     method: "deleteApiMapping",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

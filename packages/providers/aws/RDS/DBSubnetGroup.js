@@ -9,7 +9,14 @@ const { createRDS } = require("./RDSCommon");
 
 const findId = get("live.DBSubnetGroupName");
 const findName = findId;
-const pickId = pick(["DBSubnetGroupName"]);
+const pickId = pipe([
+  tap(({ DBSubnetGroupName }) => {
+    assert(DBSubnetGroupName);
+  }),
+  pick(["DBSubnetGroupName"]),
+]);
+
+const ignoreErrorCodes = ["DBSubnetGroupNotFoundFault"];
 
 exports.DBSubnetGroup = ({ spec, config }) => {
   const rds = createRDS(config);
@@ -43,7 +50,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     pickId,
     method: "describeDBSubnetGroups",
     getField: "DBSubnetGroups",
-    ignoreErrorCodes: ["DBSubnetGroupNotFoundFault"],
+    ignoreErrorCodes,
   });
 
   const getByName = pipe([
@@ -70,9 +77,8 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     ])();
 
   const create = client.create({
-    pickCreated: () => pick(["DBSubnetGroup"]),
+    pickCreated: () => get("DBSubnetGroup"),
     method: "createDBSubnetGroup",
-    pickId,
     getById,
     isInstanceUp,
     config: { ...config, retryCount: 100 },
@@ -84,7 +90,6 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     pickId,
     method: "modifyDBSubnetGroup",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteDBSubnetGroup-property
@@ -93,7 +98,6 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     method: "deleteDBSubnetGroup",
     getById,
     ignoreErrorCodes: ["DBSubnetGroupNotFoundFault"],
-    config,
   });
 
   return {

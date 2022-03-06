@@ -9,7 +9,12 @@ const { AwsClient } = require("../AwsClient");
 const { createRDS } = require("./RDSCommon");
 
 const findId = get("live.DBInstanceIdentifier");
-const pickId = pick(["DBInstanceIdentifier"]);
+const pickId = pipe([
+  tap(({ DBInstanceIdentifier }) => {
+    assert(DBInstanceIdentifier);
+  }),
+  pick(["DBInstanceIdentifier"]),
+]);
 const findName = findId;
 const isInstanceUp = pipe([eq(get("DBInstanceStatus"), "available")]);
 
@@ -77,9 +82,8 @@ exports.DBInstance = ({ spec, config }) => {
     ])();
 
   const create = client.create({
-    pickCreated: () => pick(["DBInstance"]),
+    pickCreated: () => get("DBInstance"),
     method: "createDBInstance",
-    pickId,
     getById,
     isInstanceUp,
     config: { ...config, retryCount: 100 },

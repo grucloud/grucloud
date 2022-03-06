@@ -164,7 +164,6 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createOpenIDConnectProvider-property
   const create = client.create({
     method: "createOpenIDConnectProvider",
-    pickId,
     filterPayload: (payload) =>
       pipe([
         tap(() => {
@@ -174,8 +173,6 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
         (thumbprint) => defaultsDeep({ ThumbprintList: [thumbprint] })(payload),
       ])(),
     getById,
-    config,
-    pickCreated: () => identity,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteOpenIDConnectProvider-property
@@ -183,7 +180,6 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     pickId,
     method: "deleteOpenIDConnectProvider",
     getById,
-    config,
     ignoreErrorCodes,
   });
 

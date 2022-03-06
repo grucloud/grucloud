@@ -1,22 +1,10 @@
 const assert = require("assert");
-const {
-  assign,
-  pipe,
-  tap,
-  get,
-  eq,
-  pick,
-  switchCase,
-  tryCatch,
-  set,
-  not,
-} = require("rubico");
+const { assign, pipe, tap, get, pick, tryCatch, set, not } = require("rubico");
 const {
   isEmpty,
   defaultsDeep,
   last,
   callProp,
-  includes,
   when,
   first,
 } = require("rubico/x");
@@ -111,12 +99,10 @@ exports.SQSQueue = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#createQueue-property
   const create = client.create({
-    pickCreated: () => pickId,
     method: "createQueue",
     shouldRetryOnExceptionCodes: [
       "AWS.SimpleQueueService.QueueDeletedRecently",
     ],
-    pickId,
     getById,
     isInstanceUp: pipe([
       (live) => ({ live }),
@@ -151,7 +137,6 @@ exports.SQSQueue = ({ spec, config }) => {
       ])(),
     method: "setQueueAttributes",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#deleteQueue-property
@@ -160,7 +145,6 @@ exports.SQSQueue = ({ spec, config }) => {
     method: "deleteQueue",
     getById,
     ignoreErrorCodes,
-    config,
   });
 
   const configDefault = async ({

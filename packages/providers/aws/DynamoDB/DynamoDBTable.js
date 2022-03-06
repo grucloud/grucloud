@@ -4,7 +4,7 @@ const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createDynamoDB } = require("./DynamoDBCommon");
+const { createDynamoDB, ignoreErrorCodes } = require("./DynamoDBCommon");
 const findName = get("live.TableName");
 const findId = get("live.TableArn");
 const pickId = pick(["TableName"]);
@@ -33,7 +33,7 @@ exports.DynamoDBTable = ({ spec, config }) => {
     pickId,
     method: "describeTable",
     getField: "Table",
-    ignoreErrorCodes: ["ResourceNotFoundException"],
+    ignoreErrorCodes,
     decorate: () =>
       pipe([
         tap((params) => {
@@ -67,17 +67,18 @@ exports.DynamoDBTable = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#createTable-property
   const create = client.create({
     method: "createTable",
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
     getById,
-    pickId,
     isInstanceUp: eq(get("TableStatus"), "ACTIVE"),
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#updateTable-property
   const update = client.update({
     pickId,
     method: "updateTable",
-    config,
     getById,
     isInstanceUp: eq(get("TableStatus"), "ACTIVE"),
   });
@@ -87,8 +88,7 @@ exports.DynamoDBTable = ({ spec, config }) => {
     pickId,
     method: "deleteTable",
     getById,
-    ignoreErrorCodes: ["ResourceNotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

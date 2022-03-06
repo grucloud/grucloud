@@ -93,11 +93,8 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createInternetGateway-property
   const create = client.create({
     method: "createInternetGateway",
-    pickCreated: () => (result) =>
-      pipe([() => result, get("InternetGateway"), pickId])(),
-    pickId,
+    pickCreated: () => get("InternetGateway"),
     getById,
-    config,
     postCreate:
       ({ resolvedDependencies: { vpc } }) =>
       ({ InternetGatewayId }) =>
@@ -183,7 +180,6 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     method: "deleteInternetGateway",
     getById,
     ignoreErrorCodes: ["InvalidInternetGatewayID.NotFound"],
-    config,
   });
 
   const configDefault = ({

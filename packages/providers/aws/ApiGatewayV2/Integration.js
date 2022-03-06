@@ -23,8 +23,10 @@ const { AwsClient } = require("../AwsClient");
 const {
   createApiGatewayV2,
   findDependenciesApi,
+  ignoreErrorCodes,
 } = require("./ApiGatewayCommon");
 const { createLambda } = require("../Lambda/LambdaCommon");
+
 const findId = get("live.IntegrationId");
 
 const integrationUriToName = pipe([callProp("split", ":"), last]);
@@ -63,7 +65,7 @@ exports.Integration = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getIntegration",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getIntegrations-property
@@ -90,13 +92,9 @@ exports.Integration = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createIntegration-property
   const create = client.create({
     method: "createIntegration",
-    pickCreated:
-      ({ payload }) =>
-      (result) =>
-        pipe([() => result, defaultsDeep({ ApiId: payload.ApiId })])(),
-    pickId,
+    pickCreated: ({ payload }) =>
+      pipe([defaultsDeep({ ApiId: payload.ApiId })]),
     getById,
-    config,
     postCreate: ({ resolvedDependencies: { api, lambdaFunction } }) =>
       pipe([
         tap(() => {
@@ -119,7 +117,6 @@ exports.Integration = ({ spec, config }) => {
     pickId,
     method: "updateIntegration",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#removePermission-property
@@ -155,8 +152,7 @@ exports.Integration = ({ spec, config }) => {
     pickId,
     method: "deleteIntegration",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

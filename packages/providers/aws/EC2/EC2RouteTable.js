@@ -124,10 +124,8 @@ exports.EC2RouteTable = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
   const create = client.create({
     method: "createRouteTable",
-    pickCreated: () => (result) => pipe([() => result, get("RouteTable")])(),
-    pickId,
+    pickCreated: () => get("RouteTable"),
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateRouteTable-property
@@ -137,7 +135,6 @@ exports.EC2RouteTable = ({ spec, config }) => {
     method: "deleteRouteTable",
     getById,
     ignoreErrorCodes: ["InvalidRouteTableID.NotFound"],
-    config,
   });
 
   const configDefault = ({

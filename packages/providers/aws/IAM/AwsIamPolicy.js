@@ -203,7 +203,11 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const create = client.create({
     method: "createPolicy",
     filterPayload,
-    config,
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
+    //TODO getById
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicyVersion-property
@@ -318,7 +322,6 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     method: "deletePolicy",
     getById,
     ignoreErrorCodes: ["NoSuchEntity"],
-    config,
   });
 
   const configDefault = async ({ name, namespace, properties, dependencies }) =>
