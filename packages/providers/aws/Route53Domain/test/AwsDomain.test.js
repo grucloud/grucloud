@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 
 describe("AwsDomain", async function () {
   let config;
@@ -24,11 +23,6 @@ describe("AwsDomain", async function () {
     return provider;
   };
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = await createProvider({ config });
   });
   after(async () => {});

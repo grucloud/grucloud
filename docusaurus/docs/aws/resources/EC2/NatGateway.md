@@ -23,6 +23,10 @@ exports.createResources = () => [
 
 - [VPC Module](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/vpc)
 
+### Properties
+
+- [CreateNatGatewayCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/createnatgatewaycommandinput.html)
+
 ### Dependencies
 
 - [ElasticIpAddress](./ElasticIpAddress.md)

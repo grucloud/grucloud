@@ -70,7 +70,7 @@ module.exports = pipe([
               assert(true);
             }),
             defaultsDeep({
-              RouteSettings: [],
+              RouteSettings: {},
               DefaultRouteSettings: {
                 DetailedMetricsEnabled: false,
               },

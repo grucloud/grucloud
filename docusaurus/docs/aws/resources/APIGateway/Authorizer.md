@@ -38,7 +38,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createAuthorizer-property)
+- [CreateAuthorizerCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-api-gateway/interfaces/createauthorizercommandinput.html)
 
 ## Dependencies
 
@@ -50,7 +50,7 @@ exports.createResources = () => [
 
 ## List
 
-The Authorizers can be filtered with the _Authorizer_ type:
+The authorizers can be filtered with the _Authorizer_ type:
 
 ```sh
 gc l -t Authorizer

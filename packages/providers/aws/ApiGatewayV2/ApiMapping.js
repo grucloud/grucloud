@@ -5,7 +5,10 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { findDependenciesApi } = require("./ApiGatewayCommon");
+const {
+  createApiGatewayV2,
+  findDependenciesApi,
+} = require("./ApiGatewayCommon");
 
 const findId = get("live.ApiMappingId");
 const findName = pipe([
@@ -19,10 +22,12 @@ const findName = pipe([
     assert(true);
   }),
 ]);
+
 const pickId = pick(["ApiMappingId", "DomainName"]);
 
 exports.ApiMapping = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const apiGateway = createApiGatewayV2(config);
+  const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live, lives }) => [
     findDependenciesApi({ live }),

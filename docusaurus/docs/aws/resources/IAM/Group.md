@@ -60,19 +60,19 @@ exports.createResources = () => [
 
 ### Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createGroup-property)
+- [CreateGroupCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-iam/interfaces/creategroupcommandinput.html)
 
 ### Dependencies
 
 ### Used By
 
-- [IamPolicy](./Policy.md)
-- [IamUser](./User.md)
+- [Iam Policy](./Policy.md)
+- [Iam User](./User.md)
 
 ### List
 
 ```sh
-gc l -t IamGroup
+gc l -t IAM::Group
 ```
 
 ```sh

@@ -41,7 +41,7 @@ exports.createResources = () => [
 
 ## Properties
 
-The list of properties are the parameter of [createTargetGroup](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property)
+The list of properties are defined in [CreateListenerCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-elastic-load-balancing-v2/interfaces/createlistenercommandinput.html)
 
 ## Source Code
 

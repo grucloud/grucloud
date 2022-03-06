@@ -5,7 +5,7 @@ const { defaultsDeep, pluck } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { buildTagsEcs } = require("./ECSCommon");
+const { createECS, buildTagsEcs } = require("./ECSCommon");
 
 const findId = get("live.taskSetArn");
 const findName = get("live.taskDefinition");
@@ -13,7 +13,8 @@ const pickId = pick(["cluster", "service", "taskSet"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSTaskSet = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const ecs = createECS(config);
+  const client = AwsClient({ spec, config })(ecs);
 
   // findDependencies for ECSTaskSet
   const findDependencies = ({ live }) => [

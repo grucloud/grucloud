@@ -23,7 +23,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createKey-property)
+- [CreateKeyCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-kms/interfaces/createkeycommandinput.html)
 
 ## Used By
 

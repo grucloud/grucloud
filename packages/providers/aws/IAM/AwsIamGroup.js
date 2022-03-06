@@ -1,12 +1,12 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, any, assign, pick } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck } = require("rubico/x");
+const { defaultsDeep, forEach, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamGroup" });
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { IAMNew } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createIAM } = require("./AwsIamCommon");
 
 const findName = get("live.GroupName");
 const findId = findName;
@@ -14,8 +14,8 @@ const pickId = pick(["GroupName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamGroup = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const iam = IAMNew(config);
+  const iam = createIAM(config);
+  const client = AwsClient({ spec, config })(iam);
 
   const findDependencies = ({ live }) => [
     {

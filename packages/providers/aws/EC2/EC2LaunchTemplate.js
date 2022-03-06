@@ -10,12 +10,12 @@ const {
 } = require("rubico/x");
 
 const {
-  createEndpoint,
   buildTags,
   findValueInTags,
   findNamespaceInTagsOrEksCluster,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 const EC2Instance = require("./EC2Instance");
 
@@ -48,8 +48,8 @@ const ignoreErrorCodes = [
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2LaunchTemplate = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const ec2 = () => createEndpoint({ endpointName: "EC2" })(config);
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const managedByOther = pipe([
     get("live.CreatedBy"),

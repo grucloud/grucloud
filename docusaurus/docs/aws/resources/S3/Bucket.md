@@ -19,7 +19,7 @@ exports.createResources = () => [
 
 Enable or disable the bucket acceleration.
 
-See the [AccelerateConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property)
+See the [AccelerateConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putbucketaccelerateconfigurationcommandinput.html)
 
 ```js
 exports.createResources = () => [
@@ -41,7 +41,7 @@ exports.createResources = () => [
 Set the CORS configuration for this bucket.
 
 See the
-[CORSConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketCors-property) for a full list of supported options.
+[CORSConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putbucketcorscommandinput.html) for a full list of supported options.
 
 ```js
 exports.createResources = () => [
@@ -70,7 +70,7 @@ exports.createResources = () => [
 Set the encryption configuration for this bucket.
 
 See the
-[ServerSideEncryptionConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketEncryption-property) for a full list of supported options.
+[ServerSideEncryptionConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putbucketencryptioncommandinput.html) for a full list of supported options.
 
 ```js
 exports.createResources = () => [
@@ -97,7 +97,7 @@ exports.createResources = () => [
 
 Enable or disable the bucket lifecycle.
 
-See the [LifecycleConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLifecycleConfiguration-property)
+See the [LifecycleConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putbucketlifecycleconfigurationcommandinput.html)
 
 ```js
 exports.createResources = () => [
@@ -135,7 +135,7 @@ exports.createResources = () => [
 
 Enable logging of one bucket to another.
 
-See [BucketLoggingStatus](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLogging-property) for as full list of properties.
+See [BucketLoggingStatus](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putbucketloggingcommandinput.html) for as full list of properties.
 
 > The destination bucket must have its _ACL_ set to _log-delivery-write_.
 
@@ -181,7 +181,7 @@ exports.createResources = () => [
 Set the notification configuration for this bucket.
 
 See the
-[NotificationConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketNotificationConfiguration-property) for a full list of supported options.
+[NotificationConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putbucketnotificationconfigurationcommandinput.html) for a full list of supported options.
 
 #### Notification for SNS
 
@@ -237,7 +237,7 @@ exports.createResources = () => [
 Set the policy configuration for this bucket.
 
 See the
-[Policy properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketPolicy-property) for a full list of supported options.
+[Policy properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putbucketpolicycommandinput.html) for a full list of supported options.
 
 ```js
 const bucketName = "yourgloballyuniquebucketnamehere";
@@ -273,7 +273,7 @@ exports.createResources = () => [
 Set the replication configuration for this bucket.
 
 See the
-[ReplicationConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketReplication-property) for a full list of supported options.
+[ReplicationConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putbucketreplicationcommandinput.html) for a full list of supported options.
 
 ```js
 const bucketName = "yourgloballyuniquebucketnamehere";
@@ -308,7 +308,7 @@ exports.createResources = () => [
 Set the request payment option for this bucket.
 
 See the
-[RequestPaymentConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketRequestPayment-property) for a full list of supported options.
+[RequestPaymentConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putbucketrequestpaymentcommandinput.html) for a full list of supported options.
 
 ```js
 exports.createResources = () => [
@@ -353,7 +353,7 @@ exports.createResources = () => [
 
 Enable or disable the bucket versioning.
 
-See the [VersioningConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketVersioning-property)
+See the [VersioningConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putbucketversioningcommandinput.html)
 
 ```js
 exports.createResources = () => [
@@ -376,7 +376,7 @@ exports.createResources = () => [
 Set the S3 bucket as a website.
 
 See the
-[WebsiteConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketWebsite-property) for a full list of supported options.
+[WebsiteConfiguration properties page](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/putbucketwebsitecommandinput.html) for a full list of supported options.
 
 ```js
 exports.createResources = () => [

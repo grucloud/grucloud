@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const {
   testPlanDeploy,
   testPlanDestroy,
@@ -15,11 +14,6 @@ describe("AwsS3Bucket", async function () {
   const bucketPrefix = "grucloud-t-";
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({
       name: "aws",
       config: () => ({ projectName: "gru-test" }),

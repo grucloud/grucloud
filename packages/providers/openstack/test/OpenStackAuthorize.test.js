@@ -3,19 +3,11 @@ const {
   OpenStackAuthorize,
   OpenStackListServices,
 } = require("../OpenStackUtils");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 
 describe("OpenStackAuthorize", async function () {
   let config;
 
-  before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-      assert(config);
-    } catch (error) {
-      this.skip();
-    }
-  });
+  before(async function () {});
   after(async () => {});
   it("ovh authenticate", async function () {
     try {

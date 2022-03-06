@@ -22,8 +22,9 @@ const {
 } = require("rubico/x");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createSQS } = require("./SQSCommon");
+const { throwIfNotAwsError } = require("../AwsCommon");
 
 const findId = get("live.Attributes.QueueArn");
 const pickId = pick(["QueueUrl"]);
@@ -42,8 +43,8 @@ const findName = pipe([
 const ignoreErrorCodes = ["AWS.SimpleQueueService.NonExistentQueue"];
 
 exports.SQSQueue = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const sqs = () => createEndpoint({ endpointName: "SQS" })(config);
+  const sqs = createSQS(config);
+  const client = AwsClient({ spec, config })(sqs);
 
   const findDependencies = ({ live, lives }) => [];
 
@@ -103,24 +104,8 @@ exports.SQSQueue = ({ spec, config }) => {
       assert(true);
     }),
     tryCatch(
-      pipe([
-        sqs().getQueueUrl,
-        tap((params) => {
-          assert(true);
-        }),
-        getById,
-      ]),
-      (error) =>
-        pipe([
-          () => ignoreErrorCodes,
-          switchCase([
-            includes(error.code),
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
+      pipe([sqs().getQueueUrl, getById]),
+      throwIfNotAwsError("AWS.SimpleQueueService.NonExistentQueue")
     ),
   ]);
 
@@ -128,10 +113,9 @@ exports.SQSQueue = ({ spec, config }) => {
   const create = client.create({
     pickCreated: () => pickId,
     method: "createQueue",
-    shouldRetryOnException: eq(
-      get("error.code"),
-      "AWS.SimpleQueueService.QueueDeletedRecently"
-    ),
+    shouldRetryOnExceptionCodes: [
+      "AWS.SimpleQueueService.QueueDeletedRecently",
+    ],
     pickId,
     getById,
     isInstanceUp: pipe([

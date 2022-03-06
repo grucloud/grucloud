@@ -39,10 +39,6 @@ exports.createResources = () => [
 
 - [ec2 in vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
 
-### Properties
-
-- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
-
 ### Dependencies
 
 - [SecurityGroup](./SecurityGroup.md)

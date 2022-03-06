@@ -27,25 +27,27 @@ const {
 } = require("rubico/x");
 
 const { AwsClient } = require("../AwsClient");
+const util = require("util");
 
 const logger = require("@grucloud/core/logger")({ prefix: "HostedZone" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
   getByNameCore,
-  isDownByIdCore,
   logError,
   axiosErrorToJSON,
 } = require("@grucloud/core/Common");
 const {
-  Route53New,
-  Route53DomainsNew,
   buildTags,
   findNamespaceInTags,
   getNewCallerReference,
 } = require("../AwsCommon");
 
 const { filterEmptyResourceRecords } = require("./Route53Utils");
+const { createRoute53, hostedZoneIdToResourceId } = require("./Route53Common");
+const {
+  createRoute53Domains,
+} = require("../Route53Domain/Route53DomainCommon");
 
 //Check for the final dot
 const findName = get("live.Name");
@@ -76,10 +78,10 @@ const findDnsServers = (live) =>
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53HostedZone = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const route53 = createRoute53(config);
+  const route53Domains = createRoute53Domains(config);
+  const client = AwsClient({ spec, config })(route53);
   const { providerName } = config;
-  const route53 = Route53New(config);
-  const route53domains = Route53DomainsNew(config);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -144,7 +146,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
           ]),
           Tags: pipe([
             (hostedZone) => ({
-              ResourceId: hostedZone.Id,
+              ResourceId: hostedZoneIdToResourceId(hostedZone.Id),
               ResourceType: "hostedzone",
             }),
             route53().listTagsForResource,
@@ -186,7 +188,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
       }),
       tap(({ HostedZone }) =>
         route53().changeTagsForResource({
-          ResourceId: HostedZone.Id,
+          ResourceId: hostedZoneIdToResourceId(HostedZone.Id),
           AddTags: buildTags({
             name,
             namespace,
@@ -235,11 +237,11 @@ exports.Route53HostedZone = ({ spec, config }) => {
           tryCatch(
             pipe([
               //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Domains.html#updateDomainNameservers-property
-              (Nameservers) =>
-                route53domains().updateDomainNameservers({
-                  DomainName: domain.live.DomainName,
-                  Nameservers,
-                }),
+              (Nameservers) => ({
+                DomainName: domain.live.DomainName,
+                Nameservers,
+              }),
+              route53Domains().updateDomainNameservers,
               tap(({ OperationId }) => {
                 logger.debug(`updateDomainNameservers ${tos({ OperationId })}`);
               }),
@@ -247,7 +249,15 @@ exports.Route53HostedZone = ({ spec, config }) => {
                 retryCall({
                   name: `updateDomainNameservers: getOperationDetail OperationId: ${OperationId}`,
                   fn: pipe([
-                    () => route53domains().getOperationDetail({ OperationId }),
+                    () => ({ OperationId }),
+                    route53Domains().getOperationDetail,
+                    tap((details) => {
+                      logger.debug(
+                        `updateDomainNameservers details: ${util.inspect(
+                          details
+                        )}`
+                      );
+                    }),
                     tap(({ Status, Message }) =>
                       pipe([
                         tap(() => {
@@ -267,7 +277,10 @@ exports.Route53HostedZone = ({ spec, config }) => {
                       ])()
                     ),
                   ]),
-                  isExpectedResult: pipe([eq(get("Status"), "SUCCESSFUL")]),
+                  isExpectedResult: or([
+                    pipe([get("Status"), isEmpty]), //TODO SDK v3 does not have Status
+                    pipe([eq(get("Status"), "SUCCESSFUL")]),
+                  ]),
                   config,
                 }),
               // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Domains.html#getOperationDetail-property

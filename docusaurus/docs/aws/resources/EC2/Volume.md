@@ -28,7 +28,7 @@ exports.createResources = () => [
 
 ### Properties
 
-- [all properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVolume-property)
+- [CreateVolumeCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/createvolumecommandinput.html)
 
 ### Used By
 

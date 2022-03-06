@@ -17,12 +17,15 @@ const { defaultsDeep, isEmpty, size } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "ECSCluster" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { createEndpoint, destroyAutoScalingGroupById } = require("../AwsCommon");
+const {
+  destroyAutoScalingGroupById,
+  throwIfNotAwsError,
+} = require("../AwsCommon");
 const {
   AutoScalingAutoScalingGroup,
 } = require("../Autoscaling/AutoScalingAutoScalingGroup");
 const { AwsClient } = require("../AwsClient");
-const { buildTagsEcs } = require("./ECSCommon");
+const { createECS, buildTagsEcs } = require("./ECSCommon");
 
 const findName = get("live.clusterName");
 const findId = get("live.clusterArn");
@@ -35,8 +38,9 @@ const pickId = pipe([
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSCluster = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
+  const ecs = createECS(config);
+  const client = AwsClient({ spec, config })(ecs);
+
   const autoScalingGroup = AutoScalingAutoScalingGroup({ spec, config });
 
   const findDependencies = ({ live, lives }) => [
@@ -189,13 +193,7 @@ exports.ECSCluster = ({ spec, config }) => {
           ])
         ),
       ]),
-      switchCase([
-        eq(get("code"), "ClusterNotFoundException"),
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
+      throwIfNotAwsError("ClusterNotFoundException")
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCluster-property

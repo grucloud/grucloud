@@ -1,11 +1,11 @@
 const assert = require("assert");
-const { map, pipe, tap, get, not, pick, assign } = require("rubico");
+const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { createEndpoint, buildTags } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
-
+const { createSSM } = require("./SSMCommon");
 const findName = get("live.Name");
 const findId = get("live.Name");
 const pickId = pick(["Name"]);
@@ -13,9 +13,8 @@ const pickId = pick(["Name"]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html
 
 exports.SSMParameter = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-
-  const ssm = () => createEndpoint({ endpointName: "SSM" })(config);
+  const ssm = createSSM(config);
+  const client = AwsClient({ spec, config })(ssm);
 
   const findDependencies = ({ live }) => [
     {

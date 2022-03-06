@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../GoogleProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 
 const {
   testPlanDeploy,
@@ -30,12 +29,6 @@ describe("GcpWebSiteHttps", async function () {
   let globalForwardingRule;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-
     provider = GoogleProvider({
       name: "google",
       config: () => ({

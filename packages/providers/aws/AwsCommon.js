@@ -1,4 +1,3 @@
-const AWS = require("aws-sdk");
 const assert = require("assert");
 const {
   assign,
@@ -27,10 +26,30 @@ const {
   when,
   unless,
 } = require("rubico/x");
+const util = require("util");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
 const { configProviderDefault, compare } = require("@grucloud/core/Common");
+
+const isAwsError = (code) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    eq(get("name"), code),
+  ]);
+exports.isAwsError = isAwsError;
+
+const throwIfNotAwsError = (code) =>
+  switchCase([
+    isAwsError(code),
+    () => undefined,
+    (error) => {
+      throw error;
+    },
+  ]);
+exports.throwIfNotAwsError = throwIfNotAwsError;
 
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
@@ -41,50 +60,55 @@ exports.compareAws = ({ filterAll, filterTarget, filterLive } = {}) =>
       filterTarget,
       filterTargetDefault: omit(["Tags"]),
       filterLive,
-      filterLiveDefault: omit(["Tags"]),
+      filterLiveDefault: omit(["Tags", "$metadata"]),
     }),
   ]);
 
 const proxyHandler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
-    assert(endpointName);
+    //assert(endpointName);
     assert(endpoint);
     assert(isFunction(endpoint[name]), `${name} is not a function`);
     return (...args) =>
       retryCall({
         name: `${endpointName}.${name} ${JSON.stringify(args)}`,
-        // s3.getSignedUrl does not have promise
-        fn: () =>
-          new Promise((resolve, reject) => {
-            endpoint[name](...args, (error, result) =>
-              switchCase([
-                () => error,
-                () => reject(error),
-                () => resolve(result),
-              ])()
-            );
+        fn: pipe([
+          () => endpoint[name](...args),
+          tap((params) => {
+            assert(true);
           }),
+          omit(["$metadata", "Status"]),
+        ]),
         isExpectedResult: () => true,
         config: { retryDelay: 30e3 },
         shouldRetryOnException: ({ error, name }) =>
           pipe([
             tap(() => {
               logger.info(
-                `shouldRetryOnException: ${name}, code: ${error.code}`
+                `shouldRetryOnException: ${name}, error: ${util.inspect(error)}`
+              );
+              logger.info(
+                `shouldRetryOnException: name: ${error.name}, code: ${error.code}`
               );
             }),
-            () => [
-              "Throttling",
-              "UnknownEndpoint",
-              "TooManyRequestsException",
-              "OperationAborted",
-              "TimeoutError",
-              "ServiceUnavailable",
-            ],
-            includes(error.code),
+            or([
+              pipe([() => ["ECONNRESET", "ENETDOWN"], includes(error.code)]),
+              pipe([
+                () => [
+                  "Throttling",
+                  "UnknownEndpoint",
+                  "TooManyRequestsException",
+                  "OperationAborted",
+                  "TimeoutError",
+                  "ServiceUnavailable",
+                ],
+                includes(error.name),
+              ]),
+            ]),
+
             tap.if(identity, () => {
               logger.info(
-                `shouldRetryOnException: ${name}: retrying, code: ${error.code}`
+                `shouldRetryOnException: ${name}: retrying, name: ${error.name}`
               );
             }),
           ])(),
@@ -92,49 +116,17 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
   },
 });
 
-const createEndpoint =
-  ({ endpointName }) =>
-  (config) =>
-    pipe([
-      tap(() => AWS.config.update(config)),
-      () => new AWS[endpointName]({ region: config.region }),
-      (endpoint) => new Proxy({}, proxyHandler({ endpointName, endpoint })),
-    ])();
+const createEndpoint = (client) => (config) =>
+  pipe([
+    tap((params) => {
+      assert(client);
+    }),
+    () => new client({ region: config.region }),
+    (endpoint) =>
+      new Proxy({}, proxyHandler({ endpointName: client.name, endpoint })),
+  ]);
 
 exports.createEndpoint = createEndpoint;
-
-exports.Ec2New = (config) => () =>
-  createEndpoint({ endpointName: "EC2" })(config);
-
-exports.IAMNew = (config) => () =>
-  createEndpoint({ endpointName: "IAM" })(config);
-
-exports.S3New = (config) => () =>
-  createEndpoint({ endpointName: "S3" })({ region: "us-east-1" });
-
-exports.Route53New = (config) => () =>
-  createEndpoint({ endpointName: "Route53" })(config);
-
-exports.CloudFrontNew = (config) => () =>
-  createEndpoint({ endpointName: "CloudFront" })(config);
-
-exports.Route53DomainsNew = () => () =>
-  createEndpoint({ endpointName: "Route53Domains" })({ region: "us-east-1" });
-
-exports.ACMNew = (config) => () =>
-  createEndpoint({ endpointName: "ACM" })(config);
-
-exports.EKSNew = (config) => () =>
-  createEndpoint({ endpointName: "EKS" })(config);
-
-exports.ELBv2New = (config) => () =>
-  createEndpoint({ endpointName: "ELBv2" })(config);
-
-exports.AutoScalingNew = (config) => () =>
-  createEndpoint({ endpointName: "AutoScaling" })(config);
-
-exports.KmsNew = (config) => () =>
-  createEndpoint({ endpointName: "KMS" })(config);
 
 exports.DecodeUserData = when(
   get("UserData"),
@@ -173,9 +165,9 @@ const hasKeyInTags =
         assert(live);
       }),
       () => live,
-      get("Tags"),
+      get("Tags", []),
       tap((Tags) => {
-        assert(Tags, `not Tags in ${tos(live)}`);
+        //assert(Tags, `not Tags in ${tos(live)}`);
       }),
       any((tag) => new RegExp(`^${key}*`, "i").test(tag.Key)),
       tap((result) => {
@@ -558,8 +550,8 @@ exports.revokeSecurityGroupIngress =
     tryCatch(
       () => ec2().revokeSecurityGroupIngress(params),
       tap.if(
-        ({ code }) =>
-          !includes(code)([
+        ({ name }) =>
+          !includes(name)([
             "InvalidPermission.NotFound",
             "InvalidGroup.NotFound",
           ]),
@@ -573,15 +565,9 @@ exports.removeRoleFromInstanceProfile =
   ({ iam }) =>
   (params) =>
     tryCatch(
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => params,
-        iam().removeRoleFromInstanceProfile,
-      ]),
+      pipe([() => params, iam().removeRoleFromInstanceProfile]),
       switchCase([
-        eq(get("code"), "NoSuchEntity"),
+        isAwsError("NoSuchEntity"),
         () => undefined,
         (error) => {
           logger.error(`iam role removeRoleFromInstanceProfile ${tos(error)}`);
@@ -614,7 +600,7 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
             tryCatch(
               (AttachmentId) => ec2().detachNetworkInterface({ AttachmentId }),
               switchCase([
-                eq(get("code"), "AuthFailure"),
+                isAwsError("AuthFailure"),
                 () => undefined,
                 (error) => {
                   logger.error(
@@ -641,9 +627,9 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
               ec2().deleteNetworkInterface({ NetworkInterfaceId }),
             switchCase([
               or([
-                eq(get("code"), "InvalidNetworkInterfaceID.NotFound"),
-                eq(get("code"), "InvalidParameterValue"),
-                eq(get("code"), "OperationNotPermitted"),
+                isAwsError("InvalidNetworkInterfaceID.NotFound"),
+                isAwsError("InvalidParameterValue"),
+                isAwsError("OperationNotPermitted"),
               ]),
               (error) => {
                 logger.error(

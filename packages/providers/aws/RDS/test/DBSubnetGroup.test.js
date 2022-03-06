@@ -35,7 +35,7 @@ describe("DBSubnetGroup", async function () {
     pipe([
       () =>
         subnetGroup.getByName({
-          name: "124",
+          name: "i-124",
         }),
     ])
   );

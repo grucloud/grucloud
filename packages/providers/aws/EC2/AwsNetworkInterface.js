@@ -5,12 +5,14 @@ const { isEmpty, first, identity, pluck } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "AwsNetworkInterface",
 });
-const { Ec2New, findNameInTagsOrId } = require("../AwsCommon");
+const { findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
 exports.AwsNetworkInterface = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
   const awsSecurityGroup = AwsSecurityGroup({ config, spec });
   const findId = get("live.NetworkInterfaceId");
   const pickId = pick(["NetworkInterfaceId"]);

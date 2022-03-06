@@ -25,11 +25,15 @@ const {
   flatten,
   unless,
 } = require("rubico/x");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+
 const logger = require("@grucloud/core/logger")({ prefix: "S3Object" });
 const { compareAws } = require("../AwsCommon");
 
 const { retryCall } = require("@grucloud/core/Retry");
-const { S3New, findNamespaceInTags } = require("../AwsCommon");
+const { findNamespaceInTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
 
@@ -39,6 +43,7 @@ const {
   mapPoolSize,
   md5FileBase64,
 } = require("@grucloud/core/Common");
+const { createS3 } = require("./AwsS3Common");
 
 const tagsSerialize = pipe([
   map(({ Key, Value }) => `${Key}=${Value}`),
@@ -70,10 +75,9 @@ exports.buildTagsS3Object = buildTagsS3Object;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Object = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const s3 = createS3(config);
+  const client = AwsClient({ spec, config })(s3);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
-
-  const s3 = S3New(config);
 
   const findName = get("live.Key");
   const findId = findName;
@@ -116,14 +120,18 @@ exports.AwsS3Object = ({ spec, config }) => {
         }),
       map.pool(mapPoolSize, (bucket) =>
         pipe([
-          () =>
-            s3().listObjectsV2({
-              Bucket: bucket.name,
-              MaxKeys: 1e3,
-            }),
-          get("Contents"),
-          map.pool(mapPoolSize, ({ Key }) =>
-            getByKey({ Key, Bucket: bucket.name })
+          () => ({
+            Bucket: bucket.name,
+            MaxKeys: 1e3,
+          }),
+          s3().listObjectsV2,
+          get("Contents", []),
+          tap((params) => {
+            assert(true);
+          }),
+          map.pool(
+            mapPoolSize,
+            pipe([({ Key }) => ({ Key, Bucket: bucket.name }), getByKey])
           ),
         ])()
       ),
@@ -147,7 +155,18 @@ exports.AwsS3Object = ({ spec, config }) => {
           fork({
             ACL: pipe([s3().getObjectAcl, pick(["Grants", "Owner"])]),
             signedUrl: pipe([
-              (params) => s3().getSignedUrl("getObject", params),
+              tap((params) => {
+                assert(true);
+              }),
+              (input) =>
+                getSignedUrl(
+                  new S3Client(config),
+                  new GetObjectCommand(input),
+                  {}
+                ),
+              tap((params) => {
+                assert(true);
+              }),
             ]),
             content: pipe([s3().headObject]),
             Tags: pipe([
@@ -170,7 +189,7 @@ exports.AwsS3Object = ({ spec, config }) => {
           pipe([
             () => ["NoSuchBucket", "NoSuchKey", "NotFound"],
             switchCase([
-              includes(error.code),
+              includes(error.name),
               () => null,
               () =>
                 pipe([

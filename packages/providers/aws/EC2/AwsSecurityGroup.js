@@ -10,7 +10,6 @@ const {
   filter,
   not,
   omit,
-  switchCase,
 } = require("rubico");
 const {
   find,
@@ -24,7 +23,6 @@ const {
   first,
 } = require("rubico/x");
 const {
-  Ec2New,
   buildTags,
   findNamespaceInTagsOrEksCluster,
   revokeSecurityGroupIngress,
@@ -33,16 +31,16 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags, findEksCluster } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecurityGroup" });
-const { tos } = require("@grucloud/core/tos");
 const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 exports.AwsSecurityGroup = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
   const { managedByDescription, providerName } = config;
   assert(managedByDescription);
   assert(providerName);
 
-  const ec2 = Ec2New(config);
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const findName = ({ live, lives }) =>
     pipe([

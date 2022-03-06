@@ -184,7 +184,7 @@ exports.createResources = () => [
 
 ### Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createRole-property)
+- [CreateRoleCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-iam/interfaces/createrolecommandinput.html)
 
 ### Dependencies
 
@@ -198,7 +198,7 @@ exports.createResources = () => [
 ### List
 
 ```sh
-gc list -t IamRole
+gc list -t IAM::Role
 ```
 
 ```sh
@@ -343,24 +343,4 @@ Provider: aws
 └────────────────────────────────┴──────────────────────────────────────────────────┘
 3 resources, 2 types, 1 provider
 Command "gc l -t Role" executed in 5s
-```
-
-### AWS CLI
-
-List all iam roles
-
-```
-aws iam list-roles
-```
-
-Delete a role
-
-```
-aws iam delete-role --role-name role-name
-```
-
-List a role:
-
-```
-aws iam get-role --role-name my-role
 ```

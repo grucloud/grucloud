@@ -80,7 +80,6 @@ exports.createResources = () => [
             OriginPath: "",
             CustomHeaders: {
               Quantity: 0,
-              Items: [],
             },
             S3OriginConfig: {
               OriginAccessIdentity: `origin-access-identity/cloudfront/${getId({

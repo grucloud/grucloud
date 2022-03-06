@@ -15,15 +15,6 @@ describe("ELB Rules", async function () {
     await provider.start();
   });
   it(
-    "list",
-    pipe([
-      () => rule.getList(),
-      tap(({ items }) => {
-        assert(Array.isArray(items));
-      }),
-    ])
-  );
-  it(
     "delete with invalid id",
     pipe([
       () =>
@@ -32,15 +23,6 @@ describe("ELB Rules", async function () {
             RuleArn:
               "arn:aws:elasticloadbalancing:us-east-1:840541460064:listener-rule/app/load-balancer/e6f97c90654062f0/db2d92e8196bc8c1/b902c6929ac9bcd7",
           },
-        }),
-    ])
-  );
-  it(
-    "getByName with invalid id",
-    pipe([
-      () =>
-        rule.getByName({
-          name: "invalid-rule",
         }),
     ])
   );

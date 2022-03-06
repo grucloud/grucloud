@@ -8,15 +8,14 @@ const logger = require("@grucloud/core/logger")({
 });
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { createAutoScaling } = require("./AutoScalingCommon");
 
 exports.AutoScalingAttachment = ({ spec, config }) => {
-  const autoScaling = () =>
-    createEndpoint({ endpointName: "AutoScaling" })(config);
+  const autoScaling = createAutoScaling(config);
 
-  const client = AwsClient({ spec, config });
+  const client = AwsClient({ spec, config })(autoScaling);
   const findId = get("live.TargetGroupARN");
 
   const findName = ({ live, lives }) =>

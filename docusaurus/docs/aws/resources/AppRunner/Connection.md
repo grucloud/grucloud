@@ -73,7 +73,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [createConnection properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#createConnection-property)
+- [CreateConnectionCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-apprunner/interfaces/createconnectioncommandinput.html)
 
 ## Used By
 

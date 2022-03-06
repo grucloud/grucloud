@@ -1,19 +1,11 @@
 const assert = require("assert");
 const { map, pipe } = require("rubico");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 describe("AwsS3BucketPerf", async function () {
   let config;
   const types = ["Bucket"];
-  before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-  });
   after(async () => {});
 
   it("many buckets", async function () {

@@ -1,9 +1,9 @@
 const assert = require("assert");
 const { pipe, tap, get } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
-
-const { AwsClient } = require("../AwsClient");
 const { buildTagsObject } = require("@grucloud/core/Common");
+const { AwsClient } = require("../AwsClient");
+const { createAPIGateway } = require("./ApiGatewayCommon");
 
 const findName = get("live.name");
 const findId = get("live.id");
@@ -11,7 +11,8 @@ const pickId = ({ id }) => ({ apiKey: id });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
 exports.ApiKey = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const apiGateway = createAPIGateway(config);
+  const client = AwsClient({ spec, config })(apiGateway);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getApiKey-property
   const getById = client.getById({

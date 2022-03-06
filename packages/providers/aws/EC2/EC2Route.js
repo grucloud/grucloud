@@ -32,12 +32,12 @@ const { retryCall } = require("@grucloud/core/Retry");
 
 const { findNamespaceInTags, buildTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { Ec2New } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 exports.EC2Route = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const ec2 = Ec2New(config);
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const findId = ({ live, lives }) =>
     pipe([

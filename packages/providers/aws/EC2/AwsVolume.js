@@ -32,9 +32,11 @@ const {
   findValueInTags,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 exports.AwsVolume = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
   const awsEC2 = EC2Instance({ config, spec });
 
   const managedByOther = or([

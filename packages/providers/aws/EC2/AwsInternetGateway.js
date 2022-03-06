@@ -18,13 +18,14 @@ const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
-  Ec2New,
   getByIdCore,
   findNameInTagsOrId,
   buildTags,
   findNamespaceInTags,
+  isAwsError,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createEC2 } = require("./EC2Common");
 
 const findVpcId = pipe([get("Attachments"), first, get("VpcId")]);
 
@@ -44,8 +45,8 @@ const isDefault =
 exports.isDefault = isDefault;
 
 exports.AwsInternetGateway = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const ec2 = Ec2New(config);
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const pickId = pick(["InternetGatewayId"]);
   const findId = get("live.InternetGatewayId");
@@ -135,7 +136,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
                 // "Network vpc-xxxxxxx has some mapped public address(es). Please unmap those public address(es) before detaching the gateway."
                 logger.error(`detachInternetGateway ${name}: ${tos(error)}`);
               }),
-              eq(get("code"), "DependencyViolation"),
+              isAwsError("DependencyViolation"),
             ])(),
           config: { retryCount: 10, retryDelay: 5e3 },
         }),
@@ -182,15 +183,6 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     method: "deleteInternetGateway",
     getById,
     ignoreErrorCodes: ["InvalidInternetGatewayID.NotFound"],
-    shouldRetryOnException: ({ error, name }) =>
-      pipe([
-        () => error,
-        tap(() => {
-          // "The internetGateway 'igw-0913a9915c19844a8' has dependencies and cannot be deleted."
-          logger.error(`deleteInternetGateway ${name}: ${tos(error)}`);
-        }),
-        eq(get("code"), "DependencyViolation"),
-      ])(),
     config,
   });
 

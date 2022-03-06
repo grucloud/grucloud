@@ -30,6 +30,10 @@ exports.createResources = () => [
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
 
+### Properties
+
+- [CreateInternetGatewayCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/createinternetgatewaycommandinput.html)
+
 ### Dependencies
 
 - [Vpc](./Vpc.md)

@@ -1,131 +1,82 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  not,
-  eq,
-} = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
-
-const logger = require("@grucloud/core/logger")({ prefix: "UserPool" });
-const { retryCall } = require("@grucloud/core/Retry");
-const { tos } = require("@grucloud/core/tos");
+const { map, pipe, tap, get } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const { findNamespaceInTagsObject, createEndpoint } = require("../AwsCommon");
+const { findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const {
+  createCognitoIdentityProvider,
+} = require("./CognitoIdentityServiceProviderCommon");
 
 const findId = get("live.Id");
 const findName = get("live.Name");
+const pickId = pipe([
+  tap(({ Id }) => {
+    assert(Id);
+  }),
+  ({ Id }) => ({ UserPoolId: Id }),
+]);
+
+const ignoreErrorCodes = ["ResourceNotFoundException"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html
 exports.UserPool = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const cognitoIdentityServiceProvider = () =>
-    createEndpoint({ endpointName: "CognitoIdentityServiceProvider" })(config);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listUserPools-property
-  //TODO getList
-  const getList = () =>
-    pipe([
-      tap(() => {
-        logger.info(`getList UserPool`);
-      }),
-      () => ({ MaxResults: 10 }),
-      cognitoIdentityServiceProvider().listUserPools,
-      get("UserPools"),
-      map(getById),
-    ])();
+  const cognitoIdentityServiceProvider = createCognitoIdentityProvider(config);
+  const client = AwsClient({ spec, config })(cognitoIdentityServiceProvider);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeUserPool-property
-  const getById = ({ Id: UserPoolId }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getById UserPool: ${UserPoolId}`);
-      }),
-      tryCatch(
-        pipe([
-          () => ({ UserPoolId }),
-          cognitoIdentityServiceProvider().describeUserPool,
-          get("UserPool"),
-        ]),
-        switchCase([
-          eq(get("code"), "ResourceNotFoundException"),
-          () => {
-            logger.debug(`getById ${UserPoolId} ResourceNotFoundException`);
-          },
-          (error) => {
-            logger.debug(`getById error: ${tos(error)}`);
-            throw error;
-          },
-        ])
-      ),
-      tap((result) => {
-        logger.debug(`getById UserPool result: ${tos(result)}`);
-      }),
-    ])();
+  const getById = client.getById({
+    pickId,
+    method: "describeUserPool",
+    getField: "UserPool",
+    ignoreErrorCodes,
+  });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
-
-  const isUpById = pipe([getById, not(isEmpty)]);
-  const isDownById = pipe([getById, isEmpty]);
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listUserPools-property
+  const getList = client.getList({
+    extraParam: { MaxResults: 10 },
+    method: "listUserPools",
+    getParam: "UserPools",
+    decorate: () => pipe([getById]),
+  });
 
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPool-property
-  //TODO create
-  const create = ({ name, payload, resolvedDependencies: {} }) =>
-    pipe([
-      tap(() => {
-        assert(name);
-        assert(payload);
-        logger.info(`create UserPool: ${name}, ${tos(payload)}`);
-      }),
-      () => payload,
-      cognitoIdentityServiceProvider().createUserPool,
-      get("UserPool"),
-      ({ Id }) =>
-        retryCall({
-          name: `UserPool isUpById`,
-          fn: () => isUpById({ Id }),
-          config: { retryCount: 12 * 20, retryDelay: 5e3 },
-        }),
-      tap(() => {
-        logger.info(`UserPool created: ${name}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "createUserPool",
+    getById,
+    pickCreated: () => pipe([get("UserPool")]),
+    pickId,
+    config,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#deleteUserPool-property
-  const destroy = ({ name, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy UserPool ${name}`);
-      }),
-      () => ({ UserPoolId: live.Id }),
-      tap(cognitoIdentityServiceProvider().deleteUserPool),
-      tap(({ UserPoolId }) =>
-        retryCall({
-          name: `UserPool isDownById: ${name}`,
-          fn: () => isDownById({ Id: UserPoolId }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`UserPool destroyed ${name}`);
-      }),
-    ])();
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteUserPool",
+    getById,
+    ignoreErrorCodes,
+    config,
+  });
 
-  const configDefault = ({ name, namespace, properties, dependencies: {} }) =>
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
     pipe([
-      tap(() => {}),
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         PoolName: name,
-        UserPoolTags: buildTagsObject({ config, namespace, name }),
+        UserPoolTags: buildTagsObject({
+          config,
+          namespace,
+          name,
+          userTags: Tags,
+        }),
       }),
     ])();
 
@@ -134,6 +85,7 @@ exports.UserPool = ({ spec, config }) => {
     findId,
     findNamespace: findNamespaceInTagsObject(config),
     getByName,
+    getById,
     findName,
     create,
     destroy,

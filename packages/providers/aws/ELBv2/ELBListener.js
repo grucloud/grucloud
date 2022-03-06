@@ -6,17 +6,20 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const logger = require("@grucloud/core/logger")({ prefix: "ELBListener" });
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { tos } = require("@grucloud/core/tos");
-const { ELBv2New, buildTags, findNamespaceInTags } = require("../AwsCommon");
+const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createELB } = require("./ELBCommon");
+
+const ignoreErrorCodes = ["ListenerNotFound"];
 
 const findId = get("live.ListenerArn");
 const pickId = pick(["ListenerArn"]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 
 exports.ELBListener = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const elb = ELBv2New(config);
+  const elb = createELB(config);
+  const client = AwsClient({ spec, config })(elb);
+
   const { providerName } = config;
 
   const findName = ({ live, lives }) =>
@@ -120,7 +123,7 @@ exports.ELBListener = ({ spec, config }) => {
     pickId: ({ ListenerArn }) => ({ ListenerArns: [ListenerArn] }),
     method: "describeListeners",
     getField: "Listeners",
-    ignoreErrorCodes: ["ListenerNotFound"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createListener-property
@@ -130,14 +133,7 @@ exports.ELBListener = ({ spec, config }) => {
     getById,
     config,
     pickCreated: () => pipe([get("Listeners"), first]),
-    shouldRetryOnException: ({ error }) =>
-      pipe([
-        tap(() => {
-          logger.info(`listener create isExpectedException ${tos(error)}`);
-        }),
-        () => error,
-        eq(get("code"), "UnsupportedCertificate"),
-      ])(),
+    shouldRetryOnExceptionCodes: ["UnsupportedCertificate"],
     config: { retryCount: 40 * 10, retryDelay: 10e3 },
   });
 
@@ -146,7 +142,7 @@ exports.ELBListener = ({ spec, config }) => {
     pickId,
     method: "deleteListener",
     getById,
-    ignoreErrorCodes: ["ListenerNotFound"],
+    ignoreErrorCodes,
     config,
   });
 
@@ -212,6 +208,7 @@ exports.ELBListener = ({ spec, config }) => {
     findId,
     findDependencies,
     findNamespace,
+    getById,
     getByName,
     findName,
     create,

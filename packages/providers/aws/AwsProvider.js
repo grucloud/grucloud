@@ -1,5 +1,3 @@
-process.env.AWS_SDK_LOAD_CONFIG = 1;
-const AWS = require("aws-sdk");
 const assert = require("assert");
 const {
   omit,
@@ -7,7 +5,6 @@ const {
   get,
   tap,
   tryCatch,
-  assign,
   filter,
   not,
   map,
@@ -16,21 +13,21 @@ const {
 const path = require("path");
 
 const { first, pluck, isFunction, size } = require("rubico/x");
-const { tos } = require("@grucloud/core/tos");
+const { STS } = require("@aws-sdk/client-sts");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
-const { Ec2New, assignTags } = require("./AwsCommon");
+const { assignTags } = require("./AwsCommon");
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 const {
   createProjectAws,
 } = require("@grucloud/core/cli/providers/createProjectAws");
-const { generateCode } = require("./Aws2gc");
 
+const { generateCode } = require("./Aws2gc");
+const { createEC2 } = require("./EC2/EC2Common");
 const ApiGatewayV2 = require("./ApiGatewayV2");
 const ApiGateway = require("./ApiGateway");
 const AppRunner = require("./AppRunner");
-
 const AppSync = require("./AppSync");
 const AutoScaling = require("./Autoscaling");
 const CertificateManager = require("./ACM");
@@ -90,8 +87,14 @@ const fnSpecs = (config) =>
 
 const getAvailabilityZonesName = ({ region }) =>
   pipe([
-    () => Ec2New({ region }),
-    (ec2) => ec2().describeAvailabilityZones(),
+    () => createEC2({ region }),
+    tap((params) => {
+      assert(true);
+    }),
+    (ec2) => ec2().describeAvailabilityZones({}),
+    tap((params) => {
+      assert(true);
+    }),
     get("AvailabilityZones"),
     pluck("ZoneName"),
     tap((ZoneNames) => {
@@ -112,8 +115,8 @@ const fetchAccountId = pipe([
   tap(() => {
     logger.debug(`fetchAccountId`);
   }),
-  () => new AWS.STS(),
-  (sts) => sts.getCallerIdentity({}).promise(),
+  () => new STS(),
+  (sts) => sts.getCallerIdentity({}),
   get("Account"),
 ]);
 
@@ -127,54 +130,54 @@ exports.AwsProvider = ({
 }) => {
   assert(config ? isFunction(config) : true, "config must be a function");
 
-  AWS.config.apiVersions = {
-    acm: "2015-12-08",
-    apigateway: "2015-07-09",
-    apigatewayv2: "2018-11-29",
-    apprunner: "2020-05-15",
-    appsync: "2017-07-25",
-    autoscaling: "2011-01-01",
-    cloudfront: "2020-05-31",
-    cloudwatchevents: "2015-10-07",
-    cloudwatchlogs: "2014-03-28",
-    cloudwatch: "2010-08-01",
-    cognitoidentityserviceprovider: "2016-04-18",
-    dynamodb: "2012-08-10",
-    ec2: "2016-11-15",
-    ecr: "2015-09-21",
-    ecs: "2014-11-13",
-    eks: "2017-11-01",
-    elb: "2012-06-01",
-    elbv2: "2015-12-01",
-    iam: "2010-05-08",
-    kms: "2014-11-01",
-    lambda: "2015-03-31",
-    rds: "2014-10-31",
-    resourcegroupstaggingapi: "2017-01-26",
-    route53: "2013-04-01",
-    route53domains: "2014-05-15",
-    s3: "2006-03-01",
-    sqs: "2012-11-05",
-    ssm: "2014-11-06",
-  };
+  // AWS.config.apiVersions = {
+  //   acm: "2015-12-08",
+  //   apigateway: "2015-07-09",
+  //   apigatewayv2: "2018-11-29",
+  //   apprunner: "2020-05-15",
+  //   appsync: "2017-07-25",
+  //   autoscaling: "2011-01-01",
+  //   cloudfront: "2020-05-31",
+  //   cloudwatchevents: "2015-10-07",
+  //   cloudwatchlogs: "2014-03-28",
+  //   cloudwatch: "2010-08-01",
+  //   cognitoidentityserviceprovider: "2016-04-18",
+  //   dynamodb: "2012-08-10",
+  //   ec2: "2016-11-15",
+  //   ecr: "2015-09-21",
+  //   ecs: "2014-11-13",
+  //   eks: "2017-11-01",
+  //   elb: "2012-06-01",
+  //   elbv2: "2015-12-01",
+  //   iam: "2010-05-08",
+  //   kms: "2014-11-01",
+  //   lambda: "2015-03-31",
+  //   rds: "2014-10-31",
+  //   resourcegroupstaggingapi: "2017-01-26",
+  //   route53: "2013-04-01",
+  //   route53domains: "2014-05-15",
+  //   s3: "2006-03-01",
+  //   sqs: "2012-11-05",
+  //   ssm: "2014-11-06",
+  // };
 
   const { AWSAccessKeyId, AWSSecretKey } = process.env;
 
-  AWS.config.update({
-    ...(AWSAccessKeyId && {
-      accessKeyId: AWSAccessKeyId,
-    }),
-    ...(AWSSecretKey && {
-      secretAccessKey: AWSSecretKey,
-    }),
-  });
+  // AWS.config.update({
+  //   ...(AWSAccessKeyId && {
+  //     accessKeyId: AWSAccessKeyId,
+  //   }),
+  //   ...(AWSSecretKey && {
+  //     secretAccessKey: AWSSecretKey,
+  //   }),
+  // });
 
   let accountId;
   let zone;
   let zones;
   let region;
 
-  const getRegionDefault = () => region || AWS.config.region;
+  const getRegionDefault = () => region || "us-east-1";
 
   const configDefault = {
     stage,

@@ -152,7 +152,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-appsync/interfaces/createDataSourcecommandinput.html)
+- [CreateDataSourceCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-appsync/interfaces/createdatasourcecommandinput.html)
 
 ## Dependencies
 

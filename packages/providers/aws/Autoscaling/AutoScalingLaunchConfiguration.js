@@ -8,6 +8,7 @@ const logger = require("@grucloud/core/logger")({
 const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { createAutoScaling } = require("./AutoScalingCommon");
 
 const findName = get("live.LaunchConfigurationName");
 const findId = get("live.LaunchConfigurationARN");
@@ -16,10 +17,8 @@ const pickId = pick(["LaunchConfigurationName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const autoScaling = () =>
-    createEndpoint({ endpointName: "AutoScaling" })(config);
-
+  const autoScaling = createAutoScaling(config);
+  const client = AwsClient({ spec, config })(autoScaling);
   const findDependencies = ({ live, lives }) => [
     {
       type: "KeyPair",
@@ -98,10 +97,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createLaunchConfiguration-property
   const create = client.create({
     method: "createLaunchConfiguration",
-    shouldRetryOnException: pipe([
-      get("error.message"),
-      includes("Invalid IamInstanceProfile:"),
-    ]),
+    shouldRetryOnExceptionMessages: ["Invalid IamInstanceProfile:"],
     pickId,
     getById,
     config,

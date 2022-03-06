@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { pipe, tap } = require("rubico");
 
 describe("ECSTask", async function () {
@@ -9,11 +8,6 @@ describe("ECSTask", async function () {
   let task;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({ config });
     task = provider.getClient({ groupType: "ECS::Task" });
     await provider.start();

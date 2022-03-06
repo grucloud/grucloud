@@ -21,10 +21,10 @@ const logger = require("@grucloud/core/logger")({
 });
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { compareAws, createEndpoint } = require("../AwsCommon");
+const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-
+const { createLambda } = require("./LambdaCommon");
 const findId = get("live.Configuration.FunctionArn");
 const findName = get("live.Configuration.FunctionName");
 const pickId = pipe([
@@ -45,8 +45,8 @@ const removeVersion = pipe([
 ]);
 
 exports.Function = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
+  const lambda = createLambda(config);
+  const client = AwsClient({ spec, config })(lambda);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -118,15 +118,7 @@ exports.Function = ({ spec, config }) => {
                 assert(true);
               }),
             ]),
-            pipe([
-              switchCase([
-                eq(get("code"), "ResourceNotFoundException"),
-                () => undefined,
-                (error) => {
-                  throw error;
-                },
-              ]),
-            ])
+            throwIfNotAwsError("ResourceNotFoundException")
           ),
           Code: pipe([
             get("Code"),
@@ -167,18 +159,11 @@ exports.Function = ({ spec, config }) => {
         ({ FunctionArn }) => ({ Configuration: { FunctionArn: FunctionArn } }),
       ]),
     pickId,
-    shouldRetryOnException: ({ error }) =>
-      pipe([
-        tap(() => {
-          logger.error(`createFunction isExpectedException ${tos(error)}`);
-        }),
-        () => error,
-        eq(get("code"), "InvalidParameterValueException"),
-      ])(),
+    shouldRetryOnExceptionCodes: ["InvalidParameterValueException"],
     getById,
     config,
   });
-  //TODO update
+
   const update = client.update({
     filterParams: ({ payload, live, diff }) =>
       pipe([
@@ -189,7 +174,7 @@ exports.Function = ({ spec, config }) => {
       ])(),
     method: "updateFunctionCode",
     config,
-    //getById,
+    getById,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property

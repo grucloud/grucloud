@@ -55,6 +55,10 @@ exports.createResources = () => [
 ];
 ```
 
+## Properties
+
+- [UpdateAccountCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-api-gateway/interfaces/updateaccountcommandinput.html)
+
 ## Full Examples
 
 - [RestAPI with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/APIGateway/restapi-lambda)

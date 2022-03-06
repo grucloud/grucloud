@@ -1,9 +1,7 @@
 const assert = require("assert");
 const { get, eq } = require("rubico");
 const { size, isEmpty } = require("rubico/x");
-
-const { AwsProvider } = require("../../AwsProvider");
-const {} = require("@grucloud/core/E2ETestUtils");
+const { detailedDiff } = require("deep-object-diff");
 
 const {
   SecurityGroupRulesFixture,

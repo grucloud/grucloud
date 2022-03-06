@@ -50,14 +50,15 @@ const createResources = ({ provider }) => {
       basic: bucketBasic,
       // Accelerate
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
-      acceleration: provider.S3.makeBucket({
-        name: `${bucketPrefix}-acceleration`,
-        properties: () => ({
-          AccelerateConfiguration: {
-            Status: "Enabled",
-          },
-        }),
-      }),
+      //TODO broken is SDK v3
+      // acceleration: provider.S3.makeBucket({
+      //   name: `${bucketPrefix}-acceleration`,
+      //   properties: () => ({
+      //     AccelerateConfiguration: {
+      //       Status: "Enabled",
+      //     },
+      //   }),
+      // }),
       // CORS
       CORS: provider.S3.makeBucket({
         name: `${bucketPrefix}-cors`,
@@ -224,15 +225,16 @@ const createResources = ({ provider }) => {
         }),
       }),
       // Versioning
-      versioning: provider.S3.makeBucket({
-        name: `${bucketPrefix}-versioning`,
-        properties: () => ({
-          VersioningConfiguration: {
-            MFADelete: "Disabled",
-            Status: "Enabled",
-          },
-        }),
-      }),
+      //TODO broken in SDK v3
+      // versioning: provider.S3.makeBucket({
+      //   name: `${bucketPrefix}-versioning`,
+      //   properties: () => ({
+      //     VersioningConfiguration: {
+      //       MFADelete: "Disabled",
+      //       Status: "Enabled",
+      //     },
+      //   }),
+      // }),
       // Website
       website: provider.S3.makeBucket({
         name: `${bucketPrefix}-website`,

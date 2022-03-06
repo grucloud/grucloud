@@ -3,18 +3,15 @@ const { pipe, tap, get, not } = require("rubico");
 const { defaultsDeep, includes } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { diffToPatch } = require("./ApiGatewayCommon");
+const { createAPIGateway, diffToPatch } = require("./ApiGatewayCommon");
 const findName = () => "default";
 const findId = findName;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
 exports.Account = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "APIGateway" })(config);
+  const apiGateway = createAPIGateway(config);
+  const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live }) => [
     { type: "Role", group: "IAM", ids: [live.cloudwatchRoleArn] },
@@ -63,14 +60,9 @@ exports.Account = ({ spec, config }) => {
         }),
       ])(),
     method: "updateAccount",
-    shouldRetryOnException: ({ error }) =>
-      pipe([
-        () => error,
-        get("message"),
-        includes(
-          "The role ARN does not have required permissions configured. Please grant trust permission for API Gateway and add the required role policy."
-        ),
-      ])(),
+    shouldRetryOnExceptionMessages: [
+      "The role ARN does not have required permissions configured. Please grant trust permission for API Gateway and add the required role policy.",
+    ],
     config,
     getById,
   });

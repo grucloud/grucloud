@@ -72,6 +72,10 @@ const vpc = provider.EC2.makeVpc({
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc/resources.js)
 
+## Properties
+
+- [CreateVpcCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/createvpccommandinput.html)
+
 ## Used By
 
 - [Subnet](./Subnet.md)

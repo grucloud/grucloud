@@ -11,18 +11,17 @@ const {
   assign,
 } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
-const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
+const { createCloudWatchLogs } = require("./CloudWatchLogsCommon");
 
 const findId = pipe([get("live.arn"), callProp("replace", ":*", "")]);
 const pickId = pick(["logGroupName"]);
 const findName = get("live.logGroupName");
 
 exports.CloudWatchLogsGroup = ({ spec, config }) => {
-  const cloudWatchLogs = () =>
-    createEndpoint({ endpointName: "CloudWatchLogs" })(config);
-  const client = AwsClient({ spec, config });
+  const cloudWatchLogs = createCloudWatchLogs(config);
+  const client = AwsClient({ spec, config })(cloudWatchLogs);
 
   const findDependencies = ({ live, lives }) => [
     {

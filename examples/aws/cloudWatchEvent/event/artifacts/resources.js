@@ -9,10 +9,10 @@ exports.createResources = () => [
     group: "CloudWatchEvents",
     name: "rule-test",
     properties: ({}) => ({
+      Description: "testing rule",
       EventPattern:
         '{"source":["aws.ec2"],"detail-type":["EC2 Instance State-change Notification"]}',
       State: "ENABLED",
-      Description: "testing rule",
     }),
   },
   {

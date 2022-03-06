@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { ScalewayProvider } = require("../ScalewayProvider");
-const { ConfigLoader } = require("@grucloud/core");
 const {
   testPlanDeploy,
   testPlanDestroy,
@@ -12,11 +11,6 @@ describe("ScalewayIp", async function () {
   let provider;
   let ip;
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = ScalewayProvider({
       name: "scaleway",
       config: () => ({}),

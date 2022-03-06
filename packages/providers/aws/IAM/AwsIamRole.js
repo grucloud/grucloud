@@ -28,7 +28,6 @@ const querystring = require("querystring");
 const logger = require("@grucloud/core/logger")({ prefix: "IamRole" });
 const { tos } = require("@grucloud/core/tos");
 const {
-  IAMNew,
   buildTags,
   findNamespaceInTags,
   removeRoleFromInstanceProfile,
@@ -36,12 +35,13 @@ const {
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { createIAM } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamRole = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const iam = createIAM(config);
+  const client = AwsClient({ spec, config })(iam);
   const { providerName } = config;
-  const iam = IAMNew(config);
 
   const findName = get("live.RoleName");
   const findId = get("live.Arn");

@@ -14,6 +14,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createAppRunner } = require("./AppRunnerCommon");
 
 const findName = get("live.ServiceName");
 const findId = get("live.ServiceArn");
@@ -21,7 +22,8 @@ const pickId = pick(["ServiceArn"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AppRunnerService = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const appRunner = createAppRunner(config);
+  const client = AwsClient({ spec, config })(appRunner);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -100,10 +102,7 @@ exports.AppRunnerService = ({ spec, config }) => {
     //isInstanceUp,
     pickCreated: (payload) => (result) =>
       pipe([() => result, get("Service"), pickId])(),
-    shouldRetryOnException: pipe([
-      get("error.message"),
-      includes("Error in assuming access"),
-    ]),
+    shouldRetryOnExceptionMessages: ["Error in assuming access"],
     pickId,
     getById,
     config,

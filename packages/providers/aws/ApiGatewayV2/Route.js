@@ -5,7 +5,10 @@ const { callProp, defaultsDeep, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { findDependenciesApi } = require("./ApiGatewayCommon");
+const {
+  createApiGatewayV2,
+  findDependenciesApi,
+} = require("./ApiGatewayCommon");
 
 const findId = get("live.RouteId");
 const findName = pipe([
@@ -16,7 +19,8 @@ const findName = pipe([
 const pickId = pick(["ApiId", "RouteId"]);
 
 exports.Route = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const apiGateway = createApiGatewayV2(config);
+  const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live, lives }) => [
     findDependenciesApi({ live }),
@@ -41,6 +45,15 @@ exports.Route = ({ spec, config }) => {
     pickId,
     method: "getRoute",
     ignoreErrorCodes: ["NotFoundException"],
+    decorate: ({ ApiId }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        defaultsDeep({
+          ApiId,
+        }),
+      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getRoutes-property
@@ -51,7 +64,13 @@ exports.Route = ({ spec, config }) => {
     getParam: "Items",
     config,
     decorate: ({ parent: { ApiId, Name: ApiName, Tags } }) =>
-      pipe([defaultsDeep({ ApiId, ApiName, Tags })]),
+      pipe([
+        tap((params) => {
+          assert(ApiId);
+          assert(ApiName);
+        }),
+        defaultsDeep({ ApiId, ApiName, Tags }),
+      ]),
   });
 
   // Get Route by name

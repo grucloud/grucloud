@@ -30,15 +30,12 @@ const {
 const moment = require("moment");
 const logger = require("@grucloud/core/logger")({ prefix: "IamPolicy" });
 const { tos } = require("@grucloud/core/tos");
-const {
-  IAMNew,
-  buildTags,
-  findNamespaceInTags,
-  isOurMinion,
-} = require("../AwsCommon");
+const { buildTags, findNamespaceInTags, isOurMinion } = require("../AwsCommon");
 const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
+const { createIAM } = require("./AwsIamCommon");
+
 const pickId = pipe([
   tap(({ Arn }) => {
     assert(Arn, "Arn");
@@ -48,8 +45,8 @@ const pickId = pipe([
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamPolicy = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const iam = IAMNew(config);
+  const iam = createIAM(config);
+  const client = AwsClient({ spec, config })(iam);
 
   const findId = get("live.Arn");
 

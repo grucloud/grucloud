@@ -1,20 +1,11 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  eq,
-  pick,
-  assign,
-  omit,
-} = require("rubico");
+const { pipe, tap, tryCatch, get, pick, assign, omit } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { buildTags, createEndpoint } = require("../AwsCommon");
+const { throwIfNotAwsError, buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { createECR } = require("./ECRCommon");
 
 const findName = get("live.repositoryName");
 const findId = get("live.repositoryArn");
@@ -22,8 +13,8 @@ const pickId = pick(["repositoryName", "registryId"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 exports.EcrRepository = ({ spec, config }) => {
-  const ecr = () => createEndpoint({ endpointName: "ECR" })(config);
-  const client = AwsClient({ spec, config });
+  const ecr = createECR(config);
+  const client = AwsClient({ spec, config })(ecr);
 
   const findDependencies = ({ live }) => [];
   const findNamespace = pipe([() => ""]);
@@ -31,13 +22,7 @@ exports.EcrRepository = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRepositoryPolicy-property
   const getRepositoryPolicy = tryCatch(
     pipe([pickId, ecr().getRepositoryPolicy, get("policyText"), JSON.parse]),
-    switchCase([
-      eq(get("code"), "RepositoryPolicyNotFoundException"),
-      () => undefined,
-      () => {
-        throw error;
-      },
-    ])
+    throwIfNotAwsError("RepositoryPolicyNotFoundException")
   );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getLifecyclePolicy-property
@@ -48,13 +33,7 @@ exports.EcrRepository = ({ spec, config }) => {
       get("lifecyclePolicyText"),
       JSON.parse,
     ]),
-    switchCase([
-      eq(get("code"), "LifecyclePolicyNotFoundException"),
-      () => undefined,
-      () => {
-        throw error;
-      },
-    ])
+    throwIfNotAwsError("LifecyclePolicyNotFoundException")
   );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#listTagsForResource-property
@@ -178,4 +157,3 @@ exports.EcrRepository = ({ spec, config }) => {
     configDefault,
   };
 };
-//TODO compare

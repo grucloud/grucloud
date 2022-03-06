@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../../GoogleProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const {
   testPlanDeploy,
   testPlanDestroy,
@@ -15,11 +14,6 @@ describe("GcpDnsManagedZone", async function () {
   let dnsManagedZone;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = GoogleProvider({
       name: "google",
       config: () => ({

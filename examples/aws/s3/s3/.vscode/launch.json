@@ -46,11 +46,11 @@
       "port": 9229
     },
     {
-      "name": "List --default-exclude",
+      "name": "List",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "--default-exclude"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "list"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/",

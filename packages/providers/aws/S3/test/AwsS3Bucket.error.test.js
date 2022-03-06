@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 
@@ -10,13 +9,7 @@ const bucketPrefix = `grucloud-${chance.guid().slice(0, 8)}`;
 
 describe("AwsS3BucketErrors", async function () {
   let config;
-  before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-  });
+  before(async function () {});
   after(async () => {});
 
   it("s3Bucket already exist", async function () {

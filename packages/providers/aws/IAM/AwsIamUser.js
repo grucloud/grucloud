@@ -17,19 +17,19 @@ const { defaultsDeep, forEach, pluck, find } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "IamUser" });
 const { tos } = require("@grucloud/core/tos");
 const {
-  IAMNew,
   findNameInTagsOrId,
   findNamespaceInTags,
+  throwIfNotAwsError,
 } = require("../AwsCommon");
-const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
+const { createIAM } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamUser = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-
-  const iam = IAMNew(config);
+  const iam = createIAM(config);
+  const client = AwsClient({ spec, config })(iam);
 
   const findId = get("live.UserName");
   const pickId = pick(["UserName"]);
@@ -50,14 +50,8 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const fetchLoginProfile = ({ UserName }) =>
     tryCatch(
-      pipe([() => iam().getLoginProfile({ UserName }), get("LoginProfile")]),
-      switchCase([
-        eq(get("code"), "NoSuchEntity"),
-        () => undefined,
-        (error) => {
-          throw error;
-        },
-      ])
+      pipe([() => ({ UserName }), iam().getLoginProfile, get("LoginProfile")]),
+      throwIfNotAwsError("NoSuchEntity")
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listUsers-property
@@ -231,14 +225,11 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const deleteLoginProfile = ({ UserName }) =>
     tryCatch(
-      pipe([() => iam().deleteLoginProfile({ UserName })]),
-      tap.if(not(eq(get("code"), "NoSuchEntity")), (error) => {
-        throw error;
-      })
+      pipe([() => ({ UserName }), iam().deleteLoginProfile]),
+      throwIfNotAwsError("NoSuchEntity")
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
-
   const destroy = client.destroy({
     pickId,
     preDestroy: pipe([

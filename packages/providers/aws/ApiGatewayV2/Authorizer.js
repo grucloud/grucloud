@@ -5,14 +5,19 @@ const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { findDependenciesApi } = require("./ApiGatewayCommon");
+const {
+  createApiGatewayV2,
+  findDependenciesApi,
+} = require("./ApiGatewayCommon");
 
 const findId = get("live.AuthorizerId");
 const findName = get("live.Name");
 const pickId = pick(["ApiId", "AuthorizerId"]);
 
 exports.Authorizer = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const apiGateway = createApiGatewayV2(config);
+
+  const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live, lives }) => [findDependenciesApi({ live })];
 

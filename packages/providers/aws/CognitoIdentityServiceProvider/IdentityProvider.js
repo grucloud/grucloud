@@ -1,165 +1,68 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  not,
-  filter,
-  flatMap,
-  eq,
-  pick,
-} = require("rubico");
-const { defaultsDeep, includes, size, isEmpty } = require("rubico/x");
+const { map, pipe, tap, get, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "IdentityProvider" });
-const { retryCall } = require("@grucloud/core/Retry");
-const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { getByNameCore } = require("@grucloud/core/Common");
 
 const { findNamespaceInTagsObject } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
 
+const { AwsClient } = require("../AwsClient");
+const {
+  createCognitoIdentityProvider,
+} = require("./CognitoIdentityServiceProviderCommon");
 const findId = get("ProviderName");
 const findName = get("ProviderName");
+const ignoreErrorCodes = ["ResourceNotFoundException"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html
 exports.IdentityProvider = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const cognitoIdentityServiceProvider = () =>
-    createEndpoint({ endpointName: "CognitoIdentityServiceProvider" })(config);
+  const cognitoIdentityServiceProvider = createCognitoIdentityProvider(config);
+  const client = AwsClient({ spec, config })(cognitoIdentityServiceProvider);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listIdentityProviders-property
-  //TODO getList
-  const getList = ({ lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`getList IdentityProvider`);
-      }),
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "UserPool",
-          group: "ApiGatewayV2",
-        }),
-      flatMap(({ live }) =>
-        tryCatch(
-          pipe([
-            () => live,
-            pick("UserPoolId"),
-            () => ({ UserPoolId }),
-            cognitoIdentityServiceProvider().listIdentityProviders,
-            get("Providers"),
-            map(
-              assign({
-                Tags: ({ ApiMappingId }) =>
-                  pipe([
-                    () =>
-                      cognitoIdentityServiceProvider().getTags({
-                        ResourceArn: domainNameArn({
-                          config,
-                          DomainName: live.DomainName,
-                        }),
-                      }),
-                    get("Tags"),
-                  ])(),
-              })
-            ),
-          ]),
-          (error) =>
-            pipe([
-              tap(() => {
-                assert(true);
-              }),
-              () => ({
-                error,
-              }),
-            ])()
-        )()
-      ),
-    ])();
+  const pickId = pick(["ProviderName", "UserPoolId"]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeIdentityProvider-property
-  const getByName = ({ name }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getByName IdentityProvider: ${name}`);
-      }),
-      tryCatch(
-        pipe([
-          () =>
-            cognitoIdentityServiceProvider().describeIdentityProvider({ name }),
-          get("IdentityProvider"),
-        ]),
-        switchCase([
-          eq(get("code"), "ResourceNotFoundException"),
-          () => {
-            logger.debug(`getByName ${name} ResourceNotFoundException`);
-          },
-          (error) => {
-            logger.debug(`getByName error: ${tos(error)}`);
-            throw error;
-          },
-        ])
-      ),
-      tap((result) => {
-        logger.debug(`getByName cluster result: ${tos(result)}`);
-      }),
-    ])();
+  const getById = client.getById({
+    pickId,
+    method: "describeIdentityProvider",
+    getField: "IdentityProvider",
+    ignoreErrorCodes,
+  });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
-  //const isInstanceUp = eq(get("status"), "ACTIVE");
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listIdentityProviders-property
+  const getList = client.getListWithParent({
+    parent: { type: "UserPool", group: "CognitoIdentityServiceProvider" },
+    pickKey: pipe([
+      tap(({ UserPoolId }) => {
+        assert(UserPoolId);
+      }),
+      pick("UserPoolId"),
+    ]),
+    method: "listIdentityProviders",
+    getParam: "Providers",
+    config,
+    decorate: ({ parent: { UserPoolId, Tags } }) =>
+      pipe([
+        assign({
+          Tags: (live) =>
+            pipe([
+              tap((params) => {
+                assert(live);
+              }),
+              // () => ({
+              //   ResourceArn: live.Arn,
+              // }),
+              // cognitoIdentityServiceProvider().listTagsForResource,
+              // get("Tags"),
+            ])(),
+        }),
+      ]),
+  });
 
-  const isUpByName = pipe([getByName, not(isEmpty)]);
-  const isDownByName = pipe([getByName, isEmpty]);
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createIdentityProvider-property
-  //TODO create
-  const create = ({ name, payload, resolvedDependencies: {} }) =>
-    pipe([
-      tap(() => {
-        assert(name);
-        assert(payload);
-        logger.info(`create cluster: ${name}, ${tos(payload)}`);
-      }),
-      () => payload,
-      cognitoIdentityServiceProvider().createIdentityProvider,
-      get("IdentityProvider"),
-      ({ ProviderName, UserPoolId }) =>
-        retryCall({
-          name: `cluster IdentityProvider isUpByName`,
-          fn: () => isUpByName({ ProviderName, UserPoolId }),
-          config: { retryCount: 12 * 20, retryDelay: 5e3 },
-        }),
-      tap(() => {
-        logger.info(`IdentityProvider created: ${name}`);
-      }),
-    ])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#deleteIdentityProvider-property
-  const destroy = ({ name, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroy IdentityProvider ${name}`);
-      }),
-      () => live,
-      pick(["ProviderName", "UserPoolId"]),
-      tap(cognitoIdentityServiceProvider().deleteIdentityProvider),
-      tap(({ ProviderName, UserPoolId }) =>
-        retryCall({
-          name: `IdentityProvider isDownByName: ${name}`,
-          fn: () => isDownByName({ ProviderName, UserPoolId }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`IdentityProvider destroyed ${name}`);
-      }),
-    ])();
-
   const configDefault = ({
     name,
     namespace,
@@ -177,10 +80,36 @@ exports.IdentityProvider = ({ spec, config }) => {
       }),
     ])();
 
+  const create = client.create({
+    method: "createIdentityProvider",
+    getById,
+    pickId,
+    config,
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#updateIdentityProvider-property
+  // const update = client.update({
+  //   pickId,
+  //   method: "updateIdentityProvider",
+  //   config,
+  //   getById,
+  // });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#updateIdentityProvider-property
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteIdentityProvider",
+    getById,
+    ignoreErrorCodes,
+    config,
+  });
+
   return {
     spec,
     findId,
     findNamespace: findNamespaceInTagsObject(config),
+    getById,
+    getById,
     getByName,
     findName,
     create,

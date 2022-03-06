@@ -19,10 +19,11 @@ const logger = require("@grucloud/core/logger")({
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { KmsNew, buildTags } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { configProviderDefault } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
+const { createKMS } = require("./KMSCommon");
 
 const findId = get("live.Arn");
 const pickId = pick(["KeyId"]);
@@ -42,8 +43,8 @@ const findName = (item) =>
   pipe([() => findNames, map((fn) => fn(item)), find(not(isEmpty))])();
 
 exports.KmsKey = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const kms = KmsNew(config);
+  const kms = createKMS(config);
+  const client = AwsClient({ spec, config })(kms);
 
   const decorate = () =>
     pipe([

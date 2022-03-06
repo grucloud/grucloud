@@ -9,18 +9,18 @@ const {
   switchCase,
   and,
 } = require("rubico");
-const { pluck, defaultsDeep, find } = require("rubico/x");
+const { defaultsDeep, find } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "Integration",
 });
-
+const { getField } = require("@grucloud/core/ProviderCommon");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
+const { createAPIGateway } = require("./ApiGatewayCommon");
+const { createLambda } = require("../Lambda/LambdaCommon");
 
 const { createEndpoint, lambdaAddPermission } = require("../AwsCommon");
-
-const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findName = pipe([
   get("live"),
@@ -41,10 +41,11 @@ const pickId = ({ restApiId, resourceId, httpMethod }) => ({
 });
 
 exports.Integration = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "APIGateway" })(config);
-  const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
+  const apiGateway = createAPIGateway(config);
+  const lambda = createLambda(config);
+
+  const client = AwsClient({ spec, config })(apiGateway);
+
   const findDependencies = ({ live, lives }) => [
     {
       type: "Method",

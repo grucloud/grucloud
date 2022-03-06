@@ -13,17 +13,6 @@
       "port": 9229
     },
     {
-      "name": "Test",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["test"],
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
-    },
-    {
       "name": "Generate Code",
       "type": "node",
       "request": "launch",

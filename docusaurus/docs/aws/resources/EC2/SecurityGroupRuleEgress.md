@@ -41,10 +41,6 @@ exports.createResources = () => [
 ];
 ```
 
-### Properties
-
-- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
-
 ### Dependencies
 
 - [SecurityGroup](./SecurityGroup.md)

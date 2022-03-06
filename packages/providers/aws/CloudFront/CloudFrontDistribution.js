@@ -33,13 +33,13 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
-  CloudFrontNew,
   buildTags,
   findNameInTagsOrId,
   findNamespaceInTags,
   getNewCallerReference,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { createCloudFront } = require("./CloudFrontCommon");
 
 //TODO look in spec.type instead
 const RESOURCE_TYPE = "Distribution";
@@ -48,9 +48,8 @@ const findName = findNameInTagsOrId({ findId });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.CloudFrontDistribution = ({ spec, config }) => {
-  const cloudfront = CloudFrontNew(config);
-  const client = AwsClient({ spec, config });
-
+  const cloudFront = createCloudFront(config);
+  const client = AwsClient({ spec, config })(cloudFront);
   const findDependencies = ({ live, lives }) => [
     {
       type: "Certificate",
@@ -119,14 +118,14 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
         }),
         () => distribution,
         pickId,
-        cloudfront().getDistributionConfig,
+        cloudFront().getDistributionConfig,
         get("DistributionConfig"),
         assign({
           Tags: pipe([
             () => ({
               Resource: distribution.ARN,
             }),
-            cloudfront().listTagsForResource,
+            cloudFront().listTagsForResource,
             get("Tags.Items"),
           ]),
         }),
@@ -137,7 +136,15 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#getDistribution-property
-  const pickId = pick(["Id"]);
+  const pickId = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    pick(["Id"]),
+    tap(({ Id }) => {
+      assert(Id);
+    }),
+  ]);
 
   const getById = client.getById({
     pickId,
@@ -157,30 +164,14 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
       DistributionConfigWithTags: payload,
     }),
     isInstanceUp,
-    shouldRetryOnException: ({ error, name }) =>
-      pipe([
-        tap(() => {
-          logger.info(
-            `createDistributionWithTags shouldRetryOnException ${tos({
-              name,
-              error,
-            })}`
-          );
-        }),
-        () => error,
-        eq(get("code"), "InvalidViewerCertificate"),
-        tap((retry) => {
-          logger.info(
-            `createDistributionWithTags shouldRetryOnException retry: ${retry}`
-          );
-        }),
-      ])(),
+    shouldRetryOnExceptionCodes: ["InvalidViewerCertificate"],
     pickCreated: () => (result) =>
       pipe([
         tap((params) => {
           assert(true);
         }),
         () => result,
+        get("Distribution"),
       ])(),
     pickId,
     getById,
@@ -195,7 +186,9 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
         logger.debug(tos({ payload }));
         assert(id, "id");
       }),
-      () => cloudfront().getDistributionConfig({ Id: id }),
+
+      () => ({ Id: id }),
+      cloudFront().getDistributionConfig,
       (config) =>
         pipe([
           () => config,
@@ -204,12 +197,15 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
             defaultsDeep(distributionConfig)(
               omit(["CallerReference", "Origin"])(payload.DistributionConfig)
             ),
-          (DistributionConfig) =>
-            cloudfront().updateDistribution({
-              Id: id,
-              IfMatch: config.ETag,
-              DistributionConfig,
-            }),
+          (DistributionConfig) => ({
+            Id: id,
+            IfMatch: config.ETag,
+            DistributionConfig,
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+          cloudFront().updateDistribution,
           tap((xxx) => {
             logger.debug(`updated distribution ${tos({ name, id })}`);
           }),
@@ -235,7 +231,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
         }),
         () => live,
         pickId,
-        cloudfront().getDistributionConfig,
+        cloudFront().getDistributionConfig,
         tap(({ ETag }) => {
           assert(ETag);
         }),
@@ -249,51 +245,16 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
             name,
             payload: {
               DistributionConfig: {
+                ...live,
                 Enabled: false,
-                DefaultCacheBehavior: {
-                  ForwardedValues: {
-                    QueryString: false,
-                    Cookies: {
-                      Forward: "none",
-                    },
-                    Headers: {
-                      Quantity: 0,
-                      Items: [],
-                    },
-                    QueryStringCacheKeys: {
-                      Quantity: 0,
-                      Items: [],
-                    },
-                  },
-                  MinTTL: 60,
-                  DefaultTTL: 86400,
-                  MaxTTL: 31536000,
-                  CachePolicyId: "",
-                },
+                CallerReference: getNewCallerReference(),
               },
             },
           }),
       ])(),
     method: "deleteDistribution",
     isExpectedResult: () => true,
-    shouldRetryOnException: ({ error, name }) =>
-      pipe([
-        tap(() => {
-          logger.info(
-            `deleteDistribution shouldRetryOnException ${tos({
-              name,
-              error,
-            })}`
-          );
-        }),
-        () => error,
-        eq(get("code"), "DistributionNotDisabled"),
-        tap((result) => {
-          logger.info(
-            `deleteDistribution shouldRetryOnException result: ${result}`
-          );
-        }),
-      ])(),
+    shouldRetryOnExceptionCodes: ["DistributionNotDisabled"],
     getById,
     ignoreErrorCodes: ["NoSuchDistribution"],
     config,
@@ -318,7 +279,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
             MinimumProtocolVersion: "TLSv1.2_2019",
             Certificate: getField(certificate, "CertificateArn"),
             CertificateSource: "acm",
-            CloudFrontDefaultCertificate: false,
+            //CloudFrontDefaultCertificate: false,
           },
         }),
       }),
@@ -371,7 +332,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
               tap((params) => {
                 logger.info(`createInvalidation params ${tos({ params })}`);
               }),
-              cloudfront().createInvalidation,
+              cloudFront().createInvalidation,
               tap((result) => {
                 logger.info(`createInvalidation done ${tos({ result })}`);
               }),
@@ -394,24 +355,6 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     getList,
     configDefault,
     onDeployed,
-    //TODO
-    shouldRetryOnException: ({ name, error }) =>
-      pipe([
-        tap(() => {
-          logger.info(
-            `distribution shouldRetryOnException ${tos({ name, error })}`
-          );
-        }),
-        or([
-          not(eq(get("statusCode"), 400)),
-          eq(get("code"), "InvalidViewerCertificate"),
-        ]),
-        tap((result) => {
-          logger.info(
-            `distribution shouldRetryOnException result: ${tos(result)}`
-          );
-        })(error),
-      ]),
   };
 };
 

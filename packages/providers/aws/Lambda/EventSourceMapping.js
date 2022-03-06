@@ -6,6 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { createLambda } = require("./LambdaCommon");
 
 const findId = get("live.UUID");
 const pickId = pick(["UUID"]);
@@ -19,7 +20,8 @@ const findName = pipe([
 ]);
 
 exports.EventSourceMapping = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const lambda = createLambda(config);
+  const client = AwsClient({ spec, config })(lambda);
 
   const findDependencies = ({ live, lives }) => [
     {

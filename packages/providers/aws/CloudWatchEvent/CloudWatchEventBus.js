@@ -1,8 +1,9 @@
 const assert = require("assert");
 const { assign, pipe, tap, get, eq, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { createEndpoint, buildTags } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createCloudWatchEvents } = require("./CloudWatchEventCommon");
 
 const findId = get("live.Arn");
 const pickId = pick(["Name"]);
@@ -16,9 +17,8 @@ const buildArn =
     `arn:aws:events:${config.region}:${config.accountId()}:event-bus/${Name}`;
 
 exports.CloudWatchEventBus = ({ spec, config }) => {
-  const cloudWatchEvents = () =>
-    createEndpoint({ endpointName: "CloudWatchEvents" })(config);
-  const client = AwsClient({ spec, config });
+  const cloudWatchEvents = createCloudWatchEvents(config);
+  const client = AwsClient({ spec, config })(cloudWatchEvents);
 
   // findDependencies for CloudWatchEventBus
   const findDependencies = ({ live, lives }) => [];

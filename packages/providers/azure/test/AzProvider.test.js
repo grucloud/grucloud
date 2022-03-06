@@ -2,7 +2,6 @@ const assert = require("assert");
 const { pipe, tap, get } = require("rubico");
 const path = require("path");
 const { AzureProvider } = require("../AzureProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 const {

@@ -4,9 +4,7 @@ const {
   tap,
   get,
   eq,
-  not,
   assign,
-  filter,
   omit,
   tryCatch,
   pick,
@@ -19,38 +17,30 @@ const logger = require("@grucloud/core/logger")({
 
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { createEndpoint, lambdaAddPermission } = require("../AwsCommon");
+const { throwIfNotAwsError, lambdaAddPermission } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { findDependenciesApi } = require("./ApiGatewayCommon");
-
+const {
+  createApiGatewayV2,
+  findDependenciesApi,
+} = require("./ApiGatewayCommon");
+const { createLambda } = require("../Lambda/LambdaCommon");
 const findId = get("live.IntegrationId");
 
-const integrationUriToName = pipe([
-  callProp("split", ":"),
-  last,
-  tap((params) => {
-    assert(true);
-  }),
-]);
+const integrationUriToName = pipe([callProp("split", ":"), last]);
 
 const findName = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   get("live"),
   ({ ApiName, IntegrationUri }) =>
     `integration::${ApiName}::${integrationUriToName(IntegrationUri)}`,
-  tap((params) => {
-    assert(true);
-  }),
 ]);
 
 const pickId = pick(["ApiId", "IntegrationId"]);
 
 exports.Integration = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
+  const apiGateway = createApiGatewayV2(config);
+  const lambda = createLambda(config);
+  const client = AwsClient({ spec, config })(apiGateway);
 
   // Integration findDependencies
   const findDependencies = ({ live, lives }) => [
@@ -152,13 +142,7 @@ exports.Integration = ({ spec, config }) => {
                 logger.error(`lambdaRemovePermission ${tos(error)}`);
               }),
               () => error,
-              switchCase([
-                eq(get("code"), "ResourceNotFoundException"),
-                () => {},
-                () => {
-                  throw error;
-                },
-              ]),
+              throwIfNotAwsError("ResourceNotFoundException"),
             ])()
           ),
         ])

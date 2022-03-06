@@ -20,23 +20,23 @@ const logger = require("@grucloud/core/logger")({
 });
 
 const { tos } = require("@grucloud/core/tos");
+const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
 const {
-  createEndpoint,
+  throwIfNotAwsError,
   tagsExtractFromDescription,
   tagsRemoveFromDescription,
 } = require("../AwsCommon");
 
-const { getField } = require("@grucloud/core/ProviderCommon");
-
+const { createAPIGateway } = require("./ApiGatewayCommon");
 const pickId = pick(["restApiId", "resourceId", "httpMethod"]);
 
 exports.Method = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "APIGateway" })(config);
+  const apiGateway = createAPIGateway(config);
+
+  const client = AwsClient({ spec, config })(apiGateway);
 
   const findId = ({ live, lives }) =>
     pipe([
@@ -101,6 +101,9 @@ exports.Method = ({ spec, config }) => {
           type: "Resource",
           group: "APIGateway",
         }),
+      tap((params) => {
+        assert(true);
+      }),
       pluck("live"),
       flatMap(({ restApiId, restApiName, id, path }) =>
         tryCatch(
@@ -114,20 +117,13 @@ exports.Method = ({ spec, config }) => {
                     resourceId: id,
                     httpMethod,
                   }),
+                  tap((params) => {
+                    assert(true);
+                  }),
                   apiGateway().getMethod,
                   defaultsDeep({ path }),
                 ]),
-                (error) =>
-                  pipe([
-                    () => error,
-                    switchCase([
-                      eq(get("code"), "NotFoundException"),
-                      () => undefined,
-                      () => {
-                        throw error;
-                      },
-                    ]),
-                  ])()
+                throwIfNotAwsError("NotFoundException")
               )()
             ),
             filter(not(isEmpty)),

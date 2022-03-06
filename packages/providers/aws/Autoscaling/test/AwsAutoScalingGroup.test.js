@@ -1,9 +1,5 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const {
-  AutoScalingAutoScalingGroup,
-} = require("../AutoScalingAutoScalingGroup");
 
 describe("AutoScalingAutoScalingGroup", async function () {
   let config;
@@ -12,11 +8,6 @@ describe("AutoScalingAutoScalingGroup", async function () {
   const types = ["AutoScalingGroup"];
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({ config });
     autoSg = provider.getClient({ groupType: "AutoScaling::AutoScalingGroup" });
     await provider.start();

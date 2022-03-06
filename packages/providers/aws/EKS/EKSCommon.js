@@ -4,6 +4,11 @@ const { pipe, tap, get, switchCase, eq } = require("rubico");
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { retryCall } = require("@grucloud/core/Retry");
 
+const { EKS } = require("@aws-sdk/client-eks");
+const { createEndpoint } = require("../AwsCommon");
+
+exports.createEKS = createEndpoint(EKS);
+
 exports.waitForUpdate =
   ({ eks }) =>
   (params) =>

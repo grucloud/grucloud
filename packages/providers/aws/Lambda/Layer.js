@@ -23,21 +23,26 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
 const {
-  createEndpoint,
   tagsExtractFromDescription,
   tagsRemoveFromDescription,
   compareAws,
+  throwIfNotAwsError,
 } = require("../AwsCommon");
+
+const {
+  createLambda,
+  fetchZip,
+  createZipBuffer,
+  computeHash256,
+} = require("./LambdaCommon");
 
 const findId = get("live.LayerArn");
 const findName = get("live.LayerName");
 const pickId = pick(["LayerName"]);
 
-const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
-
 exports.Layer = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
+  const lambda = createLambda(config);
+  const client = AwsClient({ spec, config })(lambda);
 
   const decorate = assign({
     Tags: tagsExtractFromDescription,
@@ -70,17 +75,7 @@ exports.Layer = ({ spec, config }) => {
         }),
         get("Policy"),
       ]),
-      (error) =>
-        pipe([
-          () => error,
-          switchCase([
-            eq(get("code"), "ResourceNotFoundException"),
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
+      throwIfNotAwsError("ResourceNotFoundException")
     ),
   });
 

@@ -1,3 +1,4 @@
+const util = require("util");
 const hiddenCredentials = "****************";
 
 const exlusionList = {
@@ -33,7 +34,7 @@ exports.tos = (x) => {
   try {
     return JSON.stringify(x, replacerCredentials, 4);
   } catch (error) {
-    console.log("Cannot stringify", error);
-    return x;
+    //console.log("Cannot stringify", error);
+    return util.inspect(x);
   }
 };

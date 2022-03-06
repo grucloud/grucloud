@@ -2,12 +2,16 @@ const assert = require("assert");
 const { pipe, tap, get } = require("rubico");
 const { defaultsDeep, isEmpty, unless } = require("rubico/x");
 
-const { createEndpoint, findNameInTagsOrId } = require("../AwsCommon");
+const { findNameInTagsOrId } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { AwsClient } = require("../AwsClient");
-const { buildTagsEcs, findDependenciesCluster } = require("./ECSCommon");
+const {
+  createECS,
+  buildTagsEcs,
+  findDependenciesCluster,
+} = require("./ECSCommon");
 
 const findId = get("live.containerInstanceArn");
 const findName = findNameInTagsOrId({ findId });
@@ -15,8 +19,8 @@ const findName = findNameInTagsOrId({ findId });
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 
 exports.ECSContainerInstance = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const ecs = () => createEndpoint({ endpointName: "ECS" })(config);
+  const ecs = createECS(config);
+  const client = AwsClient({ spec, config })(ecs);
 
   // findDependencies for ECSContainerInstance
   const findDependencies = ({ live }) => [

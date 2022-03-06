@@ -37,9 +37,9 @@ const logger = require("@grucloud/core/logger")({
 });
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createEndpoint } = require("../AwsCommon");
 
-const { diffToPatch } = require("./ApiGatewayCommon");
+const { throwIfNotAwsError } = require("../AwsCommon");
+const { createAPIGateway, diffToPatch } = require("./ApiGatewayCommon");
 
 const findId = get("live.id");
 const findName = get("live.name");
@@ -47,9 +47,9 @@ const findName = get("live.name");
 const pickId = ({ id }) => ({ restApiId: id });
 
 exports.RestApi = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const apiGateway = () =>
-    createEndpoint({ endpointName: "APIGateway" })(config);
+  const apiGateway = createAPIGateway(config);
+
+  const client = AwsClient({ spec, config })(apiGateway);
 
   const buildName = pipe([callProp("split", "."), last]);
 
@@ -503,13 +503,7 @@ exports.RestApi = ({ spec, config }) => {
                       }),
                       apiGateway().getMethod,
                     ]),
-                    switchCase([
-                      eq(get("code"), "NotFoundException"),
-                      () => undefined,
-                      (error) => {
-                        throw error;
-                      },
-                    ])
+                    throwIfNotAwsError("NotFoundException")
                   )()
                 ),
                 filter(not(isEmpty)),

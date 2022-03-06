@@ -90,7 +90,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#publishLayerVersion-property)
+- [PublishLayerVersionCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-lambda/interfaces/publishlayerversioncommandinput.html)
 
 ## Dependencies
 
@@ -98,7 +98,7 @@ exports.createResources = () => [
 
 ## UsedBy
 
-- [LambdaFunction](./Function.md)
+- [Lambda Function](./Function.md)
 
 ## List
 

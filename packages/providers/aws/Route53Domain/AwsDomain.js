@@ -3,6 +3,7 @@ const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { AwsClient } = require("../AwsClient");
+const { createRoute53Domains } = require("./Route53DomainCommon");
 
 const findName = get("live.DomainName");
 const findId = findName;
@@ -10,7 +11,8 @@ const pickId = pick(["DomainName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsDomain = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const route53Domains = createRoute53Domains(config);
+  const client = AwsClient({ spec, config })(route53Domains);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getDomain-property
   const getById = client.getById({

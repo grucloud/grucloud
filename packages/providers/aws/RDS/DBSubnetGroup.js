@@ -2,17 +2,18 @@ const assert = require("assert");
 const { map, pipe, tap, get, eq, not, assign, pick } = require("rubico");
 const { defaultsDeep, pluck } = require("rubico/x");
 
-const { createEndpoint, buildTags } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
+const { createRDS } = require("./RDSCommon");
 
 const findId = get("live.DBSubnetGroupName");
 const findName = findId;
 const pickId = pick(["DBSubnetGroupName"]);
 
 exports.DBSubnetGroup = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const rds = () => createEndpoint({ endpointName: "RDS" })(config);
+  const rds = createRDS(config);
+  const client = AwsClient({ spec, config })(rds);
 
   const findDependencies = ({ live, lives }) => [
     {

@@ -55,5 +55,5 @@ exports.createResources = () => [
 
 ### Properties
 
-- [putRegistryPolicy properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putRegistryPolicy-property)
-- [putReplicationConfiguration properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#putReplicationConfiguration-property)
+- [PutRegistryPolicyCommandInput properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecr/interfaces/putregistrypolicycommandinput.html)
+- [PutReplicationConfigurationCommandInput properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecr/interfaces/putreplicationconfigurationcommandinput.html)

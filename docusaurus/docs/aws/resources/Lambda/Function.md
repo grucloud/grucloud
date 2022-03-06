@@ -86,9 +86,11 @@ exports.createResources = () => [
 
 ## Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunction-property)
+- [CreateFunctionCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-lambda/interfaces/createfunctioncommandinput.html)
 
 ## Dependencies
+
+- [Layer](./Layer.md)
 
 - [Iam Role](../IAM/Role.md)
 

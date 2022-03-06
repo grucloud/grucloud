@@ -39,7 +39,6 @@ const {
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
-  Ec2New,
   getByIdCore,
   findNameInTags,
   buildTags,
@@ -50,7 +49,9 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags } = require("../AwsCommon");
-const { findDependenciesVpc } = require("./EC2Common");
+const { createEC2, findDependenciesVpc } = require("./EC2Common");
+
+const ignoreErrorCodes = ["InvalidInstanceID.NotFound"];
 
 const StateRunning = "running";
 const StateTerminated = "terminated";
@@ -120,7 +121,8 @@ const configDefault =
 exports.configDefault = configDefault;
 
 exports.EC2Instance = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const ec2 = createEC2(config);
+  const client = AwsClient({ spec, config })(ec2);
 
   const { providerName } = config;
   assert(providerName);
@@ -130,8 +132,6 @@ exports.EC2Instance = ({ spec, config }) => {
     retryDelay: 5e3,
     repeatCount: 1,
   };
-
-  const ec2 = Ec2New(config);
 
   const managedByOther = or([
     hasKeyInTags({
@@ -336,21 +336,6 @@ exports.EC2Instance = ({ spec, config }) => {
       }),
     ])();
 
-  const shouldRetryOnExceptionCreate = ({ error, name }) =>
-    pipe([
-      tap(() => {
-        logger.error(
-          `ec2 shouldRetryOnExceptionCreate ${tos({ name, error })}`
-        );
-      }),
-      () => error,
-      get("message"),
-      includes("Invalid IAM Instance Profile ARN"),
-      tap((retry) => {
-        logger.error(`ec2 shouldRetryOnExceptionCreate retry: ${retry}`);
-      }),
-    ])();
-
   const updateInstanceType = ({ InstanceId, updated }) =>
     pipe([
       () => updated,
@@ -439,7 +424,7 @@ exports.EC2Instance = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
   const create = client.create({
     method: "runInstances",
-    shouldRetryOnException: shouldRetryOnExceptionCreate,
+    shouldRetryOnExceptionMessages: ["Invalid IAM Instance Profile ARN"],
     isInstanceUp,
     pickCreated: () =>
       pipe([
@@ -546,7 +531,7 @@ exports.EC2Instance = ({ spec, config }) => {
     pickId: ({ InstanceId }) => ({ InstanceIds: [InstanceId] }),
     method: "terminateInstances",
     getById,
-    ignoreErrorCodes: [],
+    ignoreErrorCodes,
     config,
   });
 

@@ -17,9 +17,9 @@ const { defaultsDeep, callProp, when } = require("rubico/x");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
 
+const { AwsClient } = require("../AwsClient");
+const { createAppSync } = require("./AppSyncCommon");
 const findName = get("live.name");
 const findId = get("live.apiId");
 const pickId = pick(["apiId"]);
@@ -35,8 +35,8 @@ const resolveSchemaFile = ({ programOptions, schemaFile }) =>
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncGraphqlApi = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
-  const appSync = () => createEndpoint({ endpointName: "AppSync" })(config);
+  const appSync = createAppSync(config);
+  const client = AwsClient({ spec, config })(appSync);
 
   const findDependencies = ({ live }) => [
     {
@@ -53,8 +53,15 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
       pick(["apiId"]),
       defaultsDeep({ format: "SDL", includeDirectives: true }),
       appSync().getIntrospectionSchema,
+      tap((params) => {
+        assert(true);
+      }),
       get("schema"),
+      Buffer.from,
       callProp("toString"),
+      tap((params) => {
+        assert(true);
+      }),
     ]),
     (error) =>
       pipe([
@@ -96,7 +103,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
           assert(apiId);
           assert(definition);
         }),
-        () => ({ apiId, definition }),
+        () => ({ apiId, definition: Buffer.from(definition) }),
         appSync().startSchemaCreation,
         () =>
           retryCall({
@@ -244,6 +251,9 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
               }
             )(),
         ]),
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 

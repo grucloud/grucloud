@@ -193,7 +193,7 @@ exports.createResources = () => [
 
 ### Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicy-property)
+- [CreatePolicyCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-iam/interfaces/createpolicycommandinput.html)
 
 ### Used By
 
@@ -204,7 +204,7 @@ exports.createResources = () => [
 ### List
 
 ```sh
-gc l -t IamPolicy
+gc l -t IAM::Policy
 ```
 
 ```sh

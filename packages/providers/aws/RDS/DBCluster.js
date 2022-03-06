@@ -6,6 +6,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
+const { createRDS } = require("./RDSCommon");
 
 const findId = get("live.DBClusterIdentifier");
 const pickId = pick(["DBClusterIdentifier"]);
@@ -13,7 +14,8 @@ const findName = findId;
 const isInstanceUp = pipe([eq(get("Status"), "available")]);
 
 exports.DBCluster = ({ spec, config }) => {
-  const client = AwsClient({ spec, config });
+  const rds = createRDS(config);
+  const client = AwsClient({ spec, config })(rds);
 
   const findDependencies = ({ live, lives }) => [
     {
