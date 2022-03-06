@@ -66,7 +66,7 @@ exports.Account = ({ spec, config }) => {
     config,
     getById,
   });
-
+  //TODO client.destroy
   const destroy = pipe([
     () => ({
       patchOperations: [
