@@ -3,7 +3,7 @@ const { MockProvider } = require("../MockProvider");
 const { createAxiosMock } = require("../MockAxios");
 const { ProviderGru } = require("@grucloud/core/ProviderGru");
 const { createProviderMaker } = require("@grucloud/core/cli/infra");
-
+const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const createMockProvider = async ({
   name,
   config,
