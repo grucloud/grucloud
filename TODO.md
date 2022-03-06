@@ -2,8 +2,6 @@
 
 -inferName OpenIDConnectProvider
 
-- ✖ Deploying  
-   ✖ AppRunner::Service 0/1 Error in assuming access role arn:aws:iam::840541460064:role/service-role/AppRunnerECRAccessRole
 - example vpc-use still using make and use
 - check stage for all providers
 

@@ -10,7 +10,14 @@ const {
   map,
   fork,
 } = require("rubico");
-const { first, pluck, isFunction, size, defaultsDeep } = require("rubico/x");
+const {
+  first,
+  pluck,
+  isFunction,
+  size,
+  defaultsDeep,
+  when,
+} = require("rubico/x");
 
 const path = require("path");
 
@@ -116,7 +123,7 @@ const fetchAccountId = pipe([
   tap(() => {
     logger.debug(`fetchAccountId`);
   }),
-  () => new STS(),
+  () => new STS({ region: "us-east-1" }),
   (sts) => sts.getCallerIdentity({}),
   get("Account"),
 ]);
@@ -178,33 +185,40 @@ exports.AwsProvider = ({
   let zones;
   let region;
 
-  const getRegionDefault = () => region;
-
-  const configDefault = {
-    stage,
-    zone: () => zone,
-    accountId: () => accountId,
-    region: getRegionDefault(),
-  };
-
-  const makeConfig = () => mergeConfig({ configDefault, config, configs });
+  const makeConfig = () =>
+    mergeConfig({
+      configDefault: {
+        stage,
+        zone: () => zone,
+        accountId: () => accountId,
+        region,
+      },
+      config,
+      configs,
+    });
 
   const getRegion = (config) =>
     pipe([
-      () => ({ region: process.env.AWS_REGION }),
+      () => ({}),
+      when(
+        () => process.env.AWS_REGION,
+        defaultsDeep({ region: process.env.AWS_REGION })
+      ),
       defaultsDeep(config),
       get("region", "us-east-1"),
       tap((region) => {
+        assert(region);
         logger.info(`using region '${region}'`);
       }),
     ])();
+
+  region = getRegion(makeConfig());
 
   const getZone = ({ zones, config }) => config.zone() || first(zones);
 
   const start = async () => {
     accountId = await fetchAccountId();
     const merged = makeConfig();
-    region = getRegion(merged);
     zones = await getAvailabilityZonesName({ region });
     assert(zones, `no zones for region ${region}`);
     zone = getZone({ zones, config: merged });

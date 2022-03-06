@@ -120,6 +120,7 @@ const createEndpoint = (client) => (config) =>
   pipe([
     tap((params) => {
       assert(client);
+      assert(config.region);
     }),
     () => new client({ region: config.region }),
     (endpoint) =>
