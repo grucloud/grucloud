@@ -115,6 +115,7 @@ exports.DBInstance = ({ spec, config }) => {
     create,
     update,
     destroy,
+    getById,
     getByName,
     getList,
     configDefault,

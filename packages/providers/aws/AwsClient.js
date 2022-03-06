@@ -58,7 +58,7 @@ const shouldRetryOnExceptionMessagesDefault =
         );
       }),
       () => shouldRetryOnExceptionMessages,
-      any(includes(error.message)),
+      any((message) => pipe([() => error.message, includes(message)])()),
     ])();
 
 const shouldRetryOnExceptionDefault = ({

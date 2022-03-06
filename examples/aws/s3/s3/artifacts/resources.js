@@ -6,16 +6,6 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-acceleration",
-    properties: ({}) => ({
-      AccelerateConfiguration: {
-        Status: "Enabled",
-      },
-    }),
-  },
-  {
-    type: "Bucket",
-    group: "S3",
     name: "grucloud-cors",
     properties: ({}) => ({
       CORSConfiguration: {
@@ -24,7 +14,6 @@ exports.createResources = () => [
             AllowedHeaders: ["Authorization"],
             AllowedMethods: ["GET"],
             AllowedOrigins: ["*"],
-            ExposeHeaders: [],
             MaxAgeSeconds: 3000,
           },
         ],
@@ -70,7 +59,6 @@ exports.createResources = () => [
                 StorageClass: "GLACIER",
               },
             ],
-            NoncurrentVersionTransitions: [],
           },
         ],
       },
@@ -132,26 +120,15 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-versioning",
-    properties: ({}) => ({
-      VersioningConfiguration: {
-        Status: "Enabled",
-        MFADelete: "Disabled",
-      },
-    }),
-  },
-  {
-    type: "Bucket",
-    group: "S3",
     name: "grucloud-website",
     properties: ({}) => ({
       ACL: "public-read",
       WebsiteConfiguration: {
-        IndexDocument: {
-          Suffix: "index.html",
-        },
         ErrorDocument: {
           Key: "error.html",
+        },
+        IndexDocument: {
+          Suffix: "index.html",
         },
       },
     }),
