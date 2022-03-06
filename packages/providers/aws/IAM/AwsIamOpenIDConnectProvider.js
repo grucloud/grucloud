@@ -224,6 +224,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     findId,
     findDependencies,
     getByName,
+    getById,
     findName,
     create,
     destroy,

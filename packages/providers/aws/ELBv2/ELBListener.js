@@ -6,10 +6,11 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const logger = require("@grucloud/core/logger")({ prefix: "ELBListener" });
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { tos } = require("@grucloud/core/tos");
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { createELB } = require("./ELBCommon");
+
+const ignoreErrorCodes = ["ListenerNotFound"];
 
 const findId = get("live.ListenerArn");
 const pickId = pick(["ListenerArn"]);
@@ -122,7 +123,7 @@ exports.ELBListener = ({ spec, config }) => {
     pickId: ({ ListenerArn }) => ({ ListenerArns: [ListenerArn] }),
     method: "describeListeners",
     getField: "Listeners",
-    ignoreErrorCodes: ["ListenerNotFound"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createListener-property
@@ -141,7 +142,7 @@ exports.ELBListener = ({ spec, config }) => {
     pickId,
     method: "deleteListener",
     getById,
-    ignoreErrorCodes: ["ListenerNotFound"],
+    ignoreErrorCodes,
     config,
   });
 
@@ -207,6 +208,7 @@ exports.ELBListener = ({ spec, config }) => {
     findId,
     findDependencies,
     findNamespace,
+    getById,
     getByName,
     findName,
     create,

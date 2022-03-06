@@ -1,19 +1,11 @@
 const assert = require("assert");
 const path = require("path");
 const { JWT } = require("google-auth-library");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { authorize } = require("../GoogleProvider");
 
 describe("GoogleAuth", function () {
   let config;
-  before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      assert(error.code, 422);
-      this.skip();
-    }
-  });
+  before(async function () {});
 
   it("auth ko: account not found", async function () {
     const applicationCredentialsFile = path.resolve(

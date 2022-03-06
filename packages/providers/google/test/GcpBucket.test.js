@@ -2,7 +2,6 @@ const path = require("path");
 const assert = require("assert");
 const chance = require("chance")();
 const { GoogleProvider } = require("../GoogleProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 const {
@@ -22,11 +21,6 @@ describe("GcpBucket", async function () {
 
   let file;
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = GoogleProvider({
       config: () => ({
         projectId: "grucloud-test",

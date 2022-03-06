@@ -24,6 +24,7 @@ const {
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 const { createSQS } = require("./SQSCommon");
+const { throwIfNotAwsError } = require("../AwsCommon");
 
 const findId = get("live.Attributes.QueueArn");
 const pickId = pick(["QueueUrl"]);
@@ -103,24 +104,8 @@ exports.SQSQueue = ({ spec, config }) => {
       assert(true);
     }),
     tryCatch(
-      pipe([
-        sqs().getQueueUrl,
-        tap((params) => {
-          assert(true);
-        }),
-        getById,
-      ]),
-      (error) =>
-        pipe([
-          () => ignoreErrorCodes,
-          switchCase([
-            includes(error.code),
-            () => undefined,
-            () => {
-              throw error;
-            },
-          ]),
-        ])()
+      pipe([sqs().getQueueUrl, getById]),
+      throwIfNotAwsError("AWS.SimpleQueueService.NonExistentQueue")
     ),
   ]);
 

@@ -14,6 +14,7 @@ const { createEKS, waitForUpdate } = require("./EKSCommon");
 const findName = get("live.nodegroupName");
 const findId = findName;
 const pickId = pick(["nodegroupName", "clusterName"]);
+const ignoreErrorCodes = ["ResourceNotFoundException"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
 exports.EKSNodeGroup = ({ spec, config }) => {
@@ -57,7 +58,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     pickId,
     method: "describeNodegroup",
     getField: "nodegroup",
-    ignoreErrorCodes: ["ResourceNotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listNodegroups-property
@@ -141,7 +142,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     pickId,
     method: "deleteNodegroup",
     getById,
-    ignoreErrorCodes: ["ResourceNotFoundException"],
+    ignoreErrorCodes,
     config,
   });
 
@@ -191,6 +192,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     findId,
     findDependencies,
     findNamespace: findNamespaceInTagsObject(config),
+    getById,
     getByName,
     findName,
     update,

@@ -2,23 +2,24 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe.skip("Api Gateway Integration", async function () {
+describe("IdentityProvider", async function () {
   let config;
   let provider;
-  let integration;
+  let identityProvider;
 
   before(async function () {
     provider = AwsProvider({ config });
-    integration = provider.getClient({ groupType: "APIGateway::Integration" });
+    identityProvider = provider.getClient({
+      groupType: "CognitoIdentityServiceProvider::IdentityProvider",
+    });
     await provider.start();
   });
-  after(async () => {});
   it(
     "delete with invalid id",
     pipe([
       () =>
-        integration.destroy({
-          live: { restApiId: "12345", resourceId: "12345", httpMethod: "get" },
+        identityProvider.destroy({
+          live: { UserPoolId: "up_12345", ProviderName: "aaaa" },
         }),
     ])
   );
@@ -26,10 +27,9 @@ describe.skip("Api Gateway Integration", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        integration.getById({
-          restApiId: "12345",
-          resourceId: "12345",
-          httpMethod: "get",
+        identityProvider.getById({
+          UserPoolId: "up_12345",
+          ProviderName: "aaaa",
         }),
     ])
   );

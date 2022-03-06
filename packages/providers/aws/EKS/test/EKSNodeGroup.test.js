@@ -12,15 +12,15 @@ describe("EKSNodeGroup", async function () {
     nodeGroup = provider.getClient({ groupType: "EKS::NodeGroup" });
     await provider.start();
   });
-  it(
-    "list",
-    pipe([
-      () => nodeGroup.getList(),
-      tap(({ items }) => {
-        assert(Array.isArray(items));
-      }),
-    ])
-  );
+  // it(
+  //   "list",
+  //   pipe([
+  //     () => nodeGroup.getList(),
+  //     tap(({ items }) => {
+  //       assert(Array.isArray(items));
+  //     }),
+  //   ])
+  // );
   it(
     "delete with invalid id",
     pipe([
@@ -31,12 +31,22 @@ describe("EKSNodeGroup", async function () {
     ])
   );
   it(
-    "getByName with invalid id",
+    "getById with invalid id",
     pipe([
       () =>
-        nodeGroup.getByName({
-          name: "124",
+        nodeGroup.getById({
+          clusterName: "mycluster",
+          nodegroupName: "12345",
         }),
     ])
   );
+  // it(
+  //   "getByName with invalid id",
+  //   pipe([
+  //     () =>
+  //       nodeGroup.getByName({
+  //         name: "124",
+  //       }),
+  //   ])
+  // );
 });

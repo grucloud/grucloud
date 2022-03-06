@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../GoogleProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 const {
@@ -17,12 +16,6 @@ describe.skip("GcpServiceAccount", async function () {
   let serviceAccount;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-
     provider = GoogleProvider({
       name: "google",
       config: () => ({

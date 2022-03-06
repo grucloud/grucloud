@@ -2,7 +2,6 @@ const assert = require("assert");
 const path = require("path");
 const { tap, pipe, get, tryCatch } = require("rubico");
 
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const {
   testPlanDeploy,
@@ -62,13 +61,6 @@ const createStackNext = async ({ config }) => {
 describe.skip("AwsS3Object", async function () {
   let config;
 
-  before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-  });
   it("destroy NoSuchBucket", async function () {
     await pipe([
       () =>

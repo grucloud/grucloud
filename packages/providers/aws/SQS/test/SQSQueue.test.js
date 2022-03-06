@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { pipe, tap } = require("rubico");
 
 describe("SQSQueue", async function () {
@@ -9,11 +8,6 @@ describe("SQSQueue", async function () {
   let queue;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({ config });
     queue = provider.getClient({ groupType: "SQS::Queue" });
     await provider.start();

@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { pipe, tap } = require("rubico");
 
 describe("Api GatewayV2 Api", async function () {
@@ -9,11 +8,6 @@ describe("Api GatewayV2 Api", async function () {
   let api;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({ config });
     api = provider.getClient({ groupType: "ApiGatewayV2::Api" });
     await provider.start();

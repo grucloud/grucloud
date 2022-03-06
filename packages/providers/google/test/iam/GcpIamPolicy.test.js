@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../../GoogleProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { pipe, tap, map, get, filter } = require("rubico");
 const { find, isDeepEqual } = require("rubico/x");
 const chance = require("chance")();
@@ -21,12 +20,6 @@ describe.skip("GcpIamPolicy", async function () {
     members: ["serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"],
   };
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-
     provider = GoogleProvider({
       config: () => ({
         projectId: "grucloud-test",

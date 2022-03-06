@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { MockProvider } = require("../MockProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { createAxiosMock } = require("../MockAxios");
 const { ProviderGru } = require("@grucloud/core/ProviderGru");
 const { createProviderMaker } = require("@grucloud/core/cli/infra");

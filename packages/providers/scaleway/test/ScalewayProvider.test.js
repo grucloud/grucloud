@@ -5,7 +5,6 @@ const {
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
 const { ScalewayProvider } = require("../ScalewayProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 
 describe("ScalewayProvider", async function () {
   let config;
@@ -16,11 +15,6 @@ describe("ScalewayProvider", async function () {
   let server;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = ScalewayProvider({
       name: "scaleway",
       config: () => ({}),

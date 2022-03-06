@@ -1,16 +1,9 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../GoogleProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 
 describe("GoogleError", async function () {
   let config;
-  before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-  });
+  before(async function () {});
   after(async () => {});
 
   it("application credentials not found", async function () {

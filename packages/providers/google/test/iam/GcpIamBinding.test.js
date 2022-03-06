@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../../GoogleProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const chance = require("chance")();
 const { Cli } = require("@grucloud/core/cli/cliCommands");
 
@@ -19,12 +18,6 @@ describe.skip("GcpIamBinding", async function () {
   const roleEditor = "roles/editor";
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-
     provider = GoogleProvider({
       config: () => ({
         projectId: "grucloud-test",

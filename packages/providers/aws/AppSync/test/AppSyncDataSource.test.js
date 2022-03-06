@@ -1,8 +1,6 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { tryCatch, pipe, tap } = require("rubico");
-const { AppSyncDataSource } = require("../AppSyncDataSource");
 
 describe("AppSyncDataSource", async function () {
   let config;
@@ -10,11 +8,6 @@ describe("AppSyncDataSource", async function () {
   let dataSource;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({ config });
     dataSource = provider.getClient({ groupType: "AppSync::DataSource" });
     await provider.start();

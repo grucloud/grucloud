@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { pipe, tap } = require("rubico");
 
 describe("CloudWatchEventRule", async function () {
@@ -9,11 +8,6 @@ describe("CloudWatchEventRule", async function () {
   let rule;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({ config });
     rule = provider.getClient({ groupType: "CloudWatchEvents::Rule" });
     await provider.start();

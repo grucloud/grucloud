@@ -51,6 +51,8 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags } = require("../AwsCommon");
 const { createEC2, findDependenciesVpc } = require("./EC2Common");
 
+const ignoreErrorCodes = ["InvalidInstanceID.NotFound"];
+
 const StateRunning = "running";
 const StateTerminated = "terminated";
 const StateStopped = "stopped";
@@ -529,7 +531,7 @@ exports.EC2Instance = ({ spec, config }) => {
     pickId: ({ InstanceId }) => ({ InstanceIds: [InstanceId] }),
     method: "terminateInstances",
     getById,
-    ignoreErrorCodes: [],
+    ignoreErrorCodes,
     config,
   });
 

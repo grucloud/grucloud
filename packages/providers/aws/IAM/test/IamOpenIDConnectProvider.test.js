@@ -29,9 +29,20 @@ describe("IamOpenIDConnectProvider", async function () {
       () =>
         iamOpenIDConnectProvider.destroy({
           live: {
-            OpenIDConnectProviderArn:
-              "arn:aws:iam::840541460064:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/D37114C060BC22C04E5BE2E1BF4717A2",
+            Arn: "arn:aws:iam::840541460064:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/D37114C060BC22C04E5BE2E1BF4717A2",
           },
+        }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])
+  );
+  it(
+    "getById with invalid id",
+    pipe([
+      () =>
+        iamOpenIDConnectProvider.getById({
+          Arn: "arn:aws:iam::840541460064:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/D37114C060BC22C04E5BE2E1BF4717A2",
         }),
       tap((params) => {
         assert(true);

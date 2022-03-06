@@ -5,7 +5,7 @@ title: Resources List
 List of resources for provider aws:
 
 * APIGateway: 
-[DomainName](./resources/APIGateway/DomainName.md), [Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md)
+[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Resource](./resources/APIGateway/Resource.md), [Method](./resources/APIGateway/Method.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md)
 * ApiGatewayV2: 
 [DomainName](./resources/ApiGatewayV2/DomainName.md), [Api](./resources/ApiGatewayV2/Api.md), [Stage](./resources/ApiGatewayV2/Stage.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Deployment](./resources/ApiGatewayV2/Deployment.md)
 * AppRunner: 

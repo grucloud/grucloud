@@ -1,8 +1,6 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { pipe } = require("rubico");
-const { EcrRepository } = require("../EcrRepository");
 
 describe("EcrRepository", async function () {
   let config;
@@ -10,13 +8,10 @@ describe("EcrRepository", async function () {
   let repository;
 
   before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
     provider = AwsProvider({ config });
-    repository = EcrRepository({ config: provider.config });
+    repository = provider.getClient({
+      groupType: "ECR::Repository",
+    });
     await provider.start();
   });
   it(

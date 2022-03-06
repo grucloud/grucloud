@@ -1,7 +1,6 @@
 const assert = require("assert");
 const { find } = require("rubico/x");
 const { AwsProvider } = require("../../AwsProvider");
-const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const {
   testPlanDeploy,
   testPlanDestroy,
@@ -91,13 +90,7 @@ describe.skip("Route53HostedZone", async function () {
     });
     return { provider, resources: { domain, hostedZone, recordA } };
   };
-  before(async function () {
-    try {
-      config = ConfigLoader({ path: "../../../examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-  });
+  before(async function () {});
   after(async () => {});
 
   it("hostedZone apply plan", async function () {

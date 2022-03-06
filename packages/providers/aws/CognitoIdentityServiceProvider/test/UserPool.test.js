@@ -1,24 +1,34 @@
 const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
-const { tryCatch, pipe, tap } = require("rubico");
+const { pipe, tap } = require("rubico");
 
-describe("RestApi", async function () {
+describe("UserPool", async function () {
   let config;
   let provider;
-  let restApi;
+  let userPool;
 
   before(async function () {
     provider = AwsProvider({ config });
-    restApi = provider.getClient({ groupType: "APIGateway::RestApi" });
+    userPool = provider.getClient({
+      groupType: "CognitoIdentityServiceProvider::UserPool",
+    });
     await provider.start();
   });
-  after(async () => {});
+  it(
+    "list",
+    pipe([
+      () => userPool.getList(),
+      tap(({ items }) => {
+        assert(Array.isArray(items));
+      }),
+    ])
+  );
   it(
     "delete with invalid id",
     pipe([
       () =>
-        restApi.destroy({
-          live: { id: "12345" },
+        userPool.destroy({
+          live: { Id: "up_12345" },
         }),
     ])
   );
@@ -26,8 +36,8 @@ describe("RestApi", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        restApi.getById({
-          id: "12345",
+        userPool.getById({
+          Id: "up_12345",
         }),
     ])
   );
@@ -35,7 +45,7 @@ describe("RestApi", async function () {
     "getByName with invalid id",
     pipe([
       () =>
-        restApi.getByName({
+        userPool.getByName({
           name: "124",
         }),
     ])
