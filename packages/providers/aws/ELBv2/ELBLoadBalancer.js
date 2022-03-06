@@ -134,7 +134,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
 
   const create = client.create({
     method: "createLoadBalancer",
-    pickId,
     getById,
     isInstanceUp: eq(get("State.Code"), "active"),
     pickCreated: () => pipe([get("LoadBalancers"), first]),
@@ -147,7 +146,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     method: "deleteLoadBalancer",
     getById,
     ignoreErrorCodes: ["LoadBalancerNotFound"],
-    config,
   });
 
   return {

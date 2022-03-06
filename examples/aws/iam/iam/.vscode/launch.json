@@ -123,11 +123,11 @@
       "port": 9229
     },
     {
-      "name": "Target Graph",
+      "name": "Info",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["graph"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "info"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

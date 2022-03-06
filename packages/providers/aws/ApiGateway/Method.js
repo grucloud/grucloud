@@ -30,7 +30,7 @@ const {
   tagsRemoveFromDescription,
 } = require("../AwsCommon");
 
-const { createAPIGateway } = require("./ApiGatewayCommon");
+const { createAPIGateway, ignoreErrorCodes } = require("./ApiGatewayCommon");
 const pickId = pick(["restApiId", "resourceId", "httpMethod"]);
 
 exports.Method = ({ spec, config }) => {
@@ -84,7 +84,7 @@ exports.Method = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getMethod",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getMethod-property
@@ -209,8 +209,7 @@ exports.Method = ({ spec, config }) => {
     pickId,
     method: "deleteMethod",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   return {

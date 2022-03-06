@@ -107,17 +107,8 @@ exports.KmsKey = ({ spec, config }) => {
   const create = client.create({
     isInstanceUp,
     method: "createKey",
-    pickCreated: () => (result) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => result,
-        get("KeyMetadata"),
-      ])(),
-    pickId,
+    pickCreated: () => get("KeyMetadata"),
     getById,
-    config,
     postCreate: ({ name }) =>
       pipe([
         tap((params) => {
@@ -210,7 +201,6 @@ exports.KmsKey = ({ spec, config }) => {
     method: "disableKey",
     getById,
     isInstanceDown,
-    config,
     ignoreErrorCodes: ["NotFoundException"],
   });
 

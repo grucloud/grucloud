@@ -91,11 +91,9 @@ exports.AwsNatGateway = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createNatGateway-property
   const create = client.create({
     method: "createNatGateway",
-    pickCreated: () => (result) => pipe([() => result, get("NatGateway")])(),
-    pickId,
+    pickCreated: () => get("NatGateway"),
     isInstanceUp: eq(get("State"), "available"),
     getById,
-    config,
   });
 
   const disassociateAddress = (live) =>
@@ -144,7 +142,6 @@ exports.AwsNatGateway = ({ spec, config }) => {
     getById,
     isInstanceDown,
     ignoreErrorCodes: ["NatGatewayNotFound"],
-    config,
   });
 
   const configDefault = ({

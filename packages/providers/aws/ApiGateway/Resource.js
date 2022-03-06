@@ -8,6 +8,7 @@ const { AwsClient } = require("../AwsClient");
 const {
   createAPIGateway,
   findDependenciesRestApi,
+  ignoreErrorCodes,
 } = require("./ApiGatewayCommon");
 
 const pickId = ({ restApiId, id }) => ({
@@ -58,7 +59,7 @@ exports.Resource = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getResource",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getResources-property
@@ -100,8 +101,6 @@ exports.Resource = ({ spec, config }) => {
   const create = client.create({
     method: "createResource",
     getById,
-    pickId,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateResource-property
@@ -109,7 +108,6 @@ exports.Resource = ({ spec, config }) => {
     pickId,
     method: "updateResource",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteResource-property
@@ -117,8 +115,7 @@ exports.Resource = ({ spec, config }) => {
     pickId,
     method: "deleteResource",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   return {

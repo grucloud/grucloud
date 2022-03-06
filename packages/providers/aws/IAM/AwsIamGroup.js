@@ -84,10 +84,8 @@ exports.AwsIamGroup = ({ spec, config }) => {
 
   const create = client.create({
     method: "createGroup",
-    pickId,
     getById,
-    config,
-    pickCreated: () => pipe([get("Group")]),
+    pickCreated: () => get("Group"),
     postCreate: ({ name, resolvedDependencies: { policies } }) =>
       pipe([
         tap((params) => {
@@ -162,7 +160,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
     method: "deleteGroup",
     ignoreErrorCodes: ["NoSuchEntity"],
     getById,
-    config,
   });
 
   return {

@@ -126,6 +126,7 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
       tap(() => dependencies().autoScalingGroup.getLive({ lives })),
     ])();
 
+  //TODO ignoreErrorCodes
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#detachLoadBalancerTargetGroups-property
   const destroy = client.destroy({
     pickId: ({ TargetGroupARN, AutoScalingGroupName }) => ({

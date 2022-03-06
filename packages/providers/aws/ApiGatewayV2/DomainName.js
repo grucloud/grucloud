@@ -9,7 +9,7 @@ const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createApiGatewayV2 } = require("./ApiGatewayCommon");
+const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findId = get("live.DomainName");
 const findName = get("live.DomainName");
@@ -50,7 +50,7 @@ exports.DomainName = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getDomainName",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   const getByName = ({ name: DomainName }) => getById({ DomainName });
@@ -62,13 +62,7 @@ exports.DomainName = ({ spec, config }) => {
       "UnsupportedCertificate",
       "BadRequestException",
     ],
-    pickCreated:
-      ({ payload }) =>
-      (result) =>
-        pipe([() => result])(),
-    pickId,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteDomainName-property
@@ -76,7 +70,6 @@ exports.DomainName = ({ spec, config }) => {
     pickId,
     method: "deleteDomainName",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteDomainName-property
@@ -84,8 +77,7 @@ exports.DomainName = ({ spec, config }) => {
     pickId,
     method: "deleteDomainName",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

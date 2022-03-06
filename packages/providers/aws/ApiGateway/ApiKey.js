@@ -3,7 +3,7 @@ const { pipe, tap, get } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createAPIGateway } = require("./ApiGatewayCommon");
+const { createAPIGateway, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findName = get("live.name");
 const findId = get("live.id");
@@ -18,7 +18,7 @@ exports.ApiKey = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getApiKey",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getApiKeys-property
@@ -50,22 +50,13 @@ exports.ApiKey = ({ spec, config }) => {
 
   const create = client.create({
     method: "createApiKey",
-    pickCreated: () => (result) => pipe([() => result])(),
-    pickId,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateApiKey-property
   const update = client.update({
     pickId,
-    filterParams: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
     method: "updateApiKey",
-    config,
     getById,
   });
 
@@ -74,8 +65,7 @@ exports.ApiKey = ({ spec, config }) => {
     pickId,
     method: "deleteApiKey",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   return {

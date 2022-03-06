@@ -9,7 +9,12 @@ const { AwsClient } = require("../AwsClient");
 const { createLambda } = require("./LambdaCommon");
 
 const findId = get("live.UUID");
-const pickId = pick(["UUID"]);
+const pickId = pipe([
+  tap(({ UUID }) => {
+    assert(UUID);
+  }),
+  pick(["UUID"]),
+]);
 
 const nameFromArn = pipe([callProp("split", ":"), last]);
 
@@ -103,11 +108,8 @@ exports.EventSourceMapping = ({ spec, config }) => {
   //TODO isInstanceUp
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createEventSourceMapping-property
   const create = client.create({
-    pickCreated: () => pickId,
     method: "createEventSourceMapping",
-    pickId,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateEventSourceMapping-property
@@ -115,7 +117,6 @@ exports.EventSourceMapping = ({ spec, config }) => {
     pickId,
     method: "updateEventSourceMapping",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteEventSourceMapping-property
@@ -124,7 +125,6 @@ exports.EventSourceMapping = ({ spec, config }) => {
     method: "deleteEventSourceMapping",
     getById,
     ignoreErrorCodes: ["ResourceNotFoundException"],
-    config,
   });
 
   const configDefault = ({

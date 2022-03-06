@@ -5,17 +5,17 @@ const { pipe, tap } = require("rubico");
 describe("DBInstance", async function () {
   let config;
   let provider;
-  let cluster;
+  let dbInstance;
 
   before(async function () {
     provider = AwsProvider({ config });
-    cluster = provider.getClient({ groupType: "RDS::DBInstance" });
+    dbInstance = provider.getClient({ groupType: "RDS::DBInstance" });
     await provider.start();
   });
   it(
     "list",
     pipe([
-      () => cluster.getList(),
+      () => dbInstance.getList(),
       tap(({ items }) => {
         assert(Array.isArray(items));
       }),
@@ -25,8 +25,17 @@ describe("DBInstance", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        cluster.destroy({
+        dbInstance.destroy({
           live: { DBInstanceIdentifier: "instance-12345" },
+        }),
+    ])
+  );
+  it(
+    "getById with invalid id",
+    pipe([
+      () =>
+        dbInstance.getById({
+          DBInstanceIdentifier: "instance-12345",
         }),
     ])
   );
@@ -34,7 +43,7 @@ describe("DBInstance", async function () {
     "getByName with invalid id",
     pipe([
       () =>
-        cluster.getByName({
+        dbInstance.getByName({
           name: "124",
         }),
     ])

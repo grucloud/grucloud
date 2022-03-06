@@ -8,6 +8,7 @@ const { AwsClient } = require("../AwsClient");
 const {
   createAppSync,
   findDependenciesGraphqlApi,
+  ignoreErrorCodes,
 } = require("./AppSyncCommon");
 
 const findId = get("live.resolverArn");
@@ -79,15 +80,17 @@ exports.AppSyncResolver = ({ spec, config }) => {
     pickId,
     method: "getResolver",
     getField: "resolver",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createResolver-property
   const create = client.create({
     method: "createResolver",
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
     getById,
-    pickId,
-    config,
     shouldRetryOnExceptionCodes: ["ConcurrentModificationException"],
   });
 
@@ -96,8 +99,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
     pickId,
     method: "deleteResolver",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

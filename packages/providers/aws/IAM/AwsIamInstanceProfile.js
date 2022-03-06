@@ -185,7 +185,6 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     method: "deleteInstanceProfile",
     ignoreErrorCodes: ["NoSuchEntity"],
     getById,
-    config,
   });
 
   return {

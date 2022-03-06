@@ -91,14 +91,13 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deregisterTaskDefinition-property
-
+  //TODO
   const destroy = client.destroy({
     pickId,
     method: "deregisterTaskDefinition",
     //getById,
     ignoreErrorCodes: ["InvalidParameterException"],
     ignoreErrorMessages,
-    config,
   });
 
   const configDefault = ({

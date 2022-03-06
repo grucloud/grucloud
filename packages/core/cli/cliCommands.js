@@ -1280,19 +1280,28 @@ const DoCommand = ({ commandOptions, programOptions, command }) =>
     ]),
   ]);
 
-const info = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+const info = ({ infra, commandOptions = {}, programOptions }) =>
   tryCatch(
     pipe([
-      tap((xxx) => {
-        logger.debug(`info`);
+      tap(() => {
+        logger.debug(
+          `info ${JSON.stringify({ commandOptions, programOptions })}`
+        );
       }),
-      DoCommand({ commandOptions, programOptions, command: "info" }),
+      () => infra,
+      setupProviders({ commandOptions }),
+      ({ providerGru }) =>
+        providerGru.runCommand({
+          functionName: "info",
+          commandOptions,
+          programOptions,
+        }),
       tap((info) => {
         console.log(YAML.stringify(info.results));
       }),
     ]),
-    DisplayAndThrow({ name: "Info" })
-  )(infra);
+    DisplayAndThrow({ name: "info" })
+  )();
 
 const init = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(

@@ -8,6 +8,7 @@ const { AwsClient } = require("../AwsClient");
 const {
   createAppSync,
   findDependenciesGraphqlApi,
+  ignoreErrorCodes,
 } = require("./AppSyncCommon");
 
 const findId = get("live.dataSourceArn");
@@ -121,7 +122,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     pickId,
     method: "getDataSource",
     getField: "dataSource",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createDataSource-property
@@ -136,8 +137,6 @@ exports.AppSyncDataSource = ({ spec, config }) => {
       ]),
     method: "createDataSource",
     getById,
-    pickId,
-    config,
     postCreate: ({ name, payload, resolvedDependencies: { graphqlApi } }) =>
       pipe([
         tap(({ apiId }) => {
@@ -159,8 +158,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     pickId,
     method: "deleteDataSource",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

@@ -19,10 +19,15 @@ const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { AwsClient } = require("../AwsClient");
-const { createAppSync } = require("./AppSyncCommon");
+const { createAppSync, ignoreErrorCodes } = require("./AppSyncCommon");
 const findName = get("live.name");
 const findId = get("live.apiId");
-const pickId = pick(["apiId"]);
+const pickId = pipe([
+  tap(({ apiId }) => {
+    assert(apiId);
+  }),
+  pick(["apiId"]),
+]);
 
 const resolveSchemaFile = ({ programOptions, schemaFile }) =>
   pipe([
@@ -76,7 +81,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     pickId,
     method: "getGraphqlApi",
     getField: "graphqlApi",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
     decorate: () =>
       pipe([
         assign({
@@ -141,10 +146,8 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
   const create = client.create({
     method: "createGraphqlApi",
     filterPayload: pipe([omit(["schema", "schemaFile", "apiKeys"])]),
-    pickCreated: () => pipe([get("graphqlApi"), pickId]),
-    pickId,
+    pickCreated: () => get("graphqlApi"),
     getById,
-    config,
     postCreate:
       ({ name, payload, programOptions }) =>
       ({ apiId }) =>
@@ -203,8 +206,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     pickId,
     method: "deleteGraphqlApi",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

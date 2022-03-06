@@ -4,12 +4,13 @@ const { defaultsDeep, values, flatten, when, isEmpty } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const {
   createAPIGateway,
   findDependenciesRestApi,
+  ignoreErrorCodes,
 } = require("./ApiGatewayCommon");
+
 const findId = get("live.stageName");
 const findName = get("live.stageName");
 
@@ -44,7 +45,7 @@ exports.Stage = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getStage",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getStages-property
@@ -83,10 +84,12 @@ exports.Stage = ({ spec, config }) => {
 
   const create = client.create({
     method: "createStage",
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
     filterPayload: omit(["methodSettings"]),
-    pickId,
     getById,
-    config,
     postCreate:
       ({ payload, name }) =>
       ({ restApiId, stageName }) =>
@@ -129,7 +132,6 @@ exports.Stage = ({ spec, config }) => {
     pickId,
     method: "updateStage",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteStage-property
@@ -137,8 +139,7 @@ exports.Stage = ({ spec, config }) => {
     pickId,
     method: "deleteStage",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   return {

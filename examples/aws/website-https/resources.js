@@ -70,11 +70,9 @@ exports.createResources = () => [
           },
           Headers: {
             Quantity: 0,
-            Items: [],
           },
           QueryStringCacheKeys: {
             Quantity: 0,
-            Items: [],
           },
         },
         MinTTL: 600,

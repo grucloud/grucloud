@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { tryCatch, pipe, tap } = require("rubico");
 
-describe("CloudFrontOriginAccessIdentity", async function () {
+describe.only("CloudFrontOriginAccessIdentity", async function () {
   let config;
   let provider;
   let originAccessIdentity;
@@ -33,9 +33,16 @@ describe("CloudFrontOriginAccessIdentity", async function () {
             CloudFrontOriginAccessIdentity: { Id: "E2D1PSO5NWDAJ5" },
           },
         }),
-      tap((params) => {
-        assert(true);
-      }),
+    ])
+  );
+  it(
+    "getById with invalid id",
+    pipe([
+      () =>
+        originAccessIdentity.getById({
+          ETag: "E3E08X4BDY57MM",
+          CloudFrontOriginAccessIdentity: { Id: "E2D1PSO5NWDAJ5" },
+        }),
     ])
   );
   it(

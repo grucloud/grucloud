@@ -177,10 +177,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
   const create = client.create({
     method: "createSecurityGroup",
-    pickCreated: (payload) => (result) => pipe([() => result])(),
-    pickId,
     getById,
-    config,
   });
 
   const revokeIngressRules = ({ live }) =>
@@ -208,7 +205,6 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     method: "deleteSecurityGroup",
     getById,
     ignoreErrorCodes: ["InvalidGroup.NotFound"],
-    config,
   });
 
   const configDefault = ({

@@ -158,10 +158,8 @@ exports.Function = ({ spec, config }) => {
         }),
         ({ FunctionArn }) => ({ Configuration: { FunctionArn: FunctionArn } }),
       ]),
-    pickId,
     shouldRetryOnExceptionCodes: ["InvalidParameterValueException"],
     getById,
-    config,
   });
 
   const update = client.update({
@@ -182,7 +180,6 @@ exports.Function = ({ spec, config }) => {
     pickId,
     method: "deleteFunction",
     getById,
-    config,
     ignoreErrorCodes: ["ResourceNotFoundException"],
   });
 

@@ -35,13 +35,9 @@ exports.createResources = () => [
         })}`,
         TrustedSigners: {
           Enabled: false,
-          Quantity: 0,
-          Items: [],
         },
         TrustedKeyGroups: {
           Enabled: false,
-          Quantity: 0,
-          Items: [],
         },
         ViewerProtocolPolicy: "redirect-to-https",
         AllowedMethods: {
@@ -54,14 +50,6 @@ exports.createResources = () => [
         },
         SmoothStreaming: false,
         Compress: false,
-        LambdaFunctionAssociations: {
-          Quantity: 0,
-          Items: [],
-        },
-        FunctionAssociations: {
-          Quantity: 0,
-          Items: [],
-        },
         FieldLevelEncryptionId: "",
         ForwardedValues: {
           QueryString: false,
@@ -70,11 +58,9 @@ exports.createResources = () => [
           },
           Headers: {
             Quantity: 0,
-            Items: [],
           },
           QueryStringCacheKeys: {
             Quantity: 0,
-            Items: [],
           },
         },
         MinTTL: 600,
@@ -100,7 +86,6 @@ exports.createResources = () => [
             OriginPath: "",
             CustomHeaders: {
               Quantity: 0,
-              Items: [],
             },
             S3OriginConfig: {
               OriginAccessIdentity: "",
@@ -116,8 +101,6 @@ exports.createResources = () => [
       Restrictions: {
         GeoRestriction: {
           RestrictionType: "none",
-          Quantity: 0,
-          Items: [],
         },
       },
       Comment: `${getId({
@@ -175,11 +158,11 @@ exports.createResources = () => [
     properties: ({}) => ({
       ACL: "public-read",
       WebsiteConfiguration: {
-        IndexDocument: {
-          Suffix: "index.html",
-        },
         ErrorDocument: {
           Key: "error.html",
+        },
+        IndexDocument: {
+          Suffix: "index.html",
         },
       },
     }),

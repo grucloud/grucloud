@@ -14,7 +14,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createAppRunner } = require("./AppRunnerCommon");
+const { createAppRunner, ignoreErrorCodes } = require("./AppRunnerCommon");
 
 const findName = get("live.ServiceName");
 const findId = get("live.ServiceArn");
@@ -84,7 +84,7 @@ exports.AppRunnerService = ({ spec, config }) => {
     pickId,
     method: "describeService",
     getField: "Service",
-    ignoreErrorCodes: ["ResourceNotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#listServices-property
@@ -99,13 +99,9 @@ exports.AppRunnerService = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#createService-property
   const create = client.create({
     method: "createService",
-    //isInstanceUp,
-    pickCreated: (payload) => (result) =>
-      pipe([() => result, get("Service"), pickId])(),
+    pickCreated: () => get("Service"),
     shouldRetryOnExceptionMessages: ["Error in assuming access"],
-    pickId,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#deleteService-property
@@ -114,8 +110,7 @@ exports.AppRunnerService = ({ spec, config }) => {
     method: "deleteService",
     getById,
     isInstanceDown: eq(get("Status"), "DELETED"),
-    ignoreErrorCodes: ["ResourceNotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

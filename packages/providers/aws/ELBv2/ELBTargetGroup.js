@@ -74,9 +74,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property
   const create = client.create({
     method: "createTargetGroup",
-    pickId,
     getById,
-    config,
     pickCreated: () => pipe([get("TargetGroups"), first]),
   });
 
@@ -86,7 +84,6 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     method: "deleteTargetGroup",
     ignoreErrorCodes: ["TargetGroupNotFound"],
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property

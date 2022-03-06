@@ -129,9 +129,7 @@ exports.ELBListener = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createListener-property
   const create = client.create({
     method: "createListener",
-    pickId,
     getById,
-    config,
     pickCreated: () => pipe([get("Listeners"), first]),
     shouldRetryOnExceptionCodes: ["UnsupportedCertificate"],
     config: { retryCount: 40 * 10, retryDelay: 10e3 },
@@ -143,7 +141,6 @@ exports.ELBListener = ({ spec, config }) => {
     method: "deleteListener",
     getById,
     ignoreErrorCodes,
-    config,
   });
 
   const certificateProperties = ({ certificate }) =>

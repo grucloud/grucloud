@@ -1,19 +1,22 @@
 const assert = require("assert");
 const { pipe, tap, get, switchCase, pick, map, assign } = require("rubico");
-const { defaultsDeep, isEmpty, size, includes, callProp } = require("rubico/x");
+const { defaultsDeep, isEmpty, callProp } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "EC2LaunchConfiguration",
-});
-const { createEndpoint } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createAutoScaling } = require("./AutoScalingCommon");
 
+const ignoreErrorMessages = ["Launch configuration name not found"];
+
 const findName = get("live.LaunchConfigurationName");
 const findId = get("live.LaunchConfigurationARN");
 
-const pickId = pick(["LaunchConfigurationName"]);
+const pickId = pipe([
+  tap(({ LaunchConfigurationName }) => {
+    assert(LaunchConfigurationName);
+  }),
+  pick(["LaunchConfigurationName"]),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
@@ -81,7 +84,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     }),
     method: "describeLaunchConfigurations",
     getField: "LaunchConfigurations",
-    ignoreErrorMessages: ["Launch configuration name not found"],
+    ignoreErrorMessages,
   });
 
   const getList = client.getList({
@@ -98,9 +101,11 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
   const create = client.create({
     method: "createLaunchConfiguration",
     shouldRetryOnExceptionMessages: ["Invalid IamInstanceProfile:"],
-    pickId,
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteLaunchConfiguration-property
@@ -108,8 +113,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     pickId,
     method: "deleteLaunchConfiguration",
     getById,
-    ignoreErrorMessages: ["Launch configuration name not found"],
-    config,
+    ignoreErrorMessages,
   });
 
   const configDefault = ({

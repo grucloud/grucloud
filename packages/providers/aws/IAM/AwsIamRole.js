@@ -18,7 +18,6 @@ const {
   isEmpty,
   forEach,
   pluck,
-  find,
   includes,
   keys,
   first,
@@ -175,8 +174,13 @@ exports.AwsIamRole = ({ spec, config }) => {
       })
     );
 
+  //TODO getById
   const create = client.create({
     method: "createRole",
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
     filterPayload: pipe([
       omit(["Policies", "AttachedPolicies"]),
       assign({

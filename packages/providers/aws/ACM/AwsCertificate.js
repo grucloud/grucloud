@@ -7,6 +7,8 @@ const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { createACM } = require("./ACMCommon");
 
+const ignoreErrorCodes = ["ResourceNotFoundException"];
+
 const findName = get("live.DomainName");
 const findId = get("live.CertificateArn");
 const pickId = pick(["CertificateArn"]);
@@ -23,7 +25,7 @@ exports.AwsCertificate = ({ spec, config }) => {
     pickId,
     method: "describeCertificate",
     getField: "Certificate",
-    ignoreErrorCodes: ["ResourceNotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property
@@ -58,15 +60,12 @@ exports.AwsCertificate = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#requestCertificate-property
   const create = client.create({
     method: "requestCertificate",
-    pickCreated: () => (result) => pipe([() => result])(),
-    pickId,
     getById,
     isInstanceUp: pipe([
       get("DomainValidationOptions"),
       first,
       get("ResourceRecord"),
     ]),
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#deleteCertificate-property
@@ -74,8 +73,7 @@ exports.AwsCertificate = ({ spec, config }) => {
     pickId,
     method: "deleteCertificate",
     getById,
-    ignoreErrorCodes: ["ResourceNotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

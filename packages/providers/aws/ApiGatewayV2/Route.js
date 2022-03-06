@@ -8,6 +8,7 @@ const { AwsClient } = require("../AwsClient");
 const {
   createApiGatewayV2,
   findDependenciesApi,
+  ignoreErrorCodes,
 } = require("./ApiGatewayCommon");
 
 const findId = get("live.RouteId");
@@ -44,12 +45,9 @@ exports.Route = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getRoute",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
     decorate: ({ ApiId }) =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
         defaultsDeep({
           ApiId,
         }),
@@ -79,13 +77,9 @@ exports.Route = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createRoute-property
   const create = client.create({
     method: "createRoute",
-    pickCreated:
-      ({ payload }) =>
-      (result) =>
-        pipe([() => result, defaultsDeep({ ApiId: payload.ApiId })])(),
-    pickId,
+    pickCreated: ({ payload }) =>
+      pipe([defaultsDeep({ ApiId: payload.ApiId })]),
     getById,
-    config,
   });
 
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateRoute-property
@@ -93,7 +87,6 @@ exports.Route = ({ spec, config }) => {
     pickId,
     method: "updateRoute",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteRoute-property
@@ -101,8 +94,7 @@ exports.Route = ({ spec, config }) => {
     pickId,
     method: "deleteRoute",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

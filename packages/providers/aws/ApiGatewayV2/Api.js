@@ -4,7 +4,8 @@ const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createApiGatewayV2 } = require("./ApiGatewayCommon");
+const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
+
 const findId = get("live.ApiId");
 const findName = get("live.Name");
 const pickId = pick(["ApiId"]);
@@ -17,7 +18,7 @@ exports.Api = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getApi",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApis-property
@@ -46,16 +47,7 @@ exports.Api = ({ spec, config }) => {
 
   const create = client.create({
     method: "createApi",
-    pickCreated: () => (result) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => result,
-      ])(),
-    pickId,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#updateApi-property
@@ -63,7 +55,6 @@ exports.Api = ({ spec, config }) => {
     pickId,
     method: "updateApi",
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#deleteApi-property
@@ -71,8 +62,7 @@ exports.Api = ({ spec, config }) => {
     pickId,
     method: "deleteApi",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   return {

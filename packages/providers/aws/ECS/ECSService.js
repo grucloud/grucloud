@@ -106,7 +106,6 @@ exports.ECSService = ({ spec, config }) => {
         ])(),
     isInstanceUp: eq(get("status"), "ACTIVE"),
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateService-property
@@ -148,7 +147,6 @@ exports.ECSService = ({ spec, config }) => {
     isInstanceDown: or([isEmpty, eq(get("status"), "INACTIVE")]),
     getById,
     ignoreErrorCodes: ["ClusterNotFoundException", "InvalidParameterException"],
-    config,
   });
 
   const configDefault = ({

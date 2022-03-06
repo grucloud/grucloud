@@ -130,7 +130,7 @@ exports.AwsIamUser = ({ spec, config }) => {
     pickId,
     getById,
     config,
-    pickCreated: () => pipe([get("User")]),
+    pickCreated: () => get("User"),
     postCreate: ({ name, resolvedDependencies: { policies, iamGroups } }) =>
       pipe([
         tap((params) => {

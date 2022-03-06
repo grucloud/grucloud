@@ -434,7 +434,6 @@ exports.EC2Instance = ({ spec, config }) => {
         get("Instances"),
         first,
       ]),
-    pickId,
     getById,
     postCreate:
       ({ resolvedDependencies: { volumes, eip } }) =>
@@ -532,7 +531,6 @@ exports.EC2Instance = ({ spec, config }) => {
     method: "terminateInstances",
     getById,
     ignoreErrorCodes,
-    config,
   });
 
   return {

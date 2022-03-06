@@ -53,16 +53,9 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
     method: "createKeyPair",
     pickCreated:
       ({ payload }) =>
-      (result) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => payload,
-        ])(),
-    pickId,
+      () =>
+        payload,
     getById,
-    config,
     postCreate: ({ programOptions, created }) =>
       pipe([
         tap((params) => {
@@ -79,7 +72,6 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
     method: "deleteKeyPair",
     getById,
     ignoreErrorCodes: ["InvalidKeyPair.NotFound"],
-    config,
   });
 
   const configDefault = ({

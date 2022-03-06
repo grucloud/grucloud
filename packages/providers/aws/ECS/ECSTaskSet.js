@@ -86,13 +86,13 @@ exports.ECSTaskSet = ({ spec, config }) => {
     // getById,
     config,
   });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#deleteTaskSet-property
   const destroy = client.destroy({
     pickId,
     method: "deleteTaskSet",
     getById,
     ignoreErrorCodes,
-    config,
   });
 
   const configDefault = ({

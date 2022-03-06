@@ -43,10 +43,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#allocateAddress-property
   const create = client.create({
     method: "allocateAddress",
-    pickCreated: () => (result) => pipe([() => result, pickId])(),
-    pickId,
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#releaseAddress-property
@@ -55,7 +52,6 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
     method: "releaseAddress",
     getById,
     ignoreErrorCodes: ["InvalidAllocationID.NotFound"],
-    config,
   });
 
   const configDefault = ({

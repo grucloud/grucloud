@@ -121,8 +121,7 @@ exports.AwsSubnet = ({ spec, config }) => {
   const create = client.create({
     method: "createSubnet",
     filterPayload: omit(SubnetAttributes),
-    pickCreated: (payload) => (result) =>
-      pipe([() => result, get("Subnet"), pickId])(),
+    pickCreated: () => get("Subnet"),
     pickId,
     getById,
     postCreate:
@@ -160,7 +159,6 @@ exports.AwsSubnet = ({ spec, config }) => {
     method: "deleteSubnet",
     getById,
     ignoreErrorCodes: ["InvalidSubnetID.NotFound"],
-    config,
   });
 
   const configDefault = async ({

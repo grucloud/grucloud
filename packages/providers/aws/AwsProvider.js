@@ -10,9 +10,10 @@ const {
   map,
   fork,
 } = require("rubico");
+const { first, pluck, isFunction, size, defaultsDeep } = require("rubico/x");
+
 const path = require("path");
 
-const { first, pluck, isFunction, size } = require("rubico/x");
 const { STS } = require("@aws-sdk/client-sts");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
@@ -177,7 +178,7 @@ exports.AwsProvider = ({
   let zones;
   let region;
 
-  const getRegionDefault = () => region || "us-east-1";
+  const getRegionDefault = () => region;
 
   const configDefault = {
     stage,
@@ -188,7 +189,16 @@ exports.AwsProvider = ({
 
   const makeConfig = () => mergeConfig({ configDefault, config, configs });
 
-  const getRegion = (config) => config.region || getRegionDefault();
+  const getRegion = (config) =>
+    pipe([
+      () => ({ region: process.env.AWS_REGION }),
+      defaultsDeep(config),
+      get("region", "us-east-1"),
+      tap((region) => {
+        logger.info(`using region '${region}'`);
+      }),
+    ])();
+
   const getZone = ({ zones, config }) => config.zone() || first(zones);
 
   const start = async () => {
@@ -208,6 +218,7 @@ exports.AwsProvider = ({
 
   const info = () => ({
     accountId,
+    region,
     zone,
     config: omit(["accountId", "zone"])(makeConfig()),
   });

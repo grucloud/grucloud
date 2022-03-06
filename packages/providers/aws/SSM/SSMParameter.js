@@ -1,14 +1,22 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, identity } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
 const { createSSM } = require("./SSMCommon");
+
+const ignoreErrorCodes = ["ParameterNotFound"];
+
 const findName = get("live.Name");
 const findId = get("live.Name");
-const pickId = pick(["Name"]);
+const pickId = pipe([
+  tap(({ Name }) => {
+    assert(Name);
+  }),
+  pick(["Name"]),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html
 
@@ -24,12 +32,7 @@ exports.SSMParameter = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   const assignTags = assign({
     Tags: pipe([
@@ -48,7 +51,7 @@ exports.SSMParameter = ({ spec, config }) => {
     method: "getParameter",
     getField: "Parameter",
     decorate: () => assignTags,
-    ignoreErrorCodes: ["ParameterNotFound"],
+    ignoreErrorCodes,
   });
 
   const getByName = ({ name }) => getById({ Name: name });
@@ -77,7 +80,10 @@ exports.SSMParameter = ({ spec, config }) => {
 
   const create = client.create({
     method: "putParameter",
-    pickId,
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
     getById,
     config,
   });
@@ -86,7 +92,6 @@ exports.SSMParameter = ({ spec, config }) => {
     pickId,
     method: "putParameter",
     extraParam: { Overwrite: true },
-    config,
     getById,
   });
 
@@ -95,8 +100,7 @@ exports.SSMParameter = ({ spec, config }) => {
     pickId,
     method: "deleteParameter",
     getById,
-    ignoreErrorCodes: ["ParameterNotFound"],
-    config,
+    ignoreErrorCodes,
   });
 
   return {

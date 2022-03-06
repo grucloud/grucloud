@@ -58,7 +58,7 @@ const shouldRetryOnExceptionMessagesDefault =
         );
       }),
       () => shouldRetryOnExceptionMessages,
-      any(includes(error.message)),
+      any((message) => pipe([() => error.message, includes(message)])()),
     ])();
 
 const shouldRetryOnExceptionDefault = ({
@@ -240,7 +240,7 @@ exports.AwsClient =
         filterPayload = identity,
         config,
         configIsUp,
-        pickCreated = ({ payload }) => pipe([() => payload]),
+        pickCreated = () => identity,
         pickId,
         getById,
         isInstanceUp = not(isEmpty),
@@ -487,7 +487,6 @@ exports.AwsClient =
             assert(isFunction(pickId));
             assert(method);
             assert(ignoreError);
-            assert(config);
           }),
           tryCatch(
             pipe([

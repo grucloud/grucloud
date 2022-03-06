@@ -82,11 +82,8 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     method: "createCapacityProvider",
     pickCreated:
       ({ name }) =>
-      (result) =>
-        pipe([() => ({ name })])(),
-    pickId,
+      () => ({ name }),
     getById,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCapacityProvider-property
@@ -98,7 +95,6 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
         omit(["autoScalingGroupProvider.autoScalingGroupArn", "tags"]),
       ])(),
     method: "updateCapacityProvider",
-    config,
     getById,
   });
 
@@ -114,7 +110,6 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     pickId: ({ name }) => ({ capacityProvider: name }),
     preDestroy: deleteAutoScalingGroup,
     method: "deleteCapacityProvider",
-
     isInstanceDown: switchCase([
       eq(get("updateStatus"), "DELETE_FAILED"),
       () => {
@@ -130,7 +125,6 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     ignoreErrorMessages: [
       "The specified capacity provider does not exist. Specify a valid name or ARN and try again.",
     ],
-    config,
   });
 
   const cannotBeDeleted = ({ live }) =>

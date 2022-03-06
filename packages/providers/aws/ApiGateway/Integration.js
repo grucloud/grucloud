@@ -17,10 +17,9 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createAPIGateway } = require("./ApiGatewayCommon");
 const { createLambda } = require("../Lambda/LambdaCommon");
-
-const { createEndpoint, lambdaAddPermission } = require("../AwsCommon");
+const { lambdaAddPermission } = require("../AwsCommon");
+const { createAPIGateway, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findName = pipe([
   get("live"),
@@ -89,7 +88,7 @@ exports.Integration = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getIntegration",
-    ignoreErrorCodes: ["NotFoundException"],
+    ignoreErrorCodes,
     decorate: (method) =>
       pipe([
         tap((params) => {
@@ -121,14 +120,6 @@ exports.Integration = ({ spec, config }) => {
 
   const create = client.create({
     method: "putIntegration",
-    //TODO
-    // pickCreated:
-    //   ({ payload }) =>
-    //   (result) =>
-    //     pipe([() => result, defaultsDeep({ ApiId: payload.ApiId })])(),
-    pickId,
-    //getById,
-    config,
     postCreate: ({ resolvedDependencies: { restApi, lambdaFunction } }) =>
       pipe([
         tap(() => {
@@ -190,8 +181,7 @@ exports.Integration = ({ spec, config }) => {
     preDestroy: lambdaRemovePermission,
     method: "deleteIntegration",
     getById,
-    ignoreErrorCodes: ["NotFoundException"],
-    config,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

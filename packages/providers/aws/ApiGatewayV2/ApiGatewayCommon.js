@@ -7,6 +7,8 @@ const { createEndpoint } = require("../AwsCommon");
 
 exports.createApiGatewayV2 = createEndpoint(ApiGatewayV2);
 
+exports.ignoreErrorCodes = ["NotFoundException"];
+
 exports.buildPayloadDescriptionTags = pipe([
   tap((params) => {
     assert(true);
