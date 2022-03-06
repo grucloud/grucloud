@@ -132,7 +132,6 @@ module.exports = () =>
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
       },
       propertiesDefault: {
-        ProcessorFeatures: [],
         BackupRetentionPeriod: 1,
         DBSecurityGroups: [],
         MultiAZ: false,
@@ -145,7 +144,6 @@ module.exports = () =>
         MonitoringInterval: 0,
         IAMDatabaseAuthenticationEnabled: false,
         PerformanceInsightsEnabled: false,
-        ProcessorFeatures: [],
         DeletionProtection: false,
         AssociatedRoles: [],
         CustomerOwnedIpEnabled: false,
