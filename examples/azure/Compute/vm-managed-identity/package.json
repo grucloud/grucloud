@@ -1,6 +1,6 @@
 {
   "name": "vm-managed-identity",
-  "version": "5.7.0",
+  "version": "5.7.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^5.7.0",
-    "@grucloud/provider-azure": "^5.7.0",
+    "@grucloud/core": "^5.7.1",
+    "@grucloud/provider-azure": "^5.7.1",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
