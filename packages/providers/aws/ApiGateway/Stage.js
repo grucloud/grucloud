@@ -4,7 +4,6 @@ const { defaultsDeep, values, flatten, when, isEmpty } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const {
   createAPIGateway,

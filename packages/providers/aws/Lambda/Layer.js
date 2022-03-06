@@ -156,6 +156,7 @@ exports.Layer = ({ spec, config }) => {
     pickId: ({ Version, LayerName }) => ({ VersionNumber: Version, LayerName }),
     method: "deleteLayerVersion",
     config,
+    //TODO error codes ?
   });
 
   const configDefault = ({

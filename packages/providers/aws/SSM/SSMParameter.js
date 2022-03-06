@@ -24,12 +24,7 @@ exports.SSMParameter = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
+  const findNamespace = pipe([() => ""]);
 
   const assignTags = assign({
     Tags: pipe([
