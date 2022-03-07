@@ -91,20 +91,6 @@ exports.mergeConfig = ({ configDefault = {}, config, configs = [] }) =>
 exports.getField = ({ resource = {}, live } = {}, field) =>
   get(field, notAvailable(resource.name, field))(live);
 
-exports.findClient = (clients) =>
-  pipe([
-    tap(({ type, group }) => {
-      assert(type);
-      //assert(group);
-    }),
-    ({ type, group }) =>
-      pipe([
-        () => clients,
-        //TODO groupType
-        find(and([eq(get("spec.type"), type), eq(get("spec.group"), group)])),
-      ])(),
-  ]);
-
 const isTypesMatch = ({ typeToMatch }) =>
   switchCase([
     isEmpty,
@@ -202,48 +188,37 @@ const findDependentType =
       // ]),
     ])();
 
-const findDependentTypes = ({ groupTypes, clients }) =>
+const findDependentTypes = ({ groupTypes, specs }) =>
   pipe([
-    // tap(() => {
-    //   logger.debug(
-    //     `\n\n\nfindDependentTypes #clients ${size(clients)}, groupTypes: ${size(
-    //       groupTypes
-    //     )}`
-    //   );
-    // }),
+    tap((params) => {
+      assert(specs);
+    }),
     () => groupTypes,
-    flatMap(
-      findDependentType({ groupTypesAcc: [], specs: pluck("spec")(clients) })
-    ),
+    flatMap(findDependentType({ groupTypesAcc: [], specs })),
     uniq,
-    // tap((results) => {
-    //   logger.debug(`\n\nfindDependentTypes results: ${results}`);
-    // }),
   ])();
 
 //TODO targetTypes => targetGroupTypes
 const filterByType =
   ({ types = [], groups = [], targetTypes }) =>
-  (clients) =>
+  (specs) =>
     pipe([
       tap(() => {
         logger.debug(
-          `filterByType inputs #clients ${size(clients)}, #targetTypes ${size(
+          `filterByType inputs #specs ${size(specs)}, #targetTypes ${size(
             targetTypes
           )}, #types ${size(types)}, #groups ${size(groups)}`
         );
-        assert(Array.isArray(clients));
+        assert(Array.isArray(specs));
       }),
-      () => clients,
-      filter((client) =>
+      () => specs,
+      filter((spec) =>
         pipe([
           () => types,
           when(isEmpty, () => targetTypes),
           tap((params) => {
-            assert(client);
-            assert(client.spec);
-            assert(client.spec.groupType);
-            assert(client.spec.type);
+            assert(spec.groupType);
+            assert(spec.type);
           }),
           switchCase([
             or([
@@ -252,96 +227,86 @@ const filterByType =
                 tap((params) => {
                   assert(true);
                 }),
-                (groupTypes) => findDependentTypes({ groupTypes, clients }),
+                (groupTypes) => findDependentTypes({ groupTypes, specs }),
                 tap((dependentTypes) => {
                   assert(dependentTypes);
                 }),
-                includes(client.spec.groupType),
+                includes(spec.groupType),
                 tap((keep) => {
-                  logger.debug(
-                    `filterByType ${client.spec.groupType}, keep: ${keep}`
-                  );
+                  logger.debug(`filterByType ${spec.groupType}, keep: ${keep}`);
                 }),
               ]),
             ]),
             () => true,
-            isTypesMatch({ typeToMatch: client.spec.type }),
+            isTypesMatch({ typeToMatch: spec.type }),
           ]),
         ])()
       ),
       tap((clients) => {
-        logger.info(
-          `filterByType result #clients ${pluck("spec.groupType")(clients)}`
-        );
+        logger.info(`filterByType result #specs ${pluck("groupType")(specs)}`);
       }),
     ])();
 
-const displayClientsType = pipe([
-  pluck("spec"),
-  map(displayType),
-  callProp("join", ", "),
-]);
+const displayClientsType = pipe([map(displayType), callProp("join", ", ")]);
 
-const findClientByGroupType = (clients) => (groupType) =>
+const findClientByGroupType = (specs) => (groupType) =>
   pipe([
     tap(() => {
-      assert(Array.isArray(clients));
+      assert(Array.isArray(specs));
       assert(groupType);
     }),
-    () => clients,
-    find(eq(get("spec.groupType"), groupType)),
+    () => specs,
+    find(eq(get("groupType"), groupType)),
     tap((params) => {
       assert(true);
     }),
   ])();
 
 const findClientDependencies =
-  ({ clients }) =>
-  (client) =>
+  ({ specs }) =>
+  (spec) =>
     pipe([
       tap(() => {
-        assert(clients);
-        assert(client);
+        assert(specs);
+        assert(spec);
         logger.debug(
-          `findClientDependencies groupType: ${
-            client.spec.groupType
-          }, #clients ${size(clients)}`
+          `findClientDependencies groupType: ${spec.groupType}, #specs ${size(
+            specs
+          )}`
         );
       }),
-      () => client,
-      get("spec.dependsOnList", []),
+      () => specs,
+      get("dependsOnList", []),
       tap((params) => {
         assert(true);
       }),
-      filter(not(eq(identity, client.spec.groupType))),
-      map(findClientByGroupType(clients)),
+      filter(not(eq(identity, spec.groupType))),
+      map(findClientByGroupType(specs)),
       tap((params) => {
         assert(true);
       }),
       filter(not(isEmpty)),
-      flatMap(findClientDependencies({ clients })),
-      prepend(client),
+      flatMap(findClientDependencies({ specs })),
+      prepend(spec),
     ])();
 
-const addDependentClients = (clientsAll) => (clients) =>
+const addDependentClients = (specsAll) => (specs) =>
   pipe([
     tap(() => {
-      assert(clients);
-      assert(clientsAll);
+      assert(specs);
+      assert(specsAll);
       logger.debug(
-        `addDependentClients #clientsAll ${size(clientsAll)}, #clients ${size(
-          clients
-        )}`
+        `addDependentClients #specsAll ${size(specsAll)}, #specs ${size(specs)}`
       );
     }),
-    () => clients,
-    flatMap(findClientDependencies({ clients: clientsAll })),
+    () => specs,
+    flatMap(findClientDependencies({ specs: specsAll })),
     filter(not(isEmpty)),
     uniq,
     tap((clientsDependents) => {
       logger.debug(
-        `addDependentClients #clientsAll ${size(
-          clientsAll
+        `addDependentClients #specsAll ${size(
+          specsAll
         )}, #clientsDependents ${size(clientsDependents)}`
       );
     }),
@@ -349,20 +314,20 @@ const addDependentClients = (clientsAll) => (clients) =>
 
 exports.filterReadClient =
   ({ options: { types, all, group: groups } = {}, targetTypes }) =>
-  (clients) =>
+  (specs) =>
     pipe([
       tap(() => {
         assert(targetTypes);
         logger.info(
-          `filterReadClient types: ${types}, all: ${all}, #clients ${size(
-            clients
+          `filterReadClient types: ${types}, all: ${all}, #specs ${size(
+            specs
           )}, #targets: ${size(targetTypes)}, groups:${groups} `
         );
       }),
-      () => clients,
-      filter(not(get("spec.listHide"))),
+      () => specs,
+      filter(not(get("istHide"))),
       unless(() => all, filterByType({ types, groups, all, targetTypes })),
-      tap((clients) => {
+      tap((specs) => {
         logger.info(
           `filterReadClient types: ${types}, ${size(
             targetTypes
@@ -370,37 +335,37 @@ exports.filterReadClient =
         );
 
         logger.info(
-          `filterReadClient #clients ${size(
-            clients
-          )}, final types: ${displayClientsType(clients)}`
+          `filterReadClient #specs ${size(
+            specs
+          )}, final types: ${displayClientsType(specs)}`
         );
       }),
-      addDependentClients(clients),
+      addDependentClients(specs),
     ])();
 
 exports.filterReadWriteClient =
   ({ options: { types, groups, all } = {}, targetTypes }) =>
-  (clients) =>
+  (specs) =>
     pipe([
       tap(() => {
         assert(targetTypes);
         logger.info(
           `filterReadWriteClient types: ${types}, all: ${all}, #clients ${size(
-            clients
+            specs
           )}`
         );
       }),
-      () => clients,
+      () => specs,
       unless(() => all, filterByType({ types, all, targetTypes })),
-      filter(and([not(get("spec.singleton")), not(get("spec.listOnly"))])),
-      tap((clients) => {
+      filter(and([not(get("singleton")), not(get("listOnly"))])),
+      tap((specs) => {
         logger.info(
           `filterReadWriteClient ${types}, result #clients ${size(
-            clients
-          )}, ${displayClientsType(clients)}`
+            specs
+          )}, ${displayClientsType(specs)}`
         );
       }),
-      addDependentClients(clients),
+      addDependentClients(specs),
     ])();
 
 const setCompleted = ({ state, uri, spinnies, spinnerMap, displayText }) => {
@@ -452,9 +417,9 @@ exports.contextFromResource = ({ operation, resource }) => {
   };
 };
 
-exports.contextFromClient = ({ client, title }) => {
-  assert(client, "client");
-  const { type, providerName, group } = client.spec;
+exports.contextFromClient = ({ spec, title }) => {
+  assert(spec, "spec");
+  const { type, providerName, group } = spec;
   assert(providerName);
 
   assert(type, "client.spec.type");

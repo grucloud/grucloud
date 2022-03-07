@@ -760,48 +760,41 @@ function CoreProvider({
           ])(resourcesPerType),
       ])
     );
-  const spinnersStartClient = ({ onStateChange, title, clients }) =>
+  const spinnersStartClient = ({ onStateChange, title, specs }) =>
     tap(
       pipe([
         tap(() => {
           assert(title, "title");
-          assert(Array.isArray(clients), "clients must be an array");
-          logger.info(
-            `spinnersStartClient ${title}, #client ${clients.length}`
-          );
+          assert(Array.isArray(specs), "specs must be an array");
+          logger.info(`spinnersStartClient ${title}, #specs ${size(specs)}`);
         }),
         tap(() =>
           onStateChange({
             context: contextFromPlanner({
               providerName,
               title,
-              total: clients.length,
+              total: size(specs),
             }),
             nextState: "WAITING",
             indent: 2,
           })
         ),
-        () => clients,
-        map((client) =>
+        () => specs,
+        map((spec) =>
           onStateChange({
-            context: contextFromClient({ client, title }),
+            context: contextFromClient({ spec, title }),
             nextState: "WAITING",
             indent: 4,
           })
         ),
       ])
     );
-  const spinnersStopClient = ({ onStateChange, title, clients, error }) =>
+  const spinnersStopClient = ({ onStateChange, title, error }) =>
     tap(
       pipe([
         tap(() => {
           assert(title, "title");
-          assert(Array.isArray(clients), "clients must be an array");
-          logger.info(
-            `spinnersStopClient ${title}, #clients ${size(
-              clients
-            )}, error: ${error}`
-          );
+          logger.info(`spinnersStopClient ${title}, error: ${error}`);
         }),
         tap(() =>
           onStateChange({
@@ -812,6 +805,7 @@ function CoreProvider({
         ),
       ])
     );
+
   const spinnersStartHooks = ({ onStateChange, hookType }) =>
     pipe([
       () => [...hookMap.values()],
@@ -869,10 +863,10 @@ function CoreProvider({
       spinnersStartClient({
         onStateChange,
         title: TitleListing,
-        clients: filterReadClient({
+        specs: filterReadClient({
           options,
           targetTypes: getTargetGroupTypes(),
-        })(getClients()),
+        })(getSpecs()),
       }),
     ])();
 
@@ -887,10 +881,10 @@ function CoreProvider({
           onStateChange,
           planQueryDestroy,
           title: TitleListing,
-          clients: filterReadClient({
+          specs: filterReadClient({
             options,
             targetTypes: getTargetGroupTypes(),
-          })(getClients()),
+          })(getSpecs()),
         }),
       ])
     )();
@@ -904,10 +898,6 @@ function CoreProvider({
         spinnersStopClient({
           onStateChange,
           title: TitleListing,
-          clients: filterReadClient({
-            options,
-            targetTypes: getTargetGroupTypes(),
-          })(getClients()),
           error,
         }),
         //TODO
@@ -978,10 +968,10 @@ function CoreProvider({
       spinnersStartClient({
         onStateChange,
         title: TitleListing,
-        clients: filterReadWriteClient({
+        specs: filterReadWriteClient({
           options,
           targetTypes: getTargetGroupTypes(),
-        })(getClients()),
+        })(getSpecs()),
       }),
     ])();
 
@@ -1161,7 +1151,7 @@ function CoreProvider({
   } = {}) =>
     pipe([
       tap(() => {}),
-      getClients,
+      getSpecs,
       tap((clients) => {
         logger.info(
           `listLives #clients: ${size(clients)}, ${JSON.stringify({
@@ -1186,31 +1176,33 @@ function CoreProvider({
       tap((clients) => {
         logger.info(`listLives #clients ${size(clients)}`);
       }),
-      map((client) => ({
-        meta: pick(["type", "group", "groupType", "providerName"])(client.spec),
-        key: `${client.spec.providerName}::${client.spec.groupType}`,
+      map((spec) => ({
+        meta: pick(["type", "group", "groupType", "providerName"])(spec),
+        key: `${spec.providerName}::${spec.groupType}`,
         dependsOn: pipe([
-          () => client,
-          get("spec.dependsOnList", []),
-          map((dependOn) => `${client.spec.providerName}::${dependOn}`),
+          () => spec,
+          get("dependsOnList", []),
+          map((dependOn) => `${spec.providerName}::${dependOn}`),
         ])(),
         executor: ({ results }) =>
           pipe([
-            () =>
+            () => spec,
+            getClient,
+            (client) =>
               client.getLives({
                 lives: getLives(),
                 deep: true,
                 options,
-                resources: getResourcesByType(client.spec),
+                resources: getResourcesByType(spec),
               }),
             //TODO add client.toString()
             ({ error, resources }) => ({
               ...(error && { error }),
               resources,
-              groupType: client.spec.groupType,
-              type: client.spec.type,
-              group: client.spec.group,
-              providerName: client.providerName,
+              groupType: spec.groupType,
+              type: spec.type,
+              group: spec.group,
+              providerName: spec.providerName,
             }),
             tap(({ groupType, type }) => {
               assert(type);
@@ -1221,16 +1213,14 @@ function CoreProvider({
       Lister({
         onStateChange: ({ key, meta, result, error, ...other }) => {
           assert(key);
-          assert(meta.type);
-          assert(meta.groupType);
+          const spec = meta;
+          assert(spec.type);
+          assert(spec.groupType);
+          assert(spec.providerName);
 
-          assert(meta.providerName);
-
-          const client = getClient(meta);
-          assert(client.spec);
           onStateChange({
             context: contextFromClient({
-              client,
+              spec,
               title,
             }),
             error,

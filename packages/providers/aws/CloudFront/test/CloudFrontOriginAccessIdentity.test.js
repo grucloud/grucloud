@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { tryCatch, pipe, tap } = require("rubico");
 
-describe.only("CloudFrontOriginAccessIdentity", async function () {
+describe("CloudFrontOriginAccessIdentity", async function () {
   let config;
   let provider;
   let originAccessIdentity;

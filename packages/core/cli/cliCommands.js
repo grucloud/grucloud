@@ -112,7 +112,7 @@ const countDeployResources = pipe([
     { providers: 0, types: 0, create: 0, destroy: 0 }
   ),
   tap((result) => {
-    logger.debug(`countDeployResources ${JSON.stringify(result)}`);
+    //logger.debug(`countDeployResources ${JSON.stringify(result)}`);
   }),
 ]);
 

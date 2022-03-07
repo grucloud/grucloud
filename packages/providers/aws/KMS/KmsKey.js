@@ -195,7 +195,7 @@ exports.KmsKey = ({ spec, config }) => {
       }),
       pickId,
       defaultsDeep({ PendingWindowInDays: 7 }),
-      kms().scheduleKeyDeletion,
+      (params) => kms().scheduleKeyDeletion(params),
     ]),
     pickId,
     method: "disableKey",

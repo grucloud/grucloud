@@ -442,7 +442,7 @@ const SecurityGroupRuleBase = ({ config }) => {
             logger.debug(`create sg rule: ${tos(payload)}`);
           }),
           () => payload,
-          authorizeSecurityGroup,
+          authorizeSecurityGroup(),
           tap.if(not(get("Return")), (result) => {
             throw Error(`cannot create security group rule ${name}`);
           }),
@@ -474,7 +474,7 @@ const SecurityGroupRuleBase = ({ config }) => {
         tap((params) => {
           assert(params);
         }),
-        tryCatch(revokeSecurityGroup, (error, params) =>
+        tryCatch(revokeSecurityGroup(), (error, params) =>
           pipe([
             tap(() => {
               logger.error(`destroy sg rule error ${tos({ error, params })}`);
@@ -543,16 +543,16 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     getList: getList({ kind: "ingress", IsEgress: false }),
     create: create({
       kind: "ingress",
-      authorizeSecurityGroup: ec2().authorizeSecurityGroupIngress,
+      authorizeSecurityGroup: () => ec2().authorizeSecurityGroupIngress,
     }),
     update: update({
       kind: "ingress",
-      authorizeSecurityGroup: ec2().authorizeSecurityGroupIngress,
-      revokeSecurityGroup: ec2().revokeSecurityGroupIngress,
+      authorizeSecurityGroup: () => ec2().authorizeSecurityGroupIngress,
+      revokeSecurityGroup: () => ec2().revokeSecurityGroupIngress,
     }),
     destroy: destroy({
       kind: "ingress",
-      revokeSecurityGroup: ec2().revokeSecurityGroupIngress,
+      revokeSecurityGroup: () => ec2().revokeSecurityGroupIngress,
     }),
     configDefault,
     managedByOther: managedByOther({ IsEgress: false }),
@@ -586,16 +586,16 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     getList: getList({ kind: "egress", IsEgress: true }),
     create: create({
       kind: "egress",
-      authorizeSecurityGroup: ec2().authorizeSecurityGroupEgress,
+      authorizeSecurityGroup: () => ec2().authorizeSecurityGroupEgress,
     }),
     update: update({
       kind: "egress",
-      authorizeSecurityGroup: ec2().authorizeSecurityGroupEgress,
-      revokeSecurityGroup: ec2().revokeSecurityGroupEgress,
+      authorizeSecurityGroup: () => ec2().authorizeSecurityGroupEgress,
+      revokeSecurityGroup: () => ec2().revokeSecurityGroupEgress,
     }),
     destroy: destroy({
       kind: "egress",
-      revokeSecurityGroup: ec2().revokeSecurityGroupEgress,
+      revokeSecurityGroup: () => ec2().revokeSecurityGroupEgress,
     }),
     configDefault,
     managedByOther: managedByOther({ IsEgress: true }),

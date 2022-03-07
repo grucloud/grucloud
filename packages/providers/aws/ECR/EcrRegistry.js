@@ -34,7 +34,7 @@ exports.EcrRegistry = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRegistryPolicy-property
   const getRegistryPolicy = tryCatch(
-    pipe([() => ({}), ecr().getRegistryPolicy, get("policyText"), JSON.parse]),
+    pipe([() => ecr().getRegistryPolicy({}), get("policyText"), JSON.parse]),
     throwIfNotAwsError("RegistryPolicyNotFoundException")
   );
 
@@ -128,8 +128,7 @@ exports.EcrRegistry = ({ spec, config }) => {
     }),
     tryCatch(
       pipe([
-        () => ({}),
-        ecr().deleteRegistryPolicy,
+        () => ecr().deleteRegistryPolicy({}),
         () =>
           retryCall({
             name: `deleteRegistryPolicy is down ?`,

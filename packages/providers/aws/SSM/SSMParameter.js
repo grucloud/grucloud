@@ -36,11 +36,11 @@ exports.SSMParameter = ({ spec, config }) => {
 
   const assignTags = assign({
     Tags: pipe([
-      ({ Name }) => ({
-        ResourceId: Name,
-        ResourceType: "Parameter",
-      }),
-      ssm().listTagsForResource,
+      ({ Name }) =>
+        ssm().listTagsForResource({
+          ResourceId: Name,
+          ResourceType: "Parameter",
+        }),
       get("TagList"),
     ]),
   });

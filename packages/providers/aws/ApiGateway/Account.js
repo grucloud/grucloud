@@ -66,14 +66,15 @@ exports.Account = ({ spec, config }) => {
     config,
     getById,
   });
+
   //TODO client.destroy
   const destroy = pipe([
-    () => ({
-      patchOperations: [
-        { op: "replace", path: "/cloudwatchRoleArn", value: "" },
-      ],
-    }),
-    apiGateway().updateAccount,
+    () =>
+      apiGateway().updateAccount({
+        patchOperations: [
+          { op: "replace", path: "/cloudwatchRoleArn", value: "" },
+        ],
+      }),
   ]);
 
   return {

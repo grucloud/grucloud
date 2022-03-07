@@ -21,7 +21,12 @@ exports.EcrRepository = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRepositoryPolicy-property
   const getRepositoryPolicy = tryCatch(
-    pipe([pickId, ecr().getRepositoryPolicy, get("policyText"), JSON.parse]),
+    pipe([
+      pickId,
+      (params) => ecr().getRepositoryPolicy(params),
+      get("policyText"),
+      JSON.parse,
+    ]),
     throwIfNotAwsError("RepositoryPolicyNotFoundException")
   );
 
@@ -29,7 +34,7 @@ exports.EcrRepository = ({ spec, config }) => {
   const getLifecyclePolicy = tryCatch(
     pipe([
       pickId,
-      ecr().getLifecyclePolicy,
+      (params) => ecr().getLifecyclePolicy(params),
       get("lifecyclePolicyText"),
       JSON.parse,
     ]),
@@ -38,8 +43,8 @@ exports.EcrRepository = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#listTagsForResource-property
   const getTags = pipe([
-    ({ repositoryArn }) => ({ resourceArn: repositoryArn }),
-    ecr().listTagsForResource,
+    ({ repositoryArn }) =>
+      ecr().listTagsForResource({ resourceArn: repositoryArn }),
     get("tags"),
   ]);
 
@@ -71,7 +76,7 @@ exports.EcrRepository = ({ spec, config }) => {
       pipe([
         pickId,
         assign({ policyText: () => JSON.stringify(payload.policyText) }),
-        ecr().setRepositoryPolicy,
+        (params) => ecr().setRepositoryPolicy(params),
       ])
     );
 

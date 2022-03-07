@@ -183,19 +183,6 @@ exports.AwsProvider = ({
   let accountId;
   let zone;
   let zones;
-  let region;
-
-  const makeConfig = () =>
-    mergeConfig({
-      configDefault: {
-        stage,
-        zone: () => zone,
-        accountId: () => accountId,
-        region,
-      },
-      config,
-      configs,
-    });
 
   const getRegion = (config) =>
     pipe([
@@ -212,7 +199,29 @@ exports.AwsProvider = ({
       }),
     ])();
 
-  region = getRegion(makeConfig());
+  let region = getRegion(
+    mergeConfig({
+      config,
+      configs,
+    })
+  );
+
+  const makeConfig = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    () =>
+      mergeConfig({
+        configDefault: {
+          stage,
+          zone: () => zone,
+          accountId: () => accountId,
+          region,
+        },
+        config,
+        configs,
+      }),
+  ]);
 
   const getZone = ({ zones, config }) => config.zone() || first(zones);
 

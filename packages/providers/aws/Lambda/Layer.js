@@ -58,7 +58,7 @@ exports.Layer = ({ spec, config }) => {
           LayerName,
           VersionNumber: Version,
         }),
-        lambda().getLayerVersionPolicy,
+        (params) => lambda().getLayerVersionPolicy(params),
         tap((params) => {
           assert(true);
         }),
