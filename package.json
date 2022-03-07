@@ -5,6 +5,7 @@
   "private": true,
   "homepage": "https://www.grucloud.com",
   "scripts": {
+    "bootstrap": "lerna bootstrap",
     "download-manifest": "npm run download-manifest",
     "gen-code": "npm run --workspace @grucloud/example-* gencode -- -- --no-inventory-fetch",
     "gencode": "npm run  --workspace @grucloud/example-*   gencode",
@@ -72,12 +73,5 @@
   "np": {
     "yarn": false,
     "branch": "main"
-  },
-  "workspaces": [
-    "./packages/core",
-    "./packages/providers/aws",
-    "./packages/providers/azure",
-    "./packages/providers/google",
-    "./packages/tools/mockServer"
-  ]
+  }
 }
