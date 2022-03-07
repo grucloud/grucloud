@@ -43,7 +43,7 @@
     "axios": "^0.26.0",
     "dotenv": "^16.0.0",
     "dotenv-cli": "^5.0.0",
-    "npm": "^4.0.0",
+    "lerna": "^4.0.0",
     "mocha": "^9.2.1",
     "mocha-junit-reporter": "^2.0.2",
     "rubico": "^1.8.9"
