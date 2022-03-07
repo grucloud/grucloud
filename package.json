@@ -78,5 +78,7 @@
     "yarn": false,
     "branch": "main"
   },
-  "workspaces": ["./packages/*"]
+  "workspaces": [
+    "./packages/**/*"
+  ]
 }
