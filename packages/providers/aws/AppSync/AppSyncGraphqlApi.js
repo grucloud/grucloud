@@ -57,7 +57,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     pipe([
       pick(["apiId"]),
       defaultsDeep({ format: "SDL", includeDirectives: true }),
-      appSync().getIntrospectionSchema,
+      (params) => appSync().getIntrospectionSchema(params),
       tap((params) => {
         assert(true);
       }),

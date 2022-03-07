@@ -205,7 +205,7 @@ exports.ResourceMaker = ({
       ),
       tap((live) => {
         logger.info(`getLive ${toString()} hasLive: ${!!live}`);
-        logger.debug(`getLive ${toString()} live: ${tos(live)}`);
+        //logger.debug(`getLive ${toString()} live: ${tos(live)}`);
       }),
     ])();
 
@@ -655,7 +655,7 @@ exports.ResourceMaker = ({
           assert(false, `no live after create ${getResourceName()}`);
         }
         logger.info(`created: ${toString()}`);
-        logger.debug(`created: live: ${tos(live)}`);
+        //logger.debug(`created: live: ${tos(live)}`);
       }),
     ])();
 

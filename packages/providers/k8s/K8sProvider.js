@@ -997,7 +997,7 @@ const readKubeConfig = ({
       () => fs.readFile(kubeConfigFile, "utf-8"),
       yaml.load,
       tap((kubeConfig) => {
-        logger.info(tos(kubeConfig));
+        //logger.info(tos(kubeConfig));
       }),
     ]),
     (error) => {
@@ -1091,7 +1091,7 @@ exports.K8sProvider = ({
         },
       }),
       tap((merged) => {
-        logger.info(`mergeConfig : ${tos(merged)}`);
+        //logger.info(`mergeConfig : ${tos(merged)}`);
       }),
     ])();
 

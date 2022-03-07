@@ -254,8 +254,11 @@ exports.EC2Instance = ({ spec, config }) => {
   const decorate = pipe([
     assign({
       UserData: pipe([
-        ({ InstanceId }) => ({ Attribute: "userData", InstanceId }),
-        ec2().describeInstanceAttribute,
+        ({ InstanceId }) =>
+          ec2().describeInstanceAttribute({
+            Attribute: "userData",
+            InstanceId,
+          }),
         get("UserData.Value"),
       ]),
     }),

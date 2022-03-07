@@ -84,14 +84,14 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
       get("retentionInDays"),
       pipe([
         pick(["logGroupName", "retentionInDays"]),
-        cloudWatchLogs().putRetentionPolicy,
+        (params) => cloudWatchLogs().putRetentionPolicy(params),
       ])
     ),
   ]);
 
   const deleteRetentionPolicy = pipe([
     pick(["logGroupName"]),
-    cloudWatchLogs().deleteRetentionPolicy,
+    (params) => cloudWatchLogs().deleteRetentionPolicy(params),
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#createLogGroup-property

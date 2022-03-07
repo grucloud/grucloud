@@ -44,7 +44,7 @@ exports.ECSContainerInstance = ({ spec, config }) => {
     tap(({ cluster }) => {
       assert(cluster);
     }),
-    ecs().describeContainerInstances,
+    (params) => ecs().describeContainerInstances(params),
     get("containerInstances"),
   ]);
 

@@ -41,7 +41,11 @@ exports.SQSQueue = ({ spec, config }) => {
       assert(true);
     }),
     assign({
-      tags: pipe([pickId, sqs().listQueueTags, get("Tags")]),
+      tags: pipe([
+        pickId,
+        (params) => sqs().listQueueTags(params),
+        get("Tags"),
+      ]),
     }),
   ]);
 
@@ -87,12 +91,14 @@ exports.SQSQueue = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueUrl-property
   const getByName = pipe([
-    ({ name }) => ({ QueueName: name }),
-    tap((params) => {
-      assert(true);
-    }),
     tryCatch(
-      pipe([sqs().getQueueUrl, getById]),
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        ({ name }) => sqs().getQueueUrl({ QueueName: name }),
+        getById,
+      ]),
       throwIfNotAwsError("AWS.SimpleQueueService.NonExistentQueue")
     ),
   ]);

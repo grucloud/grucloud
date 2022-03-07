@@ -111,7 +111,7 @@ exports.createLives = (livesRaw = []) => {
           mapPerTypeSize: mapPerType.size,
         })}`
       );
-      logger.debug(`live addResource resource: ${JSON.stringify(resource)}`);
+      //logger.debug(`live addResource resource: ${JSON.stringify(resource)}`);
 
       pipe([
         () =>
