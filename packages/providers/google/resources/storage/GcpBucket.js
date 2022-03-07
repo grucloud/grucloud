@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, map, get, switchCase, assign } = require("rubico");
+const { pipe, tap, map, eq, get, switchCase, assign } = require("rubico");
 const { defaultsDeep, identity, when } = require("rubico/x");
 
 const GoogleClient = require("../../GoogleClient");
@@ -11,6 +11,8 @@ const { retryCallOnError } = require("@grucloud/core/Retry");
 const { mapPoolSize } = require("@grucloud/core/Common");
 
 const findTargetId = () => get("id");
+
+const isExpectedException404 = eq(get("response.status"), 404);
 
 // https://cloud.google.com/storage/docs/json_api/v1/buckets
 // https://cloud.google.com/storage/docs/json_api/v1/buckets/insert
@@ -95,10 +97,8 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
             logger.info(`create bucket ${name}`);
             logger.debug(`bucket ${name} assignIam ${tos(iamCurrent)}`);
           }),
-          //TODO assign
-          (iamCurrent) => ({
-            ...iamCurrent,
-            bindings: [...iamCurrent.bindings, ...payload.iam.bindings],
+          assign({
+            bindings: ({ bindings }) => [...bindings, ...payload.iam.bindings],
           }),
           tap((updatedIam) => {
             logger.info(`create bucket ${name}`);
@@ -147,6 +147,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
           name: `destroy objects in ${bucketName}`,
           fn: () => axios.delete(item.selfLink),
           config: configProvider,
+          isExpectedException: isExpectedException404,
         })
       ),
       () =>
@@ -154,10 +155,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
           name: `destroy ${bucketName}`,
           fn: () => axios.delete(`/${bucketName}`),
           config: configProvider,
-          //TODO may not need that
-          isExpectedException: (error) => {
-            return [404].includes(error.response?.status);
-          },
+          isExpectedException: isExpectedException404,
         }),
       get("data"),
       tap((xx) => {

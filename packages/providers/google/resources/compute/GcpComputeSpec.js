@@ -10,7 +10,7 @@ const {
   eq,
   filter,
 } = require("rubico");
-const { prepend, callProp, find, defaultsDeep } = require("rubico/x");
+const { first, prepend, callProp, find, defaultsDeep } = require("rubico/x");
 const { camelCase } = require("change-case");
 
 const GoogleTag = require("../../GoogleTag");
@@ -124,10 +124,10 @@ module.exports = pipe([
             "direction",
             "logConfig",
           ]),
-          // TODO remove if sourceRanges: ["0.0.0.0/0"],
-          tap((params) => {
-            assert(true);
-          }),
+          when(
+            eq(pipe([get("sourceRanges"), first]), "0.0.0.0/0"),
+            omit(["sourceRanges"])
+          ),
         ]),
     },
     {
@@ -178,6 +178,7 @@ module.exports = pipe([
         "metadata.fingerprint",
         "metadata.kind",
       ],
+      dependsOnList: ["compute::Disk"],
       dependencies: {
         ip: { type: "Address", group: "compute" },
         subNetwork: { type: "SubNetwork", group: "compute" },

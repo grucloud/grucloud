@@ -5,7 +5,6 @@ const {
   map,
   flatMap,
   filter,
-  tryCatch,
   switchCase,
   get,
   any,
@@ -34,7 +33,6 @@ const {
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "ProviderCommon" });
-const { tos } = require("./tos");
 
 const PlanDirection = {
   UP: 1,
@@ -117,7 +115,7 @@ const findDependentType =
       pipe([
         () => specs,
         find(eq(get("groupType"), groupType)),
-        get("dependsOn", []),
+        get("dependsOnList", []),
         filter(not(eq(identity, groupType))),
         // tap((groupTypes) => {
         //   logger.debug("groupType", groupType, `, groupTypes: ${groupTypes}`);
@@ -242,8 +240,10 @@ const filterByType =
           ]),
         ])()
       ),
-      tap((clients) => {
-        logger.info(`filterByType result #specs ${pluck("groupType")(specs)}`);
+      tap((specs) => {
+        logger.info(
+          `filterByType ${size(specs)} specs: ${pluck("groupType")(specs)}`
+        );
       }),
     ])();
 
@@ -325,7 +325,7 @@ exports.filterReadClient =
         );
       }),
       () => specs,
-      filter(not(get("istHide"))),
+      filter(not(get("isHide"))),
       unless(() => all, filterByType({ types, groups, all, targetTypes })),
       tap((specs) => {
         logger.info(

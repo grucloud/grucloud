@@ -263,8 +263,10 @@ const findDependencies =
                 group: "EC2",
                 providerName: config.providerName,
               }),
-            tap(({ live }) => {
-              assert(live, "cannot find security group in cache");
+            tap((resource) => {
+              if (!resource) {
+                assert(resource, "cannot find security group in cache");
+              }
             }),
             ({ live }) => ({ live, lives }),
             findEksCluster({ config }),

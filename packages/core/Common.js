@@ -36,6 +36,7 @@ const {
   defaultsDeep,
   append,
 } = require("rubico/x");
+const util = require("util");
 const { detailedDiff } = require("deep-object-diff");
 const Diff = require("diff");
 const shell = require("shelljs");
@@ -152,18 +153,20 @@ exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
     }),
   ])();
 
-exports.axiosErrorToJSON = (error = {}) => ({
-  isAxiosError: error.isAxiosError,
-  message: get("response.data.message", error.message)(error),
-  name: error.name,
-  config: pick(["url", "method", "baseURL"])(error.config),
-  code: error.code,
-  stack: error.stack,
-  response: {
+exports.axiosErrorToJSON = (error = {}) => {
+  const message = get("response.data.message", error.message)(error);
+  const exception = new Error(message);
+  exception.isAxiosError = error.isAxiosError;
+  exception.name = error.name;
+  exception.config = pick(["url", "method", "baseURL"])(error.config);
+  exception.code = error.code;
+  exception.response = {
     status: error.response?.status,
     data: error.response?.data,
-  },
-});
+  };
+
+  return exception;
+};
 
 const safeJsonParse = when(
   isString,
@@ -296,10 +299,9 @@ exports.isDownByIdCore =
     );
     return down;
   };
-const errorToString = tryCatch(JSON.stringify, callProp("toString"));
 
 exports.logError = (prefix, error = {}) => {
-  logger.error(`${prefix} error:${errorToString(error)}`);
+  logger.error(`${prefix} error:${util.inspect(error)}`);
   error.stack && logger.error(error.stack);
 
   if (error.response) {

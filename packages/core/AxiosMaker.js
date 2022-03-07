@@ -5,6 +5,7 @@ const { tos } = require("./tos");
 const { convertError } = require("./Common");
 const { assign, pipe, tap } = require("rubico");
 const { retryCallOnError } = require("./Retry");
+const util = require("util");
 
 module.exports = AxiosMaker = ({
   baseURL,
@@ -55,6 +56,7 @@ module.exports = AxiosMaker = ({
         logger.info(`axios ${error}`);
       } else {
         logger.error(`axios error ${tos(convertError({ error }))}`);
+        logger.error(`raw error ${util.inspect(error)}`);
       }
 
       return Promise.reject(error);

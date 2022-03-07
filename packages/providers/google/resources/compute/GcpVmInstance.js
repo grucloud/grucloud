@@ -368,7 +368,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
               }),
           ]),
           () => {
-            throw Error("TODO update vm");
+            assert(false, "updateNeedRestart or updateNeedRefresh not set");
           },
         ]),
       ]),

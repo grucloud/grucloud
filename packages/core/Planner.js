@@ -79,7 +79,7 @@ exports.mapToGraph = (mapResource) =>
       ])(),
     })),
     tap((graph) => {
-      logger.debug(`mapToGraph: result ${tos(graph)}`);
+      //logger.debug(`mapToGraph: result ${tos(graph)}`);
     }),
   ])();
 
@@ -313,7 +313,8 @@ exports.Planner = ({
   assert(isFunction(executor));
   assert(isFunction(onStateChange));
 
-  logger.debug(`Planner #plans: ${plans.length} ${tos({ plans })} `);
+  logger.info(`Planner #plans: ${plans.length}`);
+  //logger.debug(`Planner #plans: ${plans.length} ${tos({ plans })} `);
 
   const dependencyTree = DependencyTree({
     plans,

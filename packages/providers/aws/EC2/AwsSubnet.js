@@ -60,24 +60,18 @@ exports.AwsSubnet = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = ({ SubnetId }) =>
-    pipe([
-      tap(() => {
-        assert(SubnetId);
-      }),
-      () => ({
-        Filters: [
-          {
-            Name: "subnet-id",
-            Values: [SubnetId],
-          },
-        ],
-      }),
-      //TODO use getList ?
-      ec2().describeSubnets,
-      get("Subnets"),
-      first,
-    ])();
+  const getById = client.getById({
+    pickId: ({ SubnetId }) => ({
+      Filters: [
+        {
+          Name: "subnet-id",
+          Values: [SubnetId],
+        },
+      ],
+    }),
+    method: "describeSubnets",
+    getField: "Subnets",
+  });
 
   const modifySubnetAttribute = ({ SubnetId }) =>
     pipe([
