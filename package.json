@@ -75,7 +75,9 @@
   },
   "workspaces": [
     "./packages/core",
-    "./packages/providers/*",
-    "./packages/tools/*"
+    "./packages/providers/aws",
+    "./packages/providers/azure",
+    "./packages/providers/google",
+    "./packages/tools/mockServer"
   ]
 }
