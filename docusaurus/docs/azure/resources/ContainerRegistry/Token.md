@@ -167,7 +167,8 @@ exports.createResources = () => [
                     type: 'string'
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'thumbprint' ]
             },
             passwords: {
               type: 'array',
@@ -197,7 +198,8 @@ exports.createResources = () => [
                     readOnly: true
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': []
             }
           }
         },

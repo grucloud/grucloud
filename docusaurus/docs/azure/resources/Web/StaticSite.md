@@ -330,7 +330,8 @@ exports.createResources = () => [
                           type: 'string'
                         }
                       }
-                    }
+                    },
+                    'x-ms-identifiers': [ 'name' ]
                   }
                 }
               },
@@ -356,7 +357,8 @@ exports.createResources = () => [
                       description: 'Body of the error response returned from the API.',
                       type: 'object',
                       properties: [Circular *1]
-                    }
+                    },
+                    'x-ms-identifiers': []
                   },
                   details: {
                     description: 'Error Details.',
@@ -365,7 +367,8 @@ exports.createResources = () => [
                       description: 'Body of the error response returned from the API.',
                       type: 'object',
                       properties: [Circular *1]
-                    }
+                    },
+                    'x-ms-identifiers': []
                   },
                   target: { description: 'The error target.', type: 'string' },
                   code: { description: 'Basic error code.', type: 'string' },
@@ -626,7 +629,8 @@ exports.createResources = () => [
                 type: 'string'
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'name' ]
         }
       }
     },

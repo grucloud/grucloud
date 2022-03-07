@@ -112,7 +112,8 @@ Provides a **WebAppConfiguration** from the **Web** group
               name: { description: 'Pair name.', type: 'string' },
               value: { description: 'Pair value.', type: 'string' }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'name' ]
         },
         connectionStrings: {
           description: 'Connection strings.',
@@ -148,7 +149,8 @@ Provides a **WebAppConfiguration** from the **Web** group
                 'x-ms-enum': { name: 'ConnectionStringType', modelAsString: false }
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'name' ]
         },
         machineKey: {
           description: 'Site MachineKey.',
@@ -185,7 +187,8 @@ Provides a **WebAppConfiguration** from the **Web** group
                 type: 'string'
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'extension' ]
         },
         documentRoot: { description: 'Document root.', type: 'string' },
         scmType: {
@@ -250,10 +253,12 @@ Provides a **WebAppConfiguration** from the **Web** group
                     },
                     physicalPath: { description: 'Physical path.', type: 'string' }
                   }
-                }
+                },
+                'x-ms-identifiers': [ 'virtualPath' ]
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'virtualPath' ]
         },
         loadBalancing: {
           description: 'Site load balancing.',
@@ -320,7 +325,8 @@ Provides a **WebAppConfiguration** from the **Web** group
                     type: 'string'
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'name' ]
             }
           }
         },
@@ -404,7 +410,8 @@ Provides a **WebAppConfiguration** from the **Web** group
                       timeInterval: { description: 'Time interval.', type: 'string' },
                       path: { description: 'Request Path', type: 'string' }
                     }
-                  }
+                  },
+                  'x-ms-identifiers': [ 'path' ]
                 },
                 slowRequests: {
                   description: 'A rule based on request execution time.',
@@ -436,7 +443,8 @@ Provides a **WebAppConfiguration** from the **Web** group
                       },
                       timeInterval: { description: 'Time interval.', type: 'string' }
                     }
-                  }
+                  },
+                  'x-ms-identifiers': [ 'path' ]
                 },
                 statusCodesRange: {
                   description: 'A rule based on status codes ranges.',
@@ -457,7 +465,8 @@ Provides a **WebAppConfiguration** from the **Web** group
                       },
                       timeInterval: { description: 'Time interval.', type: 'string' }
                     }
-                  }
+                  },
+                  'x-ms-identifiers': [ 'path' ]
                 }
               }
             },
@@ -698,7 +707,8 @@ Provides a **WebAppConfiguration** from the **Web** group
                 additionalProperties: { type: 'array', items: { type: 'string' } }
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'name' ]
         },
         scmIpSecurityRestrictions: {
           description: 'IP security restrictions for scm.',
@@ -776,7 +786,8 @@ Provides a **WebAppConfiguration** from the **Web** group
                 additionalProperties: { type: 'array', items: { type: 'string' } }
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'name' ]
         },
         scmIpSecurityRestrictionsUseMain: {
           description: 'IP security restrictions for scm to use main.',

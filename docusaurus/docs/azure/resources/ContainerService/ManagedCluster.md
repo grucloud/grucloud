@@ -1491,6 +1491,68 @@ exports.createResources = () => [
 ];
 
 ```
+
+### Create Managed Cluster with Dedicated Host Group
+```js
+exports.createResources = () => [
+  {
+    type: "ManagedCluster",
+    group: "ContainerService",
+    name: "myManagedCluster",
+    properties: () => ({
+      location: "location1",
+      tags: { tier: "production", archv2: "" },
+      sku: { name: "Basic", tier: "Free" },
+      properties: {
+        kubernetesVersion: "",
+        dnsPrefix: "dnsprefix1",
+        agentPoolProfiles: [
+          {
+            name: "nodepool1",
+            count: 3,
+            vmSize: "Standard_DS2_v2",
+            osType: "Linux",
+            type: "VirtualMachineScaleSets",
+            enableNodePublicIP: true,
+            hostGroupID:
+              "/subscriptions/subid1/resourcegroups/rg/providers/Microsoft.Compute/hostGroups/hostgroup1",
+          },
+        ],
+        linuxProfile: {
+          adminUsername: "azureuser",
+          ssh: { publicKeys: [{ keyData: "keydata" }] },
+        },
+        networkProfile: {
+          loadBalancerSku: "standard",
+          outboundType: "loadBalancer",
+          loadBalancerProfile: { managedOutboundIPs: { count: 2 } },
+        },
+        autoScalerProfile: {
+          "scan-interval": "20s",
+          "scale-down-delay-after-add": "15m",
+        },
+        windowsProfile: {
+          adminUsername: "azureuser",
+          adminPassword: "replacePassword1234$",
+        },
+        servicePrincipalProfile: { clientId: "clientid", secret: "secret" },
+        addonProfiles: {},
+        enableRBAC: true,
+        diskEncryptionSetID:
+          "/subscriptions/subid1/resourceGroups/rg1/providers/Microsoft.Compute/diskEncryptionSets/des",
+        enablePodSecurityPolicy: false,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      diskEncryptionSet: "myDiskEncryptionSet",
+      routes: ["myRoute"],
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
@@ -2276,6 +2338,11 @@ exports.createResources = () => [
                   capacityReservationGroupID: {
                     description: 'AKS will associate the specified agent pool with the Capacity Reservation Group.',
                     type: 'string'
+                  },
+                  hostGroupID: {
+                    type: 'string',
+                    title: 'The fully qualified resource ID of the Dedicated Host Group to provision virtual machines from, used only in creation scenario and not allowed to changed once set.',
+                    description: 'This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}. For more information see [Azure dedicated hosts](https://docs.microsoft.com/azure/virtual-machines/dedicated-hosts).'
                   }
                 },
                 description: 'Properties for the container service agent pool profile.'
@@ -2597,7 +2664,7 @@ exports.createResources = () => [
           properties: {
             networkPlugin: {
               type: 'string',
-              enum: [ 'azure', 'kubenet' ],
+              enum: [ 'azure', 'kubenet', 'none' ],
               default: 'kubenet',
               'x-ms-enum': {
                 name: 'NetworkPlugin',
@@ -2610,6 +2677,10 @@ exports.createResources = () => [
                   {
                     value: 'kubenet',
                     description: 'Use the Kubenet network plugin. See [Kubenet (basic) networking](https://docs.microsoft.com/azure/aks/concepts-network#kubenet-basic-networking) for more information.'
+                  },
+                  {
+                    value: 'none',
+                    description: 'Do not use a network plugin. A custom CNI will need to be installed after cluster creation for networking functionality.'
                   }
                 ]
               },
@@ -3259,6 +3330,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01-preview`.
+The resource version is `2022-01-02-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2021-11-01-preview/managedClusters.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-01-02-preview/managedClusters.json).

@@ -195,7 +195,8 @@ exports.createResources = () => [
                 type: 'string'
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'workspaceId' ]
         },
         capacityReservationProperties: {
           description: 'Additional properties for capacity reservation',

@@ -127,6 +127,14 @@ exports.createResources = () => [
                       encryption: {
                         properties: {
                           osDiskImage: {
+                            type: 'object',
+                            properties: {
+                              securityProfile: {
+                                type: 'object',
+                                description: 'This property specifies the security profile of an OS disk image.',
+                                properties: [Object]
+                              }
+                            },
                             allOf: [
                               {
                                 properties: [Object],
@@ -143,6 +151,7 @@ exports.createResources = () => [
                               required: [ 'lun' ],
                               description: 'Contains encryption settings for a data disk image.'
                             },
+                            'x-ms-identifiers': [ 'lun' ],
                             description: 'A list of encryption specifications for data disk images.'
                           }
                         },
@@ -152,6 +161,7 @@ exports.createResources = () => [
                     required: [ 'name' ],
                     description: 'Describes the target region information.'
                   },
+                  'x-ms-identifiers': [ 'name' ],
                   description: 'The target regions where the Image Version is going to be replicated to. This property is updatable.'
                 },
                 replicaCount: {
@@ -185,6 +195,87 @@ exports.createResources = () => [
                   description: 'Optional parameter which specifies the mode to be used for replication. This property is not updatable.',
                   enum: [ 'Full', 'Shallow' ],
                   'x-ms-enum': { name: 'ReplicationMode', modelAsString: true }
+                },
+                targetExtendedLocations: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      name: {
+                        type: 'string',
+                        description: 'The name of the region.'
+                      },
+                      extendedLocation: {
+                        type: 'object',
+                        properties: {
+                          name: { type: 'string' },
+                          type: {
+                            type: 'string',
+                            enum: [ 'EdgeZone', 'Unknown' ],
+                            'x-ms-enum': {
+                              name: 'GalleryExtendedLocationType',
+                              modelAsString: true
+                            },
+                            description: 'It is type of the extended location.'
+                          }
+                        },
+                        description: 'The name of the extended location.'
+                      },
+                      extendedLocationReplicaCount: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'The number of replicas of the Image Version to be created per extended location. This property is updatable.'
+                      },
+                      storageAccountType: {
+                        type: 'string',
+                        description: 'Specifies the storage account type to be used to store the image. This property is not updatable.',
+                        enum: [
+                          'Standard_LRS',
+                          'Standard_ZRS',
+                          'Premium_LRS'
+                        ],
+                        'x-ms-enum': {
+                          name: 'StorageAccountType',
+                          modelAsString: true
+                        }
+                      },
+                      encryption: {
+                        properties: {
+                          osDiskImage: {
+                            type: 'object',
+                            properties: {
+                              securityProfile: {
+                                type: 'object',
+                                description: 'This property specifies the security profile of an OS disk image.',
+                                properties: [Object]
+                              }
+                            },
+                            allOf: [
+                              {
+                                properties: [Object],
+                                description: 'This is the disk image encryption base class.'
+                              }
+                            ],
+                            description: 'Contains encryption settings for an OS disk image.'
+                          },
+                          dataDiskImages: {
+                            type: 'array',
+                            items: {
+                              properties: { lun: [Object] },
+                              allOf: [ [Object] ],
+                              required: [ 'lun' ],
+                              description: 'Contains encryption settings for a data disk image.'
+                            },
+                            'x-ms-identifiers': [ 'lun' ],
+                            description: 'A list of encryption specifications for data disk images.'
+                          }
+                        },
+                        description: 'Optional. Allows users to provide customer managed keys for encrypting the OS and data disks in the gallery artifact.'
+                      }
+                    }
+                  },
+                  'x-ms-identifiers': [ 'name', 'extendedLocation/name' ],
+                  description: 'The target extended locations where the Image Version is going to be replicated to. This property is updatable.'
                 }
               },
               description: 'Describes the basic gallery artifact publishing profile.'
@@ -251,6 +342,7 @@ exports.createResources = () => [
                 },
                 description: 'This is the regional replication status.'
               },
+              'x-ms-identifiers': [ 'region' ],
               description: 'This is a summary of replication status for each region.'
             }
           },
@@ -291,6 +383,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-07-01`.
+The resource version is `2021-10-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-07-01/gallery.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-10-01/gallery.json).

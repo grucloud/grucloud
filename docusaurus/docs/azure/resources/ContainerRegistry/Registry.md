@@ -304,7 +304,8 @@ exports.createResources = () => [
                     'x-ms-client-name': 'IPAddressOrRange'
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': []
             }
           }
         },

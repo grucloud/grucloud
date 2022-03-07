@@ -124,7 +124,8 @@ Provides a **WebAppSlot** from the **Web** group
                 'x-ms-enum': { name: 'HostType', modelAsString: false }
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'name' ]
         },
         serverFarmId: {
           description: 'Resource ID of the associated App Service plan, formatted as: "/subscriptions/{subscriptionID}/resourceGroups/{groupName}/providers/Microsoft.Web/serverfarms/{appServicePlanName}".',
@@ -234,7 +235,8 @@ Provides a **WebAppSlot** from the **Web** group
                   name: { description: 'Pair name.', type: 'string' },
                   value: { description: 'Pair value.', type: 'string' }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'name' ]
             },
             connectionStrings: {
               description: 'Connection strings.',
@@ -273,7 +275,8 @@ Provides a **WebAppSlot** from the **Web** group
                     }
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'name' ]
             },
             machineKey: {
               description: 'Site MachineKey.',
@@ -313,7 +316,8 @@ Provides a **WebAppSlot** from the **Web** group
                     type: 'string'
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'extension' ]
             },
             documentRoot: { description: 'Document root.', type: 'string' },
             scmType: {
@@ -384,10 +388,12 @@ Provides a **WebAppSlot** from the **Web** group
                           type: 'string'
                         }
                       }
-                    }
+                    },
+                    'x-ms-identifiers': [ 'virtualPath' ]
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'virtualPath' ]
             },
             loadBalancing: {
               description: 'Site load balancing.',
@@ -454,7 +460,8 @@ Provides a **WebAppSlot** from the **Web** group
                         type: 'string'
                       }
                     }
-                  }
+                  },
+                  'x-ms-identifiers': [ 'name' ]
                 }
               }
             },
@@ -547,7 +554,8 @@ Provides a **WebAppSlot** from the **Web** group
                             type: 'string'
                           }
                         }
-                      }
+                      },
+                      'x-ms-identifiers': [ 'path' ]
                     },
                     slowRequests: {
                       description: 'A rule based on request execution time.',
@@ -594,7 +602,8 @@ Provides a **WebAppSlot** from the **Web** group
                             type: 'string'
                           }
                         }
-                      }
+                      },
+                      'x-ms-identifiers': [ 'path' ]
                     },
                     statusCodesRange: {
                       description: 'A rule based on status codes ranges.',
@@ -618,7 +627,8 @@ Provides a **WebAppSlot** from the **Web** group
                             type: 'string'
                           }
                         }
-                      }
+                      },
+                      'x-ms-identifiers': [ 'path' ]
                     }
                   }
                 },
@@ -865,7 +875,8 @@ Provides a **WebAppSlot** from the **Web** group
                     additionalProperties: { type: 'array', items: { type: 'string' } }
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'name' ]
             },
             scmIpSecurityRestrictions: {
               description: 'IP security restrictions for scm.',
@@ -943,7 +954,8 @@ Provides a **WebAppSlot** from the **Web** group
                     additionalProperties: { type: 'array', items: { type: 'string' } }
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'name' ]
             },
             scmIpSecurityRestrictionsUseMain: {
               description: 'IP security restrictions for scm to use main.',

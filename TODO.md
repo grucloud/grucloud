@@ -95,7 +95,6 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 - compare Tags
 - RDS DBCluster AvailabilityZones
 - ECR.makeRegistry delete
-- gc d -f -a: APIGateway::DomainName 1/2 in grey
 - inferName for SecurityGroup, and Route Table
 - Nat gateway handle deleting
 - EC2 Instance placement
@@ -107,14 +106,12 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 - ec2::SecurityGroupRuleIngress 0/1 client.update is not a function
 - document create key pair
-- throw error => throw Error(error.message);
 - UserData: ec2 update and displayResource
 - Resource pages
 
 - aws_route53_delegation_set
 
 - VpcEndpoint
-- https://medium.com/dev-genius/create-an-amazon-eks-cluster-with-managed-node-group-using-terraform-a3b50d276b13
 - security group update
 
 aws iam create-user --user-name terraform-user
@@ -143,12 +140,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - The field 'entity.managedZone.dnsName' cannot be modified.
 - gcp object path properties
 
-- isExpectedException: (error) => {
-  return error.response?.status === 409;
-  },
 - service account managedByUs false despite description: Managee By GruCloud
 - vm instance: network interface from vpc network
-- validate config: check project and region
 
 - https://medium.com/faun/creating-reusable-infrastructure-with-terraform-on-gcp-e17745ac4ff2
 

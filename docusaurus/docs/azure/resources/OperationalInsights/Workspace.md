@@ -226,6 +226,7 @@ exports.createResources = () => [
             },
             description: 'The private link scope resource reference.'
           },
+          'x-ms-identifiers': [ 'resourceId' ],
           description: 'List of linked private link scope resources.'
         },
         features: {

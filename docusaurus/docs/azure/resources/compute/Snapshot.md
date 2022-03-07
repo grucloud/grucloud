@@ -232,12 +232,18 @@ exports.createResources = () => [
           required: [ 'publisher', 'name', 'product' ]
         },
         supportedCapabilities: {
-          description: 'List of supported capabilities (like Accelerated Networking) for the image from which the source disk from the snapshot was originally created.',
+          description: 'List of supported capabilities for the image from which the source disk from the snapshot was originally created.',
           type: 'object',
           properties: {
             acceleratedNetwork: {
               type: 'boolean',
               description: 'True if the image from which the OS disk is created supports accelerated networking.'
+            },
+            architecture: {
+              type: 'string',
+              description: 'CPU architecture supported by an OS disk.',
+              enum: [ 'x64', 'Arm64' ],
+              'x-ms-enum': { name: 'Architecture', modelAsString: true }
             }
           }
         },
@@ -491,6 +497,7 @@ exports.createResources = () => [
                 },
                 description: 'Encryption settings for one disk volume.'
               },
+              'x-ms-identifiers': [ 'diskEncryptionKey/sourceVault/id' ],
               description: 'A collection of encryption settings, one for each disk volume.'
             },
             encryptionSettingsVersion: {
@@ -639,6 +646,25 @@ exports.createResources = () => [
         completionPercent: {
           type: 'number',
           description: 'Percentage complete for the background copy when a resource is created via the CopyStart operation.'
+        },
+        dataAccessAuthMode: {
+          type: 'string',
+          description: 'Additional authentication requirements when exporting or uploading to a disk or snapshot.',
+          enum: [ 'AzureActiveDirectory', 'None' ],
+          'x-ms-enum': {
+            name: 'DataAccessAuthMode',
+            modelAsString: true,
+            values: [
+              {
+                value: 'AzureActiveDirectory',
+                description: 'When export/upload URL is used, the system checks if the user has an identity in Azure Active Directory and has necessary permissions to export/upload the data. Please refer to aka.ms/DisksAzureADAuth.'
+              },
+              {
+                value: 'None',
+                description: 'No additional authentication would be performed when accessing export/upload URL.'
+              }
+            ]
+          }
         }
       },
       required: [ 'creationData' ],
@@ -675,6 +701,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2021-12-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-08-01/disk.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-12-01/disk.json).

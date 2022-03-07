@@ -144,7 +144,8 @@ Provides a **AppServiceEnvironment** from the **Web** group
               name: { description: 'Pair name.', type: 'string' },
               value: { description: 'Pair value.', type: 'string' }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'name' ]
         },
         userWhitelistedIpRanges: {
           description: 'User added ip ranges to whitelist on ASE db',

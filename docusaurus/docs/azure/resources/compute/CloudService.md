@@ -329,7 +329,8 @@ exports.createResources = () => [
                     }
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'name' ]
             }
           }
         },
@@ -364,10 +365,12 @@ exports.createResources = () => [
                           type: 'string'
                         }
                       }
-                    }
+                    },
+                    'x-ms-identifiers': [ 'certificateUrl' ]
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'sourceVault/id' ]
             }
           }
         },
@@ -412,7 +415,8 @@ exports.createResources = () => [
                             }
                           },
                           required: [ 'name', 'properties' ]
-                        }
+                        },
+                        'x-ms-identifiers': [ 'name' ]
                       }
                     },
                     required: [ 'frontendIPConfigurations' ]
@@ -509,7 +513,8 @@ exports.createResources = () => [
                     }
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'name' ]
             }
           }
         },

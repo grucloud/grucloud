@@ -80,10 +80,12 @@ Provides a **WebAppPrivateAccessSlot** from the **Web** group
                       type: 'integer'
                     }
                   }
-                }
+                },
+                'x-ms-identifiers': [ 'key' ]
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'key' ]
         }
       },
       'x-ms-client-flatten': true

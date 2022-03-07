@@ -340,7 +340,8 @@ exports.createResources = () => [
                         type: 'string'
                       }
                     }
-                  }
+                  },
+                  'x-ms-identifiers': [ 'registry' ]
                 },
                 task: {
                   description: 'The task against which run was scheduled.',
@@ -383,7 +384,8 @@ exports.createResources = () => [
                             type: 'string'
                           }
                         }
-                      }
+                      },
+                      'x-ms-identifiers': [ 'registry' ]
                     }
                   }
                 },

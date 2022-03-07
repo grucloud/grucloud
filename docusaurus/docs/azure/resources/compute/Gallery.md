@@ -60,6 +60,34 @@ exports.createResources = () => [
 ];
 
 ```
+
+### Create a community gallery.
+```js
+exports.createResources = () => [
+  {
+    type: "Gallery",
+    group: "Compute",
+    name: "myGallery",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        description: "This is the gallery description.",
+        sharingProfile: {
+          permissions: "Community",
+          communityGalleryInfo: {
+            publisherUri: "uri",
+            publisherContact: "pir@microsoft.com",
+            eula: "eula",
+            publicNamePrefix: "PirPublic",
+          },
+        },
+      },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
@@ -117,8 +145,8 @@ exports.createResources = () => [
                 properties: {
                   type: {
                     type: 'string',
-                    description: 'This property allows you to specify the type of sharing group. <br><br> Possible values are: <br><br> **Subscriptions** <br><br> **AADTenants**',
-                    enum: [ 'Subscriptions', 'AADTenants' ],
+                    description: 'This property allows you to specify the type of sharing group. <br><br> Possible values are: <br><br> **Subscriptions** <br><br> **AADTenants** <br><br> **Community**',
+                    enum: [ 'Subscriptions', 'AADTenants', 'Community' ],
                     'x-ms-enum': {
                       name: 'SharingProfileGroupTypes',
                       modelAsString: true
@@ -131,7 +159,44 @@ exports.createResources = () => [
                   }
                 }
               },
+              'x-ms-identifiers': [],
               description: 'A list of sharing profile groups.'
+            },
+            communityGalleryInfo: {
+              items: {
+                type: 'object',
+                description: 'Information of community gallery if current gallery is shared to community',
+                properties: {
+                  publisherUri: {
+                    type: 'string',
+                    description: 'Community gallery publisher uri'
+                  },
+                  publisherContact: {
+                    type: 'string',
+                    description: 'Community gallery publisher contact email'
+                  },
+                  eula: {
+                    type: 'string',
+                    description: 'Community gallery publisher eula'
+                  },
+                  publicNamePrefix: {
+                    type: 'string',
+                    description: 'Community gallery public name prefix'
+                  },
+                  communityGalleryEnabled: {
+                    readOnly: true,
+                    type: 'boolean',
+                    description: 'Contains info about whether community gallery sharing is enabled.'
+                  },
+                  publicNames: {
+                    readOnly: true,
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Community gallery public name list.'
+                  }
+                }
+              },
+              description: 'Information of community gallery if current gallery is shared to community.'
             }
           }
         },
@@ -144,6 +209,45 @@ exports.createResources = () => [
             }
           },
           description: 'Contains information about the soft deletion policy of the gallery.'
+        },
+        sharingStatus: {
+          readOnly: true,
+          type: 'object',
+          properties: {
+            aggregatedState: {
+              type: 'string',
+              description: 'Aggregated sharing state of current gallery.',
+              readOnly: true,
+              title: 'The sharing state of the gallery.',
+              enum: [ 'Succeeded', 'InProgress', 'Failed', 'Unknown' ],
+              'x-ms-enum': { name: 'SharingState', modelAsString: true }
+            },
+            summary: {
+              type: 'array',
+              items: {
+                type: 'object',
+                description: 'Gallery regional sharing status',
+                properties: {
+                  region: { type: 'string', description: 'Region name' },
+                  state: {
+                    type: 'string',
+                    description: 'Gallery sharing state in current region',
+                    readOnly: true,
+                    title: 'The sharing state of the gallery.',
+                    enum: [ 'Succeeded', 'InProgress', 'Failed', 'Unknown' ],
+                    'x-ms-enum': { name: 'SharingState', modelAsString: true }
+                  },
+                  details: {
+                    type: 'string',
+                    description: 'Details of gallery regional sharing failure.'
+                  }
+                }
+              },
+              'x-ms-identifiers': [ 'region' ],
+              description: 'Summary of all regional sharing status.'
+            }
+          },
+          description: 'Sharing status of current gallery.'
         }
       },
       description: 'Describes the properties of a Shared Image Gallery.'
@@ -179,6 +283,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-07-01`.
+The resource version is `2021-10-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-07-01/gallery.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-10-01/gallery.json).
