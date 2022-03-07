@@ -11,7 +11,7 @@
     "test:azure": "cd packages/providers/azure && npm test",
     "test:k8s": "npm run  --workspace @grucloud/provider-k8s --workspace @grucloud/example-module-k8s* test",
     "test:mock": "CONTINUOUS_INTEGRATION=1 npm run  --concurrency 1 --workspace @grucloud/core --workspace @grucloud/provider-mock test -- --reporter=mocha-junit-reporter",
-    "test:ci": "CONTINUOUS_INTEGRATION=1 dotenv -e secrets/default.env -- npm run test  --workspace @grucloud/core --workspace @grucloud/provider-mock --workspace @grucloud/mock-server  -- --reporter=mocha-junit-reporter",
+    "test:ci": "CONTINUOUS_INTEGRATION=1 dotenv -e secrets/default.env -- npm run test  --workspace @grucloud/core -- --reporter=mocha-junit-reporter",
     "test:mocha": "npm run test",
     "test": "CONTINUOUS_INTEGRATION=1 npm run test:mocha",
     "test:example": "node test/testExamples.js",
@@ -74,6 +74,8 @@
     "branch": "main"
   },
   "workspaces": [
-    "./packages/**/*"
+    "./packages/core",
+    "./packages/providers/*",
+    "./packages/tools/*"
   ]
 }
