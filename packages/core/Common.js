@@ -500,7 +500,7 @@ exports.compare = ({
       ]),
     }),
     tap((diff) => {
-      logger.debug(`compare ${tos(diff)}`);
+      // logger.debug(`compare ${tos(diff)}`);
     }),
   ]);
 

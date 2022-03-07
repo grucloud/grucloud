@@ -278,6 +278,7 @@ exports.createAxiosMakerK8s = ({ config, contentType }) =>
           AxiosMaker({
             contentType,
             httpsAgent,
+            timeout: 15e3,
             onHeaders: pipe([
               tap(() => {
                 assert(
