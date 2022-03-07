@@ -77,5 +77,6 @@
   "np": {
     "yarn": false,
     "branch": "main"
-  }
+  },
+  "workspaces": ["./packages/*"]
 }
