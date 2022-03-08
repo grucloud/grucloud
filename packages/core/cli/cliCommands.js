@@ -679,7 +679,7 @@ const doPlanApply = async ({
     assign({ error: any(get("error")) }),
     tap((result) => {
       logger.info(`doPlanApply done`);
-      logger.debug(tos(result));
+      //logger.debug(tos(result));
     }),
   ])();
 

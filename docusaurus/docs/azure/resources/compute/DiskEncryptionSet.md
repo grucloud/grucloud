@@ -154,6 +154,7 @@ exports.createResources = () => [
             required: [ 'keyUrl' ],
             description: 'Key Vault Key Url to be used for server side encryption of Managed Disks and Snapshots'
           },
+          'x-ms-identifiers': [ 'sourceVault/id' ],
           description: 'A readonly collection of key vault keys previously used by this disk encryption set while a key rotation is in progress. It will be empty if there is no ongoing key rotation.'
         },
         provisioningState: {
@@ -188,6 +189,7 @@ exports.createResources = () => [
                 },
                 description: 'Api error base.'
               },
+              'x-ms-identifiers': [ 'message', 'target' ],
               description: 'The Api error details'
             },
             innererror: {
@@ -241,6 +243,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2021-12-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-08-01/disk.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-12-01/disk.json).

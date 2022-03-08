@@ -328,12 +328,18 @@ exports.ProviderGru = ({
                           plan: planPerProvider,
                           onStateChange,
                         }),
+                      tap((params) => {
+                        assert(true);
+                      }),
                       assign({
                         resultHooks: () =>
                           provider.runOnDeployed({ onStateChange }),
                       }),
+                      tap((params) => {
+                        assert(true);
+                      }),
                       assign({
-                        error: pipe([omit(["lives"]), any(get("error"))]),
+                        error: pipe([/*omit(["lives"]),*/ any(get("error"))]),
                       }),
                       tap(({ error }) => {
                         onProviderEnd({ provider, error });

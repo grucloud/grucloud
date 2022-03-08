@@ -2895,6 +2895,7 @@ exports.createResources = () => [
                         },
                         description: 'Specifies additional XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup. Contents are defined by setting name, component name, and the pass in which the content is applied.'
                       },
+                      'x-ms-identifiers': [],
                       description: 'Specifies additional base-64 encoded XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup.'
                     },
                     patchSettings: {
@@ -2948,6 +2949,7 @@ exports.createResources = () => [
                             },
                             description: 'Describes Protocol and thumbprint of Windows Remote Management listener'
                           },
+                          'x-ms-identifiers': [],
                           description: 'The list of Windows Remote Management listeners'
                         }
                       }
@@ -2979,6 +2981,7 @@ exports.createResources = () => [
                             },
                             description: 'Contains information about SSH certificate public key and the path on the Linux VM where the public key is placed.'
                           },
+                          'x-ms-identifiers': [ 'path' ],
                           description: 'The list of SSH public keys used to authenticate with linux based VMs.'
                         }
                       }
@@ -3041,11 +3044,13 @@ exports.createResources = () => [
                           },
                           description: 'Describes a single certificate reference in a Key Vault, and where the certificate should reside on the VM.'
                         },
+                        'x-ms-identifiers': [ 'certificateUrl' ],
                         description: 'The list of key vault references in SourceVault which contain certificates.'
                       }
                     },
                     description: 'Describes a set of certificates which are all in the same Key Vault.'
                   },
+                  'x-ms-identifiers': [ 'sourceVault/id' ],
                   description: 'Specifies set of certificates that should be installed onto the virtual machines in the scale set. To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).'
                 },
                 allowExtensionOperations: {
@@ -3071,7 +3076,7 @@ exports.createResources = () => [
                     sku: { type: 'string', description: 'The image SKU.' },
                     version: {
                       type: 'string',
-                      description: "Specifies the version of the platform image or marketplace image used to create the virtual machine. The allowed formats are Major.Minor.Build or 'latest'. Major, Minor, and Build are decimal numbers. Specify 'latest' to use the latest version of an image available at deploy time. Even if you use 'latest', the VM image will not automatically update after deploy time even if a new version becomes available."
+                      description: "Specifies the version of the platform image or marketplace image used to create the virtual machine. The allowed formats are Major.Minor.Build or 'latest'. Major, Minor, and Build are decimal numbers. Specify 'latest' to use the latest version of an image available at deploy time. Even if you use 'latest', the VM image will not automatically update after deploy time even if a new version becomes available. Please do not use field 'version' for gallery image deployment, gallery image should always use 'id' field for deployment, to use 'latest' version of gallery image, just set '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/images/{imageName}' in the 'id' field without version input."
                     },
                     exactVersion: {
                       type: 'string',
@@ -3319,6 +3324,7 @@ exports.createResources = () => [
                     required: [ 'lun', 'createOption' ],
                     description: 'Describes a virtual machine scale set data disk.'
                   },
+                  'x-ms-identifiers': [ 'name', 'lun' ],
                   description: 'Specifies the parameters that are used to add data disks to the virtual machines in the scale set. <br><br> For more information about disks, see [About disks and VHDs for Azure virtual machines](https://docs.microsoft.com/azure/virtual-machines/managed-disks-overview).'
                 }
               }
@@ -3670,6 +3676,7 @@ exports.createResources = () => [
                     required: [ 'packageReferenceId' ],
                     description: 'Specifies the required information to reference a compute gallery application version'
                   },
+                  'x-ms-identifiers': [ 'packageReferenceId' ],
                   description: 'Specifies the gallery applications that should be made available to the VM/VMSS'
                 }
               }

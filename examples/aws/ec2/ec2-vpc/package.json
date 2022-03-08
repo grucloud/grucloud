@@ -8,7 +8,8 @@
     "test": "mocha",
     "graph-target": "gc graph",
     "list": "gc list --graph --types-exclude EC2::NetworkInterface",
-    "gencode": "gc gencode"
+    "gencode": "gc gencode",
+    "apply": "gc apply -f"
   },
   "author": "",
   "license": "ISC",

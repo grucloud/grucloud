@@ -1280,49 +1280,44 @@ function CoreProvider({
     }) =>
     (resource) => {
       const { type } = client.spec;
-      const { name, id, cannotBeDeleted, managedByUs, managedByOther } =
-        resource;
+      const { id } = resource;
 
       assert(direction);
       logger.debug(
         `filterDestroyResources ${JSON.stringify({
-          name,
           all,
           types,
           id,
-          managedByUs,
         })}`
       );
       return switchCase([
         // Resource that cannot be deleted
-        () => cannotBeDeleted,
+        () => resource.cannotBeDeleted,
         () => {
           logger.debug(
-            `filterDestroyResources ${type}/${name}, default resource cannot be deleted`
+            `filterDestroyResources ${type}/${id}, default resource cannot be deleted`
           );
           return false;
         },
         // Delete all resources
         and([() => all, () => isEmpty(types)]),
         () => {
-          logger.debug(`filterDestroyResources ${type}/${name}, delete all`);
+          logger.debug(`filterDestroyResources ${type}/${id}, delete all`);
           return true;
         },
         // ManagedByOther, if types is specified, delete the resource regardless of managedByOther
-        () => managedByOther && isEmpty(types),
+        () => isEmpty(types) && resource.managedByOther,
         () => false,
         // Delete by id
         () => !isEmpty(idToDelete),
         () => id === idToDelete,
         // Delete by name
         () => !isEmpty(nameToDelete),
-        () => name === nameToDelete,
+        () => resource.name === nameToDelete,
         // Not our minion
-        () => !managedByUs && isEmpty(types),
+        () => isEmpty(types) && !resource.managedByUs,
         () => {
-          logger.debug(
-            `filterDestroyResources ${type}/${name}, not our minion`
-          );
+          logger.debug(`filterDestroyResources ${type}::${id}, not our minion`);
           return false;
         },
         // Delete by type

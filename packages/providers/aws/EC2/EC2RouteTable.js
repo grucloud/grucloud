@@ -63,7 +63,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
   const findName = pipe([
     switchCase([isDefault, findDefaultName, findNameInTagsOrId({ findId })]),
     tap((name) => {
-      logger.debug(`findName: ${name}`);
+      assert(name);
     }),
   ]);
 

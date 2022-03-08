@@ -151,10 +151,12 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
       tap((result) => {
         logger.debug(`getList #items ${result.length}`);
       }),
-      filter((result) => result),
+      filter(not(isEmpty)),
       when(pipe([filter(get("error")), not(isEmpty)]), (objects) => {
-        //TODO throw exception
-        throw { code: 500, errors: objects };
+        const error = new Error("get object error");
+        error.status = 500;
+        error.objects = objects;
+        throw error;
       }),
       tap((result) => {
         logger.debug(`getList result: ${tos(result)}`);

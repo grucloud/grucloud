@@ -114,6 +114,7 @@ exports.createResources = () => [
                     },
                     description: 'Represents the dedicated host unutilized capacity in terms of a specific VM size.'
                   },
+                  'x-ms-identifiers': [],
                   description: 'The unutilized capacity of the dedicated host represented in terms of each VM size that is allowed to be deployed to the dedicated host.'
                 }
               }
@@ -145,6 +146,7 @@ exports.createResources = () => [
                 },
                 description: 'Instance view status.'
               },
+              'x-ms-identifiers': [],
               description: 'The resource status information.'
             }
           },

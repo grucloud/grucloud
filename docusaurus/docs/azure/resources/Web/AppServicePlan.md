@@ -309,7 +309,8 @@ exports.createResources = () => [
                 type: 'string'
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'name' ]
         }
       }
     },

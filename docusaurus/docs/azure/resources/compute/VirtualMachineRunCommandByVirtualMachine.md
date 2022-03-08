@@ -76,6 +76,7 @@ exports.createResources = () => [
             required: [ 'name', 'value' ],
             description: 'Describes the properties of a run command parameter.'
           },
+          'x-ms-identifiers': [ 'name' ],
           description: 'The parameters used by the script.'
         },
         protectedParameters: {
@@ -94,6 +95,7 @@ exports.createResources = () => [
             required: [ 'name', 'value' ],
             description: 'Describes the properties of a run command parameter.'
           },
+          'x-ms-identifiers': [ 'name' ],
           description: 'The parameters used by the script.'
         },
         asyncExecution: {
@@ -193,6 +195,7 @@ exports.createResources = () => [
                 },
                 description: 'Instance view status.'
               },
+              'x-ms-identifiers': [],
               description: 'The resource status information.'
             }
           }

@@ -300,6 +300,7 @@ exports.createResources = () => [
                               },
                               description: 'Describes a data disk.'
                             },
+                            'x-ms-identifiers': [ 'lun' ],
                             description: 'Gets the data disks of the VM captured at the time of the restore point creation.'
                           }
                         }
@@ -341,6 +342,7 @@ exports.createResources = () => [
                               additionalUnattendContent: {
                                 type: 'array',
                                 items: [Object],
+                                'x-ms-identifiers': [],
                                 description: 'Specifies additional base-64 encoded XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup.'
                               },
                               patchSettings: {
@@ -383,6 +385,7 @@ exports.createResources = () => [
                               },
                               description: 'Describes a set of certificates which are all in the same Key Vault.'
                             },
+                            'x-ms-identifiers': [ 'sourceVault/id' ],
                             description: 'Specifies set of certificates that should be installed onto the virtual machine. To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows).'
                           },
                           allowExtensionOperations: {
@@ -552,6 +555,7 @@ exports.createResources = () => [
                           },
                           description: 'Instance view status.'
                         },
+                        'x-ms-identifiers': [],
                         description: 'The resource status information.'
                       }
                     }

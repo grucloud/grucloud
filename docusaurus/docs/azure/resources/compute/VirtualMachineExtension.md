@@ -163,6 +163,7 @@ exports.createResources = () => [
                 },
                 description: 'Instance view status.'
               },
+              'x-ms-identifiers': [],
               description: 'The resource status information.'
             },
             statuses: {
@@ -192,6 +193,7 @@ exports.createResources = () => [
                 },
                 description: 'Instance view status.'
               },
+              'x-ms-identifiers': [],
               description: 'The resource status information.'
             }
           }

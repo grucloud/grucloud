@@ -130,6 +130,7 @@ exports.createResources = () => [
                           },
                           description: 'Instance view status.'
                         },
+                        'x-ms-identifiers': [],
                         description: 'The resource status information.'
                       }
                     },
@@ -138,6 +139,7 @@ exports.createResources = () => [
                 ],
                 description: 'The instance view of a capacity reservation that includes the name of the capacity reservation. It is used for the response to the instance view of a capacity reservation group.'
               },
+              'x-ms-identifiers': [ 'name' ],
               readOnly: true,
               description: 'List of instance view of the capacity reservations under the capacity reservation group.'
             }

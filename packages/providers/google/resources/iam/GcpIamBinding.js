@@ -8,20 +8,11 @@ const {
   any,
   filter,
   tryCatch,
-  switchCase,
   not,
   assign,
-  omit,
 } = require("rubico");
 
-const {
-  find,
-  defaultsDeep,
-  isDeepEqual,
-  uniq,
-  identity,
-  callProp,
-} = require("rubico/x");
+const { find, defaultsDeep, isDeepEqual, uniq, callProp } = require("rubico/x");
 
 const { retryCallOnError } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -153,11 +144,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       (policy) =>
         retryCallOnError({
           name: `create iam binding`,
-          fn: () =>
-            axios.request(":setIamPolicy", {
-              method: "POST",
-              data: { policy },
-            }),
+          fn: () => axios.post(":setIamPolicy", { policy }),
           config,
         }),
       get("data"),
@@ -167,14 +154,10 @@ exports.GcpIamBinding = ({ spec, config }) => {
     pipe([
       () => currentBindings,
       map(
-        switchCase([
-          eq(get("role"), newBinding.role),
-          ({ role, members }) => ({
-            role,
-            members: uniq([...members, ...newBinding.members]),
-          }),
-          identity,
-        ])
+        when(eq(get("role"), newBinding.role), ({ role, members }) => ({
+          role,
+          members: uniq([...members, ...newBinding.members]),
+        }))
       ),
     ])();
 
@@ -197,11 +180,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       (policy) =>
         retryCallOnError({
           name: `update iam binding`,
-          fn: () =>
-            axios.request(":setIamPolicy", {
-              method: "POST",
-              data: { policy },
-            }),
+          fn: () => axios.post(":setIamPolicy", { policy }),
           config,
         }),
       get("data"),
@@ -210,24 +189,23 @@ exports.GcpIamBinding = ({ spec, config }) => {
       }),
     ])();
 
-  //TODO use live
-  const destroy = ({ id }) =>
+  const destroy = ({ live }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy iam binding ${id}`);
+        assert(live.role);
+        logger.debug(`destroy iam binding ${live.role}`);
       }),
       getIamPolicy,
       assign({
-        bindings: pipe([get("bindings"), filter(not(eq(get("role"), id)))]),
+        bindings: pipe([
+          get("bindings"),
+          filter(not(eq(get("role"), live.role))),
+        ]),
       }),
       (policy) =>
         retryCallOnError({
-          name: `destroy iam binding ${id}`,
-          fn: () =>
-            axios.request(":setIamPolicy", {
-              method: "POST",
-              data: { policy },
-            }),
+          name: `destroy iam binding ${live.role}`,
+          fn: () => axios.post(":setIamPolicy", { policy }),
           config,
         }),
       get("data"),

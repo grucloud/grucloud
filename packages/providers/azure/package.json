@@ -23,7 +23,7 @@
     "rubico": "^1.8.3"
   },
   "devDependencies": {
-    "azure-rest-api-specs": "https://github.com/grucloud/azure-rest-api-specs.git#1f710eec60d29db05952d493861d9dfe926fa885",
+    "azure-rest-api-specs": "https://github.com/grucloud/azure-rest-api-specs.git#81032c93f67b6ae0d414c849dfd0290160712c06",
     "dotenv": "^10.0.0",
     "dotenv-cli": "^4.1.0",
     "mocha": "^9.1.3",

@@ -362,7 +362,8 @@ Provides a **Domain** from the **DomainRegistration** group
               }
             }
           },
-          readOnly: true
+          readOnly: true,
+          'x-ms-identifiers': [ 'name' ]
         },
         consent: {
           description: 'Legal agreement consent.',

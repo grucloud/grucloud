@@ -1,10 +1,13 @@
 const assert = require("assert");
-const { get, pipe, tap } = require("rubico");
+const { get, pipe, tap, and, eq, any } = require("rubico");
+const util = require("util");
+
 const CoreClient = require("@grucloud/core/CoreClient");
+const { tos } = require("@grucloud/core/tos");
+
 const logger = require("@grucloud/core/logger")({ prefix: "GoogleClient" });
 const { createAxiosMakerGoogle } = require("./GoogleCommon");
 
-const { tos } = require("@grucloud/core/tos");
 const onResponseListDefault = () => get("items", []);
 
 const onResponseDelete = pipe([
@@ -33,28 +36,25 @@ module.exports = GoogleClient = ({
   managedByOther,
   onResponseList = onResponseListDefault,
   cannotBeDeleted = () => false,
-  //TODO rubico
-  onCreateExpectedException = (error) => {
-    logger.info(`onCreateExpectedException ${tos(error)}`);
-    return error.response?.status === 409;
-  },
-  shouldRetryOnExceptionCreate = ({ error, name }) => {
-    logger.error(`shouldRetryOnExceptionCreate ${tos({ name, error })}`);
-    const { response } = error;
-    if (!response) return false;
-    if (
-      response.status === 400 &&
-      response.data?.error?.errors?.find(
-        (error) => error.reason === "resourceNotReady"
-      )
-    ) {
-      logger.info("shouldRetryOnExceptionCreate retrying");
-      return true;
-    }
-    logger.info("shouldRetryOnException NOT retrying");
 
-    return false;
-  },
+  onCreateExpectedException = pipe([
+    tap((error) => {
+      logger.info(`onCreateExpectedException ${util.inspect(error)}`);
+    }),
+    eq(get("response.status"), 409),
+  ]),
+  shouldRetryOnExceptionCreate = pipe([
+    tap(({ error }) => {
+      logger.info(`shouldRetryOnExceptionCreate ${util.inspect(error)}`);
+    }),
+    and([
+      eq(get("error.response.status"), 400),
+      pipe([
+        get("error.response.data.error.errors"),
+        any(eq(get("reason"), "resourceNotReady")),
+      ]),
+    ]),
+  ]),
   findDependencies,
 }) => {
   assert(baseURL);

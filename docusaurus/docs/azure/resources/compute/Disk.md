@@ -246,6 +246,35 @@ exports.createResources = () => [
 
 ```
 
+### Create a managed disk with dataAccessAuthMode
+```js
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        creationData: { createOption: "Empty" },
+        diskSizeGB: 200,
+        dataAccessAuthMode: "AzureActiveDirectory",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      vault: "myVault",
+      key: "myKey",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
+
+```
+
 ### Create a managed disk and associate with disk encryption set.
 ```js
 exports.createResources = () => [
@@ -641,6 +670,12 @@ exports.createResources = () => [
             acceleratedNetwork: {
               type: 'boolean',
               description: 'True if the image from which the OS disk is created supports accelerated networking.'
+            },
+            architecture: {
+              type: 'string',
+              description: 'CPU architecture supported by an OS disk.',
+              enum: [ 'x64', 'Arm64' ],
+              'x-ms-enum': { name: 'Architecture', modelAsString: true }
             }
           }
         },
@@ -841,6 +876,7 @@ exports.createResources = () => [
                 },
                 description: 'Encryption settings for one disk volume.'
               },
+              'x-ms-identifiers': [ 'diskEncryptionKey/sourceVault/id' ],
               description: 'A collection of encryption settings, one for each disk volume.'
             },
             encryptionSettingsVersion: {
@@ -981,6 +1017,7 @@ exports.createResources = () => [
               }
             }
           },
+          'x-ms-identifiers': [ 'vmUri' ],
           description: 'Details of the list of all VMs that have the disk attached. maxShares should be set to a value greater than one for disks to allow attaching them to multiple VMs.'
         },
         networkAccessPolicy: {
@@ -1095,6 +1132,25 @@ exports.createResources = () => [
               }
             ]
           }
+        },
+        dataAccessAuthMode: {
+          type: 'string',
+          description: 'Additional authentication requirements when exporting or uploading to a disk or snapshot.',
+          enum: [ 'AzureActiveDirectory', 'None' ],
+          'x-ms-enum': {
+            name: 'DataAccessAuthMode',
+            modelAsString: true,
+            values: [
+              {
+                value: 'AzureActiveDirectory',
+                description: 'When export/upload URL is used, the system checks if the user has an identity in Azure Active Directory and has necessary permissions to export/upload the data. Please refer to aka.ms/DisksAzureADAuth.'
+              },
+              {
+                value: 'None',
+                description: 'No additional authentication would be performed when accessing export/upload URL.'
+              }
+            ]
+          }
         }
       },
       required: [ 'creationData' ],
@@ -1131,6 +1187,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2021-12-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-08-01/disk.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-12-01/disk.json).

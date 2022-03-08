@@ -175,7 +175,14 @@ exports.createResources = () => [
             },
             description: 'A feature for gallery image.'
           },
+          'x-ms-identifiers': [ 'name' ],
           description: 'A list of gallery image features.'
+        },
+        architecture: {
+          type: 'string',
+          description: 'The architecture of the image. Applicable to OS disks only.',
+          enum: [ 'x64', 'Arm64' ],
+          'x-ms-enum': { name: 'Architecture', modelAsString: true }
         }
       },
       required: [ 'osType', 'osState', 'identifier' ],
@@ -212,6 +219,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-07-01`.
+The resource version is `2021-10-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-07-01/gallery.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-10-01/gallery.json).

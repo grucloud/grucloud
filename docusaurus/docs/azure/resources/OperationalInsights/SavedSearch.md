@@ -77,6 +77,7 @@ exports.createResources = () => [
             required: [ 'name', 'value' ],
             description: 'A tag of a saved search.'
           },
+          'x-ms-identifiers': [ 'name' ],
           description: 'The tags attached to the saved search.'
         }
       },

@@ -566,6 +566,7 @@ exports.createResources = () => [
                   }
                 }
               },
+              'x-ms-identifiers': [],
               readOnly: true
             },
             contextPath: {
@@ -607,7 +608,8 @@ exports.createResources = () => [
                     type: 'string'
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'name' ]
             },
             sourceTriggers: {
               description: 'The collection of triggers based on source code repository.',
@@ -696,7 +698,8 @@ exports.createResources = () => [
                     type: 'string'
                   }
                 }
-              }
+              },
+              'x-ms-identifiers': [ 'name', 'sourceRepository/repositoryUrl' ]
             },
             baseImageTrigger: {
               description: 'The trigger based on base image dependencies.',

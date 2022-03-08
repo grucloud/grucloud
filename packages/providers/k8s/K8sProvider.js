@@ -63,7 +63,7 @@ const cannotBeDeletedDefault = ({ live, config }) =>
       () => true,
     ]),
     tap((result) => {
-      logger.debug(`cannotBeDeletedDefault ${live.metadata.name}: ${result}`);
+      //logger.debug(`cannotBeDeletedDefault ${live.metadata.name}: ${result}`);
     }),
   ])();
 

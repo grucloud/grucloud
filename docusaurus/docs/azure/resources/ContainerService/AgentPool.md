@@ -533,6 +533,34 @@ exports.createResources = () => [
 ];
 
 ```
+
+### Create Agent Pool with Dedicated Host Group
+```js
+exports.createResources = () => [
+  {
+    type: "AgentPool",
+    group: "ContainerService",
+    name: "myAgentPool",
+    properties: () => ({
+      properties: {
+        orchestratorVersion: "",
+        count: 3,
+        vmSize: "Standard_DS2_v2",
+        osType: "Linux",
+        hostGroupID:
+          "/subscriptions/subid1/resourcegroups/rg/providers/Microsoft.Compute/hostGroups/hostgroup1",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      proximityPlacementGroup: "myProximityPlacementGroup",
+      capacityReservationGroup: "myCapacityReservationGroup",
+      resource: "myManagedCluster",
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
@@ -1145,6 +1173,11 @@ exports.createResources = () => [
             capacityReservationGroupID: {
               description: 'AKS will associate the specified agent pool with the Capacity Reservation Group.',
               type: 'string'
+            },
+            hostGroupID: {
+              type: 'string',
+              title: 'The fully qualified resource ID of the Dedicated Host Group to provision virtual machines from, used only in creation scenario and not allowed to changed once set.',
+              description: 'This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}. For more information see [Azure dedicated hosts](https://docs.microsoft.com/azure/virtual-machines/dedicated-hosts).'
             }
           },
           description: 'Properties for the container service agent pool profile.',
@@ -1157,6 +1190,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01-preview`.
+The resource version is `2022-01-02-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2021-11-01-preview/managedClusters.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-01-02-preview/managedClusters.json).

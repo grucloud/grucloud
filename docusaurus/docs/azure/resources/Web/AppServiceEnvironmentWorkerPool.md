@@ -144,7 +144,8 @@ Provides a **AppServiceEnvironmentWorkerPool** from the **Web** group
                 type: 'string'
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'name' ]
         }
       }
     }

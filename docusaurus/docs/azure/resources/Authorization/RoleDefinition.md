@@ -74,6 +74,7 @@ exports.createResources = () => [
             type: 'object',
             description: 'Role definition permissions.'
           },
+          'x-ms-identifiers': [],
           description: 'Role definition permissions.'
         },
         assignableScopes: {

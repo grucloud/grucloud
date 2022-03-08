@@ -71,7 +71,8 @@ Provides a **WebAppMSDeployStatusSlot** from the **Web** group
                 type: 'boolean'
               }
             }
-          }
+          },
+          'x-ms-identifiers': [ 'packageUri' ]
         }
       },
       'x-ms-client-flatten': true
