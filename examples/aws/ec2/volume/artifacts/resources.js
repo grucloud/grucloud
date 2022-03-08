@@ -14,6 +14,18 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "VolumeAttachment",
+    group: "EC2",
+    properties: ({}) => ({
+      Device: "/dev/sdf",
+      DeleteOnTermination: false,
+    }),
+    dependencies: () => ({
+      volume: "volume-test-volume",
+      instance: "server-4-test-volume",
+    }),
+  },
+  {
     type: "Instance",
     group: "EC2",
     name: "server-4-test-volume",
@@ -23,9 +35,6 @@ exports.createResources = () => [
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
-    }),
-    dependencies: () => ({
-      volumes: ["volume-test-volume"],
     }),
   },
 ];

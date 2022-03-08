@@ -57,6 +57,7 @@ const {
 } = require("./AwsSecurityGroupRule");
 const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
+const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { AwsNetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 const { AwsImage } = require("./AwsImage");
@@ -119,26 +120,6 @@ const ec2InstanceDependencies = {
     group: "EC2",
     list: true,
   },
-  volumes: {
-    type: "Volume",
-    group: "EC2",
-    list: true,
-    filterDependency:
-      ({ resource }) =>
-      (dependency) =>
-        pipe([
-          tap(() => {
-            assert(resource);
-            assert(resource.live);
-            assert(dependency);
-            assert(dependency.live);
-          }),
-          () => dependency,
-          get("live.Attachments"),
-          pluck("Device"),
-          not(includes(resource.live.RootDeviceName)),
-        ])(),
-  },
 };
 
 const buildAvailabilityZone = pipe([
@@ -176,7 +157,9 @@ module.exports = () =>
     {
       type: "Volume",
       Client: AwsVolume,
-      dependsOnList: ["EC2::Instance"],
+      dependencies: {
+        instance: { type: "Instance", group: "EC2", parent: true },
+      },
       isOurMinion,
       setupEbsVolume,
       compare: compareAws({
@@ -233,6 +216,27 @@ module.exports = () =>
               ]),
             ]),
           ])(),
+    },
+    {
+      type: "VolumeAttachment",
+      Client: EC2VolumeAttachment,
+      dependencies: {
+        volume: { type: "Volume", group: "EC2", parent: true },
+        instance: { type: "Instance", group: "EC2", parent: true },
+      },
+      isOurMinion: () => true,
+      compare: compareAws({ filterAll: pipe([pick([])]) }),
+      inferName: ({ properties, dependencies }) =>
+        pipe([
+          dependencies,
+          tap(({ volume, instance }) => {
+            assert(volume);
+            assert(instance);
+          }),
+          ({ volume, instance }) =>
+            `vol-attachment::${volume.name}::${instance.name}`,
+        ])(),
+      filterLive: () => pipe([pick(["Device", "DeleteOnTermination"])]),
     },
     {
       type: "Vpc",
