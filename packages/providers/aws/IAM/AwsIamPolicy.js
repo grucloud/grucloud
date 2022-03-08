@@ -203,11 +203,8 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const create = client.create({
     method: "createPolicy",
     filterPayload,
-    pickCreated:
-      ({ payload }) =>
-      () =>
-        payload,
-    //TODO getById
+    pickCreated: () => get("Policy"),
+    getById,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicyVersion-property
@@ -324,11 +321,19 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     ignoreErrorCodes: ["NoSuchEntity"],
   });
 
-  const configDefault = async ({ name, namespace, properties, dependencies }) =>
-    defaultsDeep({
-      PolicyName: name,
-      Tags: buildTags({ name, namespace, config }),
-    })(properties);
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        PolicyName: name,
+        Tags: buildTags({ name, namespace, config, UserTags: Tags }),
+      }),
+    ])();
 
   const cannotBeDeleted = ({ live }) =>
     pipe([
