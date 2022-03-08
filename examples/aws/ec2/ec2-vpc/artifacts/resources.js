@@ -15,6 +15,18 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "VolumeAttachment",
+    group: "EC2",
+    properties: ({}) => ({
+      Device: "/dev/sdf",
+      DeleteOnTermination: false,
+    }),
+    dependencies: () => ({
+      volume: "volume",
+      instance: "web-server-ec2-vpc",
+    }),
+  },
+  {
     type: "Vpc",
     group: "EC2",
     name: "vpc-ec2-example",
@@ -149,7 +161,6 @@ exports.createResources = () => [
       keyPair: "kp-ec2-vpc",
       eip: "myip",
       securityGroups: ["security-group"],
-      volumes: ["volume"],
     }),
   },
 ];

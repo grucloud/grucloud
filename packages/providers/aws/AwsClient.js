@@ -200,7 +200,7 @@ exports.AwsClient =
           tap((parents) => {
             logger.info(`getListWithParent ${type} #parents: ${size(parents)}`);
           }),
-          flatMap(({ live, name }) =>
+          flatMap(({ live, name, managedByOther }) =>
             pipe([
               () => live,
               switchCase([
@@ -221,7 +221,7 @@ exports.AwsClient =
                   }),
                   when(pipe([first, Array.isArray]), flatten),
                 ]),
-                pipe([decorate({ name, parent: live, lives })]),
+                pipe([decorate({ name, managedByOther, parent: live, lives })]),
               ]),
               tap((params) => {
                 assert(true);
@@ -250,7 +250,14 @@ exports.AwsClient =
         isExpectedException = () => false,
         postCreate = () => identity,
       }) =>
-      ({ name, payload, programOptions, resolvedDependencies }) =>
+      ({
+        name,
+        payload,
+        programOptions,
+        resolvedDependencies,
+        dependencies,
+        lives,
+      }) =>
         pipe([
           tap(() => {
             logger.info(`create ${type}, ${name}`);
@@ -311,6 +318,8 @@ exports.AwsClient =
                 created,
                 programOptions,
                 resolvedDependencies,
+                dependencies,
+                lives,
               }),
               tap(() => {
                 logger.info(`created ${type}, ${name}`);

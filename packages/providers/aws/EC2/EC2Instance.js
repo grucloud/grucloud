@@ -249,8 +249,8 @@ exports.EC2Instance = ({ spec, config }) => {
       () => [StateTerminated, StateStopped],
       includes(getStateName(instance)),
     ])();
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
   const decorate = pipe([
     assign({
       UserData: pipe([
@@ -286,42 +286,6 @@ exports.EC2Instance = ({ spec, config }) => {
 
   const isUpById = pipe([getById, isInstanceUp]);
   const isDownById = pipe([getById, isInstanceDown]);
-
-  const volumesAttach = ({ InstanceId, volumes = [] }) =>
-    pipe([
-      () => volumes,
-      tap(() => {
-        logger.debug(
-          `volumesAttach InstanceId: ${InstanceId}, #volumes: ${size(volumes)}`
-        );
-      }),
-      map((volume) =>
-        tryCatch(
-          () =>
-            ec2().attachVolume({
-              Device: volume.config.Device,
-              InstanceId,
-              VolumeId: volume.live.VolumeId,
-            }),
-          pipe([
-            (error) => convertError({ error }),
-            tap((error) => {
-              logger.error(
-                `error attaching volume ${volume}, error: ${tos(error)}`
-              );
-            }),
-            (error) => ({ error, volume }),
-          ])
-        )()
-      ),
-      filter(get("error")),
-      tap.if(not(isEmpty), (errors) => {
-        throw Error(`cannot attach volume: ${tos(errors)}`);
-      }),
-      tap(() => {
-        logger.debug(`volumes attached InstanceId: ${InstanceId}`);
-      }),
-    ])();
 
   const associateAddress = ({ InstanceId, eip }) =>
     pipe([
@@ -446,7 +410,6 @@ exports.EC2Instance = ({ spec, config }) => {
           tap(() => {
             assert(InstanceId);
           }),
-          tap(() => volumesAttach({ InstanceId, volumes })),
           tap.if(
             () => eip,
             () => associateAddress({ InstanceId, eip })
@@ -482,54 +445,8 @@ exports.EC2Instance = ({ spec, config }) => {
       ),
     ]);
 
-  const volumesDetach = ({ InstanceId }) =>
-    pipe([
-      tap(() => {
-        assert(InstanceId);
-      }),
-      () => ({
-        Filters: [
-          {
-            Name: "attachment.instance-id",
-            Values: [InstanceId],
-          },
-          {
-            Name: "tag-key",
-            Values: [config.managedByKey],
-          },
-        ],
-      }),
-      ec2().describeVolumes,
-      get("Volumes"),
-      tap((volumes) => {
-        logger.info(`destroy ec2, detachVolume #volumes: ${size(volumes)}`);
-      }),
-      map(
-        tryCatch(
-          ({ VolumeId }) => ec2().detachVolume({ VolumeId }),
-          (error, volume) =>
-            pipe([
-              tap(() => {
-                logger.error(
-                  `error detaching volume ${volume}, error: ${JSON.stringify(
-                    error
-                  )}`
-                );
-              }),
-              () => ({ error, volume }),
-            ])()
-        )
-      ),
-      tap((result) => {
-        logger.info(`destroy ec2 volumes detached`);
-      }),
-    ]);
-
   const destroy = client.destroy({
-    preDestroy: pipe([
-      get("live"),
-      fork({ address: disassociateAddress, volume: volumesDetach }),
-    ]),
+    preDestroy: pipe([get("live"), fork({ address: disassociateAddress })]),
     pickId: ({ InstanceId }) => ({ InstanceIds: [InstanceId] }),
     method: "terminateInstances",
     getById,
