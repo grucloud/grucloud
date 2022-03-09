@@ -43,7 +43,6 @@ const {
   createAPIGateway,
   diffToPatch,
   ignoreErrorCodes,
-  updateTagsApiGateway,
   tagResource,
   untagResource,
 } = require("./ApiGatewayCommon");

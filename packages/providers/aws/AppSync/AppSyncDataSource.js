@@ -9,6 +9,8 @@ const {
   createAppSync,
   findDependenciesGraphqlApi,
   ignoreErrorCodes,
+  tagResource,
+  untagResource,
 } = require("./AppSyncCommon");
 
 const findId = get("live.dataSourceArn");
@@ -203,5 +205,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ appSync }),
+    untagResource: untagResource({ appSync }),
   };
 };

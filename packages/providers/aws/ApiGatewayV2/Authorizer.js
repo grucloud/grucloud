@@ -37,7 +37,7 @@ exports.Authorizer = ({ spec, config }) => {
     getParam: "Items",
     config,
     decorate: ({ parent: { ApiId, Name: ApiName, Tags } }) =>
-      pipe([defaultsDeep({ ApiId, ApiName, Tags })]),
+      pipe([defaultsDeep({ ApiId, ApiName /*, Tags*/ })]),
   });
 
   // Get Authorizer by name

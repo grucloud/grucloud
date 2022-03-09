@@ -18,7 +18,11 @@ const {
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { createAutoScaling } = require("./AutoScalingCommon");
+const {
+  createAutoScaling,
+  tagResource,
+  untagResource,
+} = require("./AutoScalingCommon");
 
 const findId = get("live.AutoScalingGroupARN");
 const pickId = pipe([
@@ -243,5 +247,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     getList,
     configDefault,
     managedByOther,
+    tagResource: tagResource({ autoScaling }),
+    untagResource: untagResource({ autoScaling }),
   };
 };

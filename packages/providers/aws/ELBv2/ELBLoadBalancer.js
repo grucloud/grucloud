@@ -17,7 +17,7 @@ const {
   hasKeyInTags,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createELB } = require("./ELBCommon");
+const { createELB, tagResource, untagResource } = require("./ELBCommon");
 
 const findName = get("live.LoadBalancerName");
 const findId = get("live.LoadBalancerArn");
@@ -108,7 +108,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { subnets, securityGroups },
   }) =>
     pipe([
@@ -116,12 +116,12 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
         assert(Array.isArray(subnets));
         assert(Array.isArray(securityGroups));
       }),
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         Name: name,
         Type: "application",
         Scheme: "internet-facing",
-        Tags: buildTags({ name, config, namespace, UserTags: properties.Tags }),
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         Subnets: map((subnet) => getField(subnet, "SubnetId"))(subnets),
         SecurityGroups: map((securityGroup) =>
           getField(securityGroup, "GroupId")
@@ -160,5 +160,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     getList,
     configDefault,
     managedByOther,
+    tagResource: tagResource({ elb }),
+    untagResource: untagResource({ elb }),
   };
 };

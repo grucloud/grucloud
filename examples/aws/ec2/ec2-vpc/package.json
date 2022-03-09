@@ -5,11 +5,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "graph-target": "gc graph",
-    "list": "gc list --graph --types-exclude EC2::NetworkInterface",
+    "tree": "gc tree",
+    "graph": "gc graph",
     "gencode": "gc gencode",
-    "apply": "gc apply -f"
+    "list": "gc list",
+    "list-graph": "gc list -g",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "onDeployed": "gc run --onDeployed",
+    "onDestroyed": "gc run --onDestroyed",
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",

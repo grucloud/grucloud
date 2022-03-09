@@ -6,7 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
-const { createRDS } = require("./RDSCommon");
+const { createRDS, tagResource, untagResource } = require("./RDSCommon");
 
 const findId = get("live.DBInstanceIdentifier");
 const pickId = pipe([
@@ -124,5 +124,7 @@ exports.DBInstance = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    tagResource: tagResource({ rds }),
+    untagResource: untagResource({ rds }),
   };
 };

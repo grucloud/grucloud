@@ -19,7 +19,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsImage" });
 const { tos } = require("@grucloud/core/tos");
 const { findNameInTagsOrId, getByIdCore, buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2, updateTags } = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 exports.AwsImage = ({ spec, config }) => {
   const ec2 = createEC2(config);
@@ -105,6 +105,7 @@ exports.AwsImage = ({ spec, config }) => {
     getList,
     configDefault,
     cannotBeDeleted: () => true,
-    updateTags: updateTags({ ec2 }),
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };

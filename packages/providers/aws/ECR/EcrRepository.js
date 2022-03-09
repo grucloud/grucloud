@@ -5,7 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const { throwIfNotAwsError, buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createECR } = require("./ECRCommon");
+const { createECR, tagResource, untagResource } = require("./ECRCommon");
 
 const findName = get("live.repositoryName");
 const findId = get("live.repositoryArn");
@@ -160,5 +160,7 @@ exports.EcrRepository = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ ecr }),
+    untagResource: untagResource({ ecr }),
   };
 };

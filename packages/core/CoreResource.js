@@ -651,12 +651,8 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const update = ({ payload, diff, live, resolvedDependencies }) =>
+  const updateTags = ({ diff, live }) =>
     pipe([
-      () => getLive(),
-      tap.if(isEmpty, () => {
-        throw Error(`Resource ${toString()} does not exist`);
-      }),
       tap((params) => {
         assert(true);
       }),
@@ -665,14 +661,43 @@ exports.ResourceMaker = ({
         pipe([
           getClient,
           tap((client) => {
-            assert(client.updateTags, "missing client.updateTags");
+            assert(
+              client.tagResource,
+              `missing client.tagResource ${client.spec.groupType}`
+            );
+            assert(
+              client.untagResource,
+              `missing client.untagResource ${client.spec.groupType}`
+            );
           }),
-          (client) => client.updateTags({ diff, id: client.findId({ live }) }),
-          tap((params) => {
-            assert(true);
-          }),
+          (client) =>
+            pipe([
+              () => client.findId({ live }),
+              (id) =>
+                pipe([
+                  //Tag
+                  () => diff,
+                  get("tags.targetTags"),
+                  client.tagResource({ live: diff.liveIn, id }),
+                  //Untag
+                  () => diff,
+                  get("tags.removedKeys"),
+                  unless(
+                    isEmpty,
+                    pipe([client.untagResource({ live: diff.liveIn, id })])
+                  ),
+                ])(),
+            ])(),
         ])
       ),
+    ]);
+
+  const update = ({ payload, diff, live, resolvedDependencies }) =>
+    pipe([
+      () => getLive(),
+      tap.if(isEmpty, () => {
+        throw Error(`Resource ${toString()} does not exist`);
+      }),
       tap.if(
         () => diff.hasDataDiff,
         pipe([
@@ -719,6 +744,7 @@ exports.ResourceMaker = ({
           }),
         ])
       ),
+      updateTags({ diff, live }),
     ])();
 
   const planUpsert = ({ resource, lives }) =>

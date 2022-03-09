@@ -9,6 +9,8 @@ const {
   createAppSync,
   findDependenciesGraphqlApi,
   ignoreErrorCodes,
+  tagResource,
+  untagResource,
 } = require("./AppSyncCommon");
 
 const findId = get("live.resolverArn");
@@ -134,5 +136,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ appSync }),
+    untagResource: untagResource({ appSync }),
   };
 };

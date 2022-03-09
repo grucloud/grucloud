@@ -5,11 +5,17 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
-    "graph-target": "gc graph --title 'EKS Load Balancer'",
-    "list": "gc list --graph --title 'EKS Balancer' --default-exclude -e Key",
-    "test": "mocha",
+    "tree": "gc tree",
+    "graph": "gc graph",
+    "gencode": "gc gencode",
+    "list": "gc list",
+    "list-graph": "gc list -g",
     "plan": "gc plan",
-    "gencode": "gc gencode"
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "onDeployed": "gc run --onDeployed",
+    "onDestroyed": "gc run --onDestroyed",
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",

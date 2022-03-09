@@ -5,7 +5,7 @@ const { defaultsDeep, pluck } = require("rubico/x");
 const { buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createRDS } = require("./RDSCommon");
+const { createRDS, tagResource, untagResource } = require("./RDSCommon");
 
 const findId = get("live.DBSubnetGroupName");
 const findName = findId;
@@ -111,5 +111,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    tagResource: tagResource({ rds }),
+    untagResource: untagResource({ rds }),
   };
 };

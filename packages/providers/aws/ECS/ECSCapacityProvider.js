@@ -7,7 +7,12 @@ const {
   AutoScalingAutoScalingGroup,
 } = require("../Autoscaling/AutoScalingAutoScalingGroup");
 const { AwsClient } = require("../AwsClient");
-const { createECS, buildTagsEcs } = require("./ECSCommon");
+const {
+  createECS,
+  buildTagsEcs,
+  tagResource,
+  untagResource,
+} = require("./ECSCommon");
 const findId = get("live.capacityProviderArn");
 const findName = get("live.name");
 const pickId = pick(["capacityProviderArn"]);
@@ -45,7 +50,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeCapacityProviders-property
   const getList = client.getList({
-    extraParams: { include: ["TAGS"] },
+    extraParam: { include: ["TAGS"] },
     method: "describeCapacityProviders",
     getParam: "capacityProviders",
   });
@@ -54,7 +59,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { autoScalingGroup },
   }) =>
     pipe([
@@ -73,8 +78,11 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
           name,
           config,
           namespace,
-          Tags,
+          tags,
         }),
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 
@@ -145,5 +153,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     cannotBeDeleted,
     managedByOther: cannotBeDeleted,
     isDefault: cannotBeDeleted,
+    tagResource: tagResource({ ecs }),
+    untagResource: untagResource({ ecs }),
   };
 };

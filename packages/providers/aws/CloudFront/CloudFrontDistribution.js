@@ -39,7 +39,11 @@ const {
   getNewCallerReference,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createCloudFront } = require("./CloudFrontCommon");
+const {
+  createCloudFront,
+  tagResource,
+  untagResource,
+} = require("./CloudFrontCommon");
 
 const ignoreErrorCodes = ["NoSuchDistribution"];
 //TODO look in spec.type instead
@@ -346,6 +350,8 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     getList,
     configDefault,
     onDeployed,
+    tagResource: tagResource({ cloudFront }),
+    untagResource: untagResource({ cloudFront }),
   };
 };
 

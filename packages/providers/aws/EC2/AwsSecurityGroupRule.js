@@ -39,7 +39,7 @@ const { findValueInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags, findNameInTags, findEksCluster } = require("../AwsCommon");
 //const { AwsClient } = require("../AwsClient");
-const { createEC2, updateTags } = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 const findProperty = (property) =>
   pipe([

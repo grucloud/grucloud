@@ -23,7 +23,7 @@ const { buildTags } = require("../AwsCommon");
 const { configProviderDefault } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
-const { createKMS } = require("./KMSCommon");
+const { createKMS, tagResource, untagResource } = require("./KMSCommon");
 
 const findId = get("live.Arn");
 const pickId = pick(["KeyId"]);
@@ -245,5 +245,7 @@ exports.KmsKey = ({ spec, config }) => {
     cannotBeDeleted,
     isDefault,
     managedByOther: isDefault,
+    tagResource: tagResource({ kms }),
+    untagResource: untagResource({ kms }),
   };
 };

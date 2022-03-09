@@ -20,7 +20,7 @@ const findId = get("live.RuleArn");
 const pickId = pick(["RuleArn"]);
 
 const { AwsClient } = require("../AwsClient");
-const { createELB } = require("./ELBCommon");
+const { createELB, tagResource, untagResource } = require("./ELBCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 exports.ELBRule = ({ spec, config }) => {
@@ -219,7 +219,7 @@ exports.ELBRule = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { listener, targetGroup },
   }) =>
     pipe([
@@ -228,10 +228,10 @@ exports.ELBRule = ({ spec, config }) => {
       }),
       () => ({}),
       defaultsDeep(targetGroupProperties({ targetGroup })),
-      defaultsDeep(properties),
+      defaultsDeep(otherProps),
       defaultsDeep({
         ListenerArn: getField(listener, "ListenerArn"),
-        Tags: buildTags({ name, namespace, config }),
+        Tags: buildTags({ name, namespace, config, UserTags: Tags }),
       }),
     ])();
 
@@ -251,5 +251,7 @@ exports.ELBRule = ({ spec, config }) => {
     isDefault,
     cannotBeDeleted,
     managedByOther,
+    tagResource: tagResource({ elb }),
+    untagResource: untagResource({ elb }),
   };
 };

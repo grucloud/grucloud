@@ -24,7 +24,7 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { throwIfNotAwsError, compareAws } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createLambda } = require("./LambdaCommon");
+const { createLambda, tagResource, untagResource } = require("./LambdaCommon");
 
 const compareLambda = compareAws({});
 const findId = get("live.Configuration.FunctionArn");
@@ -230,6 +230,8 @@ exports.Function = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    tagResource: tagResource({ lambda }),
+    untagResource: untagResource({ lambda }),
   };
 };
 

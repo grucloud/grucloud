@@ -7,7 +7,7 @@ const { isOurMinionFactory } = require("../AwsCommon");
 const { KmsKey } = require("./KmsKey");
 
 const GROUP = "KMS";
-const compareEKS = compareAws({});
+const compareEKS = compareAws({ key: "TagKey" });
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([

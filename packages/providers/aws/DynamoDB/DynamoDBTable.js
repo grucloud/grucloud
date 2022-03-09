@@ -4,7 +4,12 @@ const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createDynamoDB, ignoreErrorCodes } = require("./DynamoDBCommon");
+const {
+  createDynamoDB,
+  ignoreErrorCodes,
+  tagResource,
+  untagResource,
+} = require("./DynamoDBCommon");
 const findName = get("live.TableName");
 const findId = get("live.TableArn");
 const pickId = pick(["TableName"]);
@@ -117,5 +122,7 @@ exports.DynamoDBTable = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ dynamoDB }),
+    untagResource: untagResource({ dynamoDB }),
   };
 };

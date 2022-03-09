@@ -1,5 +1,4 @@
 const { pipe, get } = require("rubico");
-const { unless, isEmpty } = require("rubico/x");
 const { IAM } = require("@aws-sdk/client-iam");
 const { createEndpoint } = require("../AwsCommon");
 
@@ -8,12 +7,10 @@ exports.createIAM = createEndpoint(IAM);
 exports.tagResourceIam =
   ({ field, method }) =>
   ({ iam }) =>
-  ({ diff }) =>
+  ({ live }) =>
     pipe([
-      () => diff,
-      get("tags.targetTags"),
       (Tags) => ({
-        [field]: diff.liveIn[field],
+        [field]: live[field],
         Tags,
       }),
       iam()[method],
@@ -23,18 +20,11 @@ exports.tagResourceIam =
 exports.untagResourceIam =
   ({ field, method }) =>
   ({ iam }) =>
-  ({ diff }) =>
+  ({ live }) =>
     pipe([
-      () => diff,
-      get("tags.removedKeys"),
-      unless(
-        isEmpty,
-        pipe([
-          (TagKeys) => ({
-            [field]: diff.liveIn[field],
-            TagKeys,
-          }),
-          iam()[method],
-        ])
-      ),
+      (TagKeys) => ({
+        [field]: live[field],
+        TagKeys,
+      }),
+      iam()[method],
     ]);

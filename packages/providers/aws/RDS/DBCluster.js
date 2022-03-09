@@ -6,7 +6,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createRDS } = require("./RDSCommon");
+const { createRDS, tagResource, untagResource } = require("./RDSCommon");
 
 const ignoreErrorCodes = ["DBClusterNotFoundFault"];
 
@@ -118,5 +118,7 @@ exports.DBCluster = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    tagResource: tagResource({ rds }),
+    untagResource: untagResource({ rds }),
   };
 };

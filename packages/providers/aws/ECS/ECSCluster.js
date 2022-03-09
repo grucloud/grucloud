@@ -25,7 +25,12 @@ const {
   AutoScalingAutoScalingGroup,
 } = require("../Autoscaling/AutoScalingAutoScalingGroup");
 const { AwsClient } = require("../AwsClient");
-const { createECS, buildTagsEcs } = require("./ECSCommon");
+const {
+  createECS,
+  buildTagsEcs,
+  tagResource,
+  untagResource,
+} = require("./ECSCommon");
 
 const findName = get("live.clusterName");
 const findId = get("live.clusterArn");
@@ -235,5 +240,7 @@ exports.ECSCluster = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ ecs }),
+    untagResource: untagResource({ ecs }),
   };
 };

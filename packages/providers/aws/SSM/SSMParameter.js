@@ -5,12 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const { buildTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
-const {
-  createSSM,
-  updateTagsSSM,
-  tagResource,
-  untagResource,
-} = require("./SSMCommon");
+const { createSSM, tagResource, untagResource } = require("./SSMCommon");
 
 const ignoreErrorCodes = ["ParameterNotFound"];
 

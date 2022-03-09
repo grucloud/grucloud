@@ -14,7 +14,12 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createAppRunner, ignoreErrorCodes } = require("./AppRunnerCommon");
+const {
+  createAppRunner,
+  ignoreErrorCodes,
+  tagResource,
+  untagResource,
+} = require("./AppRunnerCommon");
 
 const findName = get("live.ServiceName");
 const findId = get("live.ServiceArn");
@@ -160,5 +165,7 @@ exports.AppRunnerService = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ appRunner }),
+    untagResource: untagResource({ appRunner }),
   };
 };

@@ -16,6 +16,8 @@ const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
 const {
   createCloudWatchLogs,
   ignoreErrorCodes,
+  tagResource,
+  untagResource,
 } = require("./CloudWatchLogsCommon");
 
 const findId = pipe([get("live.arn"), callProp("replace", ":*", "")]);
@@ -120,13 +122,21 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
-  const configDefault = ({ name, namespace, properties, dependencies: {} }) =>
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { tags, ...otherProps },
+    dependencies: {},
+  }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         logGroupName: name,
-        tags: buildTagsObject({ config, namespace, name }),
+        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
         // TODO kmsKeyId
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 
@@ -144,5 +154,7 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
     findDependencies,
     cannotBeDeleted,
     managedByOther: cannotBeDeleted,
+    tagResource: tagResource({ cloudWatchLogs }),
+    untagResource: untagResource({ cloudWatchLogs }),
   };
 };

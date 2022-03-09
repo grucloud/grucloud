@@ -10,7 +10,12 @@ const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { findNamespaceInTagsObject } = require("../AwsCommon");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEKS, waitForUpdate } = require("./EKSCommon");
+const {
+  createEKS,
+  waitForUpdate,
+  tagResource,
+  untagResource,
+} = require("./EKSCommon");
 const findName = get("live.nodegroupName");
 const findId = findName;
 const pickId = pick(["nodegroupName", "clusterName"]);
@@ -200,5 +205,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ eks }),
+    untagResource: untagResource({ eks }),
   };
 };

@@ -18,7 +18,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "EcrRegistry" });
 const { AwsClient } = require("../AwsClient");
 const { throwIfNotAwsError } = require("../AwsCommon");
 
-const { createECR } = require("./ECRCommon");
+const { createECR, tagResource, untagResource } = require("./ECRCommon");
 
 const findName = () => "default";
 const findId = get("live.registryId");
@@ -193,5 +193,7 @@ exports.EcrRegistry = ({ spec, config }) => {
     getList,
     configDefault,
     cannotBeDeleted: () => true,
+    tagResource: tagResource({ ecr }),
+    untagResource: untagResource({ ecr }),
   };
 };

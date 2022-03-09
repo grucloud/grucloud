@@ -5,6 +5,9 @@ exports.createResources = () => [
     name: "my-loggroup",
     properties: () => ({
       retentionInDays: 7,
+      tags: {
+        mytag1: "myvalue",
+      },
     }),
   },
 ];

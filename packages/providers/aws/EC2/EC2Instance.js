@@ -31,11 +31,7 @@ const { AwsClient } = require("../AwsClient");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsEc2" });
-const {
-  getByNameCore,
-  convertError,
-  compare,
-} = require("@grucloud/core/Common");
+const { getByNameCore, compare } = require("@grucloud/core/Common");
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
@@ -49,7 +45,12 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags } = require("../AwsCommon");
-const { createEC2, updateTags, findDependenciesVpc } = require("./EC2Common");
+const {
+  createEC2,
+  tagResource,
+  untagResource,
+  findDependenciesVpc,
+} = require("./EC2Common");
 
 const ignoreErrorCodes = ["InvalidInstanceID.NotFound"];
 
@@ -466,6 +467,8 @@ exports.EC2Instance = ({ spec, config }) => {
     getList,
     configDefault: configDefault({ config }),
     managedByOther,
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };
 

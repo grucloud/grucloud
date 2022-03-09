@@ -28,13 +28,8 @@ module.exports = () =>
       Client: CloudWatchEventRule,
       isOurMinion,
       compare: compareCloudWatchEvent({
-        filterTarget: () =>
-          pipe([
-            defaultsDeep({ EventBusName: "default" }),
-            filterTargetDefault,
-          ]),
-        filterLive: () =>
-          pipe([omit(["Arn", "CreatedBy", "Targets"]), filterLiveDefault]),
+        filterTarget: () => pipe([defaultsDeep({ EventBusName: "default" })]),
+        filterLive: () => pipe([omit(["Arn", "CreatedBy", "Targets"])]),
       }),
       filterLive: () =>
         pipe([omit(["Name", "Arn", "EventBusName"]), omitIfEmpty(["Targets"])]),

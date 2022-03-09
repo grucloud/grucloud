@@ -1,8 +1,5 @@
 ## Bugs
 
--inferName OpenIDConnectProvider
-
-- example vpc-use still using make and use
 - check stage for all providers
 
 ## Common:
@@ -89,10 +86,9 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Aws
 
+- inferName OpenIDConnectProvider
+- example vpc-use still using make and use
 - propertiesDefault instead of defaultsDeep
-- aws user tags for all resources
-- compare refactor
-- compare Tags
 - RDS DBCluster AvailabilityZones
 - ECR.makeRegistry delete
 - inferName for SecurityGroup, and Route Table

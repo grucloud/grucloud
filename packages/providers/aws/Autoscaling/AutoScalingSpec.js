@@ -9,6 +9,7 @@ const {
   get,
   omit,
   pick,
+  eq,
 } = require("rubico");
 const { includes } = require("rubico/x");
 const { compareAws, isOurMinion, DecodeUserData } = require("../AwsCommon");
@@ -24,7 +25,19 @@ const {
 
 const { AutoScalingAttachment } = require("./AutoScalingAttachment");
 
-const compareAutoScaling = compareAws({});
+const compareAutoScaling = compareAws({
+  getLiveTags: pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("Tags", []),
+    filter(not(eq(get("Key"), "AmazonECSManaged"))),
+    map(pick(["Key", "Value"])),
+    tap((params) => {
+      assert(true);
+    }),
+  ]),
+});
 
 const GROUP = "AutoScaling";
 

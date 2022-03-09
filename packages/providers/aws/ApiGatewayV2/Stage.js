@@ -9,6 +9,8 @@ const {
   createApiGatewayV2,
   findDependenciesApi,
   ignoreErrorCodes,
+  tagResource,
+  untagResource,
 } = require("./ApiGatewayCommon");
 
 const findId = get("live.StageName");
@@ -43,7 +45,13 @@ exports.Stage = ({ spec, config }) => {
     method: "getStages",
     getParam: "Items",
     config,
-    decorate: ({ parent: { ApiId } }) => pipe([defaultsDeep({ ApiId })]),
+    decorate: ({ parent: { ApiId } }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        defaultsDeep({ ApiId }),
+      ]),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -89,6 +97,9 @@ exports.Stage = ({ spec, config }) => {
         ApiId: getField(api, "ApiId"),
         Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
       }),
+      tap((params) => {
+        assert(true);
+      }),
       when(
         () => logGroup,
         defaultsDeep({
@@ -100,6 +111,9 @@ exports.Stage = ({ spec, config }) => {
         })
       ),
     ])();
+
+  const buildResourceArn = ({ apiId, stageName }) =>
+    `arn:aws:apigateway:${config.region}::/apis/${apiId}/stages/${stageName}`;
 
   return {
     spec,
@@ -113,5 +127,7 @@ exports.Stage = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    tagResource: tagResource({ apiGateway, buildResourceArn }),
+    untagResource: untagResource({ apiGateway, buildResourceArn }),
   };
 };

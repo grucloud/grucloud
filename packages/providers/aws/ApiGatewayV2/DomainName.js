@@ -9,7 +9,12 @@ const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
+const {
+  createApiGatewayV2,
+  ignoreErrorCodes,
+  tagResource,
+  untagResource,
+} = require("./ApiGatewayCommon");
 
 const findId = get("live.DomainName");
 const findName = get("live.DomainName");

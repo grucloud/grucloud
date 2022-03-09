@@ -6,7 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createLambda } = require("./LambdaCommon");
+const { createLambda, tagResource, untagResource } = require("./LambdaCommon");
 
 const findId = get("live.UUID");
 const pickId = pipe([
@@ -161,5 +161,7 @@ exports.EventSourceMapping = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    tagResource: tagResource({ lambda }),
+    untagResource: untagResource({ lambda }),
   };
 };

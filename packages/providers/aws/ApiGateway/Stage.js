@@ -9,7 +9,6 @@ const {
   createAPIGateway,
   findDependenciesRestApi,
   ignoreErrorCodes,
-  updateTagsApiGateway,
   tagResource,
   untagResource,
 } = require("./ApiGatewayCommon");
@@ -158,9 +157,6 @@ exports.Stage = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    updateTags: updateTagsApiGateway({
-      apiGateway,
-    }),
     tagResource: tagResource({ apiGateway, buildResourceArn }),
     untagResource: untagResource({ apiGateway, buildResourceArn }),
   };

@@ -15,7 +15,7 @@ const {
   findNamespaceInTagsOrEksCluster,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2, updateTags } = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 const EC2Instance = require("./EC2Instance");
 
@@ -206,5 +206,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };

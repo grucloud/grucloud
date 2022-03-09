@@ -4,7 +4,12 @@ const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
+const {
+  createApiGatewayV2,
+  ignoreErrorCodes,
+  tagResource,
+  untagResource,
+} = require("./ApiGatewayCommon");
 
 const findId = get("live.ApiId");
 const findName = get("live.Name");
@@ -65,6 +70,9 @@ exports.Api = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
+  const buildResourceArn = ({ apiId }) =>
+    `arn:aws:apigateway:${config.region}::/apis/${apiId}`;
+
   return {
     spec,
     findName,
@@ -76,5 +84,7 @@ exports.Api = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
+    tagResource: tagResource({ apiGateway, buildResourceArn }),
+    untagResource: untagResource({ apiGateway, buildResourceArn }),
   };
 };

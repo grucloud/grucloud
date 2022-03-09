@@ -81,9 +81,9 @@ exports.Integration = ({ spec, config }) => {
         pipe([
           () => live,
           defaultsDeep({ ApiId, ApiName: Name }),
-          assign({
-            Tags: pipe([() => Tags, omit(["Name"])]),
-          }),
+          // assign({
+          //   Tags: pipe([() => Tags, omit(["Name"])]),
+          // }),
         ])(),
   });
 

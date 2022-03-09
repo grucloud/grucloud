@@ -410,7 +410,11 @@ module.exports = () =>
       type: "RouteTableAssociation",
       Client: EC2RouteTableAssociation,
       isOurMinion: () => () => true,
-      compare: compareEC2({
+
+      compare: compareAws({
+        getTargetTags: () => [],
+        getLiveTags: () => [],
+      })({
         filterLive: () => pipe([pick(["RouteTableId", "SubnetId"])]),
       }),
       inferName: ({ properties, dependencies }) =>
@@ -434,7 +438,10 @@ module.exports = () =>
       type: "Route",
       Client: EC2Route,
       isOurMinion,
-      compare: compareEC2({
+      compare: compareAws({
+        getTargetTags: () => [],
+        getLiveTags: () => [],
+      })({
         filterLive: () =>
           pipe([
             omit([

@@ -4,7 +4,12 @@ const { defaultsDeep } = require("rubico/x");
 
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createAppRunner, ignoreErrorCodes } = require("./AppRunnerCommon");
+const {
+  createAppRunner,
+  ignoreErrorCodes,
+  tagResource,
+  untagResource,
+} = require("./AppRunnerCommon");
 
 const findName = get("live.ConnectionName");
 const findId = get("live.ConnectionArn");
@@ -75,5 +80,7 @@ exports.AppRunnerConnection = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ appRunner }),
+    untagResource: untagResource({ appRunner }),
   };
 };

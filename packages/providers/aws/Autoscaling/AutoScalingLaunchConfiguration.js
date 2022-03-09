@@ -4,7 +4,11 @@ const { defaultsDeep, isEmpty, callProp } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createAutoScaling } = require("./AutoScalingCommon");
+const {
+  createAutoScaling,
+  tagResource,
+  untagResource,
+} = require("./AutoScalingCommon");
 
 const ignoreErrorMessages = ["Launch configuration name not found"];
 
@@ -156,5 +160,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ autoScaling }),
+    untagResource: untagResource({ autoScaling }),
   };
 };

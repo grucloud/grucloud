@@ -44,7 +44,12 @@ const {
 } = require("../AwsCommon");
 
 const { filterEmptyResourceRecords } = require("./Route53Utils");
-const { createRoute53, hostedZoneIdToResourceId } = require("./Route53Common");
+const {
+  createRoute53,
+  tagResource,
+  untagResource,
+  hostedZoneIdToResourceId,
+} = require("./Route53Common");
 const {
   createRoute53Domains,
 } = require("../Route53Domain/Route53DomainCommon");
@@ -411,6 +416,8 @@ exports.Route53HostedZone = ({ spec, config }) => {
     getList,
     configDefault,
     findNamespace: findNamespaceInTags(config),
+    tagResource: tagResource({ route53 }),
+    untagResource: untagResource({ route53 }),
   };
 };
 //TODO

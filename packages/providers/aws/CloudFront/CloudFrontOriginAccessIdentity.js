@@ -5,7 +5,11 @@ const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getNewCallerReference } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createCloudFront } = require("./CloudFrontCommon");
+const {
+  createCloudFront,
+  tagResource,
+  untagResource,
+} = require("./CloudFrontCommon");
 const ignoreErrorCodes = ["NoSuchCloudFrontOriginAccessIdentity"];
 
 const findName = pipe([
@@ -112,5 +116,7 @@ exports.CloudFrontOriginAccessIdentity = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ cloudFront }),
+    untagResource: untagResource({ cloudFront }),
   };
 };

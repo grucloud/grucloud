@@ -25,7 +25,7 @@ const {
 } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
-const { createEC2, updateTags } = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 exports.AwsVpc = ({ spec, config }) => {
   const ec2 = createEC2(config);
@@ -307,6 +307,7 @@ exports.AwsVpc = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    updateTags: updateTags({ ec2 }),
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };

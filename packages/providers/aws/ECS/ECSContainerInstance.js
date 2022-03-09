@@ -11,6 +11,8 @@ const {
   createECS,
   buildTagsEcs,
   findDependenciesCluster,
+  tagResource,
+  untagResource,
 } = require("./ECSCommon");
 
 const findId = get("live.containerInstanceArn");
@@ -112,5 +114,7 @@ exports.ECSContainerInstance = ({ spec, config }) => {
     configDefault,
     managedByOther: () => true,
     cannotBeDeleted: () => true,
+    tagResource: tagResource({ ecs }),
+    untagResource: untagResource({ ecs }),
   };
 };

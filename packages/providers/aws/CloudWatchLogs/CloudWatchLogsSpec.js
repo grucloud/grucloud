@@ -8,7 +8,7 @@ const { CloudWatchLogsGroup } = require("./CloudWatchLogsGroup");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html
 const GROUP = "CloudWatchLogs";
 
-const compareCloudWatchLog = compareAws({});
+const compareCloudWatchLog = compareAws({ tagsKey: "tags" });
 
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });

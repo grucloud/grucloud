@@ -3,7 +3,7 @@ const { findDependenciesVpc, findDependenciesSubnet } = require("./EC2Common");
 
 const { findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2, updateTags } = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 exports.AwsNetworkAcl = ({ spec, config }) => {
   const ec2 = createEC2(config);
@@ -31,6 +31,7 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
     findName,
     findDependencies,
     getList,
-    updateTags: updateTags({ ec2 }),
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };

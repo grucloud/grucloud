@@ -35,7 +35,6 @@ const {
 } = require("rubico/x");
 const util = require("util");
 const Diff = require("diff");
-const { differenceObject } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
@@ -64,10 +63,10 @@ exports.throwIfNotAwsError = throwIfNotAwsError;
 
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
-const extractKeys = ({ key = "Key" }) =>
+const extractKeys = ({ key }) =>
   switchCase([Array.isArray, pipe([pluck(key)]), keys]);
 
-const compareAwsTags = ({ getTargetTags, getLiveTags, tagsKey }) =>
+const compareAwsTags = ({ getTargetTags, getLiveTags, tagsKey, key }) =>
   pipe([
     tap((params) => {
       assert(tagsKey);
@@ -88,8 +87,8 @@ const compareAwsTags = ({ getTargetTags, getLiveTags, tagsKey }) =>
     assign({
       diffTags: ({ targetTags, liveTags }) =>
         Diff.diffJson(liveTags, targetTags),
-      targetKeys: pipe([get("targetTags"), extractKeys({})]),
-      liveKeys: pipe([get("liveTags"), extractKeys({})]),
+      targetKeys: pipe([get("targetTags"), extractKeys({ key })]),
+      liveKeys: pipe([get("liveTags"), extractKeys({ key })]),
     }),
     tap((params) => {
       assert(true);
@@ -104,14 +103,20 @@ const compareAwsTags = ({ getTargetTags, getLiveTags, tagsKey }) =>
   ]);
 
 exports.compareAws =
-  ({ getTargetTags, getLiveTags, omitTargetKey, tagsKey = "Tags" }) =>
+  ({
+    getTargetTags,
+    getLiveTags,
+    omitTargetKey,
+    tagsKey = "Tags",
+    key = "Key",
+  }) =>
   ({ filterAll, filterTarget, filterLive } = {}) =>
     pipe([
       tap((params) => {
         assert(true);
       }),
       fork({
-        tags: compareAwsTags({ getTargetTags, getLiveTags, tagsKey }),
+        tags: compareAwsTags({ getTargetTags, getLiveTags, tagsKey, key }),
         payloadDiff: compare({
           filterAll,
           filterTarget,
@@ -651,6 +656,7 @@ exports.removeRoleFromInstanceProfile =
     tryCatch(
       pipe([() => params, iam().removeRoleFromInstanceProfile]),
       switchCase([
+        //TODO use throwIfNotAwsError
         isAwsError("NoSuchEntity"),
         () => undefined,
         (error) => {

@@ -26,7 +26,7 @@ exports.createResources = () => [
       },
       Tags: [
         {
-          Key: "TOTOKEY",
+          Key: "TOTOKEY2",
           Value: "TOTO",
         },
       ],

@@ -23,6 +23,8 @@ const {
   fetchZip,
   createZipBuffer,
   computeHash256,
+  tagResource,
+  untagResource,
 } = require("./LambdaCommon");
 
 const findId = get("live.LayerArn");
@@ -182,6 +184,8 @@ exports.Layer = ({ spec, config }) => {
     //getById,
     getList,
     configDefault,
+    tagResource: tagResource({ lambda }),
+    untagResource: untagResource({ lambda }),
   };
 };
 
