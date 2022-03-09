@@ -178,25 +178,23 @@ exports.Route53HostedZone = ({ spec, config }) => {
         assert(payload);
         logger.info(`create hosted zone: ${name}, ${tos(payload)}`);
       }),
-      () =>
-        route53().createHostedZone({
-          Name: payload.Name,
-          CallerReference: getNewCallerReference(),
-        }),
+      () => ({
+        Name: payload.Name,
+        CallerReference: getNewCallerReference(),
+      }),
+      route53().createHostedZone,
       tap((result) => {
         logger.debug(`created hosted zone: ${name}, result: ${tos(result)}`);
       }),
-      tap(({ HostedZone }) =>
-        route53().changeTagsForResource({
-          ResourceId: hostedZoneIdToResourceId(HostedZone.Id),
-          AddTags: buildTags({
-            name,
-            namespace,
-            config,
-            UserTags: payload.Tags,
+      tap(
+        pipe([
+          ({ HostedZone }) => ({
+            ResourceId: hostedZoneIdToResourceId(HostedZone.Id),
+            AddTags: payload.Tags,
+            ResourceType: "hostedzone",
           }),
-          ResourceType: "hostedzone",
-        })
+          route53().changeTagsForResource,
+        ])
       ),
       tap(({ HostedZone }) =>
         pipe([
@@ -380,11 +378,24 @@ exports.Route53HostedZone = ({ spec, config }) => {
       ]),
     ])();
 
-  const configDefault = ({ name, properties }) =>
+  const configDefault = ({
+    name,
+    properties: { Tags, ...otherProp },
+    namespace,
+  }) =>
     pipe([
-      () => properties,
+      () => otherProp,
       defaultsDeep({
         Name: name,
+        Tags: buildTags({
+          name,
+          namespace,
+          config,
+          UserTags: Tags,
+        }),
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 

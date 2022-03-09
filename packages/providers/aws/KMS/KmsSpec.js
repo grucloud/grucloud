@@ -7,6 +7,7 @@ const { isOurMinionFactory } = require("../AwsCommon");
 const { KmsKey } = require("./KmsKey");
 
 const GROUP = "KMS";
+const compareEKS = compareAws({});
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -14,10 +15,10 @@ module.exports = () =>
       type: "Key",
       Client: KmsKey,
       isOurMinion: isOurMinionFactory({ key: "TagKey", value: "TagValue" }),
-      compare: compareAws({
+      compare: compareEKS({
         filterTarget: () =>
           pipe([
-            omit(["Tags", "KeyState"]),
+            omit(["KeyState"]),
             defaultsDeep({
               Enabled: true,
               KeyManager: "CUSTOMER",
@@ -40,7 +41,6 @@ module.exports = () =>
               "CreationDate",
               "DeletionDate",
               "KeyState",
-              "Tags",
             ]),
           ]),
       }),

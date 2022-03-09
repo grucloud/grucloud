@@ -32,7 +32,7 @@ const { hasKeyInTags, findEksCluster } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecurityGroup" });
 const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { createEC2, updateTags } = require("./EC2Common");
 
 exports.AwsSecurityGroup = ({ spec, config }) => {
   const { managedByDescription, providerName } = config;
@@ -242,5 +242,6 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
+    updateTags: updateTags({ ec2 }),
   };
 };

@@ -11,7 +11,7 @@ const {
 
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createSQS } = require("./SQSCommon");
+const { createSQS, tagResource, untagResource } = require("./SQSCommon");
 const { throwIfNotAwsError } = require("../AwsCommon");
 
 const findId = get("live.Attributes.QueueArn");
@@ -179,5 +179,7 @@ exports.SQSQueue = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    tagResource: tagResource({ sqs }),
+    untagResource: untagResource({ sqs }),
   };
 };

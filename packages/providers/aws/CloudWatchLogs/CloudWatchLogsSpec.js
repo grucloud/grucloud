@@ -8,6 +8,8 @@ const { CloudWatchLogsGroup } = require("./CloudWatchLogsGroup");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html
 const GROUP = "CloudWatchLogs";
 
+const compareCloudWatchLog = compareAws({});
+
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
 
@@ -17,7 +19,7 @@ module.exports = () =>
       type: "LogGroup",
       Client: CloudWatchLogsGroup,
       isOurMinion,
-      compare: compareAws({
+      compare: compareCloudWatchLog({
         filterAll: pipe([
           tap((params) => {
             assert(true);

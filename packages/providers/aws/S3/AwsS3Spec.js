@@ -11,6 +11,7 @@ const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
 const { compareAws, isOurMinion } = require("../AwsCommon");
 
 const GROUP = "S3";
+const compareS3 = compareAws({});
 
 const objectFileNameFromLive = ({
   live: { Bucket, Key, ContentType },
@@ -30,7 +31,7 @@ module.exports = () =>
         },
       },
       isOurMinion,
-      compare: compareAws({
+      compare: compareS3({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -39,7 +40,6 @@ module.exports = () =>
             omit([
               "Bucket",
               "ACL", //TODO
-              "Tags",
             ]),
           ]),
         filterLive: () =>
@@ -50,7 +50,6 @@ module.exports = () =>
             omit([
               "Name",
               "CreationDate",
-              "Tags",
               "LocationConstraint",
               "ACL", //TODO
               "PolicyStatus.IsPublic",

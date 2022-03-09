@@ -410,6 +410,19 @@ const contentFromChange = pipe([
   ]),
 ]);
 
+const displayJsonDiff = ({ tableItem }) =>
+  pipe([
+    map(contentFromChange),
+    callProp("join", ""),
+    (content) =>
+      tableItem.push([
+        {
+          colSpan: 2,
+          content,
+        },
+      ]),
+  ]);
+
 const displayPlanItemUpdate =
   ({ tableItem }) =>
   ({ diff, resource, id, action }) =>
@@ -446,19 +459,17 @@ const displayPlanItemUpdate =
             },
           ])
       ),
-      () => diff.jsonDiff,
-      map(contentFromChange),
       tap((params) => {
         assert(true);
       }),
-      callProp("join", ""),
-      (content) =>
-        tableItem.push([
-          {
-            colSpan: 2,
-            content,
-          },
-        ]),
+      tap.if(
+        get("hasDataDiff"),
+        pipe([get("jsonDiff"), displayJsonDiff({ tableItem })])
+      ),
+      tap.if(
+        get("hasTagsDiff"),
+        pipe([get("tags.diffTags"), displayJsonDiff({ tableItem })])
+      ),
     ])();
 
 const itemHeader =

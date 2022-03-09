@@ -23,9 +23,9 @@ const { CloudFrontDistribution } = require("./CloudFrontDistribution");
 const {
   CloudFrontOriginAccessIdentity,
 } = require("./CloudFrontOriginAccessIdentity");
-const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "CloudFront";
+const compareCloudFront = compareAws({});
 
 const replaceWithBucketName = replaceWithName({ groupType: "S3::Bucket" });
 
@@ -59,7 +59,7 @@ module.exports = () =>
         HttpVersion: "http2",
         IsIPV6Enabled: true,
       },
-      compare: compareAws({
+      compare: compareCloudFront({
         filterTarget: () =>
           pipe([
             get("DistributionConfig"),
@@ -79,7 +79,6 @@ module.exports = () =>
               "CallerReference",
               "WebACLId",
               "AliasICPRecordals",
-              "Tags", //TODO
             ]),
           ]),
       }),
@@ -193,6 +192,6 @@ module.exports = () =>
       type: "OriginAccessIdentity",
       Client: CloudFrontOriginAccessIdentity,
       filterLive: ({ lives }) => pipe([pick([])]),
-      compare: compareAws,
+      compare: compareCloudFront,
     },
   ]);

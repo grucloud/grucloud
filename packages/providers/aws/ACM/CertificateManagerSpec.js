@@ -7,13 +7,15 @@ const { AwsCertificate } = require("./AwsCertificate");
 
 const GROUP = "ACM";
 
+const compareACM = compareAws({});
+
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "Certificate",
       Client: AwsCertificate,
       isOurMinion,
-      compare: compareAws({
+      compare: compareACM({
         filterTarget: () => pipe([omit(["ValidationMethod"])]),
         filterLive: () => pipe([pick(["DomainName"])]),
       }),

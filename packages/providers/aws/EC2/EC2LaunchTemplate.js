@@ -15,7 +15,7 @@ const {
   findNamespaceInTagsOrEksCluster,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { createEC2, updateTags } = require("./EC2Common");
 
 const EC2Instance = require("./EC2Instance");
 

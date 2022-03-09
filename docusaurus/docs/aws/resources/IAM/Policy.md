@@ -204,63 +204,75 @@ exports.createResources = () => [
 ### List
 
 ```sh
-gc l -t IAM::Policy
+gc l -t Policy
 ```
 
-```sh
+```txts
 Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
-  ✓ Listing 2/2
-┌───────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 2 IamPolicy from aws                                                                          │
-├───────────────────────────┬────────────────────────────────────────────────────────────┬──────┤
-│ Name                      │ Data                                                       │ Our  │
-├───────────────────────────┼────────────────────────────────────────────────────────────┼──────┤
-│ policy-allow-ec2          │ PolicyName: policy-allow-ec2                               │ Yes  │
-│                           │ PolicyId: ANPA4HNBM2ZQAVBUWM5OH                            │      │
-│                           │ Arn: arn:aws:iam::840541460064:policy/policy-allow-ec2     │      │
-│                           │ Path: /                                                    │      │
-│                           │ DefaultVersionId: v1                                       │      │
-│                           │ AttachmentCount: 1                                         │      │
-│                           │ PermissionsBoundaryUsageCount: 0                           │      │
-│                           │ IsAttachable: true                                         │      │
-│                           │ Description: Allow ec2:Describe                            │      │
-│                           │ CreateDate: 2021-04-19T23:43:49.000Z                       │      │
-│                           │ UpdateDate: 2021-04-19T23:43:49.000Z                       │      │
-│                           │ Tags:                                                      │      │
-│                           │   - Key: ManagedBy                                         │      │
-│                           │     Value: GruCloud                                        │      │
-│                           │   - Key: stage                                             │      │
-│                           │     Value: dev                                             │      │
-│                           │   - Key: projectName                                       │      │
-│                           │     Value: @grucloud/example-aws-iam-policy                │      │
-│                           │   - Key: CreatedByProvider                                 │      │
-│                           │     Value: aws                                             │      │
-│                           │   - Key: Name                                              │      │
-│                           │     Value: policy-allow-ec2                                │      │
-│                           │ EntitiesForPolicy:                                         │      │
-│                           │   PolicyGroups: []                                         │      │
-│                           │   PolicyUsers: []                                          │      │
-│                           │   PolicyRoles:                                             │      │
-│                           │     - RoleName: role-4-policies                            │      │
-│                           │       RoleId: AROA4HNBM2ZQEPTRMF2XD                        │      │
-│                           │                                                            │      │
-├───────────────────────────┼────────────────────────────────────────────────────────────┼──────┤
-│ AmazonEKSWorkerNodePolicy │ name: AmazonEKSWorkerNodePolicy                            │ NO   │
-│                           │ Arn: arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy     │      │
-│                           │                                                            │      │
-└───────────────────────────┴────────────────────────────────────────────────────────────┴──────┘
+  ✓ Listing 1/1
+┌──────────────────────────────────────────────────────────────────┐
+│ 1 IAM::Policy from aws                                           │
+├──────────────────────────────────────────────────────────────────┤
+│ name: policy-allow-ec2                                           │
+│ managedByUs: Yes                                                 │
+│ live:                                                            │
+│   PolicyName: policy-allow-ec2                                   │
+│   PolicyId: ANPA4HNBM2ZQAGCMR7RQ7                                │
+│   Arn: arn:aws:iam::840541460064:policy/policy-allow-ec2         │
+│   Path: /                                                        │
+│   DefaultVersionId: v1                                           │
+│   AttachmentCount: 1                                             │
+│   PermissionsBoundaryUsageCount: 0                               │
+│   IsAttachable: true                                             │
+│   Description: Allow ec2:Describe                                │
+│   CreateDate: 2022-03-09T03:27:14.000Z                           │
+│   UpdateDate: 2022-03-09T03:27:14.000Z                           │
+│   Tags:                                                          │
+│     - Key: gc-created-by-provider                                │
+│       Value: aws                                                 │
+│     - Key: gc-managed-by                                         │
+│       Value: grucloud                                            │
+│     - Key: gc-project-name                                       │
+│       Value: @grucloud/example-aws-iam-policy                    │
+│     - Key: gc-stage                                              │
+│       Value: dev                                                 │
+│     - Key: Name                                                  │
+│       Value: policy-allow-ec2                                    │
+│   Versions:                                                      │
+│     -                                                            │
+│       VersionId: v1                                              │
+│       IsDefaultVersion: true                                     │
+│       CreateDate: 2022-03-09T03:27:14.000Z                       │
+│   EntitiesForPolicy:                                             │
+│     PolicyGroups: []                                             │
+│     PolicyUsers: []                                              │
+│     PolicyRoles:                                                 │
+│       - RoleName: role-4-policies                                │
+│         RoleId: AROA4HNBM2ZQKH7QZEALS                            │
+│   PolicyDocument:                                                │
+│     Version: 2012-10-17                                          │
+│     Statement:                                                   │
+│       - Action:                                                  │
+│           - "s3:*"                                               │
+│         Effect: Allow                                            │
+│         Resource: *                                              │
+│       - Action:                                                  │
+│           - "sqs:*"                                              │
+│         Effect: Allow                                            │
+│         Resource: *                                              │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
 Provider: aws
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                          │
-├────────────────────┬─────────────────────────────────────────────────────────────────────────┤
-│ IamPolicy          │ policy-allow-ec2                                                        │
-│                    │ AmazonEKSWorkerNodePolicy                                               │
-└────────────────────┴─────────────────────────────────────────────────────────────────────────┘
-2 resources, 1 type, 1 provider
-Command "gc l -t IamPolicy" executed in 2s
+┌─────────────────────────────────────────────────────────────────┐
+│ aws                                                             │
+├─────────────┬───────────────────────────────────────────────────┤
+│ IAM::Policy │ policy-allow-ec2                                  │
+└─────────────┴───────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t Policy" executed in 5s, 143 MB
 ```

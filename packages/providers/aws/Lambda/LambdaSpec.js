@@ -13,6 +13,7 @@ const { Layer, compareLayer } = require("./Layer");
 const { EventSourceMapping } = require("./EventSourceMapping");
 
 const GROUP = "Lambda";
+const compareLambda = compareAws({});
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -119,7 +120,7 @@ module.exports = () =>
       Client: EventSourceMapping,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
-      compare: compareAws({
+      compare: compareLambda({
         filterTarget: () =>
           pipe([
             defaultsDeep({
@@ -127,7 +128,7 @@ module.exports = () =>
               MaximumBatchingWindowInSeconds: 0,
               FunctionResponseTypes: [],
             }),
-            omit(["FunctionName", "Tags"]),
+            omit(["FunctionName"]),
             omitIfEmpty(["FunctionResponseTypes"]),
           ]),
         filterLive: () =>
@@ -139,7 +140,6 @@ module.exports = () =>
               "LastProcessingResult",
               "StateTransitionReason",
               "MaximumRecordAgeInSeconds",
-              "Tags",
               "State",
             ]),
             omitIfEmpty([

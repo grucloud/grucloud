@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, omit, tap, assign, fork, map, get } = require("rubico");
-const { callProp, values, flatten } = require("rubico/x");
+const { callProp, values, flatten, isEmpty, unless } = require("rubico/x");
 
 const { APIGateway } = require("@aws-sdk/client-api-gateway");
 const { createEndpoint } = require("../AwsCommon");
@@ -52,7 +52,34 @@ exports.diffToPatch = ({ diff }) =>
     }),
     values,
     flatten,
-    tap((params) => {
-      assert(true);
-    }),
   ])();
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#tagResource-property
+exports.tagResource =
+  ({ apiGateway, buildResourceArn }) =>
+  ({ diff }) =>
+    pipe([
+      () => diff,
+      get("tags.targetTags"),
+      (tags) => ({ resourceArn: buildResourceArn(diff.liveIn), tags }),
+      apiGateway().tagResource,
+    ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#untagResource-property
+exports.untagResource =
+  ({ apiGateway, buildResourceArn }) =>
+  ({ diff }) =>
+    pipe([
+      () => diff,
+      get("tags.removedKeys"),
+      unless(
+        isEmpty,
+        pipe([
+          (tagKeys) => ({
+            resourceArn: buildResourceArn(diff.liveIn),
+            tagKeys,
+          }),
+          apiGateway().untagResource,
+        ])
+      ),
+    ]);

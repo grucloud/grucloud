@@ -25,7 +25,7 @@ const {
   isAwsError,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { createEC2, updateTags } = require("./EC2Common");
 
 const findVpcId = pipe([get("Attachments"), first, get("VpcId")]);
 
@@ -213,5 +213,6 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
+    updateTags: updateTags({ ec2 }),
   };
 };

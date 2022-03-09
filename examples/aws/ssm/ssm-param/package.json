@@ -9,7 +9,10 @@
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
     "gencode": "gc gencode",
-    "plan": "gc plan"
+    "list": "gc list",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f"
   },
   "author": "",
   "license": "ISC",

@@ -25,7 +25,23 @@ const {
 } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
-const { createIAM } = require("./AwsIamCommon");
+const {
+  createIAM,
+  tagResourceIam,
+  untagResourceIam,
+} = require("./AwsIamCommon");
+
+//https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagInstanceProfile-property
+const tagResource = tagResourceIam({
+  field: "InstanceProfileName",
+  method: "tagInstanceProfile",
+});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagInstanceProfile-property
+const untagResource = untagResourceIam({
+  field: "InstanceProfileName",
+  method: "untagInstanceProfile",
+});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamInstanceProfile = ({ spec, config }) => {
@@ -168,9 +184,6 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     preDestroy: ({ live }) =>
       pipe([
         () => live,
-        tap((params) => {
-          assert(true);
-        }),
         ({ Roles, InstanceProfileName }) =>
           pipe([
             () => Roles,
@@ -220,5 +233,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     getList,
     configDefault,
     managedByOther,
+    tagResource: tagResource({ iam }),
+    untagResource: untagResource({ iam }),
   };
 };

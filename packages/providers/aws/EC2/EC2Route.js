@@ -33,7 +33,7 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { findNamespaceInTags, buildTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { createEC2, updateTags } = require("./EC2Common");
 
 exports.EC2Route = ({ spec, config }) => {
   const ec2 = createEC2(config);

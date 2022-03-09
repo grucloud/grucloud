@@ -1,12 +1,13 @@
 const assert = require("assert");
 const { assign, map, omit, pipe, tap, pick, eq, get } = require("rubico");
 const { when, defaultsDeep } = require("rubico/x");
-const { compareAws, isOurMinion } = require("../AwsCommon");
+const { isOurMinion, compareAws } = require("../AwsCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { DynamoDBTable } = require("./DynamoDBTable");
 
 const GROUP = "DynamoDB";
+const compareDynamoDB = compareAws({});
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -14,9 +15,8 @@ module.exports = () =>
       type: "Table",
       Client: DynamoDBTable,
       isOurMinion,
-      compare: compareAws({
+      compare: compareDynamoDB({
         filterAll: pipe([
-          omit(["Tags"]),
           defaultsDeep({
             BillingMode: "PAY_PER_REQUEST",
             ProvisionedThroughput: {

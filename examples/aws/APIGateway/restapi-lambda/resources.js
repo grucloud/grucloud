@@ -25,6 +25,7 @@ exports.createResources = () => [
       deployment: {
         stageName: "dev",
       },
+      tags: { mykey: "myvalue" },
     }),
   },
   {
@@ -50,6 +51,7 @@ exports.createResources = () => [
       cacheClusterEnabled: false,
       cacheClusterSize: "0.5",
       tracingEnabled: false,
+      tags: { mykey1: "myvalue1" },
     }),
     dependencies: () => ({
       restApi: "PetStore",

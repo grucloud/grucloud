@@ -5,10 +5,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
     "tree": "gc tree",
+    "graph": "gc tree",
+    "plan": "gc plan",
     "list": "gc list -g",
-    "gencode": "gc gencode"
+    "gencode": "gc gencode",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",

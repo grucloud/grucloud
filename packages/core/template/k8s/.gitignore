@@ -5,3 +5,4 @@ coverage
 *.log
 *.pem
 .DS_Store
+test-results.xml

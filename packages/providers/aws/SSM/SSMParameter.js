@@ -1,11 +1,16 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
-const { createSSM } = require("./SSMCommon");
+const {
+  createSSM,
+  updateTagsSSM,
+  tagResource,
+  untagResource,
+} = require("./SSMCommon");
 
 const ignoreErrorCodes = ["ParameterNotFound"];
 
@@ -115,5 +120,7 @@ exports.SSMParameter = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ ssm, ResourceType: "Parameter" }),
+    untagResource: untagResource({ ssm, ResourceType: "Parameter" }),
   };
 };

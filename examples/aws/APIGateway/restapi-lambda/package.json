@@ -8,7 +8,9 @@
     "test": "mocha",
     "plan": "gc plan",
     "list": "gc list --graph",
-    "gencode": "gc gencode"
+    "gencode": "gc gencode",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f"
   },
   "author": "",
   "license": "ISC",

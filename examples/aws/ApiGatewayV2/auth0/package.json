@@ -6,7 +6,10 @@
   "main": "iac.js",
   "scripts": {
     "test": "mocha",
-    "gencode": "gc gencode"
+    "list": "gc list --graph",
+    "gencode": "gc gencode",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f"
   },
   "author": "",
   "license": "ISC",

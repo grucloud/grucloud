@@ -34,7 +34,23 @@ const { buildTags, findNamespaceInTags, isOurMinion } = require("../AwsCommon");
 const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
-const { createIAM } = require("./AwsIamCommon");
+const {
+  createIAM,
+  tagResourceIam,
+  untagResourceIam,
+} = require("./AwsIamCommon");
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagPolicy-property
+const tagResource = tagResourceIam({
+  field: "PolicyArn",
+  method: "tagPolicy",
+});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagPolicy-property
+const untagResource = untagResourceIam({
+  field: "PolicyArn",
+  method: "untagPolicy",
+});
 
 const pickId = pipe([
   tap(({ Arn }) => {
@@ -365,6 +381,8 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     configDefault,
     managedByOther: cannotBeDeleted,
     cannotBeDeleted: cannotBeDeleted,
+    tagResource: tagResource({ iam }),
+    untagResource: untagResource({ iam }),
   };
 };
 

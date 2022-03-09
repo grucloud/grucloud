@@ -104,53 +104,54 @@ exports.createResources = () => [
 ### List
 
 ```sh
-gc l -t IAM::User
+gc l -t User
 ```
 
-```sh
+```txt
 Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
-  ✓ Listing 3/3
-┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 IamUser from aws                                                                                │
-├──────────┬─────────────────────────────────────────────────────────────────────────────────┬──────┤
-│ Name     │ Data                                                                            │ Our  │
-├──────────┼─────────────────────────────────────────────────────────────────────────────────┼──────┤
-│ grucloud │ Path: /                                                                         │ NO   │
-│          │ UserName: grucloud                                                              │      │
-│          │ UserId: AIDA4HNBM2ZQG52XXYCYX                                                   │      │
-│          │ Arn: arn:aws:iam::840541460064:user/grucloud                                    │      │
-│          │ CreateDate: 2021-04-19T18:59:01.000Z                                            │      │
-│          │ Tags: []                                                                        │      │
-│          │ LoginProfile:                                                                   │      │
-│          │   UserName: grucloud                                                            │      │
-│          │   CreateDate: 2021-04-19T18:59:02.000Z                                          │      │
-│          │   PasswordResetRequired: true                                                   │      │
-│          │ AccessKeys:                                                                     │      │
-│          │   - UserName: grucloud                                                          │      │
-│          │     AccessKeyId: AKIA4HNBM2ZQIMJ35GUF                                           │      │
-│          │     Status: Active                                                              │      │
-│          │     CreateDate: 2021-04-19T18:59:02.000Z                                        │      │
-│          │ AttachedPolicies:                                                               │      │
-│          │   - PolicyName: AdministratorAccess                                             │      │
-│          │     PolicyArn: arn:aws:iam::aws:policy/AdministratorAccess                      │      │
-│          │   - PolicyName: IAMUserChangePassword                                           │      │
-│          │     PolicyArn: arn:aws:iam::aws:policy/IAMUserChangePassword                    │      │
-│          │ Groups: []                                                                      │      │
-│          │                                                                                 │      │
-└──────────┴─────────────────────────────────────────────────────────────────────────────────┴──────┘
+  ✓ Listing 2/2
+┌──────────────────────────────────────────────────────────────────┐
+│ 1 IAM::User from aws                                             │
+├──────────────────────────────────────────────────────────────────┤
+│ name: my-test-user                                               │
+│ managedByUs: Yes                                                 │
+│ live:                                                            │
+│   Path: /                                                        │
+│   UserName: my-test-user                                         │
+│   UserId: AIDA4HNBM2ZQBULNO5DHK                                  │
+│   Arn: arn:aws:iam::840541460064:user/my-test-user               │
+│   CreateDate: 2022-03-09T03:50:15.000Z                           │
+│   Tags:                                                          │
+│     - Key: gc-created-by-provider                                │
+│       Value: aws                                                 │
+│     - Key: gc-managed-by                                         │
+│       Value: grucloud                                            │
+│     - Key: gc-project-name                                       │
+│       Value: iam-user                                            │
+│     - Key: gc-stage                                              │
+│       Value: dev                                                 │
+│     - Key: mytag                                                 │
+│       Value: myvalue                                             │
+│     - Key: Name                                                  │
+│       Value: my-test-user                                        │
+│   AttachedPolicies: []                                           │
+│   AccessKeys: []                                                 │
+│   Groups: []                                                     │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
 Provider: aws
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                              │
-├────────────────────┬─────────────────────────────────────────────────────────────────────────────┤
-│ IamUser            │ grucloud                                                                    │
-└────────────────────┴─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│ aws                                                             │
+├───────────┬─────────────────────────────────────────────────────┤
+│ IAM::User │ my-test-user                                        │
+└───────────┴─────────────────────────────────────────────────────┘
 1 resource, 1 type, 1 provider
-Command "gc l -t IamUser" executed in 3s
+Command "gc l -t User" executed in 5s, 209 MB
 ```
 
 ### AWS CLI

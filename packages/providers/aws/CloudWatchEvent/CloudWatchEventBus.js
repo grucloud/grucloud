@@ -6,6 +6,8 @@ const { AwsClient } = require("../AwsClient");
 const {
   createCloudWatchEvents,
   ignoreErrorCodes,
+  tagResource,
+  untagResource,
 } = require("./CloudWatchEventCommon");
 
 const findId = get("live.Arn");
@@ -96,5 +98,7 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
     cannotBeDeleted: isDefault,
     managedByOther: isDefault,
     isDefault,
+    tagResource: tagResource({ cloudWatchEvents }),
+    tagResource: untagResource({ cloudWatchEvents }),
   };
 };

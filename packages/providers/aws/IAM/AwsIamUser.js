@@ -20,11 +20,25 @@ const {
   findNameInTagsOrId,
   findNamespaceInTags,
   throwIfNotAwsError,
+  buildTags,
 } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
-const { createIAM } = require("./AwsIamCommon");
+const {
+  createIAM,
+  tagResourceIam,
+  untagResourceIam,
+} = require("./AwsIamCommon");
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagUser-property
+const tagResource = tagResourceIam({ field: "UserName", method: "tagUser" });
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagUser-property
+const untagResource = untagResourceIam({
+  field: "UserName",
+  method: "untagUser",
+});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamUser = ({ spec, config }) => {
@@ -116,12 +130,12 @@ exports.AwsIamUser = ({ spec, config }) => {
       defaultsDeep({
         UserName: name,
         Path: "/",
-        // Tags: buildTags({
-        //   name,
-        //   config,
-        //   namespace,
-        //   UserTags: Tags,
-        // }),
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
+        }),
       }),
     ])();
 
@@ -259,5 +273,7 @@ exports.AwsIamUser = ({ spec, config }) => {
     getList,
     configDefault,
     findNamespace: findNamespaceInTags(config),
+    tagResource: tagResource({ iam }),
+    untagResource: untagResource({ iam }),
   };
 };

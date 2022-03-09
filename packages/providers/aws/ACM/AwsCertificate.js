@@ -5,7 +5,7 @@ const { first, defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createACM } = require("./ACMCommon");
+const { createACM, tagResource, untagResource } = require("./ACMCommon");
 
 const ignoreErrorCodes = ["ResourceNotFoundException"];
 
@@ -101,5 +101,7 @@ exports.AwsCertificate = ({ spec, config }) => {
     getList,
     configDefault,
     cannotBeDeleted: () => true,
+    tagResource: tagResource({ acm }),
+    untagResource: untagResource({ acm }),
   };
 };

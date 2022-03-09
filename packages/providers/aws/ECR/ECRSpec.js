@@ -10,7 +10,10 @@ const { EcrRegistry } = require("./EcrRegistry");
 
 const GROUP = "ECR";
 
-const isOurMinion = isOurMinionFactory({ tags: "tags" });
+const tagsKey = "tags";
+const compareECR = compareAws({ tagsKey });
+
+const isOurMinion = isOurMinionFactory({ tags: tagsKey });
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -18,8 +21,7 @@ module.exports = () =>
       type: "Repository",
       Client: EcrRepository,
       isOurMinion,
-      compare: compareAws({
-        filterAll: pipe([omit(["tags"])]),
+      compare: compareECR({
         filterLive: () =>
           pipe([
             omit(["repositoryArn", "registryId", "repositoryUri", "createdAt"]),
@@ -69,9 +71,7 @@ module.exports = () =>
       type: "Registry",
       Client: EcrRegistry,
       isOurMinion,
-      compare: compareAws({
-        //TODO tags or Tags ?
-        filterAll: pipe([omit(["Tags"])]),
+      compare: compareECR({
         filterLive: () => pipe([omit(["registryId"])]),
       }),
       ignoreResource: () =>

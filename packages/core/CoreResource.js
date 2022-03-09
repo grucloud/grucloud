@@ -294,15 +294,7 @@ exports.ResourceMaker = ({
         pipe([
           () => diff,
           switchCase([
-            and([
-              gte(pipe([get("jsonDiff"), size]), 2),
-              or([
-                pipe([get("liveDiff.needUpdate")]),
-                pipe([get("liveDiff.added"), not(isEmpty)]),
-                pipe([get("liveDiff.updated"), not(isEmpty)]),
-                pipe([get("liveDiff.deleted"), not(isEmpty)]),
-              ]),
-            ]),
+            get("hasDiff"),
             () =>
               pipe([
                 () => [
@@ -665,45 +657,68 @@ exports.ResourceMaker = ({
       tap.if(isEmpty, () => {
         throw Error(`Resource ${toString()} does not exist`);
       }),
-      getClient,
-      tap((client) => {
-        assert(
-          client.update,
-          `client ${client.spec.groupType} has no update function`
-        );
-      }),
-      (client) =>
-        retryCall({
-          name: `update ${toString()}`,
-          fn: tryCatch(
-            pipe([
-              () =>
-                client.update({
-                  name: getResourceName(),
-                  payload,
-                  dependencies: getDependencies(),
-                  resolvedDependencies,
-                  diff,
-                  live,
-                  lives: provider.lives,
-                  id: client.findId({ live }),
-                  programOptions,
-                  compare: spec.compare,
-                }),
-            ]),
-            (error) => {
-              logger.error(
-                `error updating: ${toString()}, error: ${util.inspect(error)}`
-              );
-              throw error;
-            }
-          ),
-          shouldRetryOnException: client.shouldRetryOnException,
-          config: provider.config,
-        }),
       tap((params) => {
-        logger.info(`updated: ${toString()}`);
+        assert(true);
       }),
+      tap.if(
+        () => diff.hasTagsDiff,
+        pipe([
+          getClient,
+          tap((client) => {
+            assert(client.updateTags, "missing client.updateTags");
+          }),
+          (client) => client.updateTags({ diff, id: client.findId({ live }) }),
+          tap((params) => {
+            assert(true);
+          }),
+        ])
+      ),
+      tap.if(
+        () => diff.hasDataDiff,
+        pipe([
+          getClient,
+          tap((client) => {
+            assert(
+              client.update,
+              `client ${client.spec.groupType} has no update function`
+            );
+          }),
+          (client) =>
+            retryCall({
+              name: `update ${toString()}`,
+              fn: tryCatch(
+                pipe([
+                  () => ({
+                    name: getResourceName(),
+                    payload,
+                    dependencies: getDependencies(),
+                    resolvedDependencies,
+                    diff,
+                    live,
+                    lives: provider.lives,
+                    id: client.findId({ live }),
+                    programOptions,
+                    compare: spec.compare,
+                  }),
+                  client.update,
+                ]),
+                (error) => {
+                  logger.error(
+                    `error updating: ${toString()}, error: ${util.inspect(
+                      error
+                    )}`
+                  );
+                  throw error;
+                }
+              ),
+              shouldRetryOnException: client.shouldRetryOnException,
+              config: provider.config,
+            }),
+          tap((params) => {
+            logger.info(`updated: ${toString()}`);
+          }),
+        ])
+      ),
     ])();
 
   const planUpsert = ({ resource, lives }) =>

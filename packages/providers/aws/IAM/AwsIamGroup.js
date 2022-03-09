@@ -73,12 +73,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
       defaultsDeep({
         GroupName: name,
         Path: "/",
-        // Tags: buildTags({
-        //   name,
-        //   config,
-        //   namespace,
-        //   UserTags: Tags,
-        // }),
+        // Cannot set Tags
       }),
     ])();
 

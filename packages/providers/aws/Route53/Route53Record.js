@@ -38,7 +38,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
 const { createRoute53, hostedZoneIdToResourceId } = require("./Route53Common");
 
-const omitFieldRecord = omit(["Tags", "HostedZoneId", "namespace"]);
+const omitFieldRecord = omit(["HostedZoneId", "namespace"]);
 
 const liveToResourceSet = pipe([omitFieldRecord, filterEmptyResourceRecords]);
 const RecordKeyPrefix = "gc-record-";
@@ -711,8 +711,7 @@ exports.Route53Record = ({ spec, config }) => {
   };
 };
 exports.compareRoute53Record = pipe([
-  compareAws({
-    filterAll: pipe([omit(["Tags"])]),
+  compareAws({ getTargetTags: () => [], getLiveTags: () => [] })({
     filterTarget: () => pipe([defaultsDeep({})]),
     filterLive: () => pipe([omitFieldRecord]),
   }),

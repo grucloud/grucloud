@@ -186,7 +186,7 @@ exports.Layer = ({ spec, config }) => {
 };
 
 exports.compareLayer = pipe([
-  compareAws({
+  compareAws({})({
     filterTarget: () =>
       pipe([
         assign({

@@ -84,6 +84,9 @@ exports.createResources = () => [
     type: "InstanceProfile",
     group: "IAM",
     name: "role-ecs",
+    properties: ({}) => ({
+      Tags: [{ Key: "mykey12", Value: "value" }],
+    }),
     dependencies: () => ({
       roles: ["role-ecs"],
     }),

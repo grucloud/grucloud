@@ -25,7 +25,7 @@ const {
   destroyNetworkInterfaces,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2, findDependenciesVpc } = require("./EC2Common");
+const { createEC2, updateTags, findDependenciesVpc } = require("./EC2Common");
 
 const SubnetAttributes = [
   "MapPublicIpOnLaunch",
@@ -189,5 +189,6 @@ exports.AwsSubnet = ({ spec, config }) => {
     update,
     destroy,
     configDefault,
+    updateTags: updateTags({ ec2 }),
   };
 };

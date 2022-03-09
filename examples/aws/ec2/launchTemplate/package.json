@@ -8,7 +8,11 @@
     "test": "mocha",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
-    "gencode": "gc gencode"
+    "gencode": "gc gencode",
+    "list": "gc list",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f"
   },
   "author": "",
   "license": "ISC",

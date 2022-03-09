@@ -21,10 +21,12 @@ const logger = require("@grucloud/core/logger")({
 });
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
+const { throwIfNotAwsError, compareAws } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createLambda } = require("./LambdaCommon");
+
+const compareLambda = compareAws({});
 const findId = get("live.Configuration.FunctionArn");
 const findName = get("live.Configuration.FunctionName");
 const pickId = pipe([
@@ -235,7 +237,7 @@ exports.compareFunction = pipe([
   tap((params) => {
     assert(true);
   }),
-  compareAws({
+  compareLambda({
     filterTarget: () =>
       pipe([
         assign({ CodeSha256: pipe([get("Code.ZipFile"), computeHash256]) }),

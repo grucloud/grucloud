@@ -24,7 +24,7 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { createEC2, updateTags } = require("./EC2Common");
 
 exports.AwsNatGateway = ({ spec, config }) => {
   const ec2 = createEC2(config);
@@ -179,5 +179,6 @@ exports.AwsNatGateway = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
+    updateTags: updateTags({ ec2 }),
   };
 };

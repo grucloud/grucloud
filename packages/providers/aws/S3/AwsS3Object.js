@@ -14,7 +14,6 @@ const {
   any,
   eq,
   pick,
-  omit,
 } = require("rubico");
 const {
   append,
@@ -354,8 +353,7 @@ exports.compareS3Object = pipe([
   tap((params) => {
     assert(true);
   }),
-  compareAws({
-    filterAll: pipe([omit(["Tags"])]),
+  compareAws({})({
     filterTarget: ({ programOptions }) =>
       pipe([
         tap(() => {

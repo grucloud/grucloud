@@ -7,7 +7,9 @@
   "scripts": {
     "test": "mocha",
     "list": "gc list --graph --default-exclude",
-    "gencode": "gc gencode"
+    "gencode": "gc gencode",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f"
   },
   "author": "",
   "license": "ISC",

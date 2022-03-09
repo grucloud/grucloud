@@ -49,7 +49,7 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags } = require("../AwsCommon");
-const { createEC2, findDependenciesVpc } = require("./EC2Common");
+const { createEC2, updateTags, findDependenciesVpc } = require("./EC2Common");
 
 const ignoreErrorCodes = ["InvalidInstanceID.NotFound"];
 

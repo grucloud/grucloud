@@ -11,6 +11,8 @@ const { hasDependency } = require("@grucloud/core/generatorUtils");
 
 const GROUP = "ELBv2";
 
+const compareELB = compareAws({});
+
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
@@ -24,8 +26,8 @@ module.exports = () =>
       },
       Client: ELBLoadBalancerV2,
       isOurMinion,
-      compare: compareAws({
-        filterTarget: () => pipe([omit(["Name", "Subnets", "Tags"])]),
+      compare: compareELB({
+        filterTarget: () => pipe([omit(["Name", "Subnets"])]),
         filterLive: () =>
           pipe([
             omit([
@@ -37,7 +39,6 @@ module.exports = () =>
               "VpcId",
               "State",
               "AvailabilityZones",
-              "Tags",
             ]),
           ]),
       }),
@@ -56,10 +57,10 @@ module.exports = () =>
         //TODO autoScalingGroup
       },
       isOurMinion,
-      compare: compareAws({
+      compare: compareELB({
         filterTarget: () =>
           pipe([
-            omit(["Name", "Tags"]),
+            omit(["Name"]),
             defaultsDeep({
               HealthCheckPath: "/",
               HealthCheckPort: "traffic-port",
@@ -76,12 +77,7 @@ module.exports = () =>
           ]),
         filterLive: () =>
           pipe([
-            omit([
-              "TargetGroupArn",
-              "TargetGroupName",
-              "LoadBalancerArns",
-              "Tags",
-            ]),
+            omit(["TargetGroupArn", "TargetGroupName", "LoadBalancerArns"]),
           ]),
       }),
       filterLive: () =>
@@ -109,11 +105,10 @@ module.exports = () =>
         certificate: { type: "Certificate", group: "ACM" },
       },
       isOurMinion,
-      compare: compareAws({
-        filterTarget: () => pipe([omit(["Tags"])]),
+      compare: compareELB({
         filterLive: () =>
           pipe([
-            omit(["ListenerArn", "SslPolicy", "Tags"]),
+            omit(["ListenerArn", "SslPolicy"]),
             omitIfEmpty(["AlpnPolicy", "Certificates"]),
           ]),
       }),
@@ -159,10 +154,9 @@ module.exports = () =>
         targetGroup: { type: "TargetGroup", group: "ELBv2" },
       },
       isOurMinion,
-      compare: compareAws({
+      compare: compareELB({
         filterTarget: () =>
           pipe([
-            omit(["Tags"]),
             defaultsDeep({
               IsDefault: false,
             }),
@@ -181,7 +175,6 @@ module.exports = () =>
         filterLive: () =>
           pipe([
             omit([
-              "Tags",
               "RuleArn",
               "TargetGroupName",
               "HealthCheckProtocol",

@@ -40,6 +40,8 @@ const { compareAws, isOurMinion } = require("../AwsCommon");
 
 const GROUP = "IAM";
 
+const compareIAM = compareAws({});
+
 const replaceAccountAndRegion = ({ providerConfig }) =>
   pipe([
     callProp("replace", providerConfig.accountId(), "${config.accountId()}"),
@@ -53,12 +55,11 @@ module.exports = () =>
       type: "OpenIDConnectProvider",
       Client: AwsIamOpenIDConnectProvider,
       isOurMinion,
-      compare: compareAws({
-        filterTarget: () => pipe([omit(["Tags"])]),
+      compare: compareIAM({
         filterLive: () =>
           pipe([
             assign({ Url: pipe([get("Url"), prepend("https://")]) }),
-            omit(["ThumbprintList", "CreateDate", "Arn", "Tags"]),
+            omit(["ThumbprintList", "CreateDate", "Arn"]),
           ]),
       }),
       filterLive: () => pick(["ClientIDList"]),
@@ -86,8 +87,7 @@ module.exports = () =>
       type: "User",
       Client: AwsIamUser,
       isOurMinion,
-      compare: compareAws({
-        filterTarget: () => pipe([omit(["Tags"])]),
+      compare: compareIAM({
         filterLive: () =>
           pipe([
             omit([
@@ -96,14 +96,12 @@ module.exports = () =>
               "CreateDate",
               "LoginProfile",
               "Policies",
-              "AttachedPolicies",
               "Groups",
-              "Tags",
               "AccessKeys",
             ]),
           ]),
       }),
-      filterLive: () => pick(["Path"]),
+      filterLive: () => pick(["Path", "AttachedPolicies"]),
       dependencies: {
         iamGroups: { type: "Group", group: "IAM", list: true },
         policies: { type: "Policy", group: "IAM", list: true },
@@ -113,8 +111,7 @@ module.exports = () =>
       type: "Group",
       Client: AwsIamGroup,
       isOurMinion: isOurMinionIamGroup,
-      compare: compareAws({
-        filterTarget: () => pipe([omit(["Tags"])]),
+      compare: compareIAM({
         filterLive: () =>
           pipe([
             omit([
@@ -135,7 +132,7 @@ module.exports = () =>
       type: "Role",
       Client: AwsIamRole,
       isOurMinion,
-      compare: compareAws({
+      compare: compareIAM({
         filterAll: pipe([pick(["AssumeRolePolicyDocument"])]),
       }),
       transformDependencies: ({ provider }) =>
@@ -283,7 +280,7 @@ module.exports = () =>
       type: "Policy",
       Client: AwsIamPolicy,
       isOurMinion: isOurMinionIamPolicy,
-      compare: compareAws({
+      compare: compareIAM({
         filterAll: pipe([
           tap((params) => {
             assert(true);
@@ -302,7 +299,7 @@ module.exports = () =>
       type: "InstanceProfile",
       Client: AwsIamInstanceProfile,
       isOurMinion,
-      compare: compareAws({
+      compare: compareIAM({
         filterAll: pipe([omit(["Tags"])]),
         filterLive: () =>
           pipe([

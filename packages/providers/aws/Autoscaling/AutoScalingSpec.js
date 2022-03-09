@@ -24,6 +24,8 @@ const {
 
 const { AutoScalingAttachment } = require("./AutoScalingAttachment");
 
+const compareAutoScaling = compareAws({});
+
 const GROUP = "AutoScaling";
 
 const filterTags = filter((tag) =>
@@ -61,12 +63,12 @@ module.exports = () =>
       },
       Client: AutoScalingAutoScalingGroup,
       isOurMinion,
-      compare: compareAws({
+      compare: compareAutoScaling({
         filterAll: pipe([
           tap((params) => {
             assert(true);
           }),
-          omit(["Tags", "TargetGroupARNs"]),
+          omit(["TargetGroupARNs"]),
         ]),
         filterLive: () =>
           pipe([
@@ -112,7 +114,7 @@ module.exports = () =>
       type: "AutoScalingAttachment",
       Client: AutoScalingAttachment,
       isOurMinion: () => true,
-      compare: compareAws({
+      compare: compareAutoScaling({
         filterTarget: () => pipe([pick([])]),
         filterLive: () => pipe([pick([])]),
       }),
@@ -142,8 +144,7 @@ module.exports = () =>
       type: "LaunchConfiguration",
       Client: AutoScalingLaunchConfiguration,
       isOurMinion: () => true,
-      compare: compareAws({
-        filterAll: pipe([omit(["Tags"])]),
+      compare: compareAutoScaling({
         filterLive: () =>
           pipe([
             omit([

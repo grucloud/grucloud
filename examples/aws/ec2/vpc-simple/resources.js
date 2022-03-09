@@ -9,6 +9,12 @@ exports.createResources = () => [
     name: "my-vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
+      Tags: [
+        {
+          Key: "mytag",
+          Value: "myvalue1",
+        },
+      ],
     }),
   },
 ];

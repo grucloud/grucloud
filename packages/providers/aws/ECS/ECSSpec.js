@@ -12,6 +12,7 @@ const { ECSTask } = require("./ECSTask");
 const { ECSContainerInstance } = require("./ECSContainerInstance");
 
 const GROUP = "ECS";
+const compareECS = compareAws({ tagsKey: "tags" });
 
 const isOurMinion = isOurMinionFactory({
   key: "key",
@@ -19,22 +20,16 @@ const isOurMinion = isOurMinionFactory({
   tags: "tags",
 });
 
-const filterTargetDefault = pipe([omit(["tags"])]);
-const filterLiveDefault = pipe([omit(["tags"])]);
-
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "CapacityProvider",
       Client: ECSCapacityProvider,
       isOurMinion,
-      compare: compareAws({
+      compare: compareECS({
         filterAll: pipe([omit(["tags"])]),
         filterLive: () =>
-          pipe([
-            omit(["capacityProviderArn", "status", "updateStatus"]),
-            filterLiveDefault,
-          ]),
+          pipe([omit(["capacityProviderArn", "status", "updateStatus"])]),
       }),
       filterLive: () =>
         pipe([
@@ -49,12 +44,9 @@ module.exports = () =>
       type: "Cluster",
       Client: ECSCluster,
       isOurMinion,
-      compare: compareAws({
+      compare: compareECS({
         filterTarget: () =>
-          pipe([
-            defaultsDeep({ defaultCapacityProviderStrategy: [] }),
-            filterTargetDefault,
-          ]),
+          pipe([defaultsDeep({ defaultCapacityProviderStrategy: [] })]),
         filterLive: () =>
           pipe([
             omit([
@@ -68,7 +60,6 @@ module.exports = () =>
               "attachments",
               "attachmentsStatus",
             ]),
-            filterLiveDefault,
           ]),
       }),
       filterLive: () =>
@@ -95,8 +86,7 @@ module.exports = () =>
       },
       Client: ECSTaskDefinition,
       isOurMinion,
-      compare: compareAws({
-        filterTarget: () => pipe([omit([""]), filterTargetDefault]),
+      compare: compareECS({
         filterLive: () =>
           pipe([
             omit([
@@ -108,7 +98,6 @@ module.exports = () =>
               "registeredBy",
             ]),
             omitIfEmpty(["volumes"]),
-            filterLiveDefault,
           ]),
       }),
       filterLive: () =>
@@ -122,12 +111,11 @@ module.exports = () =>
       type: "Service",
       Client: ECSService,
       isOurMinion,
-      compare: compareAws({
+      compare: compareECS({
         filterTarget: () =>
           pipe([
             defaultsDeep({ propagateTags: "NONE" }),
             omit(["taskDefinition"]),
-            filterTargetDefault,
           ]),
         filterLive: () =>
           pipe([
@@ -145,7 +133,6 @@ module.exports = () =>
               "createdBy",
             ]),
             omitIfEmpty(["loadBalancers", "serviceRegistries"]),
-            filterLiveDefault,
           ]),
       }),
       filterLive: () =>
@@ -177,19 +164,13 @@ module.exports = () =>
       },
       Client: ECSTaskSet,
       isOurMinion,
-      compare: compareAws({
-        filterTarget: () => pipe([omit([""]), filterTargetDefault]),
-        filterLive: () => pipe([omit([""]), filterLiveDefault]),
-      }),
+      compare: compareECS({}),
     },
     {
       type: "Task",
       Client: ECSTask,
       isOurMinion,
-      compare: compareAws({
-        filterTarget: () => pipe([omit([""]), filterTargetDefault]),
-        filterLive: () => pipe([omit([""]), filterLiveDefault]),
-      }),
+      compare: compareECS({}),
       filterLive: () =>
         pick(["enableExecuteCommand", "launchType", "overrides"]),
       dependencies: {

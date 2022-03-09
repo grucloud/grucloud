@@ -3,7 +3,19 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Certificate", group: "ACM", name: "grucloud.org" },
+  {
+    type: "Certificate",
+    group: "ACM",
+    name: "grucloud.org",
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "myvalue",
+        },
+      ],
+    }),
+  },
   {
     type: "HostedZone",
     group: "Route53",

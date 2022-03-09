@@ -13,8 +13,8 @@ exports.createResources = () => [
       DataType: "text",
       Tags: [
         {
-          Key: "TOTOKEY",
-          Value: "TOTOVALUE",
+          Key: "TOTOKEYnew",
+          Value: "TOTOVALUENEW",
         },
       ],
     }),
