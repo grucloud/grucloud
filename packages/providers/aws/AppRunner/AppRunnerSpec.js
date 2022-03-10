@@ -33,6 +33,11 @@ module.exports = () =>
         accessRole: { type: "Role", group: "IAM" },
         repository: { type: "Repository", group: "ECR" },
       },
+      propertiesDefault: {
+        NetworkConfiguration: {
+          EgressConfiguration: { EgressType: "DEFAULT" },
+        },
+      },
       isOurMinion,
       compare: compareAppRunner({
         filterAll: pipe([

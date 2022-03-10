@@ -103,7 +103,7 @@ exports.ECSTaskSet = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { cluster, service },
   }) =>
     pipe([
@@ -120,7 +120,7 @@ exports.ECSTaskSet = ({ spec, config }) => {
           name,
           config,
           namespace,
-          Tags,
+          tags,
         }),
       }),
     ])();

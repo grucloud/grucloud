@@ -1,4 +1,4 @@
-const { pipe, tap } = require("rubico");
+const { pipe, tap, assign, omit, get } = require("rubico");
 const { RDS } = require("@aws-sdk/client-rds");
 const { createEndpoint } = require("../AwsCommon");
 
@@ -18,3 +18,8 @@ exports.untagResource =
       (TagKeys) => ({ ResourceName: id, TagKeys }),
       rds().removeTagsFromResource,
     ]);
+
+exports.renameTagList = pipe([
+  assign({ Tags: get("TagList") }),
+  omit(["TagList"]),
+]);

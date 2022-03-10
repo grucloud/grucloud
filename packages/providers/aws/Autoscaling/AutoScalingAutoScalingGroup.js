@@ -24,6 +24,8 @@ const {
   untagResource,
 } = require("./AutoScalingCommon");
 
+const ResourceType = "auto-scaling-group";
+
 const findId = get("live.AutoScalingGroupARN");
 const pickId = pipe([
   tap(({ AutoScalingGroupName }) => {
@@ -247,7 +249,15 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     getList,
     configDefault,
     managedByOther,
-    tagResource: tagResource({ autoScaling }),
-    untagResource: untagResource({ autoScaling }),
+    tagResource: tagResource({
+      autoScaling,
+      ResourceType,
+      property: "AutoScalingGroupName",
+    }),
+    untagResource: untagResource({
+      autoScaling,
+      ResourceType,
+      property: "AutoScalingGroupName",
+    }),
   };
 };

@@ -1,23 +1,28 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick } = require("rubico");
+const { map, pipe, tap, get, eq, pick, omit } = require("rubico");
 const { defaultsDeep, pluck } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createRDS, tagResource, untagResource } = require("./RDSCommon");
+const {
+  createRDS,
+  tagResource,
+  untagResource,
+  renameTagList,
+} = require("./RDSCommon");
 
 const ignoreErrorCodes = ["DBClusterNotFoundFault"];
 
-const findId = get("live.DBClusterIdentifier");
+const findId = get("live.DBClusterArn");
 const pickId = pipe([
   tap(({ DBClusterIdentifier }) => {
     assert(DBClusterIdentifier);
   }),
   pick(["DBClusterIdentifier"]),
 ]);
-const findName = findId;
+const findName = get("live.DBClusterIdentifier");
 const isInstanceUp = pipe([eq(get("Status"), "available")]);
 
 exports.DBCluster = ({ spec, config }) => {
@@ -50,6 +55,7 @@ exports.DBCluster = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeDBClusters",
     getParam: "DBClusters",
+    decorate: () => pipe([renameTagList]),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -62,22 +68,21 @@ exports.DBCluster = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBCluster-property
-  //TODO tags
   const configDefault = async ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { dbSubnetGroup, securityGroups },
   }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         DBClusterIdentifier: name,
         DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
         VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
           securityGroups
         ),
-        Tags: buildTags({ config, namespace, name }),
+        Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
     ])();
 
@@ -93,6 +98,7 @@ exports.DBCluster = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "modifyDBCluster",
+    filterParams: () => pipe([omit(["Tags"])]),
     getById,
   });
 

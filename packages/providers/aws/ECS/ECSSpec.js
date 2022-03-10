@@ -12,7 +12,7 @@ const { ECSTask } = require("./ECSTask");
 const { ECSContainerInstance } = require("./ECSContainerInstance");
 
 const GROUP = "ECS";
-const compareECS = compareAws({ tagsKey: "tags" });
+const compareECS = compareAws({ tagsKey: "tags", key: "key" });
 
 const isOurMinion = isOurMinionFactory({
   key: "key",
@@ -27,7 +27,6 @@ module.exports = () =>
       Client: ECSCapacityProvider,
       isOurMinion,
       compare: compareECS({
-        filterAll: pipe([omit(["tags"])]),
         filterLive: () =>
           pipe([omit(["capacityProviderArn", "status", "updateStatus"])]),
       }),

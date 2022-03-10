@@ -318,6 +318,7 @@ exports.createResources = () => [
     name: "my-cluster",
     properties: ({}) => ({
       version: "1.20",
+      tags: { mykey1: "value" },
     }),
     dependencies: () => ({
       subnets: [
@@ -345,6 +346,7 @@ exports.createResources = () => [
         "alpha.eksctl.io/nodegroup-name": "ng-1",
         "alpha.eksctl.io/cluster-name": "my-cluster",
       },
+      tags: { mykey1: "value" },
     }),
     dependencies: () => ({
       cluster: "my-cluster",

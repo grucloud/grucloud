@@ -56,8 +56,14 @@ exports.computeHash256 = (ZipFile) =>
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#tagResource-property
 exports.tagResource =
   ({ lambda }) =>
-  ({ id }) =>
-    pipe([(Tags) => ({ Resource: id, Tags }), lambda().tagResource]);
+  ({ id, live }) =>
+    pipe([
+      tap((params) => {
+        assert(live);
+      }),
+      (Tags) => ({ Resource: id, Tags }),
+      lambda().tagResource,
+    ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#untagResource-property
 exports.untagResource =

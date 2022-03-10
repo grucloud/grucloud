@@ -154,7 +154,7 @@ exports.ECSService = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { cluster, taskDefinition },
   }) =>
     pipe([
@@ -171,7 +171,7 @@ exports.ECSService = ({ spec, config }) => {
           name,
           config,
           namespace,
-          Tags,
+          tags,
         }),
       }),
     ])();

@@ -90,7 +90,6 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 - example vpc-use still using make and use
 - propertiesDefault instead of defaultsDeep
 - RDS DBCluster AvailabilityZones
-- ECR.makeRegistry delete
 - inferName for SecurityGroup, and Route Table
 - Nat gateway handle deleting
 - EC2 Instance placement

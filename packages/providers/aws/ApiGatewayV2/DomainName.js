@@ -107,6 +107,9 @@ exports.DomainName = ({ spec, config }) => {
       }),
     ])();
 
+  const buildResourceArn = ({ DomainName }) =>
+    `arn:aws:apigateway:${config.region}::/domainnames/${DomainName}`;
+
   return {
     spec,
     findName,
@@ -119,5 +122,7 @@ exports.DomainName = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    tagResource: tagResource({ apiGateway, buildResourceArn }),
+    untagResource: untagResource({ apiGateway, buildResourceArn }),
   };
 };

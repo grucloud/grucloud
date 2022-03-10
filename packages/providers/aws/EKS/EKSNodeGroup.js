@@ -17,7 +17,7 @@ const {
   untagResource,
 } = require("./EKSCommon");
 const findName = get("live.nodegroupName");
-const findId = findName;
+const findId = get("live.nodegroupArn");
 const pickId = pick(["nodegroupName", "clusterName"]);
 const ignoreErrorCodes = ["ResourceNotFoundException"];
 
@@ -154,11 +154,11 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { tags, ...otherProps },
     dependencies: { cluster, role, subnets, launchTemplate },
   }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       tap((params) => {
         assert(cluster, "missing 'cluster' dependency");
         assert(role, "missing 'role' dependency");
@@ -175,7 +175,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
           maxSize: 1,
           desiredSize: 1,
         },
-        tags: buildTagsObject({ config, namespace, name }),
+        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
       switchCase([
         () => launchTemplate,

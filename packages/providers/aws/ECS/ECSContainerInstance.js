@@ -74,7 +74,7 @@ exports.ECSContainerInstance = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { cluster },
   }) =>
     pipe([
@@ -88,7 +88,7 @@ exports.ECSContainerInstance = ({ spec, config }) => {
           name,
           config,
           namespace,
-          Tags,
+          tags,
         }),
       }),
     ])();

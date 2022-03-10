@@ -70,8 +70,8 @@ exports.Api = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
-  const buildResourceArn = ({ apiId }) =>
-    `arn:aws:apigateway:${config.region}::/apis/${apiId}`;
+  const buildResourceArn = ({ ApiId }) =>
+    `arn:aws:apigateway:${config.region}::/apis/${ApiId}`;
 
   return {
     spec,

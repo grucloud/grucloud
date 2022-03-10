@@ -4,6 +4,23 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "DBSubnetGroup",
+    group: "RDS",
+    name: "subnet-group-postgres",
+    properties: ({}) => ({
+      DBSubnetGroupDescription: "db subnet group",
+      Tags: [
+        {
+          Key: "mykey1",
+          Value: "myvalue",
+        },
+      ],
+    }),
+    dependencies: () => ({
+      subnets: ["subnet-1", "subnet-2"],
+    }),
+  },
+  {
     type: "DBInstance",
     group: "RDS",
     name: "db-instance",
@@ -19,6 +36,12 @@ exports.createResources = () => [
       BackupRetentionPeriod: 1,
       MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
       MasterUserPassword: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
+      Tags: [
+        {
+          Key: "mykey1",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: () => ({
       dbSubnetGroup: "subnet-group-postgres",

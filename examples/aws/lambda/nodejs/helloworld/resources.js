@@ -67,6 +67,7 @@ exports.createResources = () => [
       Description: "",
       Timeout: 3,
       MemorySize: 128,
+      Tags: { mykey: "value" },
     }),
     dependencies: () => ({
       layers: ["lambda-layer"],

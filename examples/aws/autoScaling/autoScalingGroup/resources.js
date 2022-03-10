@@ -11,6 +11,12 @@ exports.createResources = () => [
       MinSize: 1,
       MaxSize: 1,
       DesiredCapacity: 1,
+      Tags: [
+        {
+          Key: "mykey1",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: () => ({
       subnets: ["PubSubnetAz1", "PubSubnetAz2"],
@@ -91,6 +97,12 @@ exports.createResources = () => [
         ImageId: "ami-02e136e904f3da870",
         InstanceType: "t2.micro",
       },
+      Tags: [
+        {
+          Key: "mykey1",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: () => ({
       keyPair: "kp-ecs",

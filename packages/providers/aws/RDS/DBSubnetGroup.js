@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, not, assign, pick } = require("rubico");
+const { map, pipe, tap, get, eq, not, assign, pick, omit } = require("rubico");
 const { defaultsDeep, pluck } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
@@ -7,8 +7,8 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createRDS, tagResource, untagResource } = require("./RDSCommon");
 
-const findId = get("live.DBSubnetGroupName");
-const findName = findId;
+const findId = get("live.DBSubnetGroupArn");
+const findName = get("live.DBSubnetGroupName");
 const pickId = pipe([
   tap(({ DBSubnetGroupName }) => {
     assert(DBSubnetGroupName);
@@ -89,6 +89,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "modifyDBSubnetGroup",
+    filterParams: () => omit(["Tags"]),
     getById,
   });
 

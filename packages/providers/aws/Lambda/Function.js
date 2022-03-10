@@ -188,7 +188,7 @@ exports.Function = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { role, layers = [] },
     programOptions,
   }) =>
@@ -204,11 +204,11 @@ exports.Function = ({ spec, config }) => {
         }),
       (ZipFile) =>
         pipe([
-          () => properties,
+          () => otherProps,
           defaultsDeep({
             FunctionName: name,
             Role: getField(role, "Arn"),
-            Tags: buildTagsObject({ config, namespace, name }),
+            Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
             Layers: pipe([
               () => layers,
               map((layer) => getField(layer, "LayerVersionArn")),

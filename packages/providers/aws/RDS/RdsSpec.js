@@ -9,7 +9,7 @@ const { DBInstance } = require("./DBInstance");
 const { DBSubnetGroup } = require("./DBSubnetGroup");
 
 const GROUP = "RDS";
-const compareRDS = compareAws({ tagsKey: "TagList" });
+const compareRDS = compareAws({});
 
 const environmentVariables = [
   { path: "MasterUsername", suffix: "MASTER_USERNAME" },

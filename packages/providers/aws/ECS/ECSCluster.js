@@ -119,7 +119,7 @@ exports.ECSCluster = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { capacityProviders = [] },
   }) =>
     pipe([
@@ -134,7 +134,7 @@ exports.ECSCluster = ({ spec, config }) => {
           name,
           config,
           namespace,
-          Tags,
+          tags,
         }),
       }),
     ])();

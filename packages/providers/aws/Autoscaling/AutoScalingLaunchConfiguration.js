@@ -11,6 +11,7 @@ const {
 } = require("./AutoScalingCommon");
 
 const ignoreErrorMessages = ["Launch configuration name not found"];
+const ResourceType = "launch-configuration";
 
 const findName = get("live.LaunchConfigurationName");
 const findId = get("live.LaunchConfigurationARN");
@@ -160,7 +161,15 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    tagResource: tagResource({ autoScaling }),
-    untagResource: untagResource({ autoScaling }),
+    tagResource: tagResource({
+      autoScaling,
+      ResourceType,
+      property: "LaunchConfigurationName",
+    }),
+    untagResource: untagResource({
+      autoScaling,
+      ResourceType,
+      property: "LaunchConfigurationName",
+    }),
   };
 };

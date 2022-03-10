@@ -44,5 +44,5 @@ exports.untagResource =
   ({ live }) =>
     pipe([
       (TagKeys) => ({ ResourceArn: buildResourceArn(live), TagKeys }),
-      apiGateway().removeTagsFromResource,
+      apiGateway().untagResource,
     ]);

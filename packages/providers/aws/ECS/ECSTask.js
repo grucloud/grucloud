@@ -126,7 +126,7 @@ exports.ECSTask = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { cluster, taskDefinition, subnets, securityGroups = [] },
   }) =>
     pipe([
@@ -146,7 +146,7 @@ exports.ECSTask = ({ spec, config }) => {
           name,
           config,
           namespace,
-          Tags,
+          tags,
         }),
       }),
     ])();

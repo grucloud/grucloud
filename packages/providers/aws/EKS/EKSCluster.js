@@ -19,7 +19,7 @@ const {
 } = require("./EKSCommon");
 
 const findName = get("live.name");
-const findId = findName;
+const findId = get("live.arn");
 const pickId = pick(["name"]);
 
 const findDependencies = ({ live }) => [
@@ -160,7 +160,7 @@ exports.EKSCluster = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { subnets, securityGroups, role, key },
   }) =>
     pipe([
@@ -186,7 +186,7 @@ exports.EKSCluster = ({ spec, config }) => {
           ],
         }),
         name,
-        tags: buildTagsObject({ config, namespace, name }),
+        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
     ])();
 

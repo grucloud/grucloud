@@ -204,9 +204,13 @@ exports.KmsKey = ({ spec, config }) => {
     ignoreErrorCodes: ["NotFoundException"],
   });
 
-  const configDefault = ({ name, namespace, properties }) =>
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+  }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         Tags: buildTags({
           config,
@@ -214,6 +218,7 @@ exports.KmsKey = ({ spec, config }) => {
           name,
           key: "TagKey",
           value: "TagValue",
+          UserTags: Tags,
         }),
       }),
     ])();

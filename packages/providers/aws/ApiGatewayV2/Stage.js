@@ -112,8 +112,8 @@ exports.Stage = ({ spec, config }) => {
       ),
     ])();
 
-  const buildResourceArn = ({ apiId, stageName }) =>
-    `arn:aws:apigateway:${config.region}::/apis/${apiId}/stages/${stageName}`;
+  const buildResourceArn = ({ ApiId, StageName }) =>
+    `arn:aws:apigateway:${config.region}::/apis/${ApiId}/stages/${StageName}`;
 
   return {
     spec,

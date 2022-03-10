@@ -6,12 +6,12 @@ const { createEndpoint } = require("../AwsCommon");
 
 exports.createECS = createEndpoint(ECS);
 
-exports.buildTagsEcs = ({ name, config, namespace, Tags }) =>
+exports.buildTagsEcs = ({ name, config, namespace, tags }) =>
   buildTags({
     name,
     config,
     namespace,
-    UserTags: Tags,
+    UserTags: tags,
     key: "key",
     value: "value",
   });

@@ -108,7 +108,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { taskRole, executionRole },
   }) =>
     pipe([
@@ -124,7 +124,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
           name,
           config,
           namespace,
-          Tags,
+          tags,
         }),
       }),
     ])();
