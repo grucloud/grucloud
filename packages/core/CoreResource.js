@@ -161,7 +161,7 @@ exports.ResourceMaker = ({
 
   const getClient = () => provider.getClient(spec);
 
-  const getLive = ({ deep = true, options = {} } = {}) =>
+  const getLive = ({ deep = true, options = {}, resolvedDependencies } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getLive ${toString()}, deep: ${deep}`);
@@ -174,11 +174,11 @@ exports.ResourceMaker = ({
           namespace,
           meta,
           dependencies: getDependencies(),
+          resolvedDependencies,
           properties,
           resolveConfig,
           deep,
           resources: provider.getResourcesByType(spec),
-          properties,
           lives: provider.lives,
         }),
       unless(
@@ -638,7 +638,7 @@ exports.ResourceMaker = ({
       () =>
         retryCall({
           name: `getLive ${toString()}`,
-          fn: async () => getLive({ deep: true }),
+          fn: async () => getLive({ deep: true, resolvedDependencies }),
           config: { retryCount: 5, retryDelay: 5e3 },
           isExpectedResult: not(isEmpty),
         }),

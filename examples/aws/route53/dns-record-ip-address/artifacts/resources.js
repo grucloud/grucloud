@@ -49,12 +49,6 @@ exports.createResources = () => [
           }),
         },
       ],
-      Tags: [
-        {
-          Key: "mykey",
-          Value: "myvalue",
-        },
-      ],
     }),
     dependencies: () => ({
       hostedZone: "grucloud.org.",

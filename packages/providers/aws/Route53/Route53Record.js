@@ -10,7 +10,6 @@ const {
   pick,
   filter,
   assign,
-  fork,
   not,
   eq,
   omit,
@@ -26,7 +25,6 @@ const {
   callProp,
   size,
   includes,
-  identity,
   unless,
 } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
@@ -36,36 +34,13 @@ const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { filterEmptyResourceRecords } = require("./Route53Utils");
-const { createRoute53, hostedZoneIdToResourceId } = require("./Route53Common");
+const { createRoute53, buildRecordName } = require("./Route53Common");
 
 const omitFieldRecord = omit(["HostedZoneId", "namespace"]);
 
 const liveToResourceSet = pipe([omitFieldRecord, filterEmptyResourceRecords]);
-const RecordKeyPrefix = "gc-record-";
-const buildRecordTagKey = (name) => `${RecordKeyPrefix}${name}`;
-const getNameFromTagKey = (key = "") => key.replace(RecordKeyPrefix, "");
-const buildRecordTagValue = ({ Name, Type }) => `${Name}::${Type}`;
 
-const findNameInTags = pipe([
-  get("live"),
-  tap((live) => {
-    logger.debug(`findName live ${tos(live)}`);
-    assert(live.Name);
-    //assert(live.Tags);
-  }),
-  ({ Name, Type, Tags }) =>
-    find(eq(get("Value"), buildRecordTagValue({ Name, Type })))(Tags),
-  tap((tag) => {
-    logger.debug(`findName tag ${tos(tag)}`);
-  }),
-  get("Key"),
-  getNameFromTagKey,
-  tap((Key) => {
-    logger.debug(`findName name: ${tos(Key)}`);
-  }),
-]);
-
-const findId = pipe([get("live"), buildRecordTagValue]);
+const findId = pipe([get("live"), buildRecordName]);
 
 const getHostedZone = ({ resource: { name, dependencies }, lives }) =>
   pipe([
@@ -233,27 +208,32 @@ exports.Route53Record = ({ spec, config }) => {
     },
   ];
 
-  const findNameInDependencies = pipe([
-    findDependencies,
-    filter(not(eq(get("type"), "HostedZone"))),
-    find(pipe([get("ids"), not(isEmpty)])),
-    unless(
-      isEmpty,
-      pipe([
-        tap(({ ids }) => {
-          if (!ids[0].name) {
-            assert(ids[0].name);
-          }
-        }),
-        ({ group, type, ids }) => `record::${group}::${type}::${ids[0].name}`,
-      ])
-    ),
-  ]);
+  const findNameInDependencies = ({ live, lives }) =>
+    pipe([
+      () => ({ live, lives }),
+      findDependencies,
+      filter(not(eq(get("type"), "HostedZone"))),
+      tap((params) => {
+        assert(true);
+      }),
+      find(pipe([get("ids"), not(isEmpty)])),
+      unless(
+        isEmpty,
+        pipe([
+          tap(({ ids }) => {
+            if (!ids[0].name) {
+              assert(ids[0].name);
+            }
+          }),
+          ({ group, type, ids }) => `record::${group}::${type}::${ids[0].name}`,
+        ])
+      ),
+    ])();
 
   const findName = ({ live, lives }) =>
     pipe([
       () => {
-        for (fn of [findNameInDependencies, findNameInTags, findId]) {
+        for (fn of [findNameInDependencies, findId]) {
           const name = fn({ live, lives, config });
           if (!isEmpty(name)) {
             return name;
@@ -264,50 +244,11 @@ exports.Route53Record = ({ spec, config }) => {
 
   const findNamespace = get("live.namespace", "");
 
-  const findRecordInZone = ({ name, namespace, hostedZone }) =>
-    pipe([
-      () => hostedZone,
-      tap(() => {
-        logger.debug(`findRecordInZone ${tos({ name, hostedZone })}`);
-      }),
-      get("Tags", []),
-      find(eq(get("Key"), buildRecordTagKey(name))),
-      get("Value"),
-      tryCatch(
-        pipe([
-          callProp("split", "::"),
-          ([Name, Type] = []) =>
-            find(
-              and([
-                //
-                eq(get("Name"), Name),
-                eq(get("Type"), Type),
-              ])
-            )(hostedZone.RecordSet),
-        ]),
-        (error) => {
-          logger.debug(`findRecordInZone ${name}, cannot find record in tags`);
-        }
-      ),
-      switchCase([
-        isEmpty,
-        () => undefined,
-        (record) => ({
-          ...record,
-          Tags: hostedZone.Tags,
-          HostedZoneId: hostedZone.Id,
-          namespace,
-        }),
-      ]),
-      tap((record) => {
-        logger.debug(`findRecordInZone ${name}: ${tos({ record })}`);
-      }),
-    ])();
-
-  const getListFromLive = ({ lives }) =>
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
+  const getList = ({ lives }) =>
     pipe([
       tap(() => {
-        logger.info(`getListFromLive`);
+        logger.info(`getList record`);
         assert(lives);
       }),
       () =>
@@ -319,99 +260,42 @@ exports.Route53Record = ({ spec, config }) => {
           map(assign({ HostedZoneId: () => hostedZone.id })),
         ])()
       ),
-      tap((records) => {
-        logger.debug(`getListFromLive result: ${tos(records)}`);
-      }),
     ])();
 
-  const getListFromTarget = ({ resources = [], lives } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getListFromTarget #resources ${size(resources)}`);
-        assert(lives);
-      }),
-      () => resources,
-      map((resource) =>
-        pipe([
-          tap(() => {
-            logger.debug(`getListFromTarget resource ${resource.name}`);
-          }),
-          () => getHostedZone({ resource, lives }),
-          tap((hostedZone) => {
-            logger.debug(`getListFromTarget, hostedZone: ${hostedZone}`);
-          }),
-          switchCase([
-            isEmpty,
-            () => null,
-            (hostedZone) =>
-              findRecordInZone({
-                name: resource.name,
-                namespace: resource.namespace,
-                hostedZone,
-              }),
-          ]),
-        ])()
-      ),
-      filter(not(isEmpty)),
-      tap((records) => {
-        logger.debug(`getList route53 records result: ${tos(records)}`);
-      }),
-    ])();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
-  const getList = ({ resources = [], lives }) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList Route53Record #resources ${resources.length}`);
-      }),
-      fork({
-        recordsLive: () => getListFromLive({ lives }),
-        recordsTarget: () => getListFromTarget({ resources, lives }),
-      }),
-      tap(({ recordsLive, recordsTarget }) => {
-        logger.debug(
-          `getList route53 records result: ${tos({
-            recordsLive,
-            recordsTarget,
-          })}`
-        );
-      }),
-      ({ recordsLive, recordsTarget }) =>
-        pipe([
-          () => recordsLive,
-          map((recordLive) =>
-            pipe([
-              () => recordsTarget,
-              find((recordTarget) =>
-                pipe([
-                  fork({
-                    recordTargetFiltered: () =>
-                      omit(["Tags", "namespace"])(recordTarget),
-                    recordLiveFiltered: () =>
-                      omit(["Tags", "namespace"])(recordLive),
-                  }),
-                  ({ recordTargetFiltered, recordLiveFiltered }) =>
-                    isDeepEqual(recordTargetFiltered, recordLiveFiltered),
-                ])()
-              ),
-              switchCase([isEmpty, () => recordLive, identity]),
-            ])()
-          ),
-        ])(),
-    ])();
-
-  const getByName = ({ name, namespace, dependencies, lives }) =>
+  const getByName = ({
+    name,
+    properties,
+    dependencies,
+    resolvedDependencies,
+    lives,
+  }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
         assert(dependencies, "dependencies");
       }),
-      () => getHostedZone({ resource: { dependencies, name }, lives }),
-      switchCase([
-        not(isEmpty),
-        (hostedZone) => findRecordInZone({ name, namespace, hostedZone }),
-        () => {},
-      ]),
+      tap((params) => {
+        assert(true);
+      }),
+      () =>
+        configDefault({
+          name,
+          properties: properties({ getId: () => undefined }),
+          dependencies: resolvedDependencies,
+        }),
+      tap((params) => {
+        assert(true);
+      }),
+      buildRecordName,
+      (recordName) =>
+        pipe([
+          () => getHostedZone({ resource: { dependencies, name }, lives }),
+          tap((params) => {
+            assert(recordName);
+          }),
+          get("RecordSet"),
+          find(eq(buildRecordName, recordName)),
+        ])(),
       tap((result) => {
         logger.debug(`getByName result: ${tos(result)}`);
       }),
@@ -435,30 +319,17 @@ exports.Route53Record = ({ spec, config }) => {
         );
       }),
       () => payload,
-      omit(["Tags"]),
       (ResourceRecordSet) => ({
         Action: "CREATE",
         ResourceRecordSet,
       }),
-      (Change) =>
-        route53().changeResourceRecordSets({
-          HostedZoneId: hostedZone.live.Id,
-          ChangeBatch: {
-            Changes: [Change],
-          },
-        }),
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
-      () =>
-        route53().changeTagsForResource({
-          ResourceId: hostedZoneIdToResourceId(hostedZone.live.Id),
-          AddTags: [
-            {
-              Key: buildRecordTagKey(name),
-              Value: buildRecordTagValue(payload),
-            },
-          ],
-          ResourceType: "hostedzone",
-        }),
+      (Change) => ({
+        HostedZoneId: hostedZone.live.Id,
+        ChangeBatch: {
+          Changes: [Change],
+        },
+      }),
+      route53().changeResourceRecordSets,
       tap((result) => {
         logger.info(`record created: ${name}`);
       }),
@@ -491,13 +362,6 @@ exports.Route53Record = ({ spec, config }) => {
               },
             }),
             route53().changeResourceRecordSets,
-            // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
-            () => ({
-              ResourceId: hostedZoneIdToResourceId(live.HostedZoneId),
-              RemoveTagKeys: [buildRecordTagKey(name)],
-              ResourceType: "hostedzone",
-            }),
-            route53().changeTagsForResource,
           ]),
           (error) =>
             pipe([
@@ -579,6 +443,9 @@ exports.Route53Record = ({ spec, config }) => {
       unless(
         isEmpty,
         pipe([
+          tap((params) => {
+            assert(true);
+          }),
           () => ({
             Name: getField(
               certificate,
@@ -609,21 +476,6 @@ exports.Route53Record = ({ spec, config }) => {
           HostedZoneId: getField(loadBalancer, "CanonicalHostedZoneId"),
           DNSName: `dualstack.${getField(loadBalancer, "DNSName")}.`,
           EvaluateTargetHealth: true,
-        },
-      })),
-    ])();
-
-  //TODO Regional
-  const apiGatewayRecord = ({ apiGatewayDomainName, hostedZone }) =>
-    pipe([
-      () => apiGatewayDomainName,
-      unless(isEmpty, () => ({
-        Name: hostedZone.config.Name,
-        Type: "A",
-        AliasTarget: {
-          HostedZoneId: getField(apiGatewayDomainName, "regionalHostedZoneId"),
-          DNSName: `${getField(apiGatewayDomainName, "regionalDomainName")}.`,
-          EvaluateTargetHealth: false,
         },
       })),
     ])();
@@ -664,12 +516,11 @@ exports.Route53Record = ({ spec, config }) => {
 
   const configDefault = ({
     name,
-    properties,
+    properties = {},
     dependencies: {
       certificate,
       loadBalancer,
       hostedZone,
-      apiGatewayDomainName,
       apiGatewayV2DomainName,
       distribution,
     },
@@ -681,7 +532,6 @@ exports.Route53Record = ({ spec, config }) => {
       () => properties,
       defaultsDeep(certificateRecord({ certificate })),
       defaultsDeep(loadBalancerRecord({ loadBalancer, hostedZone })),
-      defaultsDeep(apiGatewayRecord({ apiGatewayDomainName, hostedZone })),
       defaultsDeep(apiGatewayV2Record({ apiGatewayV2DomainName, hostedZone })),
       defaultsDeep(distributionRecord({ distribution, hostedZone })),
       defaultsDeep({ Name: name }),
@@ -694,6 +544,26 @@ exports.Route53Record = ({ spec, config }) => {
     }),
     (Type) => pipe([() => ["SOA", "NS"], includes(Type)])(),
   ]);
+
+  const isOurMinion = ({ live, lives, config }) =>
+    pipe([
+      () => live,
+      get("HostedZoneId"),
+      (id) =>
+        lives.getById({
+          id,
+          type: "HostedZone",
+          group: "Route53",
+          providerName: config.providerName,
+        }),
+      tap((hostedZone) => {
+        assert(hostedZone);
+      }),
+      get("managedByUs"),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   return {
     spec,
@@ -708,6 +578,7 @@ exports.Route53Record = ({ spec, config }) => {
     getList,
     configDefault,
     cannotBeDeleted,
+    isOurMinion,
   };
 };
 exports.compareRoute53Record = pipe([

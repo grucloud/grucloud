@@ -300,10 +300,7 @@ function CoreProvider({
     assert(resourcesByType);
     mapTypeToResources.set(
       JSON.stringify({ type: resource.type, group: resource.group }),
-      [
-        ...filter(not(eq(get("name"), resource.name)))(resourcesByType),
-        resource,
-      ]
+      [...filter(not(eq(get("name"), name)))(resourcesByType), resource]
     );
 
     tap.if(get("hook"), (client) =>

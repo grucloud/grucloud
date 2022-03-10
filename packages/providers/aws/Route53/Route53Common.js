@@ -6,6 +6,7 @@ const { createEndpoint } = require("../AwsCommon");
 exports.createRoute53 = createEndpoint(Route53);
 
 exports.hostedZoneIdToResourceId = callProp("replace", "/hostedzone/", "");
+exports.buildRecordName = ({ Name, Type }) => `record::${Name}::${Type}`;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
 exports.tagResource =

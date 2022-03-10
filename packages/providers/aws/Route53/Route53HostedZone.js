@@ -56,7 +56,7 @@ const {
 
 //Check for the final dot
 const findName = get("live.Name");
-const findId = get("live.Id");
+const findId = pipe([get("live.Id"), hostedZoneIdToResourceId]);
 const pickId = pick(["Id"]);
 
 const canDeleteRecord = (zoneName) =>
@@ -171,7 +171,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createHostedZone-property
-  const create = async ({
+  const create = ({
     name,
     namespace,
     payload = {},
@@ -185,6 +185,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
       }),
       () => ({
         Name: payload.Name,
+        //TODO other param ?
         CallerReference: getNewCallerReference(),
       }),
       route53().createHostedZone,
@@ -193,31 +194,36 @@ exports.Route53HostedZone = ({ spec, config }) => {
       }),
       tap(
         pipe([
-          ({ HostedZone }) => ({
-            ResourceId: hostedZoneIdToResourceId(HostedZone.Id),
+          get("HostedZone.Id"),
+          tap((Id) => {
+            assert(Id);
+          }),
+          hostedZoneIdToResourceId,
+          (ResourceId) => ({
+            ResourceId,
             AddTags: payload.Tags,
             ResourceType: "hostedzone",
           }),
           route53().changeTagsForResource,
         ])
       ),
-      tap(({ HostedZone }) =>
-        pipe([
-          () => payload.RecordSet,
-          map((ResourceRecordSet) => ({
-            Action: "CREATE",
-            ResourceRecordSet,
-          })),
-          tap.if(not(isEmpty), (Changes) =>
-            route53().changeResourceRecordSets({
-              HostedZoneId: HostedZone.Id,
-              ChangeBatch: {
-                Changes,
-              },
-            })
-          ),
-        ])()
-      ),
+      // tap(({ HostedZone }) =>
+      //   pipe([
+      //     () => payload.RecordSet,
+      //     map((ResourceRecordSet) => ({
+      //       Action: "CREATE",
+      //       ResourceRecordSet,
+      //     })),
+      //     tap.if(not(isEmpty), (Changes) =>
+      //       route53().changeResourceRecordSets({
+      //         HostedZoneId: HostedZone.Id,
+      //         ChangeBatch: {
+      //           Changes,
+      //         },
+      //       })
+      //     ),
+      //   ])()
+      // ),
       tap.if(
         ({ DelegationSet }) =>
           domain &&
@@ -404,6 +410,8 @@ exports.Route53HostedZone = ({ spec, config }) => {
       }),
     ])();
 
+  const ResourceType = "hostedzone";
+
   return {
     spec,
     findId,
@@ -416,62 +424,62 @@ exports.Route53HostedZone = ({ spec, config }) => {
     getList,
     configDefault,
     findNamespace: findNamespaceInTags(config),
-    tagResource: tagResource({ route53 }),
-    untagResource: untagResource({ route53 }),
+    tagResource: tagResource({ route53, ResourceType }),
+    untagResource: untagResource({ route53, ResourceType }),
   };
 };
 //TODO
-exports.compareHostedZone = ({ target, live, dependencies, lives }) =>
-  pipe([
-    tap(() => {
-      //logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
-      assert(live.RecordSet, "live.recordSet");
-      assert(lives);
-    }),
-    fork({
-      liveRecordSet: () => filter(canDeleteRecord(target.Name))(live.RecordSet),
-      targetRecordSet: async () =>
-        map(
-          tryCatch(
-            (resource) => {
-              return resource.resolveConfig({ lives, deep: true });
-            },
-            (error) => {
-              logger.error("compareHostedZone error in resolveConfig");
-              logger.error(tos(error));
-              return { error };
-            }
-          )
-        )([]),
-    }),
-    //TODO throw if error
-    tap((xxx) => {
-      logger.debug(`compareHostedZone `);
-    }),
-    fork({
-      deletions: ({ liveRecordSet, targetRecordSet }) =>
-        differenceWith(
-          (left, right) =>
-            and([eq(get("Name"), right.Name), eq(get("Type"), right.Type)])(
-              left
-            ),
-          liveRecordSet
-        )(targetRecordSet),
-    }),
-    tap((xxx) => {
-      logger.debug(`compareHostedZone `);
-    }),
-    assign({
-      needUpdateRecordSet: or([(diff) => !isEmpty(diff.deletions)]),
-      needUpdateManagedZone: () => target.Name !== live.Name,
-    }),
-    assign({
-      needUpdate: or([
-        get("needUpdateRecordSet"),
-        get("needUpdateManagedZone"),
-      ]),
-    }),
-    tap((diff) => {
-      logger.debug(`compareHostedZone diff:${tos(diff)}`);
-    }),
-  ])();
+// exports.compareHostedZone = ({ target, live, dependencies, lives }) =>
+//   pipe([
+//     tap(() => {
+//       //logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
+//       assert(live.RecordSet, "live.recordSet");
+//       assert(lives);
+//     }),
+//     fork({
+//       liveRecordSet: () => filter(canDeleteRecord(target.Name))(live.RecordSet),
+//       targetRecordSet: async () =>
+//         map(
+//           tryCatch(
+//             (resource) => {
+//               return resource.resolveConfig({ lives, deep: true });
+//             },
+//             (error) => {
+//               logger.error("compareHostedZone error in resolveConfig");
+//               logger.error(tos(error));
+//               return { error };
+//             }
+//           )
+//         )([]),
+//     }),
+//     //TODO throw if error
+//     tap((xxx) => {
+//       logger.debug(`compareHostedZone `);
+//     }),
+//     fork({
+//       deletions: ({ liveRecordSet, targetRecordSet }) =>
+//         differenceWith(
+//           (left, right) =>
+//             and([eq(get("Name"), right.Name), eq(get("Type"), right.Type)])(
+//               left
+//             ),
+//           liveRecordSet
+//         )(targetRecordSet),
+//     }),
+//     tap((xxx) => {
+//       logger.debug(`compareHostedZone `);
+//     }),
+//     assign({
+//       needUpdateRecordSet: or([(diff) => !isEmpty(diff.deletions)]),
+//       needUpdateManagedZone: () => target.Name !== live.Name,
+//     }),
+//     assign({
+//       needUpdate: or([
+//         get("needUpdateRecordSet"),
+//         get("needUpdateManagedZone"),
+//       ]),
+//     }),
+//     tap((diff) => {
+//       logger.debug(`compareHostedZone diff:${tos(diff)}`);
+//     }),
+//   ])();

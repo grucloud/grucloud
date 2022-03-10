@@ -13,13 +13,16 @@ const {
 } = require("rubico");
 const { prepend, isEmpty, find } = require("rubico/x");
 const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
-
-const { isOurMinion } = require("../AwsCommon");
-const { Route53HostedZone, compareHostedZone } = require("./Route53HostedZone");
-const { Route53Record, compareRoute53Record } = require("./Route53Record");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
+const { isOurMinion, compareAws } = require("../AwsCommon");
+const { Route53HostedZone } = require("./Route53HostedZone");
+const { Route53Record, compareRoute53Record } = require("./Route53Record");
+const { buildRecordName } = require("./Route53Common");
+
 const GROUP = "Route53";
+
+const compareRoute53 = compareAws({});
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -32,19 +35,15 @@ module.exports = () =>
       },
       Client: Route53HostedZone,
       isOurMinion,
-      compare: compareHostedZone,
-      filterLive: () =>
-        pick([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
+      compare: compareRoute53({
+        filterTarget: () => pipe([() => ({})]),
+        filterLive: () => pipe([() => ({})]),
+      }),
+      filterLive: () => pick([]),
       includeDefaultDependencies: true,
     },
     {
       type: "Record",
-      //TODO
-      dependsOn: ["Route53::HostedZone", "ACM::Certificate"],
       dependencies: {
         hostedZone: { type: "HostedZone", group: "Route53", parent: true },
         elasticIpAddress: { type: "ElasticIpAddress", group: "EC2" },
@@ -52,7 +51,6 @@ module.exports = () =>
         certificate: { type: "Certificate", group: "ACM" },
         distribution: { type: "Distribution", group: "CloudFront" },
         apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
-        apiGatewayDomainName: { type: "DomainName", group: "APIGateway" },
       },
       Client: Route53Record,
       isOurMinion: () => true,
@@ -60,7 +58,7 @@ module.exports = () =>
       inferName: ({ properties, dependenciesSpec }) =>
         pipe([
           () => dependenciesSpec,
-          tap((params) => {
+          tap(() => {
             assert(dependenciesSpec);
           }),
           switchCase([
@@ -75,19 +73,14 @@ module.exports = () =>
             pipe([get("loadBalancer"), prepend("ELBv2::LoadBalancer::")]),
             get("distribution"),
             pipe([get("distribution"), prepend("CloudFront::Distribution::")]),
-            get("apiGatewayDomainName"),
-            pipe([
-              get("apiGatewayDomainName"),
-              prepend("APIGateway::DomainName::"),
-            ]),
             get("apiGatewayV2DomainName"),
             pipe([
               get("apiGatewayV2DomainName"),
               prepend("ApiGatewayV2::DomainName::"),
             ]),
-            () => "",
+            () => `${properties.Name}::${properties.Type}`,
           ]),
-          prepend("record::"),
+          prepend(`record::`),
           tap((params) => {
             assert(true);
           }),
@@ -134,11 +127,9 @@ module.exports = () =>
             hasDependency({ type: "LoadBalancer", group: "ELBv2" }),
             hasDependency({ type: "Certificate", group: "ACM" }),
             hasDependency({ type: "Distribution", group: "CloudFront" }),
-            hasDependency({ type: "DomainName", group: "APIGateway" }),
             hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),
           ]),
         ])(),
-
       //TODO remove ?
       ignoreResource: () => get("cannotBeDeleted"),
     },
