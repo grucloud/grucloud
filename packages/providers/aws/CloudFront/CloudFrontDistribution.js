@@ -165,8 +165,8 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
 
   const create = client.create({
     method: "createDistributionWithTags",
-    filterPayload: (payload) => ({
-      DistributionConfigWithTags: payload,
+    filterPayload: ({ Tags, ...payload }) => ({
+      DistributionConfigWithTags: { ...payload, Tags: { Items: Tags } },
     }),
     isInstanceUp,
     shouldRetryOnExceptionCodes: ["InvalidViewerCertificate"],
@@ -280,7 +280,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
       }),
       (payload) => ({
         DistributionConfig: payload,
-        Tags: { Items: buildTags({ name, namespace, config, UserTags: Tags }) },
+        Tags: buildTags({ name, namespace, config, UserTags: Tags }),
       }),
     ])();
 
