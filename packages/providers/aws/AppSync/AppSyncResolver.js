@@ -70,7 +70,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
             () => ({ apiId, typeName: name }),
             appSync().listResolvers,
             get("resolvers"),
-            map(pipe([defaultsDeep({ apiId, tags })])),
+            map(pipe([defaultsDeep({ apiId })])),
           ])(),
       ]),
   });

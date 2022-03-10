@@ -189,6 +189,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
                   "OperationAborted",
                   "TimeoutError",
                   "ServiceUnavailable",
+                  "SyntaxError", // SDK v3 JSON.parse exception
                 ],
                 includes(error.name),
               ]),

@@ -13,7 +13,7 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(ec2);
 
   const findName = get("live.KeyName");
-  const findId = findName;
+  const findId = get("live.KeyPairId");
   const pickId = pick(["KeyName"]);
 
   const getList = client.getList({

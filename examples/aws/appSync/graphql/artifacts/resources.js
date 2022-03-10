@@ -26,7 +26,6 @@ exports.createResources = () => [
       type: "AWS_LAMBDA",
     }),
     dependencies: () => ({
-      graphqlApi: "cdk-notes-appsync-api",
       serviceRole:
         "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
       lambdaFunction: "lambda-fns",
@@ -41,7 +40,6 @@ exports.createResources = () => [
       kind: "UNIT",
     }),
     dependencies: () => ({
-      graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
   },
@@ -54,7 +52,6 @@ exports.createResources = () => [
       kind: "UNIT",
     }),
     dependencies: () => ({
-      graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
   },
@@ -67,7 +64,6 @@ exports.createResources = () => [
       kind: "UNIT",
     }),
     dependencies: () => ({
-      graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
   },
@@ -80,7 +76,6 @@ exports.createResources = () => [
       kind: "UNIT",
     }),
     dependencies: () => ({
-      graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
   },
@@ -93,7 +88,6 @@ exports.createResources = () => [
       kind: "UNIT",
     }),
     dependencies: () => ({
-      graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
   },

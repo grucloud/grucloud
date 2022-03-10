@@ -18,6 +18,7 @@ exports.createResources = () => [
         },
         managedTerminationProtection: "DISABLED",
       },
+      tags: [{ key: "mykey1", value: "value" }],
     }),
     dependencies: () => ({
       autoScalingGroup: "EcsInstanceAsg",
@@ -34,6 +35,7 @@ exports.createResources = () => [
           value: "disabled",
         },
       ],
+      tags: [{ key: "mykey1", value: "value" }],
     }),
     dependencies: () => ({
       capacityProviders: ["cp"],
@@ -65,6 +67,7 @@ exports.createResources = () => [
       ],
       placementConstraints: [],
       requiresCompatibilities: ["EC2"],
+      tags: [{ key: "mykey1", value: "value" }],
     }),
   },
   {
@@ -96,6 +99,7 @@ exports.createResources = () => [
       schedulingStrategy: "REPLICA",
       enableECSManagedTags: true,
       enableExecuteCommand: false,
+      tags: [{ key: "mykey1", value: "value" }],
     }),
     dependencies: () => ({
       cluster: "cluster",
