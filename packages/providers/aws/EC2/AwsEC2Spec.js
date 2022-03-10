@@ -225,7 +225,9 @@ module.exports = () =>
         instance: { type: "Instance", group: "EC2", parent: true },
       },
       isOurMinion: () => true,
-      compare: compareEC2({ filterAll: pipe([pick([])]) }),
+      compare: compareAws({ getLiveTags: () => [], getTargetTags: () => [] })({
+        filterAll: pipe([pick([])]),
+      }),
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,

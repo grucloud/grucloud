@@ -1,9 +1,9 @@
 const assert = require("assert");
-const { pipe, get, tryCatch, tap } = require("rubico");
+const { assign, map, pipe, get, tryCatch, tap } = require("rubico");
 const { find, first, keys } = require("rubico/x");
 const { IAM } = require("@aws-sdk/client-iam");
 const querystring = require("querystring");
-
+const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamCommon" });
@@ -58,3 +58,21 @@ exports.createFetchPolicyDocument =
         logger.error(`FetchPolicyDocument ${error}, ${document}`);
       }),
     ])();
+
+exports.assignAttachedPolicies = ({ policies = [] }) =>
+  assign({
+    AttachedPolicies: pipe([
+      () => policies,
+      map(
+        pipe([
+          tap((policy) => {
+            assert(policy.config.PolicyName);
+          }),
+          (policy) => ({
+            PolicyArn: getField(policy, "Arn"),
+            PolicyName: policy.config.PolicyName,
+          }),
+        ])
+      ),
+    ]),
+  });

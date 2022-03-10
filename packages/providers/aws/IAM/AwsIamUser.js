@@ -5,8 +5,6 @@ const {
   tap,
   tryCatch,
   get,
-  not,
-  eq,
   assign,
   fork,
   pick,
@@ -28,8 +26,8 @@ const {
   createIAM,
   tagResourceIam,
   untagResourceIam,
+  assignAttachedPolicies,
 } = require("./AwsIamCommon");
-const { getField } = require("../../../core/ProviderCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagUser-property
 const tagResource = tagResourceIam({ field: "UserName", method: "tagUser" });
@@ -78,33 +76,20 @@ exports.AwsIamUser = ({ spec, config }) => {
         get("User"),
         assign({
           AttachedPolicies: pipe([
-            ({ UserName }) => ({
-              UserName,
-              MaxItems: 1e3,
-            }),
+            pick(["UserName"]),
+            defaultsDeep({ MaxItems: 1e3 }),
             iam().listAttachedUserPolicies,
-            tap((params) => {
-              assert(true);
-            }),
             get("AttachedPolicies"),
           ]),
           Policies: pipe([
-            ({ UserName }) => ({
-              UserName,
-              MaxItems: 1e3,
-            }),
+            pick(["UserName"]),
+            defaultsDeep({ MaxItems: 1e3 }),
             iam().listUserPolicies,
-            tap((params) => {
-              assert(true);
-            }),
             get("PolicyNames"),
           ]),
           Groups: pipe([
             pick(["UserName"]),
             iam().listGroupsForUser,
-            tap((params) => {
-              assert(true);
-            }),
             get("Groups"),
             pluck("GroupName"),
           ]),
@@ -135,7 +120,22 @@ exports.AwsIamUser = ({ spec, config }) => {
     dependencies: { policies = [], iamGroups = [] },
   }) =>
     pipe([
-      () => otherProps,
+      () => ({}),
+      assignAttachedPolicies({ policies }),
+      assign({
+        Groups: pipe([
+          () => iamGroups,
+          map(
+            pipe([
+              get("config.GroupName"),
+              tap((GroupName) => {
+                assert(GroupName);
+              }),
+            ])
+          ),
+        ]),
+      }),
+      defaultsDeep(otherProps),
       defaultsDeep({
         UserName: name,
         Path: "/",
@@ -146,44 +146,11 @@ exports.AwsIamUser = ({ spec, config }) => {
           UserTags: Tags,
         }),
       }),
-      assign({
-        Groups: pipe([
-          () => iamGroups,
-          map(
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              get("config.GroupName"),
-            ])
-          ),
-        ]),
-        AttachedPolicies: pipe([
-          () => policies,
-          map(
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              (policy) => ({
-                PolicyArn: getField(policy, "Arn"),
-                PolicyName: policy.config.PolicyName,
-              }),
-              tap((params) => {
-                assert(true);
-              }),
-            ])
-          ),
-        ]),
-      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#addUserToGroup-property
   const addUserToGroup = ({ name }) =>
     pipe([
-      tap((params) => {
-        assert(name);
-      }),
       forEach(
         pipe([
           (GroupName) => ({ GroupName, UserName: name }),

@@ -100,7 +100,7 @@ module.exports = () =>
             ]),
           ]),
       }),
-      filterLive: () => pick(["Path"]),
+      filterLive: () => pick(["Path", "AttachedPolicies"]),
       dependencies: {
         iamGroups: { type: "Group", group: "IAM", list: true },
         policies: { type: "Policy", group: "IAM", list: true },
@@ -112,17 +112,9 @@ module.exports = () =>
       isOurMinion: isOurMinionIamGroup,
       compare: compareIAM({
         filterLive: () =>
-          pipe([
-            omit([
-              "GroupId",
-              "Arn",
-              "CreateDate",
-              "Policies",
-              "AttachedPolicies",
-            ]),
-          ]),
+          pipe([omit(["GroupId", "Arn", "CreateDate", "Policies"])]),
       }),
-      filterLive: () => pick(["Path"]),
+      filterLive: () => pick(["Path", "AttachedPolicies"]),
       dependencies: {
         policies: { type: "Policy", group: "IAM", list: true },
       },
