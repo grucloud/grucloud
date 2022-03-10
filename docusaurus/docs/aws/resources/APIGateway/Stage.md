@@ -89,5 +89,77 @@ gc l -t Stage
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 2/2
+┌────────────────────────────────────────────────────────────┐
+│ 2 APIGateway::Stage from aws                               │
+├────────────────────────────────────────────────────────────┤
+│ name: dev                                                  │
+│ managedByUs: Yes                                           │
+│ live:                                                      │
+│   cacheClusterEnabled: false                               │
+│   cacheClusterSize: 0.5                                    │
+│   cacheClusterStatus: NOT_AVAILABLE                        │
+│   createdDate: 2022-03-10T02:54:35.000Z                    │
+│   deploymentId: 2f1hv2                                     │
+│   description: dev                                         │
+│   lastUpdatedDate: 2022-03-10T02:54:36.000Z                │
+│   methodSettings:                                          │
+│     */*:                                                   │
+│       cacheDataEncrypted: false                            │
+│       cacheTtlInSeconds: 300                               │
+│       cachingEnabled: false                                │
+│       dataTraceEnabled: false                              │
+│       metricsEnabled: false                                │
+│       requireAuthorizationForCacheControl: true            │
+│       throttlingBurstLimit: 5000                           │
+│       throttlingRateLimit: 10000                           │
+│       unauthorizedCacheControlHeaderStrategy: SUCCEED_WIT… │
+│   stageName: dev                                           │
+│   tags:                                                    │
+│     Name: dev                                              │
+│     gc-created-by-provider: aws                            │
+│     gc-managed-by: grucloud                                │
+│     gc-project-name: @grucloud/example-aws-api-gateway-re… │
+│     gc-stage: dev                                          │
+│     mykey1: myvalue1                                       │
+│   tracingEnabled: false                                    │
+│   restApiId: dfc2hu0zti                                    │
+│                                                            │
+├────────────────────────────────────────────────────────────┤
+│ name: prod                                                 │
+│ managedByUs: Yes                                           │
+│ live:                                                      │
+│   cacheClusterEnabled: false                               │
+│   cacheClusterStatus: NOT_AVAILABLE                        │
+│   createdDate: 2022-03-10T02:54:35.000Z                    │
+│   deploymentId: 2f1hv2                                     │
+│   description: prod                                        │
+│   lastUpdatedDate: 2022-03-10T02:54:36.000Z                │
+│   methodSettings:                                          │
+│   stageName: prod                                          │
+│   tags:                                                    │
+│     Name: prod                                             │
+│     gc-created-by-provider: aws                            │
+│     gc-managed-by: grucloud                                │
+│     gc-project-name: @grucloud/example-aws-api-gateway-re… │
+│     gc-stage: dev                                          │
+│   tracingEnabled: false                                    │
+│   restApiId: dfc2hu0zti                                    │
+│                                                            │
+└────────────────────────────────────────────────────────────┘
 
+
+List Summary:
+Provider: aws
+┌───────────────────────────────────────────────────────────┐
+│ aws                                                       │
+├───────────────────┬───────────────────────────────────────┤
+│ APIGateway::Stage │ dev                                   │
+│                   │ prod                                  │
+└───────────────────┴───────────────────────────────────────┘
+2 resources, 1 type, 1 provider
+Command "gc l -t APIGateway::Stage" executed in 5s, 136 MB
 ```

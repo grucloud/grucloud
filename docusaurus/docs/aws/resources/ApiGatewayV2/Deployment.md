@@ -65,9 +65,38 @@ exports.createResources = () => [
 The Deployments can be filtered with the _Deployment_ type:
 
 ```sh
-gc l -t Deployment
+gc l -t ApiGatewayV2::Deployment
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 3/3
+┌────────────────────────────────────────────────────────────┐
+│ 1 ApiGatewayV2::Deployment from aws                        │
+├────────────────────────────────────────────────────────────┤
+│ name: deployment::my-api                                   │
+│ managedByUs: Yes                                           │
+│ live:                                                      │
+│   AutoDeployed: false                                      │
+│   CreatedDate: 2022-03-10T02:57:19.000Z                    │
+│   DeploymentId: dni6x2                                     │
+│   DeploymentStatus: DEPLOYED                               │
+│   ApiId: kfd5t0wyr4                                        │
+│   ApiName: my-api                                          │
+│                                                            │
+└────────────────────────────────────────────────────────────┘
+
+
+List Summary:
+Provider: aws
+┌───────────────────────────────────────────────────────────┐
+│ aws                                                       │
+├──────────────────────────┬────────────────────────────────┤
+│ ApiGatewayV2::Deployment │ deployment::my-api             │
+└──────────────────────────┴────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t ApiGatewayV2::Deployment" executed in 5s, 214 MB
 
 ```
