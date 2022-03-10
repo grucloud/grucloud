@@ -11,7 +11,11 @@ const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
 const { compareAws, isOurMinion } = require("../AwsCommon");
 
 const GROUP = "S3";
-const compareS3 = compareAws({});
+
+const compareS3 = compareAws({
+  getTargetTags: () => [],
+  getLiveTags: () => [],
+});
 
 const objectFileNameFromLive = ({
   live: { Bucket, Key, ContentType },

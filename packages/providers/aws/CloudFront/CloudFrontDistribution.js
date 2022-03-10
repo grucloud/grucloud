@@ -48,7 +48,7 @@ const {
 const ignoreErrorCodes = ["NoSuchDistribution"];
 //TODO look in spec.type instead
 const RESOURCE_TYPE = "Distribution";
-const findId = get("live.Id");
+const findId = get("live.ARN");
 const findName = findNameInTagsOrId({ findId });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
