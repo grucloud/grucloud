@@ -38,6 +38,7 @@ const {
   createIAM,
   tagResourceIam,
   untagResourceIam,
+  createFetchPolicyDocument,
 } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagPolicy-property
@@ -63,7 +64,7 @@ const pickId = pipe([
 exports.AwsIamPolicy = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
-
+  const fetchPolicyDocument = createFetchPolicyDocument({ iam });
   const findId = get("live.Arn");
 
   const findName = ({ live }) =>
@@ -125,28 +126,6 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     ({ Arn }) => iam().listPolicyVersions({ PolicyArn: Arn }),
     get("Versions"),
   ]);
-
-  const fetchPolicyDocument = ({ Versions, PolicyArn }) =>
-    pipe([
-      tap(() => {
-        assert(PolicyArn, "PolicyArn");
-        assert(Versions, "Versions");
-      }),
-      () => Versions,
-      find(get("IsDefaultVersion")),
-      ({ VersionId }) =>
-        iam().getPolicyVersion({
-          PolicyArn,
-          VersionId,
-        }),
-      get("PolicyVersion.Document"),
-      querystring.decode,
-      keys,
-      first,
-      tryCatch(JSON.parse, (error, document) => {
-        logger.error(`${error}, ${document}`);
-      }),
-    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listPolicies-property
   const getList = ({ params, resources } = {}) =>

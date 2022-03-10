@@ -4,23 +4,29 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Policy",
+    group: "IAM",
+    name: "AmazonEC2ReadOnlyAccess",
+    readOnly: true,
+    properties: ({}) => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
+    }),
+  },
+  {
     type: "User",
     group: "IAM",
     name: "my-test-user",
     properties: ({}) => ({
       Path: "/",
-      AttachedPolicies: [
-        {
-          PolicyName: "AmazonEC2ReadOnlyAccess",
-          PolicyArn: "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
-        },
-      ],
       Tags: [
         {
           Key: "mytag",
           Value: "myvalue",
         },
       ],
+    }),
+    dependencies: () => ({
+      policies: ["AmazonEC2ReadOnlyAccess"],
     }),
   },
 ];

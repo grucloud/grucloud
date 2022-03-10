@@ -353,7 +353,7 @@ exports.compareS3Object = pipe([
   tap((params) => {
     assert(true);
   }),
-  compareAws({})({
+  compareAws({ getTargetTags: () => [], getLiveTags: () => [] })({
     filterTarget: ({ programOptions }) =>
       pipe([
         tap(() => {

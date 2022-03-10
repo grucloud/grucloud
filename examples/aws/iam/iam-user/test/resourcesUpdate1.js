@@ -16,5 +16,8 @@ exports.createResources = () => [
         },
       ],
     }),
+    dependencies: () => ({
+      policies: ["AmazonEC2ReadOnlyAccess"],
+    }),
   },
 ];

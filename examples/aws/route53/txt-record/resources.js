@@ -7,6 +7,9 @@ exports.createResources = () => [
     type: "HostedZone",
     group: "Route53",
     name: "grucloud.org.",
+    properties: ({}) => ({
+      Tags: [{ Key: "mykey", Value: "value" }],
+    }),
     dependencies: () => ({
       domain: "grucloud.org",
     }),

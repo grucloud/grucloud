@@ -157,7 +157,7 @@ exports.EC2Instance = ({ spec, config }) => {
     {
       type: "KeyPair",
       group: "EC2",
-      ids: [live.KeyName],
+      ids: [live.KeyPairId],
     },
     { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
     {

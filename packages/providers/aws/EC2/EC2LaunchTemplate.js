@@ -60,7 +60,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     {
       type: "KeyPair",
       group: "EC2",
-      ids: [pipe([() => live, get("LaunchTemplateData.KeyName")])()],
+      ids: [pipe([() => live, get("LaunchTemplateData.KeyPairId")])()],
     },
     {
       type: "SecurityGroup",

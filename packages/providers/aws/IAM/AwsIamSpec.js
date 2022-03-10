@@ -96,12 +96,11 @@ module.exports = () =>
               "CreateDate",
               "LoginProfile",
               "Policies",
-              "Groups",
               "AccessKeys",
             ]),
           ]),
       }),
-      filterLive: () => pick(["Path", "AttachedPolicies"]),
+      filterLive: () => pick(["Path"]),
       dependencies: {
         iamGroups: { type: "Group", group: "IAM", list: true },
         policies: { type: "Policy", group: "IAM", list: true },
