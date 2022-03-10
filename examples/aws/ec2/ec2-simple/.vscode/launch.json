@@ -60,7 +60,7 @@
       "name": "Destroy",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "gc",
+      "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "destroy"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
