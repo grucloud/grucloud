@@ -2,4 +2,18 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-exports.createResources = () => [{ type: "KeyPair", group: "EC2", name: "kp" }];
+exports.createResources = () => [
+  {
+    type: "KeyPair",
+    group: "EC2",
+    name: "kp",
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "myvalue",
+        },
+      ],
+    }),
+  },
+];

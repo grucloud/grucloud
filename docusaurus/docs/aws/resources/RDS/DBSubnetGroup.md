@@ -45,50 +45,53 @@ gc l -t DBSubnetGroup
 Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
-  ✓ Listing 7/7
-┌─────────────────┬────────────────────────────────────────────────────────────────────────┐
-│ 1 DBSubnetGrou… │                                                                        │
-├─────────────────┼─────────────────────────────────────────────────────────────────┬──────┤
-│ Name            │ Data                                                            │ Our  │
-├─────────────────┼─────────────────────────────────────────────────────────────────┼──────┤
-│ db-subnet-group │ DBSubnetGroupName: db-subnet-group                              │ Yes  │
-│                 │ DBSubnetGroupDescription: db subnet group                       │      │
-│                 │ VpcId: vpc-00adc8aa058c195e0                                    │      │
-│                 │ SubnetGroupStatus: Complete                                     │      │
-│                 │ Subnets:                                                        │      │
-│                 │   - SubnetIdentifier: subnet-0a6789c65e6cad43a                  │      │
-│                 │     SubnetAvailabilityZone:                                     │      │
-│                 │       Name: eu-west-2b                                          │      │
-│                 │     SubnetOutpost:                                              │      │
-│                 │     SubnetStatus: Active                                        │      │
-│                 │   - SubnetIdentifier: subnet-0c54f4e32ff2723b8                  │      │
-│                 │     SubnetAvailabilityZone:                                     │      │
-│                 │       Name: eu-west-2a                                          │      │
-│                 │     SubnetOutpost:                                              │      │
-│                 │     SubnetStatus: Active                                        │      │
-│                 │ DBSubnetGroupArn: arn:aws:rds:eu-west-2:840541460064:subgrp:db… │      │
-│                 │ Tags:                                                           │      │
-│                 │   - Key: ManagedBy                                              │      │
-│                 │     Value: GruCloud                                             │      │
-│                 │   - Key: stage                                                  │      │
-│                 │     Value: dev                                                  │      │
-│                 │   - Key: projectName                                            │      │
-│                 │     Value: rds-example                                          │      │
-│                 │   - Key: CreatedByProvider                                      │      │
-│                 │     Value: aws                                                  │      │
-│                 │   - Key: Name                                                   │      │
-│                 │     Value: db-subnet-group                                      │      │
-│                 │                                                                 │      │
-└─────────────────┴─────────────────────────────────────────────────────────────────┴──────┘
+  ✓ Listing 1/1
+┌────────────────────────────────────────────────────────────────────────┐
+│ 1 RDS::DBSubnetGroup from aws                                          │
+├────────────────────────────────────────────────────────────────────────┤
+│ name: subnet-group-postgres                                            │
+│ managedByUs: Yes                                                       │
+│ live:                                                                  │
+│   DBSubnetGroupName: subnet-group-postgres                             │
+│   DBSubnetGroupDescription: db subnet group                            │
+│   VpcId: vpc-0d5b0c96f249946d7                                         │
+│   SubnetGroupStatus: Complete                                          │
+│   Subnets:                                                             │
+│     - SubnetIdentifier: subnet-0ffb0ef569d4a8716                       │
+│       SubnetAvailabilityZone:                                          │
+│         Name: us-east-1a                                               │
+│       SubnetOutpost:                                                   │
+│       SubnetStatus: Active                                             │
+│     - SubnetIdentifier: subnet-0fa8cee733fa0d508                       │
+│       SubnetAvailabilityZone:                                          │
+│         Name: us-east-1b                                               │
+│       SubnetOutpost:                                                   │
+│       SubnetStatus: Active                                             │
+│   DBSubnetGroupArn: arn:aws:rds:us-east-1:840541460064:subgrp:subnet-… │
+│   Tags:                                                                │
+│     - Key: gc-created-by-provider                                      │
+│       Value: aws                                                       │
+│     - Key: gc-managed-by                                               │
+│       Value: grucloud                                                  │
+│     - Key: gc-project-name                                             │
+│       Value: @grucloud/example-aws-rds-postgres                        │
+│     - Key: gc-stage                                                    │
+│       Value: dev                                                       │
+│     - Key: mykey2                                                      │
+│       Value: myvalue                                                   │
+│     - Key: Name                                                        │
+│       Value: subnet-group-postgres                                     │
+│                                                                        │
+└────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
 Provider: aws
-┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                     │
-├────────────────────┬────────────────────────────────────────────────────────────────────┤
-│ DBSubnetGroup      │ db-subnet-group                                                    │
-└────────────────────┴────────────────────────────────────────────────────────────────────┘
-1 resource, 4 types, 1 provider
-Command "gc l -t DBSubnetGroup" executed in 3s
+┌───────────────────────────────────────────────────────────────────────┐
+│ aws                                                                   │
+├────────────────────┬──────────────────────────────────────────────────┤
+│ RDS::DBSubnetGroup │ subnet-group-postgres                            │
+└────────────────────┴──────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t DBSubnetGroup" executed in 4s, 216 MB
 ```

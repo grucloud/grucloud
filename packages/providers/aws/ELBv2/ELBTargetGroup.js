@@ -11,7 +11,7 @@ const {
 } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
-const { createELB } = require("./ELBCommon");
+const { createELB, tagResource, untagResource } = require("./ELBCommon");
 
 const findName = get("live.TargetGroupName");
 const findId = get("live.TargetGroupArn");
@@ -90,19 +90,19 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { vpc },
   }) =>
     pipe([
       tap(() => {
         assert(vpc);
       }),
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         Name: name,
         Protocol: "HTTP",
         VpcId: getField(vpc, "VpcId"),
-        Tags: buildTags({ name, namespace, config }),
+        Tags: buildTags({ name, namespace, config, UserTags: Tags }),
       }),
     ])();
 
@@ -118,5 +118,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     getList,
     configDefault,
     managedByOther,
+    tagResource: tagResource({ elb }),
+    untagResource: untagResource({ elb }),
   };
 };

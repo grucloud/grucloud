@@ -91,9 +91,14 @@ exports.createResources = () => [
         ImageId: "ami-02e136e904f3da870",
         InstanceType: "t2.micro",
       },
+      Tags: [
+        {
+          Key: "mykey1",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: () => ({
-      keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
     }),
   },

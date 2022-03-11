@@ -6,6 +6,8 @@ const { AwsClient } = require("../AwsClient");
 const {
   createCloudWatchEvents,
   ignoreErrorCodes,
+  tagResource,
+  untagResource,
 } = require("./CloudWatchEventCommon");
 
 const findId = get("live.Arn");
@@ -72,14 +74,14 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
   const configDefault = async ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProp },
     dependencies: {},
   }) =>
     pipe([
-      () => properties,
+      () => otherProp,
       defaultsDeep({
         Name: name,
-        Tags: buildTags({ config, namespace, name }),
+        Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
     ])();
 
@@ -96,5 +98,7 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
     cannotBeDeleted: isDefault,
     managedByOther: isDefault,
     isDefault,
+    tagResource: tagResource({ cloudWatchEvents }),
+    untagResource: untagResource({ cloudWatchEvents }),
   };
 };

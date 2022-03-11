@@ -34,7 +34,20 @@ const {
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createIAM } = require("./AwsIamCommon");
+const {
+  createIAM,
+  tagResourceIam,
+  untagResourceIam,
+} = require("./AwsIamCommon");
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagRole-property
+const tagResource = tagResourceIam({ field: "RoleName", method: "tagRole" });
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagRole-property
+const untagResource = untagResourceIam({
+  field: "RoleName",
+  method: "untagRole",
+});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamRole = ({ spec, config }) => {
@@ -341,5 +354,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ iam }),
+    untagResource: untagResource({ iam }),
   };
 };

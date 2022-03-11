@@ -1,21 +1,26 @@
 const assert = require("assert");
 const { map, pipe, tap, get, eq, pick, assign, omit } = require("rubico");
-const { defaultsDeep, isEmpty, pluck, includes } = require("rubico/x");
+const { defaultsDeep, isEmpty, pluck } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
-const { createRDS } = require("./RDSCommon");
+const {
+  createRDS,
+  tagResource,
+  untagResource,
+  renameTagList,
+} = require("./RDSCommon");
 
-const findId = get("live.DBInstanceIdentifier");
+const findId = get("live.DBInstanceArn");
 const pickId = pipe([
   tap(({ DBInstanceIdentifier }) => {
     assert(DBInstanceIdentifier);
   }),
   pick(["DBInstanceIdentifier"]),
 ]);
-const findName = findId;
+const findName = get("live.DBInstanceIdentifier");
 const isInstanceUp = pipe([eq(get("DBInstanceStatus"), "available")]);
 
 exports.DBInstance = ({ spec, config }) => {
@@ -44,6 +49,7 @@ exports.DBInstance = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeDBInstances",
     getParam: "DBInstances",
+    decorate: () => pipe([renameTagList]),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -59,17 +65,17 @@ exports.DBInstance = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { dbSubnetGroup, securityGroups, kmsKey },
   }) =>
     pipe([
       tap(() => {
         assert(
-          !isEmpty(properties.MasterUserPassword),
+          !isEmpty(otherProps.MasterUserPassword),
           "MasterUserPassword is empty"
         );
       }),
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         DBInstanceIdentifier: name,
         DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
@@ -77,7 +83,7 @@ exports.DBInstance = ({ spec, config }) => {
           securityGroups
         ),
         ...(kmsKey && { KmsKeyId: getField(kmsKey, "Arn") }),
-        Tags: buildTags({ config, namespace, name }),
+        Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
     ])();
 
@@ -95,6 +101,7 @@ exports.DBInstance = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "modifyDBInstance",
+    filterParams: () => pipe([omit(["Tags"])]),
     extraParam: { ApplyImmediately: true },
     getById,
     config: { ...config, retryDelay: 10e3, retryCount: 200 },
@@ -124,5 +131,7 @@ exports.DBInstance = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    tagResource: tagResource({ rds }),
+    untagResource: untagResource({ rds }),
   };
 };

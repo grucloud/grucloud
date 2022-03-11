@@ -39,12 +39,16 @@ const {
   getNewCallerReference,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createCloudFront } = require("./CloudFrontCommon");
+const {
+  createCloudFront,
+  tagResource,
+  untagResource,
+} = require("./CloudFrontCommon");
 
 const ignoreErrorCodes = ["NoSuchDistribution"];
 //TODO look in spec.type instead
 const RESOURCE_TYPE = "Distribution";
-const findId = get("live.Id");
+const findId = get("live.ARN");
 const findName = findNameInTagsOrId({ findId });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
@@ -161,8 +165,8 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
 
   const create = client.create({
     method: "createDistributionWithTags",
-    filterPayload: (payload) => ({
-      DistributionConfigWithTags: payload,
+    filterPayload: ({ Tags, ...payload }) => ({
+      DistributionConfigWithTags: { ...payload, Tags: { Items: Tags } },
     }),
     isInstanceUp,
     shouldRetryOnExceptionCodes: ["InvalidViewerCertificate"],
@@ -276,7 +280,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
       }),
       (payload) => ({
         DistributionConfig: payload,
-        Tags: { Items: buildTags({ name, namespace, config, UserTags: Tags }) },
+        Tags: buildTags({ name, namespace, config, UserTags: Tags }),
       }),
     ])();
 
@@ -346,6 +350,8 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     getList,
     configDefault,
     onDeployed,
+    tagResource: tagResource({ cloudFront }),
+    untagResource: untagResource({ cloudFront }),
   };
 };
 

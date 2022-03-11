@@ -13,6 +13,12 @@ exports.createResources = () => [
         '{"source":["aws.ec2"],"detail-type":["EC2 Instance State-change Notification"]}',
       State: "ENABLED",
       Description: "testing rule",
+      Tags: [
+        {
+          Key: "mytag",
+          Value: "myvalue",
+        },
+      ],
     }),
   },
   {
@@ -23,6 +29,12 @@ exports.createResources = () => [
       EventPattern:
         '{"source":["aws.acm"],"detail-type":["ACM Certificate Approaching Expiration"]}',
       State: "ENABLED",
+      Tags: [
+        {
+          Key: "mytag",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: () => ({
       eventBus: "bus-test",

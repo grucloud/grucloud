@@ -47,3 +47,15 @@ exports.waitForUpdate =
           config: { retryCount: 12 * 20, retryDelay: 5e3 },
         }),
     ])();
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#tagResource-property
+exports.tagResource =
+  ({ eks }) =>
+  ({ id }) =>
+    pipe([(tags) => ({ resourceArn: id, tags }), eks().tagResource]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#untagResource-property
+exports.untagResource =
+  ({ eks }) =>
+  ({ id }) =>
+    pipe([(tagKeys) => ({ resourceArn: id, tagKeys }), eks().untagResource]);

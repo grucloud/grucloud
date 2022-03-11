@@ -8,10 +8,12 @@ const {
   and,
   get,
   eq,
+  gte,
   or,
   any,
   not,
   omit,
+  fork,
 } = require("rubico");
 const {
   callProp,
@@ -24,9 +26,16 @@ const {
   isFunction,
   includes,
   when,
+  size,
   unless,
+  pluck,
+  keys,
+  isDeepEqual,
+  differenceWith,
 } = require("rubico/x");
 const util = require("util");
+const Diff = require("diff");
+
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
@@ -49,20 +58,99 @@ const throwIfNotAwsError = (code) =>
       throw error;
     },
   ]);
+
 exports.throwIfNotAwsError = throwIfNotAwsError;
 
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
-exports.compareAws = ({ filterAll, filterTarget, filterLive } = {}) =>
+const extractKeys = ({ key }) =>
+  switchCase([Array.isArray, pipe([pluck(key)]), keys]);
+
+const compareAwsTags = ({ getTargetTags, getLiveTags, tagsKey, key }) =>
   pipe([
-    compare({
-      filterAll,
-      filterTarget,
-      filterTargetDefault: omit(["Tags"]),
-      filterLive,
-      filterLiveDefault: omit(["Tags", "$metadata"]),
+    tap((params) => {
+      assert(tagsKey);
+    }),
+    fork({
+      targetTags: pipe([
+        get("target"),
+        switchCase([() => getTargetTags, getTargetTags, get(tagsKey, [])]),
+      ]),
+      liveTags: pipe([
+        get("live"),
+        switchCase([() => getLiveTags, getLiveTags, get(tagsKey, [])]),
+      ]),
+    }),
+    tap((params) => {
+      assert(true);
+    }),
+    assign({
+      diffTags: ({ targetTags, liveTags }) =>
+        Diff.diffJson(liveTags, targetTags),
+      targetKeys: pipe([get("targetTags"), extractKeys({ key })]),
+      liveKeys: pipe([get("liveTags"), extractKeys({ key })]),
+    }),
+    tap((params) => {
+      assert(true);
+    }),
+    assign({
+      removedKeys: ({ targetKeys, liveKeys }) =>
+        pipe([() => targetKeys, differenceWith(isDeepEqual, liveKeys)])(),
+    }),
+    tap((params) => {
+      assert(true);
     }),
   ]);
+
+exports.compareAws =
+  ({
+    getTargetTags,
+    getLiveTags,
+    omitTargetKey,
+    tagsKey = "Tags",
+    key = "Key",
+  }) =>
+  ({ filterAll, filterTarget, filterLive } = {}) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      fork({
+        tags: compareAwsTags({ getTargetTags, getLiveTags, tagsKey, key }),
+        payloadDiff: compare({
+          filterAll,
+          filterTarget,
+          filterTargetDefault: omit([omitTargetKey, tagsKey]),
+          filterLive,
+          filterLiveDefault: omit([tagsKey, "$metadata"]),
+        }),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+      ({ payloadDiff, tags }) => ({ ...payloadDiff, tags }),
+      tap((params) => {
+        assert(true);
+      }),
+      assign({
+        hasTagsDiff: gte(pipe([get("tags.diffTags"), size]), 2),
+        hasDataDiff: and([
+          gte(pipe([get("jsonDiff"), size]), 2),
+          or([
+            pipe([get("liveDiff.needUpdate")]),
+            pipe([get("liveDiff.added"), not(isEmpty)]),
+            pipe([get("liveDiff.updated"), not(isEmpty)]),
+            pipe([get("liveDiff.deleted"), not(isEmpty)]),
+          ]),
+        ]),
+      }),
+      assign({
+        hasDiff: or([get("hasTagsDiff"), get("hasDataDiff")]),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ]);
 
 const proxyHandler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
@@ -92,7 +180,10 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
               );
             }),
             or([
-              pipe([() => ["ECONNRESET", "ENETDOWN"], includes(error.code)]),
+              pipe([
+                () => ["ECONNRESET", "ENETDOWN", "EPROTO"],
+                includes(error.code),
+              ]),
               pipe([
                 () => [
                   "Throttling",
@@ -101,6 +192,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
                   "OperationAborted",
                   "TimeoutError",
                   "ServiceUnavailable",
+                  "SyntaxError", // SDK v3 JSON.parse exception
                 ],
                 includes(error.name),
               ]),
@@ -568,6 +660,7 @@ exports.removeRoleFromInstanceProfile =
     tryCatch(
       pipe([() => params, iam().removeRoleFromInstanceProfile]),
       switchCase([
+        //TODO use throwIfNotAwsError
         isAwsError("NoSuchEntity"),
         () => undefined,
         (error) => {

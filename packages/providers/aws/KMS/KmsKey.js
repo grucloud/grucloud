@@ -23,7 +23,7 @@ const { buildTags } = require("../AwsCommon");
 const { configProviderDefault } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
-const { createKMS } = require("./KMSCommon");
+const { createKMS, tagResource, untagResource } = require("./KMSCommon");
 
 const findId = get("live.Arn");
 const pickId = pick(["KeyId"]);
@@ -204,9 +204,13 @@ exports.KmsKey = ({ spec, config }) => {
     ignoreErrorCodes: ["NotFoundException"],
   });
 
-  const configDefault = ({ name, namespace, properties }) =>
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+  }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         Tags: buildTags({
           config,
@@ -214,6 +218,7 @@ exports.KmsKey = ({ spec, config }) => {
           name,
           key: "TagKey",
           value: "TagValue",
+          UserTags: Tags,
         }),
       }),
     ])();
@@ -245,5 +250,7 @@ exports.KmsKey = ({ spec, config }) => {
     cannotBeDeleted,
     isDefault,
     managedByOther: isDefault,
+    tagResource: tagResource({ kms }),
+    untagResource: untagResource({ kms }),
   };
 };

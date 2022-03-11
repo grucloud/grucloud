@@ -1,10 +1,11 @@
 const assert = require("assert");
 const { pipe, tap, get, not } = require("rubico");
-const { defaultsDeep, includes } = require("rubico/x");
+const { defaultsDeep, isEmpty } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createAPIGateway, diffToPatch } = require("./ApiGatewayCommon");
+const { differenceObject } = require("@grucloud/core/Common");
 const findName = () => "default";
 const findId = findName;
 
@@ -90,5 +91,18 @@ exports.Account = ({ spec, config }) => {
     configDefault,
     isDefault,
     managedByOther: isDefault,
+    cannotBeDeleted: pipe([
+      get("live"),
+      differenceObject({
+        apiKeyVersion: "4",
+        cloudwatchRoleArn: undefined,
+        features: ["UsagePlans"],
+        throttleSettings: {
+          burstLimit: 5000,
+          rateLimit: 10000,
+        },
+      }),
+      isEmpty,
+    ]),
   };
 };

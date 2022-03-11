@@ -53,12 +53,46 @@ exports.createResources = () => [
 
 ## List
 
-The Authorizers can be filtered with the _Authorizer_ type:
+The Authorizers can be filtered with the _ApiGatewayV2::Authorizer_ type:
 
 ```sh
-gc l -t Authorizer
+gc l -t ApiGatewayV2::Authorizer
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 2/2
+┌────────────────────────────────────────────────────────────┐
+│ 1 ApiGatewayV2::Authorizer from aws                        │
+├────────────────────────────────────────────────────────────┤
+│ name: authorizer-auth0                                     │
+│ managedByUs: Yes                                           │
+│ live:                                                      │
+│   AuthorizerId: m9cvw2                                     │
+│   AuthorizerType: JWT                                      │
+│   IdentitySource:                                          │
+│     - "$request.header.Authorization"                      │
+│   JwtConfiguration:                                        │
+│     Audience:                                              │
+│       - "https://api.grucloud.org"                         │
+│     Issuer: https://dev-zojrhsju.us.auth0.com/             │
+│   Name: authorizer-auth0                                   │
+│   ApiId: kfd5t0wyr4                                        │
+│   ApiName: my-api                                          │
+│                                                            │
+└────────────────────────────────────────────────────────────┘
+
+
+List Summary:
+Provider: aws
+┌───────────────────────────────────────────────────────────┐
+│ aws                                                       │
+├──────────────────────────┬────────────────────────────────┤
+│ ApiGatewayV2::Authorizer │ authorizer-auth0               │
+└──────────────────────────┴────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t ApiGatewayV2::Authorizer" executed in 4s, 211 MB
 
 ```

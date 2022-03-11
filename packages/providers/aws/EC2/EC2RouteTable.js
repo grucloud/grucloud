@@ -24,6 +24,8 @@ const {
   createEC2,
   findDependenciesVpc,
   findDependenciesSubnet,
+  tagResource,
+  untagResource,
 } = require("./EC2Common");
 
 exports.EC2RouteTable = ({ spec, config }) => {
@@ -176,5 +178,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };

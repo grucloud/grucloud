@@ -431,6 +431,7 @@ exports.compare = ({
       assert(filterTarget);
     }),
     assign({
+      liveIn: get("live"),
       target: ({
         target = {},
         propertiesDefault = {},

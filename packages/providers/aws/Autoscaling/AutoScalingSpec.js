@@ -9,6 +9,7 @@ const {
   get,
   omit,
   pick,
+  eq,
 } = require("rubico");
 const { includes } = require("rubico/x");
 const { compareAws, isOurMinion, DecodeUserData } = require("../AwsCommon");
@@ -23,6 +24,20 @@ const {
 } = require("./AutoScalingLaunchConfiguration");
 
 const { AutoScalingAttachment } = require("./AutoScalingAttachment");
+
+const compareAutoScaling = compareAws({
+  getLiveTags: pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("Tags", []),
+    filter(not(eq(get("Key"), "AmazonECSManaged"))),
+    map(pick(["Key", "Value"])),
+    tap((params) => {
+      assert(true);
+    }),
+  ]),
+});
 
 const GROUP = "AutoScaling";
 
@@ -61,12 +76,12 @@ module.exports = () =>
       },
       Client: AutoScalingAutoScalingGroup,
       isOurMinion,
-      compare: compareAws({
+      compare: compareAutoScaling({
         filterAll: pipe([
           tap((params) => {
             assert(true);
           }),
-          omit(["Tags", "TargetGroupARNs"]),
+          omit(["TargetGroupARNs"]),
         ]),
         filterLive: () =>
           pipe([
@@ -112,7 +127,7 @@ module.exports = () =>
       type: "AutoScalingAttachment",
       Client: AutoScalingAttachment,
       isOurMinion: () => true,
-      compare: compareAws({
+      compare: compareAutoScaling({
         filterTarget: () => pipe([pick([])]),
         filterLive: () => pipe([pick([])]),
       }),
@@ -142,8 +157,7 @@ module.exports = () =>
       type: "LaunchConfiguration",
       Client: AutoScalingLaunchConfiguration,
       isOurMinion: () => true,
-      compare: compareAws({
-        filterAll: pipe([omit(["Tags"])]),
+      compare: compareAutoScaling({
         filterLive: () =>
           pipe([
             omit([

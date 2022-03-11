@@ -10,7 +10,7 @@ const {
   pick,
   not,
 } = require("rubico");
-const { defaultsDeep, isEmpty, find, identity } = require("rubico/x");
+const { defaultsDeep, isEmpty, find } = require("rubico/x");
 const tls = require("tls");
 
 const logger = require("@grucloud/core/logger")({
@@ -25,7 +25,11 @@ const {
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createIAM } = require("./AwsIamCommon");
+const {
+  createIAM,
+  tagResourceIam,
+  untagResourceIam,
+} = require("./AwsIamCommon");
 
 const formatThumbPrint = pipe([
   get("fingerprint"),
@@ -69,18 +73,28 @@ const fetchThumbprint = ({ Url }) =>
           resolve(tlsStream.getPeerCertificate(true));
         });
       }),
-    tap((peerCertificate) => {
-      logger.debug(`peerCertificate `);
-    }),
     getLastCertificate,
     formatThumbPrint,
     tap((fingerprint) => {
       logger.debug(`fingerprint ${fingerprint}`);
     }),
   ])();
+
 exports.fetchThumbprint = fetchThumbprint;
 
 const ignoreErrorCodes = ["NoSuchEntity"];
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagOpenIDConnectProvider-property
+const tagResource = tagResourceIam({
+  field: "OpenIDConnectProviderArn",
+  method: "tagOpenIDConnectProvider",
+});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagOpenIDConnectProvider-property
+const untagResource = untagResourceIam({
+  field: "OpenIDConnectProviderArn",
+  method: "untagOpenIDConnectProvider",
+});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
@@ -226,5 +240,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ iam }),
+    untagResource: untagResource({ iam }),
   };
 };

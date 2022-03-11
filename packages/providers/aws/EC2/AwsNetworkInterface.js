@@ -7,7 +7,7 @@ const logger = require("@grucloud/core/logger")({
 });
 const { findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
 exports.AwsNetworkInterface = ({ spec, config }) => {
@@ -81,5 +81,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
     findName,
     getList,
     destroy,
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };

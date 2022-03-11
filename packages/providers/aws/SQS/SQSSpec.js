@@ -12,6 +12,8 @@ const { SQSQueue } = require("./SQSQueue");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html
 const GROUP = "SQS";
 
+const compareSQS = compareAws({ tagsKey: "tags" });
+
 module.exports = pipe([
   () => [
     {
@@ -26,7 +28,7 @@ module.exports = pipe([
           ReceiveMessageWaitTimeSeconds: "0",
         },
       },
-      compare: compareAws({
+      compare: compareSQS({
         filterTarget: () => pipe([omit(["QueueName"])]),
         filterLive: () =>
           pipe([

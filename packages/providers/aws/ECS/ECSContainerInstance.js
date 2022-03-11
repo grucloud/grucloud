@@ -11,6 +11,8 @@ const {
   createECS,
   buildTagsEcs,
   findDependenciesCluster,
+  tagResource,
+  untagResource,
 } = require("./ECSCommon");
 
 const findId = get("live.containerInstanceArn");
@@ -72,7 +74,7 @@ exports.ECSContainerInstance = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { cluster },
   }) =>
     pipe([
@@ -86,7 +88,7 @@ exports.ECSContainerInstance = ({ spec, config }) => {
           name,
           config,
           namespace,
-          Tags,
+          tags,
         }),
       }),
     ])();
@@ -112,5 +114,7 @@ exports.ECSContainerInstance = ({ spec, config }) => {
     configDefault,
     managedByOther: () => true,
     cannotBeDeleted: () => true,
+    tagResource: tagResource({ ecs }),
+    untagResource: untagResource({ ecs }),
   };
 };

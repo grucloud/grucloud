@@ -44,14 +44,19 @@ const {
 } = require("../AwsCommon");
 
 const { filterEmptyResourceRecords } = require("./Route53Utils");
-const { createRoute53, hostedZoneIdToResourceId } = require("./Route53Common");
+const {
+  createRoute53,
+  tagResource,
+  untagResource,
+  hostedZoneIdToResourceId,
+} = require("./Route53Common");
 const {
   createRoute53Domains,
 } = require("../Route53Domain/Route53DomainCommon");
 
 //Check for the final dot
 const findName = get("live.Name");
-const findId = get("live.Id");
+const findId = pipe([get("live.Id"), hostedZoneIdToResourceId]);
 const pickId = pick(["Id"]);
 
 const canDeleteRecord = (zoneName) =>
@@ -166,7 +171,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createHostedZone-property
-  const create = async ({
+  const create = ({
     name,
     namespace,
     payload = {},
@@ -178,43 +183,47 @@ exports.Route53HostedZone = ({ spec, config }) => {
         assert(payload);
         logger.info(`create hosted zone: ${name}, ${tos(payload)}`);
       }),
-      () =>
-        route53().createHostedZone({
-          Name: payload.Name,
-          CallerReference: getNewCallerReference(),
-        }),
+      () => ({
+        Name: payload.Name,
+        //TODO other param ?
+        CallerReference: getNewCallerReference(),
+      }),
+      route53().createHostedZone,
       tap((result) => {
         logger.debug(`created hosted zone: ${name}, result: ${tos(result)}`);
       }),
-      tap(({ HostedZone }) =>
-        route53().changeTagsForResource({
-          ResourceId: hostedZoneIdToResourceId(HostedZone.Id),
-          AddTags: buildTags({
-            name,
-            namespace,
-            config,
-            UserTags: payload.Tags,
-          }),
-          ResourceType: "hostedzone",
-        })
-      ),
-      tap(({ HostedZone }) =>
+      tap(
         pipe([
-          () => payload.RecordSet,
-          map((ResourceRecordSet) => ({
-            Action: "CREATE",
-            ResourceRecordSet,
-          })),
-          tap.if(not(isEmpty), (Changes) =>
-            route53().changeResourceRecordSets({
-              HostedZoneId: HostedZone.Id,
-              ChangeBatch: {
-                Changes,
-              },
-            })
-          ),
-        ])()
+          get("HostedZone.Id"),
+          tap((Id) => {
+            assert(Id);
+          }),
+          hostedZoneIdToResourceId,
+          (ResourceId) => ({
+            ResourceId,
+            AddTags: payload.Tags,
+            ResourceType: "hostedzone",
+          }),
+          route53().changeTagsForResource,
+        ])
       ),
+      // tap(({ HostedZone }) =>
+      //   pipe([
+      //     () => payload.RecordSet,
+      //     map((ResourceRecordSet) => ({
+      //       Action: "CREATE",
+      //       ResourceRecordSet,
+      //     })),
+      //     tap.if(not(isEmpty), (Changes) =>
+      //       route53().changeResourceRecordSets({
+      //         HostedZoneId: HostedZone.Id,
+      //         ChangeBatch: {
+      //           Changes,
+      //         },
+      //       })
+      //     ),
+      //   ])()
+      // ),
       tap.if(
         ({ DelegationSet }) =>
           domain &&
@@ -380,13 +389,28 @@ exports.Route53HostedZone = ({ spec, config }) => {
       ]),
     ])();
 
-  const configDefault = ({ name, properties }) =>
+  const configDefault = ({
+    name,
+    properties: { Tags, ...otherProp },
+    namespace,
+  }) =>
     pipe([
-      () => properties,
+      () => otherProp,
       defaultsDeep({
         Name: name,
+        Tags: buildTags({
+          name,
+          namespace,
+          config,
+          UserTags: Tags,
+        }),
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ])();
+
+  const ResourceType = "hostedzone";
 
   return {
     spec,
@@ -400,60 +424,62 @@ exports.Route53HostedZone = ({ spec, config }) => {
     getList,
     configDefault,
     findNamespace: findNamespaceInTags(config),
+    tagResource: tagResource({ route53, ResourceType }),
+    untagResource: untagResource({ route53, ResourceType }),
   };
 };
 //TODO
-exports.compareHostedZone = ({ target, live, dependencies, lives }) =>
-  pipe([
-    tap(() => {
-      //logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
-      assert(live.RecordSet, "live.recordSet");
-      assert(lives);
-    }),
-    fork({
-      liveRecordSet: () => filter(canDeleteRecord(target.Name))(live.RecordSet),
-      targetRecordSet: async () =>
-        map(
-          tryCatch(
-            (resource) => {
-              return resource.resolveConfig({ lives, deep: true });
-            },
-            (error) => {
-              logger.error("compareHostedZone error in resolveConfig");
-              logger.error(tos(error));
-              return { error };
-            }
-          )
-        )([]),
-    }),
-    //TODO throw if error
-    tap((xxx) => {
-      logger.debug(`compareHostedZone `);
-    }),
-    fork({
-      deletions: ({ liveRecordSet, targetRecordSet }) =>
-        differenceWith(
-          (left, right) =>
-            and([eq(get("Name"), right.Name), eq(get("Type"), right.Type)])(
-              left
-            ),
-          liveRecordSet
-        )(targetRecordSet),
-    }),
-    tap((xxx) => {
-      logger.debug(`compareHostedZone `);
-    }),
-    assign({
-      needUpdateRecordSet: or([(diff) => !isEmpty(diff.deletions)]),
-      needUpdateManagedZone: () => target.Name !== live.Name,
-    }),
-    assign({
-      needUpdate: or([
-        get("needUpdateRecordSet"),
-        get("needUpdateManagedZone"),
-      ]),
-    }),
-    tap((diff) => {
-      logger.debug(`compareHostedZone diff:${tos(diff)}`);
-    }),
-  ])();
+// exports.compareHostedZone = ({ target, live, dependencies, lives }) =>
+//   pipe([
+//     tap(() => {
+//       //logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
+//       assert(live.RecordSet, "live.recordSet");
+//       assert(lives);
+//     }),
+//     fork({
+//       liveRecordSet: () => filter(canDeleteRecord(target.Name))(live.RecordSet),
+//       targetRecordSet: async () =>
+//         map(
+//           tryCatch(
+//             (resource) => {
+//               return resource.resolveConfig({ lives, deep: true });
+//             },
+//             (error) => {
+//               logger.error("compareHostedZone error in resolveConfig");
+//               logger.error(tos(error));
+//               return { error };
+//             }
+//           )
+//         )([]),
+//     }),
+//     //TODO throw if error
+//     tap((xxx) => {
+//       logger.debug(`compareHostedZone `);
+//     }),
+//     fork({
+//       deletions: ({ liveRecordSet, targetRecordSet }) =>
+//         differenceWith(
+//           (left, right) =>
+//             and([eq(get("Name"), right.Name), eq(get("Type"), right.Type)])(
+//               left
+//             ),
+//           liveRecordSet
+//         )(targetRecordSet),
+//     }),
+//     tap((xxx) => {
+//       logger.debug(`compareHostedZone `);
+//     }),
+//     assign({
+//       needUpdateRecordSet: or([(diff) => !isEmpty(diff.deletions)]),
+//       needUpdateManagedZone: () => target.Name !== live.Name,
+//     }),
+//     assign({
+//       needUpdate: or([
+//         get("needUpdateRecordSet"),
+//         get("needUpdateManagedZone"),
+//       ]),
+//     }),
+//     tap((diff) => {
+//       logger.debug(`compareHostedZone diff:${tos(diff)}`);
+//     }),
+//   ])();

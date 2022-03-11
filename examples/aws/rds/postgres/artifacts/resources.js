@@ -146,6 +146,12 @@ exports.createResources = () => [
     name: "subnet-group-postgres",
     properties: ({}) => ({
       DBSubnetGroupDescription: "db subnet group",
+      Tags: [
+        {
+          Key: "mykey2",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: () => ({
       subnets: ["subnet-1", "subnet-2"],
@@ -164,11 +170,16 @@ exports.createResources = () => [
       PubliclyAccessible: true,
       PreferredBackupWindow: "22:10-22:40",
       PreferredMaintenanceWindow: "fri:23:40-sat:00:10",
+      Tags: [
+        {
+          Key: "mykey2",
+          Value: "myvalue",
+        },
+      ],
       MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
       MasterUserPassword: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
     }),
     dependencies: () => ({
-      dbSubnetGroup: "subnet-group-postgres",
       securityGroups: ["security-group"],
     }),
   },

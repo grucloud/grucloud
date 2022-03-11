@@ -19,9 +19,15 @@ const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { AwsClient } = require("../AwsClient");
-const { createAppSync, ignoreErrorCodes } = require("./AppSyncCommon");
+const {
+  createAppSync,
+  ignoreErrorCodes,
+  tagResource,
+  untagResource,
+} = require("./AppSyncCommon");
 const findName = get("live.name");
-const findId = get("live.apiId");
+const findId = get("live.arn");
+
 const pickId = pipe([
   tap(({ apiId }) => {
     assert(apiId);
@@ -272,5 +278,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ appSync }),
+    untagResource: untagResource({ appSync }),
   };
 };

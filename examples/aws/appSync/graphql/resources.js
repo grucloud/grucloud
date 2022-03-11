@@ -16,6 +16,7 @@ exports.createResources = () => [
         },
       ],
       schemaFile: "cdk-notes-appsync-api.graphql",
+      tags: { mykey: "myvalue" },
     }),
   },
   {

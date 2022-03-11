@@ -84,9 +84,9 @@ exports.ApiMapping = ({ spec, config }) => {
               get("name"),
             ]),
           }),
-          assign({
-            Tags: pipe([() => Tags, omit(["Name"])]),
-          }),
+          // assign({
+          //   Tags: pipe([() => Tags, omit(["Name"])]),
+          // }),
         ])(),
   });
 

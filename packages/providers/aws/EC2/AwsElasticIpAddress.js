@@ -6,7 +6,7 @@ const { getByIdCore, buildTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { findNameInTagsOrId, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 exports.AwsElasticIpAddress = ({ spec, config }) => {
   const ec2 = createEC2(config);
@@ -87,5 +87,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };

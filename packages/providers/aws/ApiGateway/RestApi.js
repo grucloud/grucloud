@@ -43,6 +43,8 @@ const {
   createAPIGateway,
   diffToPatch,
   ignoreErrorCodes,
+  tagResource,
+  untagResource,
 } = require("./ApiGatewayCommon");
 
 const findId = get("live.id");
@@ -716,6 +718,9 @@ exports.RestApi = ({ spec, config }) => {
       }),
     ])();
 
+  const buildResourceArn = ({ id }) =>
+    `arn:aws:apigateway:${config.region}::/restapis/${id}`;
+
   return {
     spec,
     findName,
@@ -727,5 +732,7 @@ exports.RestApi = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
+    tagResource: tagResource({ apiGateway, buildResourceArn }),
+    untagResource: untagResource({ apiGateway, buildResourceArn }),
   };
 };

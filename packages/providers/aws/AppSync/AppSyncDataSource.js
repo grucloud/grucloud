@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick, assign, omit } = require("rubico");
-const { defaultsDeep, prepend } = require("rubico/x");
+const { pipe, tap, get, eq, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -9,6 +9,8 @@ const {
   createAppSync,
   findDependenciesGraphqlApi,
   ignoreErrorCodes,
+  tagResource,
+  untagResource,
 } = require("./AppSyncCommon");
 
 const findId = get("live.dataSourceArn");
@@ -19,17 +21,6 @@ const pickId = pipe([
     assert(apiId);
   }),
   pick(["apiId", "name"]),
-]);
-
-const graphqlApiArn = ({ config, apiId }) =>
-  `arn:aws:appsync:${config.region}:${config.accountId()}:apis/${apiId}`;
-
-const buildTagKey = pipe([
-  get("name"),
-  tap((name) => {
-    assert(name);
-  }),
-  prepend("gc-data-source-"),
 ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
@@ -83,36 +74,13 @@ exports.AppSyncDataSource = ({ spec, config }) => {
   const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listDataSources-property
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listResolvers-property
   const getList = client.getListWithParent({
     parent: { type: "GraphqlApi", group: "AppSync" },
     pickKey: pick(["apiId"]),
     method: "listDataSources",
     getParam: "dataSources",
     config,
-    decorate: ({ lives, parent: { apiId, Tags } }) =>
-      pipe([
-        tap((params) => {
-          assert(apiId);
-        }),
-        defaultsDeep({ apiId, Tags }),
-        assign({
-          tags: ({ name }) =>
-            pipe([
-              () => ({
-                resourceArn: graphqlApiArn({
-                  config,
-                  apiId,
-                }),
-              }),
-              appSync().listTagsForResource,
-              get("tags"),
-              assign({ name: get(buildTagKey({ name })) }),
-              omit([buildTagKey({ name })]),
-            ])(),
-        }),
-      ]),
+    decorate: ({ lives, parent: { apiId } }) => pipe([defaultsDeep({ apiId })]),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -128,30 +96,9 @@ exports.AppSyncDataSource = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#createDataSource-property
   const create = client.create({
     pickCreated: ({ payload: { apiId } }) =>
-      pipe([
-        tap((params) => {
-          assert(apiId);
-        }),
-        get("dataSource"),
-        defaultsDeep({ apiId }),
-      ]),
+      pipe([get("dataSource"), defaultsDeep({ apiId })]),
     method: "createDataSource",
     getById,
-    postCreate: ({ name, payload, resolvedDependencies: { graphqlApi } }) =>
-      pipe([
-        tap(({ apiId }) => {
-          assert(apiId);
-          assert(graphqlApi);
-        }),
-        ({ apiId }) => ({
-          resourceArn: graphqlApiArn({
-            config,
-            apiId,
-          }),
-          tags: { ...graphqlApi.live.tags, [buildTagKey({ name })]: name },
-        }),
-        appSync().tagResource,
-      ]),
   });
 
   const destroy = client.destroy({
@@ -203,5 +150,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ appSync }),
+    untagResource: untagResource({ appSync }),
   };
 };

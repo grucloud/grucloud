@@ -10,9 +10,7 @@ const { CloudWatchEventRule } = require("./CloudWatchEventRule");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html
 const GROUP = "CloudWatchEvents";
-
-const filterTargetDefault = pipe([omit(["Tags"])]);
-const filterLiveDefault = pipe([omit(["Tags"])]);
+const compareCloudWatchEvent = compareAws({});
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -20,9 +18,8 @@ module.exports = () =>
       type: "EventBus",
       Client: CloudWatchEventBus,
       isOurMinion,
-      compare: compareAws({
-        filterTarget: () => pipe([filterTargetDefault]),
-        filterLive: () => pipe([omit(["Arn"]), filterLiveDefault]),
+      compare: compareCloudWatchEvent({
+        filterLive: () => pipe([omit(["Arn"])]),
       }),
       filterLive: () => pipe([pick([])]),
     },
@@ -30,14 +27,9 @@ module.exports = () =>
       type: "Rule",
       Client: CloudWatchEventRule,
       isOurMinion,
-      compare: compareAws({
-        filterTarget: () =>
-          pipe([
-            defaultsDeep({ EventBusName: "default" }),
-            filterTargetDefault,
-          ]),
-        filterLive: () =>
-          pipe([omit(["Arn", "CreatedBy", "Targets"]), filterLiveDefault]),
+      compare: compareCloudWatchEvent({
+        filterTarget: () => pipe([defaultsDeep({ EventBusName: "default" })]),
+        filterLive: () => pipe([omit(["Arn", "CreatedBy", "Targets"])]),
       }),
       filterLive: () =>
         pipe([omit(["Name", "Arn", "EventBusName"]), omitIfEmpty(["Targets"])]),

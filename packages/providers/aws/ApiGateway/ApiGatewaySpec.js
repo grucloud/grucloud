@@ -17,11 +17,11 @@ const prettier = require("prettier");
 const path = require("path");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { compareAws, isOurMinionObject } = require("../AwsCommon");
+const { isOurMinionObject, compareAws } = require("../AwsCommon");
 
 const { RestApi } = require("./RestApi");
 const { Stage } = require("./Stage");
-const { DomainName } = require("./DomainName");
+//const { DomainName } = require("./DomainName");
 const { Authorizer } = require("./Authorizer");
 const { ApiKey } = require("./ApiKey");
 const { Account } = require("./Account");
@@ -30,6 +30,7 @@ const { Resource } = require("./Resource");
 //const { Integration } = require("./Integration");
 
 const GROUP = "APIGateway";
+const compareAPIGateway = compareAws({ tagsKey: "tags" });
 
 const schemaFilePath = ({ programOptions, commandOptions, resource }) =>
   path.resolve(programOptions.workingDirectory, `${resource.name}.oas30.json`);
@@ -63,7 +64,7 @@ module.exports = pipe([
     // {
     //   type: "DomainName",
     //   Client: DomainName,
-    //   compare: compareAws({}),
+    //   compare: compareAPIGateway({}),
     //   filterLive: () =>
     //     pipe([
     //       tap((params) => {
@@ -79,7 +80,7 @@ module.exports = pipe([
       type: "Account",
       Client: Account,
       isOurMinion: ({ live, config }) => true,
-      compare: compareAws({
+      compare: compareAPIGateway({
         filterTarget: () =>
           pipe([
             defaultsDeep({
@@ -105,7 +106,7 @@ module.exports = pipe([
       type: "ApiKey",
       Client: ApiKey,
       omitProperties: ["id", "createdDate", "lastUpdatedDate", "stageKeys"],
-      compare: compareAws(),
+      compare: compareAPIGateway(),
       propertiesDefault: { enabled: true },
       filterLive: () =>
         pipe([
@@ -133,7 +134,7 @@ module.exports = pipe([
     {
       type: "RestApi",
       Client: RestApi,
-      compare: compareAws({
+      compare: compareAPIGateway({
         filterTarget: () =>
           pipe([
             omit(["schemaFile", "deployment"]),
@@ -179,7 +180,7 @@ module.exports = pipe([
     {
       type: "Stage",
       Client: Stage,
-      compare: compareAws({
+      compare: compareAPIGateway({
         filterTarget: () =>
           pipe([
             defaultsDeep({ cacheClusterEnabled: false, tracingEnabled: false }),
@@ -218,7 +219,7 @@ module.exports = pipe([
     {
       type: "Authorizer",
       Client: Authorizer,
-      compare: compareAws({}),
+      compare: compareAPIGateway({}),
       filterLive: () =>
         pipe([omit(["id", "name", "restApiId", "providerARNs"])]),
       dependencies: {

@@ -8,11 +8,9 @@ const logger = require("@grucloud/core/logger")({
 });
 
 const { tos } = require("@grucloud/core/tos");
-const { buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
 const {
-  tagsExtractFromDescription,
   tagsRemoveFromDescription,
   compareAws,
   throwIfNotAwsError,
@@ -25,7 +23,7 @@ const {
   computeHash256,
 } = require("./LambdaCommon");
 
-const findId = get("live.LayerArn");
+const findId = get("live.LayerVersionArn");
 const findName = get("live.LayerName");
 const pickId = pick(["LayerName"]);
 
@@ -34,8 +32,6 @@ exports.Layer = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(lambda);
 
   const decorate = assign({
-    Tags: tagsExtractFromDescription,
-    Description: tagsRemoveFromDescription,
     Content: ({ LayerVersionArn }) =>
       pipe([
         tap((params) => {
@@ -59,9 +55,6 @@ exports.Layer = ({ spec, config }) => {
           VersionNumber: Version,
         }),
         (params) => lambda().getLayerVersionPolicy(params),
-        tap((params) => {
-          assert(true);
-        }),
         get("Policy"),
       ]),
       throwIfNotAwsError("ResourceNotFoundException")
@@ -73,14 +66,7 @@ exports.Layer = ({ spec, config }) => {
     method: "listLayerVersions",
     getField: "LayerVersions",
     ignoreErrorCodes: ["NotFoundException"],
-    decorate: ({ LayerName }) =>
-      pipe([
-        tap((params) => {
-          assert(LayerName);
-        }),
-        defaultsDeep({ LayerName }),
-        decorate,
-      ]),
+    decorate: ({ LayerName }) => pipe([defaultsDeep({ LayerName }), decorate]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listLayers-property
@@ -113,18 +99,7 @@ exports.Layer = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#publishLayerVersion-property
 
   const create = client.create({
-    filterPayload: (payload) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => payload,
-        omit(["Tags"]),
-        assign({
-          Description: ({ Description }) =>
-            `${Description} tags:${JSON.stringify(payload.Tags)}`,
-        }),
-      ])(),
+    filterPayload: (payload) => pipe([() => payload])(),
     method: "publishLayerVersion",
     pickCreated:
       ({ payload }) =>
@@ -138,8 +113,7 @@ exports.Layer = ({ spec, config }) => {
     method: "publishLayerVersion",
     getById,
     config,
-    filterParams: ({ pickId, payload, diff, live }) =>
-      pipe([() => payload, omit(["Tags"])])(),
+    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteLayerVersion-property
@@ -165,7 +139,6 @@ exports.Layer = ({ spec, config }) => {
           () => otherProps,
           defaultsDeep({
             LayerName: name,
-            Tags: buildTagsObject({ name, namespace, config, userTags: Tags }),
             Content: { ZipFile },
           }),
         ])(),
@@ -186,7 +159,7 @@ exports.Layer = ({ spec, config }) => {
 };
 
 exports.compareLayer = pipe([
-  compareAws({
+  compareAws({})({
     filterTarget: () =>
       pipe([
         assign({

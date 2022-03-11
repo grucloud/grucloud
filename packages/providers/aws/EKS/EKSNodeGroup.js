@@ -10,9 +10,14 @@ const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { findNamespaceInTagsObject } = require("../AwsCommon");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { createEKS, waitForUpdate } = require("./EKSCommon");
+const {
+  createEKS,
+  waitForUpdate,
+  tagResource,
+  untagResource,
+} = require("./EKSCommon");
 const findName = get("live.nodegroupName");
-const findId = findName;
+const findId = get("live.nodegroupArn");
 const pickId = pick(["nodegroupName", "clusterName"]);
 const ignoreErrorCodes = ["ResourceNotFoundException"];
 
@@ -22,7 +27,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(eks);
 
   const findDependencies = ({ live, lives }) => [
-    { type: "Cluster", group: "EKS", ids: [live.clusterName] },
+    { type: "Cluster", group: "EKS", ids: [live.arn] },
     { type: "Subnet", group: "EC2", ids: live.subnets },
     {
       type: "AutoScalingGroup",
@@ -149,11 +154,11 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { tags, ...otherProps },
     dependencies: { cluster, role, subnets, launchTemplate },
   }) =>
     pipe([
-      () => properties,
+      () => otherProps,
       tap((params) => {
         assert(cluster, "missing 'cluster' dependency");
         assert(role, "missing 'role' dependency");
@@ -170,7 +175,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
           maxSize: 1,
           desiredSize: 1,
         },
-        tags: buildTagsObject({ config, namespace, name }),
+        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
       switchCase([
         () => launchTemplate,
@@ -200,5 +205,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ eks }),
+    untagResource: untagResource({ eks }),
   };
 };

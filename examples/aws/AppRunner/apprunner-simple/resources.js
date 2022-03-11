@@ -35,6 +35,12 @@ exports.createResources = () => [
         HealthyThreshold: 1,
         UnhealthyThreshold: 5,
       },
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: () => ({
       accessRole: "AppRunnerECRAccessRole",

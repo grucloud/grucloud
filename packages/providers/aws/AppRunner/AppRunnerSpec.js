@@ -10,6 +10,8 @@ const { AppRunnerConnection } = require("./Connection");
 
 const GROUP = "AppRunner";
 
+const compareAppRunner = compareAws({});
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html
 
 module.exports = () =>
@@ -18,7 +20,7 @@ module.exports = () =>
       type: "Connection",
       Client: AppRunnerConnection,
       isOurMinion,
-      compare: compareAws({
+      compare: compareAppRunner({
         filterAll: pipe([omit(["ConnectionArn", "Status", "CreatedAt"])]),
       }),
       filterLive: () => pipe([pick(["ProviderType"])]),
@@ -31,8 +33,13 @@ module.exports = () =>
         accessRole: { type: "Role", group: "IAM" },
         repository: { type: "Repository", group: "ECR" },
       },
+      propertiesDefault: {
+        NetworkConfiguration: {
+          EgressConfiguration: { EgressType: "DEFAULT" },
+        },
+      },
       isOurMinion,
-      compare: compareAws({
+      compare: compareAppRunner({
         filterAll: pipe([
           omit([
             "ServiceId",

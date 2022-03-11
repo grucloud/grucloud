@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { eq, pipe, tap, get, pick } = require("rubico");
+const { eq, pipe, tap, get, pick, assign, tryCatch } = require("rubico");
 const {
   defaultsDeep,
   when,
@@ -8,13 +8,17 @@ const {
   callProp,
   first,
   find,
-  includes,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createAppRunner, ignoreErrorCodes } = require("./AppRunnerCommon");
+const {
+  createAppRunner,
+  ignoreErrorCodes,
+  tagResource,
+  untagResource,
+} = require("./AppRunnerCommon");
 
 const findName = get("live.ServiceName");
 const findId = get("live.ServiceArn");
@@ -79,12 +83,29 @@ exports.AppRunnerService = ({ spec, config }) => {
     },
   ];
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#listTagsForResource-property
+  const decorate = () =>
+    pipe([
+      assign({
+        Tags: tryCatch(
+          pipe([
+            ({ ServiceArn }) => ({ ResourceArn: ServiceArn }),
+            appRunner().listTagsForResource,
+            get("Tags"),
+          ]),
+          //Error in listing tags for resource: Operation not allowed for resource arn:aws:apprunner:us-east-1:1234567890:service/mock-server/5c5b4af0772e4a82a32738c1d590cc62 when it is in state: deleted
+          () => undefined
+        ),
+      }),
+    ]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#describeService-property
   const getById = client.getById({
     pickId,
     method: "describeService",
     getField: "Service",
     ignoreErrorCodes,
+    decorate,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#listServices-property
@@ -160,5 +181,7 @@ exports.AppRunnerService = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ appRunner }),
+    untagResource: untagResource({ appRunner }),
   };
 };

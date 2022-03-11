@@ -293,6 +293,12 @@ exports.createResources = () => [
       MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
       MasterUserPassword:
         process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USER_PASSWORD,
+      Tags: [
+        {
+          Key: "mykey1",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: () => ({
       dbSubnetGroup: "subnet-group-postgres-stateless",

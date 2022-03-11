@@ -9,6 +9,7 @@ const { DBInstance } = require("./DBInstance");
 const { DBSubnetGroup } = require("./DBSubnetGroup");
 
 const GROUP = "RDS";
+const compareRDS = compareAws({});
 
 const environmentVariables = [
   { path: "MasterUsername", suffix: "MASTER_USERNAME" },
@@ -21,8 +22,7 @@ module.exports = () =>
       type: "DBSubnetGroup",
       Client: DBSubnetGroup,
       isOurMinion,
-      compare: compareAws({
-        filterAll: pipe([omit(["Tags"])]),
+      compare: compareRDS({
         filterTarget: () => pipe([omit(["SubnetIds"])]),
         filterLive: () =>
           pipe([
@@ -46,8 +46,8 @@ module.exports = () =>
         },
       },
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
-      compare: compareAws({
-        filterAll: pipe([omit(["SubnetIds", "Tags"])]),
+      compare: compareRDS({
+        filterAll: pipe([omit(["SubnetIds"])]),
         filterTarget: () =>
           pipe([
             omit([
@@ -79,7 +79,6 @@ module.exports = () =>
           pipe([
             assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
             omit([
-              "TagList",
               "Capacity",
               "ScalingConfigurationInfo",
               "AvailabilityZones",
@@ -103,7 +102,6 @@ module.exports = () =>
               "EnabledCloudwatchLogsExports",
               "ActivityStreamStatus",
               "DomainMemberships",
-              "TagList",
             ]),
           ]),
       }),
@@ -150,8 +148,7 @@ module.exports = () =>
         BackupTarget: "region",
       },
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
-      compare: compareAws({
-        filterAll: omit(["TagList"]),
+      compare: compareRDS({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -161,7 +158,6 @@ module.exports = () =>
               "MasterUserPassword",
               "VpcSecurityGroupIds",
               "DBSubnetGroupName", //TODO
-              "Tags",
             ]),
           ]),
         filterLive: () =>

@@ -6,14 +6,14 @@ const path = require("path");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsKp" });
 const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 exports.AwsClientKeyPair = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
   const findName = get("live.KeyName");
-  const findId = findName;
+  const findId = get("live.KeyPairId");
   const pickId = pick(["KeyName"]);
 
   const getList = client.getList({
@@ -101,5 +101,7 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };

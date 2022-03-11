@@ -24,6 +24,8 @@ const { AppSyncResolver } = require("./AppSyncResolver");
 
 const GROUP = "AppSync";
 
+const compareAppSync = compareAws({ tagsKey: "tags" });
+
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
 
@@ -74,7 +76,7 @@ module.exports = () =>
       Client: AppSyncGraphqlApi,
       isOurMinion,
       // TODO apiKeys
-      compare: compareAws({
+      compare: compareAppSync({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -125,9 +127,9 @@ module.exports = () =>
       type: "DataSource",
       Client: AppSyncDataSource,
       isOurMinion,
-      compare: compareAws({
+      compare: compareAppSync({
         filterAll: pipe([
-          omit(["apiId", "serviceRoleArn", "dataSourceArn", "tags"]),
+          omit(["apiId", "serviceRoleArn", "dataSourceArn"]),
           omitIfEmpty(["description"]),
         ]),
       }),
@@ -175,11 +177,10 @@ module.exports = () =>
           }),
         ])(),
       isOurMinion,
-      compare: compareAws({
-        filterTarget: () => pipe([omit(["tags"])]),
+      compare: compareAppSync({
         filterLive: () =>
           pipe([
-            omit(["arn", "resolverArn", "tags"]),
+            omit(["arn", "resolverArn"]),
             omitIfEmpty([
               "description",
               "requestMappingTemplate",

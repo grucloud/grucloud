@@ -5,12 +5,17 @@
   "description": "Example of an EBS volume attached to an EC2 Instance",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "graph-target": "gc graph",
-    "graph-live": "gc list --graph",
+    "tree": "gc tree",
+    "graph": "gc graph",
     "gencode": "gc gencode",
     "list": "gc list",
-    "apply": "gc apply -f"
+    "list-graph": "gc list -g",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "onDeployed": "gc run --onDeployed",
+    "onDestroyed": "gc run --onDestroyed",
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",

@@ -11,10 +11,15 @@ const { buildTagsObject, shellRun } = require("@grucloud/core/Common");
 const { findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 
-const { createEKS, waitForUpdate } = require("./EKSCommon");
+const {
+  createEKS,
+  waitForUpdate,
+  tagResource,
+  untagResource,
+} = require("./EKSCommon");
 
 const findName = get("live.name");
-const findId = findName;
+const findId = get("live.arn");
 const pickId = pick(["name"]);
 
 const findDependencies = ({ live }) => [
@@ -155,7 +160,7 @@ exports.EKSCluster = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { subnets, securityGroups, role, key },
   }) =>
     pipe([
@@ -181,7 +186,7 @@ exports.EKSCluster = ({ spec, config }) => {
           ],
         }),
         name,
-        tags: buildTagsObject({ config, namespace, name }),
+        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
     ])();
 
@@ -197,5 +202,7 @@ exports.EKSCluster = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ eks }),
+    untagResource: untagResource({ eks }),
   };
 };

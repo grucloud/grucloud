@@ -8,7 +8,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createELB } = require("./ELBCommon");
+const { createELB, tagResource, untagResource } = require("./ELBCommon");
 
 const ignoreErrorCodes = ["ListenerNotFound"];
 
@@ -213,5 +213,7 @@ exports.ELBListener = ({ spec, config }) => {
     getList,
     configDefault,
     managedByOther,
+    tagResource: tagResource({ elb }),
+    untagResource: untagResource({ elb }),
   };
 };

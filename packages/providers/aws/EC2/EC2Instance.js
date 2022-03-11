@@ -31,11 +31,7 @@ const { AwsClient } = require("../AwsClient");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsEc2" });
-const {
-  getByNameCore,
-  convertError,
-  compare,
-} = require("@grucloud/core/Common");
+const { getByNameCore, compare } = require("@grucloud/core/Common");
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
@@ -49,7 +45,12 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags } = require("../AwsCommon");
-const { createEC2, findDependenciesVpc } = require("./EC2Common");
+const {
+  createEC2,
+  tagResource,
+  untagResource,
+  findDependenciesVpc,
+} = require("./EC2Common");
 
 const ignoreErrorCodes = ["InvalidInstanceID.NotFound"];
 
@@ -142,7 +143,7 @@ exports.EC2Instance = ({ spec, config }) => {
     }),
   ]);
 
-  const findDependencies = ({ live, lives }) => [
+  const findDependencies = ({ live, lives, config }) => [
     findDependenciesVpc({ live }),
     {
       type: "Image",
@@ -156,7 +157,21 @@ exports.EC2Instance = ({ spec, config }) => {
     {
       type: "KeyPair",
       group: "EC2",
-      ids: [live.KeyName],
+      ids: [
+        pipe([
+          () =>
+            lives.getByName({
+              name: live.KeyName,
+              type: "KeyPair",
+              group: "EC2",
+              providerName,
+            }),
+          tap((keyPair) => {
+            assert(keyPair);
+          }),
+          get("id"),
+        ])(),
+      ],
     },
     { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
     {
@@ -466,6 +481,8 @@ exports.EC2Instance = ({ spec, config }) => {
     getList,
     configDefault: configDefault({ config }),
     managedByOther,
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };
 

@@ -9,7 +9,7 @@ exports.createResources = () => [
     name: "my-queue",
     properties: ({}) => ({
       tags: {
-        "my-tag": "my-value",
+        "my-tagaaaaa": "my-value",
       },
     }),
   },

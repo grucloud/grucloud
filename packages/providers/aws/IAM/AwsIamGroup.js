@@ -1,12 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, any, assign, pick } = require("rubico");
+const { pipe, tap, get, eq, any, assign, pick, omit } = require("rubico");
 const { defaultsDeep, forEach, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamGroup" });
-const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createIAM } = require("./AwsIamCommon");
+const { createIAM, assignAttachedPolicies } = require("./AwsIamCommon");
 
 const findName = get("live.GroupName");
 const findId = findName;
@@ -26,7 +25,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroups-property
-
   const getList = client.getList({
     method: "listGroups",
     getParam: "Groups",
@@ -34,19 +32,15 @@ exports.AwsIamGroup = ({ spec, config }) => {
       pipe([
         assign({
           AttachedPolicies: pipe([
-            ({ GroupName }) =>
-              iam().listAttachedGroupPolicies({
-                GroupName,
-                MaxItems: 1e3,
-              }),
+            pick(["GroupName"]),
+            defaultsDeep({ MaxItems: 1e3 }),
+            iam().listAttachedGroupPolicies,
             get("AttachedPolicies"),
           ]),
           Policies: pipe([
-            ({ GroupName }) =>
-              iam().listGroupPolicies({
-                GroupName,
-                MaxItems: 1e3,
-              }),
+            pick(["GroupName"]),
+            defaultsDeep({ MaxItems: 1e3 }),
+            iam().listGroupPolicies,
             get("Policies"),
           ]),
         }),
@@ -66,61 +60,72 @@ exports.AwsIamGroup = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {},
+    dependencies: { policies = [] },
   }) =>
     pipe([
-      () => otherProps,
+      () => ({}),
+      assignAttachedPolicies({ policies }),
+      defaultsDeep(otherProps),
       defaultsDeep({
         GroupName: name,
         Path: "/",
-        // Tags: buildTags({
-        //   name,
-        //   config,
-        //   namespace,
-        //   UserTags: Tags,
-        // }),
       }),
+      // Cannot set Tags
     ])();
+
+  const attachGroupPolicy = ({ name }) =>
+    pipe([
+      forEach(
+        pipe([
+          tap(({ PolicyArn }) => {
+            assert(PolicyArn);
+            assert(name);
+          }),
+          pick(["PolicyArn"]),
+          defaultsDeep({ GroupName: name }),
+          iam().attachGroupPolicy,
+        ])
+      ),
+    ]);
 
   const create = client.create({
     method: "createGroup",
     getById,
+    filterPayload: omit(["AttachedPolicies"]),
     pickCreated: () => get("Group"),
-    postCreate: ({ name, resolvedDependencies: { policies } }) =>
+    postCreate: ({ name, payload }) =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        tap.if(
-          () => policies,
-          () =>
-            forEach(
-              pipe([
-                tap((policy) => {
-                  logger.debug(`attachGroupPolicy ${tos({ policy })}`);
-                  assert(policy.live.Arn, `no live.Arn in ${tos(policy)}`);
-                }),
-                (policy) => ({
-                  PolicyArn: policy.live.Arn,
-                  GroupName: name,
-                }),
-                tap((params) => {
-                  logger.debug(`attachGroupPolicy ${tos({ params })}`);
-                }),
-                iam().attachGroupPolicy,
-              ])
-            )(policies)
-        ),
+        () => payload,
+        get("AttachedPolicies", []),
+        attachGroupPolicy({ name }),
       ]),
   });
 
+  const updateAttachedPolicies = ({ name, diff }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => diff,
+      get("liveDiff.added.AttachedPolicies", []),
+      //putUserAttachedPolicies({ name }),
+    ]);
+
+  const update = async ({ name, diff }) =>
+    pipe([
+      tap((params) => {
+        assert(diff);
+      }),
+      updateAttachedPolicies({ name, diff }),
+    ])();
+
   const removeUserFromGroup = ({ GroupName }) =>
     pipe([
-      () =>
-        iam().getGroup({
-          GroupName,
-          MaxItems: 1e3,
-        }),
+      () => ({
+        GroupName,
+        MaxItems: 1e3,
+      }),
+      iam().getGroup,
       get("Users"),
       tap((Users = []) => {
         logger.info(`removeUserFromGroup #users ${Users.length}`);
@@ -169,6 +174,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

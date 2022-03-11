@@ -6,6 +6,7 @@ const { compareAws } = require("../AwsCommon");
 const { SSMParameter } = require("./SSMParameter");
 
 const GROUP = "SSM";
+const compareSSM = compareAws({});
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -13,8 +14,7 @@ module.exports = () =>
       type: "Parameter",
       Client: SSMParameter,
       isOurMinion,
-      compare: compareAws({
-        filterAll: omit(["Tags"]),
+      compare: compareSSM({
         filterTarget: () =>
           pipe([
             tap((params) => {

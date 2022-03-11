@@ -7,6 +7,9 @@ exports.createResources = () => [
     type: "DomainName",
     group: "ApiGatewayV2",
     name: "grucloud.org",
+    properties: ({}) => ({
+      Tags: { mykey1: "value" },
+    }),
     dependencies: () => ({
       certificate: "grucloud.org",
     }),
@@ -20,6 +23,7 @@ exports.createResources = () => [
       ApiKeySelectionExpression: "$request.header.x-api-key",
       DisableExecuteApiEndpoint: false,
       RouteSelectionExpression: "$request.method $request.path",
+      Tags: { mykey1: "value" },
     }),
   },
   {
@@ -31,6 +35,7 @@ exports.createResources = () => [
         Format:
           '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
       },
+      Tags: { mykey1: "value" },
     }),
     dependencies: () => ({
       api: "my-api",

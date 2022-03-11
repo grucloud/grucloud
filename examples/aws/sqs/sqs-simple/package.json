@@ -8,7 +8,10 @@
     "test": "mocha",
     "graph-target": "gc graph",
     "list": "gc list --graph -t SQS::Queue",
-    "gencode": "gc gencode"
+    "gencode": "gc gencode",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f"
   },
   "author": "",
   "license": "ISC",

@@ -9,6 +9,8 @@ const {
   createAPIGateway,
   findDependenciesRestApi,
   ignoreErrorCodes,
+  tagResource,
+  untagResource,
 } = require("./ApiGatewayCommon");
 
 const findId = get("live.stageName");
@@ -66,19 +68,19 @@ exports.Stage = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { tags, ...otherProps },
     dependencies: { restApi },
   }) =>
     pipe([
       tap(() => {
         assert(restApi, "missing 'restApi' dependency");
       }),
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         stageName: name,
         restApiId: getField(restApi, "id"),
         deploymentId: getField(restApi, "deployments[0].id"),
-        tags: buildTagsObject({ config, namespace, name }),
+        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
     ])();
 
@@ -141,7 +143,8 @@ exports.Stage = ({ spec, config }) => {
     getById,
     ignoreErrorCodes,
   });
-
+  const buildResourceArn = ({ restApiId, stageName }) =>
+    `arn:aws:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`;
   return {
     spec,
     findName,
@@ -154,5 +157,7 @@ exports.Stage = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    tagResource: tagResource({ apiGateway, buildResourceArn }),
+    untagResource: untagResource({ apiGateway, buildResourceArn }),
   };
 };

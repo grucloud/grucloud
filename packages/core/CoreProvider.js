@@ -300,10 +300,7 @@ function CoreProvider({
     assert(resourcesByType);
     mapTypeToResources.set(
       JSON.stringify({ type: resource.type, group: resource.group }),
-      [
-        ...filter(not(eq(get("name"), resource.name)))(resourcesByType),
-        resource,
-      ]
+      [...filter(not(eq(get("name"), name)))(resourcesByType), resource]
     );
 
     tap.if(get("hook"), (client) =>
@@ -1133,11 +1130,11 @@ function CoreProvider({
   const sortResources = callProp("sort", (a, b) =>
     pipe([
       tap(() => {
-        assert(a);
-        assert(a.name.localeCompare);
-        assert(a.name);
-        assert(b);
-        assert(b.name);
+        // assert(a);
+        // assert(a.name.localeCompare);
+        // assert(a.name);
+        // assert(b);
+        // assert(b.name);
       }),
       () => a.name.localeCompare(b.name),
     ])()

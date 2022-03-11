@@ -78,13 +78,7 @@ exports.Integration = ({ spec, config }) => {
     decorate:
       ({ parent: { ApiId, Name, Tags } }) =>
       (live) =>
-        pipe([
-          () => live,
-          defaultsDeep({ ApiId, ApiName: Name }),
-          assign({
-            Tags: pipe([() => Tags, omit(["Name"])]),
-          }),
-        ])(),
+        pipe([() => live, defaultsDeep({ ApiId, ApiName: Name })])(),
   });
 
   const getByName = getByNameCore({ getList, findName });

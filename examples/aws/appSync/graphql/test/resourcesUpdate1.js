@@ -12,6 +12,7 @@ const createResources = () => [
         },
       ],
       schemaFile: "test/cdk-notes-appsync-api.update1.graphql",
+      tags: { mykey1: "myvalue" },
     }),
   },
 ];

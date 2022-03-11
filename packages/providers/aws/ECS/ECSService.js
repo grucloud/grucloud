@@ -9,6 +9,8 @@ const {
   createECS,
   buildTagsEcs,
   findDependenciesCluster,
+  tagResource,
+  untagResource,
 } = require("./ECSCommon");
 
 const findId = get("live.serviceArn");
@@ -152,7 +154,7 @@ exports.ECSService = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { cluster, taskDefinition },
   }) =>
     pipe([
@@ -169,7 +171,7 @@ exports.ECSService = ({ spec, config }) => {
           name,
           config,
           namespace,
-          Tags,
+          tags,
         }),
       }),
     ])();
@@ -187,5 +189,7 @@ exports.ECSService = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ ecs }),
+    untagResource: untagResource({ ecs }),
   };
 };

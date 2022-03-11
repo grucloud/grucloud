@@ -5,8 +5,17 @@
   "private": true,
   "main": "iac.js",
   "scripts": {
-    "test": "mocha",
-    "gencode": "gc gencode"
+    "tree": "gc tree",
+    "graph": "gc graph",
+    "gencode": "gc gencode",
+    "list": "gc list",
+    "list-graph": "gc list -g",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "onDeployed": "gc run --onDeployed",
+    "onDestroyed": "gc run --onDestroyed",
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",

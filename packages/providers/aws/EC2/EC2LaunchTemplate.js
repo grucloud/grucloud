@@ -15,7 +15,7 @@ const {
   findNamespaceInTagsOrEksCluster,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 const EC2Instance = require("./EC2Instance");
 
@@ -56,11 +56,27 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     includes("AWSServiceRoleForAmazonEKSNodegroup"),
   ]);
 
-  const findDependencies = ({ live, lives }) => [
+  const findDependencies = ({ live, lives, config }) => [
     {
       type: "KeyPair",
       group: "EC2",
-      ids: [pipe([() => live, get("LaunchTemplateData.KeyName")])()],
+      ids: [
+        pipe([
+          () => live,
+          get("LaunchTemplateData.KeyName"),
+          (KeyName) =>
+            lives.getByName({
+              name: KeyName,
+              type: "KeyPair",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          tap((keyPair) => {
+            assert(keyPair);
+          }),
+          get("id"),
+        ])(),
+      ],
     },
     {
       type: "SecurityGroup",
@@ -206,5 +222,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };

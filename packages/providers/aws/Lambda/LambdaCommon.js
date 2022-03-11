@@ -52,3 +52,21 @@ exports.computeHash256 = (ZipFile) =>
     (hash256) =>
       pipe([() => hash256.update(ZipFile), () => hash256.digest("base64")])(),
   ])();
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#tagResource-property
+exports.tagResource =
+  ({ lambda }) =>
+  ({ id, live }) =>
+    pipe([
+      tap((params) => {
+        assert(live);
+      }),
+      (Tags) => ({ Resource: id, Tags }),
+      lambda().tagResource,
+    ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#untagResource-property
+exports.untagResource =
+  ({ lambda }) =>
+  ({ id }) =>
+    pipe([(TagKeys) => ({ Resource: id, TagKeys }), lambda().untagResource]);

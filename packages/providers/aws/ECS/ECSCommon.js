@@ -1,3 +1,4 @@
+const { pipe, tap } = require("rubico");
 const { buildTags } = require("../AwsCommon");
 
 const { ECS } = require("@aws-sdk/client-ecs");
@@ -5,12 +6,12 @@ const { createEndpoint } = require("../AwsCommon");
 
 exports.createECS = createEndpoint(ECS);
 
-exports.buildTagsEcs = ({ name, config, namespace, Tags }) =>
+exports.buildTagsEcs = ({ name, config, namespace, tags }) =>
   buildTags({
     name,
     config,
     namespace,
-    UserTags: Tags,
+    UserTags: tags,
     key: "key",
     value: "value",
   });
@@ -20,3 +21,15 @@ exports.findDependenciesCluster = ({ live }) => ({
   group: "ECS",
   ids: [live.clusterArn],
 });
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#tagResource-property
+exports.tagResource =
+  ({ ecs }) =>
+  ({ id }) =>
+    pipe([(tags) => ({ resourceArn: id, tags }), ecs().tagResource]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#untagResource-property
+exports.untagResource =
+  ({ ecs }) =>
+  ({ id }) =>
+    pipe([(tagKeys) => ({ resourceArn: id, tagKeys }), ecs().untagResource]);

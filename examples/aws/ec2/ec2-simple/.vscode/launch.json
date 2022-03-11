@@ -2,14 +2,25 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "GenCode",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "gencode"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "Graph",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["graph"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "graph"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
@@ -20,77 +31,74 @@
       "runtimeArgs": ["run", "list"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/",
-      "port": 9229
-    },
-    {
-      "name": "GenCode",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["gencode"],
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
       "name": "Plan",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["plan"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "plan"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
       "name": "Apply",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["apply", "-f"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "apply"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/",
-      "port": 9229
-    },
-    {
-      "name": "onDeployed",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["run", "--onDeployed"],
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
       "name": "Destroy",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["destroy", "-f"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "destroy"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
-      "name": "Info",
+      "name": "onDeployed",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["info"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "onDeployed"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/",
-      "port": 9229,
-      "env": {
-        "STAGE": "uat"
-      }
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "onDestroyed",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "onDestroyed"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "E2E test",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["test"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
     }
   ]
 }

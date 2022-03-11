@@ -11,6 +11,7 @@ const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
 
 const GROUP = "EKS";
+const compareEKS = compareAws({ tagsKey: "tags" });
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -41,7 +42,7 @@ module.exports = () =>
         key: { type: "Key", group: "KMS" },
       },
       isOurMinion,
-      compare: compareAws({
+      compare: compareEKS({
         fitterAll: pipe([
           tap((params) => {
             assert(true);
@@ -98,7 +99,7 @@ module.exports = () =>
       },
       Client: EKSNodeGroup,
       isOurMinion,
-      compare: compareAws({
+      compare: compareEKS({
         filterTarget: () =>
           pipe([
             pick([

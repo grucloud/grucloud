@@ -32,7 +32,7 @@ const {
   findValueInTags,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 exports.AwsVolume = ({ spec, config }) => {
   const ec2 = createEC2(config);
@@ -216,6 +216,8 @@ exports.AwsVolume = ({ spec, config }) => {
     configDefault,
     cannotBeDeleted,
     managedByOther,
+    tagResource: tagResource({ ec2 }),
+    untagResource: untagResource({ ec2 }),
   };
 };
 

@@ -5,7 +5,7 @@ const { defaultsDeep, find, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2 } = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 const ignoreErrorCodes = ["InvalidVolume.NotFound"];
 

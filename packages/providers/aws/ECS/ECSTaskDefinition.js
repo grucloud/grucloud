@@ -4,7 +4,12 @@ const { defaultsDeep, first } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createECS, buildTagsEcs } = require("./ECSCommon");
+const {
+  createECS,
+  buildTagsEcs,
+  tagResource,
+  untagResource,
+} = require("./ECSCommon");
 
 const findId = get("live.taskDefinitionArn");
 const findName = get("live.family");
@@ -103,7 +108,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { taskRole, executionRole },
   }) =>
     pipe([
@@ -119,7 +124,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
           name,
           config,
           namespace,
-          Tags,
+          tags,
         }),
       }),
     ])();
@@ -136,5 +141,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ ecs }),
+    untagResource: untagResource({ ecs }),
   };
 };

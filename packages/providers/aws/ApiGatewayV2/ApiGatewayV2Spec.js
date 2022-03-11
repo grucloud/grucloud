@@ -15,12 +15,14 @@ const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "ApiGatewayV2";
 
+const compareApiGatewayV2 = compareAws({});
+
 module.exports = pipe([
   () => [
     {
       type: "DomainName",
       Client: DomainName,
-      compare: compareAws({
+      compare: compareApiGatewayV2({
         filterTarget: () =>
           pipe([
             defaultsDeep({
@@ -45,7 +47,7 @@ module.exports = pipe([
     {
       type: "Api",
       Client: Api,
-      compare: compareAws({
+      compare: compareApiGatewayV2({
         filterLive: () => pipe([omit(["ApiEndpoint", "ApiId", "CreatedDate"])]),
       }),
       filterLive: () =>
@@ -63,7 +65,7 @@ module.exports = pipe([
     {
       type: "Stage",
       Client: Stage,
-      compare: compareAws({
+      compare: compareApiGatewayV2({
         filterTarget: () =>
           pipe([
             tap((params) => {
@@ -94,7 +96,7 @@ module.exports = pipe([
     {
       type: "Authorizer",
       Client: Authorizer,
-      compare: compareAws({
+      compare: compareApiGatewayV2({
         filterLive: () => pipe([omit(["AuthorizerId", "ApiName"])]),
       }),
       filterLive: () =>
@@ -125,7 +127,7 @@ module.exports = pipe([
           ({ domainName, api, stage }) =>
             `apimapping::${domainName.name}::${api.name}::${stage.name}::${properties.ApiMappingKey}`,
         ])(),
-      compare: compareAws({
+      compare: compareApiGatewayV2({
         filterLive: () => pipe([omit(["ApiMappingId", "ApiName"])]),
       }),
       filterLive: () => pipe([pick(["ApiMappingKey"])]),
@@ -145,7 +147,7 @@ module.exports = pipe([
           ({ api, lambdaFunction }) =>
             `integration::${api.name}::${lambdaFunction.name}`,
         ])(),
-      compare: compareAws({
+      compare: compareApiGatewayV2({
         filterTarget: () =>
           pipe([defaultsDeep({ TimeoutInMillis: 30e3, Description: "" })]),
         filterLive: () =>
@@ -175,7 +177,7 @@ module.exports = pipe([
           dependencies,
           ({ api }) => `route::${api.name}::${properties.RouteKey}`,
         ])(),
-      compare: compareAws({
+      compare: compareApiGatewayV2({
         filterLive: () => pipe([omit(["RouteId", "ApiName"])]),
       }),
       filterLive: () =>
@@ -202,7 +204,7 @@ module.exports = pipe([
       Client: Deployment,
       inferName: ({ properties, dependencies }) =>
         pipe([dependencies, ({ api }) => `deployment::${api.name}`])(),
-      compare: compareAws({
+      compare: compareApiGatewayV2({
         filterTarget: () =>
           pipe([
             defaultsDeep({ AutoDeployed: false, Description: "" }),

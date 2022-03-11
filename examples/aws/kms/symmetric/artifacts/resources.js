@@ -3,5 +3,17 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Key", group: "KMS", name: "key-test" },
+  {
+    type: "Key",
+    group: "KMS",
+    name: "key-test",
+    properties: ({}) => ({
+      Tags: [
+        {
+          TagKey: "mykey13",
+          TagValue: "value",
+        },
+      ],
+    }),
+  },
 ];

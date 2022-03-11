@@ -138,6 +138,7 @@ exports.createResources = () => [
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",
+      Tags: [{ Key: "mykey", Value: "value" }],
     }),
     dependencies: () => ({
       subnets: ["subnet-a", "subnet-b"],
@@ -163,6 +164,7 @@ exports.createResources = () => [
       },
       TargetType: "instance",
       ProtocolVersion: "HTTP1",
+      Tags: [{ Key: "mykey", Value: "value" }],
     }),
     dependencies: () => ({
       vpc: "vpc",
@@ -198,6 +200,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",
+      Tags: [{ Key: "mykey", Value: "value" }],
     }),
     dependencies: () => ({
       loadBalancer: "load-balancer",
@@ -242,6 +245,7 @@ exports.createResources = () => [
           },
         },
       ],
+      Tags: [{ Key: "mykey", Value: "value" }],
     }),
     dependencies: () => ({
       listener: "listener::load-balancer::HTTP::80",

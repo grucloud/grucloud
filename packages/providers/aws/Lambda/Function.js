@@ -21,10 +21,12 @@ const logger = require("@grucloud/core/logger")({
 });
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
+const { throwIfNotAwsError, compareAws } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createLambda } = require("./LambdaCommon");
+const { createLambda, tagResource, untagResource } = require("./LambdaCommon");
+
+const compareLambda = compareAws({});
 const findId = get("live.Configuration.FunctionArn");
 const findName = get("live.Configuration.FunctionName");
 const pickId = pipe([
@@ -186,7 +188,7 @@ exports.Function = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { role, layers = [] },
     programOptions,
   }) =>
@@ -202,11 +204,11 @@ exports.Function = ({ spec, config }) => {
         }),
       (ZipFile) =>
         pipe([
-          () => properties,
+          () => otherProps,
           defaultsDeep({
             FunctionName: name,
             Role: getField(role, "Arn"),
-            Tags: buildTagsObject({ config, namespace, name }),
+            Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
             Layers: pipe([
               () => layers,
               map((layer) => getField(layer, "LayerVersionArn")),
@@ -228,6 +230,8 @@ exports.Function = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    tagResource: tagResource({ lambda }),
+    untagResource: untagResource({ lambda }),
   };
 };
 
@@ -235,7 +239,7 @@ exports.compareFunction = pipe([
   tap((params) => {
     assert(true);
   }),
-  compareAws({
+  compareLambda({
     filterTarget: () =>
       pipe([
         assign({ CodeSha256: pipe([get("Code.ZipFile"), computeHash256]) }),

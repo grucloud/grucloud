@@ -17,7 +17,6 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      keyPair: "kp-ec2-example",
       eip: "eip",
     }),
   },

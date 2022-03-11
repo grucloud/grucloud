@@ -69,7 +69,7 @@ exports.Deployment = ({ spec, config }) => {
         tap((params) => {
           assert(ApiName);
         }),
-        defaultsDeep({ ApiId, ApiName, Tags }),
+        defaultsDeep({ ApiId, ApiName /*, Tags*/ }),
       ]),
   });
 

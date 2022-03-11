@@ -67,7 +67,7 @@ exports.Route = ({ spec, config }) => {
           assert(ApiId);
           assert(ApiName);
         }),
-        defaultsDeep({ ApiId, ApiName, Tags }),
+        defaultsDeep({ ApiId, ApiName /*, Tags*/ }),
       ]),
   });
 
