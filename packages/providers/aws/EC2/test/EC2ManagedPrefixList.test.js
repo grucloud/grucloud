@@ -1,42 +1,42 @@
 const assert = require("assert");
-const { tryCatch, pipe, tap } = require("rubico");
+const { pipe, tap } = require("rubico");
 const { AwsProvider } = require("../../AwsProvider");
 
-describe("EC2VpcEndpoint", async function () {
+describe("EC2ManagedPrefixList", async function () {
   let provider;
-  let vpcEndpoint;
+  let prefixList;
   before(async function () {
     provider = AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
-    vpcEndpoint = provider.getClient({ groupType: "EC2::VpcEndpoint" });
+    prefixList = provider.getClient({ groupType: "EC2::ManagedPrefixList" });
   });
   it(
     "list",
     pipe([
-      () => vpcEndpoint.getList(),
+      () => prefixList.getList(),
       tap(({ items }) => {
         assert(Array.isArray(items));
       }),
     ])
   );
   it(
-    "vpcEndpoint destroy not found",
+    "prefixList destroy not found",
     pipe([
       () =>
-        vpcEndpoint.destroy({
+        prefixList.destroy({
           live: {
-            VpcEndpointId: "vpce-0ceb4fc535e8d1872",
+            PrefixListId: "pl-63a5400b",
           },
         }),
     ])
   );
   it(
-    "vpcEndpoint getById not found",
+    "prefixList getById not found",
     pipe([
       () =>
-        vpcEndpoint.getById({
-          VpcEndpointId: "vpce-0ceb4fc535e8d1872",
+        prefixList.getById({
+          PrefixListId: "pl-63a5400b",
         }),
     ])
   );

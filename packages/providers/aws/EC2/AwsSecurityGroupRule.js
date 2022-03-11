@@ -609,9 +609,8 @@ exports.compareSecurityGroupRule = compareAws({
   getTargetTags: () => [],
   getLiveTags: () => [],
 })({
-  filterAll: pipe([
-    omit(["IpPermission.UserIdGroupPairs", "SecurityGroupRuleId"]),
-  ]),
+  filterAll: () =>
+    pipe([omit(["IpPermission.UserIdGroupPairs", "SecurityGroupRuleId"])]),
   filterTarget: () =>
     pipe([
       ({ GroupId, IpPermissions }) => ({

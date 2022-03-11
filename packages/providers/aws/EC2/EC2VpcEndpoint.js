@@ -1,8 +1,9 @@
 const assert = require("assert");
-const { pipe, tap, get, or, omit, pick, eq } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { pipe, tap, get, assign } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
+const { getByNameCore } = require("@grucloud/core/Common");
 
-const { buildTags } = require("../AwsCommon");
+const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const {
   createEC2,
@@ -11,7 +12,7 @@ const {
   findDependenciesVpc,
 } = require("./EC2Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
-
+const ignoreErrorCodes = ["InvalidVpcEndpointId.NotFound"];
 const findId = get("live.VpcEndpointId");
 const pickId = pipe([
   tap(({ VpcEndpointId }) => {
@@ -19,8 +20,7 @@ const pickId = pipe([
   }),
   ({ VpcEndpointId }) => ({ VpcEndpointIds: [VpcEndpointId] }),
 ]);
-
-const findName = get("live.ServiceName");
+const findName = findNameInTagsOrId({ findId: get("live.ServiceName") });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2VpcEndpoint = ({ spec, config }) => {
@@ -41,6 +41,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
       group: "EC2",
       ids: live.SubnetIds,
     },
+    //TODO
     // RouteTableIds:
   ];
 
@@ -49,6 +50,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
       tap((params) => {
         assert(true);
       }),
+      assign({ PolicyDocument: pipe([get("PolicyDocument"), JSON.parse]) }),
     ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcEndpoints-property
@@ -61,26 +63,20 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcEndpoints-property
   const getById = client.getById({
     pickId,
-    method: "describeLaunchTemplates",
+    method: "describeVpcEndpoints",
     getField: "VpcEndpoints",
     decorate,
+    ignoreErrorCodes,
   });
-
-  const getByName = pipe([
-    ({ name }) => ({ LaunchTemplateName: name }),
-    getById,
-  ]);
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpcEndpoint-property
   const create = client.create({
     method: "createVpcEndpoint",
-    pickCreated: () =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("VpcEndpoint"),
-      ]),
+    filterPayload: assign({
+      PolicyDocument: pipe([get("PolicyDocument"), JSON.stringify]),
+    }),
+    pickCreated: () => pipe([get("VpcEndpoint")]),
     getById,
   });
 
@@ -96,12 +92,17 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
     pickId,
     method: "deleteVpcEndpoints",
     getById,
+    ignoreErrorCodes,
   });
 
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: {
+      Tags,
+
+      ...otherProps
+    },
     dependencies: { vpc },
   }) =>
     pipe([
@@ -112,15 +113,13 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
       defaultsDeep({
         ServiceName: name,
         VpcId: getField(vpc, "VpcId"),
+
         TagSpecifications: [
           {
             ResourceType: "vpc-endpoint",
             Tags: buildTags({ config, namespace, name, UserTags: Tags }),
           },
         ],
-      }),
-      tap((params) => {
-        assert(true);
       }),
     ])();
 
@@ -130,6 +129,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
     managedByOther,
     findDependencies,
     getByName,
+    getById,
     findName,
     create,
     update,

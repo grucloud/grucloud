@@ -152,18 +152,19 @@ exports.fnSpecs = ({ config }) => {
         },
         apiVersion: "2021-03-01",
         compare: compare({
-          filterAll: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick(["properties", "sku"]),
-            omit([
-              "properties.provisioningState",
-              "properties.latestRevisionName",
-              "properties.latestRevisionFqdn",
-              "properties.configuration.ingress.fqdn",
+          filterAll: () =>
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              pick(["properties", "sku"]),
+              omit([
+                "properties.provisioningState",
+                "properties.latestRevisionName",
+                "properties.latestRevisionFqdn",
+                "properties.configuration.ingress.fqdn",
+              ]),
             ]),
-          ]),
         }),
         propertiesDefault: {
           properties: {

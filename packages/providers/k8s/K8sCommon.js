@@ -103,11 +103,7 @@ const pickCompare = ({ metadata, spec, data }) => ({
   data,
 });
 
-exports.compareK8s = ({
-  filterAll = identity,
-  filterTarget,
-  filterLive,
-} = {}) =>
+exports.compareK8s = ({ filterAll, filterTarget, filterLive } = {}) =>
   pipe([
     compare({
       filterAll,

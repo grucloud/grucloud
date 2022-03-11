@@ -16,19 +16,20 @@ module.exports = () =>
       Client: DynamoDBTable,
       isOurMinion,
       compare: compareDynamoDB({
-        filterAll: pipe([
-          defaultsDeep({
-            BillingMode: "PAY_PER_REQUEST",
-            ProvisionedThroughput: {
-              ReadCapacityUnits: 0,
-              WriteCapacityUnits: 0,
-            },
-          }),
-          ({ BillingMode, ...other }) => ({
-            ...other,
-            BillingModeSummary: { BillingMode },
-          }),
-        ]),
+        filterAll: () =>
+          pipe([
+            defaultsDeep({
+              BillingMode: "PAY_PER_REQUEST",
+              ProvisionedThroughput: {
+                ReadCapacityUnits: 0,
+                WriteCapacityUnits: 0,
+              },
+            }),
+            ({ BillingMode, ...other }) => ({
+              ...other,
+              BillingModeSummary: { BillingMode },
+            }),
+          ]),
         filterLive: () =>
           pipe([
             tap((params) => {

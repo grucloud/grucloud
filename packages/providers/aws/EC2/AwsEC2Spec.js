@@ -56,6 +56,8 @@ const {
 } = require("./AwsSecurityGroupRule");
 const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
+const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
+
 const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { AwsNetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
@@ -229,7 +231,7 @@ module.exports = () =>
       },
       isOurMinion: () => true,
       compare: compareAws({ getLiveTags: () => [], getTargetTags: () => [] })({
-        filterAll: pipe([pick([])]),
+        filterAll: () => pipe([pick([])]),
       }),
       inferName: ({ properties, dependencies }) =>
         pipe([
@@ -317,7 +319,7 @@ module.exports = () =>
       Client: AwsSubnet,
       isOurMinion,
       compare: compareEC2({
-        filterAll: pipe([omit(["VpcId"])]),
+        filterAll: () => pipe([omit(["VpcId"])]),
         filterTarget: () =>
           pipe([
             defaultsDeep({
@@ -378,7 +380,7 @@ module.exports = () =>
       Client: EC2RouteTable,
       isOurMinion,
       compare: compareEC2({
-        filterAll: pipe([omit(["VpcId"])]),
+        filterAll: () => pipe([omit(["VpcId"])]),
         filterLive: () =>
           pipe([
             omit([
@@ -454,11 +456,12 @@ module.exports = () =>
         getTargetTags: () => [],
         getLiveTags: () => [],
       })({
-        filterLive: () =>
+        filterAll: () =>
           pipe([
             omit([
               "GatewayId",
               "NatGatewayId",
+              "VpcEndpointId",
               "Origin",
               "State",
               "name",
@@ -505,6 +508,7 @@ module.exports = () =>
         ig: { type: "InternetGateway", group: "EC2" },
         natGateway: { type: "NatGateway", group: "EC2" },
         vpcEndpoint: { type: "VpcEndpoint", group: "EC2" },
+        managedPrefixList: { type: "ManagedPrefixList", group: "EC2" },
       },
     },
     {
@@ -725,6 +729,35 @@ module.exports = () =>
       ignoreResource: () => pipe([() => true]),
     },
     {
+      type: "ManagedPrefixList",
+      dependencies: {},
+      Client: EC2ManagedPrefixList,
+      isOurMinion,
+      compare: compareEC2({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick([]),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick([]),
+          ]),
+      }),
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          pick(["AddressFamily"]),
+        ]),
+    },
+    {
       type: "VpcEndpoint",
       dependencies: {
         vpc: { type: "Vpc", group: "EC2" },
@@ -759,6 +792,7 @@ module.exports = () =>
             assert(true);
           }),
           pick([
+            "ServiceName",
             "PolicyDocument",
             "PrivateDnsEnabled",
             "RequesterManaged",

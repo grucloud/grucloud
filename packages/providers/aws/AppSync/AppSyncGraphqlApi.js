@@ -201,7 +201,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
           }),
         ])(),
       method: "updateGraphqlApi",
-      filterAll: omit(["schema"]),
+      filterAll: () => omit(["schema"]),
       getById,
       config,
     }),

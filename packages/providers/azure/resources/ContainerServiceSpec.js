@@ -153,38 +153,39 @@ exports.fnSpecs = ({ config }) =>
         postCreate: () => kubeConfigUpdate,
         postDestroy: () => kubeConfigRemove,
         compare: compare({
-          filterAll: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick(["properties"]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                //TODO
-                omit([
-                  "networkProfile",
-                  "provisioningState",
-                  "powerState",
-                  "currentKubernetesVersion",
-                  "fqdn",
-                  "azurePortalFQDN",
-                  "identityProfile",
-                  "nodeResourceGroup",
-                  "windowsProfile",
-                  "addonProfiles.httpApplicationRouting.identity",
-                  "addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName",
-                  "addonProfiles.azureKeyvaultSecretsProvider.identity",
-                  "diskEncryptionSetID",
+          filterAll: () =>
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              pick(["properties"]),
+              assign({
+                properties: pipe([
+                  get("properties"),
+                  //TODO
+                  omit([
+                    "networkProfile",
+                    "provisioningState",
+                    "powerState",
+                    "currentKubernetesVersion",
+                    "fqdn",
+                    "azurePortalFQDN",
+                    "identityProfile",
+                    "nodeResourceGroup",
+                    "windowsProfile",
+                    "addonProfiles.httpApplicationRouting.identity",
+                    "addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName",
+                    "addonProfiles.azureKeyvaultSecretsProvider.identity",
+                    "diskEncryptionSetID",
+                  ]),
+                  omitIfEmpty(["addonProfiles.httpApplicationRouting.config"]),
+                  assignContainerProp,
                 ]),
-                omitIfEmpty(["addonProfiles.httpApplicationRouting.config"]),
-                assignContainerProp,
-              ]),
-            }),
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
+              }),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
         }),
         filterLive: ({ pickPropertiesCreate, lives }) =>
           pipe([

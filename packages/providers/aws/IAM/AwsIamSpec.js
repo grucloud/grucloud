@@ -124,7 +124,7 @@ module.exports = () =>
       Client: AwsIamRole,
       isOurMinion,
       compare: compareIAM({
-        filterAll: pipe([pick(["AssumeRolePolicyDocument"])]),
+        filterAll: () => pipe([pick(["AssumeRolePolicyDocument"])]),
       }),
       transformDependencies: ({ provider }) =>
         pipe([
@@ -272,13 +272,14 @@ module.exports = () =>
       Client: AwsIamPolicy,
       isOurMinion: isOurMinionIamPolicy,
       compare: compareIAM({
-        filterAll: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          //TODO description
-          pick(["PolicyDocument"]),
-        ]),
+        filterAll: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            //TODO description
+            pick(["PolicyDocument"]),
+          ]),
       }),
       filterLive: switchCase([
         get("resource.cannotBeDeleted"),
@@ -291,7 +292,8 @@ module.exports = () =>
       Client: AwsIamInstanceProfile,
       isOurMinion,
       compare: compareIAM({
-        filterAll: pipe([omit(["Tags"])]),
+        //TODO remove
+        filterAll: () => pipe([omit(["Tags"])]),
         filterLive: () =>
           pipe([
             omit(["Path", "InstanceProfileId", "Arn", "CreateDate", "Roles"]),
