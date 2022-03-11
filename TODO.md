@@ -6,10 +6,7 @@
 
 - https://stackshare.io/terraform/alternatives
 
-- const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
-
 - PROMPT='%4~ %# '
-- iam deal with deleted user
 
 ## Web site
 
@@ -106,7 +103,6 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 - aws_route53_delegation_set
 
-- VpcEndpoint
 - security group update
 
 aws iam create-user --user-name terraform-user
@@ -137,6 +133,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 - service account managedByUs false despite description: Managee By GruCloud
 - vm instance: network interface from vpc network
+
+- iam deal with deleted user
 
 - https://medium.com/faun/creating-reusable-infrastructure-with-terraform-on-gcp-e17745ac4ff2
 
