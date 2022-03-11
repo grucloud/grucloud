@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-k8s-crunchy-postgres",
-  "version": "5.8.0",
+  "version": "5.8.1",
   "description": "GruCloud Module for the Kubernetes Crunchy Data Postgres Operator",
   "main": "iac.js",
   "scripts": {
@@ -12,9 +12,9 @@
     "url": "git+ssh://git@github.com/grucloud/grucloud.git"
   },
   "dependencies": {
-    "@grucloud/core": "^5.8.0",
+    "@grucloud/core": "^5.8.1",
     "@grucloud/k8s-manifest2code": "^5.8.0",
-    "@grucloud/provider-k8s": "^5.8.0"
+    "@grucloud/provider-k8s": "^5.8.1"
   },
   "keywords": [
     "kubernetes",
