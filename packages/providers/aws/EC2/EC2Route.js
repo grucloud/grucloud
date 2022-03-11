@@ -245,25 +245,6 @@ exports.EC2Route = ({ spec, config }) => {
       filter(not(isEmpty)),
     ])();
 
-  const isRouteEqual = (live, target) =>
-    pipe([
-      tap((params) => {
-        assert(live);
-        assert(target);
-      }),
-      and([
-        eq(live.RouteTableId, target.RouteTableId),
-        eq(live.DestinationCidrBlock, target.DestinationCidrBlock),
-        or([
-          eq(live.GatewayId, target.GatewayId),
-          eq(live.NatGatewayId, target.NatGatewayId),
-        ]),
-      ]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-
   const getList = pipe([
     tap((params) => {
       assert(true);
@@ -273,66 +254,34 @@ exports.EC2Route = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const createRouteInternetGateway = ({ ig, RouteTableId, payload }) =>
+  const createRouteFactory = ({ destination, field, RouteTableId, payload }) =>
     pipe([
-      tap(() => {
+      tap((params) => {
+        assert(field);
         assert(RouteTableId);
       }),
-      () => ig,
-      get("live.InternetGatewayId"),
-      unless(isEmpty, (GatewayId) =>
-        pipe([
-          () => ({
-            ...payload,
-            RouteTableId,
-            GatewayId,
-          }),
-          ec2().createRoute,
-          () =>
-            retryCall({
-              name: `createRouteInternetGateway: GatewayId: ${GatewayId}`,
-              fn: pipe([
-                () =>
-                  ec2().describeRouteTables({
-                    RouteTableIds: [RouteTableId],
-                  }),
-                get("RouteTables"),
-                find(
-                  pipe([get("Routes"), find(eq(get("GatewayId"), GatewayId))])
-                ),
-              ]),
-              config,
-            }),
-        ])()
-      ),
-    ]);
-
-  const createRouteNatGateway = ({ natGateway, RouteTableId, payload }) =>
-    pipe([
-      () => natGateway,
-      get("live.NatGatewayId"),
-      unless(isEmpty, (NatGatewayId) =>
+      () => destination,
+      get("live"),
+      get(field),
+      unless(isEmpty, (DestinationId) =>
         pipe([
           () =>
             ec2().createRoute({
               ...payload,
               RouteTableId,
-              NatGatewayId,
+              [field]: DestinationId,
             }),
           () =>
             retryCall({
-              name: `createRouteNatGateway: NatGatewayId: ${NatGatewayId}`,
+              name: `createRouteFactory: ${field}, ${DestinationId}`,
               fn: pipe([
-                () =>
-                  ec2().describeRouteTables({
-                    RouteTableIds: [RouteTableId],
-                  }),
+                () => ({
+                  RouteTableIds: [RouteTableId],
+                }),
+                ec2().describeRouteTables,
                 get("RouteTables"),
                 find(
-                  pipe([
-                    get("Routes"),
-                    find(eq(get("NatGatewayId"), NatGatewayId)),
-                  ])
+                  pipe([get("Routes"), find(eq(get(field), DestinationId))])
                 ),
               ]),
               config,
@@ -346,7 +295,7 @@ exports.EC2Route = ({ spec, config }) => {
     payload,
     name,
     dependencies,
-    resolvedDependencies: { routeTable, ig, natGateway },
+    resolvedDependencies: { routeTable, ig, natGateway, vpcEndpoint },
     lives,
   }) =>
     pipe([
@@ -359,21 +308,29 @@ exports.EC2Route = ({ spec, config }) => {
         assert(routeTable, "Route is missing the dependency 'routeTable'");
         assert(routeTable.live.RouteTableId, "routeTable.live.RouteTableId");
         assert(
-          ig || natGateway,
-          "Route needs the dependency 'ig', or 'natGateway'"
+          ig || natGateway || vpcEndpoint,
+          "Route needs the dependency 'ig', or 'natGateway' or 'vpcEndpoint'"
         );
       }),
       () => routeTable.live.RouteTableId,
       tap((RouteTableId) =>
         pipe([
           fork({
-            GatewayId: createRouteInternetGateway({
-              ig,
+            GatewayId: createRouteFactory({
+              destination: ig,
+              field: "GatewayId",
               RouteTableId,
               payload,
             }),
-            NatGatewayId: createRouteNatGateway({
-              natGateway,
+            VpcEndpointId: createRouteFactory({
+              destination: vpcEndpoint,
+              field: "VpcEndpointId",
+              RouteTableId,
+              payload,
+            }),
+            NatGatewayId: createRouteFactory({
+              destination: natGateway,
+              field: "NatGatewayId",
               RouteTableId,
               payload,
             }),

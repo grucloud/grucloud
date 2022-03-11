@@ -74,6 +74,13 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpcEndpoint-property
   const create = client.create({
     method: "createVpcEndpoint",
+    pickCreated: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        get("VpcEndpoint"),
+      ]),
     getById,
   });
 

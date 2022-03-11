@@ -743,14 +743,14 @@ module.exports = () =>
             tap((params) => {
               assert(true);
             }),
-            omit([""]),
+            pick(["PolicyDocument"]),
           ]),
         filterLive: () =>
           pipe([
             tap((params) => {
               assert(true);
             }),
-            omit([]),
+            pick(["PolicyDocument"]),
           ]),
       }),
       filterLive: () =>
