@@ -137,6 +137,7 @@ const decorateLive =
               client.findDependencies({
                 live,
                 lives,
+                config,
               }),
             tap((ids) => {
               assert(Array.isArray(ids));

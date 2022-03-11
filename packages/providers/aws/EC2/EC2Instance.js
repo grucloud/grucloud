@@ -143,7 +143,7 @@ exports.EC2Instance = ({ spec, config }) => {
     }),
   ]);
 
-  const findDependencies = ({ live, lives }) => [
+  const findDependencies = ({ live, lives, config }) => [
     findDependenciesVpc({ live }),
     {
       type: "Image",
@@ -157,7 +157,21 @@ exports.EC2Instance = ({ spec, config }) => {
     {
       type: "KeyPair",
       group: "EC2",
-      ids: [live.KeyPairId],
+      ids: [
+        pipe([
+          () =>
+            lives.getByName({
+              name: live.KeyName,
+              type: "KeyPair",
+              group: "EC2",
+              providerName,
+            }),
+          tap((keyPair) => {
+            assert(keyPair);
+          }),
+          get("id"),
+        ])(),
+      ],
     },
     { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
     {

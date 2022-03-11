@@ -56,11 +56,27 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     includes("AWSServiceRoleForAmazonEKSNodegroup"),
   ]);
 
-  const findDependencies = ({ live, lives }) => [
+  const findDependencies = ({ live, lives, config }) => [
     {
       type: "KeyPair",
       group: "EC2",
-      ids: [pipe([() => live, get("LaunchTemplateData.KeyPairId")])()],
+      ids: [
+        pipe([
+          () => live,
+          get("LaunchTemplateData.KeyName"),
+          (KeyName) =>
+            lives.getByName({
+              name: KeyName,
+              type: "KeyPair",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          tap((keyPair) => {
+            assert(keyPair);
+          }),
+          get("id"),
+        ])(),
+      ],
     },
     {
       type: "SecurityGroup",

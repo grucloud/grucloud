@@ -180,7 +180,10 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
               );
             }),
             or([
-              pipe([() => ["ECONNRESET", "ENETDOWN"], includes(error.code)]),
+              pipe([
+                () => ["ECONNRESET", "ENETDOWN", "EPROTO"],
+                includes(error.code),
+              ]),
               pipe([
                 () => [
                   "Throttling",
