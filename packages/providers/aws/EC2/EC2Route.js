@@ -22,7 +22,7 @@ const {
   find,
   unless,
   append,
-  unionWith,
+  callProp,
   when,
 } = require("rubico/x");
 
@@ -61,8 +61,10 @@ exports.EC2Route = ({ spec, config }) => {
         append("-nat-gateway"),
         eq(live.GatewayId, "local"),
         append("-local"),
-        not(eq(live.GatewayId, "local")),
+        pipe([() => live.GatewayId, callProp("startsWith", "igw-")]),
         append("-igw"),
+        pipe([() => live.GatewayId, callProp("startsWith", "vpce-")]),
+        append("-vpce"),
         append(`-${live.DestinationCidrBlock}`),
       ]),
       tap((params) => {
@@ -90,7 +92,7 @@ exports.EC2Route = ({ spec, config }) => {
       eq(get("GatewayId"), "local"),
     ])();
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     {
       type: "RouteTable",
       group: "EC2",
@@ -99,7 +101,35 @@ exports.EC2Route = ({ spec, config }) => {
     {
       type: "InternetGateway",
       group: "EC2",
-      ids: [live.GatewayId],
+      //must start with igw-
+      ids: [
+        pipe([
+          () =>
+            lives.getById({
+              id: live.GatewayId,
+              type: "InternetGateway",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("id"),
+        ])(),
+      ],
+    },
+    {
+      type: "VpcEndpoint",
+      group: "EC2",
+      ids: [
+        pipe([
+          () =>
+            lives.getById({
+              id: live.GatewayId,
+              type: "VpcEndpoint",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("id"),
+        ])(),
+      ],
     },
     {
       type: "NatGateway",
@@ -238,12 +268,7 @@ exports.EC2Route = ({ spec, config }) => {
     tap((params) => {
       assert(true);
     }),
-    fork({ fromTarget: getListFromTarget, fromLive: getListFromLive }),
-    ({ fromTarget, fromLive }) => [fromTarget, fromLive],
-    unionWith(isRouteEqual),
-    tap((params) => {
-      assert(true);
-    }),
+    getListFromLive,
   ]);
 
   const getByName = getByNameCore({ getList, findName });

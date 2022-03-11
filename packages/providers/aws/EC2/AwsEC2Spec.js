@@ -60,6 +60,9 @@ const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { AwsNetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 const { AwsImage } = require("./AwsImage");
+const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
+
+const logger = require("@grucloud/core/logger")({ prefix: "EC2Spec" });
 
 const GROUP = "EC2";
 
@@ -440,6 +443,13 @@ module.exports = () =>
       type: "Route",
       Client: EC2Route,
       isOurMinion,
+      ignoreResource: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          get("isDefault"),
+        ]),
       compare: compareAws({
         getTargetTags: () => [],
         getLiveTags: () => [],
@@ -456,14 +466,20 @@ module.exports = () =>
             ]),
           ]),
       }),
-      filterLive: () => pick(["DestinationCidrBlock"]),
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          pick(["DestinationCidrBlock"]),
+        ]),
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,
           tap(({ routeTable }) => {
             assert(routeTable);
           }),
-          ({ routeTable, ig, natGateway }) =>
+          ({ routeTable, ig, natGateway, vpcEndpoint }) =>
             pipe([
               tap(() => {
                 assert(routeTable);
@@ -477,9 +493,9 @@ module.exports = () =>
                 append("-igw"),
                 () => natGateway,
                 append("-nat-gateway"),
-                () => {
-                  throw Error("missing 'ig' or 'natGateway' dependency");
-                },
+                () => vpcEndpoint,
+                append("-vpce"),
+                append("-local"),
               ]),
             ])(),
         ])(),
@@ -488,6 +504,7 @@ module.exports = () =>
         routeTable: { type: "RouteTable", group: "EC2", parent: true },
         ig: { type: "InternetGateway", group: "EC2" },
         natGateway: { type: "NatGateway", group: "EC2" },
+        vpcEndpoint: { type: "VpcEndpoint", group: "EC2" },
       },
     },
     {
@@ -706,5 +723,47 @@ module.exports = () =>
       listOnly: true,
       isOurMinion,
       ignoreResource: () => pipe([() => true]),
+    },
+    {
+      type: "VpcEndpoint",
+      dependencies: {
+        vpc: { type: "Vpc", group: "EC2" },
+        // Interface endpoint
+        subnets: { type: "Subnet", group: "EC2", list: true },
+        // Gateway endpoint
+        routeTables: { type: "RouteTable", group: "EC2", list: true },
+        // NetworkInterfaceIds ?
+        // SecurityGroup ?
+      },
+      Client: EC2VpcEndpoint,
+      isOurMinion,
+      compare: compareEC2({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([""]),
+          ]),
+        filterLive: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit([]),
+          ]),
+      }),
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          pick([
+            "PolicyDocument",
+            "PrivateDnsEnabled",
+            "RequesterManaged",
+            "VpcEndpointType",
+          ]),
+        ]),
     },
   ]);
