@@ -99,6 +99,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: () => ({
+      keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
     }),
   },

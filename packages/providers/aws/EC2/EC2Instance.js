@@ -166,9 +166,6 @@ exports.EC2Instance = ({ spec, config }) => {
               group: "EC2",
               providerName,
             }),
-          tap((keyPair) => {
-            assert(keyPair);
-          }),
           get("id"),
         ])(),
       ],

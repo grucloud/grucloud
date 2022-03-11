@@ -71,9 +71,6 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
               group: "EC2",
               providerName: config.providerName,
             }),
-          tap((keyPair) => {
-            assert(keyPair);
-          }),
           get("id"),
         ])(),
       ],
