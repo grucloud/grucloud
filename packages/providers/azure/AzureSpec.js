@@ -189,23 +189,24 @@ const buildDefaultSpec = fork({
             assert(true);
           }),
         ]),
-      filterAll: pipe([
-        tap((params) => {
-          assert(pickProperties);
-          assert(propertiesDefault);
-        }),
-        pick(pickProperties),
-        defaultsDeep(propertiesDefault),
-        omit(omitProperties),
-        omit([
-          "type",
-          //TODO keep the name and add inferName
-          "name",
-          "properties.provisioningState",
-          "etag",
-          "identity", //TODO
+      filterAll: () =>
+        pipe([
+          tap((params) => {
+            assert(pickProperties);
+            assert(propertiesDefault);
+          }),
+          pick(pickProperties),
+          defaultsDeep(propertiesDefault),
+          omit(omitProperties),
+          omit([
+            "type",
+            //TODO keep the name and add inferName
+            "name",
+            "properties.provisioningState",
+            "etag",
+            "identity", //TODO
+          ]),
         ]),
-      ]),
     }),
   isOurMinion: () => AzTag.isOurMinion,
 });

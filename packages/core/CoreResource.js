@@ -122,7 +122,7 @@ exports.ResourceMaker = ({
         }),
         spec.inferName,
         tap((name) => {
-          assert(name);
+          assert(name, "empty inferName");
           assert(isString(name));
         }),
       ]),

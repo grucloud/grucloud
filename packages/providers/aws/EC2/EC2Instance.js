@@ -166,9 +166,6 @@ exports.EC2Instance = ({ spec, config }) => {
               group: "EC2",
               providerName,
             }),
-          tap((keyPair) => {
-            assert(keyPair);
-          }),
           get("id"),
         ])(),
       ],
@@ -511,7 +508,8 @@ exports.compareEC2Instance = pipe([
     assert(true);
   }),
   compare({
-    filterAll: pipe([omit(["Tags"])]),
+    //TODO remove
+    filterAll: () => pipe([omit(["Tags"])]),
     filterTarget: () =>
       pipe([
         tap((params) => {
@@ -534,7 +532,6 @@ exports.compareEC2Instance = pipe([
           "PrivateDnsNameOptions",
           "UsageOperation",
           "UsageOperationUpdateTime",
-
           "EnclaveOptions",
           "MetadataOptions",
           "Licenses",

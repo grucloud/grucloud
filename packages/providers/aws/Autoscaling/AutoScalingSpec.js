@@ -77,12 +77,13 @@ module.exports = () =>
       Client: AutoScalingAutoScalingGroup,
       isOurMinion,
       compare: compareAutoScaling({
-        filterAll: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          omit(["TargetGroupARNs"]),
-        ]),
+        filterAll: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["TargetGroupARNs"]),
+          ]),
         filterLive: () =>
           pipe([
             tap((params) => {

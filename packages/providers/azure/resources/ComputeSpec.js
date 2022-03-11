@@ -580,26 +580,27 @@ exports.fnSpecs = ({ config }) =>
           "properties.virtualMachineProfile.osProfile.secrets",
         ],
         compare: compare({
-          filterAll: pipe([
-            pick(["properties"]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                pick(["virtualMachineProfile"]),
-                assign({
-                  virtualMachineProfile: pipe([
-                    get("virtualMachineProfile"),
-                    // TODO
-                    omit(["extensionProfile", "osProfile"]),
-                    omitIfEmpty(["networkProfile"]),
-                  ]),
-                }),
-              ]),
-            }),
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
+          filterAll: () =>
+            pipe([
+              pick(["properties"]),
+              assign({
+                properties: pipe([
+                  get("properties"),
+                  pick(["virtualMachineProfile"]),
+                  assign({
+                    virtualMachineProfile: pipe([
+                      get("virtualMachineProfile"),
+                      // TODO
+                      omit(["extensionProfile", "osProfile"]),
+                      omitIfEmpty(["networkProfile"]),
+                    ]),
+                  }),
+                ]),
+              }),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
         }),
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives }),

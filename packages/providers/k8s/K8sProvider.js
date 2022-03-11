@@ -795,28 +795,30 @@ const fnSpecs = pipe([
         cannotBeDeleted: cannotBeDeletedDefault,
       }),
       compare: compareK8s({
-        filterAll: ({ live, target }) =>
-          pipe([
-            () => ({ live, target }),
-            set(
-              "live.data",
-              pipe([
-                () => live,
-                get("data", {}),
-                map.entries(([key, value]) => [
-                  key,
-                  pipe([
-                    () => target,
-                    get("data", {}),
-                    // Cannnot use rubico 'get' because the key may contain a dot
-                    (data) => data[key],
-                    switchCase([isEmpty, identity, () => value]),
-                  ])(),
-                ]),
-              ])()
-            ),
-            omitIfEmpty(["live.data", "target.data"]),
-          ])(),
+        filterAll:
+          () =>
+          ({ live, target }) =>
+            pipe([
+              () => ({ live, target }),
+              set(
+                "live.data",
+                pipe([
+                  () => live,
+                  get("data", {}),
+                  map.entries(([key, value]) => [
+                    key,
+                    pipe([
+                      () => target,
+                      get("data", {}),
+                      // Cannnot use rubico 'get' because the key may contain a dot
+                      (data) => data[key],
+                      switchCase([isEmpty, identity, () => value]),
+                    ])(),
+                  ]),
+                ])()
+              ),
+              omitIfEmpty(["live.data", "target.data"]),
+            ])(),
       }),
     },
     {

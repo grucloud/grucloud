@@ -47,7 +47,7 @@ module.exports = () =>
       },
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
       compare: compareRDS({
-        filterAll: pipe([omit(["SubnetIds"])]),
+        filterAll: () => pipe([omit(["SubnetIds"])]),
         filterTarget: () =>
           pipe([
             omit([

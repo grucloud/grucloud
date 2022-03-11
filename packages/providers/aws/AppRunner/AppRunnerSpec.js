@@ -21,7 +21,7 @@ module.exports = () =>
       Client: AppRunnerConnection,
       isOurMinion,
       compare: compareAppRunner({
-        filterAll: pipe([omit(["ConnectionArn", "Status", "CreatedAt"])]),
+        filterAll: () => pipe([omit(["ConnectionArn", "Status", "CreatedAt"])]),
       }),
       filterLive: () => pipe([pick(["ProviderType"])]),
     },
@@ -40,18 +40,19 @@ module.exports = () =>
       },
       isOurMinion,
       compare: compareAppRunner({
-        filterAll: pipe([
-          omit([
-            "ServiceId",
-            "ServiceArn",
-            "ServiceUrl",
-            "CreatedAt",
-            "UpdatedAt",
-            "Status",
-            //TODO
-            "AutoScalingConfigurationSummary",
+        filterAll: () =>
+          pipe([
+            omit([
+              "ServiceId",
+              "ServiceArn",
+              "ServiceUrl",
+              "CreatedAt",
+              "UpdatedAt",
+              "Status",
+              //TODO
+              "AutoScalingConfigurationSummary",
+            ]),
           ]),
-        ]),
       }),
       filterLive: ({ lives }) =>
         pipe([

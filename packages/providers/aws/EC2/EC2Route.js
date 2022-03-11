@@ -6,12 +6,8 @@ const {
   filter,
   map,
   not,
-  and,
-  or,
   eq,
-  fork,
   switchCase,
-  tryCatch,
   pick,
   assign,
   flatMap,
@@ -20,20 +16,21 @@ const {
   isEmpty,
   defaultsDeep,
   find,
-  unless,
+  first,
   append,
-  unionWith,
+  callProp,
   when,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRoute" });
-const { tos } = require("@grucloud/core/tos");
-const { retryCall } = require("@grucloud/core/Retry");
 
-const { findNamespaceInTags, buildTags } = require("../AwsCommon");
+const { findNamespaceInTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 const { createEC2 } = require("./EC2Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
+
+const ignoreErrorCodes = ["InvalidRoute.NotFound"];
 
 exports.EC2Route = ({ spec, config }) => {
   const ec2 = createEC2(config);
@@ -61,8 +58,18 @@ exports.EC2Route = ({ spec, config }) => {
         append("-nat-gateway"),
         eq(live.GatewayId, "local"),
         append("-local"),
-        not(eq(live.GatewayId, "local")),
+        pipe([
+          () => live,
+          get("GatewayId", ""),
+          callProp("startsWith", "igw-"),
+        ]),
         append("-igw"),
+        pipe([
+          () => live,
+          get("GatewayId", ""),
+          callProp("startsWith", "vpce-"),
+        ]),
+        append("-vpce"),
         append(`-${live.DestinationCidrBlock}`),
       ]),
       tap((params) => {
@@ -90,7 +97,7 @@ exports.EC2Route = ({ spec, config }) => {
       eq(get("GatewayId"), "local"),
     ])();
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     {
       type: "RouteTable",
       group: "EC2",
@@ -99,7 +106,51 @@ exports.EC2Route = ({ spec, config }) => {
     {
       type: "InternetGateway",
       group: "EC2",
-      ids: [live.GatewayId],
+      //must start with igw-
+      ids: [
+        pipe([
+          () =>
+            lives.getById({
+              id: live.GatewayId,
+              type: "InternetGateway",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("id"),
+        ])(),
+      ],
+    },
+    {
+      type: "VpcEndpoint",
+      group: "EC2",
+      ids: [
+        pipe([
+          () =>
+            lives.getById({
+              id: live.GatewayId,
+              type: "VpcEndpoint",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("id"),
+        ])(),
+      ],
+    },
+    {
+      type: "ManagedPrefixList",
+      group: "EC2",
+      ids: [
+        pipe([
+          () =>
+            lives.getById({
+              id: live.DestinationPrefixListId,
+              type: "ManagedPrefixList",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("id"),
+        ])(),
+      ],
     },
     {
       type: "NatGateway",
@@ -108,70 +159,47 @@ exports.EC2Route = ({ spec, config }) => {
     },
   ];
 
-  const getListFromTarget = ({ resources, lives } = {}) =>
-    pipe([
-      tap(() => {
-        assert(Array.isArray(resources));
-        logger.info(`getList #routes ${resources.length}`);
+  const getById = client.getById({
+    pickId: pipe([
+      tap((params) => {
+        assert(true);
       }),
-      () => resources,
-      map((resource) =>
-        pipe([
-          tap(() => {
-            logger.debug(`getList resource ${resource.name}`);
-          }),
-          () => resource.resolveDependencies({ lives }),
-          tap((resolvedDependencies) => {
-            logger.debug(
-              `getList route resolvedDependencies ${tos(resolvedDependencies)}`
-            );
-          }),
-          ({ routeTable, ig, natGateway }) =>
+      tap(({ RouteTableId }) => {
+        assert(RouteTableId);
+      }),
+      ({ RouteTableId }) => ({
+        RouteTableIds: [RouteTableId],
+      }),
+    ]),
+    method: "describeRouteTables",
+    getField: "RouteTables",
+    decorate: ({ GatewayId, NatGatewayId, VpcEndpointId }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        get("Routes"),
+        find(
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
             switchCase([
-              () => isEmpty(routeTable.live),
-              () => null,
-              tryCatch(
-                pipe([
-                  () => routeTable.live.Routes,
-                  find(
-                    or([
-                      and([
-                        () => !isEmpty(ig?.live?.InternetGatewayId),
-                        eq(get("GatewayId"), ig?.live?.InternetGatewayId),
-                      ]),
-                      and([
-                        () => !isEmpty(natGateway?.live?.NatGatewayId),
-                        eq(get("NatGatewayId"), natGateway?.live?.NatGatewayId),
-                      ]),
-                    ])
-                  ),
-                  switchCase([
-                    not(isEmpty),
-                    assign({
-                      name: () => resource.name,
-                      RouteTableId: () => routeTable.live.RouteTableId,
-                      Tags: () =>
-                        buildTags({
-                          config,
-                          namespace: findNamespaceInTags(config)({
-                            live: routeTable.live,
-                          }),
-                          name: resource.name,
-                        }),
-                    }),
-                    () => undefined,
-                  ]),
-                ]),
-                (error, params) => ({
-                  error,
-                  params,
-                })
-              ),
-            ])(),
-        ])()
-      ),
-      filter(not(isEmpty)),
-    ])();
+              () => GatewayId,
+              eq(get("GatewayId"), GatewayId),
+              () => NatGatewayId,
+              eq(get("NatGatewayId"), NatGatewayId),
+              () => VpcEndpointId,
+              eq(get("VpcEndpointId"), VpcEndpointId),
+              () => {
+                assert(false, "missing route destination");
+              },
+            ]),
+          ])
+        ),
+      ]),
+    ignoreErrorCodes,
+  });
 
   const getListFromLive = ({ lives }) =>
     pipe([
@@ -191,7 +219,7 @@ exports.EC2Route = ({ spec, config }) => {
           }),
           () => resource,
           get("live"),
-          ({ Routes, Tags, RouteTableId }) =>
+          ({ Routes, RouteTableId }) =>
             pipe([
               tap(() => {
                 assert(Routes);
@@ -202,168 +230,37 @@ exports.EC2Route = ({ spec, config }) => {
                 pipe([
                   assign({
                     RouteTableId: () => RouteTableId,
-                    //Tags: () => Tags,
                   }),
                 ])
               ),
             ])(),
         ])()
       ),
-      tap((params) => {
-        assert(true);
-      }),
       filter(not(isEmpty)),
     ])();
 
-  const isRouteEqual = (live, target) =>
-    pipe([
-      tap((params) => {
-        assert(live);
-        assert(target);
-      }),
-      and([
-        eq(live.RouteTableId, target.RouteTableId),
-        eq(live.DestinationCidrBlock, target.DestinationCidrBlock),
-        or([
-          eq(live.GatewayId, target.GatewayId),
-          eq(live.NatGatewayId, target.NatGatewayId),
-        ]),
-      ]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-
-  const getList = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    fork({ fromTarget: getListFromTarget, fromLive: getListFromLive }),
-    ({ fromTarget, fromLive }) => [fromTarget, fromLive],
-    unionWith(isRouteEqual),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+  const getList = pipe([getListFromLive]);
 
   const getByName = getByNameCore({ getList, findName });
 
-  const createRouteInternetGateway = ({ ig, RouteTableId, payload }) =>
-    pipe([
-      tap(() => {
-        assert(RouteTableId);
-      }),
-      () => ig,
-      get("live.InternetGatewayId"),
-      unless(isEmpty, (GatewayId) =>
-        pipe([
-          () => ({
-            ...payload,
-            RouteTableId,
-            GatewayId,
-          }),
-          ec2().createRoute,
-          () =>
-            retryCall({
-              name: `createRouteInternetGateway: GatewayId: ${GatewayId}`,
-              fn: pipe([
-                () =>
-                  ec2().describeRouteTables({
-                    RouteTableIds: [RouteTableId],
-                  }),
-                get("RouteTables"),
-                find(
-                  pipe([get("Routes"), find(eq(get("GatewayId"), GatewayId))])
-                ),
-              ]),
-              config,
-            }),
-        ])()
-      ),
-    ]);
-
-  const createRouteNatGateway = ({ natGateway, RouteTableId, payload }) =>
-    pipe([
-      () => natGateway,
-      get("live.NatGatewayId"),
-      unless(isEmpty, (NatGatewayId) =>
-        pipe([
-          () =>
-            ec2().createRoute({
-              ...payload,
-              RouteTableId,
-              NatGatewayId,
-            }),
-          () =>
-            retryCall({
-              name: `createRouteNatGateway: NatGatewayId: ${NatGatewayId}`,
-              fn: pipe([
-                () =>
-                  ec2().describeRouteTables({
-                    RouteTableIds: [RouteTableId],
-                  }),
-                get("RouteTables"),
-                find(
-                  pipe([
-                    get("Routes"),
-                    find(eq(get("NatGatewayId"), NatGatewayId)),
-                  ])
-                ),
-              ]),
-              config,
-            }),
-        ])()
-      ),
-    ]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRoute-property
-  const create = ({
-    payload,
-    name,
-    dependencies,
-    resolvedDependencies: { routeTable, ig, natGateway },
-    lives,
-  }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`create route ${tos({ name })}`);
-        assert(dependencies);
-        assert(dependencies().routeTable);
-
-        assert(routeTable, "Route is missing the dependency 'routeTable'");
-        assert(routeTable.live.RouteTableId, "routeTable.live.RouteTableId");
-        assert(
-          ig || natGateway,
-          "Route needs the dependency 'ig', or 'natGateway'"
-        );
-      }),
-      () => routeTable.live.RouteTableId,
-      tap((RouteTableId) =>
-        pipe([
-          fork({
-            GatewayId: createRouteInternetGateway({
-              ig,
-              RouteTableId,
-              payload,
-            }),
-            NatGatewayId: createRouteNatGateway({
-              natGateway,
-              RouteTableId,
-              payload,
-            }),
-          }),
-        ])()
-      ),
-      tap((RouteTableId) => {
-        logger.info(`Refresh the route table ${RouteTableId}`);
-      }),
-      // Refresh the route table
-      tap(() => dependencies().routeTable.getLive({ lives })),
-      tap((RouteTableId) => {
-        logger.info(`created route ${tos({ name, RouteTableId })}`);
-      }),
-    ])();
+  //TODO create vpv endpoint route with https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifyVpcEndpoint-property
+  const create = client.create({
+    method: "createRoute",
+    getById,
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
+    postCreate: ({ dependencies, lives }) =>
+      pipe([
+        tap((params) => {
+          assert(dependencies);
+          assert(lives);
+        }),
+        () => dependencies().routeTable.getLive({ lives }),
+      ]),
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteRoute-property
   const destroy = client.destroy({
@@ -376,16 +273,61 @@ exports.EC2Route = ({ spec, config }) => {
     method: "deleteRoute",
     //TODO
     //getById,
-    ignoreErrorCodes: ["InvalidRoute.NotFound"],
+    ignoreErrorCodes,
     config,
   });
 
-  const configDefault = ({ name, namespace, properties = {} }) =>
+  const configDefault = ({
+    name,
+    namespace,
+    properties = {},
+    dependencies: {
+      routeTable,
+      managedPrefixList,
+      natGateway,
+      ig,
+      vpcEndpoint,
+    },
+  }) =>
     pipe([
+      tap((params) => {
+        assert(routeTable, "Route is missing the dependency 'routeTable'");
+        assert(
+          ig || natGateway || vpcEndpoint,
+          "Route needs the dependency 'ig', or 'natGateway' or 'vpcEndpoint'"
+        );
+      }),
       () => properties,
       defaultsDeep({
-        DestinationCidrBlock: "0.0.0.0/0",
+        RouteTableId: getField(routeTable, "RouteTableId"),
       }),
+      switchCase([
+        () => managedPrefixList,
+        defaultsDeep({
+          DestinationPrefixListId: getField(managedPrefixList, "PrefixListId"),
+        }),
+        defaultsDeep({
+          DestinationCidrBlock: "0.0.0.0/0",
+        }),
+      ]),
+      when(
+        () => natGateway,
+        defaultsDeep({
+          NatGatewayId: getField(natGateway, "NatGatewayId"),
+        })
+      ),
+      when(
+        () => ig,
+        defaultsDeep({
+          GatewayId: getField(ig, "InternetGatewayId"),
+        })
+      ),
+      when(
+        () => vpcEndpoint,
+        defaultsDeep({
+          VpcEndpointId: getField(vpcEndpoint, "VpcEndpointId"),
+        })
+      ),
     ])();
 
   return {

@@ -131,7 +131,7 @@ const updatePackageJson = ({ projectName, dirs: { destination } }) =>
         () => fs.readFile(filename, "utf-8"),
         JSON.parse,
         assign({ name: () => projectName }),
-        (content) => JSON.stringify(content, null, 4),
+        (content) => JSON.stringify(content, null, 2),
         (content) => fs.writeFile(filename, content),
       ])(),
   ])();

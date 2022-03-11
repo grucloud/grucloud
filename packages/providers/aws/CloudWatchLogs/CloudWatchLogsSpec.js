@@ -20,12 +20,7 @@ module.exports = () =>
       Client: CloudWatchLogsGroup,
       isOurMinion,
       compare: compareCloudWatchLog({
-        filterAll: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          pick(["retentionInDays"]),
-        ]),
+        filterAll: () => pipe([pick(["retentionInDays"])]),
       }),
       filterLive: () => pipe([pick(["retentionInDays"])]),
       dependencies: {

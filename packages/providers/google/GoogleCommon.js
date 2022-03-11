@@ -33,11 +33,7 @@ exports.createAxiosMakerGoogle = ({
     },
   });
 
-exports.compareGoogle = ({
-  filterAll = identity,
-  filterTarget,
-  filterLive,
-} = {}) =>
+exports.compareGoogle = ({ filterAll, filterTarget, filterLive } = {}) =>
   pipe([
     compare({
       filterAll,

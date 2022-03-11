@@ -308,31 +308,36 @@ exports.fnSpecs = ({ config }) => {
             }),
           ]),
         compare: compare({
-          filterAll: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick(["properties"]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                omit(["provisioningState", "resourceGuid", "operationalState"]),
-                applicationGatewayOmitIfEmpty,
-                assign({
-                  gatewayIPConfigurations: pickSubProps,
-                  frontendIPConfigurations: pickSubProps,
-                  frontendPorts: pickSubProps,
-                  backendAddressPools: pickSubProps,
-                  backendHttpSettingsCollection: pickSubProps,
-                  httpListeners: pickSubProps,
-                  requestRoutingRules: pickSubProps,
-                }),
-              ]),
-            }),
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
+          filterAll: () =>
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              pick(["properties"]),
+              assign({
+                properties: pipe([
+                  get("properties"),
+                  omit([
+                    "provisioningState",
+                    "resourceGuid",
+                    "operationalState",
+                  ]),
+                  applicationGatewayOmitIfEmpty,
+                  assign({
+                    gatewayIPConfigurations: pickSubProps,
+                    frontendIPConfigurations: pickSubProps,
+                    frontendPorts: pickSubProps,
+                    backendAddressPools: pickSubProps,
+                    backendHttpSettingsCollection: pickSubProps,
+                    httpListeners: pickSubProps,
+                    requestRoutingRules: pickSubProps,
+                  }),
+                ]),
+              }),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
         }),
       },
       {
@@ -388,36 +393,37 @@ exports.fnSpecs = ({ config }) => {
         //   "properties.backendAddressPools",
         // ],
         compare: compare({
-          filterAll: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit([
-              "properties.frontendIPConfigurations",
-              "properties.backendAddressPools",
-            ]),
-            pick(["properties"]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                omit(["provisioningState", "resourceGuid"]),
-                assign({
-                  outboundRules: pipe([
-                    get("outboundRules"),
-                    map(
-                      pipe([
-                        omit(["properties.provisioningState"]),
-                        pick(["properties"]),
-                      ])
-                    ),
-                  ]),
-                }),
+          filterAll: () =>
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              omit([
+                "properties.frontendIPConfigurations",
+                "properties.backendAddressPools",
               ]),
-            }),
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
+              pick(["properties"]),
+              assign({
+                properties: pipe([
+                  get("properties"),
+                  omit(["provisioningState", "resourceGuid"]),
+                  assign({
+                    outboundRules: pipe([
+                      get("outboundRules"),
+                      map(
+                        pipe([
+                          omit(["properties.provisioningState"]),
+                          pick(["properties"]),
+                        ])
+                      ),
+                    ]),
+                  }),
+                ]),
+              }),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
         }),
         filterLive: ({ lives }) =>
           pipe([
@@ -1147,38 +1153,39 @@ exports.fnSpecs = ({ config }) => {
         ],
         //TODO use filterLive in compare
         compare: compare({
-          filterAll: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit([
-              "properties.provisioningState",
-              "properties.ipConfigurations",
-              "properties.routeTable",
-              "properties.networkSecurityGroup",
-              "properties.applicationGatewayIPConfigurations",
-            ]),
-            omitIfEmpty(["properties.delegations"]),
-            pick(["properties"]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                unless(
-                  pipe([get("serviceEndpoints"), isEmpty]),
-                  assign({
-                    serviceEndpoints: pipe([
-                      get("serviceEndpoints"),
-                      map(omit(["provisioningState"])),
-                    ]),
-                  })
-                ),
-                omitIfEmpty(["serviceEndpoints"]),
+          filterAll: () =>
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              omit([
+                "properties.provisioningState",
+                "properties.ipConfigurations",
+                "properties.routeTable",
+                "properties.networkSecurityGroup",
+                "properties.applicationGatewayIPConfigurations",
               ]),
-            }),
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
+              omitIfEmpty(["properties.delegations"]),
+              pick(["properties"]),
+              assign({
+                properties: pipe([
+                  get("properties"),
+                  unless(
+                    pipe([get("serviceEndpoints"), isEmpty]),
+                    assign({
+                      serviceEndpoints: pipe([
+                        get("serviceEndpoints"),
+                        map(omit(["provisioningState"])),
+                      ]),
+                    })
+                  ),
+                  omitIfEmpty(["serviceEndpoints"]),
+                ]),
+              }),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
         }),
         filterLive: ({ pickPropertiesCreate }) =>
           pipe([

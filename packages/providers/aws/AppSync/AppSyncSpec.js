@@ -128,10 +128,11 @@ module.exports = () =>
       Client: AppSyncDataSource,
       isOurMinion,
       compare: compareAppSync({
-        filterAll: pipe([
-          omit(["apiId", "serviceRoleArn", "dataSourceArn"]),
-          omitIfEmpty(["description"]),
-        ]),
+        filterAll: () =>
+          pipe([
+            omit(["apiId", "serviceRoleArn", "dataSourceArn"]),
+            omitIfEmpty(["description"]),
+          ]),
       }),
       filterLive: () =>
         pipe([

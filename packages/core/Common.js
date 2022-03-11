@@ -420,7 +420,7 @@ const removeOurTags = pipe([
 exports.removeOurTags = removeOurTags;
 
 exports.compare = ({
-  filterAll = identity,
+  filterAll = () => identity,
   filterTarget = () => identity,
   filterTargetDefault = identity,
   filterLive = () => identity,
@@ -446,7 +446,7 @@ exports.compare = ({
           defaultsDeep(propertiesDefault),
           removeOurTags,
           filterTarget(otherProps),
-          filterAll,
+          filterAll(otherProps),
           filterTargetDefault,
           omit(omitProperties),
           tap((params) => {
@@ -467,7 +467,7 @@ exports.compare = ({
           removeOurTags,
           defaultsDeep(propertiesDefault),
           filterLive(otherProps),
-          filterAll,
+          filterAll(otherProps),
           filterLiveDefault,
           omit(omitProperties),
           tap((params) => {
