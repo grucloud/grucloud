@@ -262,13 +262,7 @@ exports.Route53Record = ({ spec, config }) => {
       ),
     ])();
 
-  const getByName = ({
-    name,
-    properties,
-    dependencies,
-    resolvedDependencies,
-    lives,
-  }) =>
+  const getByName = ({ name, properties, dependencies, lives }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
@@ -277,12 +271,7 @@ exports.Route53Record = ({ spec, config }) => {
       tap((params) => {
         assert(true);
       }),
-      () =>
-        configDefault({
-          name,
-          properties: properties({ getId: () => undefined }),
-          dependencies: resolvedDependencies,
-        }),
+      () => properties({ getId: () => undefined }),
       tap((params) => {
         assert(true);
       }),
@@ -398,14 +387,11 @@ exports.Route53Record = ({ spec, config }) => {
   }) =>
     pipe([
       tap(() => {
-        logger.info(
+        logger.debug(
           `update ${name}, payload: ${tos(payload)}, live: ${tos(
             live
-          )}, diff:  ${tos(diff)}`
+          )}, diff: ${tos(diff)}`
         );
-        assert(name, "name");
-        assert(live, "live");
-        assert(diff, "diff");
         assert(hostedZone, "missing the hostedZone dependency.");
         assert(hostedZone.live.Id, "hostedZone.live.Id");
       }),
@@ -415,8 +401,8 @@ exports.Route53Record = ({ spec, config }) => {
         () => {
           logger.info(`update route53 ${name}, same create and delete`);
         },
-        ({ createSet, deleteSet }) =>
-          route53().changeResourceRecordSets({
+        pipe([
+          ({ createSet, deleteSet }) => ({
             HostedZoneId: hostedZone.live.Id,
             ChangeBatch: {
               Changes: [
@@ -431,10 +417,9 @@ exports.Route53Record = ({ spec, config }) => {
               ],
             },
           }),
+          route53().changeResourceRecordSets,
+        ]),
       ]),
-      tap((result) => {
-        logger.info(`record updated: ${name}`);
-      }),
     ])();
 
   const certificateRecord = ({ certificate }) =>
@@ -443,9 +428,6 @@ exports.Route53Record = ({ spec, config }) => {
       unless(
         isEmpty,
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           () => ({
             Name: getField(
               certificate,
