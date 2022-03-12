@@ -5,6 +5,6 @@
   "reporter": "spec",
   "timeout": 1000e3,
   "ui": "bdd",
-  "bail": true,
+  "bail": false,
   "recursive": true
 }
