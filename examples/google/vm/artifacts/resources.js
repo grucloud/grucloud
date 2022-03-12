@@ -21,7 +21,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       description: "Managed By GruCloud",
       priority: 1000,
-      sourceRanges: ["0.0.0.0/0"],
       allowed: [
         {
           IPProtocol: "tcp",
@@ -41,7 +40,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       description: "Managed By GruCloud",
       priority: 1000,
-      sourceRanges: ["0.0.0.0/0"],
       allowed: [
         {
           IPProtocol: "icmp",
