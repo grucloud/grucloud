@@ -43,9 +43,25 @@ exports.createResources = () => [
 ];
 ```
 
+### Attach a route to a VPC Endpoint
+
+```js
+exports.createResources = () => [
+  {
+    type: "Route",
+    group: "EC2",
+    dependencies: () => ({
+      routeTable: "project-vpc-endpoint-rtb-private1-us-east-1a",
+      vpcEndpoint: "project-vpc-endpoint-vpce-s3",
+    }),
+  },
+];
+```
+
 ## Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
+- [vpc endpoint](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/vpc-endpoint)
 
 ## Properties
 
@@ -53,6 +69,7 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [RouteTable](./RouteTable.md)
-- [InternetGateway](./InternetGateway.md)
-- [NatGateway](./NatGateway.md)
+- [Route Table](./RouteTable.md)
+- [Internet Gateway](./InternetGateway.md)
+- [Nat Gateway](./NatGateway.md)
+- [Vpc Endpoint](./VpcEndpoint.md)

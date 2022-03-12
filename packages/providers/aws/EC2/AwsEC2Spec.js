@@ -462,6 +462,7 @@ module.exports = () =>
               "GatewayId",
               "NatGatewayId",
               "VpcEndpointId",
+              "DestinationPrefixListId",
               "Origin",
               "State",
               "name",
@@ -508,7 +509,6 @@ module.exports = () =>
         ig: { type: "InternetGateway", group: "EC2" },
         natGateway: { type: "NatGateway", group: "EC2" },
         vpcEndpoint: { type: "VpcEndpoint", group: "EC2" },
-        managedPrefixList: { type: "ManagedPrefixList", group: "EC2" },
       },
     },
     {

@@ -76,26 +76,20 @@ exports.EC2RouteTable = ({ spec, config }) => {
 
   const routesDelete = ({ live }) =>
     pipe([
-      tap(() => {
-        assert(true);
-      }),
       () => live,
       get("Routes"),
       filter(eq(get("State"), "blackhole")),
-      tap((Routes) => {
-        assert(true);
-      }),
       map(
         tryCatch(
           pipe([
             tap((Route) => {
               assert(Route);
             }),
-            (Route) =>
-              ec2().deleteRoute({
-                RouteTableId: live.RouteTableId,
-                DestinationCidrBlock: Route.DestinationCidrBlock,
-              }),
+            ({ DestinationCidrBlock }) => ({
+              RouteTableId: live.RouteTableId,
+              DestinationCidrBlock: DestinationCidrBlock,
+            }),
+            ec2().deleteRoute,
           ]),
           (error, Route) =>
             pipe([

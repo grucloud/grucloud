@@ -22,6 +22,8 @@ const {
   when,
 } = require("rubico/x");
 
+const { retryCall } = require("@grucloud/core/Retry");
+
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRoute" });
 
 const { findNamespaceInTags } = require("../AwsCommon");
@@ -78,7 +80,7 @@ exports.EC2Route = ({ spec, config }) => {
     ])();
 
   const findName = (params) => {
-    const fns = [get("live.name"), findId];
+    const fns = [findId];
     for (fn of fns) {
       const name = fn(params);
       if (!isEmpty(name)) {
@@ -89,13 +91,7 @@ exports.EC2Route = ({ spec, config }) => {
   };
 
   const isDefault = ({ live, lives }) =>
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      () => live,
-      eq(get("GatewayId"), "local"),
-    ])();
+    pipe([() => live, eq(get("GatewayId"), "local")])();
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -137,33 +133,35 @@ exports.EC2Route = ({ spec, config }) => {
       ],
     },
     {
-      type: "ManagedPrefixList",
-      group: "EC2",
-      ids: [
-        pipe([
-          () =>
-            lives.getById({
-              id: live.DestinationPrefixListId,
-              type: "ManagedPrefixList",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    {
       type: "NatGateway",
       group: "EC2",
       ids: [live.NatGatewayId],
     },
   ];
 
+  const findRoute = ({ GatewayId, NatGatewayId }) =>
+    pipe([
+      get("Routes"),
+      tap((Routes) => {
+        assert(Routes);
+      }),
+      find(
+        pipe([
+          switchCase([
+            () => GatewayId,
+            eq(get("GatewayId"), GatewayId),
+            () => NatGatewayId,
+            eq(get("NatGatewayId"), NatGatewayId),
+            () => {
+              assert(false, "missing route destination");
+            },
+          ]),
+        ])
+      ),
+    ]);
+
   const getById = client.getById({
     pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       tap(({ RouteTableId }) => {
         assert(RouteTableId);
       }),
@@ -173,31 +171,7 @@ exports.EC2Route = ({ spec, config }) => {
     ]),
     method: "describeRouteTables",
     getField: "RouteTables",
-    decorate: ({ GatewayId, NatGatewayId, VpcEndpointId }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("Routes"),
-        find(
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            switchCase([
-              () => GatewayId,
-              eq(get("GatewayId"), GatewayId),
-              () => NatGatewayId,
-              eq(get("NatGatewayId"), NatGatewayId),
-              () => VpcEndpointId,
-              eq(get("VpcEndpointId"), VpcEndpointId),
-              () => {
-                assert(false, "missing route destination");
-              },
-            ]),
-          ])
-        ),
-      ]),
+    decorate: findRoute,
     ignoreErrorCodes,
   });
 
@@ -241,53 +215,112 @@ exports.EC2Route = ({ spec, config }) => {
 
   const getList = pipe([getListFromLive]);
 
-  const getByName = getByNameCore({ getList, findName });
+  const getByName = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    getByNameCore({ getList, findName }),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRoute-property
-  //TODO create vpv endpoint route with https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifyVpcEndpoint-property
-  const create = client.create({
-    method: "createRoute",
-    getById,
-    pickCreated:
-      ({ payload }) =>
+  // Create vpc endpoint route with https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifyVpcEndpoint-property
+
+  const createRouteVpcEndpoint = ({
+    name,
+    payload: { VpcEndpointId, RouteTableId },
+    dependencies,
+    lives,
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(VpcEndpointId);
+        assert(RouteTableId);
+      }),
+      () => ({ VpcEndpointId, AddRouteTableIds: [RouteTableId] }),
+      ec2().modifyVpcEndpoint,
       () =>
-        payload,
-    postCreate: ({ dependencies, lives }) =>
-      pipe([
-        tap((params) => {
-          assert(dependencies);
-          assert(lives);
+        retryCall({
+          name: `modifyVpcEndpoint ${name}`,
+          fn: pipe([
+            () => ({ RouteTableId, GatewayId: VpcEndpointId }),
+            getById,
+          ]),
+          config: { retryCount: 12 * 5, retryDelay: 5e3 },
+          isExpectedResult: not(isEmpty),
         }),
-        () => dependencies().routeTable.getLive({ lives }),
-      ]),
-  });
+      tap((params) => {
+        assert(true);
+      }),
+      () =>
+        retryCall({
+          name: `modifyVpcEndpoint ${name}`,
+          fn: pipe([
+            () => dependencies().routeTable.getLive({ lives }),
+            tap((params) => {
+              assert(true);
+            }),
+            findRoute({ RouteTableId, GatewayId: VpcEndpointId }),
+          ]),
+          config: { retryCount: 12 * 5, retryDelay: 5e3 },
+          isExpectedResult: not(isEmpty),
+        }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+  const create = pipe([
+    switchCase([
+      get("payload.VpcEndpointId"),
+      createRouteVpcEndpoint,
+      client.create({
+        method: "createRoute",
+        getById,
+        pickCreated:
+          ({ payload }) =>
+          () =>
+            payload,
+        postCreate: ({ dependencies, lives }) =>
+          pipe([() => dependencies().routeTable.getLive({ lives })]),
+      }),
+    ]),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteRoute-property
-  const destroy = client.destroy({
-    pickId: pick([
-      "DestinationCidrBlock",
-      "RouteTableId",
-      "DestinationIpv6CidrBlock",
-      "DestinationPrefixListId",
-    ]),
-    method: "deleteRoute",
-    //TODO
-    //getById,
-    ignoreErrorCodes,
-    config,
-  });
+  const destroy = switchCase([
+    pipe([get("live.GatewayId", ""), callProp("startsWith", "vpce-")]),
+    ({ live: { GatewayId, RouteTableId } }) =>
+      pipe([
+        tap(() => {
+          assert(GatewayId);
+          assert(RouteTableId);
+        }),
+        () => ({
+          VpcEndpointId: GatewayId,
+          RemoveRouteTableIds: [RouteTableId],
+        }),
+        ec2().modifyVpcEndpoint,
+      ])(),
+    client.destroy({
+      pickId: pick([
+        "DestinationCidrBlock",
+        "RouteTableId",
+        "DestinationIpv6CidrBlock",
+        "DestinationPrefixListId",
+      ]),
+      method: "deleteRoute",
+      //TODO
+      //getById,
+      ignoreErrorCodes,
+      config,
+    }),
+  ]);
 
   const configDefault = ({
     name,
     namespace,
     properties = {},
-    dependencies: {
-      routeTable,
-      managedPrefixList,
-      natGateway,
-      ig,
-      vpcEndpoint,
-    },
+    dependencies: { routeTable, natGateway, ig, vpcEndpoint },
   }) =>
     pipe([
       tap((params) => {
@@ -302,10 +335,8 @@ exports.EC2Route = ({ spec, config }) => {
         RouteTableId: getField(routeTable, "RouteTableId"),
       }),
       switchCase([
-        () => managedPrefixList,
-        defaultsDeep({
-          DestinationPrefixListId: getField(managedPrefixList, "PrefixListId"),
-        }),
+        () => vpcEndpoint,
+        defaultsDeep({}),
         defaultsDeep({
           DestinationCidrBlock: "0.0.0.0/0",
         }),
