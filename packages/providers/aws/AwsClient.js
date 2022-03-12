@@ -31,7 +31,7 @@ const util = require("util");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
 const { retryCall } = require("@grucloud/core/Retry");
-const { assignTags } = require("./AwsCommon");
+const { assignTagsSort } = require("./AwsCommon");
 
 const shouldRetryOnExceptionCodesDefault =
   (shouldRetryOnExceptionCodes) =>
@@ -107,7 +107,7 @@ exports.AwsClient =
               }),
               when(() => getField, get(getField)),
               when(Array.isArray, first),
-              unless(isEmpty, pipe([decorate(params), assignTags])),
+              unless(isEmpty, pipe([decorate(params), assignTagsSort])),
             ]),
             switchCase([
               or([
@@ -169,7 +169,7 @@ exports.AwsClient =
           tap((params) => {
             assert(true);
           }),
-          map(assignTags),
+          map(assignTagsSort),
           tap((items) => {
             assert(Array.isArray(items));
             logger.info(`getList ${type} #items ${size(items)}`);
@@ -430,15 +430,7 @@ exports.AwsClient =
                             )}`
                           );
                         }),
-                        //TODO use hasDataDiff
                         not(get("hasDataDiff")),
-                        // or([
-                        //   eq(pipe([get("jsonDiff"), size]), 1),
-                        //   and([
-                        //     pipe([get("liveDiff"), isEmpty]),
-                        //     pipe([get("targetDiff"), isEmpty]),
-                        //   ]),
-                        // ]),
                       ]),
                     ]),
                   ]),

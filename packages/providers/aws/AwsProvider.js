@@ -269,7 +269,7 @@ exports.AwsProvider = ({
         tap((items) => {
           Array.isArray(items);
         }),
-        map(assignTags),
+        //map(assignTags),
         filter(not(isEmpty)),
         (items) => ({ items, total: size(items) }),
         tap(({ total, items }) => {

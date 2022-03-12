@@ -318,7 +318,9 @@ exports.createResources = () => [
     name: "my-cluster",
     properties: ({}) => ({
       version: "1.20",
-      tags: { mykey1: "value" },
+      tags: {
+        mykey1: "value",
+      },
     }),
     dependencies: () => ({
       subnets: [
@@ -338,15 +340,17 @@ exports.createResources = () => [
     properties: ({}) => ({
       capacityType: "ON_DEMAND",
       scalingConfig: {
-        minSize: 1,
-        maxSize: 1,
         desiredSize: 1,
+        maxSize: 1,
+        minSize: 1,
       },
       labels: {
-        "alpha.eksctl.io/nodegroup-name": "ng-1",
         "alpha.eksctl.io/cluster-name": "my-cluster",
+        "alpha.eksctl.io/nodegroup-name": "ng-1",
       },
-      tags: { mykey1: "value" },
+      tags: {
+        mykey1: "value",
+      },
     }),
     dependencies: () => ({
       cluster: "my-cluster",
@@ -437,21 +441,21 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
+          PolicyName: "AmazonEKSWorkerNodePolicy",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+        },
+        {
           PolicyName: "AmazonEC2ContainerRegistryReadOnly",
           PolicyArn:
             "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
         },
         {
-          PolicyName: "AmazonEKSWorkerNodePolicy",
-          PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+          PolicyName: "AmazonSSMManagedInstanceCore",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
         },
         {
           PolicyName: "AmazonEKS_CNI_Policy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-        },
-        {
-          PolicyName: "AmazonSSMManagedInstanceCore",
-          PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
         },
       ],
     }),
