@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "Vpc",
     group: "EC2",
-    name: "project-test-vpc",
+    name: "vpc-wizard-vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
     }),
@@ -14,121 +14,130 @@ exports.createResources = () => [
   {
     type: "InternetGateway",
     group: "EC2",
-    name: "project-test-igw",
+    name: "vpc-wizard-igw",
     dependencies: () => ({
-      vpc: "project-test-vpc",
+      vpc: "vpc-wizard-vpc",
+    }),
+  },
+  {
+    type: "NatGateway",
+    group: "EC2",
+    name: "vpc-wizard-nat-public1-us-east-1a",
+    dependencies: () => ({
+      subnet: "vpc-wizard-subnet-public1-us-east-1a",
+      eip: "vpc-wizard-eip-us-east-1a",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "project-test-subnet-private1-us-east-1a",
+    name: "vpc-wizard-subnet-private1-us-east-1a",
     properties: ({ config }) => ({
       CidrBlock: "10.0.128.0/20",
       AvailabilityZone: `${config.region}a`,
     }),
     dependencies: () => ({
-      vpc: "project-test-vpc",
+      vpc: "vpc-wizard-vpc",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "project-test-subnet-private2-us-east-1b",
+    name: "vpc-wizard-subnet-private2-us-east-1b",
     properties: ({ config }) => ({
       CidrBlock: "10.0.144.0/20",
       AvailabilityZone: `${config.region}b`,
     }),
     dependencies: () => ({
-      vpc: "project-test-vpc",
+      vpc: "vpc-wizard-vpc",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "project-test-subnet-public1-us-east-1a",
+    name: "vpc-wizard-subnet-public1-us-east-1a",
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/20",
       AvailabilityZone: `${config.region}a`,
     }),
     dependencies: () => ({
-      vpc: "project-test-vpc",
+      vpc: "vpc-wizard-vpc",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "project-test-subnet-public2-us-east-1b",
+    name: "vpc-wizard-subnet-public2-us-east-1b",
     properties: ({ config }) => ({
       CidrBlock: "10.0.16.0/20",
       AvailabilityZone: `${config.region}b`,
     }),
     dependencies: () => ({
-      vpc: "project-test-vpc",
+      vpc: "vpc-wizard-vpc",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "project-test-rtb-private1-us-east-1a",
+    name: "vpc-wizard-rtb-private1-us-east-1a",
     dependencies: () => ({
-      vpc: "project-test-vpc",
+      vpc: "vpc-wizard-vpc",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "project-test-rtb-private2-us-east-1b",
+    name: "vpc-wizard-rtb-private2-us-east-1b",
     dependencies: () => ({
-      vpc: "project-test-vpc",
+      vpc: "vpc-wizard-vpc",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "project-test-rtb-public1-us-east-1a",
+    name: "vpc-wizard-rtb-public1-us-east-1a",
     dependencies: () => ({
-      vpc: "project-test-vpc",
+      vpc: "vpc-wizard-vpc",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "project-test-rtb-public2-us-east-1b",
+    name: "vpc-wizard-rtb-public2-us-east-1b",
     dependencies: () => ({
-      vpc: "project-test-vpc",
+      vpc: "vpc-wizard-vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: () => ({
-      routeTable: "project-test-rtb-private1-us-east-1a",
-      subnet: "project-test-subnet-private1-us-east-1a",
+      routeTable: "vpc-wizard-rtb-private1-us-east-1a",
+      subnet: "vpc-wizard-subnet-private1-us-east-1a",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: () => ({
-      routeTable: "project-test-rtb-private2-us-east-1b",
-      subnet: "project-test-subnet-private2-us-east-1b",
+      routeTable: "vpc-wizard-rtb-private2-us-east-1b",
+      subnet: "vpc-wizard-subnet-private2-us-east-1b",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: () => ({
-      routeTable: "project-test-rtb-public1-us-east-1a",
-      subnet: "project-test-subnet-public1-us-east-1a",
+      routeTable: "vpc-wizard-rtb-public1-us-east-1a",
+      subnet: "vpc-wizard-subnet-public1-us-east-1a",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: () => ({
-      routeTable: "project-test-rtb-public2-us-east-1b",
-      subnet: "project-test-subnet-public2-us-east-1b",
+      routeTable: "vpc-wizard-rtb-public2-us-east-1b",
+      subnet: "vpc-wizard-subnet-public2-us-east-1b",
     }),
   },
   {
@@ -138,8 +147,16 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: () => ({
-      routeTable: "project-test-rtb-public1-us-east-1a",
-      ig: "project-test-igw",
+      routeTable: "vpc-wizard-rtb-private1-us-east-1a",
+      natGateway: "vpc-wizard-nat-public1-us-east-1a",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    dependencies: () => ({
+      routeTable: "vpc-wizard-rtb-private1-us-east-1a",
+      vpcEndpoint: "vpc-wizard-vpce-s3",
     }),
   },
   {
@@ -149,8 +166,64 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: () => ({
-      routeTable: "project-test-rtb-public2-us-east-1b",
-      ig: "project-test-igw",
+      routeTable: "vpc-wizard-rtb-private2-us-east-1b",
+      natGateway: "vpc-wizard-nat-public1-us-east-1a",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    dependencies: () => ({
+      routeTable: "vpc-wizard-rtb-private2-us-east-1b",
+      vpcEndpoint: "vpc-wizard-vpce-s3",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: () => ({
+      routeTable: "vpc-wizard-rtb-public1-us-east-1a",
+      ig: "vpc-wizard-igw",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: () => ({
+      routeTable: "vpc-wizard-rtb-public2-us-east-1b",
+      ig: "vpc-wizard-igw",
+    }),
+  },
+  { type: "ElasticIpAddress", group: "EC2", name: "vpc-wizard-eip-us-east-1a" },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: "vpc-wizard-vpce-s3",
+    properties: ({}) => ({
+      ServiceName: "com.amazonaws.us-east-1.s3",
+      PolicyDocument: {
+        Version: "2008-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: "*",
+            Action: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: false,
+      RequesterManaged: false,
+      VpcEndpointType: "Gateway",
+    }),
+    dependencies: () => ({
+      vpc: "vpc-wizard-vpc",
     }),
   },
 ];

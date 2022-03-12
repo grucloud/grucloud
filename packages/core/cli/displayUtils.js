@@ -28,6 +28,7 @@ const {
   identity,
   when,
   append,
+  prepend,
 } = require("rubico/x");
 
 const { planToResourcesPerType } = require("../Common");
@@ -397,16 +398,28 @@ const displayLiveItem =
     ])();
   };
 
+const addSymbol = ({ symbol, color }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("value", ""),
+    callProp("split", "\n"),
+    map(prepend(`${symbol} `)),
+    callProp("join", "\n"),
+    (value) => colors[color](value),
+  ]);
+
 const contentFromChange = pipe([
   tap((params) => {
     assert(true);
   }),
   switchCase([
     get("added"),
-    ({ value }) => colors.bold(`+ ${value}`),
+    addSymbol({ symbol: "+", color: "bold" }),
     get("removed"),
-    ({ value }) => colors.red(`- ${value}`),
-    ({ value }) => colors.green(`${value}`),
+    addSymbol({ symbol: "-", color: "red" }),
+    addSymbol({ symbol: " ", color: "green" }),
   ]),
 ]);
 

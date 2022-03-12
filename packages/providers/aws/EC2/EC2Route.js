@@ -288,7 +288,7 @@ exports.EC2Route = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteRoute-property
   const destroy = switchCase([
-    pipe([get("live.GatewayId"), callProp("startsWith", "vpce-")]),
+    pipe([get("live.GatewayId", ""), callProp("startsWith", "vpce-")]),
     ({ live: { GatewayId, RouteTableId } }) =>
       pipe([
         tap(() => {
