@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { tap, assign, map, pipe, omit, pick, get, not, and } = require("rubico");
-const { callProp, when } = require("rubico/x");
+const { callProp, when, defaultsDeep } = require("rubico/x");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
@@ -15,12 +15,11 @@ const compareECR = compareAws({ tagsKey });
 
 const isOurMinion = isOurMinionFactory({ tags: tagsKey });
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "Repository",
       Client: EcrRepository,
-      isOurMinion,
       compare: compareECR({
         filterLive: () =>
           pipe([
@@ -70,7 +69,6 @@ module.exports = () =>
     {
       type: "Registry",
       Client: EcrRegistry,
-      isOurMinion,
       compare: compareECR({
         filterLive: () => pipe([omit(["registryId"])]),
       }),
@@ -82,4 +80,12 @@ module.exports = () =>
       filterLive: () =>
         pipe([pick(["policyText", "replicationConfiguration"])]),
     },
-  ]);
+  ],
+  map(
+    defaultsDeep({
+      group: GROUP,
+      tagsKey,
+      isOurMinion,
+    })
+  ),
+]);

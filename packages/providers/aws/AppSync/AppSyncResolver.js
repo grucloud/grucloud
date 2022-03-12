@@ -30,7 +30,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
 
   // findDependencies for AppSyncResolver
   const findDependencies = ({ live, lives }) => [
-    findDependenciesGraphqlApi({ live }),
+    findDependenciesGraphqlApi({ live, lives, config }),
     {
       type: "Type",
       group: "AppSync",

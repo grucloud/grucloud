@@ -27,6 +27,7 @@ const {
   reduce,
   any,
   flatMap,
+  all,
 } = require("rubico");
 
 const {
@@ -162,6 +163,7 @@ const buildProperties = ({
   propertiesDefault = {},
   omitProperties = [],
   pickPropertiesCreate = [],
+  spec: { tagsKey = "Tags" },
 }) =>
   pipe([
     tap(() => {
@@ -169,6 +171,7 @@ const buildProperties = ({
       assert(filterLive);
       assert(pickPropertiesCreate);
       assert(resource);
+      //assert(spec);
     }),
     () => resource,
     get("live"),
@@ -179,33 +182,36 @@ const buildProperties = ({
       dependencies,
       programOptions,
       commandOptions,
-      omitProperties,
+      //omitProperties,
       pickPropertiesCreate,
     }),
     tap((params) => {
       assert(true);
     }),
+    omit(omitProperties),
     differenceObject(propertiesDefault),
     tap((params) => {
       assert(true);
     }),
     assign({
-      Tags: pipe([
+      [tagsKey]: pipe([
         () => resource,
-        get("live.Tags", []),
+        get("live"),
+        get(tagsKey, []),
         switchCase([
           Array.isArray,
-          filter(
-            and([
-              pipe([get("Key", ""), isNotOurTagKey]),
-              pipe([get("TagKey", ""), isNotOurTagKey]), //kms.Key
-            ])
+          filter((tag) =>
+            pipe([
+              () => ["Key", "key", "TagKey"],
+              all(pipe([(key) => get(key, "")(tag), isNotOurTagKey])),
+            ])()
           ),
           pipe([
-            keys,
-            filter(
-              not(or([callProp("startsWith", "gc-"), eq(identity, "Name")]))
-            ),
+            map.entries(([key, value]) => [
+              key,
+              isNotOurTagKey(key) ? value : undefined,
+            ]),
+            filter(not(isEmpty)),
           ]),
         ]),
       ]),
@@ -213,10 +219,7 @@ const buildProperties = ({
     tap((params) => {
       assert(true);
     }),
-    when(pipe([get("Tags"), isEmpty]), omit(["Tags"])),
-    tap((params) => {
-      assert(true);
-    }),
+    omitIfEmpty([tagsKey]),
     (props) =>
       pipe([
         () => environmentVariables,
@@ -1145,6 +1148,7 @@ const writeResource =
     filterLive,
     propertiesDefault,
     omitProperties,
+    tagsKey,
     pickPropertiesCreate,
     codeBuildProperties,
     hasNoProperty,
@@ -1157,11 +1161,13 @@ const writeResource =
     options,
     commandOptions,
     programOptions,
+    spec,
   }) =>
   ({ resource, lives, mapping }) =>
     pipe([
       tap(() => {
         assert(providerName);
+        assert(spec);
       }),
       () => resource,
       switchCase([
@@ -1186,11 +1192,13 @@ const writeResource =
                   filterLive,
                   omitProperties,
                   pickPropertiesCreate,
+                  tagsKey,
                   propertiesDefault,
                   dependencies,
                   environmentVariables,
                   commandOptions,
                   programOptions,
+                  spec,
                 }),
               (props) =>
                 pipe([
@@ -1245,6 +1253,7 @@ const writeResources =
     filterLive,
     propertiesDefault,
     omitProperties,
+    tagsKey,
     pickPropertiesCreate,
     properties,
     dependencies,
@@ -1257,6 +1266,7 @@ const writeResources =
     configBuildProperties,
     hasNoProperty = () => false,
     addCode,
+    spec,
   }) =>
   ({ lives, mapping }) =>
     pipe([
@@ -1307,6 +1317,7 @@ const writeResources =
                 configBuildProperties,
                 hasNoProperty,
                 addCode,
+                spec,
               })({
                 resource,
                 lives,
@@ -1379,6 +1390,7 @@ exports.generatorMain = ({
                     group,
                     providerName: providerType, //TODO
                     ...spec,
+                    spec,
                   }),
                   filter(not(isEmpty)),
                 ])(),

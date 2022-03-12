@@ -71,12 +71,10 @@ const shouldRetryOnExceptionDefault = ({
   ]);
 
 exports.AwsClient =
-  ({ spec: { type, group }, config }) =>
+  ({ spec, config }) =>
   (endpoint) => {
-    assert(type);
-    assert(group);
+    const { type, group } = spec;
     assert(config);
-
     assert(endpoint);
 
     const getById =
@@ -419,6 +417,7 @@ exports.AwsClient =
                       pipe([
                         (live) =>
                           compare({
+                            ...spec,
                             live,
                             target: filterAll({ name })(payload),
                           }),
@@ -431,13 +430,15 @@ exports.AwsClient =
                             )}`
                           );
                         }),
-                        or([
-                          eq(pipe([get("jsonDiff"), size]), 1),
-                          and([
-                            pipe([get("liveDiff"), isEmpty]),
-                            pipe([get("targetDiff"), isEmpty]),
-                          ]),
-                        ]),
+                        //TODO use hasDataDiff
+                        not(get("hasDataDiff")),
+                        // or([
+                        //   eq(pipe([get("jsonDiff"), size]), 1),
+                        //   and([
+                        //     pipe([get("liveDiff"), isEmpty]),
+                        //     pipe([get("targetDiff"), isEmpty]),
+                        //   ]),
+                        // ]),
                       ]),
                     ]),
                   ]),

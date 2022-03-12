@@ -11,8 +11,9 @@ const { SQSQueue } = require("./SQSQueue");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html
 const GROUP = "SQS";
+const tagsKey = "tags";
 
-const compareSQS = compareAws({ tagsKey: "tags" });
+const compareSQS = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
@@ -71,6 +72,7 @@ module.exports = pipe([
   map(
     defaultsDeep({
       group: GROUP,
+      tagsKey,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
     })

@@ -30,7 +30,8 @@ const { Resource } = require("./Resource");
 //const { Integration } = require("./Integration");
 
 const GROUP = "APIGateway";
-const compareAPIGateway = compareAws({ tagsKey: "tags" });
+const tagsKey = "tags";
+const compareAPIGateway = compareAws({ tagsKey });
 
 const schemaFilePath = ({ programOptions, commandOptions, resource }) =>
   path.resolve(programOptions.workingDirectory, `${resource.name}.oas30.json`);
@@ -232,6 +233,7 @@ module.exports = pipe([
   map(
     defaultsDeep({
       group: GROUP,
+      tagsKey,
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
     })

@@ -11,10 +11,12 @@ const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
 
 const GROUP = "EKS";
-const compareEKS = compareAws({ tagsKey: "tags" });
+const tagsKey = "tags";
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+const compareEKS = compareAws({ tagsKey });
+
+module.exports = pipe([
+  () => [
     {
       type: "Cluster",
       Client: EKSCluster,
@@ -41,13 +43,7 @@ module.exports = () =>
         role: { type: "Role", group: "IAM" },
         key: { type: "Key", group: "KMS" },
       },
-      isOurMinion,
       compare: compareEKS({
-        fitterAll: pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
         filterTarget: () =>
           pipe([
             defaultsDeep({
@@ -98,7 +94,6 @@ module.exports = () =>
         autoScaling: { type: "AutoScalingGroup", group: "AutoScaling" },
       },
       Client: EKSNodeGroup,
-      isOurMinion,
       compare: compareEKS({
         filterTarget: () =>
           pipe([
@@ -147,4 +142,6 @@ module.exports = () =>
           omit(["launchTemplate"]),
         ]),
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, tagsKey, isOurMinion })),
+]);
