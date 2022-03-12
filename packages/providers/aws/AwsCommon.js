@@ -393,15 +393,28 @@ const sortTags = () =>
 
 exports.sortTags = sortTags;
 
-const assignTags = switchCase([
-  pipe([get("Tags"), Array.isArray]),
-  assign({ Tags: pipe([get("Tags"), sortTags()]) }),
-  pipe([get("tags"), Array.isArray]),
-  assign({ tags: pipe([get("tags"), sortTags()]) }),
-  identity,
+const assignTagsSort = pipe([
+  switchCase([
+    pipe([get("Tags"), Array.isArray]),
+    assign({ Tags: pipe([get("Tags"), sortTags()]) }),
+    pipe([get("tags"), Array.isArray]),
+    assign({ tags: pipe([get("tags"), sortTags()]) }),
+    identity,
+  ]),
+  when(
+    get("labels"),
+    assign({
+      labels: pipe([
+        get("labels"),
+        Object.entries,
+        callProp("sort"),
+        Object.fromEntries,
+      ]),
+    })
+  ),
 ]);
 
-exports.assignTags = assignTags;
+exports.assignTagsSort = assignTagsSort;
 
 exports.buildTags = ({
   name,

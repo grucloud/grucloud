@@ -166,10 +166,16 @@ exports.createResources = () => [
           maximumScalingStepSize: 10000,
           minimumScalingStepSize: 1,
           status: "ENABLED",
-          targetCapacity: 100,
+          targetCapacity: 95,
         },
         managedTerminationProtection: "DISABLED",
       },
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
+        },
+      ],
     }),
     dependencies: () => ({
       autoScalingGroup: "EcsInstanceAsg",
@@ -184,6 +190,12 @@ exports.createResources = () => [
         {
           name: "containerInsights",
           value: "enabled",
+        },
+      ],
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
         },
       ],
     }),
@@ -217,6 +229,12 @@ exports.createResources = () => [
       ],
       placementConstraints: [],
       requiresCompatibilities: ["EC2"],
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
+        },
+      ],
     }),
   },
   {
@@ -248,6 +266,12 @@ exports.createResources = () => [
       schedulingStrategy: "REPLICA",
       enableECSManagedTags: true,
       enableExecuteCommand: false,
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
+        },
+      ],
     }),
     dependencies: () => ({
       cluster: "cluster",

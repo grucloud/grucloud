@@ -162,15 +162,20 @@ exports.createResources = () => [
     properties: ({}) => ({
       autoScalingGroupProvider: {
         managedScaling: {
-          status: "ENABLED",
-          targetCapacity: 100,
-          minimumScalingStepSize: 1,
-          maximumScalingStepSize: 10000,
           instanceWarmupPeriod: 300,
+          maximumScalingStepSize: 10000,
+          minimumScalingStepSize: 1,
+          status: "ENABLED",
+          targetCapacity: 95,
         },
         managedTerminationProtection: "DISABLED",
       },
-      tags: [{ key: "mykey1", value: "value" }],
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
+        },
+      ],
     }),
     dependencies: () => ({
       autoScalingGroup: "EcsInstanceAsg",
@@ -187,7 +192,12 @@ exports.createResources = () => [
           value: "enabled",
         },
       ],
-      tags: [{ key: "mykey", value: "value" }],
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
+        },
+      ],
     }),
     dependencies: () => ({
       capacityProviders: ["cp"],
@@ -200,10 +210,13 @@ exports.createResources = () => [
     properties: ({}) => ({
       containerDefinitions: [
         {
-          name: "nginx",
-          image: "nginx",
           cpu: 0,
+          environment: [],
+          essential: true,
+          image: "nginx",
           memory: 512,
+          mountPoints: [],
+          name: "nginx",
           portMappings: [
             {
               containerPort: 80,
@@ -211,15 +224,17 @@ exports.createResources = () => [
               protocol: "tcp",
             },
           ],
-          essential: true,
-          environment: [],
-          mountPoints: [],
           volumesFrom: [],
         },
       ],
       placementConstraints: [],
       requiresCompatibilities: ["EC2"],
-      tags: [{ key: "mykey1", value: "value" }],
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
+        },
+      ],
     }),
   },
   {
@@ -240,18 +255,23 @@ exports.createResources = () => [
       placementConstraints: [],
       placementStrategy: [
         {
-          type: "spread",
           field: "attribute:ecs.availability-zone",
+          type: "spread",
         },
         {
-          type: "spread",
           field: "instanceId",
+          type: "spread",
         },
       ],
       schedulingStrategy: "REPLICA",
       enableECSManagedTags: true,
       enableExecuteCommand: false,
-      tags: [{ key: "mykey", value: "value" }],
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
+        },
+      ],
     }),
     dependencies: () => ({
       cluster: "cluster",

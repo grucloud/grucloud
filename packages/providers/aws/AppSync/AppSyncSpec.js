@@ -10,7 +10,7 @@ const {
   tryCatch,
   eq,
 } = require("rubico");
-const { when } = require("rubico/x");
+const { when, defaultsDeep } = require("rubico/x");
 
 const fs = require("fs").promises;
 const path = require("path");
@@ -23,8 +23,9 @@ const { AppSyncDataSource } = require("./AppSyncDataSource");
 const { AppSyncResolver } = require("./AppSyncResolver");
 
 const GROUP = "AppSync";
+const tagsKey = "tags";
 
-const compareAppSync = compareAws({ tagsKey: "tags" });
+const compareAppSync = compareAws({ tagsKey });
 
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
@@ -69,12 +70,11 @@ const writeGraphqlSchema =
         )(),
     ])();
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "GraphqlApi",
       Client: AppSyncGraphqlApi,
-      isOurMinion,
       // TODO apiKeys
       compare: compareAppSync({
         filterTarget: () =>
@@ -126,7 +126,6 @@ module.exports = () =>
     {
       type: "DataSource",
       Client: AppSyncDataSource,
-      isOurMinion,
       compare: compareAppSync({
         filterAll: () =>
           pipe([
@@ -177,7 +176,6 @@ module.exports = () =>
             assert(true);
           }),
         ])(),
-      isOurMinion,
       compare: compareAppSync({
         filterLive: () =>
           pipe([
@@ -209,4 +207,6 @@ module.exports = () =>
         dynamoDbTable: { type: "Table", group: "DynamoDB" },
       },
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, tagsKey, isOurMinion })),
+]);

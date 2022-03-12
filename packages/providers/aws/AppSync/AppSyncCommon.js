@@ -1,4 +1,7 @@
-const { pipe, get } = require("rubico");
+const assert = require("assert");
+const { pipe, get, eq, tap } = require("rubico");
+const { find } = require("rubico/x");
+
 const { AppSync } = require("@aws-sdk/client-appsync");
 const { createEndpoint } = require("../AwsCommon");
 
@@ -6,10 +9,27 @@ exports.createAppSync = createEndpoint(AppSync);
 
 exports.ignoreErrorCodes = ["NotFoundException"];
 
-exports.findDependenciesGraphqlApi = ({ live, lives }) => ({
+exports.findDependenciesGraphqlApi = ({ live, lives, config }) => ({
   type: "GraphqlApi",
   group: "AppSync",
-  ids: [live.apiId],
+  ids: [
+    pipe([
+      () =>
+        lives.getByType({
+          type: "GraphqlApi",
+          group: "AppSync",
+          providerName: config.providerName,
+        }),
+      tap((params) => {
+        assert(true);
+      }),
+      find(eq(get("live.apiId"), live.apiId)),
+      get("id"),
+      tap((params) => {
+        assert(true);
+      }),
+    ])(),
+  ],
 });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#tagResource-property

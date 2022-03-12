@@ -31,7 +31,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
 
   // findDependencies for AppSyncDataSource
   const findDependencies = ({ live, lives }) => [
-    findDependenciesGraphqlApi({ live }),
+    findDependenciesGraphqlApi({ live, lives, config }),
     {
       type: "Role",
       group: "IAM",

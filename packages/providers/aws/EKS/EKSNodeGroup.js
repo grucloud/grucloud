@@ -27,7 +27,22 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(eks);
 
   const findDependencies = ({ live, lives }) => [
-    { type: "Cluster", group: "EKS", ids: [live.arn] },
+    {
+      type: "Cluster",
+      group: "EKS",
+      ids: [
+        pipe([
+          () =>
+            lives.getByName({
+              name: live.clusterName,
+              type: "Cluster",
+              group: "EKS",
+              providerName: config.providerName,
+            }),
+          get("id"),
+        ])(),
+      ],
+    },
     { type: "Subnet", group: "EC2", ids: live.subnets },
     {
       type: "AutoScalingGroup",

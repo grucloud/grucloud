@@ -25,7 +25,9 @@ exports.createResources = () => [
       deployment: {
         stageName: "dev",
       },
-      tags: { mykey: "myvalue" },
+      tags: {
+        mykey: "myvalue",
+      },
     }),
   },
   {
@@ -36,14 +38,14 @@ exports.createResources = () => [
       description: "dev",
       methodSettings: {
         "*/*": {
-          metricsEnabled: false,
+          cacheDataEncrypted: false,
+          cacheTtlInSeconds: 300,
+          cachingEnabled: false,
           dataTraceEnabled: false,
+          metricsEnabled: false,
+          requireAuthorizationForCacheControl: true,
           throttlingBurstLimit: 5000,
           throttlingRateLimit: 10000,
-          cachingEnabled: false,
-          cacheTtlInSeconds: 300,
-          cacheDataEncrypted: false,
-          requireAuthorizationForCacheControl: true,
           unauthorizedCacheControlHeaderStrategy:
             "SUCCEED_WITH_RESPONSE_HEADER",
         },
@@ -51,7 +53,9 @@ exports.createResources = () => [
       cacheClusterEnabled: false,
       cacheClusterSize: "0.5",
       tracingEnabled: false,
-      tags: { mykey1: "myvalue1" },
+      tags: {
+        mykey: "myvalue1",
+      },
     }),
     dependencies: () => ({
       restApi: "PetStore",

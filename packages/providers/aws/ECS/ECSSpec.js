@@ -12,24 +12,28 @@ const { ECSTask } = require("./ECSTask");
 const { ECSContainerInstance } = require("./ECSContainerInstance");
 
 const GROUP = "ECS";
-const compareECS = compareAws({ tagsKey: "tags", key: "key" });
+const tagsKey = "tags";
+
+const compareECS = compareAws({ tagsKey, key: "key" });
 
 const isOurMinion = isOurMinionFactory({
   key: "key",
   value: "value",
-  tags: "tags",
+  tags: tagsKey,
 });
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "CapacityProvider",
       Client: ECSCapacityProvider,
-      isOurMinion,
-      compare: compareECS({
-        filterLive: () =>
-          pipe([omit(["capacityProviderArn", "status", "updateStatus"])]),
-      }),
+      omitProperties: [
+        "capacityProviderArn",
+        "status",
+        "updateStatus",
+        "autoScalingGroupProvider.autoScalingGroupArn",
+      ],
+      compare: compareECS({}),
       filterLive: () =>
         pipe([
           pick(["autoScalingGroupProvider"]),
@@ -42,30 +46,21 @@ module.exports = () =>
     {
       type: "Cluster",
       Client: ECSCluster,
-      isOurMinion,
-      compare: compareECS({
-        filterTarget: () =>
-          pipe([defaultsDeep({ defaultCapacityProviderStrategy: [] })]),
-        filterLive: () =>
-          pipe([
-            omit([
-              "clusterArn",
-              "status",
-              "registeredContainerInstancesCount",
-              "runningTasksCount",
-              "pendingTasksCount",
-              "activeServicesCount",
-              "statistics",
-              "attachments",
-              "attachmentsStatus",
-            ]),
-          ]),
-      }),
+      omitProperties: [
+        "clusterArn",
+        "status",
+        "registeredContainerInstancesCount",
+        "runningTasksCount",
+        "pendingTasksCount",
+        "activeServicesCount",
+        "statistics",
+        "attachments",
+        "attachmentsStatus",
+      ],
+      propertiesDefault: { defaultCapacityProviderStrategy: [] },
+      compare: compareECS({}),
       filterLive: () =>
-        pipe([
-          pick(["settings", "defaultCapacityProviderStrategy"]),
-          omitIfEmpty(["defaultCapacityProviderStrategy"]),
-        ]),
+        pipe([pick(["settings", "defaultCapacityProviderStrategy"])]),
       dependencies: {
         capacityProviders: {
           type: "CapacityProvider",
@@ -84,7 +79,6 @@ module.exports = () =>
         role: { type: "Role", group: "IAM" },
       },
       Client: ECSTaskDefinition,
-      isOurMinion,
       compare: compareECS({
         filterLive: () =>
           pipe([
@@ -109,28 +103,23 @@ module.exports = () =>
     {
       type: "Service",
       Client: ECSService,
-      isOurMinion,
+      omitProperties: [
+        "taskDefinition",
+        "clusterArn",
+        "createdAt",
+        "events",
+        "deployments",
+        "runningCount",
+        "pendingCount",
+        "status",
+        "serviceArn",
+        "createdBy",
+      ],
+      propertiesDefault: { propagateTags: "NONE" },
       compare: compareECS({
-        filterTarget: () =>
-          pipe([
-            defaultsDeep({ propagateTags: "NONE" }),
-            omit(["taskDefinition"]),
-          ]),
         filterLive: () =>
           pipe([
             assign({ cluster: get("clusterArn") }),
-            omit([
-              "taskDefinition",
-              "clusterArn",
-              "createdAt",
-              "events",
-              "deployments",
-              "runningCount",
-              "pendingCount",
-              "status",
-              "serviceArn",
-              "createdBy",
-            ]),
             omitIfEmpty(["loadBalancers", "serviceRegistries"]),
           ]),
       }),
@@ -162,13 +151,11 @@ module.exports = () =>
         service: { type: "Service", group: "ECS", parent: true },
       },
       Client: ECSTaskSet,
-      isOurMinion,
       compare: compareECS({}),
     },
     {
       type: "Task",
       Client: ECSTask,
-      isOurMinion,
       compare: compareECS({}),
       filterLive: () =>
         pick(["enableExecuteCommand", "launchType", "overrides"]),
@@ -185,6 +172,7 @@ module.exports = () =>
         cluster: { type: "Cluster", group: "ECS" },
       },
       Client: ECSContainerInstance,
-      isOurMinion,
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, tagsKey, isOurMinion })),
+]);
