@@ -1,15 +1,11 @@
 const { assign, map, pipe, tap } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { isOurMinionObject, compareAws } = require("../AwsCommon");
+const { isOurMinionObject, isOurMinion, compareAws } = require("../AwsCommon");
 const { UserPool } = require("./UserPool");
-const {
-  IdentityProvider,
-  compareIdentityProvider,
-} = require("./IdentityProvider");
+const { UserPoolClient } = require("./UserPoolClient");
 
-const isOurMinion = ({ live, config }) =>
-  isOurMinionObject({ tags: live.tags, config });
+const { IdentityProvider } = require("./IdentityProvider");
 
 const GROUP = "CognitoIdentityServiceProvider";
 
@@ -19,6 +15,13 @@ const compareCognitoIdentityServiceProvider = compareAws({
 
 module.exports = pipe([
   () => [
+    {
+      type: "IdentityProvider",
+      dependencies: {
+        userPool: { type: "UserPool", group: GROUP, parent: true },
+      },
+      Client: IdentityProvider,
+    },
     {
       type: "UserPool",
       Client: UserPool,
@@ -290,12 +293,31 @@ module.exports = pipe([
       },
     },
     {
-      type: "IdentityProvider",
-      dependencies: {
-        userPool: { type: "UserPool", group: "CognitoIdentityServiceProvider" },
+      type: "UserPoolClient",
+      Client: UserPoolClient,
+      omitProperties: [
+        "ClientId",
+        "ClientName",
+        "UserPoolId",
+        "CreationDate",
+        "LastModifiedDate",
+      ],
+      propertiesDefault: {
+        AccessTokenValidity: 60,
+        AllowedOAuthFlowsUserPoolClient: false,
+        EnableTokenRevocation: true,
+        IdTokenValidity: 60,
+        PreventUserExistenceErrors: "ENABLED",
+        RefreshTokenValidity: 30,
+        TokenValidityUnits: {
+          AccessToken: "minutes",
+          IdToken: "minutes",
+          RefreshToken: "days",
+        },
       },
-      Client: IdentityProvider,
-      compareIdentity: compareIdentityProvider,
+      dependencies: {
+        userPool: { type: "UserPool", group: GROUP, parent: true },
+      },
     },
   ],
   map(

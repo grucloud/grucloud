@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, pick } = require("rubico");
+const { assign, pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -10,17 +10,21 @@ const { findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const {
   createCognitoIdentityProvider,
+  findDependenciesUserPool,
+  ignoreErrorCodes,
 } = require("./CognitoIdentityServiceProviderCommon");
 const findId = get("ProviderName");
+const pickId = pick(["ProviderName", "UserPoolId"]);
 const findName = get("ProviderName");
-const ignoreErrorCodes = ["ResourceNotFoundException"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html
 exports.IdentityProvider = ({ spec, config }) => {
   const cognitoIdentityServiceProvider = createCognitoIdentityProvider(config);
   const client = AwsClient({ spec, config })(cognitoIdentityServiceProvider);
 
-  const pickId = pick(["ProviderName", "UserPoolId"]);
+  const findDependencies = ({ live, lives }) => [
+    findDependenciesUserPool({ live, lives, config }),
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeIdentityProvider-property
   const getById = client.getById({
@@ -34,23 +38,18 @@ exports.IdentityProvider = ({ spec, config }) => {
   const getList = client.getListWithParent({
     parent: { type: "UserPool", group: "CognitoIdentityServiceProvider" },
     pickKey: pipe([
-      tap(({ UserPoolId }) => {
-        assert(UserPoolId);
+      tap(({ Id }) => {
+        assert(Id);
       }),
-      pick("UserPoolId"),
+      ({ Id }) => ({ UserPoolId: Id }),
     ]),
     method: "listIdentityProviders",
     getParam: "Providers",
     config,
     decorate: ({ parent }) =>
       pipe([
-        assign({
-          Tags: (live) =>
-            pipe([
-              tap((params) => {
-                assert(live);
-              }),
-            ])(),
+        tap((params) => {
+          assert(true);
         }),
       ]),
   });
@@ -71,7 +70,7 @@ exports.IdentityProvider = ({ spec, config }) => {
       () => properties,
       defaultsDeep({
         ProviderName: name,
-        UserPoolId: getField(userPool, "UserPoolId"),
+        UserPoolId: getField(userPool, "Id"),
       }),
     ])();
 
@@ -102,6 +101,7 @@ exports.IdentityProvider = ({ spec, config }) => {
   return {
     spec,
     findId,
+    findDependencies,
     findNamespace: findNamespaceInTagsObject(config),
     getById,
     getById,

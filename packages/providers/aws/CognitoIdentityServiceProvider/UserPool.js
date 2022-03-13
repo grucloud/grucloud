@@ -9,6 +9,7 @@ const {
   createCognitoIdentityProvider,
   tagResource,
   untagResource,
+  ignoreErrorCodes,
 } = require("./CognitoIdentityServiceProviderCommon");
 
 const findId = get("live.Arn");
@@ -19,8 +20,6 @@ const pickId = pipe([
   }),
   ({ Id }) => ({ UserPoolId: Id }),
 ]);
-
-const ignoreErrorCodes = ["ResourceNotFoundException"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html
 exports.UserPool = ({ spec, config }) => {

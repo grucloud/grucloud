@@ -185,7 +185,7 @@ module.exports = pipe([
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
         lambdaFunction: { type: "Function", group: "Lambda" },
-        userPool: { type: "UserPool", group: "Cognito" },
+        userPool: { type: "UserPool", group: "CognitoIdentityServiceProvider" },
       },
     },
   ],

@@ -1,4 +1,6 @@
-const { pipe, tap } = require("rubico");
+const { pipe, tap, eq, get } = require("rubico");
+const { find } = require("rubico/x");
+
 const {
   CognitoIdentityProvider,
 } = require("@aws-sdk/client-cognito-identity-provider");
@@ -23,3 +25,22 @@ exports.untagResource =
       (TagKeys) => ({ ResourceArn: id, TagKeys }),
       cognitoIdentityServiceProvider().untagResource,
     ]);
+
+exports.ignoreErrorCodes = ["ResourceNotFoundException"];
+
+exports.findDependenciesUserPool = ({ live, lives, config }) => ({
+  type: "UserPool",
+  group: "CognitoIdentityServiceProvider",
+  ids: [
+    pipe([
+      () =>
+        lives.getByType({
+          providerName: config.providerName,
+          type: "UserPool",
+          group: "CognitoIdentityServiceProvider",
+        }),
+      find(eq(get("live.Id"), live.UserPoolId)),
+      get("id"),
+    ])(),
+  ],
+});

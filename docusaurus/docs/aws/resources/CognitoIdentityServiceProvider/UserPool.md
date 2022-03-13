@@ -3,7 +3,7 @@ id: UserPool
 title: User Pool
 ---
 
-Manages an [Cognito User Pool](https://console.aws.amazon.com/cognito/v2/idp/user-pools).
+Manages a [Cognito User Pool](https://console.aws.amazon.com/cognito/v2/idp/user-pools).
 
 ## Sample code
 
@@ -30,16 +30,20 @@ exports.createResources = () => [
 
 - [Identity Provider](./IdentityProvider.md)
 
+## Used By
+
+- [User Pool Client](./UserPoolClient.md)
+
 ## Full Examples
 
-- [Simple user pool](CognitoIdentityServiceProvider/identity-provider)
+- [Simple user pool](https://github.com/grucloud/grucloud/tree/main/examples/aws/CognitoIdentityServiceProvider/identity-provider)
 
 ## List
 
 The user pools can be filtered with the _UserPool_ type:
 
 ```sh
-gc l -t Table
+gc l -t UserPool
 ```
 
 ```txt
