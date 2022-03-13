@@ -57,6 +57,9 @@ const { resourcesTpl } = require("./resourcesTpl");
 
 exports.filterModel = ({ field }) =>
   pipe([
+    tap((params) => {
+      assert(true);
+    }),
     map(
       assign({
         live: pipe([
@@ -68,6 +71,7 @@ exports.filterModel = ({ field }) =>
                 get(field),
                 unless(
                   isEmpty,
+                  //TODO use Object.entries, Object.fromEntries
                   pipe([
                     map.entries(([key, value]) => [
                       key,

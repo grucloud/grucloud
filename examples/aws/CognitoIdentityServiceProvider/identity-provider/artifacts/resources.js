@@ -2,4 +2,21 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-exports.createResources = () => [];
+exports.createResources = () => [
+  {
+    type: "UserPool",
+    group: "CognitoIdentityServiceProvider",
+    name: "my-user-pool",
+    properties: ({}) => ({
+      Policies: {
+        PasswordPolicy: {
+          MinimumLength: 10,
+          TemporaryPasswordValidityDays: 10,
+        },
+      },
+      UserPoolTags: {
+        mykey: "myvalue",
+      },
+    }),
+  },
+];

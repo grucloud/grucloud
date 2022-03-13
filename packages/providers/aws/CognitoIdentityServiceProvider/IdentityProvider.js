@@ -42,7 +42,7 @@ exports.IdentityProvider = ({ spec, config }) => {
     method: "listIdentityProviders",
     getParam: "Providers",
     config,
-    decorate: ({ parent: { UserPoolId, Tags } }) =>
+    decorate: ({ parent }) =>
       pipe([
         assign({
           Tags: (live) =>
@@ -50,11 +50,6 @@ exports.IdentityProvider = ({ spec, config }) => {
               tap((params) => {
                 assert(live);
               }),
-              // () => ({
-              //   ResourceArn: live.Arn,
-              // }),
-              // cognitoIdentityServiceProvider().listTagsForResource,
-              // get("Tags"),
             ])(),
         }),
       ]),

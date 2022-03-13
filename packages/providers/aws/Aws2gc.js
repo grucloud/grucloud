@@ -176,6 +176,9 @@ const ignoreTags = (key) =>
   ])();
 
 const filterModel = pipe([
+  tap((params) => {
+    assert(true);
+  }),
   map(
     assign({
       live: pipe([
@@ -183,9 +186,11 @@ const filterModel = pipe([
         removeOurTags,
         //TODO create removeOurTagArray
         when(
+          //TODO
           get("Tags"),
           assign({
             Tags: pipe([
+              //TODO
               get("Tags"),
               tap((params) => {
                 assert(true);
