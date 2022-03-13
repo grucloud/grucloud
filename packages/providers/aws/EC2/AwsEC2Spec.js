@@ -129,7 +129,6 @@ module.exports = pipe([
     {
       type: "KeyPair",
       Client: AwsClientKeyPair,
-      isOurMinion,
       propertiesDefault: { KeyType: "rsa" },
       omitProperties: ["KeyPairId", "KeyFingerprint"],
       filterLive: () => pick([]),
@@ -137,7 +136,6 @@ module.exports = pipe([
     {
       type: "Image",
       Client: AwsImage,
-      isOurMinion,
       ignoreResource: () => () => true,
     },
     {
@@ -156,7 +154,6 @@ module.exports = pipe([
         "MultiAttachEnabled",
         "Device",
       ],
-      isOurMinion,
       setupEbsVolume,
       filterLive: () =>
         pipe([
@@ -225,7 +222,6 @@ module.exports = pipe([
       //TODO only for delete
       //dependsOnDelete: ["IAM::User", "IAM::Group"],
       Client: AwsVpc,
-      isOurMinion,
       omitProperties: [
         "DhcpOptionsId",
         "State",
@@ -242,7 +238,6 @@ module.exports = pipe([
     {
       type: "InternetGateway",
       Client: AwsInternetGateway,
-      isOurMinion,
       compare: compareEC2({
         filterLive: () =>
           pipe([omit(["Attachments", "InternetGatewayId", "OwnerId"])]),
@@ -253,7 +248,6 @@ module.exports = pipe([
     {
       type: "NatGateway",
       Client: AwsNatGateway,
-      isOurMinion,
       omitProperties: [
         "CreateTime",
         "NatGatewayAddresses",
@@ -277,7 +271,6 @@ module.exports = pipe([
     {
       type: "Subnet",
       Client: AwsSubnet,
-      isOurMinion,
       omitProperties: [
         "VpcId",
         "AvailabilityZoneId",
@@ -301,41 +294,6 @@ module.exports = pipe([
           EnableResourceNameDnsAAAARecord: false,
         },
       },
-      // compare: compareEC2({
-      //   filterAll: () => pipe([omit(["VpcId"])]),
-      //   filterTarget: () =>
-      //     pipe([
-      //       defaultsDeep({
-      //         MapPublicIpOnLaunch: false,
-      //         MapCustomerOwnedIpOnLaunch: false,
-      //         EnableDns64: false,
-      //         Ipv6Native: false,
-      //         PrivateDnsNameOptionsOnLaunch: {
-      //           HostnameType: "ip-name",
-      //           EnableResourceNameDnsARecord: false,
-      //           EnableResourceNameDnsAAAARecord: false,
-      //         },
-      //       }),
-      //     ]),
-      //   filterLive: () =>
-      //     pipe([
-      //       omit([
-      //         "AvailabilityZoneId",
-      //         "AvailableIpAddressCount",
-      //         "DefaultForAz",
-      //         "State",
-      //         "SubnetId",
-      //         "OwnerId",
-      //         "AssignIpv6AddressOnCreation",
-      //         "Ipv6CidrBlockAssociationSet",
-      //         "SubnetArn",
-      //       ]),
-      //     ]),
-      // }),
-      // propertiesDefault: {
-      //   MapPublicIpOnLaunch: false,
-      //   MapCustomerOwnedIpOnLaunch: false,
-      // },
       filterLive: () =>
         pipe([
           pick([
@@ -361,7 +319,6 @@ module.exports = pipe([
     {
       type: "RouteTable",
       Client: EC2RouteTable,
-      isOurMinion,
       omitProperties: [
         "VpcId",
         "Associations",
@@ -421,7 +378,6 @@ module.exports = pipe([
     {
       type: "Route",
       Client: EC2Route,
-      isOurMinion,
       ignoreResource: () => pipe([get("isDefault")]),
       compare: compareAws({
         getTargetTags: () => [],
@@ -480,7 +436,6 @@ module.exports = pipe([
       type: "SecurityGroup",
       dependsOn: ["EC2::Vpc", "EC2::Subnet"],
       Client: AwsSecurityGroup,
-      isOurMinion,
       includeDefaultDependencies: true,
       findDefault: findDefaultWithVpcDependency,
       compare: compareEC2({
@@ -535,7 +490,6 @@ module.exports = pipe([
       type: "SecurityGroupRuleIngress",
       Client: AwsSecurityGroupRuleIngress,
       compare: compareSecurityGroupRule,
-      isOurMinion,
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
       dependencies: {
@@ -573,7 +527,6 @@ module.exports = pipe([
       type: "SecurityGroupRuleEgress",
       Client: AwsSecurityGroupRuleEgress,
       compare: compareSecurityGroupRule,
-      isOurMinion,
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
       dependencies: {
@@ -586,7 +539,6 @@ module.exports = pipe([
         internetGateway: { type: "InternetGateway", group: "EC2" },
       },
       Client: AwsElasticIpAddress,
-      isOurMinion,
       omitProperties: [
         "InstanceId",
         "PublicIp",
@@ -630,7 +582,6 @@ module.exports = pipe([
       type: "LaunchTemplate",
       Client: EC2LaunchTemplate,
       includeDefaultDependencies: true,
-      isOurMinion,
       compare: compareEC2({
         filterTarget: () => pipe([omit(["LaunchTemplateData"])]),
         filterLive: () =>
@@ -680,14 +631,12 @@ module.exports = pipe([
       type: "NetworkAcl",
       Client: AwsNetworkAcl,
       listOnly: true,
-      isOurMinion,
       ignoreResource: () => pipe([() => true]),
     },
     {
       type: "ManagedPrefixList",
       dependencies: {},
       Client: EC2ManagedPrefixList,
-      isOurMinion,
       compare: compareEC2({
         filterTarget: () => pipe([pick([])]),
         filterLive: () => pipe([pick([])]),
@@ -706,7 +655,6 @@ module.exports = pipe([
         // SecurityGroup ?
       },
       Client: EC2VpcEndpoint,
-      isOurMinion,
       compare: compareEC2({
         filterTarget: () => pipe([pick(["PolicyDocument"])]),
         filterLive: () => pipe([pick(["PolicyDocument"])]),
@@ -723,5 +671,5 @@ module.exports = pipe([
         ]),
     },
   ],
-  map(defaultsDeep({ group: GROUP, compare: compareEC2({}) })),
+  map(defaultsDeep({ group: GROUP, compare: compareEC2({}), isOurMinion })),
 ]);

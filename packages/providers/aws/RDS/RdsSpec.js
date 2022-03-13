@@ -74,7 +74,8 @@ module.exports = pipe([
         "DomainMemberships",
       ],
       propertiesDefault: {
-        AllocatedStorage: 1,
+        //AllocatedStorage: 1,
+        //AutoMinorVersionUpgrade: false,
         BackupRetentionPeriod: 1,
         MultiAZ: false,
         Port: 5432,
@@ -90,7 +91,6 @@ module.exports = pipe([
           SecondsBeforeTimeout: 300,
           TimeoutAction: "RollbackCapacityChange",
         },
-        AutoMinorVersionUpgrade: false,
       },
       compare: compareRDS({
         filterLive: () =>

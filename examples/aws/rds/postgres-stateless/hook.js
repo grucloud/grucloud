@@ -64,6 +64,7 @@ module.exports = ({ provider }) => {
         ].getLive();
         assert(dbClusterLive);
         const ec2InstanceLive = await resources.EC2.Instance.bastion.getLive();
+        assert(ec2InstanceLive);
         const connectionString = `postgres://${process.env.MASTER_USERNAME}:${process.env.MASTER_USER_PASSWORD}@${dbClusterLive.Endpoint}`;
         return {
           dbClusterLive,
@@ -76,6 +77,7 @@ module.exports = ({ provider }) => {
           name: "postgres",
           command: async ({ connectionString, ec2InstanceLive }) => {
             const host = ec2InstanceLive.PublicIpAddress;
+            assert(host);
             await retryCall({
               name: `ssh ${host}`,
               fn: async () => {
