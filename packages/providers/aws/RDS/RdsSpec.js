@@ -1,9 +1,9 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, tap, get, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, callProp, when } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 
-const { isOurMinionFactory, isOurMinion } = require("../AwsCommon");
+const { isOurMinionFactory } = require("../AwsCommon");
 const { DBCluster } = require("./DBCluster");
 const { DBInstance } = require("./DBInstance");
 const { DBSubnetGroup } = require("./DBSubnetGroup");
@@ -47,7 +47,7 @@ module.exports = pipe([
       omitProperties: [
         "SubnetIds",
         "VpcSecurityGroupIds",
-        //"MasterUserPassword",
+        "MasterUserPassword",
         "DBSubnetGroupName",
         "Capacity",
         "ScalingConfigurationInfo",
@@ -93,6 +93,16 @@ module.exports = pipe([
         },
       },
       compare: compareRDS({
+        filterTarget: () =>
+          pipe([
+            when(
+              pipe([get("Engine"), callProp("startsWith", "aurora")]),
+              defaultsDeep({
+                AllocatedStorage: 1,
+                AutoMinorVersionUpgrade: false,
+              })
+            ),
+          ]),
         filterLive: () =>
           pipe([
             assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),

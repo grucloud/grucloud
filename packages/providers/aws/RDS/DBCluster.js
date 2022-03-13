@@ -33,7 +33,20 @@ exports.DBCluster = ({ spec, config }) => {
     {
       type: "DBSubnetGroup",
       group: "RDS",
-      ids: [get("DBSubnetGroup")(live)],
+      ids: [
+        pipe([
+          () => live,
+          get("DBSubnetGroup"),
+          (name) =>
+            lives.getByName({
+              name,
+              providerName: config.providerName,
+              type: "DBSubnetGroup",
+              group: "RDS",
+            }),
+          get("id"),
+        ])(),
+      ],
     },
     {
       type: "SecurityGroup",
