@@ -31,7 +31,20 @@ exports.DBInstance = ({ spec, config }) => {
     {
       type: "DBSubnetGroup",
       group: "RDS",
-      ids: [get("DBSubnetGroup.DBSubnetGroupName")(live)],
+      ids: [
+        pipe([
+          () => live,
+          get("DBSubnetGroup.DBSubnetGroupName"),
+          (name) =>
+            lives.getByName({
+              name,
+              providerName: config.providerName,
+              type: "DBSubnetGroup",
+              group: "RDS",
+            }),
+          get("id"),
+        ])(),
+      ],
     },
     {
       type: "SecurityGroup",

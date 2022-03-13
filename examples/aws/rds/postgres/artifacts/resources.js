@@ -180,6 +180,7 @@ exports.createResources = () => [
       MasterUserPassword: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
     }),
     dependencies: () => ({
+      dbSubnetGroup: "subnet-group-postgres",
       securityGroups: ["security-group"],
     }),
   },

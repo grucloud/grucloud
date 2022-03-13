@@ -170,15 +170,14 @@ exports.createResources = () => [
       PubliclyAccessible: true,
       PreferredBackupWindow: "22:10-22:40",
       PreferredMaintenanceWindow: "fri:23:40-sat:00:10",
-      BackupRetentionPeriod: 1,
-      MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
-      MasterUserPassword: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
       Tags: [
         {
           Key: "mykey2",
           Value: "myvalue",
         },
       ],
+      MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
+      MasterUserPassword: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
     }),
     dependencies: () => ({
       dbSubnetGroup: "subnet-group-postgres",

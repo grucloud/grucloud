@@ -35,13 +35,9 @@ module.exports = pipe([
           list: true,
         },
       },
-      isOurMinion,
       compare: compareS3({
         filterTarget: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             omit([
               "Bucket",
               "ACL", //TODO
@@ -49,9 +45,6 @@ module.exports = pipe([
           ]),
         filterLive: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             omit([
               "Name",
               "CreationDate",
@@ -111,16 +104,10 @@ module.exports = pipe([
                         assign({
                           Principal: pipe([
                             get("Principal"),
-                            tap((params) => {
-                              assert(true);
-                            }),
                             when(
                               isObject,
                               assign({
                                 AWS: pipe([
-                                  tap((params) => {
-                                    assert(true);
-                                  }),
                                   get("AWS"),
                                   when(
                                     includes(
@@ -153,9 +140,6 @@ module.exports = pipe([
                     ),
                   ]),
                 }),
-                tap((params) => {
-                  assert(true);
-                }),
               ]),
             })
           ),
@@ -168,7 +152,6 @@ module.exports = pipe([
       },
       Client: AwsS3Object,
       compare: compareS3Object,
-      isOurMinion,
       filterLive: ({ commandOptions, programOptions, resource: { live } }) =>
         pipe([
           pick(["ContentType", "ServerSideEncryption", "StorageClass"]),
@@ -183,5 +166,5 @@ module.exports = pipe([
         ]),
     },
   ],
-  map(defaultsDeep({ group: GROUP })),
+  map(defaultsDeep({ group: GROUP, isOurMinion })),
 ]);

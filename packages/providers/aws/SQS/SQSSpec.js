@@ -29,37 +29,23 @@ module.exports = pipe([
           ReceiveMessageWaitTimeSeconds: "0",
         },
       },
-      compare: compareSQS({
-        filterTarget: () => pipe([omit(["QueueName"])]),
-        filterLive: () =>
-          pipe([
-            omit([
-              "QueueUrl",
-              "Attributes.QueueArn",
-              "Attributes.ApproximateNumberOfMessages",
-              "Attributes.ApproximateNumberOfMessagesNotVisible",
-              "Attributes.ApproximateNumberOfMessagesDelayed",
-              "Attributes.CreatedTimestamp",
-              "Attributes.LastModifiedTimestamp",
-              "Attributes.SqsManagedSseEnabled",
-            ]),
-          ]),
-      }),
+      omitProperties: [
+        "QueueName",
+        "QueueUrl",
+        "Attributes.QueueArn",
+        "Attributes.ApproximateNumberOfMessages",
+        "Attributes.ApproximateNumberOfMessagesNotVisible",
+        "Attributes.ApproximateNumberOfMessagesDelayed",
+        "Attributes.CreatedTimestamp",
+        "Attributes.LastModifiedTimestamp",
+        "Attributes.SqsManagedSseEnabled",
+      ],
       filterLive: () =>
         pipe([
           omit(["QueueUrl"]),
           assign({
             Attributes: pipe([
               get("Attributes"),
-              omit([
-                "QueueArn",
-                "ApproximateNumberOfMessages",
-                "ApproximateNumberOfMessagesNotVisible",
-                "ApproximateNumberOfMessagesDelayed",
-                "CreatedTimestamp",
-                "LastModifiedTimestamp",
-                "SqsManagedSseEnabled",
-              ]),
               when(
                 eq(get("Policy.Id"), "__default_policy_ID"),
                 omit(["Policy"])
@@ -73,6 +59,7 @@ module.exports = pipe([
     defaultsDeep({
       group: GROUP,
       tagsKey,
+      compare: compareSQS({}),
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
     })

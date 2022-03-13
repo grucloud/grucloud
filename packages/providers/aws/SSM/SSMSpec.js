@@ -14,22 +14,13 @@ module.exports = pipe([
     {
       type: "Parameter",
       Client: SSMParameter,
-      compare: compareSSM({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["Description", "Tier"]),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["Version", "LastModifiedDate", "ARN"]),
-          ]),
-      }),
+      omitProperties: [
+        "Version",
+        "LastModifiedDate",
+        "ARN",
+        "Description", //TODO
+        "Tier",
+      ],
       filterLive: () =>
         pick([
           "Type",
@@ -41,5 +32,5 @@ module.exports = pipe([
         ]),
     },
   ],
-  map(defaultsDeep({ group: GROUP, isOurMinion })),
+  map(defaultsDeep({ group: GROUP, isOurMinion, compare: compareSSM({}) })),
 ]);
