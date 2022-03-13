@@ -7,6 +7,8 @@ Manages a [Cognito User Pool Domain](https://console.aws.amazon.com/cognito/v2/i
 
 ## Sample code
 
+Create a user pool domain provider by Cognito:
+
 ```js
 exports.createResources = () => [
   {
@@ -14,6 +16,22 @@ exports.createResources = () => [
     group: "CognitoIdentityServiceProvider",
     name: "my-user-pool-domain",
     dependencies: () => ({ userPool: "my-user-pool" }),
+  },
+];
+```
+
+Create a user pool domain attached to a ACM certificate:
+
+```js
+exports.createResources = () => [
+  {
+    type: "UserPoolDomain",
+    group: "CognitoIdentityServiceProvider",
+    name: "auth.grucloud.org",
+    dependencies: () => ({
+      userPool: "my-user-pool",
+      certificate: "grucloud.org",
+    }),
   },
 ];
 ```

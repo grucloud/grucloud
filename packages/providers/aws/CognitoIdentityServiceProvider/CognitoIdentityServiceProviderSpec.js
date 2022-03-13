@@ -38,6 +38,7 @@ module.exports = pipe([
         "PoolName",
         "AdminCreateUserConfig.UnusedAccountValidityDays",
         "Domain",
+        "CustomDomain",
       ],
       propertiesDefault: {
         AccountRecoverySetting: {

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, pick, not } = require("rubico");
+const { map, pipe, tap, get, pick, not, or } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 
 const { findNamespaceInTagsObject } = require("../AwsCommon");
@@ -53,10 +53,13 @@ exports.UserPoolDomain = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listUserPoolDomain-property
   const getList = client.getListWithParent({
     parent: { type: "UserPool", group: "CognitoIdentityServiceProvider" },
-    pickKey: pipe([({ Domain }) => ({ Domain })]),
-    filterParent: get("live.Domain"),
+    pickKey: pipe([
+      ({ Domain, CustomDomain }) => ({ Domain: CustomDomain || Domain }),
+    ]),
+    filterParent: or([get("live.Domain"), get("live.CustomDomain")]),
     method: "describeUserPoolDomain",
     getParam: "DomainDescription",
+    config,
   });
 
   const getByName = pipe([({ name }) => ({ Domain: name }), getById]);
@@ -64,6 +67,9 @@ exports.UserPoolDomain = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPoolDomain-property
   const create = client.create({
     method: "createUserPoolDomain",
+    shouldRetryOnExceptionMessages: [
+      "Custom domain is not a valid subdomain: Was not able to resolve the root domain, please ensure an A record exists for the root domain",
+    ],
     getById,
     pickCreated:
       ({ payload }) =>

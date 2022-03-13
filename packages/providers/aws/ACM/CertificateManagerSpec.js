@@ -17,7 +17,8 @@ module.exports = () =>
       isOurMinion,
       compare: compareACM({
         filterTarget: () => pipe([omit(["ValidationMethod"])]),
-        filterLive: () => pipe([pick(["DomainName"])]),
+        filterLive: () =>
+          pipe([pick(["DomainName", "SubjectAlternativeNames"])]),
       }),
       ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
       filterLive: () =>

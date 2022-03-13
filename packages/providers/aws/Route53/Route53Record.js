@@ -120,8 +120,8 @@ exports.Route53Record = ({ spec, config }) => {
       ])(),
     },
     {
-      type: "DomainName",
-      group: "APIGateway",
+      type: "UserPoolDomain",
+      group: "CognitoIdentityServiceProvider",
       ids: pipe([
         () => live,
         get("AliasTarget.DNSName", ""),
@@ -130,11 +130,13 @@ exports.Route53Record = ({ spec, config }) => {
           pipe([
             () =>
               lives.getByType({
-                type: "DomainName",
-                group: "APIGateway",
+                type: "UserPoolDomain",
+                group: "CognitoIdentityServiceProvider",
                 providerName,
               }),
-            filter(eq(get("live.regionalDomainName"), DNSName)),
+            filter(({ live }) =>
+              pipe([() => DNSName, includes(live.CloudFrontDistribution)])()
+            ),
             map(pick(["id", "name"])),
           ])(),
       ])(),
@@ -287,14 +289,24 @@ exports.Route53Record = ({ spec, config }) => {
         assert(true);
       }),
       buildRecordName,
-      (recordName) =>
+      (targetRecordName) =>
         pipe([
+          tap(() => {
+            logger.debug(`getByName recordName ${targetRecordName}`);
+          }),
           () => getHostedZone({ resource: { dependencies, name }, lives }),
           tap((params) => {
-            assert(recordName);
+            assert(targetRecordName);
           }),
           get("RecordSet"),
-          find(eq(buildRecordName, recordName)),
+          tap(() => {
+            logger.debug(
+              `getByName RecordSet ${JSON.stringify(RecordSet, null, 4)}`
+            );
+          }),
+          find(
+            pipe([buildRecordName, callProp("startsWith", targetRecordName)])
+          ),
         ])(),
       tap((result) => {
         logger.debug(`getByName result: ${tos(result)}`);
@@ -507,6 +519,20 @@ exports.Route53Record = ({ spec, config }) => {
       })),
     ])();
 
+  const userPoolDomainRecord = ({ userPoolDomain, hostedZone }) =>
+    pipe([
+      () => userPoolDomain,
+      unless(isEmpty, () => ({
+        Name: `${getField(userPoolDomain, "Domain")}.`,
+        Type: "A",
+        AliasTarget: {
+          HostedZoneId: "Z2FDTNDATAQYW2",
+          DNSName: `${getField(userPoolDomain, "CloudFrontDistribution")}.`,
+          EvaluateTargetHealth: false,
+        },
+      })),
+    ])();
+
   const configDefault = ({
     name,
     properties = {},
@@ -516,6 +542,7 @@ exports.Route53Record = ({ spec, config }) => {
       hostedZone,
       apiGatewayV2DomainName,
       distribution,
+      userPoolDomain,
     },
   }) =>
     pipe([
@@ -527,6 +554,7 @@ exports.Route53Record = ({ spec, config }) => {
       defaultsDeep(loadBalancerRecord({ loadBalancer, hostedZone })),
       defaultsDeep(apiGatewayV2Record({ apiGatewayV2DomainName, hostedZone })),
       defaultsDeep(distributionRecord({ distribution, hostedZone })),
+      defaultsDeep(userPoolDomainRecord({ userPoolDomain, hostedZone })),
       defaultsDeep({ Name: name }),
     ])();
 

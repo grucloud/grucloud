@@ -49,6 +49,10 @@ module.exports = pipe([
         loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
         certificate: { type: "Certificate", group: "ACM" },
         distribution: { type: "Distribution", group: "CloudFront" },
+        userPoolDomain: {
+          type: "UserPoolDomain",
+          group: "CognitoIdentityServiceProvider",
+        },
         apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
       },
       Client: Route53Record,
@@ -68,6 +72,11 @@ module.exports = pipe([
             ]),
             get("certificate"),
             pipe([get("certificate"), prepend("ACM::Certificate::")]),
+            get("userPoolDomain"),
+            pipe([
+              get("userPoolDomain"),
+              prepend("CognitoIdentityServiceProvider::UserPoolDomain::"),
+            ]),
             get("loadBalancer"),
             pipe([get("loadBalancer"), prepend("ELBv2::LoadBalancer::")]),
             get("distribution"),
@@ -127,6 +136,10 @@ module.exports = pipe([
             hasDependency({ type: "Certificate", group: "ACM" }),
             hasDependency({ type: "Distribution", group: "CloudFront" }),
             hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),
+            hasDependency({
+              type: "UserPoolDomain",
+              group: "CognitoIdentityServiceProvider",
+            }),
           ]),
         ])(),
       //TODO remove ?
