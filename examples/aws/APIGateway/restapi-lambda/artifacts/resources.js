@@ -50,11 +50,9 @@ exports.createResources = () => [
             "SUCCEED_WITH_RESPONSE_HEADER",
         },
       },
-      cacheClusterEnabled: false,
       cacheClusterSize: "0.5",
-      tracingEnabled: false,
       tags: {
-        mykey: "myvalue1",
+        mykey: "myvalue3",
       },
     }),
     dependencies: () => ({
@@ -67,8 +65,6 @@ exports.createResources = () => [
     name: "prod",
     properties: ({}) => ({
       description: "prod",
-      cacheClusterEnabled: false,
-      tracingEnabled: false,
     }),
     dependencies: () => ({
       restApi: "PetStore",

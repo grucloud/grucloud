@@ -436,6 +436,7 @@ exports.compare = ({
         target = {},
         propertiesDefault = {},
         omitProperties = [],
+        pickProperties,
         ...otherProps
       }) =>
         pipe([
@@ -448,6 +449,9 @@ exports.compare = ({
           filterTarget(otherProps),
           filterAll(otherProps),
           filterTargetDefault,
+          //TODO
+          //when(() => pickProperties, pick(pickProperties)),
+
           omit(omitProperties),
           tap((params) => {
             assert(true);
@@ -457,6 +461,7 @@ exports.compare = ({
         live = {},
         propertiesDefault,
         omitProperties = [],
+        pickProperties,
         ...otherProps
       }) =>
         pipe([
@@ -469,6 +474,8 @@ exports.compare = ({
           filterLive(otherProps),
           filterAll(otherProps),
           filterLiveDefault,
+          // TODO
+          //when(() => pickProperties, pick(pickProperties)),
           omit(omitProperties),
           tap((params) => {
             assert(true);

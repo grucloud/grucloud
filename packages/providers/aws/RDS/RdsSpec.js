@@ -1,9 +1,9 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, tap, get, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, callProp, when } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 
-const { isOurMinionFactory, isOurMinion } = require("../AwsCommon");
+const { isOurMinionFactory } = require("../AwsCommon");
 const { DBCluster } = require("./DBCluster");
 const { DBInstance } = require("./DBInstance");
 const { DBSubnetGroup } = require("./DBSubnetGroup");
@@ -16,19 +16,18 @@ const environmentVariables = [
   { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
 ];
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "DBSubnetGroup",
       Client: DBSubnetGroup,
-      isOurMinion,
-      compare: compareRDS({
-        filterTarget: () => pipe([omit(["SubnetIds"])]),
-        filterLive: () =>
-          pipe([
-            omit(["VpcId", "SubnetGroupStatus", "Subnets", "DBSubnetGroupArn"]),
-          ]),
-      }),
+      omitProperties: [
+        "SubnetIds",
+        "VpcId",
+        "SubnetGroupStatus",
+        "Subnets",
+        "DBSubnetGroupArn",
+      ],
       filterLive: () => pick(["DBSubnetGroupDescription"]),
       dependencies: {
         subnets: { type: "Subnet", group: "EC2", list: true },
@@ -45,64 +44,68 @@ module.exports = () =>
           group: "KMS",
         },
       },
-      isOurMinion: isOurMinionFactory({ tags: "TagList" }),
+      omitProperties: [
+        "SubnetIds",
+        "VpcSecurityGroupIds",
+        "MasterUserPassword",
+        "DBSubnetGroupName",
+        "Capacity",
+        "ScalingConfigurationInfo",
+        "AvailabilityZones",
+        "DBClusterParameterGroup",
+        "DBSubnetGroup",
+        "Status",
+        "EarliestRestorableTime",
+        "Endpoint",
+        "CustomEndpoints",
+        "LatestRestorableTime",
+        "DBClusterOptionGroupMemberships",
+        "ReadReplicaIdentifiers",
+        "DBClusterMembers",
+        "VpcSecurityGroups",
+        "HostedZoneId",
+        "KmsKeyId",
+        "DbClusterResourceId",
+        "DBClusterArn",
+        "AssociatedRoles",
+        "ClusterCreateTime",
+        "EnabledCloudwatchLogsExports",
+        "ActivityStreamStatus",
+        "DomainMemberships",
+      ],
+      propertiesDefault: {
+        //AllocatedStorage: 1,
+        //AutoMinorVersionUpgrade: false,
+        BackupRetentionPeriod: 1,
+        MultiAZ: false,
+        Port: 5432,
+        StorageEncrypted: true,
+        IAMDatabaseAuthenticationEnabled: false,
+        DeletionProtection: false,
+        HttpEndpointEnabled: false,
+        CopyTagsToSnapshot: false,
+        CrossAccountClone: false,
+        ScalingConfiguration: {
+          AutoPause: true,
+          SecondsUntilAutoPause: 300,
+          SecondsBeforeTimeout: 300,
+          TimeoutAction: "RollbackCapacityChange",
+        },
+      },
       compare: compareRDS({
-        filterAll: () => pipe([omit(["SubnetIds"])]),
         filterTarget: () =>
           pipe([
-            omit([
-              "VpcSecurityGroupIds",
-              "MasterUserPassword",
-              "DBSubnetGroupName",
-            ]),
-            defaultsDeep({
-              AllocatedStorage: 1,
-              BackupRetentionPeriod: 1,
-              MultiAZ: false,
-              Port: 5432,
-              StorageEncrypted: true,
-              IAMDatabaseAuthenticationEnabled: false,
-              DeletionProtection: false,
-              HttpEndpointEnabled: false,
-              CopyTagsToSnapshot: false,
-              CrossAccountClone: false,
-              ScalingConfiguration: {
-                AutoPause: true,
-                SecondsUntilAutoPause: 300,
-                SecondsBeforeTimeout: 300,
-                TimeoutAction: "RollbackCapacityChange",
-              },
-              AutoMinorVersionUpgrade: false,
-            }),
+            when(
+              pipe([get("Engine"), callProp("startsWith", "aurora")]),
+              defaultsDeep({
+                AllocatedStorage: 1,
+                AutoMinorVersionUpgrade: false,
+              })
+            ),
           ]),
         filterLive: () =>
           pipe([
             assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
-            omit([
-              "Capacity",
-              "ScalingConfigurationInfo",
-              "AvailabilityZones",
-              "DBClusterParameterGroup",
-              "DBSubnetGroup",
-              "Status",
-              "EarliestRestorableTime",
-              "Endpoint",
-              "CustomEndpoints",
-              "LatestRestorableTime",
-              "DBClusterOptionGroupMemberships",
-              "ReadReplicaIdentifiers",
-              "DBClusterMembers",
-              "VpcSecurityGroups",
-              "HostedZoneId",
-              "KmsKeyId",
-              "DbClusterResourceId",
-              "DBClusterArn",
-              "AssociatedRoles",
-              "ClusterCreateTime",
-              "EnabledCloudwatchLogsExports",
-              "ActivityStreamStatus",
-              "DomainMemberships",
-            ]),
           ]),
       }),
       filterLive: () =>
@@ -147,48 +150,30 @@ module.exports = () =>
         CustomerOwnedIpEnabled: false,
         BackupTarget: "region",
       },
-      isOurMinion: isOurMinionFactory({ tags: "TagList" }),
-      compare: compareRDS({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit([
-              "MasterUserPassword",
-              "VpcSecurityGroupIds",
-              "DBSubnetGroupName", //TODO
-            ]),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit([
-              "VpcSecurityGroupIds",
-              "VpcSecurityGroups",
-              "DBSubnetGroupName", //TODO
-              "DBInstanceStatus",
-              "Endpoint",
-              "InstanceCreateTime",
-              "DBParameterGroups",
-              "AvailabilityZone",
-              "DBSubnetGroup",
-              "PendingModifiedValues",
-              "LatestRestorableTime",
-              "ReadReplicaDBInstanceIdentifiers",
-              "ReadReplicaDBClusterIdentifiers",
-              "LicenseModel",
-              "OptionGroupMemberships",
-              "StatusInfos",
-              "DbiResourceId",
-              "CACertificateIdentifier",
-              "DBInstanceArn",
-              "ActivityStreamStatus",
-            ]),
-          ]),
-      }),
+      omitProperties: [
+        //"MasterUserPassword",
+        "VpcSecurityGroupIds",
+        "DBSubnetGroupName", //TODO
+        "VpcSecurityGroupIds",
+        "VpcSecurityGroups",
+        "DBInstanceStatus",
+        "Endpoint",
+        "InstanceCreateTime",
+        "DBParameterGroups",
+        "AvailabilityZone",
+        "DBSubnetGroup",
+        "PendingModifiedValues",
+        "LatestRestorableTime",
+        "ReadReplicaDBInstanceIdentifiers",
+        "ReadReplicaDBClusterIdentifiers",
+        "LicenseModel",
+        "OptionGroupMemberships",
+        "StatusInfos",
+        "DbiResourceId",
+        "CACertificateIdentifier",
+        "DBInstanceArn",
+        "ActivityStreamStatus",
+      ],
       filterLive: () =>
         pick([
           "DBInstanceClass",
@@ -203,4 +188,12 @@ module.exports = () =>
         ]),
       environmentVariables,
     },
-  ]);
+  ],
+  map(
+    defaultsDeep({
+      group: GROUP,
+      compare: compareRDS({}),
+      isOurMinion: isOurMinionFactory({ tags: "TagList" }),
+    })
+  ),
+]);

@@ -12,21 +12,19 @@ const { CloudWatchEventRule } = require("./CloudWatchEventRule");
 const GROUP = "CloudWatchEvents";
 const compareCloudWatchEvent = compareAws({});
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "EventBus",
       Client: CloudWatchEventBus,
-      isOurMinion,
-      compare: compareCloudWatchEvent({
-        filterLive: () => pipe([omit(["Arn"])]),
-      }),
+      omitProperties: ["Arn"],
       filterLive: () => pipe([pick([])]),
     },
     {
       type: "Rule",
       Client: CloudWatchEventRule,
-      isOurMinion,
+      //omitProperties: ["Arn", "CreatedBy", "Targets"],
+      //propertiesDefault: { EventBusName: "default" },
       compare: compareCloudWatchEvent({
         filterTarget: () => pipe([defaultsDeep({ EventBusName: "default" })]),
         filterLive: () => pipe([omit(["Arn", "CreatedBy", "Targets"])]),
@@ -37,4 +35,12 @@ module.exports = () =>
         eventBus: { type: "EventBus", group: "CloudWatchEvents", parent: true },
       },
     },
-  ]);
+  ],
+  map(
+    defaultsDeep({
+      group: GROUP,
+      compare: compareCloudWatchEvent({}),
+      isOurMinion,
+    })
+  ),
+]);

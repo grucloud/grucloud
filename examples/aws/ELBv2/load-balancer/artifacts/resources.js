@@ -138,6 +138,12 @@ exports.createResources = () => [
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "value",
+        },
+      ],
     }),
     dependencies: () => ({
       subnets: ["subnet-a", "subnet-b"],
@@ -152,17 +158,12 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 30020,
       HealthCheckProtocol: "HTTP",
-      HealthCheckPort: "traffic-port",
-      HealthCheckEnabled: true,
-      HealthCheckIntervalSeconds: 30,
-      HealthCheckTimeoutSeconds: 5,
-      HealthyThresholdCount: 5,
-      HealthCheckPath: "/",
-      Matcher: {
-        HttpCode: "200",
-      },
-      TargetType: "instance",
-      ProtocolVersion: "HTTP1",
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "value",
+        },
+      ],
     }),
     dependencies: () => ({
       vpc: "vpc",
@@ -176,17 +177,6 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 30010,
       HealthCheckProtocol: "HTTP",
-      HealthCheckPort: "traffic-port",
-      HealthCheckEnabled: true,
-      HealthCheckIntervalSeconds: 30,
-      HealthCheckTimeoutSeconds: 5,
-      HealthyThresholdCount: 5,
-      HealthCheckPath: "/",
-      Matcher: {
-        HttpCode: "200",
-      },
-      TargetType: "instance",
-      ProtocolVersion: "HTTP1",
     }),
     dependencies: () => ({
       vpc: "vpc",
@@ -198,6 +188,12 @@ exports.createResources = () => [
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "value",
+        },
+      ],
     }),
     dependencies: () => ({
       loadBalancer: "load-balancer",
@@ -240,6 +236,12 @@ exports.createResources = () => [
             Query: "#{query}",
             StatusCode: "HTTP_301",
           },
+        },
+      ],
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "value",
         },
       ],
     }),

@@ -75,45 +75,28 @@ module.exports = pipe([
     {
       type: "GraphqlApi",
       Client: AppSyncGraphqlApi,
-      // TODO apiKeys
+      omitProperties: [
+        "apiId",
+        "arn",
+        "uris",
+        "wafWebAclArn",
+        "logConfig.cloudWatchLogsRoleArn",
+      ],
       compare: compareAppSync({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["schemaFile"]),
-          ]),
+        filterTarget: () => pipe([omit(["schemaFile"])]),
         filterLive: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["apiId", "arn", "uris", "wafWebAclArn"]),
             assign({
               apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
-            }),
-            tap((params) => {
-              assert(true);
             }),
           ]),
       }),
       filterLive: (input) => (live) =>
         pipe([
-          tap(() => {
-            assert(input);
-          }),
           () => input,
           tap(writeGraphqlSchema(input)),
           () => live,
-          pick([
-            "authenticationType",
-            "xrayEnabled",
-            "wafWebAclArn",
-            "logConfig",
-            "apiKeys",
-          ]),
-          omit(["logConfig.cloudWatchLogsRoleArn"]),
+          pick(["authenticationType", "xrayEnabled", "logConfig", "apiKeys"]),
           assign({
             schemaFile: () => `${live.name}.graphql`,
             apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
@@ -126,12 +109,17 @@ module.exports = pipe([
     {
       type: "DataSource",
       Client: AppSyncDataSource,
+      omitProperties: [
+        "apiId",
+        "serviceRoleArn",
+        "dataSourceArn",
+        "httpConfig.endpoint",
+        "relationalDatabaseConfig.rdsHttpEndpointConfig.dbClusterIdentifier",
+        "relationalDatabaseConfig.rdsHttpEndpointConfig.awsSecretStoreArn",
+        "relationalDatabaseConfig.rdsHttpEndpointConfig.awsRegion",
+      ],
       compare: compareAppSync({
-        filterAll: () =>
-          pipe([
-            omit(["apiId", "serviceRoleArn", "dataSourceArn"]),
-            omitIfEmpty(["description"]),
-          ]),
+        filterAll: () => pipe([omitIfEmpty(["description"])]),
       }),
       filterLive: () =>
         pipe([
@@ -144,17 +132,10 @@ module.exports = pipe([
             "relationalDatabaseConfig",
           ]),
           //TODO omit elasticsearchConfig.xxx ?
-          omit([
-            "httpConfig.endpoint",
-            "relationalDatabaseConfig.rdsHttpEndpointConfig.dbClusterIdentifier",
-            "relationalDatabaseConfig.rdsHttpEndpointConfig.awsSecretStoreArn",
-            "relationalDatabaseConfig.rdsHttpEndpointConfig.awsRegion",
-          ]),
         ]),
       dependencies: {
         graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
         serviceRole: { type: "Role", group: "IAM" },
-
         dbCluster: { type: "DBCluster", group: "RDS" },
         lambdaFunction: { type: "Function", group: "Lambda" },
         //TODO
@@ -172,14 +153,11 @@ module.exports = pipe([
             assert(properties.fieldName);
           }),
           () => `resolver::${properties.typeName}::${properties.fieldName}`,
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
+      omitProperties: ["arn", "resolverArn"],
       compare: compareAppSync({
         filterLive: () =>
           pipe([
-            omit(["arn", "resolverArn"]),
             omitIfEmpty([
               "description",
               "requestMappingTemplate",

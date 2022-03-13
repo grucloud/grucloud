@@ -31,13 +31,9 @@ exports.createResources = () => [
         })}.s3.us-east-1.amazonaws.com`,
         TrustedSigners: {
           Enabled: false,
-          Quantity: 0,
-          Items: [],
         },
         TrustedKeyGroups: {
           Enabled: false,
-          Quantity: 0,
-          Items: [],
         },
         ViewerProtocolPolicy: "redirect-to-https",
         AllowedMethods: {
@@ -50,14 +46,6 @@ exports.createResources = () => [
         },
         SmoothStreaming: false,
         Compress: true,
-        LambdaFunctionAssociations: {
-          Quantity: 0,
-          Items: [],
-        },
-        FunctionAssociations: {
-          Quantity: 0,
-          Items: [],
-        },
         FieldLevelEncryptionId: "",
         CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6",
       },
@@ -99,8 +87,6 @@ exports.createResources = () => [
       Restrictions: {
         GeoRestriction: {
           RestrictionType: "none",
-          Quantity: 0,
-          Items: [],
         },
       },
       Comment: "",

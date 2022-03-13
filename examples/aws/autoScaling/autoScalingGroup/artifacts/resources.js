@@ -11,6 +11,12 @@ exports.createResources = () => [
       MinSize: 1,
       MaxSize: 1,
       DesiredCapacity: 1,
+      Tags: [
+        {
+          Key: "mykey1",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: () => ({
       subnets: ["PubSubnetAz1", "PubSubnetAz2"],

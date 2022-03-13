@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, not, get, pick } = require("rubico");
+const { pipe, map, omit, tap, not, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
@@ -9,8 +9,8 @@ const { KmsKey } = require("./KmsKey");
 const GROUP = "KMS";
 const compareEKS = compareAws({ key: "TagKey" });
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "Key",
       Client: KmsKey,
@@ -45,12 +45,8 @@ module.exports = () =>
           ]),
       }),
       filterLive: () => pick([""]),
-      ignoreResource: ({ lives }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          not(get("live.Enabled")),
-        ]),
+      ignoreResource: ({ lives }) => pipe([not(get("live.Enabled"))]),
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP })),
+]);

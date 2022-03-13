@@ -121,7 +121,6 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
       ])(),
     method: "putRule",
     getById,
-    config,
   });
 
   const destroyTargets = pipe([

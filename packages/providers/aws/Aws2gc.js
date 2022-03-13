@@ -13,9 +13,10 @@ const {
   tryCatch,
   any,
   or,
+  omit,
 } = require("rubico");
 const Axios = require("axios");
-const { pluck, when, callProp, isEmpty } = require("rubico/x");
+const { pluck, when, callProp, isEmpty, isObject } = require("rubico/x");
 const mime = require("mime-types");
 
 const path = require("path");
@@ -198,8 +199,14 @@ const filterModel = pipe([
                       when(isEmpty, get("TagKey")),
                       switchCase([isEmpty, () => false, ignoreTags]),
                     ]),
-                    get("ResourceId"),
+                    //get("ResourceId"),
                   ])
+                )
+              ),
+              map(
+                when(
+                  isObject,
+                  omit(["ResourceId", "ResourceType", "PropagateAtLaunch"])
                 )
               ),
             ]),

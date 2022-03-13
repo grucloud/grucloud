@@ -262,7 +262,13 @@ exports.Route53Record = ({ spec, config }) => {
       ),
     ])();
 
-  const getByName = ({ name, properties, dependencies, lives }) =>
+  const getByName = ({
+    name,
+    properties,
+    dependencies,
+    lives,
+    resolvedDependencies = {},
+  }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
@@ -271,7 +277,12 @@ exports.Route53Record = ({ spec, config }) => {
       tap((params) => {
         assert(true);
       }),
-      () => properties({ getId: () => undefined }),
+      () =>
+        configDefault({
+          name,
+          properties: properties({ getId: () => undefined }),
+          dependencies: resolvedDependencies,
+        }),
       tap((params) => {
         assert(true);
       }),
@@ -509,7 +520,7 @@ exports.Route53Record = ({ spec, config }) => {
   }) =>
     pipe([
       tap(() => {
-        assert(hostedZone, "missing hostedZone dependencies");
+        //assert(hostedZone, "missing hostedZone dependencies");
       }),
       () => properties,
       defaultsDeep(certificateRecord({ certificate })),

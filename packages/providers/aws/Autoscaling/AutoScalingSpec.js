@@ -11,7 +11,7 @@ const {
   pick,
   eq,
 } = require("rubico");
-const { includes } = require("rubico/x");
+const { includes, defaultsDeep } = require("rubico/x");
 const { compareAws, isOurMinion, DecodeUserData } = require("../AwsCommon");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
@@ -45,8 +45,8 @@ const filterTags = filter((tag) =>
   pipe([() => ["AmazonECSManaged"], not(includes(tag.Key))])()
 );
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "AutoScalingGroup",
       //TODO dependsOn: ["ELBv2::LoadBalancer", "EKS::Cluster"],
@@ -76,44 +76,32 @@ module.exports = () =>
       },
       Client: AutoScalingAutoScalingGroup,
       isOurMinion,
-      compare: compareAutoScaling({
-        filterAll: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["TargetGroupARNs"]),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit([
-              "AutoScalingGroupARN",
-              "AvailabilityZones",
-              "Instances",
-              "CreatedTime",
-              "SuspendedProcesses",
-              "EnabledMetrics", //TODO
-              "TerminationPolicies", //TODO
-              "NewInstancesProtectedFromScaleIn", //TODO
-              "LaunchTemplate.LaunchTemplateName",
-              "TargetGroupARNs",
-              "ServiceLinkedRoleARN",
-            ]),
-            omitIfEmpty(["LoadBalancerNames"]),
-            assign({ Tags: pipe([get("Tags"), filterTags]) }),
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-      }),
+      omitProperties: [
+        "AutoScalingGroupARN",
+        "AvailabilityZones",
+        "Instances",
+        "CreatedTime",
+        "SuspendedProcesses",
+        "EnabledMetrics", //TODO
+        "TerminationPolicies", //TODO
+        "NewInstancesProtectedFromScaleIn", //TODO
+        "LaunchTemplate.LaunchTemplateName",
+        "TargetGroupARNs",
+        "ServiceLinkedRoleARN",
+      ],
       propertiesDefault: {
         HealthCheckType: "EC2",
         DefaultCooldown: 300,
         HealthCheckGracePeriod: 300,
       },
+      compare: compareAutoScaling({
+        filterLive: () =>
+          pipe([
+            omitIfEmpty(["LoadBalancerNames"]),
+            assign({ Tags: pipe([get("Tags"), filterTags]) }),
+          ]),
+      }),
+
       filterLive: () =>
         pick([
           "MinSize",
@@ -143,7 +131,6 @@ module.exports = () =>
           ({ autoScalingGroup, targetGroup }) =>
             `attachment::${autoScalingGroup.name}::${targetGroup.name}`,
         ])(),
-
       filterLive: () => pipe([pick([])]),
       dependencies: {
         autoScalingGroup: {
@@ -158,19 +145,15 @@ module.exports = () =>
       type: "LaunchConfiguration",
       Client: AutoScalingLaunchConfiguration,
       isOurMinion: () => true,
-      compare: compareAutoScaling({
-        filterLive: () =>
-          pipe([
-            omit([
-              "LaunchConfigurationARN",
-              "KeyName",
-              "ClassicLinkVPCSecurityGroups",
-              "KernelId",
-              "RamdiskId",
-              "CreatedTime",
-            ]),
-          ]),
-      }),
+      omitProperties: [
+        "LaunchConfigurationARN",
+        "KeyName",
+        "ClassicLinkVPCSecurityGroups",
+        "KernelId",
+        "RamdiskId",
+        "CreatedTime",
+      ],
+      compare: compareAutoScaling({}),
       // propertiesDefault: {
       //   EbsOptimized: false,
       //   BlockDeviceMappings: [],
@@ -201,4 +184,6 @@ module.exports = () =>
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
       },
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, compare: compareAutoScaling({}) })),
+]);

@@ -38,6 +38,9 @@ exports.Account = ({ spec, config }) => {
           cloudwatchRoleArn: getField(cloudwatchRole, "Arn"),
         }),
       }),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
   const create = pipe([
@@ -92,7 +95,11 @@ exports.Account = ({ spec, config }) => {
     isDefault,
     managedByOther: isDefault,
     cannotBeDeleted: pipe([
+      tap((params) => {
+        assert(true);
+      }),
       get("live"),
+
       differenceObject({
         apiKeyVersion: "4",
         cloudwatchRoleArn: undefined,

@@ -25,7 +25,7 @@ const { STS } = require("@aws-sdk/client-sts");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
-const { assignTags } = require("./AwsCommon");
+const { assignTagsSort } = require("./AwsCommon");
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 const {
   createProjectAws,
@@ -269,7 +269,7 @@ exports.AwsProvider = ({
         tap((items) => {
           Array.isArray(items);
         }),
-        //map(assignTags),
+        map(assignTagsSort),
         filter(not(isEmpty)),
         (items) => ({ items, total: size(items) }),
         tap(({ total, items }) => {

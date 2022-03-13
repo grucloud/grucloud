@@ -9,30 +9,30 @@ exports.createResources = () => [
     name: "mock-server",
     properties: ({ getId }) => ({
       SourceConfiguration: {
+        AutoDeploymentsEnabled: false,
         ImageRepository: {
+          ImageConfiguration: {
+            Port: "8089",
+          },
           ImageIdentifier: `${getId({
             type: "Repository",
             group: "ECR",
             name: "grucloud/mock-server",
             path: "live.repositoryUri",
           })}:latest`,
-          ImageConfiguration: {
-            Port: "8089",
-          },
           ImageRepositoryType: "ECR",
         },
-        AutoDeploymentsEnabled: false,
       },
       InstanceConfiguration: {
         Cpu: "1024",
         Memory: "2048",
       },
       HealthCheckConfiguration: {
-        Protocol: "TCP",
-        Path: "/",
-        Interval: 10,
-        Timeout: 5,
         HealthyThreshold: 1,
+        Interval: 10,
+        Path: "/",
+        Protocol: "TCP",
+        Timeout: 5,
         UnhealthyThreshold: 5,
       },
       Tags: [

@@ -9,6 +9,7 @@ const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const { AwsS3Bucket } = require("./AwsS3Bucket");
 const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
 const { compareAws, isOurMinion } = require("../AwsCommon");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "S3";
 
@@ -22,8 +23,8 @@ const objectFileNameFromLive = ({
   commandOptions,
 }) => `s3/${Bucket}/${Key}.${mime.extension(ContentType)}`;
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "Bucket",
       Client: AwsS3Bucket,
@@ -34,13 +35,9 @@ module.exports = () =>
           list: true,
         },
       },
-      isOurMinion,
       compare: compareS3({
         filterTarget: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             omit([
               "Bucket",
               "ACL", //TODO
@@ -48,9 +45,6 @@ module.exports = () =>
           ]),
         filterLive: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             omit([
               "Name",
               "CreationDate",
@@ -110,16 +104,10 @@ module.exports = () =>
                         assign({
                           Principal: pipe([
                             get("Principal"),
-                            tap((params) => {
-                              assert(true);
-                            }),
                             when(
                               isObject,
                               assign({
                                 AWS: pipe([
-                                  tap((params) => {
-                                    assert(true);
-                                  }),
                                   get("AWS"),
                                   when(
                                     includes(
@@ -152,9 +140,6 @@ module.exports = () =>
                     ),
                   ]),
                 }),
-                tap((params) => {
-                  assert(true);
-                }),
               ]),
             })
           ),
@@ -167,7 +152,6 @@ module.exports = () =>
       },
       Client: AwsS3Object,
       compare: compareS3Object,
-      isOurMinion,
       filterLive: ({ commandOptions, programOptions, resource: { live } }) =>
         pipe([
           pick(["ContentType", "ServerSideEncryption", "StorageClass"]),
@@ -181,4 +165,6 @@ module.exports = () =>
           }),
         ]),
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, isOurMinion })),
+]);

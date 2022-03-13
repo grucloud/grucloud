@@ -3,5 +3,14 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "LogGroup", group: "CloudWatchLogs", name: "my-loggroup" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "my-loggroup",
+    properties: ({}) => ({
+      tags: {
+        mytag: "myvalue",
+      },
+    }),
+  },
 ];

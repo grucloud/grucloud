@@ -37,6 +37,7 @@ const {
 } = require("./AwsIamOpenIDConnectProvider");
 
 const { compareAws, isOurMinion } = require("../AwsCommon");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "IAM";
 
@@ -49,12 +50,11 @@ const replaceAccountAndRegion = ({ providerConfig }) =>
     (resource) => () => "`" + resource + "`",
   ]);
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "OpenIDConnectProvider",
       Client: AwsIamOpenIDConnectProvider,
-      isOurMinion,
       compare: compareIAM({
         filterLive: () =>
           pipe([
@@ -86,7 +86,6 @@ module.exports = () =>
     {
       type: "User",
       Client: AwsIamUser,
-      isOurMinion,
       compare: compareIAM({
         filterLive: () =>
           pipe([
@@ -122,7 +121,6 @@ module.exports = () =>
     {
       type: "Role",
       Client: AwsIamRole,
-      isOurMinion,
       compare: compareIAM({
         filterAll: () => pipe([pick(["AssumeRolePolicyDocument"])]),
       }),
@@ -290,7 +288,6 @@ module.exports = () =>
     {
       type: "InstanceProfile",
       Client: AwsIamInstanceProfile,
-      isOurMinion,
       compare: compareIAM({
         //TODO remove
         filterAll: () => pipe([omit(["Tags"])]),
@@ -304,4 +301,6 @@ module.exports = () =>
         roles: { type: "Role", group: "IAM", list: true },
       },
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, isOurMinion })),
+]);

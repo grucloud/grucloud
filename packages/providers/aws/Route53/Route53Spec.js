@@ -18,14 +18,14 @@ const { hasDependency } = require("@grucloud/core/generatorUtils");
 const { isOurMinion, compareAws } = require("../AwsCommon");
 const { Route53HostedZone } = require("./Route53HostedZone");
 const { Route53Record, compareRoute53Record } = require("./Route53Record");
-const { buildRecordName } = require("./Route53Common");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "Route53";
 
 const compareRoute53 = compareAws({});
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "HostedZone",
       dependsOn: ["Route53Domains::Domain"],
@@ -34,7 +34,6 @@ module.exports = () =>
         hostedZone: { type: "HostedZone", group: "Route53" },
       },
       Client: Route53HostedZone,
-      isOurMinion,
       compare: compareRoute53({
         filterTarget: () => pipe([() => ({})]),
         filterLive: () => pipe([() => ({})]),
@@ -133,4 +132,6 @@ module.exports = () =>
       //TODO remove ?
       ignoreResource: () => get("cannotBeDeleted"),
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, isOurMinion })),
+]);
