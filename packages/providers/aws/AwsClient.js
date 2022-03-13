@@ -32,6 +32,7 @@ const util = require("util");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { assignTagsSort } = require("./AwsCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const shouldRetryOnExceptionCodesDefault =
   (shouldRetryOnExceptionCodes) =>
@@ -184,6 +185,7 @@ exports.AwsClient =
         method,
         getParam,
         decorate = () => identity,
+        filterParent = () => true,
         config,
       }) =>
       ({ lives }) =>
@@ -198,6 +200,7 @@ exports.AwsClient =
           tap((parents) => {
             logger.info(`getListWithParent ${type} #parents: ${size(parents)}`);
           }),
+          filter(filterParent),
           flatMap(({ live, name, managedByOther }) =>
             pipe([
               () => live,
@@ -213,11 +216,26 @@ exports.AwsClient =
                     assert(true);
                   }),
                   when(() => getParam, get(getParam)),
-                  map(decorate({ name, parent: live, lives })),
                   tap((params) => {
                     assert(true);
                   }),
-                  when(pipe([first, Array.isArray]), flatten),
+                  switchCase([
+                    Array.isArray,
+                    pipe([
+                      map(decorate({ name, parent: live, lives })),
+                      tap((params) => {
+                        assert(true);
+                      }),
+                      when(pipe([first, Array.isArray]), flatten),
+                    ]),
+                    pipe([
+                      tap((params) => {
+                        assert(true);
+                      }),
+                      decorate({ name, parent: live, lives }),
+                      (result) => [result],
+                    ]),
+                  ]),
                 ]),
                 pipe([decorate({ name, managedByOther, parent: live, lives })]),
               ]),

@@ -56,7 +56,6 @@ exports.UserPoolClient = ({ spec, config }) => {
     getById,
     pickCreated: () => pipe([get("UserPoolClient")]),
     pickId,
-    config,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#updateUserPoolClient-property
@@ -74,7 +73,6 @@ exports.UserPoolClient = ({ spec, config }) => {
     method: "deleteUserPoolClient",
     getById,
     ignoreErrorCodes,
-    config,
   });
 
   const configDefault = ({

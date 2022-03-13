@@ -73,4 +73,12 @@ exports.createResources = () => [
       userPool: "my-user-pool",
     }),
   },
+  {
+    type: "UserPoolDomain",
+    group: "CognitoIdentityServiceProvider",
+    name: "grucloudtest",
+    dependencies: () => ({
+      userPool: "my-user-pool",
+    }),
+  },
 ];

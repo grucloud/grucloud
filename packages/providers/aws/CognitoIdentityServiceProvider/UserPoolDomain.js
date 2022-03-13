@@ -1,0 +1,133 @@
+const assert = require("assert");
+const { map, pipe, tap, get, pick, not } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
+
+const { findNamespaceInTagsObject } = require("../AwsCommon");
+const { AwsClient } = require("../AwsClient");
+const {
+  createCognitoIdentityProvider,
+  findDependenciesUserPool,
+  ignoreErrorCodes,
+} = require("./CognitoIdentityServiceProviderCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
+
+const ignoreCodeMessages = ["No such domain or user pool exists."];
+
+const findId = get("live.Domain");
+const findName = get("live.Domain");
+const pickId = pipe([
+  tap(({ UserPoolId, Domain }) => {
+    assert(UserPoolId);
+    assert(Domain);
+  }),
+  pick(["Domain", "UserPoolId"]),
+]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html
+exports.UserPoolDomain = ({ spec, config }) => {
+  const cognitoIdentityServiceProvider = createCognitoIdentityProvider(config);
+  const client = AwsClient({ spec, config })(cognitoIdentityServiceProvider);
+
+  const findDependencies = ({ live, lives }) => [
+    findDependenciesUserPool({ live, lives, config }),
+    {
+      type: "Certificate",
+      group: "ACM",
+      ids: [get("CustomDomainConfig.CertificateArn")(live)],
+    },
+  ];
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeUserPoolDomain-property
+  const getById = client.getById({
+    pickId: pipe([
+      tap(({ Domain }) => {
+        assert(Domain);
+      }),
+      pick(["Domain"]),
+    ]),
+    method: "describeUserPoolDomain",
+    getField: "DomainDescription",
+    ignoreErrorCodes,
+    ignoreCodeMessages,
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listUserPoolDomain-property
+  const getList = client.getListWithParent({
+    parent: { type: "UserPool", group: "CognitoIdentityServiceProvider" },
+    pickKey: pipe([({ Domain }) => ({ Domain })]),
+    filterParent: get("live.Domain"),
+    method: "describeUserPoolDomain",
+    getParam: "DomainDescription",
+  });
+
+  const getByName = pipe([({ name }) => ({ Domain: name }), getById]);
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPoolDomain-property
+  const create = client.create({
+    method: "createUserPoolDomain",
+    getById,
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
+    postCreate: ({ dependencies, lives }) =>
+      pipe([() => dependencies().userPool.getLive({ lives })]),
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#updateUserPoolDomain-property
+  const update = client.update({
+    filterParams: ({ payload, live }) =>
+      pipe([() => payload, defaultsDeep(pickId(live))])(),
+    method: "updateUserPoolDomain",
+    getById,
+  });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#deleteUserPoolDomain-property
+  const destroy = client.destroy({
+    pickId,
+    method: "deleteUserPoolDomain",
+    getById,
+    isInstanceDown: not(get("Status")),
+    ignoreErrorCodes,
+    ignoreCodeMessages,
+  });
+
+  const configDefault = ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { userPool, certificate },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(userPool);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        Domain: name,
+        UserPoolId: getField(userPool, "Id"),
+      }),
+      when(
+        () => certificate,
+        defaultsDeep({
+          CustomDomainConfig: {
+            CertificateArn: getField(certificate, "CertificateArn"),
+          },
+        })
+      ),
+    ])();
+
+  return {
+    spec,
+    findId,
+    findDependencies,
+    findNamespace: findNamespaceInTagsObject(config),
+    getByName,
+    getById,
+    findName,
+    create,
+    update,
+    destroy,
+    getList,
+    configDefault,
+  };
+};

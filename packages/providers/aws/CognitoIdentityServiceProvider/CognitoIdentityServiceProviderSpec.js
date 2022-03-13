@@ -1,9 +1,11 @@
+const assert = require("assert");
 const { assign, map, pipe, tap } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { isOurMinionObject, isOurMinion, compareAws } = require("../AwsCommon");
 const { UserPool } = require("./UserPool");
 const { UserPoolClient } = require("./UserPoolClient");
+const { UserPoolDomain } = require("./UserPoolDomain");
 
 const { IdentityProvider } = require("./IdentityProvider");
 
@@ -35,6 +37,7 @@ module.exports = pipe([
         "Id",
         "PoolName",
         "AdminCreateUserConfig.UnusedAccountValidityDays",
+        "Domain",
       ],
       propertiesDefault: {
         AccountRecoverySetting: {
@@ -317,6 +320,25 @@ module.exports = pipe([
       },
       dependencies: {
         userPool: { type: "UserPool", group: GROUP, parent: true },
+      },
+    },
+    {
+      type: "UserPoolDomain",
+      Client: UserPoolDomain,
+      omitProperties: [
+        "AWSAccountId",
+        "CloudFrontDistribution",
+        "S3Bucket",
+        "Domain",
+        "Status",
+        "UserPoolId",
+        "Version",
+        "CustomDomainConfig",
+      ],
+      propertiesDefault: {},
+      dependencies: {
+        userPool: { type: "UserPool", group: GROUP, parent: true },
+        certificate: { type: "Certificate", group: "ACM" },
       },
     },
   ],

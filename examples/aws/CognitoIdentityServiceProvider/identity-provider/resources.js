@@ -24,7 +24,6 @@ exports.createResources = () => [
     group: "CognitoIdentityServiceProvider",
     name: "my-userpool-client",
     properties: ({}) => ({
-      IdTokenValidity: 60,
       ExplicitAuthFlows: [
         "ALLOW_REFRESH_TOKEN_AUTH",
         "ALLOW_USER_PASSWORD_AUTH",
@@ -70,6 +69,14 @@ exports.createResources = () => [
         "zoneinfo",
       ],
     }),
+    dependencies: () => ({
+      userPool: "my-user-pool",
+    }),
+  },
+  {
+    type: "UserPoolDomain",
+    group: "CognitoIdentityServiceProvider",
+    name: "grucloudtest",
     dependencies: () => ({
       userPool: "my-user-pool",
     }),
