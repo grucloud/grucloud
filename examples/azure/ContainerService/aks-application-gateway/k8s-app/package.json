@@ -1,6 +1,6 @@
 {
   "name": "k8s-app",
-  "version": "5.8.4",
+  "version": "5.8.5",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -15,8 +15,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^5.8.4",
-    "@grucloud/provider-k8s": "^5.8.4",
+    "@grucloud/core": "^5.8.5",
+    "@grucloud/provider-k8s": "^5.8.5",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
