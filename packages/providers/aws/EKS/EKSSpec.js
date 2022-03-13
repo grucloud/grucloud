@@ -43,45 +43,32 @@ module.exports = pipe([
         role: { type: "Role", group: "IAM" },
         key: { type: "Key", group: "KMS" },
       },
-      compare: compareEKS({
-        filterTarget: () =>
-          pipe([
-            defaultsDeep({
-              resourcesVpcConfig: {
-                endpointPublicAccess: true,
-                endpointPrivateAccess: false,
-              },
-            }),
-            omit([
-              "resourcesVpcConfig.clusterSecurityGroupId",
-              "resourcesVpcConfig.vpcId",
-              "resourcesVpcConfig.subnetIds",
-              "resourcesVpcConfig.publicAccessCidrs",
-              "version",
-              "encryptionConfig",
-            ]),
-          ]),
-        filterLive: () =>
-          omit([
-            "arn",
-            "encryptionConfig",
-            "createdAt",
-            "endpoint",
-            "resourcesVpcConfig.clusterSecurityGroupId",
-            "resourcesVpcConfig.vpcId",
-            "resourcesVpcConfig.subnetIds",
-            "resourcesVpcConfig.publicAccessCidrs",
-            "kubernetesNetworkConfig",
-            "identity",
-            "logging",
-            "status",
-            "certificateAuthority",
-            "clientRequestToken",
-            "eks.2",
-            "version",
-            "platformVersion",
-          ]),
-      }),
+      propertiesDefault: {
+        resourcesVpcConfig: {
+          endpointPublicAccess: true,
+          endpointPrivateAccess: false,
+        },
+      },
+      omitProperties: [
+        "arn",
+        "encryptionConfig",
+        "createdAt",
+        "endpoint",
+        "resourcesVpcConfig.clusterSecurityGroupId",
+        "resourcesVpcConfig.vpcId",
+        "resourcesVpcConfig.subnetIds",
+        "resourcesVpcConfig.publicAccessCidrs",
+        "kubernetesNetworkConfig",
+        "identity",
+        "logging",
+        "status",
+        "certificateAuthority",
+        "clientRequestToken",
+        "eks.2",
+        "version",
+        "platformVersion",
+      ],
+      compare: compareEKS({}),
       filterLive: () => pick(["version"]),
     },
     {
@@ -94,6 +81,7 @@ module.exports = pipe([
         autoScaling: { type: "AutoScalingGroup", group: "AutoScaling" },
       },
       Client: EKSNodeGroup,
+
       compare: compareEKS({
         filterTarget: () =>
           pipe([

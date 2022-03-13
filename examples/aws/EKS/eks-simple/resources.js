@@ -317,7 +317,6 @@ exports.createResources = () => [
     group: "EKS",
     name: "my-cluster",
     properties: ({}) => ({
-      version: "1.20",
       tags: {
         mykey1: "value",
       },

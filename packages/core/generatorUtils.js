@@ -185,7 +185,7 @@ const buildProperties = ({
       pickPropertiesCreate,
     }),
     tap((params) => {
-      assert(true);
+      assert(Array.isArray(omitProperties));
     }),
     //TODO
     //when(() => pickProperties, pick(pickProperties)),
