@@ -16,12 +16,11 @@ const environmentVariables = [
   { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
 ];
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "DBSubnetGroup",
       Client: DBSubnetGroup,
-      isOurMinion,
       compare: compareRDS({
         filterTarget: () => pipe([omit(["SubnetIds"])]),
         filterLive: () =>
@@ -45,7 +44,6 @@ module.exports = () =>
           group: "KMS",
         },
       },
-      isOurMinion: isOurMinionFactory({ tags: "TagList" }),
       compare: compareRDS({
         filterAll: () => pipe([omit(["SubnetIds"])]),
         filterTarget: () =>
@@ -147,13 +145,9 @@ module.exports = () =>
         CustomerOwnedIpEnabled: false,
         BackupTarget: "region",
       },
-      isOurMinion: isOurMinionFactory({ tags: "TagList" }),
       compare: compareRDS({
         filterTarget: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             omit([
               "MasterUserPassword",
               "VpcSecurityGroupIds",
@@ -162,9 +156,6 @@ module.exports = () =>
           ]),
         filterLive: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             omit([
               "VpcSecurityGroupIds",
               "VpcSecurityGroups",
@@ -203,4 +194,11 @@ module.exports = () =>
         ]),
       environmentVariables,
     },
-  ]);
+  ],
+  map(
+    defaultsDeep({
+      group: GROUP,
+      isOurMinion: isOurMinionFactory({ tags: "TagList" }),
+    })
+  ),
+]);

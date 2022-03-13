@@ -13,8 +13,8 @@ const GROUP = "ELBv2";
 
 const compareELB = compareAws({});
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "LoadBalancer",
       dependencies: {
@@ -25,23 +25,18 @@ module.exports = () =>
         key: { type: "Key", group: "KMS" },
       },
       Client: ELBLoadBalancerV2,
-      isOurMinion,
-      compare: compareELB({
-        filterTarget: () => pipe([omit(["Name", "Subnets"])]),
-        filterLive: () =>
-          pipe([
-            omit([
-              "LoadBalancerArn",
-              "DNSName",
-              "CanonicalHostedZoneId",
-              "CreatedTime",
-              "LoadBalancerName",
-              "VpcId",
-              "State",
-              "AvailabilityZones",
-            ]),
-          ]),
-      }),
+      omitProperties: [
+        "Name",
+        "Subnets",
+        "LoadBalancerArn",
+        "DNSName",
+        "CanonicalHostedZoneId",
+        "CreatedTime",
+        "LoadBalancerName",
+        "VpcId",
+        "State",
+        "AvailabilityZones",
+      ],
       includeDefaultDependencies: true,
       filterLive: () => pick(["Scheme", "Type", "IpAddressType"]),
     },
@@ -56,30 +51,25 @@ module.exports = () =>
         },
         //TODO autoScalingGroup
       },
-      isOurMinion,
-      compare: compareELB({
-        filterTarget: () =>
-          pipe([
-            omit(["Name"]),
-            defaultsDeep({
-              HealthCheckPath: "/",
-              HealthCheckPort: "traffic-port",
-              HealthCheckEnabled: true,
-              HealthCheckIntervalSeconds: 30,
-              HealthCheckTimeoutSeconds: 5,
-              HealthyThresholdCount: 5,
-              UnhealthyThresholdCount: 2,
-              Matcher: { HttpCode: "200" },
-              TargetType: "instance",
-              ProtocolVersion: "HTTP1",
-              IpAddressType: "ipv4",
-            }),
-          ]),
-        filterLive: () =>
-          pipe([
-            omit(["TargetGroupArn", "TargetGroupName", "LoadBalancerArns"]),
-          ]),
-      }),
+      propertiesDefault: {
+        HealthCheckPath: "/",
+        HealthCheckPort: "traffic-port",
+        HealthCheckEnabled: true,
+        HealthCheckIntervalSeconds: 30,
+        HealthCheckTimeoutSeconds: 5,
+        HealthyThresholdCount: 5,
+        UnhealthyThresholdCount: 2,
+        Matcher: { HttpCode: "200" },
+        TargetType: "instance",
+        ProtocolVersion: "HTTP1",
+        IpAddressType: "ipv4",
+      },
+      omitProperties: [
+        "Name",
+        "TargetGroupArn",
+        "TargetGroupName",
+        "LoadBalancerArns",
+      ],
       filterLive: () =>
         pick([
           "Protocol",
@@ -104,13 +94,9 @@ module.exports = () =>
         targetGroup: { type: "TargetGroup", group: "ELBv2" },
         certificate: { type: "Certificate", group: "ACM" },
       },
-      isOurMinion,
+      omitProperties: ["ListenerArn", "SslPolicy"],
       compare: compareELB({
-        filterLive: () =>
-          pipe([
-            omit(["ListenerArn", "SslPolicy"]),
-            omitIfEmpty(["AlpnPolicy", "Certificates"]),
-          ]),
+        filterLive: () => pipe([omitIfEmpty(["AlpnPolicy", "Certificates"])]),
       }),
       inferName: ({ properties, dependencies }) =>
         pipe([
@@ -120,14 +106,8 @@ module.exports = () =>
           }),
           ({ loadBalancer }) =>
             `listener::${loadBalancer.name}::${properties.Protocol}::${properties.Port}`,
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
       filterLive: pipe([
-        tap((params) => {
-          assert(true);
-        }),
         ({ resource }) =>
           (live) =>
             pipe([
@@ -139,9 +119,6 @@ module.exports = () =>
                   ),
                 omit(["DefaultActions"])
               ),
-              tap((params) => {
-                assert(true);
-              }),
               pick(["Port", "Protocol", "DefaultActions"]),
             ])(),
       ]),
@@ -153,13 +130,18 @@ module.exports = () =>
         listener: { type: "Listener", group: "ELBv2", parent: true },
         targetGroup: { type: "TargetGroup", group: "ELBv2" },
       },
-      isOurMinion,
+      omitProperties: [
+        "RuleArn",
+        "TargetGroupName",
+        "HealthCheckProtocol",
+        "LoadBalancerArns",
+      ],
+      propertiesDefault: {
+        IsDefault: false,
+      },
       compare: compareELB({
         filterTarget: () =>
           pipe([
-            defaultsDeep({
-              IsDefault: false,
-            }),
             unless(
               get("Conditions[0].Values"),
               assign({
@@ -174,12 +156,6 @@ module.exports = () =>
           ]),
         filterLive: () =>
           pipe([
-            omit([
-              "RuleArn",
-              "TargetGroupName",
-              "HealthCheckProtocol",
-              "LoadBalancerArns",
-            ]),
             assign({
               Conditions: pipe([
                 get("Conditions"),
@@ -217,21 +193,7 @@ module.exports = () =>
               }),
             ])(),
       ]),
-      //TODO do we need this ?
-      // configBuildProperties: ({ properties, lives }) =>
-      //   pipe([
-      //     tap(() => {
-      //       assert(lives);
-      //     }),
-      //     () => `\n,properties: ${JSON.stringify(properties, null, 4)}`,
-      //   ])(),
-      // codeBuildProperties: ({ group, type, resourceVarName }) =>
-      //   pipe([
-      //     tap(() => {
-      //       assert(true);
-      //     }),
-      //     () =>
-      //       `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`,
-      //   ])(),
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, compare: compareELB({}), isOurMinion })),
+]);

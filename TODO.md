@@ -83,6 +83,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Aws
 
+- apprunner example npm test
 - inferName OpenIDConnectProvider
 - example vpc-use still using make and use
 - propertiesDefault instead of defaultsDeep

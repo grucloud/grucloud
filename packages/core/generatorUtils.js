@@ -163,7 +163,7 @@ const buildProperties = ({
   propertiesDefault = {},
   omitProperties = [],
   pickPropertiesCreate = [],
-  spec: { tagsKey = "Tags" },
+  spec: { tagsKey = "Tags", pickProperties },
 }) =>
   pipe([
     tap(() => {
@@ -182,12 +182,13 @@ const buildProperties = ({
       dependencies,
       programOptions,
       commandOptions,
-      //omitProperties,
       pickPropertiesCreate,
     }),
     tap((params) => {
       assert(true);
     }),
+    //TODO
+    //when(() => pickProperties, pick(pickProperties)),
     omit(omitProperties),
     differenceObject(propertiesDefault),
     tap((params) => {

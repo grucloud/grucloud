@@ -22,19 +22,12 @@ module.exports = pipe([
     {
       type: "DomainName",
       Client: DomainName,
-      compare: compareApiGatewayV2({
-        filterTarget: () =>
-          pipe([
-            defaultsDeep({
-              ApiMappingSelectionExpression: "$request.basepath",
-            }),
-            omit(["DomainNameConfigurations"]),
-          ]),
-        filterLive: () => pipe([omit(["DomainNameConfigurations"])]),
-      }),
+      propertiesDefault: {
+        ApiMappingSelectionExpression: "$request.basepath",
+      },
+      omitProperties: ["DomainName", "DomainNameConfigurations"],
       filterLive: () =>
         pipe([
-          omit(["DomainName", "DomainNameConfigurations"]),
           when(
             eq(get("ApiMappingSelectionExpression"), "$request.basepath"),
             omit(["ApiMappingSelectionExpression"])
@@ -47,9 +40,12 @@ module.exports = pipe([
     {
       type: "Api",
       Client: Api,
-      compare: compareApiGatewayV2({
-        filterLive: () => pipe([omit(["ApiEndpoint", "ApiId", "CreatedDate"])]),
-      }),
+      omitProperties: [
+        "ApiEndpoint",
+        "ApiId",
+        "CreatedDate",
+        "AccessLogSettings.DestinationArn",
+      ],
       filterLive: () =>
         pipe([
           pick([
@@ -59,34 +55,28 @@ module.exports = pipe([
             "RouteSelectionExpression",
             "AccessLogSettings",
           ]),
-          omit(["AccessLogSettings.DestinationArn"]),
         ]),
     },
     {
       type: "Stage",
       Client: Stage,
-      compare: compareApiGatewayV2({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            defaultsDeep({
-              RouteSettings: {},
-              DefaultRouteSettings: {
-                DetailedMetricsEnabled: false,
-              },
-              StageVariables: {},
-            }),
-          ]),
-        filterLive: () =>
-          pipe([omit(["CreatedDate", "DeploymentId", "LastUpdatedDate"])]),
-      }),
+      propertiesDefault: {
+        RouteSettings: {},
+        DefaultRouteSettings: {
+          DetailedMetricsEnabled: false,
+        },
+        StageVariables: {},
+      },
+      omitProperties: [
+        "CreatedDate",
+        "DeploymentId",
+        "LastUpdatedDate",
+        "AccessLogSettings.DestinationArn",
+      ],
       filterLive: () =>
         pipe([
           pick(["AccessLogSettings", "StageVariables"]),
           omitIfEmpty(["StageVariables"]),
-          omit(["AccessLogSettings.DestinationArn"]),
         ]),
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
@@ -96,9 +86,7 @@ module.exports = pipe([
     {
       type: "Authorizer",
       Client: Authorizer,
-      compare: compareApiGatewayV2({
-        filterLive: () => pipe([omit(["AuthorizerId", "ApiName"])]),
-      }),
+      omitProperties: ["AuthorizerId", "ApiName"],
       filterLive: () =>
         pick([
           "AuthorizerType",
@@ -127,9 +115,7 @@ module.exports = pipe([
           ({ domainName, api, stage }) =>
             `apimapping::${domainName.name}::${api.name}::${stage.name}::${properties.ApiMappingKey}`,
         ])(),
-      compare: compareApiGatewayV2({
-        filterLive: () => pipe([omit(["ApiMappingId", "ApiName"])]),
-      }),
+      omitProperties: ["ApiMappingId", "ApiName"],
       filterLive: () => pipe([pick(["ApiMappingKey"])]),
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
@@ -147,15 +133,8 @@ module.exports = pipe([
           ({ api, lambdaFunction }) =>
             `integration::${api.name}::${lambdaFunction.name}`,
         ])(),
-      compare: compareApiGatewayV2({
-        filterTarget: () =>
-          pipe([defaultsDeep({ TimeoutInMillis: 30e3, Description: "" })]),
-        filterLive: () =>
-          pipe([
-            omit(["RouteId", "IntegrationId", "ApiName"]),
-            defaultsDeep({ Description: "" }),
-          ]),
-      }),
+      propertiesDefault: { TimeoutInMillis: 30e3, Description: "" },
+      omitProperties: ["RouteId", "IntegrationId", "ApiName"],
       filterLive: () =>
         pick([
           "ConnectionType",
@@ -177,11 +156,7 @@ module.exports = pipe([
           dependencies,
           ({ api }) => `route::${api.name}::${properties.RouteKey}`,
         ])(),
-      compare: compareApiGatewayV2({
-        filterLive: () => pipe([omit(["RouteId", "ApiName"])]),
-      }),
-      filterLive: () =>
-        pipe([omit(["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"])]),
+      omitProperties: ["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"],
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
         integration: {
@@ -204,23 +179,14 @@ module.exports = pipe([
       Client: Deployment,
       inferName: ({ properties, dependencies }) =>
         pipe([dependencies, ({ api }) => `deployment::${api.name}`])(),
-      compare: compareApiGatewayV2({
-        filterTarget: () =>
-          pipe([
-            defaultsDeep({ AutoDeployed: false, Description: "" }),
-            omit(["StageName"]),
-          ]),
-        filterLive: () =>
-          pipe([
-            omit([
-              "CreatedDate",
-              "DeploymentId",
-              "DeploymentStatus",
-              "ApiName",
-            ]),
-            defaultsDeep({ Description: "" }),
-          ]),
-      }),
+      omitProperties: [
+        "StageName",
+        "CreatedDate",
+        "DeploymentId",
+        "DeploymentStatus",
+        "ApiName",
+      ],
+      propertiesDefault: { AutoDeployed: false, Description: "" },
       filterLive: () => pick(["Description"]),
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
@@ -228,10 +194,10 @@ module.exports = pipe([
       },
     },
   ],
-
   map(
     defaultsDeep({
       group: GROUP,
+      compare: compareApiGatewayV2({}),
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.Tags, config }),
     })

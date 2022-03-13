@@ -9,6 +9,7 @@ const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const { AwsS3Bucket } = require("./AwsS3Bucket");
 const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
 const { compareAws, isOurMinion } = require("../AwsCommon");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "S3";
 
@@ -22,8 +23,8 @@ const objectFileNameFromLive = ({
   commandOptions,
 }) => `s3/${Bucket}/${Key}.${mime.extension(ContentType)}`;
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "Bucket",
       Client: AwsS3Bucket,
@@ -181,4 +182,6 @@ module.exports = () =>
           }),
         ]),
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP })),
+]);

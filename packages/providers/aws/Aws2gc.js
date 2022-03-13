@@ -13,6 +13,7 @@ const {
   tryCatch,
   any,
   or,
+  omit,
 } = require("rubico");
 const Axios = require("axios");
 const { pluck, when, callProp, isEmpty } = require("rubico/x");
@@ -198,10 +199,11 @@ const filterModel = pipe([
                       when(isEmpty, get("TagKey")),
                       switchCase([isEmpty, () => false, ignoreTags]),
                     ]),
-                    get("ResourceId"),
+                    //get("ResourceId"),
                   ])
                 )
               ),
+              map(omit(["ResourceId", "ResourceType", "PropagateAtLaunch"])),
             ]),
           })
         ),

@@ -20,6 +20,8 @@ module.exports = pipe([
     {
       type: "LogGroup",
       Client: CloudWatchLogsGroup,
+      pickProperties: ["retentionInDays"],
+      //TODO
       compare: compareCloudWatchLog({
         filterAll: () => pipe([pick(["retentionInDays"])]),
       }),
@@ -29,5 +31,12 @@ module.exports = pipe([
       },
     },
   ],
-  map(defaultsDeep({ group: GROUP, tagsKey, isOurMinion })),
+  map(
+    defaultsDeep({
+      group: GROUP,
+      tagsKey,
+      isOurMinion,
+      compare: compareCloudWatchLog({}),
+    })
+  ),
 ]);

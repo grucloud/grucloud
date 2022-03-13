@@ -15,13 +15,11 @@ const { EventSourceMapping } = require("./EventSourceMapping");
 const GROUP = "Lambda";
 const compareLambda = compareAws({});
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "Layer",
       Client: Layer,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
       compare: compareLayer,
       displayResource: () => pipe([omit(["Content.Data", "Content.ZipFile"])]),
       filterLive:
@@ -60,8 +58,6 @@ module.exports = () =>
     {
       type: "Function",
       Client: Function,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
       compare: compareFunction,
       displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
       //TODO
@@ -118,8 +114,6 @@ module.exports = () =>
     {
       type: "EventSourceMapping",
       Client: EventSourceMapping,
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.Tags, config }),
       compare: compareLambda({
         filterTarget: () =>
           pipe([
@@ -182,4 +176,12 @@ module.exports = () =>
         //TODO other event source
       },
     },
-  ]);
+  ],
+  map(
+    defaultsDeep({
+      group: GROUP,
+      isOurMinion: ({ live, config }) =>
+        isOurMinionObject({ tags: live.Tags, config }),
+    })
+  ),
+]);

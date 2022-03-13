@@ -18,7 +18,6 @@ const {
 const {
   first,
   unless,
-  pluck,
   identity,
   isEmpty,
   find,
@@ -64,8 +63,6 @@ const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 const { AwsImage } = require("./AwsImage");
 const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
 
-const logger = require("@grucloud/core/logger")({ prefix: "EC2Spec" });
-
 const GROUP = "EC2";
 
 const getTargetTags = pipe([get("TagSpecifications"), first, get("Tags")]);
@@ -89,15 +86,9 @@ const findDefaultWithVpcDependency = ({ resources, dependencies }) =>
         eq(get("live.VpcId"), get("vpc.live.VpcId")(dependencies)),
       ])
     ),
-    tap((params) => {
-      assert(true);
-    }),
   ])();
 
 const securityGroupRulePickProperties = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   ({ resource }) =>
     (live) =>
       pipe([
@@ -108,9 +99,6 @@ const securityGroupRulePickProperties = pipe([
           omit(["IpPermission.UserIdGroupPairs"]),
           identity,
         ]),
-        tap((params) => {
-          assert(true);
-        }),
         pick(["IpPermission"]),
       ])(),
 ]);
@@ -132,27 +120,19 @@ const ec2InstanceDependencies = {
 
 const buildAvailabilityZone = pipe([
   get("AvailabilityZone"),
-  tap((params) => {
-    assert(true);
-  }),
   last,
   (az) => () => "`${config.region}" + az + "`",
-  tap((params) => {
-    assert(true);
-  }),
 ]);
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "KeyPair",
       Client: AwsClientKeyPair,
       isOurMinion,
-      compare: compareEC2({
-        filterTarget: () => pipe([defaultsDeep({ KeyType: "rsa" })]),
-        filterLive: () => pipe([omit(["KeyPairId", "KeyFingerprint"])]),
-      }),
-      filterLive: () => pick([""]),
+      propertiesDefault: { KeyType: "rsa" },
+      omitProperties: ["KeyPairId", "KeyFingerprint"],
+      filterLive: () => pick([]),
     },
     {
       type: "Image",
@@ -166,23 +146,18 @@ module.exports = () =>
       dependencies: {
         instance: { type: "Instance", group: "EC2", parent: true },
       },
+      omitProperties: [
+        "Attachments",
+        "CreateTime",
+        "Encrypted",
+        "SnapshotId",
+        "State",
+        "VolumeId",
+        "MultiAttachEnabled",
+        "Device",
+      ],
       isOurMinion,
       setupEbsVolume,
-      compare: compareEC2({
-        filterTarget: () => pipe([omit(["Device"])]),
-        filterLive: () =>
-          pipe([
-            omit([
-              "Attachments",
-              "CreateTime",
-              "Encrypted",
-              "SnapshotId",
-              "State",
-              "VolumeId",
-              "MultiAttachEnabled",
-            ]),
-          ]),
-      }),
       filterLive: () =>
         pipe([
           pick(["Size", "VolumeType", "Device", "AvailabilityZone"]),
@@ -251,26 +226,16 @@ module.exports = () =>
       //dependsOnDelete: ["IAM::User", "IAM::Group"],
       Client: AwsVpc,
       isOurMinion,
-      compare: compareEC2({
-        filterTarget: () =>
-          pipe([defaultsDeep({ DnsSupport: true, DnsHostnames: false })]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit([
-              "DhcpOptionsId",
-              "State",
-              "OwnerId",
-              "InstanceTenancy",
-              "Ipv6CidrBlockAssociationSet",
-              "CidrBlockAssociationSet",
-              "IsDefault",
-              "VpcId",
-            ]),
-          ]),
-      }),
+      omitProperties: [
+        "DhcpOptionsId",
+        "State",
+        "OwnerId",
+        "InstanceTenancy",
+        "Ipv6CidrBlockAssociationSet",
+        "CidrBlockAssociationSet",
+        "IsDefault",
+        "VpcId",
+      ],
       propertiesDefault: { DnsSupport: true, DnsHostnames: false },
       filterLive: () => pick(["CidrBlock", "DnsSupport", "DnsHostnames"]),
     },
@@ -289,23 +254,18 @@ module.exports = () =>
       type: "NatGateway",
       Client: AwsNatGateway,
       isOurMinion,
-      compare: compareEC2({
-        filterTarget: () => pipe([omit(["AllocationId"])]),
-        filterLive: () =>
-          pipe([
-            omit([
-              "CreateTime",
-              "NatGatewayAddresses",
-              "NatGatewayId",
-              "State",
-              "VpcId",
-              "ConnectivityType",
-              "DeleteTime",
-              "FailureCode",
-              "FailureMessage",
-            ]),
-          ]),
-      }),
+      omitProperties: [
+        "CreateTime",
+        "NatGatewayAddresses",
+        "NatGatewayId",
+        "State",
+        "VpcId",
+        "ConnectivityType",
+        "DeleteTime",
+        "FailureCode",
+        "FailureMessage",
+        "AllocationId",
+      ],
       filterLive: () => pick([]),
       dependencies: {
         subnet: { type: "Subnet", group: "EC2" },
@@ -318,41 +278,64 @@ module.exports = () =>
       type: "Subnet",
       Client: AwsSubnet,
       isOurMinion,
-      compare: compareEC2({
-        filterAll: () => pipe([omit(["VpcId"])]),
-        filterTarget: () =>
-          pipe([
-            defaultsDeep({
-              MapPublicIpOnLaunch: false,
-              MapCustomerOwnedIpOnLaunch: false,
-              EnableDns64: false,
-              Ipv6Native: false,
-              PrivateDnsNameOptionsOnLaunch: {
-                HostnameType: "ip-name",
-                EnableResourceNameDnsARecord: false,
-                EnableResourceNameDnsAAAARecord: false,
-              },
-            }),
-          ]),
-        filterLive: () =>
-          pipe([
-            omit([
-              "AvailabilityZoneId",
-              "AvailableIpAddressCount",
-              "DefaultForAz",
-              "State",
-              "SubnetId",
-              "OwnerId",
-              "AssignIpv6AddressOnCreation",
-              "Ipv6CidrBlockAssociationSet",
-              "SubnetArn",
-            ]),
-          ]),
-      }),
+      omitProperties: [
+        "VpcId",
+        "AvailabilityZoneId",
+        "AvailableIpAddressCount",
+        "DefaultForAz",
+        "State",
+        "SubnetId",
+        "OwnerId",
+        "AssignIpv6AddressOnCreation",
+        "Ipv6CidrBlockAssociationSet",
+        "SubnetArn",
+      ],
       propertiesDefault: {
         MapPublicIpOnLaunch: false,
         MapCustomerOwnedIpOnLaunch: false,
+        EnableDns64: false,
+        Ipv6Native: false,
+        PrivateDnsNameOptionsOnLaunch: {
+          HostnameType: "ip-name",
+          EnableResourceNameDnsARecord: false,
+          EnableResourceNameDnsAAAARecord: false,
+        },
       },
+      // compare: compareEC2({
+      //   filterAll: () => pipe([omit(["VpcId"])]),
+      //   filterTarget: () =>
+      //     pipe([
+      //       defaultsDeep({
+      //         MapPublicIpOnLaunch: false,
+      //         MapCustomerOwnedIpOnLaunch: false,
+      //         EnableDns64: false,
+      //         Ipv6Native: false,
+      //         PrivateDnsNameOptionsOnLaunch: {
+      //           HostnameType: "ip-name",
+      //           EnableResourceNameDnsARecord: false,
+      //           EnableResourceNameDnsAAAARecord: false,
+      //         },
+      //       }),
+      //     ]),
+      //   filterLive: () =>
+      //     pipe([
+      //       omit([
+      //         "AvailabilityZoneId",
+      //         "AvailableIpAddressCount",
+      //         "DefaultForAz",
+      //         "State",
+      //         "SubnetId",
+      //         "OwnerId",
+      //         "AssignIpv6AddressOnCreation",
+      //         "Ipv6CidrBlockAssociationSet",
+      //         "SubnetArn",
+      //       ]),
+      //     ]),
+      // }),
+      // propertiesDefault: {
+      //   MapPublicIpOnLaunch: false,
+      //   MapCustomerOwnedIpOnLaunch: false,
+      // },
       filterLive: () =>
         pipe([
           pick([
@@ -379,19 +362,14 @@ module.exports = () =>
       type: "RouteTable",
       Client: EC2RouteTable,
       isOurMinion,
-      compare: compareEC2({
-        filterAll: () => pipe([omit(["VpcId"])]),
-        filterLive: () =>
-          pipe([
-            omit([
-              "Associations",
-              "PropagatingVgws",
-              "RouteTableId",
-              "OwnerId",
-              "Routes",
-            ]),
-          ]),
-      }),
+      omitProperties: [
+        "VpcId",
+        "Associations",
+        "PropagatingVgws",
+        "RouteTableId",
+        "OwnerId",
+        "Routes",
+      ],
       includeDefaultDependencies: true,
       findDefault: findDefaultWithVpcDependency,
       filterLive: () => pick([]),
@@ -417,7 +395,6 @@ module.exports = () =>
       type: "RouteTableAssociation",
       Client: EC2RouteTableAssociation,
       isOurMinion: () => () => true,
-
       compare: compareAws({
         getTargetTags: () => [],
         getLiveTags: () => [],
@@ -445,13 +422,7 @@ module.exports = () =>
       type: "Route",
       Client: EC2Route,
       isOurMinion,
-      ignoreResource: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          get("isDefault"),
-        ]),
+      ignoreResource: () => pipe([get("isDefault")]),
       compare: compareAws({
         getTargetTags: () => [],
         getLiveTags: () => [],
@@ -470,13 +441,7 @@ module.exports = () =>
             ]),
           ]),
       }),
-      filterLive: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          pick(["DestinationCidrBlock"]),
-        ]),
+      filterLive: () => pipe([pick(["DestinationCidrBlock"])]),
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,
@@ -622,28 +587,21 @@ module.exports = () =>
       },
       Client: AwsElasticIpAddress,
       isOurMinion,
-      compare: compareEC2({
-        filterTarget: () => pipe([omit([""])]),
-        filterLive: () =>
-          pipe([
-            omit([
-              "InstanceId",
-              "PublicIp",
-              "AllocationId",
-              "AssociationId",
-              "NetworkInterfaceId",
-              "NetworkInterfaceOwnerId",
-              "PrivateIpAddress",
-              "PublicIpv4Pool",
-              "NetworkBorderGroup",
-            ]),
-          ]),
-      }),
+      omitProperties: [
+        "InstanceId",
+        "PublicIp",
+        "AllocationId",
+        "AssociationId",
+        "NetworkInterfaceId",
+        "NetworkInterfaceOwnerId",
+        "PrivateIpAddress",
+        "PublicIpv4Pool",
+        "NetworkBorderGroup",
+      ],
       filterLive: () => pick([]),
     },
     {
       type: "Instance",
-
       Client: EC2Instance,
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
       propertiesDefault: {
@@ -663,9 +621,6 @@ module.exports = () =>
                 AvailabilityZone: buildAvailabilityZone,
               }),
             ]),
-          }),
-          tap((params) => {
-            assert(true);
           }),
           DecodeUserData,
         ]),
@@ -734,28 +689,10 @@ module.exports = () =>
       Client: EC2ManagedPrefixList,
       isOurMinion,
       compare: compareEC2({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick([]),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick([]),
-          ]),
+        filterTarget: () => pipe([pick([])]),
+        filterLive: () => pipe([pick([])]),
       }),
-      filterLive: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          pick(["AddressFamily"]),
-        ]),
+      filterLive: () => pipe([pick(["AddressFamily"])]),
     },
     {
       type: "VpcEndpoint",
@@ -771,26 +708,11 @@ module.exports = () =>
       Client: EC2VpcEndpoint,
       isOurMinion,
       compare: compareEC2({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick(["PolicyDocument"]),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick(["PolicyDocument"]),
-          ]),
+        filterTarget: () => pipe([pick(["PolicyDocument"])]),
+        filterLive: () => pipe([pick(["PolicyDocument"])]),
       }),
       filterLive: () =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           pick([
             "ServiceName",
             "PolicyDocument",
@@ -800,4 +722,6 @@ module.exports = () =>
           ]),
         ]),
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, compare: compareEC2({}) })),
+]);

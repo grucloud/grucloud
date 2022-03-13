@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, tap, pick, get } = require("rubico");
-const { when } = require("rubico/x");
+const { when, defaultsDeep } = require("rubico/x");
 
 const { compareAws, isOurMinion } = require("../AwsCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
@@ -14,15 +14,13 @@ const compareAppRunner = compareAws({});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "Connection",
       Client: AppRunnerConnection,
       isOurMinion,
-      compare: compareAppRunner({
-        filterAll: () => pipe([omit(["ConnectionArn", "Status", "CreatedAt"])]),
-      }),
+      omitProperties: ["ConnectionArn", "Status", "CreatedAt"],
       filterLive: () => pipe([pick(["ProviderType"])]),
     },
     {
@@ -39,21 +37,16 @@ module.exports = () =>
         },
       },
       isOurMinion,
-      compare: compareAppRunner({
-        filterAll: () =>
-          pipe([
-            omit([
-              "ServiceId",
-              "ServiceArn",
-              "ServiceUrl",
-              "CreatedAt",
-              "UpdatedAt",
-              "Status",
-              //TODO
-              "AutoScalingConfigurationSummary",
-            ]),
-          ]),
-      }),
+      omitProperties: [
+        "ServiceId",
+        "ServiceArn",
+        "ServiceUrl",
+        "CreatedAt",
+        "UpdatedAt",
+        "Status",
+        //TODO
+        "AutoScalingConfigurationSummary",
+      ],
       filterLive: ({ lives }) =>
         pipe([
           pick([
@@ -88,4 +81,6 @@ module.exports = () =>
           }),
         ]),
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, compare: compareAppRunner() })),
+]);

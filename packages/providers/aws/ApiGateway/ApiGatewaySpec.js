@@ -21,7 +21,6 @@ const { isOurMinionObject, compareAws } = require("../AwsCommon");
 
 const { RestApi } = require("./RestApi");
 const { Stage } = require("./Stage");
-//const { DomainName } = require("./DomainName");
 const { Authorizer } = require("./Authorizer");
 const { ApiKey } = require("./ApiKey");
 const { Account } = require("./Account");
@@ -62,43 +61,15 @@ const writeRestApiSchema =
 
 module.exports = pipe([
   () => [
-    // {
-    //   type: "DomainName",
-    //   Client: DomainName,
-    //   compare: compareAPIGateway({}),
-    //   filterLive: () =>
-    //     pipe([
-    //       tap((params) => {
-    //         assert(true);
-    //       }),
-    //       omit(["DomainName"]),
-    //     ]),
-    //   dependencies: {
-    //     certificate: { type: "Certificate", group: "ACM" },
-    //   },
-    // },
     {
       type: "Account",
       Client: Account,
       isOurMinion: ({ live, config }) => true,
-      compare: compareAPIGateway({
-        filterTarget: () =>
-          pipe([
-            defaultsDeep({
-              features: ["UsagePlans"],
-            }),
-          ]),
-        filterLive: () => pipe([omit(["throttleSettings", "apiKeyVersion"])]),
-      }),
-      filterLive: () =>
-        pipe([
-          omit([
-            "apiKeyVersion",
-            "throttleSettings",
-            "features",
-            "cloudwatchRoleArn",
-          ]),
-        ]),
+      omitProperties: ["apiKeyVersion", "throttleSettings"],
+      propertiesDefault: {
+        features: ["UsagePlans"],
+      },
+      filterLive: () => pipe([omit(["features", "cloudwatchRoleArn"])]),
       dependencies: {
         cloudwatchRole: { type: "Role", group: "IAM" },
       },
@@ -106,13 +77,14 @@ module.exports = pipe([
     {
       type: "ApiKey",
       Client: ApiKey,
-      omitProperties: ["id", "createdDate", "lastUpdatedDate", "stageKeys"],
-      compare: compareAPIGateway(),
+      omitProperties: [
+        "name",
+        "id",
+        "createdDate",
+        "lastUpdatedDate",
+        "stageKeys",
+      ],
       propertiesDefault: { enabled: true },
-      filterLive: () =>
-        pipe([
-          omit(["name", "id", "createdDate", "lastUpdatedDate", "stageKeys"]),
-        ]),
     },
     {
       type: "Resource",
@@ -135,14 +107,10 @@ module.exports = pipe([
     {
       type: "RestApi",
       Client: RestApi,
+      omitProperties: ["id", "createdDate", "deployments", "version"],
+      propertiesDefault: { disableExecuteApiEndpoint: false },
       compare: compareAPIGateway({
-        filterTarget: () =>
-          pipe([
-            omit(["schemaFile", "deployment"]),
-            defaultsDeep({ disableExecuteApiEndpoint: false }),
-          ]),
-        filterLive: () =>
-          pipe([omit(["id", "createdDate", "deployments", "version"])]),
+        filterTarget: () => pipe([omit(["schemaFile", "deployment"])]),
       }),
       filterLive: (input) => (live) =>
         pipe([
@@ -181,23 +149,16 @@ module.exports = pipe([
     {
       type: "Stage",
       Client: Stage,
+      omitProperties: [
+        "deploymentId",
+        "clientCertificateId",
+        "createdDate",
+        "lastUpdatedDate",
+        "cacheClusterStatus",
+      ],
+      propertiesDefault: { cacheClusterEnabled: false, tracingEnabled: false },
       compare: compareAPIGateway({
-        filterTarget: () =>
-          pipe([
-            defaultsDeep({ cacheClusterEnabled: false, tracingEnabled: false }),
-            omit(["deploymentId"]),
-          ]),
-        filterLive: () =>
-          pipe([
-            omit([
-              "deploymentId",
-              "clientCertificateId",
-              "createdDate",
-              "lastUpdatedDate",
-              "cacheClusterStatus",
-            ]),
-            omitIfEmpty(["methodSettings"]),
-          ]),
+        filterLive: () => pipe([omitIfEmpty(["methodSettings"])]),
       }),
       filterLive: () =>
         pipe([
@@ -220,9 +181,7 @@ module.exports = pipe([
     {
       type: "Authorizer",
       Client: Authorizer,
-      compare: compareAPIGateway({}),
-      filterLive: () =>
-        pipe([omit(["id", "name", "restApiId", "providerARNs"])]),
+      omitProperties: ["id", "name", "restApiId", "providerARNs"],
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
         lambdaFunction: { type: "Function", group: "Lambda" },
@@ -234,6 +193,7 @@ module.exports = pipe([
     defaultsDeep({
       group: GROUP,
       tagsKey,
+      compare: compareAPIGateway({}),
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.tags, config }),
     })

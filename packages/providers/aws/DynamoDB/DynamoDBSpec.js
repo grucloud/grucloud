@@ -9,12 +9,24 @@ const { DynamoDBTable } = require("./DynamoDBTable");
 const GROUP = "DynamoDB";
 const compareDynamoDB = compareAws({});
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "Table",
       Client: DynamoDBTable,
-      isOurMinion,
+      omitProperties: [
+        "TableSizeBytes",
+        "ItemCount",
+        "TableArn",
+        "TableId",
+        "ProvisionedThroughput.NumberOfDecreasesToday",
+        "ProvisionedThroughput.LastIncreaseDateTime",
+        "ProvisionedThroughput.LastDecreaseDateTime",
+        "CreationDateTime",
+        "TableStatus",
+        "SSEDescription",
+        "BillingModeSummary.LastUpdateToPayPerRequestDateTime",
+      ],
       compare: compareDynamoDB({
         filterAll: () =>
           pipe([
@@ -32,25 +44,6 @@ module.exports = () =>
           ]),
         filterLive: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit([
-              "TableSizeBytes",
-              "ItemCount",
-              "TableArn",
-              "TableId",
-              "ProvisionedThroughput.NumberOfDecreasesToday",
-              "ProvisionedThroughput.LastIncreaseDateTime",
-              "ProvisionedThroughput.LastDecreaseDateTime",
-              "CreationDateTime",
-              "TableStatus",
-              "SSEDescription",
-              "BillingModeSummary.LastUpdateToPayPerRequestDateTime",
-            ]),
-            tap((params) => {
-              assert(true);
-            }),
             omitIfEmpty([
               "ProvisionedThroughput.ReadCapacityUnits",
               "ProvisionedThroughput.WriteCapacityUnits",
@@ -67,10 +60,6 @@ module.exports = () =>
             "GlobalSecondaryIndexes",
             "LocalSecondaryIndexes",
           ]),
-          omit([
-            "ProvisionedThroughput.NumberOfDecreasesToday",
-            "BillingModeSummary.LastUpdateToPayPerRequestDateTime",
-          ]),
           when(
             eq(get("BillingModeSummary.BillingMode"), "PAY_PER_REQUEST"),
             pipe([
@@ -83,4 +72,6 @@ module.exports = () =>
         kmsKey: { type: "Key", group: "KMS" },
       },
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, isOurMinion })),
+]);

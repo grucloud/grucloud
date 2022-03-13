@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { assign, map, pipe, tap, omit, pick } = require("rubico");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 const { isOurMinion } = require("../AwsCommon");
 const { compareAws } = require("../AwsCommon");
 
@@ -8,12 +9,11 @@ const { SSMParameter } = require("./SSMParameter");
 const GROUP = "SSM";
 const compareSSM = compareAws({});
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "Parameter",
       Client: SSMParameter,
-      isOurMinion,
       compare: compareSSM({
         filterTarget: () =>
           pipe([
@@ -40,4 +40,6 @@ module.exports = () =>
           "DataType",
         ]),
     },
-  ]);
+  ],
+  map(defaultsDeep({ group: GROUP, isOurMinion })),
+]);
