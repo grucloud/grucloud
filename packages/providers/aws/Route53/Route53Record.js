@@ -580,8 +580,10 @@ exports.Route53Record = ({ spec, config }) => {
           group: "Route53",
           providerName: config.providerName,
         }),
-      tap((hostedZone) => {
-        assert(hostedZone);
+      tap.if(isEmpty, () => {
+        logger.error(`missing hostedZone ${live.HostedZoneId} in cache`);
+        logger.error(lives.json);
+        //assert(hostedZone);
       }),
       get("managedByUs"),
       tap((params) => {

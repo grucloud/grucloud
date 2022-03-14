@@ -60,7 +60,6 @@ exports.fnSpecs = ({ config }) =>
         ],
         omitProperties: [
           "id",
-          "name",
           "type",
           "properties.scope",
           "properties.roleDefinitionId",

@@ -16,10 +16,9 @@ module.exports = () =>
       Client: AwsCertificate,
       isOurMinion,
       compare: compareACM({
-        filterTarget: () => pipe([omit(["ValidationMethod"])]),
+        filterTarget: () => pipe([pick([])]),
         //TODO recreate
-        filterLive: () =>
-          pipe([pick(["DomainName" /*, "SubjectAlternativeNames"*/])]),
+        filterLive: () => pipe([pick([])]),
       }),
       ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
       filterLive: () =>

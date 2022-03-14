@@ -33,7 +33,8 @@ const integrationUriToName = pipe([callProp("split", ":"), last]);
 
 const findName = pipe([
   get("live"),
-  ({ ApiName, IntegrationUri }) =>
+  //TODO eventBus
+  ({ ApiName, IntegrationUri = "" }) =>
     `integration::${ApiName}::${integrationUriToName(IntegrationUri)}`,
 ]);
 
@@ -58,6 +59,11 @@ exports.Integration = ({ spec, config }) => {
         ),
         (id) => [id],
       ])(),
+    },
+    {
+      type: "EventBus",
+      group: "CloudWatchEvents",
+      ids: [pipe([() => live, get("RequestParameters.EventBusName")])()],
     },
   ];
 
