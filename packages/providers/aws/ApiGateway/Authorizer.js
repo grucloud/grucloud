@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -13,7 +13,13 @@ const {
 
 const findId = get("live.id");
 const findName = get("live.name");
-const pickId = ({ restApiId, id }) => ({ restApiId, authorizerId: id });
+const pickId = pipe([
+  tap(({ restApiId, id }) => {
+    assert(restApiId);
+    assert(id);
+  }),
+  ({ restApiId, id }) => ({ restApiId, authorizerId: id }),
+]);
 
 exports.Authorizer = ({ spec, config }) => {
   const apiGateway = createAPIGateway(config);
@@ -21,15 +27,15 @@ exports.Authorizer = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives }) => [
     findDependenciesRestApi({ live }),
-    // {
-    //   type: "Function",
-    //   group: "Lambda",
-    //   ids: [live.providerARNs],
-    // },
+    {
+      type: "Function",
+      group: "Lambda",
+      ids: [live.authorizerUri],
+    },
     {
       type: "UserPool",
-      group: "Cognito",
-      ids: [live.providerARNs],
+      group: "CognitoIdentityServiceProvider",
+      ids: live.providerARNs,
     },
   ];
 
@@ -48,8 +54,8 @@ exports.Authorizer = ({ spec, config }) => {
     method: "getAuthorizers",
     getParam: "items",
     config,
-    decorate: ({ lives, parent: { id: restApiId, Tags } }) =>
-      defaultsDeep({ restApiId, Tags }),
+    decorate: ({ lives, parent: { id: restApiId } }) =>
+      defaultsDeep({ restApiId }),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -59,7 +65,7 @@ exports.Authorizer = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { restApi },
+    dependencies: { restApi, userPools },
   }) =>
     pipe([
       tap(() => {
@@ -70,6 +76,15 @@ exports.Authorizer = ({ spec, config }) => {
         name,
         restApiId: getField(restApi, "id"),
       }),
+      when(
+        () => userPools,
+        defaultsDeep({
+          providerARNs: pipe([
+            () => userPools,
+            map((userPool) => getField(userPool, "Arn")),
+          ])(),
+        })
+      ),
     ])();
 
   const create = client.create({

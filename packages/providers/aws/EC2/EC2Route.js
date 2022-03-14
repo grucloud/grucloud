@@ -16,7 +16,7 @@ const {
   isEmpty,
   defaultsDeep,
   find,
-  first,
+  size,
   append,
   callProp,
   when,
@@ -144,6 +144,11 @@ exports.EC2Route = ({ spec, config }) => {
       get("Routes"),
       tap((Routes) => {
         assert(Routes);
+        logger.debug(
+          `findRoute #Routes ${size(
+            Routes
+          )}, GatewayId ${GatewayId}, NatGatewayId ${NatGatewayId}`
+        );
       }),
       find(
         pipe([

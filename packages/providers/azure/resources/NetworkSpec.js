@@ -704,7 +704,6 @@ exports.fnSpecs = ({ config }) => {
           //   createOnly: true,
           // },
         },
-        omitProperties: ["properties.securityRules"],
         filterLive: () =>
           pipe([
             pick(["name", "tags", "properties"]),

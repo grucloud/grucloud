@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, map, omit, tap, eq, get, pick } = require("rubico");
-const { when } = require("rubico/x");
+const { pipe, map, omit, tap, eq, get, pick, switchCase } = require("rubico");
+const { when, defaultsDeep, append } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { compareAws, isOurMinionObject } = require("../AwsCommon");
 const { Api } = require("./Api");
@@ -11,7 +11,6 @@ const { Integration } = require("./Integration");
 const { DomainName } = require("./DomainName");
 const { ApiMapping } = require("./ApiMapping");
 const { Authorizer } = require("./Authorizer");
-const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "ApiGatewayV2";
 
@@ -130,22 +129,46 @@ module.exports = pipe([
         pipe([
           //TODO other target
           dependencies,
-          ({ api, lambdaFunction }) =>
-            `integration::${api.name}::${lambdaFunction.name}`,
+          tap(({ api }) => {
+            assert(api);
+          }),
+          ({ api, lambdaFunction, eventBus }) =>
+            pipe([
+              () => `integration::${api.name}`,
+              switchCase([
+                () => lambdaFunction,
+                append(`::${lambdaFunction?.name}`),
+                () => eventBus,
+                append(`::${eventBus?.name}`),
+                append(`::UNKNOWN`),
+              ]),
+            ])(),
         ])(),
       propertiesDefault: { TimeoutInMillis: 30e3, Description: "" },
-      omitProperties: ["RouteId", "IntegrationId", "ApiName"],
+      omitProperties: [
+        "RouteId",
+        "IntegrationId",
+        "ApiName",
+        "RequestParameters.EventBusName",
+      ],
       filterLive: () =>
-        pick([
-          "ConnectionType",
-          "Description",
-          "IntegrationMethod",
-          "IntegrationType",
-          "PayloadFormatVersion",
+        pipe([
+          pick([
+            "ConnectionType",
+            "Description",
+            "IntegrationMethod",
+            "IntegrationType",
+            "IntegrationSubtype",
+            "PayloadFormatVersion",
+            "RequestParameters",
+            "RequestTemplates",
+            "TimeoutInMillis",
+          ]),
         ]),
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
         lambdaFunction: { type: "Function", group: "Lambda" },
+        eventBus: { type: "EventBus", group: "CloudWatchEvents" },
       },
     },
     {
@@ -153,6 +176,9 @@ module.exports = pipe([
       Client: Route,
       inferName: ({ properties, dependencies }) =>
         pipe([
+          tap((params) => {
+            assert(properties.RouteKey);
+          }),
           dependencies,
           ({ api }) => `route::${api.name}::${properties.RouteKey}`,
         ])(),

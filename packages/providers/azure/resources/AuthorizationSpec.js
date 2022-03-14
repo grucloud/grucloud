@@ -58,6 +58,17 @@ exports.fnSpecs = ({ config }) =>
           "Compute::VirtualMachine",
           "Compute::DiskEncryptionSet",
         ],
+        omitProperties: [
+          "id",
+          "type",
+          "properties.scope",
+          "properties.roleDefinitionId",
+          "properties.createdOn",
+          "properties.updatedOn",
+          "properties.createdBy",
+          "properties.updatedBy",
+          "properties.delegatedManagedIdentityResourceId",
+        ],
         dependencies: {
           scopeResourceGroup: {
             type: "ResourceGroup",

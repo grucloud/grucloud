@@ -415,6 +415,7 @@ const removeOurTagObject = ({ tags = "tags" }) =>
 const removeOurTags = pipe([
   removeOurTagObject({ tags: "tags" }),
   removeOurTagObject({ tags: "Tags" }),
+  removeOurTagObject({ tags: "UserPoolTags" }),
 ]);
 
 exports.removeOurTags = removeOurTags;

@@ -1207,6 +1207,9 @@ function CoreProvider({
             }),
           ])(),
       })),
+      tap((params) => {
+        assert(true);
+      }),
       Lister({
         onStateChange: ({ key, meta, result, error, ...other }) => {
           assert(key);

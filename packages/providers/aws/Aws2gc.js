@@ -23,7 +23,13 @@ const path = require("path");
 const Fs = require("fs");
 const fs = require("fs").promises;
 
-const ignoredTags = ["aws", "alpha.eksctl.io", "eksctl.cluster.k8s.io", "eks"];
+const ignoredTags = [
+  "aws",
+  "alpha.eksctl.io",
+  "eksctl.cluster.k8s.io",
+  "eks",
+  "AmazonECSManaged",
+];
 
 const { removeOurTags } = require("@grucloud/core/Common");
 
@@ -176,6 +182,9 @@ const ignoreTags = (key) =>
   ])();
 
 const filterModel = pipe([
+  tap((params) => {
+    assert(true);
+  }),
   map(
     assign({
       live: pipe([
@@ -183,9 +192,11 @@ const filterModel = pipe([
         removeOurTags,
         //TODO create removeOurTagArray
         when(
+          //TODO
           get("Tags"),
           assign({
             Tags: pipe([
+              //TODO
               get("Tags"),
               tap((params) => {
                 assert(true);

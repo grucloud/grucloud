@@ -33,7 +33,14 @@ exports.createResources = () => [
       targetGroup: "target-group-web",
     }),
   },
-  { type: "Certificate", group: "ACM", name: "grucloud.org" },
+  {
+    type: "Certificate",
+    group: "ACM",
+    name: "grucloud.org",
+    properties: ({}) => ({
+      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
+    }),
+  },
   {
     type: "Vpc",
     group: "EC2",

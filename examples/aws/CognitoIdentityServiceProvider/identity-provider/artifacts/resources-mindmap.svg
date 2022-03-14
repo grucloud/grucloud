@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="115px" preserveAspectRatio="none" style="width:612px;height:115px;background:#FFFFFF;" version="1.1" viewBox="0 0 612 115" width="612px" zoomAndPan="magnify"><defs><filter height="300%" id="f1jv19naej24db" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><rect fill="none" height="26.4883" style="stroke:none;stroke-width:1.0;" width="294" x="129" y="15"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="284" x="134" y="33.5352">Resources for project identity-provider</text><rect fill="#F8F8F8" filter="url(#f1jv19naej24db)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="52" x="10" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="20" y="81.0234">Infra</text><rect fill="#F8F8F8" filter="url(#f1jv19naej24db)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="46" x="112" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26" x="122" y="81.0234">aws</text><rect fill="#F8F8F8" filter="url(#f1jv19naej24db)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="231" x="208" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="211" x="218" y="81.0234">CognitoIdentityServiceProvider</text><rect fill="#F8F8F8" filter="url(#f1jv19naej24db)" height="36.4883" rx="12.5" ry="12.5" style="stroke:#383838;stroke-width:1.5;" width="104" x="489" y="57.4883"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="84" x="499" y="81.0234">UserPool (1)</text><path d="M439,75.7324 L449,75.7324 C464,75.7324 464,75.7324 479,75.7324 L489,75.7324 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><path d="M158,75.7324 L168,75.7324 C183,75.7324 183,75.7324 198,75.7324 L208,75.7324 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><path d="M62,75.7324 L72,75.7324 C87,75.7324 87,75.7324 102,75.7324 L112,75.7324 " fill="none" style="stroke:#383838;stroke-width:1.0;"/><!--MD5=[f84a9cb877aacdac2de584b0bfd93400]
+@startmindmap
+title Resources for project identity-provider
+skinparam monochrome true
++ Infra
+++ aws
++++ CognitoIdentityServiceProvider
+++++ UserPool (1)
+@endmindmap
+
+PlantUML version 1.2021.8(Sat Jun 26 03:20:59 COT 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project identity-provider
+skinparam monochrome true
++ Infra
+++ aws
++++ CognitoIdentityServiceProvider
+++++ UserPool (1)
+@endmindmap
