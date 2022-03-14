@@ -78,6 +78,9 @@ exports.Deployment = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDeployment-property
   const create = client.create({
     method: "createDeployment",
+    shouldRetryOnExceptionMessages: [
+      "Unable to deploy API because no routes exist in this API",
+    ],
     pickCreated: ({ payload }) =>
       pipe([defaultsDeep({ ApiId: payload.ApiId })]),
     getById,

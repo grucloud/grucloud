@@ -80,6 +80,14 @@ exports.AwsCertificate = ({ spec, config }) => {
       }),
     ])();
 
+  //TODO
+  const update = async () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
   return {
     spec,
     getById,
@@ -88,6 +96,7 @@ exports.AwsCertificate = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

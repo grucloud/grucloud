@@ -23,7 +23,13 @@ const path = require("path");
 const Fs = require("fs");
 const fs = require("fs").promises;
 
-const ignoredTags = ["aws", "alpha.eksctl.io", "eksctl.cluster.k8s.io", "eks"];
+const ignoredTags = [
+  "aws",
+  "alpha.eksctl.io",
+  "eksctl.cluster.k8s.io",
+  "eks",
+  "AmazonECSManaged",
+];
 
 const { removeOurTags } = require("@grucloud/core/Common");
 

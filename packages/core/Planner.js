@@ -277,14 +277,13 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
           name,
           uri,
           dependsOn: uniq([
-            ...findDependsOnType({
-              providerName,
-              group,
-              type,
-              plans,
-              dependsOnType: dependsOnTypeForward(dependsOnType),
-            }),
-
+            // ...findDependsOnType({
+            //   providerName,
+            //   group,
+            //   type,
+            //   plans,
+            //   dependsOnType: dependsOnTypeForward(dependsOnType),
+            // }),
             ...findDependsOnInstance({
               uri,
               plans,

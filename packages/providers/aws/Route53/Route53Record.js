@@ -299,7 +299,7 @@ exports.Route53Record = ({ spec, config }) => {
             assert(targetRecordName);
           }),
           get("RecordSet"),
-          tap(() => {
+          tap((RecordSet) => {
             logger.debug(
               `getByName RecordSet ${JSON.stringify(RecordSet, null, 4)}`
             );
@@ -569,6 +569,9 @@ exports.Route53Record = ({ spec, config }) => {
   const isOurMinion = ({ live, lives, config }) =>
     pipe([
       () => live,
+      tap((HostedZoneId) => {
+        assert(HostedZoneId);
+      }),
       get("HostedZoneId"),
       (id) =>
         lives.getById({

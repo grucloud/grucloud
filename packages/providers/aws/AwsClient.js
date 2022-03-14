@@ -92,7 +92,7 @@ exports.AwsClient =
         pipe([
           tap(() => {
             assert(method);
-            logger.debug(`getById ${type} ${JSON.stringify(params)}`);
+            logger.debug(`getById ${type}`);
           }),
           tryCatch(
             pipe([
@@ -100,7 +100,7 @@ exports.AwsClient =
               pickId,
               defaultsDeep(extraParams),
               tap((params) => {
-                logger.info(`getById ${type} ${JSON.stringify(params)}`);
+                logger.info(`getById ${type}`);
               }),
               endpoint()[method],
               tap((params) => {
@@ -130,9 +130,7 @@ exports.AwsClient =
           ),
           tap((result) => {
             logger.debug(
-              `getById ${type}, ${JSON.stringify(
-                params
-              )} result: ${JSON.stringify(result, null, 4)}`
+              `getById ${type} result: ${JSON.stringify(result, null, 4)}`
             );
           }),
         ])();

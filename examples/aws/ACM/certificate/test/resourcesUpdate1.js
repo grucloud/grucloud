@@ -4,6 +4,7 @@ exports.createResources = () => [
     group: "ACM",
     name: "grucloud.org",
     properties: ({}) => ({
+      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
       Tags: [
         {
           Key: "mykeynew",

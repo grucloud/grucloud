@@ -101,7 +101,14 @@ exports.createResources = () => [
       stage: "my-api-stage-dev",
     }),
   },
-  { type: "Certificate", group: "ACM", name: "grucloud.org" },
+  {
+    type: "Certificate",
+    group: "ACM",
+    name: "grucloud.org",
+    properties: ({}) => ({
+      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
+    }),
+  },
   { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
   {
     type: "Role",

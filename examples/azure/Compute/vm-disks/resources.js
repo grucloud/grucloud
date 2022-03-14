@@ -127,9 +127,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       resourceGroup: "rg-vm-disks",
-      networkInterfaces: ["rg-vm-disks::vm537"],
       disks: ["rg-vm-disks::vm_datadisk_0"],
       sshPublicKeys: ["rg-vm-disks::keypair"],
+      networkInterfaces: ["rg-vm-disks::vm537"],
     }),
   },
   {

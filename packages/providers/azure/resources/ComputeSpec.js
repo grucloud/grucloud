@@ -802,11 +802,7 @@ exports.fnSpecs = ({ config }) =>
               ]),
             }),
           ]),
-        omitProperties: [
-          "properties.osProfile.adminPassword",
-          "properties.storageProfile",
-          "properties.osProfile",
-        ],
+        omitProperties: ["properties.osProfile.adminPassword"],
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           findDependenciesUserAssignedIdentity({ live }),

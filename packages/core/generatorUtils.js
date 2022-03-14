@@ -227,6 +227,9 @@ const buildProperties = ({
     omitIfEmpty([tagsKey]),
     (props) =>
       pipe([
+        tap((params) => {
+          assert(props);
+        }),
         () => environmentVariables,
         tap.if(not(isEmpty), (params) => {
           assert(true);
