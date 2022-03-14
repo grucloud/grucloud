@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-ssm-parameter",
-  "version": "5.8.5",
+  "version": "5.8.6",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^5.8.5",
-    "@grucloud/provider-aws": "^5.8.5",
+    "@grucloud/core": "^5.8.6",
+    "@grucloud/provider-aws": "^5.8.6",
     "rubico": "^1.6.29"
   },
   "devDependencies": {
