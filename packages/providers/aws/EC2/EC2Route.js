@@ -253,25 +253,16 @@ exports.EC2Route = ({ spec, config }) => {
           config: { retryCount: 12 * 5, retryDelay: 5e3 },
           isExpectedResult: not(isEmpty),
         }),
-      tap((params) => {
-        assert(true);
-      }),
       () =>
         retryCall({
-          name: `modifyVpcEndpoint ${name}`,
+          name: `modifyVpcEndpoint routeTable ${name}`,
           fn: pipe([
             () => dependencies().routeTable.getLive({ lives }),
-            tap((params) => {
-              assert(true);
-            }),
             findRoute({ RouteTableId, GatewayId: VpcEndpointId }),
           ]),
           config: { retryCount: 12 * 5, retryDelay: 5e3 },
           isExpectedResult: not(isEmpty),
         }),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   const create = pipe([
@@ -285,8 +276,20 @@ exports.EC2Route = ({ spec, config }) => {
           ({ payload }) =>
           () =>
             payload,
-        postCreate: ({ dependencies, lives }) =>
-          pipe([() => dependencies().routeTable.getLive({ lives })]),
+        postCreate: ({ name, dependencies, lives, payload }) =>
+          pipe([
+            () => dependencies().routeTable.getLive({ lives }),
+            () =>
+              retryCall({
+                name: `create route ${name}, is up ? `,
+                fn: pipe([
+                  () => dependencies().routeTable.getLive({ lives }),
+                  findRoute(payload),
+                ]),
+                config: { retryCount: 12 * 5, retryDelay: 5e3 },
+                isExpectedResult: not(isEmpty),
+              }),
+          ]),
       }),
     ]),
   ]);

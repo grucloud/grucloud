@@ -56,7 +56,7 @@ exports.AwsIamUser = ({ spec, config }) => {
     {
       type: "Group",
       group: "IAM",
-      ids: pipe([() => live, get("Groups"), pluck("GroupName")])(),
+      ids: pipe([() => live, get("Groups")])(),
     },
   ];
 

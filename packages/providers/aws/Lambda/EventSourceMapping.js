@@ -41,9 +41,6 @@ exports.EventSourceMapping = ({ spec, config }) => {
               type: "Function",
               group: "Lambda",
             }),
-          tap((params) => {
-            assert(true);
-          }),
           get("id"),
         ])(),
       ],
@@ -70,31 +67,6 @@ exports.EventSourceMapping = ({ spec, config }) => {
   const getList = client.getList({
     method: "listEventSourceMappings",
     getParam: "EventSourceMappings",
-    decorate: ({ lives }) =>
-      pipe([
-        tap((params) => {
-          assert(lives);
-        }),
-        assign({
-          Tags: ({ FunctionArn }) =>
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              () =>
-                lives.getById({
-                  providerName: config.providerName,
-                  id: FunctionArn,
-                  type: "Function",
-                  group: "Lambda",
-                }),
-              tap((params) => {
-                assert(true);
-              }),
-              get("live.Tags"),
-            ])(),
-        }),
-      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#getEventSourceMapping-property

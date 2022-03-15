@@ -50,6 +50,19 @@ const replaceAccountAndRegion = ({ providerConfig }) =>
     (resource) => () => "`" + resource + "`",
   ]);
 
+const filterAttachedPolicies = ({ lives }) =>
+  pipe([
+    assign({
+      AttachedPolicies: pipe([
+        get("AttachedPolicies"),
+        filter(({ PolicyArn }) =>
+          pipe([() => lives, not(find(get("id"), PolicyArn))])()
+        ),
+      ]),
+    }),
+    omitIfEmpty(["AttachedPolicies"]),
+  ]);
+
 module.exports = pipe([
   () => [
     {
@@ -99,7 +112,11 @@ module.exports = pipe([
             ]),
           ]),
       }),
-      filterLive: () => pick(["Path", "AttachedPolicies"]),
+      filterLive: ({ lives }) =>
+        pipe([
+          pick(["Path", "AttachedPolicies"]),
+          filterAttachedPolicies({ lives }),
+        ]),
       dependencies: {
         iamGroups: { type: "Group", group: "IAM", list: true },
         policies: { type: "Policy", group: "IAM", list: true },
@@ -113,7 +130,11 @@ module.exports = pipe([
         filterLive: () =>
           pipe([omit(["GroupId", "Arn", "CreateDate", "Policies"])]),
       }),
-      filterLive: () => pick(["Path", "AttachedPolicies"]),
+      filterLive: ({ lives }) =>
+        pipe([
+          pick(["Path", "AttachedPolicies"]),
+          filterAttachedPolicies({ lives }),
+        ]),
       dependencies: {
         policies: { type: "Policy", group: "IAM", list: true },
       },

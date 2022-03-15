@@ -151,7 +151,7 @@ module.exports = pipe([
         BackupTarget: "region",
       },
       omitProperties: [
-        //"MasterUserPassword",
+        "MasterUserPassword",
         "VpcSecurityGroupIds",
         "DBSubnetGroupName", //TODO
         "VpcSecurityGroupIds",

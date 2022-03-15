@@ -32,7 +32,6 @@ const util = require("util");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { assignTagsSort } = require("./AwsCommon");
-const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const shouldRetryOnExceptionCodesDefault =
   (shouldRetryOnExceptionCodes) =>

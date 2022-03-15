@@ -13,6 +13,20 @@ exports.createResources = () => [
       MaxSize: 1,
       DesiredCapacity: 1,
       HealthCheckGracePeriod: 15,
+      Tags: [
+        {
+          Key: "k8s.io/cluster-autoscaler/enabled",
+          Value: "true",
+        },
+        {
+          Key: "k8s.io/cluster-autoscaler/my-cluster",
+          Value: "owned",
+        },
+        {
+          Key: "kubernetes.io/cluster/my-cluster",
+          Value: "owned",
+        },
+      ],
     }),
     dependencies: () => ({
       subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
@@ -419,9 +433,6 @@ exports.createResources = () => [
     type: "Cluster",
     group: "EKS",
     name: "my-cluster",
-    properties: ({}) => ({
-      version: "1.20",
-    }),
     dependencies: () => ({
       subnets: [
         "SubnetPrivateUSEAST1D",
@@ -445,8 +456,8 @@ exports.createResources = () => [
         minSize: 1,
       },
       labels: {
-        "alpha.eksctl.io/nodegroup-name": "ng-1",
         "alpha.eksctl.io/cluster-name": "my-cluster",
+        "alpha.eksctl.io/nodegroup-name": "ng-1",
       },
     }),
     dependencies: () => ({
@@ -478,17 +489,7 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 30020,
       HealthCheckProtocol: "HTTP",
-      HealthCheckPort: "traffic-port",
-      HealthCheckEnabled: true,
-      HealthCheckIntervalSeconds: 30,
-      HealthCheckTimeoutSeconds: 5,
-      HealthyThresholdCount: 5,
       HealthCheckPath: "/api/v1/version",
-      Matcher: {
-        HttpCode: "200",
-      },
-      TargetType: "instance",
-      ProtocolVersion: "HTTP1",
     }),
     dependencies: () => ({
       vpc: "VPC",
@@ -502,17 +503,6 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 30010,
       HealthCheckProtocol: "HTTP",
-      HealthCheckPort: "traffic-port",
-      HealthCheckEnabled: true,
-      HealthCheckIntervalSeconds: 30,
-      HealthCheckTimeoutSeconds: 5,
-      HealthyThresholdCount: 5,
-      HealthCheckPath: "/",
-      Matcher: {
-        HttpCode: "200",
-      },
-      TargetType: "instance",
-      ProtocolVersion: "HTTP1",
     }),
     dependencies: () => ({
       vpc: "VPC",
