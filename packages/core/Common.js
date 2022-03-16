@@ -338,11 +338,10 @@ exports.buildTagsObject = ({ name, namespace, config, userTags = {} }) => {
     namespaceKey,
   } = config;
 
-  assert(name);
   assert(providerName);
   assert(stage);
   return {
-    [nameKey]: name,
+    ...(name && { [nameKey]: name }),
     [managedByKey]: managedByValue,
     [createdByProviderKey]: providerName,
     ...(namespace && {

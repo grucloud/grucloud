@@ -108,6 +108,17 @@ const downloadS3Objects = ({ lives, commandOptions, programOptions }) =>
     tap((params) => {
       assert(true);
     }),
+    filter(
+      not(
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          get("Bucket"),
+          callProp("startsWith", "cdk-"),
+        ])
+      )
+    ),
     map((live) =>
       pipe([
         () =>
@@ -164,6 +175,7 @@ const downloadAssets = ({ specs, commandOptions, programOptions }) =>
         writersSpec: createWritersSpec(specs),
         commandOptions,
         programOptions,
+        filterModel,
       }),
       mapping: readMapping({ commandOptions, programOptions }),
     }),

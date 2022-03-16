@@ -17,13 +17,13 @@ module.exports = pipe([
     {
       type: "EventBus",
       Client: CloudWatchEventBus,
-      omitProperties: ["Arn"],
+      omitProperties: ["Arn", "Targets"],
       filterLive: () => pipe([pick([])]),
     },
     {
       type: "Rule",
       Client: CloudWatchEventRule,
-      //omitProperties: ["Arn", "CreatedBy", "Targets"],
+      omitProperties: ["Name", "Arn", "CreatedBy", "Targets"],
       //propertiesDefault: { EventBusName: "default" },
       compare: compareCloudWatchEvent({
         filterTarget: () => pipe([defaultsDeep({ EventBusName: "default" })]),

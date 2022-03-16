@@ -935,9 +935,6 @@ const addUsedBy =
           usedBy: findUsedBy({ lives, writersSpec }),
         })
       ),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
 const readModel = ({
@@ -969,19 +966,10 @@ const readModel = ({
     flatten,
     pluck("resources"),
     flatten,
-    tap((params) => {
-      assert(true);
-    }),
     filterModel,
-    tap((params) => {
-      assert(true);
-    }),
     removeDefaultDependencies({ writersSpec }),
     addUsedBy({ writersSpec }),
     //TODO handle multi provider
-    tap((params) => {
-      assert(true);
-    }),
   ]);
 
 exports.readModel = readModel;

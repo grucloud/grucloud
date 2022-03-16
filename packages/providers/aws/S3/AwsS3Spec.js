@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { tap, pipe, assign, map, omit, pick, get } = require("rubico");
-const { when, includes, isObject } = require("rubico/x");
+const { when, includes, isObject, callProp } = require("rubico/x");
 
 const mime = require("mime-types");
 
@@ -152,6 +152,8 @@ module.exports = pipe([
       },
       Client: AwsS3Object,
       compare: compareS3Object,
+      ignoreResource: () =>
+        pipe([get("live.Bucket"), callProp("startsWith", "cdk-")]),
       filterLive: ({ commandOptions, programOptions, resource: { live } }) =>
         pipe([
           pick(["ContentType", "ServerSideEncryption", "StorageClass"]),

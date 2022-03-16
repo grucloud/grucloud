@@ -4,8 +4,8 @@ const {
   tap,
   get,
   eq,
-  assign,
-  omit,
+  fork,
+  and,
   tryCatch,
   pick,
   switchCase,
@@ -29,13 +29,30 @@ const { createLambda } = require("../Lambda/LambdaCommon");
 
 const findId = get("live.IntegrationId");
 
-const integrationUriToName = pipe([callProp("split", ":"), last]);
+const uriToName = pipe([callProp("split", ":"), last]);
+const eventBusUriToName = pipe([callProp("split", "/"), last]);
 
 const findName = pipe([
   get("live"),
-  //TODO eventBus
-  ({ ApiName, IntegrationUri = "" }) =>
-    `integration::${ApiName}::${integrationUriToName(IntegrationUri)}`,
+  tap((params) => {
+    assert(true);
+  }),
+  fork({
+    apiName: pipe([({ ApiName }) => `integration::${ApiName}::`]),
+    integration: switchCase([
+      get("IntegrationUri"),
+      pipe([get("IntegrationUri"), uriToName]),
+      get("RequestParameters.EventBusName"),
+      pipe([get("RequestParameters.EventBusName"), eventBusUriToName]),
+      (params) => {
+        assert(false);
+      },
+    ]),
+  }),
+  tap((params) => {
+    assert(true);
+  }),
+  ({ apiName, integration }) => `${apiName}${integration}`,
 ]);
 
 const pickId = pick(["ApiId", "IntegrationId"]);
@@ -64,6 +81,11 @@ exports.Integration = ({ spec, config }) => {
       type: "EventBus",
       group: "CloudWatchEvents",
       ids: [pipe([() => live, get("RequestParameters.EventBusName")])()],
+    },
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [live.CredentialsArn],
     },
   ];
 
@@ -99,17 +121,19 @@ exports.Integration = ({ spec, config }) => {
       pipe([
         tap(() => {
           assert(api);
-          assert(lambdaFunction);
         }),
-        lambdaAddPermission({
-          lambda,
-          lambdaFunction,
-          SourceArn: `arn:aws:execute-api:${
-            config.region
-          }:${config.accountId()}:${getField(api, "ApiId")}/*/*/${
-            lambdaFunction.resource.name
-          }`,
-        }),
+        when(
+          () => lambdaFunction,
+          lambdaAddPermission({
+            lambda,
+            lambdaFunction,
+            SourceArn: `arn:aws:execute-api:${
+              config.region
+            }:${config.accountId()}:${getField(api, "ApiId")}/*/*/${
+              lambdaFunction?.resource.name
+            }`,
+          })
+        ),
       ]),
   });
 
@@ -127,11 +151,15 @@ exports.Integration = ({ spec, config }) => {
       }),
       () => live,
       tap.if(
-        eq(get("IntegrationType"), "AWS_PROXY"),
+        and([
+          eq(get("IntegrationType"), "AWS_PROXY"),
+          get("IntegrationUri"),
+          get("IntegrationId"),
+        ]),
         pipe([
-          () => ({
-            FunctionName: live.IntegrationUri,
-            StatementId: live.IntegrationId,
+          ({ IntegrationUri, IntegrationId }) => ({
+            FunctionName: IntegrationUri,
+            StatementId: IntegrationId,
           }),
           tryCatch(lambda().removePermission, (error) =>
             pipe([
@@ -159,7 +187,7 @@ exports.Integration = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { api, lambdaFunction },
+    dependencies: { api, lambdaFunction, eventBus, role },
   }) =>
     pipe([
       tap(() => {
@@ -168,10 +196,25 @@ exports.Integration = ({ spec, config }) => {
       () => otherProps,
       defaultsDeep({
         ApiId: getField(api, "ApiId"),
-        ...(lambdaFunction && {
-          IntegrationUri: getField(lambdaFunction, "Configuration.FunctionArn"),
-        }),
       }),
+      when(
+        () => lambdaFunction,
+        defaultsDeep({
+          IntegrationUri: getField(lambdaFunction, "Configuration.FunctionArn"),
+        })
+      ),
+      when(
+        () => eventBus,
+        defaultsDeep({
+          RequestParameters: { EventBusName: getField(eventBus, "Arn") },
+        })
+      ),
+      when(
+        () => role,
+        defaultsDeep({
+          CredentialsArn: getField(role, "Arn"),
+        })
+      ),
     ])();
 
   return {

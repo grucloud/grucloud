@@ -95,7 +95,7 @@ exports.Stage = ({ spec, config }) => {
       defaultsDeep({
         StageName: name,
         ApiId: getField(api, "ApiId"),
-        Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
+        Tags: buildTagsObject({ config, namespace, userTags: Tags }),
       }),
       tap((params) => {
         assert(true);

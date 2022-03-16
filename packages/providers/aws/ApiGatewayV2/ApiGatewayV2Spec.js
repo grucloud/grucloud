@@ -71,10 +71,11 @@ module.exports = pipe([
         "DeploymentId",
         "LastUpdatedDate",
         "AccessLogSettings.DestinationArn",
+        "LastDeploymentStatusMessage",
       ],
       filterLive: () =>
         pipe([
-          pick(["AccessLogSettings", "StageVariables"]),
+          pick(["AccessLogSettings", "StageVariables", "AutoDeploy"]),
           omitIfEmpty(["StageVariables"]),
         ]),
       dependencies: {
@@ -150,6 +151,7 @@ module.exports = pipe([
         "IntegrationId",
         "ApiName",
         "RequestParameters.EventBusName",
+        "CredentialsArn",
       ],
       filterLive: () =>
         pipe([
@@ -169,6 +171,7 @@ module.exports = pipe([
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
         lambdaFunction: { type: "Function", group: "Lambda" },
         eventBus: { type: "EventBus", group: "CloudWatchEvents" },
+        role: { type: "Role", group: "IAM" },
       },
     },
     {
@@ -210,10 +213,12 @@ module.exports = pipe([
         "CreatedDate",
         "DeploymentId",
         "DeploymentStatus",
+        "DeploymentStatusMessage",
         "ApiName",
       ],
+      compare: compareApiGatewayV2({ filterAll: () => omit(["AutoDeployed"]) }),
       propertiesDefault: { AutoDeployed: false, Description: "" },
-      filterLive: () => pick(["Description"]),
+      filterLive: () => pick(["Description", "AutoDeployed"]),
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
         stage: { type: "Stage", group: "ApiGatewayV2", parent: true },
