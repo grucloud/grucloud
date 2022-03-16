@@ -9,7 +9,116 @@ exports.createResources = () => [
     name: "default",
     dependencies: () => ({
       cloudwatchRole:
-        "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-OX2SVOIAAEZG",
+        "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-1BD4XJCCR36O9",
+    }),
+  },
+  {
+    type: "Deployment",
+    group: "APIGateway",
+    name: "befavm",
+    properties: ({}) => ({
+      description: "Automatically created by the RestApi construct",
+    }),
+  },
+  {
+    type: "Integration",
+    group: "APIGateway",
+    properties: ({}) => ({
+      httpMethod: "GET",
+      requestParameters: {
+        "integration.request.path.id": "method.request.path.id",
+      },
+      requestTemplates: {
+        "application/json": {
+          TableName: "ApiDynamoStack-ApiDynamoTable66095DD3-1URGY6310RHOE",
+          KeyConditionExpression: "pk = :v1",
+          ExpressionAttributeValues: {
+            ":v1": {
+              S: "$input.params('id')",
+            },
+          },
+        },
+      },
+      type: "AWS",
+      uri: "arn:aws:apigateway:us-east-1:dynamodb:action/Query",
+      path: "/{id}",
+    }),
+    dependencies: () => ({
+      method: "ApiDynamoRestApi::/{id}::GET",
+      role: "ApiDynamoStack-IntegrationRole35EAE287-IA8X8W4J0FGV",
+      table: "ApiDynamoStack-ApiDynamoTable66095DD3-1URGY6310RHOE",
+    }),
+  },
+  {
+    type: "Integration",
+    group: "APIGateway",
+    properties: ({}) => ({
+      httpMethod: "POST",
+      requestTemplates: {
+        "application/json": {
+          TableName: "ApiDynamoStack-ApiDynamoTable66095DD3-1URGY6310RHOE",
+          Item: {
+            pk: {
+              S: "$input.path('$.pk')",
+            },
+            data: {
+              S: "$input.path('$.data')",
+            },
+          },
+        },
+      },
+      type: "AWS",
+      uri: "arn:aws:apigateway:us-east-1:dynamodb:action/PutItem",
+      path: "/{id}",
+    }),
+    dependencies: () => ({
+      method: "ApiDynamoRestApi::/{id}::POST",
+      role: "ApiDynamoStack-IntegrationRole35EAE287-IA8X8W4J0FGV",
+      table: "ApiDynamoStack-ApiDynamoTable66095DD3-1URGY6310RHOE",
+    }),
+  },
+  {
+    type: "Resource",
+    group: "APIGateway",
+    readOnly: true,
+    dependencies: () => ({
+      restApi: "ApiDynamoRestApi",
+    }),
+  },
+  {
+    type: "Resource",
+    group: "APIGateway",
+    properties: ({}) => ({
+      pathPart: "{id}",
+    }),
+    dependencies: () => ({
+      restApi: "ApiDynamoRestApi",
+      parent: "ApiDynamoRestApi::/",
+    }),
+  },
+  {
+    type: "Method",
+    group: "APIGateway",
+    properties: ({}) => ({
+      httpMethod: "GET",
+      requestParameters: {
+        "method.request.path.id": true,
+      },
+      path: "/{id}",
+    }),
+    dependencies: () => ({
+      resource: "ApiDynamoRestApi::/{id}",
+    }),
+  },
+  {
+    type: "Method",
+    group: "APIGateway",
+    properties: ({}) => ({
+      httpMethod: "POST",
+      path: "/{id}",
+    }),
+    dependencies: () => ({
+      resource: "ApiDynamoRestApi::/{id}",
     }),
   },
   {
@@ -38,7 +147,7 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "ApiDynamoStack-ApiDynamoTable66095DD3-Z6RNPRRX62QF",
+    name: "ApiDynamoStack-ApiDynamoTable66095DD3-1URGY6310RHOE",
     properties: ({}) => ({
       AttributeDefinitions: [
         {
@@ -58,7 +167,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-OX2SVOIAAEZG",
+    name: "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-1BD4XJCCR36O9",
     properties: ({}) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -84,7 +193,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ApiDynamoStack-IntegrationRole35EAE287-ZAW4HA8CPX9X",
+    name: "ApiDynamoStack-IntegrationRole35EAE287-IA8X8W4J0FGV",
     properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -120,7 +229,7 @@ exports.createResources = () => [
                 Resource: [
                   `arn:aws:dynamodb:${
                     config.region
-                  }:${config.accountId()}:table/ApiDynamoStack-ApiDynamoTable66095DD3-Z6RNPRRX62QF`,
+                  }:${config.accountId()}:table/ApiDynamoStack-ApiDynamoTable66095DD3-1URGY6310RHOE`,
                 ],
                 Effect: "Allow",
               },
@@ -129,6 +238,9 @@ exports.createResources = () => [
           PolicyName: "IntegrationRoleDefaultPolicy99182A66",
         },
       ],
+    }),
+    dependencies: () => ({
+      table: "ApiDynamoStack-ApiDynamoTable66095DD3-1URGY6310RHOE",
     }),
   },
 ];

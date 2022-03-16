@@ -8,10 +8,11 @@ exports.createResources = () => [
     type: "Rule",
     group: "CloudWatchEvents",
     name: "rule-test",
-    //TODO EventPattern
     properties: ({}) => ({
-      EventPattern:
-        '{"source":["aws.ec2"],"detail-type":["EC2 Instance State-change Notification"]}',
+      EventPattern: {
+        source: ["aws.ec2"],
+        "detail-type": ["EC2 Instance State-change Notification"],
+      },
       State: "ENABLED",
       Description: "testing rule",
       Tags: [
@@ -26,10 +27,11 @@ exports.createResources = () => [
     type: "Rule",
     group: "CloudWatchEvents",
     name: "rule-test-ec2",
-    //TODO EventPattern
     properties: ({}) => ({
-      EventPattern:
-        '{"source":["aws.acm"],"detail-type":["ACM Certificate Approaching Expiration"]}',
+      EventPattern: {
+        source: ["aws.acm"],
+        "detail-type": ["ACM Certificate Approaching Expiration"],
+      },
       State: "ENABLED",
       Tags: [
         {

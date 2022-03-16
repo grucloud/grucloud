@@ -125,7 +125,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
     properties: ({ config }) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -162,7 +161,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
     properties: ({ config }) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

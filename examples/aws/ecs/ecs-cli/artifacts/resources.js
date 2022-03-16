@@ -209,7 +209,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-TERDPQNAO5Q2",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

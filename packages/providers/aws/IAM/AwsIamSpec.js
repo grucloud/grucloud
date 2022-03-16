@@ -284,6 +284,7 @@ module.exports = pipe([
           type: "OpenIDConnectProvider",
           group: "IAM",
         },
+        table: { type: "Table", group: "DynamoDB" },
       },
       hasNoProperty: ({ resource }) =>
         pipe([

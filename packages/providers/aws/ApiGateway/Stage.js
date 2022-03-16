@@ -80,7 +80,7 @@ exports.Stage = ({ spec, config }) => {
         stageName: name,
         restApiId: getField(restApi, "id"),
         deploymentId: getField(restApi, "deployments[0].id"),
-        tags: buildTagsObject({ config, namespace, name, userTags: tags }),
+        tags: buildTagsObject({ config, namespace, userTags: tags }),
       }),
     ])();
 

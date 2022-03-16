@@ -4,13 +4,9 @@ const {
   pipe,
   tap,
   get,
-  eq,
   not,
-  assign,
   filter,
-  omit,
   tryCatch,
-  switchCase,
   pick,
   flatMap,
 } = require("rubico");
@@ -21,17 +17,21 @@ const logger = require("@grucloud/core/logger")({
 
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
-const {
-  throwIfNotAwsError,
-  tagsExtractFromDescription,
-  tagsRemoveFromDescription,
-} = require("../AwsCommon");
+const { throwIfNotAwsError } = require("../AwsCommon");
 
 const { createAPIGateway, ignoreErrorCodes } = require("./ApiGatewayCommon");
-const pickId = pick(["restApiId", "resourceId", "httpMethod"]);
+
+const pickId = pipe([
+  tap(({ restApiId }) => {
+    assert(restApiId);
+    assert(resourceId);
+    assert(httpMethod);
+  }),
+  pick(["restApiId", "resourceId", "httpMethod"]),
+]);
 
 exports.Method = ({ spec, config }) => {
   const apiGateway = createAPIGateway(config);
@@ -51,7 +51,8 @@ exports.Method = ({ spec, config }) => {
       tap((name) => {
         assert(name);
       }),
-      append(`_${live.httpMethod}`),
+      append(`::`),
+      append(live.httpMethod),
       tap((params) => {
         assert(true);
       }),
@@ -134,12 +135,6 @@ exports.Method = ({ spec, config }) => {
                 resourceId: id,
               })
             ),
-            map(
-              assign({
-                tags: tagsExtractFromDescription,
-                description: tagsRemoveFromDescription,
-              })
-            ),
           ]),
           (error) =>
             pipe([
@@ -168,27 +163,20 @@ exports.Method = ({ spec, config }) => {
       () => otherProps,
       defaultsDeep({
         restApiId: getField(resource, "restApiId"),
-        resource: getField(resource, "id"),
+        resourceId: getField(resource, "id"),
         ...(authorizer && {
           authorizerId: getField(authorizer, "authorizerId"),
         }),
-        tags: buildTagsObject({ name, namespace, config, userTags: Tags }),
       }),
     ])();
 
-  //TODO create
-  const create = ({ name, payload, resolvedDependencies: { restApi } }) =>
-    pipe([
-      tap(() => {
-        logger.info(`create method: ${name}`);
-        logger.debug(tos(payload));
-      }),
-      () => payload,
-      apiGateway().putMethod,
-      tap((params) => {
-        logger.info(`created method ${name}`);
-      }),
-    ])();
+  const create = client.create({
+    method: "putMethod",
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
+  });
 
   //TODO update
   const update = ({ name, payload, diff, live }) =>

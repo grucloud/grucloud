@@ -1,8 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, map, get, any, eq, filter, not } = require("rubico");
-const { size, isEmpty, find, append, callProp } = require("rubico/x");
-const { tos } = require("./tos");
-//const initSqlJs = require("sql.js");
+const { size, isEmpty, find, append, callProp, isString } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "Lives" });
 
@@ -64,7 +62,9 @@ exports.createLives = (livesRaw = []) => {
   const getById = ({ providerName, type, group, id = "" }) =>
     pipe([
       tap(() => {
-        //assert(id);
+        if (!isString(id)) {
+          assert(isString(id));
+        }
       }),
       () => getByType({ providerName, type, group }),
       find(pipe([get("id"), eq(callProp("toUpperCase"), id.toUpperCase())])),

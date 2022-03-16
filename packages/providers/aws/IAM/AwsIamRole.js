@@ -14,6 +14,7 @@ const {
   and,
 } = require("rubico");
 const {
+  flatten,
   defaultsDeep,
   isEmpty,
   forEach,
@@ -64,6 +65,28 @@ exports.AwsIamRole = ({ spec, config }) => {
       type: "Policy",
       group: "IAM",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
+    },
+    {
+      type: "Table",
+      group: "DynamoDB",
+      ids: pipe([
+        () => live,
+        get("Policies"),
+        pluck("PolicyDocument"),
+        pluck("Statement"),
+        flatten,
+        pluck("Resource"),
+        flatten,
+        filter(not(isEmpty)),
+        filter((id) =>
+          lives.getById({
+            id,
+            providerName: config.providerName,
+            type: "Table",
+            group: "DynamoDB",
+          })
+        ),
+      ])(),
     },
     {
       type: "OpenIDConnectProvider",

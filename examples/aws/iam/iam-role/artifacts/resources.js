@@ -9,7 +9,6 @@ exports.createResources = () => [
     name: "role-ec2-read-only",
     properties: ({}) => ({
       Description: "Allows EC2 instances to call AWS services on your behalf.",
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

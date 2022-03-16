@@ -76,7 +76,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "roleApiGatewayCloudWatch",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

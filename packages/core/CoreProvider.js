@@ -40,6 +40,7 @@ const {
   values,
 } = require("rubico/x");
 const fs = require("fs").promises;
+const util = require("util");
 const logger = require("./logger")({ prefix: "CoreProvider" });
 const { tos } = require("./tos");
 const { createSpec } = require("./SpecDefault");
@@ -380,7 +381,12 @@ function CoreProvider({
         () => mapNameToResource.get(name),
         tap((resource) => {
           if (!resource) {
-            assert(false, `no resource for ${name}`);
+            assert(
+              false,
+              `no resource for ${name}, available resources:\n${[
+                ...mapNameToResource.keys(),
+              ].join("\n")} )}`
+            );
           }
         }),
       ])(),

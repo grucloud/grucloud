@@ -110,6 +110,7 @@ module.exports = pipe([
     {
       type: "ApiMapping",
       Client: ApiMapping,
+      //TODO inferName
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,

@@ -205,6 +205,7 @@ module.exports = pipe([
       compare: compareAws({ getLiveTags: () => [], getTargetTags: () => [] })({
         filterAll: () => pipe([pick([])]),
       }),
+      //TODO inferName
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,
@@ -358,6 +359,7 @@ module.exports = pipe([
       })({
         filterLive: () => pipe([pick(["RouteTableId", "SubnetId"])]),
       }),
+      //TODO inferName
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,
@@ -398,6 +400,7 @@ module.exports = pipe([
           ]),
       }),
       filterLive: () => pipe([pick(["DestinationCidrBlock"])]),
+      //TODO inferName
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,

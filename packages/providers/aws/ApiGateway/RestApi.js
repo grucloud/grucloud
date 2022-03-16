@@ -563,18 +563,18 @@ exports.RestApi = ({ spec, config }) => {
         //       assert(true);
         //     }),
         //   ])(),
-        schema: ({ id: restApiId, name, description }) =>
-          pipe([
-            () => ({ restApiId }),
-            fetchRestApiChilds,
-            tap((params) => {
-              assert(true);
-            }),
-            generateOpenApi2Schema({ name, description }),
-            tap((params) => {
-              assert(true);
-            }),
-          ])(),
+        // schema: ({ id: restApiId, name, description }) =>
+        //   pipe([
+        //     () => ({ restApiId }),
+        //     fetchRestApiChilds,
+        //     tap((params) => {
+        //       assert(true);
+        //     }),
+        //     generateOpenApi2Schema({ name, description }),
+        //     tap((params) => {
+        //       assert(true);
+        //     }),
+        //   ])(),
       }),
     ]);
 
@@ -625,10 +625,10 @@ exports.RestApi = ({ spec, config }) => {
     getById,
     postCreate: (params) =>
       pipe([
-        tap(putRestApi(params)),
+        //tap(putRestApi(params)),
         ({ id }) => ({ restApiId: id, ...params.deployment }),
         omit(["stageName"]),
-        apiGateway().createDeployment,
+        //apiGateway().createDeployment,
       ]),
   });
 
@@ -644,8 +644,8 @@ exports.RestApi = ({ spec, config }) => {
             get("liveDiff.deleted.schema"),
           ]),
           pipe([
-            () => ({ id: live.id }),
-            putRestApi({ name, payload }),
+            // () => ({ id: live.id }),
+            // putRestApi({ name, payload }),
             () => ({ restApiId: live.id, ...payload.deployment }),
             tap(() => {
               logger.info(`createDeployment ${name}`);
@@ -697,22 +697,22 @@ exports.RestApi = ({ spec, config }) => {
         schemaFile,
         tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
-      assign({
-        schema: pipe([
-          () => path.resolve(programOptions.workingDirectory, schemaFile),
-          (schemaFileFull) =>
-            tryCatch(
-              pipe([() => fs.readFile(schemaFileFull, "utf-8"), JSON.parse]),
-              (error) => {
-                console.error(
-                  `Problem reading or parsing ${schemaFileFull}, error:`,
-                  error
-                );
-                throw error;
-              }
-            )(),
-        ]),
-      }),
+      // assign({
+      //   schema: pipe([
+      //     () => path.resolve(programOptions.workingDirectory, schemaFile),
+      //     (schemaFileFull) =>
+      //       tryCatch(
+      //         pipe([() => fs.readFile(schemaFileFull, "utf-8"), JSON.parse]),
+      //         (error) => {
+      //           console.error(
+      //             `Problem reading or parsing ${schemaFileFull}, error:`,
+      //             error
+      //           );
+      //           throw error;
+      //         }
+      //       )(),
+      //   ]),
+      // }),
       assign({
         description: pipe([get("schema.info.description", description)]),
       }),

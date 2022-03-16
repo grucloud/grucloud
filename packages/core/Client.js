@@ -146,7 +146,9 @@ const decorateLive =
             map(
               pipe([
                 tap(({ type, group }) => {
-                  assert(type);
+                  if (!type) {
+                    assert(type);
+                  }
                   //assert(group);
                 }),
                 assign({

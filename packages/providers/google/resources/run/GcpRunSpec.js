@@ -86,6 +86,7 @@ module.exports = () =>
       dependencies: {
         service: { type: "Service", group: "run", parent: true },
       },
+      //TODO inferName
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,

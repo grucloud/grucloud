@@ -56,12 +56,17 @@ exports.Deployment = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getDeployments-property
   const getList = client.getListWithParent({
     parent: { type: "RestApi", group: "APIGateway" },
-    pickKey: pipe([({ id }) => ({ restApiId: id })]),
+    pickKey: pipe([
+      tap(({ id }) => {
+        assert(id);
+      }),
+      ({ id }) => ({ restApiId: id }),
+    ]),
     method: "getDeployments",
     getParam: "items",
     config,
-    decorate: ({ lives, parent: { id: restApiId, Tags } }) =>
-      defaultsDeep({ restApiId, Tags }),
+    decorate: ({ lives, parent: { id: restApiId } }) =>
+      defaultsDeep({ restApiId }),
   });
 
   const getByName = getByNameCore({ getList, findName });
