@@ -56,6 +56,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
   const decorate = () =>
     pipe([
       assign({
+        EventPattern: pipe([get("EventPattern", {}), JSON.parse]),
         Targets: pipe([
           ({ Name, EventBusName }) => ({ Rule: Name, EventBusName }),
           //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTargetsByRule-property
@@ -100,6 +101,9 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
   const create = client.create({
     method: "putRule",
+    filterPayload: pipe([
+      assign({ EventPattern: pipe([get("EventPattern"), JSON.stringify]) }),
+    ]),
     pickCreated:
       ({ payload }) =>
       () =>
