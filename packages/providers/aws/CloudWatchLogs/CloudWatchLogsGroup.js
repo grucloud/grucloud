@@ -43,7 +43,7 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
     get("live.logGroupName"),
     (logGroupName) =>
       pipe([
-        () => ["/aws/", "/ecs/"],
+        () => ["/ecs/"],
         any((prefix) => logGroupName.startsWith(prefix)),
       ])(),
     tap((params) => {

@@ -12,6 +12,7 @@ const {
   eq,
   not,
   filter,
+  any,
 } = require("rubico");
 const {
   when,
@@ -36,7 +37,7 @@ const {
   AwsIamOpenIDConnectProvider,
 } = require("./AwsIamOpenIDConnectProvider");
 
-const { compareAws, isOurMinion } = require("../AwsCommon");
+const { compareAws, isOurMinion, ignoreResourceCdk } = require("../AwsCommon");
 const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "IAM";
@@ -55,8 +56,10 @@ const filterAttachedPolicies = ({ lives }) =>
     assign({
       AttachedPolicies: pipe([
         get("AttachedPolicies"),
-        filter(({ PolicyArn }) =>
-          pipe([() => lives, not(find(get("id"), PolicyArn))])()
+        filter(
+          not(({ PolicyArn }) =>
+            pipe([() => lives, any(eq(get("id"), PolicyArn))])()
+          )
         ),
       ]),
     }),
@@ -145,6 +148,7 @@ module.exports = pipe([
       compare: compareIAM({
         filterAll: () => pipe([pick(["AssumeRolePolicyDocument"])]),
       }),
+      ignoreResource: ignoreResourceCdk,
       transformDependencies: ({ provider }) =>
         pipe([
           assign({

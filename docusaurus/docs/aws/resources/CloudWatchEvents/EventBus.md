@@ -20,6 +20,7 @@ exports.createResources = () => [
 ## Used By
 
 - [Rule](./Rule.md)
+- [ApiGatewayV2 Integration](../ApiGatewayV2/Integration.md)
 
 ## Full Examples
 

@@ -75,6 +75,17 @@ exports.createResources = () => [
       stage: "$default",
     }),
   },
+  {
+    type: "Deployment",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      Description:
+        "Automatic deployment triggered by changes to the Api configuration",
+    }),
+    dependencies: () => ({
+      api: "MyHttpApi",
+    }),
+  },
   { type: "EventBus", group: "CloudWatchEvents", name: "MyEventBus" },
   {
     type: "Rule",

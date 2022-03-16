@@ -164,7 +164,7 @@ const findDependsOnType = ({
       ])
     ),
     tap((x) => {
-      assert(x);
+      assert(x, `${group}::${type}, ${JSON.stringify(dependsOnType)}`);
     }),
     get("dependsOn", []),
     flatMap((dependOn) =>

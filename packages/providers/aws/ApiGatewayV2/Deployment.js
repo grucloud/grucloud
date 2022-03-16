@@ -64,13 +64,8 @@ exports.Deployment = ({ spec, config }) => {
     method: "getDeployments",
     getParam: "Items",
     config,
-    decorate: ({ parent: { ApiId, Name: ApiName, Tags } }) =>
-      pipe([
-        tap((params) => {
-          assert(ApiName);
-        }),
-        defaultsDeep({ ApiId, ApiName /*, Tags*/ }),
-      ]),
+    decorate: ({ parent: { ApiId, Name: ApiName } }) =>
+      pipe([defaultsDeep({ ApiId, ApiName })]),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -99,7 +94,6 @@ exports.Deployment = ({ spec, config }) => {
     method: "deleteDeployment",
     getById,
     ignoreErrorCodes: ["NotFoundException", "BadRequestException"],
-    config,
   });
 
   const configDefault = ({

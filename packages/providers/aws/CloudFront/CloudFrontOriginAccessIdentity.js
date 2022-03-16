@@ -53,7 +53,6 @@ exports.CloudFrontOriginAccessIdentity = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getCloudFrontOriginAccessIdentity",
-    //getField: "CloudFrontOriginAccessIdentity",
     ignoreErrorCodes,
   });
 
@@ -82,9 +81,6 @@ exports.CloudFrontOriginAccessIdentity = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#deleteCloudFrontOriginAccessIdentity-property
   const destroy = client.destroy({
     pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       ({ ETag, CloudFrontOriginAccessIdentity: { Id } }) => ({
         Id,
         IfMatch: ETag,

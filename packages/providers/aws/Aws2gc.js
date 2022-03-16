@@ -23,6 +23,8 @@ const path = require("path");
 const Fs = require("fs");
 const fs = require("fs").promises;
 
+const ignoreResourceWithTags = ["aws:cloudformation", "aws-cdk"];
+
 const ignoredTags = [
   "aws",
   "alpha.eksctl.io",
@@ -106,6 +108,17 @@ const downloadS3Objects = ({ lives, commandOptions, programOptions }) =>
     tap((params) => {
       assert(true);
     }),
+    filter(
+      not(
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          get("Bucket"),
+          callProp("startsWith", "cdk-"),
+        ])
+      )
+    ),
     map((live) =>
       pipe([
         () =>
@@ -162,6 +175,7 @@ const downloadAssets = ({ specs, commandOptions, programOptions }) =>
         writersSpec: createWritersSpec(specs),
         commandOptions,
         programOptions,
+        filterModel,
       }),
       mapping: readMapping({ commandOptions, programOptions }),
     }),
@@ -185,6 +199,19 @@ const filterModel = pipe([
   tap((params) => {
     assert(true);
   }),
+  filter(
+    not(
+      pipe([
+        get("live.Tags"),
+        any(({ Key = "" } = {}) =>
+          pipe([
+            () => ignoreResourceWithTags,
+            any((ignoreTag) => Key.startsWith(ignoreTag)),
+          ])()
+        ),
+      ])
+    )
+  ),
   map(
     assign({
       live: pipe([

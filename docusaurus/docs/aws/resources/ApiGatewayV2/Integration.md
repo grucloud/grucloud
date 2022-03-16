@@ -104,6 +104,7 @@ exports.createResources = () => [
 
 - [API](./Api.md)
 - [Lambda Function](../Lambda/Function.md)
+- [Event Bus](../CloudWatchEvents/EventBus.md)
 
 ## Used By
 
