@@ -92,7 +92,7 @@ module.exports = pipe([
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
       },
-      ignoreResource: () => true,
+      ignoreResource: () => () => true,
       cannotBeDeleted: () => true,
     },
     {
@@ -101,7 +101,7 @@ module.exports = pipe([
       dependencies: {
         resource: { type: "Resource", group: "APIGateway", parent: true },
       },
-      ignoreResource: () => true,
+      ignoreResource: () => () => true,
       cannotBeDeleted: () => true,
     },
     {

@@ -1,0 +1,100 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "ApiDynamoRestApi",
+    "version": "1"
+  },
+  "paths": {
+    "/": {},
+    "/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {},
+            "content": {}
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "credentials": "arn:aws:iam::840541460064:role/ApiDynamoStack-IntegrationRole35EAE287-ZAW4HA8CPX9X",
+          "httpMethod": "POST",
+          "passthroughBehavior": "WHEN_NO_TEMPLATES",
+          "requestParameters": {
+            "integration.request.path.id": "method.request.path.id"
+          },
+          "requestTemplates": {
+            "application/json": "{\"TableName\":\"ApiDynamoStack-ApiDynamoTable66095DD3-Z6RNPRRX62QF\",\"KeyConditionExpression\":\"pk = :v1\",\"ExpressionAttributeValues\":{\":v1\":{\"S\":\"$input.params('id')\"}}}"
+          },
+          "type": "AWS",
+          "uri": "arn:aws:apigateway:us-east-1:dynamodb:action/Query",
+          "responses": {
+            "default": {
+              "responseParameters": {},
+              "responseTemplates": {},
+              "statusCode": "200"
+            }
+          }
+        }
+      },
+      "post": {
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "headers": {},
+            "content": {}
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "credentials": "arn:aws:iam::840541460064:role/ApiDynamoStack-IntegrationRole35EAE287-ZAW4HA8CPX9X",
+          "httpMethod": "POST",
+          "passthroughBehavior": "WHEN_NO_TEMPLATES",
+          "requestParameters": {},
+          "requestTemplates": {
+            "application/json": "{\"TableName\":\"ApiDynamoStack-ApiDynamoTable66095DD3-Z6RNPRRX62QF\",\"Item\":{\"pk\":{\"S\":\"$input.path('$.pk')\"},\"data\":{\"S\":\"$input.path('$.data')\"}}}"
+          },
+          "type": "AWS",
+          "uri": "arn:aws:apigateway:us-east-1:dynamodb:action/PutItem",
+          "responses": {
+            "default": {
+              "responseParameters": {},
+              "responseTemplates": {
+                "application/json": "{}"
+              },
+              "statusCode": "200"
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Empty": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "title": "Empty Schema",
+        "type": "object"
+      },
+      "Error": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "title": "Error Schema",
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
