@@ -23,6 +23,8 @@ const path = require("path");
 const Fs = require("fs");
 const fs = require("fs").promises;
 
+const ignoreResourceWithTags = ["aws:cloudformation", "aws-cdk"];
+
 const ignoredTags = [
   "aws",
   "alpha.eksctl.io",
@@ -185,6 +187,19 @@ const filterModel = pipe([
   tap((params) => {
     assert(true);
   }),
+  filter(
+    not(
+      pipe([
+        get("live.Tags"),
+        any(({ Key = "" } = {}) =>
+          pipe([
+            () => ignoreResourceWithTags,
+            any((ignoreTag) => Key.startsWith(ignoreTag)),
+          ])()
+        ),
+      ])
+    )
+  ),
   map(
     assign({
       live: pipe([
