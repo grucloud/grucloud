@@ -4,7 +4,11 @@ const { callProp, when, defaultsDeep } = require("rubico/x");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
-const { compareAws, isOurMinionFactory } = require("../AwsCommon");
+const {
+  compareAws,
+  isOurMinionFactory,
+  ignoreResourceCdk,
+} = require("../AwsCommon");
 const { EcrRepository } = require("./EcrRepository");
 const { EcrRegistry } = require("./EcrRegistry");
 
@@ -27,6 +31,7 @@ module.exports = pipe([
             omitIfEmpty(["lifecyclePolicyText", "policyText"]),
           ]),
       }),
+      ignoreResource: ignoreResourceCdk,
       filterLive: ({ providerConfig }) =>
         pipe([
           pick([

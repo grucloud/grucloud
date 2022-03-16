@@ -55,7 +55,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       api: "MyHttpApi",
-      integration: "integration::MyHttpApi::",
+      integration: "integration::MyHttpApi::MyEventBus",
     }),
   },
   {
@@ -74,7 +74,7 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "ApiEventbridgeStack-EventLoggerRuleC0DD3E40-9QUOOGMMJ7E1",
+    name: "ApiEventbridgeStack-EventLoggerRuleC0DD3E40-5CW9EC6LK143",
     properties: ({}) => ({
       Description: "Log all events",
       EventPattern: '{"region":["ap-southeast-2"]}',
@@ -89,6 +89,19 @@ exports.createResources = () => [
     dependencies: () => ({
       eventBus: "MyEventBus",
     }),
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "/aws/events/MyEventBus",
+    properties: ({}) => ({
+      retentionInDays: 731,
+    }),
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "/aws/lambda/ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-bue4fvxoCK8n",
   },
   {
     type: "Repository",
@@ -107,7 +120,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-VEFQ7FPG4DH",
+    name: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-CSO0224XWSKH",
     properties: ({}) => ({
       Path: "/",
       AssumeRolePolicyDocument: {
@@ -155,7 +168,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-16CKN6OG527GA",
+    name: "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-U8MBYFGYOC7W",
     properties: ({ config }) => ({
       Path: "/",
       AssumeRolePolicyDocument: {
@@ -216,289 +229,9 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Role",
-    group: "IAM",
-    name: "cdk-hnb659fds-deploy-role-840541460064-us-east-1",
-    properties: ({ config }) => ({
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              AWS: "arn:aws:iam::840541460064:root",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      Policies: [
-        {
-          PolicyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Action: [
-                  "cloudformation:CreateChangeSet",
-                  "cloudformation:DeleteChangeSet",
-                  "cloudformation:DescribeChangeSet",
-                  "cloudformation:DescribeStacks",
-                  "cloudformation:ExecuteChangeSet",
-                  "cloudformation:CreateStack",
-                  "cloudformation:UpdateStack",
-                ],
-                Resource: `*`,
-                Effect: "Allow",
-                Sid: "CloudFormationPermissions",
-              },
-              {
-                Condition: {
-                  StringNotEquals: {
-                    "s3:ResourceAccount": "840541460064",
-                  },
-                },
-                Action: [
-                  "s3:GetObject*",
-                  "s3:GetBucket*",
-                  "s3:List*",
-                  "s3:Abort*",
-                  "s3:DeleteObject*",
-                  "s3:PutObject*",
-                ],
-                Resource: `*`,
-                Effect: "Allow",
-                Sid: "PipelineCrossAccountArtifactsBucket",
-              },
-              {
-                Condition: {
-                  StringEquals: {
-                    "kms:ViaService": "s3.us-east-1.amazonaws.com",
-                  },
-                },
-                Action: [
-                  "kms:Decrypt",
-                  "kms:DescribeKey",
-                  "kms:Encrypt",
-                  "kms:ReEncrypt*",
-                  "kms:GenerateDataKey*",
-                ],
-                Resource: `*`,
-                Effect: "Allow",
-                Sid: "PipelineCrossAccountArtifactsKey",
-              },
-              {
-                Action: "iam:PassRole",
-                Resource: `arn:aws:iam::${config.accountId()}:role/cdk-hnb659fds-cfn-exec-role-840541460064-${
-                  config.region
-                }`,
-                Effect: "Allow",
-              },
-              {
-                Action: [
-                  "cloudformation:DescribeStackEvents",
-                  "cloudformation:GetTemplate",
-                  "cloudformation:DeleteStack",
-                  "cloudformation:UpdateTerminationProtection",
-                  "sts:GetCallerIdentity",
-                ],
-                Resource: `*`,
-                Effect: "Allow",
-                Sid: "CliPermissions",
-              },
-              {
-                Action: ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
-                Resource: [
-                  `arn:aws:s3:::cdk-hnb659fds-assets-${config.accountId()}-${
-                    config.region
-                  }`,
-                  `arn:aws:s3:::cdk-hnb659fds-assets-${config.accountId()}-${
-                    config.region
-                  }/*`,
-                ],
-                Effect: "Allow",
-                Sid: "CliStagingBucket",
-              },
-              {
-                Action: ["ssm:GetParameter"],
-                Resource: [
-                  `arn:aws:ssm:${
-                    config.region
-                  }:${config.accountId()}:parameter/cdk-bootstrap/hnb659fds/version`,
-                ],
-                Effect: "Allow",
-                Sid: "ReadVersion",
-              },
-            ],
-          },
-          PolicyName: "default",
-        },
-      ],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    name: "cdk-hnb659fds-file-publishing-role-840541460064-us-east-1",
-    properties: ({ config }) => ({
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              AWS: "arn:aws:iam::840541460064:root",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      Policies: [
-        {
-          PolicyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Action: [
-                  "s3:GetObject*",
-                  "s3:GetBucket*",
-                  "s3:GetEncryptionConfiguration",
-                  "s3:List*",
-                  "s3:DeleteObject*",
-                  "s3:PutObject*",
-                  "s3:Abort*",
-                ],
-                Resource: [
-                  `arn:aws:s3:::cdk-hnb659fds-assets-${config.accountId()}-${
-                    config.region
-                  }`,
-                  `arn:aws:s3:::cdk-hnb659fds-assets-${config.accountId()}-${
-                    config.region
-                  }/*`,
-                ],
-                Effect: "Allow",
-              },
-              {
-                Action: [
-                  "kms:Decrypt",
-                  "kms:DescribeKey",
-                  "kms:Encrypt",
-                  "kms:ReEncrypt*",
-                  "kms:GenerateDataKey*",
-                ],
-                Resource: `arn:aws:kms:${
-                  config.region
-                }:${config.accountId()}:key/AWS_MANAGED_KEY`,
-                Effect: "Allow",
-              },
-            ],
-          },
-          PolicyName:
-            "cdk-hnb659fds-file-publishing-role-default-policy-840541460064-us-east-1",
-        },
-      ],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    name: "cdk-hnb659fds-image-publishing-role-840541460064-us-east-1",
-    properties: ({ config }) => ({
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              AWS: "arn:aws:iam::840541460064:root",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      Policies: [
-        {
-          PolicyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Action: [
-                  "ecr:PutImage",
-                  "ecr:InitiateLayerUpload",
-                  "ecr:UploadLayerPart",
-                  "ecr:CompleteLayerUpload",
-                  "ecr:BatchCheckLayerAvailability",
-                  "ecr:DescribeRepositories",
-                  "ecr:DescribeImages",
-                  "ecr:BatchGetImage",
-                  "ecr:GetDownloadUrlForLayer",
-                ],
-                Resource: `arn:aws:ecr:${
-                  config.region
-                }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-840541460064-us-east-1`,
-                Effect: "Allow",
-              },
-              {
-                Action: ["ecr:GetAuthorizationToken"],
-                Resource: `*`,
-                Effect: "Allow",
-              },
-            ],
-          },
-          PolicyName:
-            "cdk-hnb659fds-image-publishing-role-default-policy-840541460064-us-east-1",
-        },
-      ],
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    name: "cdk-hnb659fds-lookup-role-840541460064-us-east-1",
-    properties: ({}) => ({
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2008-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              AWS: "arn:aws:iam::840541460064:root",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-      Policies: [
-        {
-          PolicyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Action: ["kms:Decrypt"],
-                Resource: `*`,
-                Effect: "Deny",
-                Sid: "DontReadSecrets",
-              },
-            ],
-          },
-          PolicyName: "LookupRolePolicy",
-        },
-      ],
-      AttachedPolicies: [
-        {
-          PolicyName: "ReadOnlyAccess",
-          PolicyArn: "arn:aws:iam::aws:policy/ReadOnlyAccess",
-        },
-      ],
-    }),
-  },
-  {
     type: "Function",
     group: "Lambda",
-    name: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-QCABOEbNQvRH",
+    name: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-bue4fvxoCK8n",
     properties: ({}) => ({
       Handler: "index.handler",
       PackageType: "Zip",
@@ -508,45 +241,7 @@ exports.createResources = () => [
       MemorySize: 128,
     }),
     dependencies: () => ({
-      role: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-VEFQ7FPG4DH",
-    }),
-  },
-  {
-    type: "Bucket",
-    group: "S3",
-    name: "cdk-hnb659fds-assets-840541460064-us-east-1",
-    properties: ({}) => ({
-      ServerSideEncryptionConfiguration: {
-        Rules: [
-          {
-            ApplyServerSideEncryptionByDefault: {
-              SSEAlgorithm: "aws:kms",
-            },
-            BucketKeyEnabled: false,
-          },
-        ],
-      },
-      Policy: {
-        Version: "2012-10-17",
-        Id: "AccessControl",
-        Statement: [
-          {
-            Sid: "AllowSSLRequestsOnly",
-            Effect: "Deny",
-            Principal: "*",
-            Action: "s3:*",
-            Resource: [
-              "arn:aws:s3:::cdk-hnb659fds-assets-840541460064-us-east-1",
-              "arn:aws:s3:::cdk-hnb659fds-assets-840541460064-us-east-1/*",
-            ],
-            Condition: {
-              Bool: {
-                "aws:SecureTransport": "false",
-              },
-            },
-          },
-        ],
-      },
+      role: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-CSO0224XWSKH",
     }),
   },
   {
@@ -558,19 +253,6 @@ exports.createResources = () => [
       ServerSideEncryption: "aws:kms",
       source:
         "s3/cdk-hnb659fds-assets-840541460064-us-east-1/assets/f3d3a3cc7f26921b237eff24fc5dd7aef8f0465a1f376b8f7918eb3d4b3e8797.zip.zip",
-    }),
-    dependencies: () => ({
-      bucket: "cdk-hnb659fds-assets-840541460064-us-east-1",
-    }),
-  },
-  {
-    type: "Parameter",
-    group: "SSM",
-    name: "/cdk-bootstrap/hnb659fds/version",
-    properties: ({}) => ({
-      Type: "String",
-      Value: "10",
-      DataType: "text",
     }),
   },
 ];

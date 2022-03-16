@@ -792,3 +792,6 @@ exports.destroyAutoScalingGroupById = ({ autoScalingGroup, lives, config }) =>
       ])
     ),
   ]);
+
+exports.ignoreResourceCdk = () =>
+  pipe([get("name"), callProp("startsWith", "cdk-")]);
