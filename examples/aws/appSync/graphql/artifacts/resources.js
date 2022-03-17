@@ -200,6 +200,9 @@ exports.createResources = () => [
         },
       ],
     }),
+    dependencies: () => ({
+      table: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
+    }),
   },
   {
     type: "Function",

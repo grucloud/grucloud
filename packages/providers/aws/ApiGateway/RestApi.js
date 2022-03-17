@@ -672,6 +672,9 @@ exports.RestApi = ({ spec, config }) => {
       tap((params) => {
         assert(true);
       }),
+      assign({
+        description: pipe([get("schema.info.description")]),
+      }),
     ])();
 
   const buildResourceArn = ({ id }) =>

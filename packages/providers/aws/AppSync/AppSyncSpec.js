@@ -133,36 +133,39 @@ module.exports = pipe([
             "httpConfig",
             "relationalDatabaseConfig",
           ]),
-          assign({
-            httpConfig: pipe([
-              get("httpConfig"),
-              when(
-                get("endpoint"),
-                assign({
-                  authorizationConfig: pipe([
-                    get(["authorizationConfig"]),
-                    assign({
-                      awsIamConfig: pipe([
-                        get("awsIamConfig"),
-                        assign({
-                          signingRegion: pipe([
-                            get("signingRegion"),
-                            replaceRegion(providerConfig),
-                            (resource) => () => "`" + resource + "`",
-                          ]),
-                        }),
-                      ]),
-                    }),
-                  ]),
-                  endpoint: pipe([
-                    get("endpoint"),
-                    replaceRegion(providerConfig),
-                    (resource) => () => "`" + resource + "`",
-                  ]),
-                })
-              ),
-            ]),
-          }),
+          when(
+            get("httpConfig"),
+            assign({
+              httpConfig: pipe([
+                get("httpConfig"),
+                when(
+                  get("endpoint"),
+                  assign({
+                    authorizationConfig: pipe([
+                      get(["authorizationConfig"]),
+                      assign({
+                        awsIamConfig: pipe([
+                          get("awsIamConfig"),
+                          assign({
+                            signingRegion: pipe([
+                              get("signingRegion"),
+                              replaceRegion(providerConfig),
+                              (resource) => () => "`" + resource + "`",
+                            ]),
+                          }),
+                        ]),
+                      }),
+                    ]),
+                    endpoint: pipe([
+                      get("endpoint"),
+                      replaceRegion(providerConfig),
+                      (resource) => () => "`" + resource + "`",
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
           //TODO omit elasticsearchConfig.xxx ?
         ]),
       dependencies: {

@@ -45,7 +45,7 @@ exports.diffToPatch = ({ diff }) =>
         get("liveDiff.updated", {}),
         map.entries(([key, value]) => [
           key,
-          { op: "replace", path: `/${key}`, value: `${value.toString()}` },
+          { op: "replace", path: `/${key}`, value: `${value?.toString()}` },
         ]),
         values,
       ]),
