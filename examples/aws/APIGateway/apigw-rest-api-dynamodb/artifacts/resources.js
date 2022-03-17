@@ -24,17 +24,6 @@ exports.createResources = () => [
     type: "Deployment",
     group: "APIGateway",
     name: "deployment::ApiDynamoRestApi",
-    properties: ({}) => ({
-      description: "Automatically created by the RestApi construct",
-    }),
-    dependencies: () => ({
-      restApi: "ApiDynamoRestApi",
-    }),
-  },
-  {
-    type: "Deployment",
-    group: "APIGateway",
-    name: "deployment::ApiDynamoRestApi",
     dependencies: () => ({
       restApi: "ApiDynamoRestApi",
     }),

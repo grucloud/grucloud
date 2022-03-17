@@ -59,7 +59,7 @@ exports.Resource = ({ spec, config }) => {
     findDependenciesRestApi({ live }),
     { type: "Resource", group: "APIGateway", ids: [live.parentId] },
   ];
-  const cannotBeDeleted = pipe([
+  const managedByOther = pipe([
     tap((params) => {
       assert(true);
     }),
@@ -147,7 +147,7 @@ exports.Resource = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    managedByOther: cannotBeDeleted,
-    cannotBeDeleted,
+    managedByOther,
+    cannotBeDeleted: () => true,
   };
 };

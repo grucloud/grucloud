@@ -11,7 +11,21 @@ const { AwsClient } = require("../AwsClient");
 const { createAPIGateway, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findId = get("live.id");
-const findName = findNameInTagsOrId({ findId });
+
+const findName = pipe([
+  get("live"),
+  tap((params) => {
+    assert(true);
+  }),
+  tap(({ restApiName }) => {
+    assert(restApiName);
+  }),
+  ({ restApiName }) => `deployment::${restApiName}`,
+  tap((params) => {
+    assert(true);
+  }),
+]);
+
 const pickId = pipe([
   tap(({ restApiId, id }) => {
     assert(restApiId);
@@ -28,7 +42,7 @@ exports.Deployment = ({ spec, config }) => {
     {
       type: "RestApi",
       group: "APIGateway",
-      ids: [live.ApiId],
+      ids: [live.restApiId],
     },
     {
       type: "Stage",
@@ -65,8 +79,14 @@ exports.Deployment = ({ spec, config }) => {
     method: "getDeployments",
     getParam: "items",
     config,
-    decorate: ({ lives, parent: { id: restApiId } }) =>
-      defaultsDeep({ restApiId }),
+    decorate: ({ lives, parent: { id: restApiId, name: restApiName } }) =>
+      pipe([
+        tap((params) => {
+          assert(restApiId);
+          assert(restApiName);
+        }),
+        defaultsDeep({ restApiId, restApiName }),
+      ]),
   });
 
   const getByName = getByNameCore({ getList, findName });

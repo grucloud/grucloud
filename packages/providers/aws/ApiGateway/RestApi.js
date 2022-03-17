@@ -153,9 +153,6 @@ exports.RestApi = ({ spec, config }) => {
       assign({
         ["x-amazon-apigateway-integration"]: pipe([
           () => method,
-          tap((params) => {
-            assert(true);
-          }),
           get("methodIntegration", {}),
           omit([
             "timeoutInMillis",
@@ -163,9 +160,6 @@ exports.RestApi = ({ spec, config }) => {
             "cacheKeyParameters",
             "connectionType",
           ]),
-          tap((params) => {
-            assert(true);
-          }),
           ({ integrationResponses, ...otherProps }) => ({
             ...otherProps,
             ...(integrationResponses && {
@@ -223,9 +217,6 @@ exports.RestApi = ({ spec, config }) => {
     pipe([
       () => method,
       get("methodResponses", {}),
-      tap((params) => {
-        assert(true);
-      }),
       map.entries(
         ([key, { statusCode, responseParameters, responseModels }]) => [
           key,
@@ -363,9 +354,6 @@ exports.RestApi = ({ spec, config }) => {
                     method.httpMethod.toLowerCase(),
                     pipe([
                       () => ({}),
-                      tap((params) => {
-                        assert(true);
-                      }),
                       when(
                         () => method.operationName,
                         assign({ operationId: () => method.operationName })
@@ -391,9 +379,6 @@ exports.RestApi = ({ spec, config }) => {
                       assign({
                         responses: () =>
                           buildOpenApiMethodResponses({ method }),
-                      }),
-                      tap((params) => {
-                        assert(true);
                       }),
                       assignMethodIntegration({ method }),
                     ])()
@@ -513,6 +498,9 @@ exports.RestApi = ({ spec, config }) => {
                         httpMethod,
                       }),
                       apiGateway().getMethod,
+                      tap((params) => {
+                        assert(true);
+                      }),
                     ]),
                     throwIfNotAwsError("NotFoundException")
                   )()
@@ -529,9 +517,6 @@ exports.RestApi = ({ spec, config }) => {
         () => ({ restApiId }),
         apiGateway().getModels,
         get("items"),
-        tap((params) => {
-          assert(true);
-        }),
         callProp("sort", (a, b) => a.name.localeCompare(b.name)),
       ]),
     })();
@@ -563,18 +548,15 @@ exports.RestApi = ({ spec, config }) => {
         //       assert(true);
         //     }),
         //   ])(),
-        // schema: ({ id: restApiId, name, description }) =>
-        //   pipe([
-        //     () => ({ restApiId }),
-        //     fetchRestApiChilds,
-        //     tap((params) => {
-        //       assert(true);
-        //     }),
-        //     generateOpenApi2Schema({ name, description }),
-        //     tap((params) => {
-        //       assert(true);
-        //     }),
-        //   ])(),
+        schema: ({ id: restApiId, name, description }) =>
+          pipe([
+            () => ({ restApiId }),
+            fetchRestApiChilds,
+            tap((params) => {
+              assert(true);
+            }),
+            generateOpenApi2Schema({ name, description }),
+          ])(),
       }),
     ]);
 
@@ -609,13 +591,7 @@ exports.RestApi = ({ spec, config }) => {
         }),
         JSON.stringify,
         (body) => ({ body, restApiId: id, mode: "overwrite" }),
-        tap((params) => {
-          assert(true);
-        }),
         apiGateway().putRestApi,
-        tap((params) => {
-          assert(true);
-        }),
       ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createRestApi-property
@@ -625,10 +601,10 @@ exports.RestApi = ({ spec, config }) => {
     getById,
     postCreate: (params) =>
       pipe([
-        //tap(putRestApi(params)),
+        tap(putRestApi(params)),
         ({ id }) => ({ restApiId: id, ...params.deployment }),
         omit(["stageName"]),
-        //apiGateway().createDeployment,
+        apiGateway().createDeployment,
       ]),
   });
 
@@ -683,38 +659,18 @@ exports.RestApi = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { tags, description, schemaFile, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: {},
     programOptions,
   }) =>
     pipe([
-      tap(() => {
-        assert(schemaFile, "missing 'schemaFile' property");
-      }),
       () => otherProps,
       defaultsDeep({
         name,
-        schemaFile,
         tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
-      // assign({
-      //   schema: pipe([
-      //     () => path.resolve(programOptions.workingDirectory, schemaFile),
-      //     (schemaFileFull) =>
-      //       tryCatch(
-      //         pipe([() => fs.readFile(schemaFileFull, "utf-8"), JSON.parse]),
-      //         (error) => {
-      //           console.error(
-      //             `Problem reading or parsing ${schemaFileFull}, error:`,
-      //             error
-      //           );
-      //           throw error;
-      //         }
-      //       )(),
-      //   ]),
-      // }),
-      assign({
-        description: pipe([get("schema.info.description", description)]),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 
