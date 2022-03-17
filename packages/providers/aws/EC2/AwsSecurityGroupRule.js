@@ -30,7 +30,7 @@ const {
   uniq,
   when,
 } = require("rubico/x");
-
+const util = require("util");
 const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
@@ -39,7 +39,7 @@ const { findValueInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags, findNameInTags, findEksCluster } = require("../AwsCommon");
 //const { AwsClient } = require("../AwsClient");
-const { createEC2, tagResource, untagResource } = require("./EC2Common");
+const { createEC2 } = require("./EC2Common");
 
 const findProperty = (property) =>
   pipe([
@@ -446,7 +446,11 @@ const SecurityGroupRuleBase = ({ config }) => {
           () => payload,
           authorizeSecurityGroup(),
           tap.if(not(get("Return")), (result) => {
-            throw Error(`cannot create security group rule ${name}`);
+            throw Error(
+              `cannot create security group rule ${name}, ${util.inspect(
+                result
+              )}`
+            );
           }),
           tap((result) => {
             logger.info(`created sg rule ${kind}, ${name} ${tos({ result })}`);

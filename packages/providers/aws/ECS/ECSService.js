@@ -112,6 +112,9 @@ exports.ECSService = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createService-property
   const create = client.create({
     method: "createService",
+    shouldRetryOnExceptionMessages: [
+      "does not have an associated load balancer",
+    ],
     pickCreated:
       ({ name }) =>
       ({ service }) =>

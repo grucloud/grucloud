@@ -24,6 +24,7 @@ const {
   last,
   append,
   defaultsDeep,
+  when,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
@@ -95,17 +96,13 @@ const findDefaultWithVpcDependency = ({ resources, dependencies }) =>
 
 const securityGroupRulePickProperties = pipe([
   ({ resource }) =>
-    (live) =>
-      pipe([
-        () => live,
-        switchCase([
-          () =>
-            hasDependency({ type: "SecurityGroup", group: "EC2" })(resource),
-          omit(["IpPermission.UserIdGroupPairs"]),
-          identity,
-        ]),
-        pick(["IpPermission"]),
-      ])(),
+    pipe([
+      when(
+        () => hasDependency({ type: "SecurityGroup", group: "EC2" })(resource),
+        omit(["IpPermission.UserIdGroupPairs"])
+      ),
+      pick(["IpPermission"]),
+    ]),
 ]);
 
 const ec2InstanceDependencies = {
@@ -128,6 +125,37 @@ const buildAvailabilityZone = pipe([
   last,
   (az) => () => "`${config.region}" + az + "`",
 ]);
+
+const securityGroupRuleDependencies = {
+  securityGroup: {
+    type: "SecurityGroup",
+    group: "EC2",
+    parent: true,
+    filterDependency:
+      ({ resource }) =>
+      (dependency) =>
+        pipe([
+          () => resource,
+          eq(get("live.GroupId"), dependency.live.GroupId),
+        ])(),
+  },
+  securityGroupFrom: {
+    type: "SecurityGroup",
+    group: "EC2",
+    filterDependency:
+      ({ resource }) =>
+      (dependency) =>
+        pipe([
+          () => resource,
+          tap(() => {
+            assert(dependency.live.GroupId);
+            assert(resource.live.GroupId);
+          }),
+          get("live.IpPermission.UserIdGroupPairs[0].GroupId", ""),
+          eq(identity, dependency.live.GroupId),
+        ])(),
+  },
+};
 
 module.exports = pipe([
   () => [
@@ -500,36 +528,7 @@ module.exports = pipe([
       compare: compareSecurityGroupRule,
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
-      dependencies: {
-        securityGroup: {
-          type: "SecurityGroup",
-          group: "EC2",
-          parent: true,
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                () => resource,
-                eq(get("live.GroupId"), dependency.live.GroupId),
-              ])(),
-        },
-        securityGroupFrom: {
-          type: "SecurityGroup",
-          group: "EC2",
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                () => resource,
-                tap(() => {
-                  assert(dependency.live.GroupId);
-                  assert(resource.live.GroupId);
-                }),
-                get("live.IpPermission.UserIdGroupPairs[0].GroupId", ""),
-                eq(identity, dependency.live.GroupId),
-              ])(),
-        },
-      },
+      dependencies: securityGroupRuleDependencies,
     },
     {
       type: "SecurityGroupRuleEgress",
@@ -537,9 +536,7 @@ module.exports = pipe([
       compare: compareSecurityGroupRule,
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
-      dependencies: {
-        securityGroup: { type: "SecurityGroup", group: "EC2", parent: true },
-      },
+      dependencies: securityGroupRuleDependencies,
     },
     {
       type: "ElasticIpAddress",

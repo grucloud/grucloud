@@ -113,7 +113,7 @@ module.exports = pipe([
         "compatibilities",
       ],
       compare: compareECS({
-        filterLive: () =>
+        filterAll: () =>
           pipe([omitIfEmpty(["volumes", "placementConstraints"])]),
       }),
       filterLive: () =>
