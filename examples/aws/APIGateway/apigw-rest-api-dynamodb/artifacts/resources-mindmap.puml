@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project apigw-rest-api-dynamodb
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ Account (1)
+++++ Deployment (1)
+++++ RestApi (1)
+++++ Stage (1)
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (2)
+@endmindmap

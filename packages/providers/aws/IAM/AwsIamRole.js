@@ -12,8 +12,10 @@ const {
   pick,
   omit,
   and,
+  flatMap,
 } = require("rubico");
 const {
+  unless,
   flatten,
   defaultsDeep,
   isEmpty,
@@ -60,34 +62,51 @@ exports.AwsIamRole = ({ spec, config }) => {
   const findId = get("live.Arn");
   const pickId = pick(["RoleName"]);
 
+  const findDependenciesInPolicies = ({ type, group, live, lives }) => ({
+    type,
+    group,
+    ids: pipe([
+      () => live,
+      get("Policies"),
+      pluck("PolicyDocument"),
+      pluck("Statement"),
+      flatten,
+      flatMap(
+        pipe([get("Resource"), unless(Array.isArray, (resource) => [resource])])
+      ),
+      filter(not(isEmpty)),
+      filter((id) =>
+        lives.getById({
+          id,
+          providerName: config.providerName,
+          type,
+          group,
+        })
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+    ])(),
+  });
+
   const findDependencies = ({ live, lives }) => [
     {
       type: "Policy",
       group: "IAM",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
     },
-    {
+    findDependenciesInPolicies({
       type: "Table",
       group: "DynamoDB",
-      ids: pipe([
-        () => live,
-        get("Policies"),
-        pluck("PolicyDocument"),
-        pluck("Statement"),
-        flatten,
-        pluck("Resource"),
-        flatten,
-        filter(not(isEmpty)),
-        filter((id) =>
-          lives.getById({
-            id,
-            providerName: config.providerName,
-            type: "Table",
-            group: "DynamoDB",
-          })
-        ),
-      ])(),
-    },
+      live,
+      lives,
+    }),
+    findDependenciesInPolicies({
+      type: "Queue",
+      group: "SQS",
+      live,
+      lives,
+    }),
     {
       type: "OpenIDConnectProvider",
       group: "IAM",

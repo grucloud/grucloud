@@ -285,6 +285,7 @@ module.exports = pipe([
           group: "IAM",
         },
         table: { type: "Table", group: "DynamoDB" },
+        queue: { type: "Queue", group: "SQS" },
       },
       hasNoProperty: ({ resource }) =>
         pipe([

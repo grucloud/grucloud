@@ -121,9 +121,12 @@ exports.Integration = ({ spec, config }) => {
     assign({
       requestTemplates: pipe([
         get("requestTemplates"),
-        assign({
-          "application/json": pipe([get("application/json"), JSON.stringify]),
-        }),
+        when(
+          get("application/json"),
+          assign({
+            "application/json": pipe([get("application/json"), JSON.stringify]),
+          })
+        ),
       ]),
     }),
   ]);
@@ -157,9 +160,12 @@ exports.Integration = ({ spec, config }) => {
         assign({
           requestTemplates: pipe([
             get("requestTemplates"),
-            assign({
-              "application/json": pipe([get("application/json"), JSON.parse]),
-            }),
+            when(
+              get("application/json"),
+              assign({
+                "application/json": pipe([get("application/json"), JSON.parse]),
+              })
+            ),
           ]),
         }),
       ]),
