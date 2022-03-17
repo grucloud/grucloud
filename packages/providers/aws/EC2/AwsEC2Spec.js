@@ -26,7 +26,12 @@ const {
   defaultsDeep,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { compareAws, isOurMinion, DecodeUserData } = require("../AwsCommon");
+const {
+  compareAws,
+  isOurMinion,
+  DecodeUserData,
+  assignPolicyDocumentAccountAndRegion,
+} = require("../AwsCommon");
 
 const {
   hasDependency,
@@ -662,7 +667,7 @@ module.exports = pipe([
         filterTarget: () => pipe([pick(["PolicyDocument"])]),
         filterLive: () => pipe([pick(["PolicyDocument"])]),
       }),
-      filterLive: () =>
+      filterLive: ({ providerConfig }) =>
         pipe([
           pick([
             "ServiceName",
@@ -671,6 +676,7 @@ module.exports = pipe([
             "RequesterManaged",
             "VpcEndpointType",
           ]),
+          assignPolicyDocumentAccountAndRegion({ providerConfig }),
         ]),
     },
   ],

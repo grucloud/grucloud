@@ -14,6 +14,7 @@ const {
   not,
   omit,
   fork,
+  map,
 } = require("rubico");
 const {
   callProp,
@@ -795,3 +796,61 @@ exports.destroyAutoScalingGroupById = ({ autoScalingGroup, lives, config }) =>
 
 exports.ignoreResourceCdk = () =>
   pipe([get("name"), callProp("startsWith", "cdk-")]);
+
+const replaceAccountAndRegion = ({ providerConfig }) =>
+  pipe([
+    callProp("replace", providerConfig.accountId(), "${config.accountId()}"),
+    callProp("replace", providerConfig.region, "${config.region}"),
+    (resource) => () => "`" + resource + "`",
+  ]);
+
+exports.assignPolicyDocumentAccountAndRegion = ({ providerConfig }) =>
+  assign({
+    PolicyDocument: pipe([
+      get("PolicyDocument"),
+      assign({
+        Statement: pipe([
+          get("Statement"),
+          map(
+            pipe([
+              when(
+                get("Condition"),
+                assign({
+                  Condition: pipe([
+                    get("Condition"),
+                    when(
+                      get("ArnEquals"),
+                      assign({
+                        ArnEquals: pipe([
+                          get("ArnEquals"),
+                          when(
+                            get("aws:PrincipalArn"),
+                            assign({
+                              "aws:PrincipalArn": pipe([
+                                get("aws:PrincipalArn"),
+                                replaceAccountAndRegion({ providerConfig }),
+                              ]),
+                            })
+                          ),
+                        ]),
+                      })
+                    ),
+                  ]),
+                })
+              ),
+              assign({
+                Resource: pipe([
+                  get("Resource"),
+                  switchCase([
+                    Array.isArray,
+                    map(replaceAccountAndRegion({ providerConfig })),
+                    replaceAccountAndRegion({ providerConfig }),
+                  ]),
+                ]),
+              }),
+            ])
+          ),
+        ]),
+      }),
+    ]),
+  });

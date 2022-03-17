@@ -28,6 +28,7 @@ module.exports = pipe([
     {
       type: "Bucket",
       Client: AwsS3Bucket,
+      ignoreResource: () => pipe([get("name"), callProp("startsWith", "cdk-")]),
       dependencies: {
         originAccessIdentities: {
           type: "OriginAccessIdentity",

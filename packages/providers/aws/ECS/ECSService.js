@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { assign, pipe, tap, get, eq, or, omit } = require("rubico");
-const { defaultsDeep, isEmpty, unless, pluck } = require("rubico/x");
+const { assign, pipe, tap, get, eq, or, omit, map } = require("rubico");
+const { defaultsDeep, isEmpty, when, pluck } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -49,6 +49,22 @@ exports.ECSService = ({ spec, config }) => {
       type: "TargetGroup",
       group: "ELBv2",
       ids: pluck("targetGroupArn")(live.loadBalancers),
+    },
+    {
+      type: "Subnet",
+      group: "EC2",
+      ids: pipe([
+        () => live,
+        get("networkConfiguration.awsvpcConfiguration.subnets"),
+      ])(),
+    },
+    {
+      type: "SecurityGroup",
+      group: "EC2",
+      ids: pipe([
+        () => live,
+        get("networkConfiguration.awsvpcConfiguration.securityGroups"),
+      ])(),
     },
   ];
 
@@ -155,7 +171,7 @@ exports.ECSService = ({ spec, config }) => {
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: { cluster, taskDefinition },
+    dependencies: { cluster, taskDefinition, subnets, securityGroups },
   }) =>
     pipe([
       tap(() => {
@@ -174,6 +190,32 @@ exports.ECSService = ({ spec, config }) => {
           tags,
         }),
       }),
+      when(
+        () => subnets,
+        defaultsDeep({
+          networkConfiguration: {
+            awsvpcConfiguration: {
+              subnets: pipe([
+                () => subnets,
+                map((subnet) => getField(subnet, "SubnetId")),
+              ])(),
+            },
+          },
+        })
+      ),
+      when(
+        () => securityGroups,
+        defaultsDeep({
+          networkConfiguration: {
+            awsvpcConfiguration: {
+              securityGroups: pipe([
+                () => securityGroups,
+                map((securityGroup) => getField(securityGroup, "GroupId")),
+              ])(),
+            },
+          },
+        })
+      ),
     ])();
 
   return {

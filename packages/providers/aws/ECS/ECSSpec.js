@@ -1,7 +1,8 @@
-const { assign, map, pipe, get, omit, pick, eq } = require("rubico");
+const assert = require("assert");
+const { assign, map, pipe, get, omit, pick, eq, tap } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 const { compareAws, isOurMinionFactory } = require("../AwsCommon");
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 
 const { ECSCluster } = require("./ECSCluster");
 const { ECSCapacityProvider } = require("./ECSCapacityProvider");
@@ -76,29 +77,47 @@ module.exports = pipe([
     {
       type: "TaskDefinition",
       dependencies: {
-        role: { type: "Role", group: "IAM" },
+        taskRole: {
+          type: "Role",
+          group: "IAM",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                () => resource,
+                eq(get("live.taskRoleArn"), dependency.live.Arn),
+              ])(),
+        },
+        executionRole: {
+          type: "Role",
+          group: "IAM",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                () => resource,
+                eq(get("live.executionRoleArn"), dependency.live.Arn),
+              ])(),
+        },
       },
       Client: ECSTaskDefinition,
+      omitProperties: [
+        "taskDefinitionArn",
+        "taskRoleArn",
+        "executionRoleArn",
+        "revision",
+        "status",
+        "compatibilities",
+        "registeredAt",
+        "registeredBy",
+        "compatibilities",
+      ],
       compare: compareECS({
         filterLive: () =>
-          pipe([
-            omit([
-              "taskDefinitionArn",
-              "revision",
-              "status",
-              "compatibilities",
-              "registeredAt",
-              "registeredBy",
-            ]),
-            omitIfEmpty(["volumes"]),
-          ]),
+          pipe([omitIfEmpty(["volumes", "placementConstraints"])]),
       }),
       filterLive: () =>
-        pick([
-          "containerDefinitions",
-          "placementConstraints",
-          "requiresCompatibilities",
-        ]),
+        pipe([omitIfEmpty(["volumes", "placementConstraints"])]),
     },
     {
       type: "Service",
@@ -106,6 +125,7 @@ module.exports = pipe([
       omitProperties: [
         "taskDefinition",
         "clusterArn",
+        "cluster",
         "createdAt",
         "events",
         "deployments",
@@ -113,35 +133,58 @@ module.exports = pipe([
         "pendingCount",
         "status",
         "serviceArn",
+        "roleArn",
         "createdBy",
+        "networkConfiguration.awsvpcConfiguration.securityGroups",
+        "networkConfiguration.awsvpcConfiguration.subnets",
       ],
       propertiesDefault: { propagateTags: "NONE" },
       compare: compareECS({
-        filterLive: () =>
+        filterAll: () =>
           pipe([
-            assign({ cluster: get("clusterArn") }),
+            assign({
+              cluster: get("clusterArn"),
+            }),
+            assign({
+              loadBalancers: pipe([
+                get("loadBalancers"),
+                map(omit(["targetGroupArn"])),
+              ]),
+            }),
             omitIfEmpty(["loadBalancers", "serviceRegistries"]),
           ]),
       }),
-      filterLive: () =>
+      filterLive: ({ lives }) =>
         pipe([
-          pick([
-            "launchType",
-            "desiredCount",
-            "deploymentConfiguration",
-            "placementConstraints",
-            "placementStrategy",
-            "schedulingStrategy",
-            "enableECSManagedTags",
-            "propagateTags",
-            "enableExecuteCommand",
-          ]),
+          assign({
+            loadBalancers: pipe([
+              get("loadBalancers"),
+              map(
+                pipe([
+                  assign({
+                    targetGroupArn: ({ targetGroupArn }) =>
+                      pipe([
+                        () => ({ Id: targetGroupArn, lives }),
+                        replaceWithName({
+                          groupType: "ELBv2::TargetGroup",
+                          path: "id",
+                        }),
+                      ])(),
+                  }),
+                ])
+              ),
+            ]),
+          }),
+          omitIfEmpty(["loadBalancers", "serviceRegistries"]),
           when(eq(get("propagateTags"), "NONE"), omit(["propagateTags"])),
         ]),
       dependencies: {
         cluster: { type: "Cluster", group: "ECS", parent: true },
         taskDefinition: { type: "TaskDefinition", group: "ECS" },
+        subnets: { type: "Subnet", group: "EC2", list: true },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
         loadBalancers: { type: "LoadBalancer", group: "ELBv2", list: true },
+        targetGroups: { type: "TargetGroup", group: "ELBv2", list: true },
       },
     },
     {

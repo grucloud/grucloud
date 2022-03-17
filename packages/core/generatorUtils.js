@@ -336,7 +336,7 @@ const dependencyValue = ({ key, list, resource }) =>
         if (size(dependencyVarNames) > 1) {
           assert(key);
           assert(resource);
-          assert(false);
+          assert(false, `key ${key} has multiple dependencies`);
         }
       }
     }),
@@ -1175,6 +1175,7 @@ const writeResource =
         pipe([
           tap((params) => {
             assert(true);
+            // console.log(" Writing", resource.name);
           }),
           fork({
             resourceVarName: () => resourceVarName(resource.name),
