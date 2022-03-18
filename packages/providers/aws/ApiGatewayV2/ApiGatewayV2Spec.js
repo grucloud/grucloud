@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, map, omit, tap, eq, get, pick, switchCase } = require("rubico");
-const { when, defaultsDeep, append } = require("rubico/x");
+const { when, defaultsDeep, append, callProp } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { compareAws, isOurMinionObject } = require("../AwsCommon");
 const { Api } = require("./Api");
@@ -50,17 +50,15 @@ module.exports = pipe([
         "ApiId",
         "CreatedDate",
         "AccessLogSettings.DestinationArn",
+        "Name",
       ],
-      filterLive: () =>
-        pipe([
-          pick([
-            "ProtocolType",
-            "ApiKeySelectionExpression",
-            "DisableExecuteApiEndpoint",
-            "RouteSelectionExpression",
-            "AccessLogSettings",
-          ]),
-        ]),
+      propertiesDefault: {
+        Version: "1.0",
+        ProtocolType: "HTTP",
+        ApiKeySelectionExpression: "$request.header.x-api-key",
+        RouteSelectionExpression: "$request.method $request.path",
+        DisableExecuteApiEndpoint: false,
+      },
     },
     {
       type: "Stage",
@@ -94,17 +92,27 @@ module.exports = pipe([
       Client: Authorizer,
       omitProperties: ["AuthorizerId", "ApiName"],
       filterLive: () =>
-        pick([
-          "AuthorizerType",
-          "IdentitySource",
-          "AuthorizerPayloadFormatVersion",
-          "AuthorizerResultTtlInSeconds",
-          "EnableSimpleResponses",
-          "IdentityValidationExpression",
-          "JwtConfiguration",
+        pipe([
+          pick([
+            "AuthorizerType",
+            "IdentitySource",
+            "AuthorizerPayloadFormatVersion",
+            "AuthorizerResultTtlInSeconds",
+            "EnableSimpleResponses",
+            "IdentityValidationExpression",
+            "JwtConfiguration",
+          ]),
+          when(
+            pipe([
+              get("JwtConfiguration.Issuer", ""),
+              callProp("startsWith", "https://cognito-idp"),
+            ]),
+            omit(["JwtConfiguration.Issuer"])
+          ),
         ]),
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
+        userPool: { type: "UserPool", group: "CognitoIdentityServiceProvider" },
       },
     },
     {

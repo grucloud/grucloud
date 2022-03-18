@@ -46,10 +46,12 @@ exports.createResources = () => [
 ## Dependencies
 
 - [API](./Api.md)
+- [User Pool](../CognitoIdentityServiceProvider/UserPool.md)
 
 ## Full Examples
 
 - [Http with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/http-lambda)
+- [Authorizer with User Pool](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/cognito-httpapi)
 
 ## List
 

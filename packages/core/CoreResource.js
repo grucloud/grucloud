@@ -38,6 +38,8 @@ const {
   when,
   values,
 } = require("rubico/x");
+
+const { mergeWith } = require("lodash/fp");
 const util = require("util");
 const logger = require("./logger")({ prefix: "CoreResources" });
 const { tos } = require("./tos");
@@ -519,6 +521,12 @@ exports.ResourceMaker = ({
       }),
     ])();
 
+  const customizerMergeArray = (objValue, srcValue) =>
+    when(
+      () => Array.isArray(objValue),
+      () => [...objValue, ...srcValue]
+    )();
+
   const resolveConfig = ({ live, resolvedDependencies, deep = false } = {}) =>
     pipe([
       tap(() => {
@@ -590,7 +598,10 @@ exports.ResourceMaker = ({
                 namespace,
                 properties: pipe([
                   () => properties,
-                  defaultsDeep(spec.propertiesDefault),
+                  mergeWith(customizerMergeArray, spec.propertiesDefault),
+                  tap((params) => {
+                    assert(true);
+                  }),
                 ])(),
                 dependencies: resolvedDependencies,
                 spec,

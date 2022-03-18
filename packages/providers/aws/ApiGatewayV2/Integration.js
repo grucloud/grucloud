@@ -9,8 +9,9 @@ const {
   tryCatch,
   pick,
   switchCase,
+  filter,
 } = require("rubico");
-const { defaultsDeep, callProp, last, when, isEmpty } = require("rubico/x");
+const { defaultsDeep, callProp, last, when, includes } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "IntegrationV2",
 });
@@ -29,7 +30,12 @@ const { createLambda } = require("../Lambda/LambdaCommon");
 
 const findId = get("live.IntegrationId");
 
-const uriToName = pipe([callProp("split", ":"), last]);
+const uriToName = pipe([
+  callProp("split", ":"),
+  last,
+  callProp("replace", "/invocations", ""),
+]);
+
 const eventBusUriToName = pipe([callProp("split", "/"), last]);
 
 const findName = pipe([
@@ -69,12 +75,13 @@ exports.Integration = ({ spec, config }) => {
       type: "Function",
       group: "Lambda",
       ids: pipe([
-        () => live,
-        when(
-          eq(get("IntegrationType"), "AWS_PROXY"),
-          () => live.IntegrationUri
-        ),
-        (id) => [id],
+        () =>
+          lives.getByType({
+            type: "Function",
+            group: "Lambda",
+            providerName: config.providerName,
+          }),
+        filter(pipe([get("id"), (id) => includes(id)(live.IntegrationUri)])),
       ])(),
     },
     {

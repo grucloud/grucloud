@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { tap, pipe, assign, map, omit, pick, get } = require("rubico");
+const { tap, pipe, assign, map, omit, pick, get, or } = require("rubico");
 const { when, includes, isObject, callProp } = require("rubico/x");
 
 const mime = require("mime-types");
@@ -23,12 +23,17 @@ const objectFileNameFromLive = ({
   commandOptions,
 }) => `s3/${Bucket}/${Key}.${mime.extension(ContentType)}`;
 
+const ignoreBuckets = or([
+  callProp("startsWith", "cdk-"),
+  callProp("startsWith", "aws-sam-cli"),
+]);
+
 module.exports = pipe([
   () => [
     {
       type: "Bucket",
       Client: AwsS3Bucket,
-      ignoreResource: () => pipe([get("name"), callProp("startsWith", "cdk-")]),
+      ignoreResource: () => pipe([get("name"), ignoreBuckets]),
       dependencies: {
         originAccessIdentities: {
           type: "OriginAccessIdentity",
@@ -153,8 +158,7 @@ module.exports = pipe([
       },
       Client: AwsS3Object,
       compare: compareS3Object,
-      ignoreResource: () =>
-        pipe([get("live.Bucket"), callProp("startsWith", "cdk-")]),
+      ignoreResource: () => pipe([get("live.Bucket"), ignoreBuckets]),
       filterLive: ({ commandOptions, programOptions, resource: { live } }) =>
         pipe([
           pick(["ContentType", "ServerSideEncryption", "StorageClass"]),

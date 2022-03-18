@@ -118,7 +118,10 @@ const downloadS3Objects = ({ lives, commandOptions, programOptions }) =>
             assert(true);
           }),
           get("Bucket"),
-          callProp("startsWith", "cdk-"),
+          or([
+            callProp("startsWith", "cdk-"),
+            callProp("startsWith", "aws-sam"),
+          ]),
         ])
       )
     ),
@@ -205,7 +208,7 @@ const removeTagsArray = ({ tagsKey, key }) =>
       assert(key);
     }),
     when(
-      get(tagsKey),
+      pipe([get(tagsKey), Array.isArray]),
       assign({
         [tagsKey]: pipe([
           get(tagsKey),
@@ -223,11 +226,11 @@ const removeTagsArray = ({ tagsKey, key }) =>
                     }),
                     get(key, tag.TagKey),
                     tap((value) => {
-                      if (!value) {
-                        assert(value);
-                      }
+                      // if (!value) {
+                      //   assert(value);
+                      // }
                     }),
-                    ignoreTags,
+                    switchCase([isEmpty, () => true, ignoreTags]),
                   ])(),
               ])
             )

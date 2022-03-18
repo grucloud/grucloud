@@ -21,10 +21,6 @@ exports.createResources = () => [
     group: "ApiGatewayV2",
     name: "my-api",
     properties: ({}) => ({
-      ProtocolType: "HTTP",
-      ApiKeySelectionExpression: "$request.header.x-api-key",
-      DisableExecuteApiEndpoint: false,
-      RouteSelectionExpression: "$request.method $request.path",
       Tags: {
         mykey1: "value",
       },
@@ -78,8 +74,6 @@ exports.createResources = () => [
     type: "Route",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      ApiKeyRequired: false,
-      AuthorizationType: "NONE",
       RouteKey: "ANY /my-function",
     }),
     dependencies: () => ({
@@ -109,7 +103,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "lambda-role",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

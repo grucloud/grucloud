@@ -1482,6 +1482,7 @@ const genCode = ({ infra, commandOptions = {}, programOptions }) =>
           commandOptions,
           programOptions,
         }),
+      throwIfError,
     ]),
     DisplayAndThrow({ name: "genCode" })
   )();
