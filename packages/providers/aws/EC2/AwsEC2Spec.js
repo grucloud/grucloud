@@ -58,6 +58,7 @@ const {
   AwsSecurityGroupRuleIngress,
   AwsSecurityGroupRuleEgress,
   compareSecurityGroupRule,
+  inferNameSecurityGroupRule,
 } = require("./AwsSecurityGroupRule");
 const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
