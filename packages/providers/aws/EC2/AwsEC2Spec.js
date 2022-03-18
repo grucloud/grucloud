@@ -238,16 +238,13 @@ module.exports = pipe([
       compare: compareAws({ getLiveTags: () => [], getTargetTags: () => [] })({
         filterAll: () => pipe([pick([])]),
       }),
-      //TODO inferName
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({ properties, dependenciesSpec: { volume, instance } }) =>
         pipe([
-          dependencies,
-          tap(({ volume, instance }) => {
+          tap(() => {
             assert(volume);
             assert(instance);
           }),
-          ({ volume, instance }) =>
-            `vol-attachment::${volume.name}::${instance.name}`,
+          () => `vol-attachment::${volume}::${instance}`,
         ])(),
       filterLive: () => pipe([pick(["Device", "DeleteOnTermination"])]),
     },
@@ -392,16 +389,13 @@ module.exports = pipe([
       })({
         filterLive: () => pipe([pick(["RouteTableId", "SubnetId"])]),
       }),
-      //TODO inferName
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({ properties, dependenciesSpec: { routeTable, subnet } }) =>
         pipe([
-          dependencies,
-          tap(({ routeTable, subnet }) => {
+          tap(() => {
             assert(routeTable);
             assert(subnet);
           }),
-          ({ routeTable, subnet }) =>
-            `rt-assoc::${routeTable.name}::${subnet.name}`,
+          () => `rt-assoc::${routeTable}::${subnet}`,
         ])(),
       filterLive: () => pick([]),
       includeDefaultDependencies: true,
@@ -433,22 +427,20 @@ module.exports = pipe([
           ]),
       }),
       filterLive: () => pipe([pick(["DestinationCidrBlock"])]),
-      //TODO inferName
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({
+        properties,
+        dependenciesSpec: { routeTable, ig, natGateway, vpcEndpoint },
+      }) =>
         pipe([
-          dependencies,
-          tap(({ routeTable }) => {
+          tap(() => {
             assert(routeTable);
           }),
-          ({ routeTable, ig, natGateway, vpcEndpoint }) =>
+          () =>
             pipe([
               tap(() => {
                 assert(routeTable);
               }),
-              () => routeTable.name,
-              tap((name) => {
-                assert(name);
-              }),
+              () => routeTable,
               switchCase([
                 () => ig,
                 append("-igw"),
@@ -529,6 +521,7 @@ module.exports = pipe([
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
       dependencies: securityGroupRuleDependencies,
+      inferName: inferNameSecurityGroupRule({ kind: "ingress" }),
     },
     {
       type: "SecurityGroupRuleEgress",
@@ -537,6 +530,7 @@ module.exports = pipe([
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
       dependencies: securityGroupRuleDependencies,
+      inferName: inferNameSecurityGroupRule({ kind: "egress" }),
     },
     {
       type: "ElasticIpAddress",

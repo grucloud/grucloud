@@ -4,8 +4,6 @@
 
 ## Refactoring
 
-inferName should use dependenciesSpec, not dependencies
-
 ## Common:
 
 - https://stackshare.io/terraform/alternatives

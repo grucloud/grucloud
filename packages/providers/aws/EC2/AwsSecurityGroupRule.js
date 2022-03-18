@@ -29,6 +29,7 @@ const {
   isDeepEqual,
   uniq,
   when,
+  append,
 } = require("rubico/x");
 const util = require("util");
 const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
@@ -161,12 +162,12 @@ const ipVersion = ({ IpRanges, Ipv6Ranges }) =>
     () => "",
   ])();
 
-const fromSecurityGroup = ({ UserIdGroupPairs, lives, config }) =>
+const fromSecurityGroup = ({ lives, config }) =>
   pipe([
     tap((params) => {
       assert(true);
     }),
-    () => UserIdGroupPairs,
+    get("UserIdGroupPairs"),
     first,
     get("GroupId"),
     (GroupId) =>
@@ -181,37 +182,54 @@ const fromSecurityGroup = ({ UserIdGroupPairs, lives, config }) =>
         get("name"),
         switchCase([not(isEmpty), (name) => `-from-${name}`, () => ""]),
       ])(),
-  ])();
+  ]);
 
 const ruleDefaultToName = ({
   kind,
-  live: {
-    GroupId,
-    IpPermission: {
-      IpProtocol,
-      FromPort,
-      ToPort,
-      IpRanges,
-      Ipv6Ranges,
-      UserIdGroupPairs,
-    },
-  },
+  live: { GroupId, IpPermission },
   lives,
   config,
 }) =>
-  `${groupNameFromId({
-    GroupId,
-    lives,
-    config,
-  })}-rule-${kind}-${protocolFromToPortToName({
-    IpProtocol,
-    FromPort,
-    ToPort,
-  })}${ipVersion({ IpRanges, Ipv6Ranges })}${fromSecurityGroup({
-    UserIdGroupPairs,
-    lives,
-    config,
-  })}`;
+  pipe([
+    () =>
+      groupNameFromId({
+        GroupId,
+        lives,
+        config,
+      }),
+    append("-rule-"),
+    append(kind),
+    append("-"),
+    append(protocolFromToPortToName(IpPermission)),
+    append(ipVersion(IpPermission)),
+    append(
+      fromSecurityGroup({
+        lives,
+        config,
+      })(IpPermission)
+    ),
+  ])();
+
+exports.inferNameSecurityGroupRule =
+  ({ kind }) =>
+  ({
+    properties: { IpPermission },
+    dependenciesSpec: { securityGroup, securityGroupFrom },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(securityGroup);
+        assert(IpPermission);
+        assert(kind);
+      }),
+      () => securityGroup,
+      append("-rule-"),
+      append(kind),
+      append("-"),
+      append(protocolFromToPortToName(IpPermission)),
+      append(ipVersion(IpPermission)),
+      when(() => securityGroupFrom, append(`from-${securityGroupFrom}`)),
+    ])();
 
 const findName =
   ({ kind, config }) =>

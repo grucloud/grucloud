@@ -152,7 +152,11 @@ const envVarName = ({ resource, suffix }) =>
   ).toUpperCase()}`;
 
 const isNotOurTagKey = not(
-  or([callProp("startsWith", "gc-"), eq(identity, "Name")])
+  or([
+    callProp("startsWith", "gc-"),
+    eq(identity, "Name"),
+    eq(identity, "fingerprint"), // GCP
+  ])
 );
 
 const buildProperties = ({
@@ -186,6 +190,7 @@ const buildProperties = ({
       dependencies,
       programOptions,
       commandOptions,
+      omitProperties,
       pickPropertiesCreate,
     }),
     tap((params) => {

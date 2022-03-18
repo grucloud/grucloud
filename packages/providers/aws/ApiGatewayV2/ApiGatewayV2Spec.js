@@ -118,17 +118,18 @@ module.exports = pipe([
     {
       type: "ApiMapping",
       Client: ApiMapping,
-      //TODO inferName
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({
+        properties: { ApiMappingKey },
+        dependencies: { domainName, api, stage },
+      }) =>
         pipe([
-          dependencies,
-          tap(({ domainName, api, stage }) => {
+          tap(() => {
             assert(domainName);
             assert(api);
             assert(stage);
+            assert(ApiMappingKey);
           }),
-          ({ domainName, api, stage }) =>
-            `apimapping::${domainName.name}::${api.name}::${stage.name}::${properties.ApiMappingKey}`,
+          () => `apimapping::${domainName}::${api}::${stage}::${ApiMappingKey}`,
         ])(),
       omitProperties: ["ApiMappingId", "ApiName"],
       filterLive: () => pipe([pick(["ApiMappingKey"])]),

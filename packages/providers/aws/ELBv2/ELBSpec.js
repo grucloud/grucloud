@@ -98,15 +98,17 @@ module.exports = pipe([
       compare: compareELB({
         filterLive: () => pipe([omitIfEmpty(["AlpnPolicy", "Certificates"])]),
       }),
-      //TODO inferName
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({
+        properties: { Protocol, Port },
+        dependencies: { loadBalancer },
+      }) =>
         pipe([
-          dependencies,
-          tap(({ loadBalancer }) => {
+          tap(() => {
             assert(loadBalancer);
+            assert(Protocol);
+            assert(Port);
           }),
-          ({ loadBalancer }) =>
-            `listener::${loadBalancer.name}::${properties.Protocol}::${properties.Port}`,
+          () => `listener::${loadBalancer}::${Protocol}::${Port}`,
         ])(),
       filterLive: pipe([
         ({ resource }) =>
@@ -165,14 +167,13 @@ module.exports = pipe([
             }),
           ]),
       }),
-      //TODO inferName
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({ properties: { Priority }, dependencies: { listener } }) =>
         pipe([
-          dependencies,
-          tap(({ listener }) => {
+          tap(() => {
             assert(listener);
+            assert(Priority);
           }),
-          ({ listener }) => `rule::${listener.name}::${properties.Priority}`,
+          () => `rule::${listener}::${Priority}`,
         ])(),
       filterLive: pipe([
         ({ resource }) =>
