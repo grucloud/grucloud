@@ -60,7 +60,7 @@ exports.createResources = () => [
             Effect: "Allow",
             Principal: "*",
             Action: "*",
-            Resource: "*",
+            Resource: `*`,
           },
         ],
       },

@@ -54,9 +54,11 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description:
         "Automatic deployment triggered by changes to the Api configuration",
+      AutoDeployed: true,
     }),
     dependencies: () => ({
       api: "MyHttpApi",
+      stage: "$default",
     }),
   },
   {
@@ -65,11 +67,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description:
         "Automatic deployment triggered by changes to the Api configuration",
-      AutoDeployed: true,
     }),
     dependencies: () => ({
       api: "MyHttpApi",
-      stage: "$default",
     }),
   },
   { type: "EventBus", group: "CloudWatchEvents", name: "MyEventBus" },

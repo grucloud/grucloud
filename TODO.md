@@ -90,12 +90,10 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 - apprunner example npm test
 - inferName OpenIDConnectProvider
 - example vpc-use still using make and use
-- propertiesDefault instead of defaultsDeep
 - RDS DBCluster AvailabilityZones
-- inferName for SecurityGroup, and Route Table
+- inferName Route Table
 - Nat gateway handle deleting
 - EC2 Instance placement
-- Route display internet gateway or nat gateway in configDefault
 - resource schema
 
 - Lambda env var dependencies with DynamoDB table
