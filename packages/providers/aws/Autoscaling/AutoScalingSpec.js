@@ -123,7 +123,7 @@ module.exports = pipe([
       includeDefaultDependencies: true,
       inferName: ({
         properties,
-        dependencies: { autoScalingGroup, targetGroup },
+        dependenciesSpec: { autoScalingGroup, targetGroup },
       }) =>
         pipe([
           tap(() => {

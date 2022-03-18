@@ -36,7 +36,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "sg-rule-cluster-ingress-port-22",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",
@@ -61,7 +60,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "sg-rule-node-group-ingress-cluster",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",
@@ -87,7 +85,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleEgress",
     group: "EC2",
-    name: "sg-rule-cluster-egress",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",

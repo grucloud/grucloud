@@ -120,7 +120,7 @@ module.exports = pipe([
       Client: ApiMapping,
       inferName: ({
         properties: { ApiMappingKey },
-        dependencies: { domainName, api, stage },
+        dependenciesSpec: { domainName, api, stage },
       }) =>
         pipe([
           tap(() => {
@@ -142,21 +142,23 @@ module.exports = pipe([
     {
       type: "Integration",
       Client: Integration,
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({
+        properties,
+        dependenciesSpec: { api, lambdaFunction, eventBus },
+      }) =>
         pipe([
           //TODO other target
-          dependencies,
-          tap(({ api }) => {
+          tap(() => {
             assert(api);
           }),
-          ({ api, lambdaFunction, eventBus }) =>
+          () =>
             pipe([
-              () => `integration::${api.name}`,
+              () => `integration::${api}`,
               switchCase([
                 () => lambdaFunction,
-                append(`::${lambdaFunction?.name}`),
+                append(`::${lambdaFunction}`),
                 () => eventBus,
-                append(`::${eventBus?.name}`),
+                append(`::${eventBus}`),
                 append(`::UNKNOWN`),
               ]),
             ])(),
@@ -199,13 +201,13 @@ module.exports = pipe([
         AuthorizationType: "NONE",
         RequestModels: {},
       },
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({ properties: { RouteKey }, dependenciesSpec: { api } }) =>
         pipe([
           tap((params) => {
-            assert(properties.RouteKey);
+            assert(RouteKey);
+            assert(api);
           }),
-          dependencies,
-          ({ api }) => `route::${api.name}::${properties.RouteKey}`,
+          () => `route::${api}::${RouteKey}`,
         ])(),
       omitProperties: ["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"],
       dependencies: {
@@ -228,8 +230,13 @@ module.exports = pipe([
         "ApiGatewayV2::Integration",
       ],
       Client: Deployment,
-      inferName: ({ properties, dependencies }) =>
-        pipe([dependencies, ({ api }) => `deployment::${api.name}`])(),
+      inferName: ({ properties, dependenciesSpec: { api } }) =>
+        pipe([
+          tap((params) => {
+            assert(api);
+          }),
+          () => `deployment::${api}`,
+        ])(),
       omitProperties: [
         "StageName",
         "CreatedDate",

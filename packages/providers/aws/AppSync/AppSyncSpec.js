@@ -181,13 +181,13 @@ module.exports = pipe([
     {
       type: "Resolver",
       Client: AppSyncResolver,
-      inferName: ({ properties }) =>
+      inferName: ({ properties: { typeName, fieldName } }) =>
         pipe([
           tap((params) => {
-            assert(properties.typeName);
-            assert(properties.fieldName);
+            assert(typeName);
+            assert(fieldName);
           }),
-          () => `resolver::${properties.typeName}::${properties.fieldName}`,
+          () => `resolver::${typeName}::${fieldName}`,
         ])(),
       omitProperties: ["arn", "resolverArn"],
       compare: compareAppSync({

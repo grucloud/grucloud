@@ -100,7 +100,7 @@ module.exports = pipe([
       }),
       inferName: ({
         properties: { Protocol, Port },
-        dependencies: { loadBalancer },
+        dependenciesSpec: { loadBalancer },
       }) =>
         pipe([
           tap(() => {
@@ -167,7 +167,10 @@ module.exports = pipe([
             }),
           ]),
       }),
-      inferName: ({ properties: { Priority }, dependencies: { listener } }) =>
+      inferName: ({
+        properties: { Priority },
+        dependenciesSpec: { listener },
+      }) =>
         pipe([
           tap(() => {
             assert(listener);

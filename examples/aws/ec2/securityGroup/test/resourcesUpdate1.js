@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "sg-rule-cluster-ingress-port-22",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",

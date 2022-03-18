@@ -44,7 +44,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "ClusterSharedNode-rule-ingress-all-from-ClusterSharedNode",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "-1",
