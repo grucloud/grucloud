@@ -27,6 +27,11 @@ const buildArn =
       append(Name),
     ])();
 
+const assignEvenPattern = assign({
+  EventPattern: pipe([get("EventPattern"), JSON.stringify]),
+});
+const parseEventPattern = pipe([get("EventPattern", {}), JSON.parse]);
+
 exports.CloudWatchEventRule = ({ spec, config }) => {
   const cloudWatchEvents = createCloudWatchEvents(config);
   const client = AwsClient({ spec, config })(cloudWatchEvents);
@@ -56,7 +61,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
   const decorate = () =>
     pipe([
       assign({
-        EventPattern: pipe([get("EventPattern", {}), JSON.parse]),
+        EventPattern: parseEventPattern,
         Targets: pipe([
           ({ Name, EventBusName }) => ({ Rule: Name, EventBusName }),
           //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTargetsByRule-property
@@ -88,6 +93,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     pickId,
     method: "describeRule",
     ignoreErrorCodes,
+    decorate: () => pipe([assign({ EventPattern: parseEventPattern })]),
   });
 
   const getByName = ({ name, dependencies = () => ({}) }) =>
@@ -101,9 +107,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
   const create = client.create({
     method: "putRule",
-    filterPayload: pipe([
-      assign({ EventPattern: pipe([get("EventPattern"), JSON.stringify]) }),
-    ]),
+    filterPayload: pipe([assignEvenPattern]),
     pickCreated:
       ({ payload }) =>
       () =>
@@ -118,6 +122,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
       pipe([
         () => payload,
         omit(["Tags"]),
+        assignEvenPattern,
         defaultsDeep(pickId(live)),
         tap((params) => {
           assert(true);

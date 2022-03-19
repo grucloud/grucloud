@@ -283,7 +283,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "ecsInstanceRole",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2008-10-17",
         Statement: [

@@ -10,7 +10,10 @@ const {
   tryCatch,
   eq,
 } = require("rubico");
-const { when, defaultsDeep } = require("rubico/x");
+const { when, defaultsDeep, callProp } = require("rubico/x");
+
+const replaceRegion = (providerConfig) =>
+  callProp("replace", providerConfig.region, "${config.region}");
 
 const fs = require("fs").promises;
 const path = require("path");
@@ -113,7 +116,6 @@ module.exports = pipe([
         "apiId",
         "serviceRoleArn",
         "dataSourceArn",
-        "httpConfig.endpoint",
         "relationalDatabaseConfig.rdsHttpEndpointConfig.dbClusterIdentifier",
         "relationalDatabaseConfig.rdsHttpEndpointConfig.awsSecretStoreArn",
         "relationalDatabaseConfig.rdsHttpEndpointConfig.awsRegion",
@@ -121,7 +123,7 @@ module.exports = pipe([
       compare: compareAppSync({
         filterAll: () => pipe([omitIfEmpty(["description"])]),
       }),
-      filterLive: () =>
+      filterLive: ({ providerConfig }) =>
         pipe([
           pick([
             "description",
@@ -131,6 +133,39 @@ module.exports = pipe([
             "httpConfig",
             "relationalDatabaseConfig",
           ]),
+          when(
+            get("httpConfig"),
+            assign({
+              httpConfig: pipe([
+                get("httpConfig"),
+                when(
+                  get("endpoint"),
+                  assign({
+                    authorizationConfig: pipe([
+                      get(["authorizationConfig"]),
+                      assign({
+                        awsIamConfig: pipe([
+                          get("awsIamConfig"),
+                          assign({
+                            signingRegion: pipe([
+                              get("signingRegion"),
+                              replaceRegion(providerConfig),
+                              (resource) => () => "`" + resource + "`",
+                            ]),
+                          }),
+                        ]),
+                      }),
+                    ]),
+                    endpoint: pipe([
+                      get("endpoint"),
+                      replaceRegion(providerConfig),
+                      (resource) => () => "`" + resource + "`",
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
           //TODO omit elasticsearchConfig.xxx ?
         ]),
       dependencies: {

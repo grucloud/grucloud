@@ -127,11 +127,12 @@ exports.Integration = ({ spec, config }) => {
           lambdaAddPermission({
             lambda,
             lambdaFunction,
-            SourceArn: `arn:aws:execute-api:${
-              config.region
-            }:${config.accountId()}:${getField(api, "ApiId")}/*/*/${
-              lambdaFunction?.resource.name
-            }`,
+            SourceArn: () =>
+              `arn:aws:execute-api:${
+                config.region
+              }:${config.accountId()}:${getField(api, "ApiId")}/*/*/${
+                lambdaFunction.resource.name
+              }`,
           })
         ),
       ]),

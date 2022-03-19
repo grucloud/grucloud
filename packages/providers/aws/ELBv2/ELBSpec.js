@@ -98,6 +98,7 @@ module.exports = pipe([
       compare: compareELB({
         filterLive: () => pipe([omitIfEmpty(["AlpnPolicy", "Certificates"])]),
       }),
+      //TODO inferName
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,
@@ -164,6 +165,7 @@ module.exports = pipe([
             }),
           ]),
       }),
+      //TODO inferName
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,

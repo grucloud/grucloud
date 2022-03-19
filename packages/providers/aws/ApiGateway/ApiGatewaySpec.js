@@ -1,20 +1,15 @@
 const assert = require("assert");
+const { pipe, assign, map, tap, omit, pick, get, eq, and } = require("rubico");
 const {
-  tryCatch,
-  pipe,
-  assign,
-  map,
-  tap,
-  omit,
-  pick,
-  get,
-  eq,
-  and,
-} = require("rubico");
-const { defaultsDeep, first, find } = require("rubico/x");
-const fs = require("fs").promises;
-const prettier = require("prettier");
-const path = require("path");
+  defaultsDeep,
+  first,
+  find,
+  prepend,
+  append,
+  callProp,
+  last,
+  when,
+} = require("rubico/x");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { isOurMinionObject, compareAws } = require("../AwsCommon");
@@ -26,38 +21,42 @@ const { ApiKey } = require("./ApiKey");
 const { Account } = require("./Account");
 const { Method } = require("./Method");
 const { Resource } = require("./Resource");
-//const { Integration } = require("./Integration");
+const { Integration } = require("./Integration");
+const { Deployment } = require("./Deployment");
 
 const GROUP = "APIGateway";
 const tagsKey = "tags";
 const compareAPIGateway = compareAws({ tagsKey });
 
-const schemaFilePath = ({ programOptions, commandOptions, resource }) =>
-  path.resolve(programOptions.workingDirectory, `${resource.name}.oas30.json`);
+// const schemaFilePath = ({ programOptions, commandOptions, resource }) =>
+//   path.resolve(programOptions.workingDirectory, `${resource.name}.oas30.json`);
 
-const writeRestApiSchema =
-  ({ programOptions, commandOptions }) =>
-  ({ lives, resource }) =>
-    pipe([
-      () => resource,
-      get("live.schema"),
-      (json) => JSON.stringify(json, null, 4),
-      (content) => prettier.format(content, { parser: "json" }),
-      (content) =>
-        tryCatch(
-          pipe([
-            () => schemaFilePath({ programOptions, commandOptions, resource }),
-            tap((filePath) => {
-              console.log("Writing rest api schema:", filePath);
-            }),
-            (filePath) => fs.writeFile(filePath, content),
-          ]),
-          (error) => {
-            console.error("Error writing rest api schema", error);
-            throw error;
-          }
-        )(),
-    ])();
+// const writeRestApiSchema =
+//   ({ programOptions, commandOptions }) =>
+//   ({ lives, resource }) =>
+//     pipe([
+//       () => resource,
+//       get("live.schema", {}),
+//       (json) => JSON.stringify(json, null, 4),
+//       tap((params) => {
+//         assert(true);
+//       }),
+//       (content) => prettier.format(content, { parser: "json" }),
+//       (content) =>
+//         tryCatch(
+//           pipe([
+//             () => schemaFilePath({ programOptions, commandOptions, resource }),
+//             tap((filePath) => {
+//               console.log("Writing rest api schema:", filePath);
+//             }),
+//             (filePath) => fs.writeFile(filePath, content),
+//           ]),
+//           (error) => {
+//             console.error("Error writing rest api schema", error);
+//             throw error;
+//           }
+//         )(),
+//     ])();
 
 module.exports = pipe([
   () => [
@@ -87,22 +86,144 @@ module.exports = pipe([
       propertiesDefault: { enabled: true },
     },
     {
-      type: "Resource",
-      Client: Resource,
+      type: "Deployment",
+      Client: Deployment,
+      omitProperties: ["createdDate", "id", "restApiId", "restApiName"],
+      propertiesDefault: {},
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
       },
-      ignoreResource: () => true,
-      cannotBeDeleted: () => true,
+    },
+    {
+      type: "Integration",
+      Client: Integration,
+      ignoreResource: () => () => true,
+      omitProperties: [
+        "credentials",
+        "restApiId",
+        "restApiName",
+        "resourceId",
+        "resource",
+        "cacheNamespace",
+      ],
+      compare: compareAPIGateway({
+        filterAll: () =>
+          pipe([
+            omitIfEmpty(["cacheKeyParameters"]),
+            omit(["integrationHttpMethod"]),
+          ]),
+      }),
+      filterLive: () => pipe([omitIfEmpty(["cacheKeyParameters"])]),
+      propertiesDefault: {
+        //type: "AWS",
+        timeoutInMillis: 29000,
+        requestParameters: {},
+        integrationResponses: {
+          200: {
+            responseParameters: {},
+            responseTemplates: { "application/json": "{}" },
+            statusCode: "200",
+          },
+        },
+        passthroughBehavior: "WHEN_NO_TEMPLATES",
+      },
+      dependencies: {
+        method: { type: "Method", group: "APIGateway", parent: true },
+        lambdaFunction: { type: "Function", group: "Lambda" },
+        role: { type: "Role", group: "IAM" },
+        table: { type: "Table", group: "DynamoDB" },
+      },
+      inferName: ({ properties, dependenciesSpec }) =>
+        pipe([
+          () => dependenciesSpec,
+          tap(({ method }) => {
+            assert(method);
+          }),
+          get("method"),
+          prepend("integration::"),
+        ])(),
+    },
+    {
+      type: "Resource",
+      ignoreResource: () => () => true,
+      Client: Resource,
+      dependencies: {
+        restApi: { type: "RestApi", group: "APIGateway", parent: true },
+        parent: { type: "Resource", group: "APIGateway" },
+      },
+      includeDefaultDependencies: true,
+      omitProperties: [
+        "id",
+        "parentId",
+        "path",
+        "restApiName",
+        "restApiId",
+        "resourceMethods",
+      ],
+      inferName: ({ properties, dependenciesSpec }) =>
+        pipe([
+          () => dependenciesSpec,
+          tap(({ restApi }) => {
+            assert(restApi);
+            assert(properties);
+          }),
+          get("restApi"),
+          append("::"),
+          when(
+            () => dependenciesSpec.parent,
+            (name) =>
+              append(
+                pipe([
+                  () => dependenciesSpec.parent,
+                  callProp("split", "::"),
+                  last,
+                ])()
+              )(name)
+          ),
+          append(properties.pathPart || "/"),
+        ])(),
     },
     {
       type: "Method",
+      ignoreResource: () => () => true,
       Client: Method,
       dependencies: {
         resource: { type: "Resource", group: "APIGateway", parent: true },
       },
-      ignoreResource: () => true,
       cannotBeDeleted: () => true,
+      omitProperties: [
+        "resource",
+        "resourceId",
+        "restApiName",
+        "restApiId",
+        "methodIntegration",
+      ],
+      filterLive: () =>
+        pipe([
+          omitIfEmpty([
+            "description",
+            "requestModels",
+            "requestParameters",
+            "methodResponses.200.responseModels",
+            "methodResponses.200.responseParameters",
+          ]),
+        ]),
+      propertiesDefault: {
+        apiKeyRequired: false,
+        authorizationType: "NONE",
+        methodResponses: { 200: { statusCode: "200" } },
+      },
+      inferName: ({ properties, dependenciesSpec }) =>
+        pipe([
+          () => dependenciesSpec,
+          tap(({ resource }) => {
+            assert(resource);
+            assert(properties.httpMethod);
+          }),
+          get("resource"),
+          append("::"),
+          append(properties.httpMethod),
+        ])(),
     },
     {
       type: "RestApi",
@@ -110,41 +231,98 @@ module.exports = pipe([
       omitProperties: ["id", "createdDate", "deployments", "version"],
       propertiesDefault: { disableExecuteApiEndpoint: false },
       compare: compareAPIGateway({
-        filterTarget: () => pipe([omit(["schemaFile", "deployment"])]),
+        filterTarget: () => pipe([omit(["deployment"])]),
       }),
-      filterLive: (input) => (live) =>
-        pipe([
-          tap(() => {
-            assert(input);
-          }),
-          () => input,
-          tap(writeRestApiSchema(input)),
-          () => live,
-          pick(["apiKeySource", "endpointConfiguration"]),
-          assign({
-            schemaFile: () => `${live.name}.oas30.json`,
-            deployment: pipe([
-              () => live,
-              get("deployments"),
-              first,
-              get("id"),
-              (deploymentId) =>
-                pipe([
-                  () => input.lives,
-                  find(
-                    and([
-                      eq(get("groupType"), "APIGateway::Stage"),
-                      eq(get("live.deploymentId"), deploymentId),
-                    ])
-                  ),
-                  get("name"),
-                ])(),
-              (stageName) => ({
-                stageName,
-              }),
-            ]),
-          }),
-        ])(),
+      filterLive:
+        ({ providerConfig, lives }) =>
+        (live) =>
+          pipe([
+            tap(() => {
+              assert(providerConfig);
+            }),
+            () => live,
+            pick(["apiKeySource", "endpointConfiguration", "schema"]),
+            assign({
+              schema: pipe([
+                get("schema"),
+                assign({
+                  paths: pipe([
+                    get("paths"),
+                    map(
+                      pipe([
+                        map(
+                          pipe([
+                            when(
+                              get("x-amazon-apigateway-integration"),
+                              assign({
+                                "x-amazon-apigateway-integration": pipe([
+                                  get("x-amazon-apigateway-integration"),
+                                  tap((params) => {
+                                    assert(true);
+                                  }),
+                                  //TODO requestTemplates
+                                  when(
+                                    get("credentials"),
+                                    assign({
+                                      credentials: pipe([
+                                        get("credentials"),
+                                        callProp(
+                                          "replace",
+                                          providerConfig.accountId(),
+                                          "${config.accountId()}"
+                                        ),
+                                        (resource) => () =>
+                                          "`" + resource + "`",
+                                      ]),
+                                    })
+                                  ),
+                                  when(
+                                    get("uri"),
+                                    assign({
+                                      uri: pipe([
+                                        get("uri"),
+                                        callProp(
+                                          "replace",
+                                          providerConfig.region,
+                                          "${config.region}"
+                                        ),
+                                        (resource) => () =>
+                                          "`" + resource + "`",
+                                      ]),
+                                    })
+                                  ),
+                                ]),
+                              })
+                            ),
+                          ])
+                        ),
+                      ])
+                    ),
+                  ]),
+                }),
+              ]),
+              deployment: pipe([
+                () => live,
+                get("deployments"),
+                first,
+                get("id"),
+                (deploymentId) =>
+                  pipe([
+                    () => lives,
+                    find(
+                      and([
+                        eq(get("groupType"), "APIGateway::Stage"),
+                        eq(get("live.deploymentId"), deploymentId),
+                      ])
+                    ),
+                    get("name"),
+                  ])(),
+                (stageName) => ({
+                  stageName,
+                }),
+              ]),
+            }),
+          ])(),
     },
     {
       type: "Stage",
@@ -176,6 +354,7 @@ module.exports = pipe([
         ]),
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
+        deployment: { type: "Deployment", group: "APIGateway" },
       },
     },
     {

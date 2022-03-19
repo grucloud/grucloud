@@ -8,21 +8,24 @@ const {
   tryCatch,
   switchCase,
   and,
+  pick,
+  assign,
 } = require("rubico");
-const { defaultsDeep, find } = require("rubico/x");
-const logger = require("@grucloud/core/logger")({
-  prefix: "Integration",
-});
+const { defaultsDeep, find, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { tos } = require("@grucloud/core/tos");
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 const { createLambda } = require("../Lambda/LambdaCommon");
-const { lambdaAddPermission } = require("../AwsCommon");
+const { lambdaAddPermission, throwIfNotAwsError } = require("../AwsCommon");
 const { createAPIGateway, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findName = pipe([
   get("live"),
+  tap(({ restApiName, path, httpMethod }) => {
+    assert(restApiName);
+    assert(path);
+    assert(httpMethod);
+  }),
   ({ restApiName, path, httpMethod }) =>
     `integration::${restApiName}::${path}::${httpMethod}`,
 ]);
@@ -33,11 +36,14 @@ const findId = pipe([
     `integration::${restApiId}::${path}::${httpMethod}`,
 ]);
 
-const pickId = ({ restApiId, resourceId, httpMethod }) => ({
-  restApiId,
-  resourceId,
-  httpMethod,
-});
+const pickId = pipe([
+  tap(({ restApiId, httpMethod, resourceId }) => {
+    assert(restApiId);
+    assert(resourceId);
+    assert(httpMethod);
+  }),
+  pick(["restApiId", "resourceId", "httpMethod"]),
+]);
 
 exports.Integration = ({ spec, config }) => {
   const apiGateway = createAPIGateway(config);
@@ -71,18 +77,59 @@ exports.Integration = ({ spec, config }) => {
     {
       type: "Function",
       group: "Lambda",
-      ids: pipe([
-        () => live,
-        //TODO
-        switchCase([
-          eq(get("integrationType"), "AWS_PROXY"),
-          () => live.integrationUri,
-          () => undefined,
-        ]),
-        (id) => [id],
-      ])(),
+      ids: [
+        pipe([
+          () => live,
+          //TODO
+          switchCase([
+            eq(get("integrationType"), "AWS_PROXY"),
+            () => live.integrationUri,
+            () => undefined,
+          ]),
+        ])(),
+      ],
+    },
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [live.credentials],
+    },
+    {
+      type: "Table",
+      group: "DynamoDB",
+      ids: [
+        pipe([
+          () => live,
+          get("requestTemplates.application/json.TableName"),
+          (name) =>
+            lives.getByName({
+              name,
+              providerName: config.providerName,
+              type: "Table",
+              group: "DynamoDB",
+            }),
+          get("id"),
+        ])(),
+      ],
     },
   ];
+
+  const requestTemplatesStringify = pipe([
+    tap(({ requestTemplates }) => {
+      assert(requestTemplates);
+    }),
+    assign({
+      requestTemplates: pipe([
+        get("requestTemplates"),
+        when(
+          get("application/json"),
+          assign({
+            "application/json": pipe([get("application/json"), JSON.stringify]),
+          })
+        ),
+      ]),
+    }),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getIntegration-property
   const getById = client.getById({
@@ -94,15 +141,32 @@ exports.Integration = ({ spec, config }) => {
         tap((params) => {
           assert(method);
         }),
-        defaultsDeep({
-          restApiId: method.restApiId,
-          restApiName: method.restApiName,
-          resourceId: method.resourceId,
-          path: method.path,
-          httpMethod: method.httpMethod,
-        }),
+        defaultsDeep(
+          pipe([
+            () => method,
+            pick([
+              "restApiId",
+              "restApiName",
+              "resourceId",
+              "path",
+              "httpMethod",
+            ]),
+          ])()
+        ),
+        assign({ httpMethod: () => method.httpMethod }),
         tap((params) => {
           assert(true);
+        }),
+        assign({
+          requestTemplates: pipe([
+            get("requestTemplates"),
+            when(
+              get("application/json"),
+              assign({
+                "application/json": pipe([get("application/json"), JSON.parse]),
+              })
+            ),
+          ]),
         }),
       ]),
   });
@@ -117,67 +181,57 @@ exports.Integration = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#putIntegration-property
-
   const create = client.create({
     method: "putIntegration",
-    postCreate: ({ resolvedDependencies: { restApi, lambdaFunction } }) =>
+    filterPayload: requestTemplatesStringify,
+    postCreate: ({ resolvedDependencies: { method, lambdaFunction } }) =>
       pipe([
         tap(() => {
-          assert(restApi);
+          assert(method);
         }),
-        lambdaAddPermission({
-          lambda,
-          lambdaFunction,
-          SourceArn: `arn:aws:execute-api:${
-            config.region
-          }:${config.accountId()}:${getField(restApi, "id")}/*/*/${
-            lambdaFunction.resource.name
-          }`,
-        }),
+        when(
+          () => lambdaFunction,
+          lambdaAddPermission({
+            lambda,
+            lambdaFunction,
+            SourceArn: () =>
+              `arn:aws:execute-api:${
+                config.region
+              }:${config.accountId()}:${getField(method, "restApiId")}/*/*/${
+                lambdaFunction.resource.name
+              }`,
+          })
+        ),
       ]),
   });
 
-  //TODO update
-  const update = ({ name, payload, diff, live }) =>
-    pipe([
-      tap(() => {
-        logger.info(`update integration: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
-      }),
-      () => payload,
-      apiGateway().updateIntegration,
-      tap(() => {
-        logger.info(`updated integration ${name}`);
-      }),
-    ])();
+  const update = client.update({
+    pickId,
+    filterParams: ({ payload, live, diff }) =>
+      pipe([() => payload, requestTemplatesStringify])(),
+    method: "updateIntegration",
+    getById,
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#removePermission-property
   const lambdaRemovePermission = ({ live }) =>
     pipe([
       () => live,
       tap.if(
-        eq(get("integrationType"), "AWS_PROXY"),
+        and([eq(get("integrationType"), "AWS_PROXY"), get("integrationUri")]),
         pipe([
           () => ({
             FunctionName: live.integrationUri,
             StatementId: live.id,
           }),
-          tryCatch(lambda().removePermission, (error) =>
-            pipe([
-              tap(() => {
-                logger.error(`lambdaRemovePermission ${tos(error)}`);
-              }),
-              () => {
-                throw error;
-              },
-            ])()
-          ),
+          tryCatch(lambda().removePermission, throwIfNotAwsError),
         ])
       ),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteIntegration-property
   const destroy = client.destroy({
+    pickId,
     preDestroy: lambdaRemovePermission,
     method: "deleteIntegration",
     getById,
@@ -188,7 +242,7 @@ exports.Integration = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { method, lambdaFunction },
+    dependencies: { method, lambdaFunction, role },
   }) =>
     pipe([
       tap(() => {
@@ -197,13 +251,22 @@ exports.Integration = ({ spec, config }) => {
       () => otherProps,
       defaultsDeep({
         httpMethod: getField(method, "httpMethod"),
+        integrationHttpMethod: getField(method, "httpMethod"),
         restApiId: getField(method, "restApiId"),
-        resource: getField(method, "resourceId"),
-        ...(lambdaFunction && {
-          integrationUri: getField(lambdaFunction, "FunctionArn"),
-        }),
-        tags: buildTagsObject({ name, namespace, config, userTags: Tags }),
+        resourceId: getField(method, "resourceId"),
       }),
+      when(
+        () => lambdaFunction,
+        defaultsDeep({
+          integrationUri: getField(lambdaFunction, "FunctionArn"),
+        })
+      ),
+      when(
+        () => role,
+        defaultsDeep({
+          credentials: getField(role, "Arn"),
+        })
+      ),
     ])();
 
   return {

@@ -234,7 +234,10 @@ exports.AwsClient =
                     ]),
                   ]),
                 ]),
-                pipe([decorate({ name, managedByOther, parent: live, lives })]),
+                pipe([
+                  decorate({ name, managedByOther, parent: live, lives }),
+                  unless(Array.isArray, (result) => [result]),
+                ]),
               ]),
               tap((params) => {
                 assert(true);

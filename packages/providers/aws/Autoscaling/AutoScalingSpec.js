@@ -121,6 +121,7 @@ module.exports = pipe([
         filterLive: () => pipe([pick([])]),
       }),
       includeDefaultDependencies: true,
+      //TODO inferName
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,

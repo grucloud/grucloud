@@ -767,7 +767,7 @@ exports.lambdaAddPermission = ({ lambda, lambdaFunction, SourceArn }) =>
             FunctionName: lambdaFunction.resource.name,
             Principal: "apigateway.amazonaws.com",
             StatementId: IntegrationId,
-            SourceArn,
+            SourceArn: SourceArn(),
           }),
           lambda().addPermission,
         ])()

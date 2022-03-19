@@ -2,6 +2,10 @@
 
 - check stage for all providers
 
+## Refactoring
+
+inferName should use dependenciesSpec, not dependencies
+
 ## Common:
 
 - https://stackshare.io/terraform/alternatives
