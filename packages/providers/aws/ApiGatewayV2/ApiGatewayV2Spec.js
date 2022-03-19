@@ -39,6 +39,12 @@ module.exports = pipe([
     {
       type: "Api",
       Client: Api,
+      propertiesDefault: {
+        ProtocolType: "HTTP",
+        ApiKeySelectionExpression: "$request.header.x-api-key",
+        DisableExecuteApiEndpoint: false,
+        RouteSelectionExpression: "$request.method $request.path",
+      },
       omitProperties: [
         "ApiEndpoint",
         "ApiId",
@@ -177,6 +183,12 @@ module.exports = pipe([
     {
       type: "Route",
       Client: Route,
+      propertiesDefault: {
+        ApiKeyRequired: false,
+        AuthorizationScopes: [],
+        AuthorizationType: "NONE",
+        RequestModels: {},
+      },
       inferName: ({ properties, dependencies }) =>
         pipe([
           tap((params) => {

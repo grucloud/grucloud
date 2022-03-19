@@ -145,6 +145,7 @@ module.exports = pipe([
     {
       type: "Role",
       Client: AwsIamRole,
+      propertiesDefault: { Path: "/" },
       compare: compareIAM({
         filterAll: () => pipe([pick(["AssumeRolePolicyDocument"])]),
       }),
