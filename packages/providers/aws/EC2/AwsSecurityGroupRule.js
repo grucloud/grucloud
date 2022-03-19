@@ -130,12 +130,12 @@ const ruleDefaultToName =
       append(kind),
       append("-"),
       append(protocolFromToPortToName(IpPermission)),
-      append(
-        fromSecurityGroup({
-          lives,
-          config,
-        })(IpPermission)
-      ),
+      // append(
+      //   fromSecurityGroup({
+      //     lives,
+      //     config,
+      //   })(IpPermission)
+      // ),
       tap((name) => {
         logger.debug(`rule name: ${name}`);
       }),
@@ -158,7 +158,7 @@ exports.inferNameSecurityGroupRule =
       append(kind),
       append("-"),
       append(protocolFromToPortToName(IpPermission)),
-      when(() => securityGroupFrom, append(`-from-${securityGroupFrom}`)),
+      //when(() => securityGroupFrom, append(`-from-${securityGroupFrom}`)),
       tap((params) => {
         assert(true);
       }),
@@ -424,6 +424,15 @@ const SecurityGroupRuleBase = ({ config }) => {
         tap((params) => {
           assert(true);
         }),
+        tap(
+          pipe([
+            map(ruleDefaultToName({ kind, lives, config })),
+            tap((names) => {
+              logger.debug(`getByName all names ${name}`);
+              logger.debug(names.join("\n"));
+            }),
+          ])
+        ),
         find(eq(ruleDefaultToName({ kind, lives, config }), name)),
         tap((result) => {
           logger.debug(`getByName ${name} result: ${tos(result)}`);
@@ -434,7 +443,7 @@ const SecurityGroupRuleBase = ({ config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupEgress-property
   const create =
     ({ kind, authorizeSecurityGroup }) =>
-    ({ payload, name, namespace }) =>
+    ({ payload, name, namespace, dependencies, lives }) =>
       tryCatch(
         pipe([
           tap(() => {
@@ -452,6 +461,7 @@ const SecurityGroupRuleBase = ({ config }) => {
               )}`
             );
           }),
+          tap(() => dependencies().securityGroup.getLive({ lives })),
           tap((result) => {
             logger.info(`created sg rule ${kind}, ${name} ${tos({ result })}`);
           }),

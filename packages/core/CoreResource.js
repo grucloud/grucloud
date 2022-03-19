@@ -836,7 +836,7 @@ exports.ResourceMaker = ({
                   client.getLives,
                   get("resources"),
                   tap((resources) => {
-                    logger.error(
+                    logger.debug(
                       `waitForResourceUp: ${toString()}, #resources: ${size(
                         resources
                       )}`
@@ -857,7 +857,7 @@ exports.ResourceMaker = ({
                   dependencies: resolveDependencies,
                 }),
               tap((params) => {
-                logger.error(
+                logger.debug(
                   `waitForResourceUp: ${toString()}, filterLives: ${tos(
                     params
                   )}`
