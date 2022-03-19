@@ -173,7 +173,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF-rule-ingress-tcp-80-v4",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",

@@ -318,7 +318,7 @@ const findNamespaceEksCluster =
       }),
       findNamespaceInTagsObject(config),
       tap((namespace) => {
-        logger.debug(`findNamespace`, namespace);
+        //  logger.debug(`findNamespace`, namespace);
       }),
     ])();
 
@@ -438,7 +438,7 @@ exports.buildTags = ({
     namespaceKey,
   } = config;
 
-  assert(name);
+  // assert(name);
   assert(nameKey);
   assert(providerName);
   assert(stage);
@@ -448,10 +448,6 @@ exports.buildTags = ({
   return pipe([
     () => [
       ...UserTags,
-      {
-        [key]: nameKey,
-        [value]: name,
-      },
       {
         [key]: managedByKey,
         [value]: managedByValue,
@@ -466,6 +462,16 @@ exports.buildTags = ({
       },
       { [key]: projectNameKey, [value]: projectName },
     ],
+    unless(
+      () => isEmpty(name),
+      (tags) => [
+        ...tags,
+        {
+          [key]: nameKey,
+          [value]: name,
+        },
+      ]
+    ),
     unless(
       () => isEmpty(namespace),
       (tags) => [

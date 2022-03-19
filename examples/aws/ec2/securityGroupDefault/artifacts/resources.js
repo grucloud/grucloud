@@ -18,9 +18,8 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 22,
-        ToPort: 22,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -31,6 +30,7 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: 22,
       },
     }),
     dependencies: () => ({
@@ -42,9 +42,8 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 1024,
-        ToPort: 65535,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -55,6 +54,7 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: 65535,
       },
     }),
     dependencies: () => ({

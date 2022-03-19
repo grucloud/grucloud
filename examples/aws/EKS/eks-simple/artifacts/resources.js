@@ -239,12 +239,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "ClusterSharedNodeSecurityGroup-rule-ingress-all-from-ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
       },
     }),
     dependencies: () => ({
@@ -255,12 +252,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "ClusterSharedNodeSecurityGroup-rule-ingress-all-from-eks-cluster-sg-my-cluster-1909614887",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
       },
     }),
     dependencies: () => ({
@@ -271,12 +265,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
       },
     }),
     dependencies: () => ({

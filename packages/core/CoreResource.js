@@ -732,7 +732,8 @@ exports.ResourceMaker = ({
                     diff,
                     live,
                     lives: provider.lives,
-                    id: client.findId({ live }),
+                    //TODO do we need that id ?
+                    id: client.findId({ live, lives: provider.lives }),
                     programOptions,
                     compare: spec.compare,
                   }),

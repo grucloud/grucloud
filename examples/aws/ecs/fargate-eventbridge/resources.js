@@ -239,7 +239,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5-rule-ingress-tcp-80-v4",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",
@@ -260,7 +259,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2-rule-ingress-tcp-80-from-CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",
@@ -278,7 +276,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "CdkStack-VpcEbInterfaceEndpointSecurityGroupE08A80D2-7XKKU5JDDTFV-rule-ingress-tcp-443-v4",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",

@@ -26,7 +26,7 @@ const {
   isFunction,
   unless,
 } = require("rubico/x");
-
+const util = require("util");
 const logger = require("./logger")({ prefix: "Client" });
 const { tos } = require("./tos");
 
@@ -78,7 +78,9 @@ const decorateLive =
         assert(lives);
         assert(
           isObject(live),
-          `live is not an object, groupType: ${client.spec.groupType}`
+          `live is not an object, groupType: ${
+            client.spec.groupType
+          }, live: ${util.inspect(live)}`
         );
         if (isFunction(live)) {
           assert(true);

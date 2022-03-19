@@ -93,6 +93,15 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg-default-vpc-ec2-example",
+    isDefault: true,
+    dependencies: () => ({
+      vpc: "vpc-ec2-example",
+    }),
+  },
+  {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
@@ -121,9 +130,8 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 22,
-        ToPort: 22,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -134,10 +142,24 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: 22,
       },
     }),
     dependencies: () => ({
       securityGroup: "security-group",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpPermission: {
+        IpProtocol: "-1",
+      },
+    }),
+    dependencies: () => ({
+      securityGroup: "sg-default-vpc-ec2-example",
+      securityGroupFrom: "sg-default-vpc-ec2-example",
     }),
   },
   { type: "ElasticIpAddress", group: "EC2", name: "myip" },

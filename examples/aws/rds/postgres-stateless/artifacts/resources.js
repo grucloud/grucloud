@@ -191,7 +191,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "sg-rule-ingress-postgres",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",
@@ -217,7 +216,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "sg-rule-ingress-ssh-bastion",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",

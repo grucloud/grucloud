@@ -95,6 +95,8 @@ const findDefaultWithVpcDependency = ({ resources, dependencies }) =>
     ),
   ])();
 
+const omitPort = ({ port }) => when(eq(get(port), -1), omit([port]));
+
 const securityGroupRulePickProperties = pipe([
   ({ resource }) =>
     pipe([
@@ -103,6 +105,8 @@ const securityGroupRulePickProperties = pipe([
         omit(["IpPermission.UserIdGroupPairs"])
       ),
       pick(["IpPermission"]),
+      omitPort({ port: "FromPort" }),
+      omitPort({ port: "ToPort" }),
     ]),
 ]);
 

@@ -95,7 +95,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "sg-rule-ingress-icmp",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "icmp",
@@ -120,7 +119,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "sg-rule-ingress-ssh",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",

@@ -239,17 +239,16 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5-rule-ingress-tcp-80-v4",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 80,
-        ToPort: 80,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
           },
         ],
+        ToPort: 80,
       },
     }),
     dependencies: () => ({
@@ -260,11 +259,10 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2-rule-ingress-tcp-80-from-CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 80,
+        IpProtocol: "tcp",
         ToPort: 80,
       },
     }),
@@ -278,17 +276,16 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "CdkStack-VpcEbInterfaceEndpointSecurityGroupE08A80D2-7XKKU5JDDTFV-rule-ingress-tcp-443-v4",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 443,
-        ToPort: 443,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "10.0.0.0/16",
           },
         ],
+        ToPort: 443,
       },
     }),
     dependencies: () => ({
@@ -299,11 +296,10 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleEgress",
     group: "EC2",
-    name: "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5-rule-egress-tcp-80-from-CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 80,
+        IpProtocol: "tcp",
         ToPort: 80,
       },
     }),

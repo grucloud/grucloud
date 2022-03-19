@@ -21,14 +21,14 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 22,
-        ToPort: 22,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
           },
         ],
+        ToPort: 22,
       },
     }),
     dependencies: () => ({

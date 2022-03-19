@@ -47,8 +47,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
       },
     }),
     dependencies: () => ({
