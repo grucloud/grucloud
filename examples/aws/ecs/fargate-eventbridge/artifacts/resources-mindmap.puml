@@ -1,0 +1,33 @@
+@startmindmap
+title Resources for project fargate-eventbridge
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ EventBus (1)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ NatGateway (2)
+++++ Subnet (4)
+++++ RouteTable (4)
+++++ RouteTableAssociation (4)
+++++ Route (4)
+++++ SecurityGroup (3)
+++++ SecurityGroupRuleIngress (3)
+++++ SecurityGroupRuleEgress (1)
+++++ ElasticIpAddress (2)
+++++ VpcEndpoint (1)
++++ ECS
+++++ Cluster (1)
+++++ TaskDefinition (1)
+++++ Service (1)
++++ ELBv2
+++++ LoadBalancer (1)
+++++ TargetGroup (1)
+++++ Listener (1)
++++ IAM
+++++ Role (2)
+@endmindmap
