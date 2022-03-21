@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { assign, map, pipe, tap, omit, pick } = require("rubico");
-const defaultsDeep = require("rubico/x/defaultsDeep");
+const { assign, map, pipe, tap, get, pick } = require("rubico");
+const { defaultsDeep, callProp } = require("rubico/x");
 const { isOurMinion } = require("../AwsCommon");
 const { compareAws } = require("../AwsCommon");
 
@@ -14,6 +14,8 @@ module.exports = pipe([
     {
       type: "Parameter",
       Client: SSMParameter,
+      ignoreResource: () =>
+        pipe([get("name"), callProp("startsWith", "/cdk-bootstrap/")]),
       omitProperties: [
         "Version",
         "LastModifiedDate",

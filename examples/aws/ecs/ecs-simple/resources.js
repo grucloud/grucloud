@@ -138,17 +138,16 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "EcsSecurityGroup-rule-ingress-tcp-80-v4",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 80,
-        ToPort: 80,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
           },
         ],
+        ToPort: 80,
       },
     }),
     dependencies: () => ({
@@ -227,7 +226,7 @@ exports.createResources = () => [
           volumesFrom: [],
         },
       ],
-      placementConstraints: [],
+      family: "nginx",
       requiresCompatibilities: ["EC2"],
       tags: [
         {
@@ -242,8 +241,6 @@ exports.createResources = () => [
     group: "ECS",
     name: "service-nginx",
     properties: ({}) => ({
-      launchType: "EC2",
-      desiredCount: 1,
       deploymentConfiguration: {
         deploymentCircuitBreaker: {
           enable: false,
@@ -252,6 +249,10 @@ exports.createResources = () => [
         maximumPercent: 200,
         minimumHealthyPercent: 100,
       },
+      desiredCount: 1,
+      enableECSManagedTags: true,
+      enableExecuteCommand: false,
+      launchType: "EC2",
       placementConstraints: [],
       placementStrategy: [
         {
@@ -264,8 +265,7 @@ exports.createResources = () => [
         },
       ],
       schedulingStrategy: "REPLICA",
-      enableECSManagedTags: true,
-      enableExecuteCommand: false,
+      serviceName: "service-nginx",
       tags: [
         {
           key: "mykey",
@@ -283,7 +283,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "ecsInstanceRole",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2008-10-17",
         Statement: [

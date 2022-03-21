@@ -24,19 +24,38 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg-default-VPC",
+    isDefault: true,
+    dependencies: () => ({
+      vpc: "VPC",
+    }),
+  },
+  {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "ClusterSharedNode-rule-ingress-all-from-ClusterSharedNode",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
       },
     }),
     dependencies: () => ({
       securityGroup: "ClusterSharedNode",
       securityGroupFrom: "ClusterSharedNode",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpPermission: {
+        IpProtocol: "-1",
+      },
+    }),
+    dependencies: () => ({
+      securityGroup: "sg-default-VPC",
+      securityGroupFrom: "sg-default-VPC",
     }),
   },
 ];

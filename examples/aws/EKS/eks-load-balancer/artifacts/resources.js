@@ -303,28 +303,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "ClusterSharedNodeSecurityGroup-rule-ingress-all-from-ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
-      },
-    }),
-    dependencies: () => ({
-      securityGroup: "ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: "ClusterSharedNodeSecurityGroup",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    name: "ClusterSharedNodeSecurityGroup-rule-ingress-all-from-eks-cluster-sg-my-cluster-1909614887",
-    properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
       },
     }),
     dependencies: () => ({
@@ -335,28 +316,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
-      },
-    }),
-    dependencies: () => ({
-      securityGroup: "eks-cluster-sg-my-cluster-1909614887",
-      securityGroupFrom: "ClusterSharedNodeSecurityGroup",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    name: "eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-load-balancer",
-    properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
       },
     }),
     dependencies: () => ({
@@ -367,17 +329,16 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "load-balancer-rule-ingress-tcp-443-v4",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 443,
-        ToPort: 443,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
           },
         ],
+        ToPort: 443,
       },
     }),
     dependencies: () => ({
@@ -387,17 +348,16 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "load-balancer-rule-ingress-tcp-80-v4",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 80,
-        ToPort: 80,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
           },
         ],
+        ToPort: 80,
       },
     }),
     dependencies: () => ({
@@ -602,7 +562,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -664,7 +623,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

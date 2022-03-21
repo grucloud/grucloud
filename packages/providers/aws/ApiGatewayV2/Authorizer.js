@@ -1,6 +1,13 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, eq, pick, filter } = require("rubico");
+const {
+  defaultsDeep,
+  isEmpty,
+  callProp,
+  last,
+  unless,
+  when,
+} = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -20,7 +27,30 @@ exports.Authorizer = ({ spec, config }) => {
 
   const client = AwsClient({ spec, config })(apiGateway);
 
-  const findDependencies = ({ live, lives }) => [findDependenciesApi({ live })];
+  const findDependencies = ({ live, lives }) => [
+    findDependenciesApi({ live }),
+    {
+      type: "UserPool",
+      group: "CognitoIdentityServiceProvider",
+      ids: pipe([
+        () => live,
+        get("JwtConfiguration.Issuer", ""),
+        callProp("split", "/"),
+        last,
+        unless(isEmpty, (Id) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "UserPool",
+                group: "CognitoIdentityServiceProvider",
+                providerName: config.providerName,
+              }),
+            filter(eq(get("live.Id"), Id)),
+          ])()
+        ),
+      ])(),
+    },
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getAuthorizer-property
   const getById = client.getById({
@@ -70,7 +100,7 @@ exports.Authorizer = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { api },
+    dependencies: { api, userPool },
   }) =>
     pipe([
       tap(() => {
@@ -81,6 +111,16 @@ exports.Authorizer = ({ spec, config }) => {
         Name: name,
         ApiId: getField(api, "ApiId"),
       }),
+      when(
+        () => userPool,
+        defaultsDeep({
+          JwtConfiguration: {
+            Issuer: `https://cognito-idp.${
+              config.region
+            }.amazonaws.com/${getField(userPool, "Id")}`,
+          },
+        })
+      ),
     ])();
 
   return {

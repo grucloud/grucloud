@@ -227,12 +227,10 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
       defaultsDeep(otherProps),
       when(
         () => cloudWatchLogsRole,
-        assign({
-          logConfig: () => ({
-            fieldLogLevel: "NONE",
-            excludeVerboseContent: true,
+        defaultsDeep({
+          logConfig: {
             cloudWatchLogsRoleArn: getField(cloudWatchLogsRole, "Arn"),
-          }),
+          },
         })
       ),
       defaultsDeep({

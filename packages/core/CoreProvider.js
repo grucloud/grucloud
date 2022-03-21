@@ -1444,6 +1444,7 @@ function CoreProvider({
       map.pool(
         mapPoolSize,
         tryCatch(
+          //TODO rubico
           async (resource) => {
             onStateChange({
               context: contextFromResource({
@@ -1454,6 +1455,7 @@ function CoreProvider({
             });
             const actions = await resource.planUpsert({
               resource,
+              targetResources: getTargetResources(),
               lives: getLives(),
             });
             onStateChange({
@@ -1633,6 +1635,7 @@ function CoreProvider({
           logger.debug(
             `upsertResources: executor ${resource.type} ${resource.name}, action: ${action}`
           );
+          //logger.debug(diff);
         }),
         () => ({}),
         assign({ engine: () => getResource(resource) }),
@@ -1667,11 +1670,13 @@ function CoreProvider({
               engine.update({
                 payload: input,
                 live,
+                diff,
                 diff: engine.spec.compare({
                   ...engine.spec,
                   live,
                   target: input,
                   config: getProviderConfig(),
+                  targetResources: getTargetResources(),
                   programOptions,
                 }),
                 resolvedDependencies,

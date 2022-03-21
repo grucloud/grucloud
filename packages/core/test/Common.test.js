@@ -36,4 +36,10 @@ describe("Common", function () {
     });
     assert(isDeepEqual(result, {}));
   });
+  it("differenceObject []", async function () {
+    const result = differenceObject({ a: ["toto"] })({
+      a: ["toto", "new"],
+    });
+    assert(isDeepEqual(result, { a: ["new"] }));
+  });
 });

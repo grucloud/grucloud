@@ -54,12 +54,7 @@ exports.ApiMapping = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApiMappings-property
   const getList = client.getListWithParent({
     parent: { type: "DomainName", group: "ApiGatewayV2" },
-    pickKey: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      pick(["DomainName"]),
-    ]),
+    pickKey: pick(["DomainName"]),
     method: "getApiMappings",
     getParam: "Items",
     config,
@@ -68,9 +63,6 @@ exports.ApiMapping = ({ spec, config }) => {
       (live) =>
         pipe([
           () => live,
-          tap((params) => {
-            assert(lives);
-          }),
           defaultsDeep({ DomainName }),
           assign({
             ApiName: pipe([
@@ -84,9 +76,6 @@ exports.ApiMapping = ({ spec, config }) => {
               get("name"),
             ]),
           }),
-          // assign({
-          //   Tags: pipe([() => Tags, omit(["Name"])]),
-          // }),
         ])(),
   });
 

@@ -11,17 +11,7 @@ exports.createResources = () => [
       certificate: "grucloud.org",
     }),
   },
-  {
-    type: "Api",
-    group: "ApiGatewayV2",
-    name: "my-api",
-    properties: ({}) => ({
-      ProtocolType: "HTTP",
-      ApiKeySelectionExpression: "$request.header.x-api-key",
-      DisableExecuteApiEndpoint: false,
-      RouteSelectionExpression: "$request.method $request.path",
-    }),
-  },
+  { type: "Api", group: "ApiGatewayV2", name: "my-api" },
   {
     type: "Stage",
     group: "ApiGatewayV2",
@@ -83,7 +73,6 @@ exports.createResources = () => [
     type: "Route",
     group: "ApiGatewayV2",
     properties: ({}) => ({
-      ApiKeyRequired: false,
       AuthorizationType: "JWT",
       RouteKey: "ANY /my-function",
     }),
@@ -115,7 +104,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "lambda-role",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

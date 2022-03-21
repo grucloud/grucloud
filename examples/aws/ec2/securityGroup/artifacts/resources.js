@@ -36,12 +36,10 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "sg-rule-cluster-ingress-port-22",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 22,
-        ToPort: 22,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -52,6 +50,7 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: 22,
       },
     }),
     dependencies: () => ({
@@ -61,12 +60,10 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "sg-rule-node-group-ingress-cluster",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 0,
-        ToPort: 65535,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -77,6 +74,7 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: 65535,
       },
     }),
     dependencies: () => ({
@@ -87,12 +85,10 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleEgress",
     group: "EC2",
-    name: "sg-rule-cluster-egress",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 1024,
-        ToPort: 65535,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -103,6 +99,7 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: 65535,
       },
     }),
     dependencies: () => ({

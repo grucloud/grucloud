@@ -24,9 +24,17 @@ const {
   last,
   append,
   defaultsDeep,
+  when,
+  isDeepEqual,
+  callProp,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { compareAws, isOurMinion, DecodeUserData } = require("../AwsCommon");
+const {
+  compareAws,
+  isOurMinion,
+  DecodeUserData,
+  assignPolicyDocumentAccountAndRegion,
+} = require("../AwsCommon");
 
 const {
   hasDependency,
@@ -52,6 +60,7 @@ const {
   AwsSecurityGroupRuleIngress,
   AwsSecurityGroupRuleEgress,
   compareSecurityGroupRule,
+  inferNameSecurityGroupRule,
 } = require("./AwsSecurityGroupRule");
 const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
@@ -88,19 +97,19 @@ const findDefaultWithVpcDependency = ({ resources, dependencies }) =>
     ),
   ])();
 
+const omitPort = ({ port }) => when(eq(get(port), -1), omit([port]));
+
 const securityGroupRulePickProperties = pipe([
   ({ resource }) =>
-    (live) =>
-      pipe([
-        () => live,
-        switchCase([
-          () =>
-            hasDependency({ type: "SecurityGroup", group: "EC2" })(resource),
-          omit(["IpPermission.UserIdGroupPairs"]),
-          identity,
-        ]),
-        pick(["IpPermission"]),
-      ])(),
+    pipe([
+      when(
+        () => hasDependency({ type: "SecurityGroup", group: "EC2" })(resource),
+        omit(["IpPermission.UserIdGroupPairs"])
+      ),
+      pick(["IpPermission"]),
+      omitPort({ port: "FromPort" }),
+      omitPort({ port: "ToPort" }),
+    ]),
 ]);
 
 const ec2InstanceDependencies = {
@@ -122,6 +131,88 @@ const buildAvailabilityZone = pipe([
   get("AvailabilityZone"),
   last,
   (az) => () => "`${config.region}" + az + "`",
+]);
+
+const securityGroupRuleDependencies = {
+  securityGroup: {
+    type: "SecurityGroup",
+    group: "EC2",
+    parent: true,
+    filterDependency:
+      ({ resource }) =>
+      (dependency) =>
+        pipe([
+          () => resource,
+          eq(get("live.GroupId"), dependency.live.GroupId),
+        ])(),
+  },
+  securityGroupFrom: {
+    type: "SecurityGroup",
+    group: "EC2",
+    filterDependency:
+      ({ resource }) =>
+      (dependency) =>
+        pipe([
+          () => resource,
+          tap(() => {
+            assert(dependency.live.GroupId);
+            assert(resource.live.GroupId);
+          }),
+          get("live.IpPermission.UserIdGroupPairs[0].GroupId", ""),
+          eq(identity, dependency.live.GroupId),
+        ])(),
+  },
+};
+
+const sortByFromPort = pipe([
+  callProp("sort", (a, b) => a.FromPort - b.FromPort),
+]);
+
+const getIpPermissions =
+  ({ type, targetResources }) =>
+  ({ GroupName }) =>
+    pipe([
+      tap(() => {
+        assert(type);
+        assert(targetResources);
+        assert(GroupName);
+      }),
+      () => targetResources,
+      filter(eq(get("type"), type)),
+      filter(
+        eq(
+          ({ dependencies }) =>
+            pipe([dependencies, get("securityGroup.name")])(),
+          GroupName
+        )
+      ),
+      map(({ properties }) =>
+        pipe([
+          () => properties({}),
+          get("IpPermission"),
+          omit(["UserIdGroupPairs"]),
+        ])()
+      ),
+      sortByFromPort,
+    ])();
+
+const filterPermissions = pipe([
+  map(
+    pipe([
+      omitIfEmpty(["PrefixListIds", "Ipv6Ranges", "IpRanges"]),
+      omit(["UserIdGroupPairs"]),
+    ])
+  ),
+  filter(
+    (rule) =>
+      !isDeepEqual(rule, {
+        FromPort: undefined,
+        IpProtocol: "-1",
+        IpRanges: [{ CidrIp: "0.0.0.0/0", Description: undefined }],
+        ToPort: undefined,
+      })
+  ),
+  sortByFromPort,
 ]);
 
 module.exports = pipe([
@@ -205,16 +296,13 @@ module.exports = pipe([
       compare: compareAws({ getLiveTags: () => [], getTargetTags: () => [] })({
         filterAll: () => pipe([pick([])]),
       }),
-      //TODO inferName
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({ properties, dependenciesSpec: { volume, instance } }) =>
         pipe([
-          dependencies,
-          tap(({ volume, instance }) => {
+          tap(() => {
             assert(volume);
             assert(instance);
           }),
-          ({ volume, instance }) =>
-            `vol-attachment::${volume.name}::${instance.name}`,
+          () => `vol-attachment::${volume}::${instance}`,
         ])(),
       filterLive: () => pipe([pick(["Device", "DeleteOnTermination"])]),
     },
@@ -359,16 +447,13 @@ module.exports = pipe([
       })({
         filterLive: () => pipe([pick(["RouteTableId", "SubnetId"])]),
       }),
-      //TODO inferName
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({ properties, dependenciesSpec: { routeTable, subnet } }) =>
         pipe([
-          dependencies,
-          tap(({ routeTable, subnet }) => {
+          tap(() => {
             assert(routeTable);
             assert(subnet);
           }),
-          ({ routeTable, subnet }) =>
-            `rt-assoc::${routeTable.name}::${subnet.name}`,
+          () => `rt-assoc::${routeTable}::${subnet}`,
         ])(),
       filterLive: () => pick([]),
       includeDefaultDependencies: true,
@@ -400,22 +485,20 @@ module.exports = pipe([
           ]),
       }),
       filterLive: () => pipe([pick(["DestinationCidrBlock"])]),
-      //TODO inferName
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({
+        properties,
+        dependenciesSpec: { routeTable, ig, natGateway, vpcEndpoint },
+      }) =>
         pipe([
-          dependencies,
-          tap(({ routeTable }) => {
+          tap(() => {
             assert(routeTable);
           }),
-          ({ routeTable, ig, natGateway, vpcEndpoint }) =>
+          () =>
             pipe([
               tap(() => {
                 assert(routeTable);
               }),
-              () => routeTable.name,
-              tap((name) => {
-                assert(name);
-              }),
+              () => routeTable,
               switchCase([
                 () => ig,
                 append("-igw"),
@@ -442,8 +525,30 @@ module.exports = pipe([
       includeDefaultDependencies: true,
       findDefault: findDefaultWithVpcDependency,
       compare: compareEC2({
-        filterTarget: () => pipe([pick(["Description"])]),
-        filterLive: () => pipe([pick(["Description"])]),
+        filterTarget: ({ lives, config, targetResources }) =>
+          pipe([
+            assign({
+              IpPermissions: getIpPermissions({
+                type: "SecurityGroupRuleIngress",
+                targetResources,
+              }),
+              IpPermissionsEgress: getIpPermissions({
+                type: "SecurityGroupRuleEgress",
+                targetResources,
+              }),
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            assign({
+              IpPermissions: pipe([get("IpPermissions"), filterPermissions]),
+              IpPermissionsEgress: pipe([
+                get("IpPermissionsEgress"),
+                filterPermissions,
+              ]),
+            }),
+          ]),
+        filterAll: () => pipe([omit(["VpcId", "OwnerId", "GroupId"])]),
       }),
       filterLive: () => pick(["Description"]),
       dependencies: {
@@ -495,36 +600,8 @@ module.exports = pipe([
       compare: compareSecurityGroupRule,
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
-      dependencies: {
-        securityGroup: {
-          type: "SecurityGroup",
-          group: "EC2",
-          parent: true,
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                () => resource,
-                eq(get("live.GroupId"), dependency.live.GroupId),
-              ])(),
-        },
-        securityGroupFrom: {
-          type: "SecurityGroup",
-          group: "EC2",
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                () => resource,
-                tap(() => {
-                  assert(dependency.live.GroupId);
-                  assert(resource.live.GroupId);
-                }),
-                get("live.IpPermission.UserIdGroupPairs[0].GroupId", ""),
-                eq(identity, dependency.live.GroupId),
-              ])(),
-        },
-      },
+      dependencies: securityGroupRuleDependencies,
+      inferName: inferNameSecurityGroupRule({ kind: "ingress" }),
     },
     {
       type: "SecurityGroupRuleEgress",
@@ -532,9 +609,8 @@ module.exports = pipe([
       compare: compareSecurityGroupRule,
       filterLive: securityGroupRulePickProperties,
       includeDefaultDependencies: true,
-      dependencies: {
-        securityGroup: { type: "SecurityGroup", group: "EC2", parent: true },
-      },
+      dependencies: securityGroupRuleDependencies,
+      inferName: inferNameSecurityGroupRule({ kind: "egress" }),
     },
     {
       type: "ElasticIpAddress",
@@ -662,7 +738,7 @@ module.exports = pipe([
         filterTarget: () => pipe([pick(["PolicyDocument"])]),
         filterLive: () => pipe([pick(["PolicyDocument"])]),
       }),
-      filterLive: () =>
+      filterLive: ({ providerConfig }) =>
         pipe([
           pick([
             "ServiceName",
@@ -671,6 +747,7 @@ module.exports = pipe([
             "RequesterManaged",
             "VpcEndpointType",
           ]),
+          assignPolicyDocumentAccountAndRegion({ providerConfig }),
         ]),
     },
   ],

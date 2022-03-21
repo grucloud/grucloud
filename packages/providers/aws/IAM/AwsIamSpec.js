@@ -37,19 +37,17 @@ const {
   AwsIamOpenIDConnectProvider,
 } = require("./AwsIamOpenIDConnectProvider");
 
-const { compareAws, isOurMinion, ignoreResourceCdk } = require("../AwsCommon");
+const {
+  compareAws,
+  isOurMinion,
+  ignoreResourceCdk,
+  assignPolicyDocumentAccountAndRegion,
+} = require("../AwsCommon");
 const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "IAM";
 
 const compareIAM = compareAws({});
-
-const replaceAccountAndRegion = ({ providerConfig }) =>
-  pipe([
-    callProp("replace", providerConfig.accountId(), "${config.accountId()}"),
-    callProp("replace", providerConfig.region, "${config.region}"),
-    (resource) => () => "`" + resource + "`",
-  ]);
 
 const filterAttachedPolicies = ({ lives }) =>
   pipe([
@@ -216,32 +214,7 @@ module.exports = pipe([
           assign({
             Policies: pipe([
               get("Policies", []),
-              map(
-                assign({
-                  PolicyDocument: pipe([
-                    get("PolicyDocument"),
-                    assign({
-                      Statement: pipe([
-                        get("Statement"),
-                        map(
-                          assign({
-                            Resource: pipe([
-                              get("Resource"),
-                              switchCase([
-                                Array.isArray,
-                                map(
-                                  replaceAccountAndRegion({ providerConfig })
-                                ),
-                                replaceAccountAndRegion({ providerConfig }),
-                              ]),
-                            ]),
-                          })
-                        ),
-                      ]),
-                    }),
-                  ]),
-                })
-              ),
+              map(assignPolicyDocumentAccountAndRegion({ providerConfig })),
             ]),
           }),
           omitIfEmpty(["Description", "Policies", "AttachedPolicies"]),

@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { assign, pipe, tap, get, eq, or, omit } = require("rubico");
-const { defaultsDeep, isEmpty, unless, pluck } = require("rubico/x");
+const { assign, pipe, tap, get, eq, or, omit, map } = require("rubico");
+const { defaultsDeep, isEmpty, when, pluck } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -50,6 +50,22 @@ exports.ECSService = ({ spec, config }) => {
       group: "ELBv2",
       ids: pluck("targetGroupArn")(live.loadBalancers),
     },
+    {
+      type: "Subnet",
+      group: "EC2",
+      ids: pipe([
+        () => live,
+        get("networkConfiguration.awsvpcConfiguration.subnets"),
+      ])(),
+    },
+    {
+      type: "SecurityGroup",
+      group: "EC2",
+      ids: pipe([
+        () => live,
+        get("networkConfiguration.awsvpcConfiguration.securityGroups"),
+      ])(),
+    },
   ];
 
   const findNamespace = pipe([() => ""]);
@@ -96,6 +112,9 @@ exports.ECSService = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#createService-property
   const create = client.create({
     method: "createService",
+    shouldRetryOnExceptionMessages: [
+      "does not have an associated load balancer",
+    ],
     pickCreated:
       ({ name }) =>
       ({ service }) =>
@@ -155,7 +174,7 @@ exports.ECSService = ({ spec, config }) => {
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: { cluster, taskDefinition },
+    dependencies: { cluster, taskDefinition, subnets, securityGroups },
   }) =>
     pipe([
       tap(() => {
@@ -174,6 +193,32 @@ exports.ECSService = ({ spec, config }) => {
           tags,
         }),
       }),
+      when(
+        () => subnets,
+        defaultsDeep({
+          networkConfiguration: {
+            awsvpcConfiguration: {
+              subnets: pipe([
+                () => subnets,
+                map((subnet) => getField(subnet, "SubnetId")),
+              ])(),
+            },
+          },
+        })
+      ),
+      when(
+        () => securityGroups,
+        defaultsDeep({
+          networkConfiguration: {
+            awsvpcConfiguration: {
+              securityGroups: pipe([
+                () => securityGroups,
+                map((securityGroup) => getField(securityGroup, "GroupId")),
+              ])(),
+            },
+          },
+        })
+      ),
     ])();
 
   return {

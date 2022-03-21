@@ -26,7 +26,6 @@ const {
   values,
   first,
   pluck,
-  isDeepEqual,
   isString,
   when,
   identity,
@@ -35,6 +34,8 @@ const {
   keys,
   defaultsDeep,
   append,
+  differenceWith,
+  isDeepEqual,
 } = require("rubico/x");
 const util = require("util");
 const { detailedDiff } = require("deep-object-diff");
@@ -92,36 +93,39 @@ const differenceObject = (exclude) => (target) =>
       assert(exclude);
     }),
     () => target,
-    keys,
-    reduce(
-      (acc, key) =>
-        pipe([
-          switchCase([
-            () => exclude.hasOwnProperty(key),
-            switchCase([
-              () => isObject(exclude[key]),
-              pipe([
-                () => differenceObject(exclude[key])(target[key]),
-                switchCase([
-                  isEmpty,
-                  () => acc,
-                  (value) => ({ ...acc, [key]: value }),
-                ]),
-              ]),
+    switchCase([
+      Array.isArray,
+      pipe([() => exclude, differenceWith(isDeepEqual, target)]),
+      pipe([
+        keys,
+        reduce(
+          (acc, key) =>
+            pipe([
               switchCase([
-                eq(exclude[key], target[key]),
-                () => acc,
+                () => exclude.hasOwnProperty(key),
+                switchCase([
+                  () => isObject(exclude[key]),
+                  pipe([
+                    pipe([() => differenceObject(exclude[key])(target[key])]),
+                    switchCase([
+                      isEmpty,
+                      () => acc,
+                      pipe([(value) => ({ ...acc, [key]: value })]),
+                    ]),
+                  ]),
+                  switchCase([
+                    pipe([eq(exclude[key], target[key])]),
+                    () => acc,
+                    () => ({ ...acc, [key]: target[key] }),
+                  ]),
+                ]),
                 () => ({ ...acc, [key]: target[key] }),
               ]),
-            ]),
-            () => ({ ...acc, [key]: target[key] }),
-          ]),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
-      {}
-    ),
+            ])(),
+          {}
+        ),
+      ]),
+    ]),
   ])();
 
 exports.differenceObject = differenceObject;

@@ -23,7 +23,9 @@ const path = require("path");
 const Fs = require("fs");
 const fs = require("fs").promises;
 
-const ignoreResourceWithTags = ["aws:cloudformation", "aws-cdk"];
+const ignoreResourceWithTags = [
+  /*"aws:cloudformation", "aws-cdk"*/
+];
 
 const ignoredTags = [
   "aws",
@@ -42,6 +44,7 @@ const {
   createWritersSpec,
 } = require("@grucloud/core/generatorUtils");
 const { configTpl } = require("./configTpl");
+const { isString } = require("util");
 
 const bucketFileNameFromLive = ({ live: { Name }, commandOptions }) =>
   `s3/${Name}/`;
@@ -115,7 +118,10 @@ const downloadS3Objects = ({ lives, commandOptions, programOptions }) =>
             assert(true);
           }),
           get("Bucket"),
-          callProp("startsWith", "cdk-"),
+          or([
+            callProp("startsWith", "cdk-"),
+            callProp("startsWith", "aws-sam"),
+          ]),
         ])
       )
     ),
@@ -195,6 +201,51 @@ const ignoreTags = (key) =>
     any((ingnoredTag) => key.startsWith(ingnoredTag)),
   ])();
 
+const removeTagsArray = ({ tagsKey, key }) =>
+  pipe([
+    tap((params) => {
+      assert(tagsKey);
+      assert(key);
+    }),
+    when(
+      pipe([get(tagsKey), Array.isArray]),
+      assign({
+        [tagsKey]: pipe([
+          get(tagsKey),
+          tap((params) => {
+            assert(true);
+          }),
+          filter(
+            not(
+              or([
+                (tag) =>
+                  pipe([
+                    () => tag,
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    get(key, tag.TagKey),
+                    tap((value) => {
+                      // if (!value) {
+                      //   assert(value);
+                      // }
+                    }),
+                    switchCase([isEmpty, () => true, ignoreTags]),
+                  ])(),
+              ])
+            )
+          ),
+          map(
+            when(
+              isObject,
+              omit(["ResourceId", "ResourceType", "PropagateAtLaunch"])
+            )
+          ),
+        ]),
+      })
+    ),
+  ]);
+
 const filterModel = pipe([
   tap((params) => {
     assert(true);
@@ -217,39 +268,8 @@ const filterModel = pipe([
       live: pipe([
         get("live"),
         removeOurTags,
-        //TODO create removeOurTagArray
-        when(
-          //TODO
-          get("Tags"),
-          assign({
-            Tags: pipe([
-              //TODO
-              get("Tags"),
-              tap((params) => {
-                assert(true);
-              }),
-              filter(
-                not(
-                  or([
-                    pipe([
-                      get("Key"),
-                      when(isEmpty, get("key")),
-                      when(isEmpty, get("TagKey")),
-                      switchCase([isEmpty, () => false, ignoreTags]),
-                    ]),
-                    //get("ResourceId"),
-                  ])
-                )
-              ),
-              map(
-                when(
-                  isObject,
-                  omit(["ResourceId", "ResourceType", "PropagateAtLaunch"])
-                )
-              ),
-            ]),
-          })
-        ),
+        removeTagsArray({ tagsKey: "Tags", key: "Key" }),
+        removeTagsArray({ tagsKey: "tags", key: "key" }),
       ]),
     })
   ),

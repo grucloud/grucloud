@@ -239,28 +239,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "ClusterSharedNodeSecurityGroup-rule-ingress-all-from-ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
-      },
-    }),
-    dependencies: () => ({
-      securityGroup: "ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: "ClusterSharedNodeSecurityGroup",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    name: "ClusterSharedNodeSecurityGroup-rule-ingress-all-from-eks-cluster-sg-my-cluster-1909614887",
-    properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
       },
     }),
     dependencies: () => ({
@@ -271,17 +252,14 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "eks-cluster-sg-my-cluster-1909614887-rule-ingress-all-from-ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "-1",
-        FromPort: -1,
-        ToPort: -1,
       },
     }),
     dependencies: () => ({
       securityGroup: "eks-cluster-sg-my-cluster-1909614887",
-      securityGroupFrom: "ClusterSharedNodeSecurityGroup",
+      securityGroupFrom: "eks-cluster-sg-my-cluster-1909614887",
     }),
   },
   { type: "ElasticIpAddress", group: "EC2", name: "NATIP" },
@@ -363,7 +341,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -425,7 +402,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

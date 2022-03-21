@@ -95,12 +95,10 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "sg-rule-ingress-icmp",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "icmp",
         FromPort: -1,
-        ToPort: -1,
+        IpProtocol: "icmp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -111,6 +109,7 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: -1,
       },
     }),
     dependencies: () => ({
@@ -120,12 +119,10 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "sg-rule-ingress-ssh",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 22,
-        ToPort: 22,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -136,6 +133,7 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: 22,
       },
     }),
     dependencies: () => ({

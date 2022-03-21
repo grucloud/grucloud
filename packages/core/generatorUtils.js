@@ -152,7 +152,11 @@ const envVarName = ({ resource, suffix }) =>
   ).toUpperCase()}`;
 
 const isNotOurTagKey = not(
-  or([callProp("startsWith", "gc-"), eq(identity, "Name")])
+  or([
+    callProp("startsWith", "gc-"),
+    eq(identity, "Name"),
+    eq(identity, "fingerprint"), // GCP
+  ])
 );
 
 const buildProperties = ({
@@ -186,6 +190,7 @@ const buildProperties = ({
       dependencies,
       programOptions,
       commandOptions,
+      omitProperties,
       pickPropertiesCreate,
     }),
     tap((params) => {
@@ -336,7 +341,7 @@ const dependencyValue = ({ key, list, resource }) =>
         if (size(dependencyVarNames) > 1) {
           assert(key);
           assert(resource);
-          assert(false);
+          assert(false, `key ${key} has multiple dependencies`);
         }
       }
     }),
@@ -1175,6 +1180,7 @@ const writeResource =
         pipe([
           tap((params) => {
             assert(true);
+            // console.log(" Writing", resource.name);
           }),
           fork({
             resourceVarName: () => resourceVarName(resource.name),

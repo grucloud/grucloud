@@ -38,6 +38,8 @@ const {
   when,
   values,
 } = require("rubico/x");
+
+const { mergeWith } = require("lodash/fp");
 const util = require("util");
 const logger = require("./logger")({ prefix: "CoreResources" });
 const { tos } = require("./tos");
@@ -265,7 +267,7 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const planUpdate = ({ resource, target, live }) =>
+  const planUpdate = ({ resource, target, live, targetResources }) =>
     pipe([
       tap(() => {
         // logger.debug(
@@ -273,9 +275,11 @@ exports.ResourceMaker = ({
         //     target
         //   )}, live: ${tos(live)}`
         // );
+        assert(targetResources);
       }),
       () =>
         spec.compare({
+          // DO we still need omitProperties, pick pickProperties and propertiesDefault ? let's provider spec instead
           omitProperties: spec.omitProperties,
           pickProperties: spec.pickProperties,
           propertiesDefault: spec.propertiesDefault,
@@ -285,6 +289,7 @@ exports.ResourceMaker = ({
           lives: provider.lives,
           config,
           programOptions,
+          targetResources,
         }),
       tap((diff) => {
         assert(diff);
@@ -519,6 +524,12 @@ exports.ResourceMaker = ({
       }),
     ])();
 
+  const customizerMergeArray = (objValue, srcValue) =>
+    when(
+      () => Array.isArray(objValue),
+      () => [...objValue, ...srcValue]
+    )();
+
   const resolveConfig = ({ live, resolvedDependencies, deep = false } = {}) =>
     pipe([
       tap(() => {
@@ -590,7 +601,10 @@ exports.ResourceMaker = ({
                 namespace,
                 properties: pipe([
                   () => properties,
-                  defaultsDeep(spec.propertiesDefault),
+                  mergeWith(customizerMergeArray, spec.propertiesDefault),
+                  tap((params) => {
+                    assert(true);
+                  }),
                 ])(),
                 dependencies: resolvedDependencies,
                 spec,
@@ -721,7 +735,8 @@ exports.ResourceMaker = ({
                     diff,
                     live,
                     lives: provider.lives,
-                    id: client.findId({ live }),
+                    //TODO do we need that id ?
+                    id: client.findId({ live, lives: provider.lives }),
                     programOptions,
                     compare: spec.compare,
                   }),
@@ -747,11 +762,12 @@ exports.ResourceMaker = ({
       updateTags({ diff, live }),
     ])();
 
-  const planUpsert = ({ resource, lives }) =>
+  const planUpsert = ({ resource, lives, targetResources }) =>
     pipe([
       tap((params) => {
         logger.info(`planUpsert resource: ${resource.toString()}`);
         assert(lives);
+        assert(targetResources);
       }),
       () => resource,
       switchCase([
@@ -801,7 +817,8 @@ exports.ResourceMaker = ({
                 providerName: resource.toJSON().providerName,
               },
             ],
-            ({ live, target }) => planUpdate({ live, target, resource }),
+            ({ live, target }) =>
+              planUpdate({ live, target, resource, targetResources }),
           ]),
         ]),
       ]),
@@ -824,7 +841,7 @@ exports.ResourceMaker = ({
                   client.getLives,
                   get("resources"),
                   tap((resources) => {
-                    logger.error(
+                    logger.debug(
                       `waitForResourceUp: ${toString()}, #resources: ${size(
                         resources
                       )}`
@@ -845,7 +862,7 @@ exports.ResourceMaker = ({
                   dependencies: resolveDependencies,
                 }),
               tap((params) => {
-                logger.error(
+                logger.debug(
                   `waitForResourceUp: ${toString()}, filterLives: ${tos(
                     params
                   )}`

@@ -253,10 +253,11 @@ module.exports = pipe([
   ],
   map(
     pipe([
-      assign({ group: () => GROUP }),
       defaultsDeep({
+        group: GROUP,
         isOurMinion: GoogleTag.isOurMinion,
         compare: compareGoogle,
+        tagsKey: "tags",
       }),
     ])
   ),

@@ -19,7 +19,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
-    name: "my-security-group-rule-ingress-tcp-22-v4",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",

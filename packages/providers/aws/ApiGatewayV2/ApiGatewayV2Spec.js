@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, map, omit, tap, eq, get, pick, switchCase } = require("rubico");
-const { when, defaultsDeep, append } = require("rubico/x");
+const { when, defaultsDeep, append, callProp } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { compareAws, isOurMinionObject } = require("../AwsCommon");
 const { Api } = require("./Api");
@@ -50,17 +50,15 @@ module.exports = pipe([
         "ApiId",
         "CreatedDate",
         "AccessLogSettings.DestinationArn",
+        "Name",
       ],
-      filterLive: () =>
-        pipe([
-          pick([
-            "ProtocolType",
-            "ApiKeySelectionExpression",
-            "DisableExecuteApiEndpoint",
-            "RouteSelectionExpression",
-            "AccessLogSettings",
-          ]),
-        ]),
+      propertiesDefault: {
+        Version: "1.0",
+        ProtocolType: "HTTP",
+        ApiKeySelectionExpression: "$request.header.x-api-key",
+        RouteSelectionExpression: "$request.method $request.path",
+        DisableExecuteApiEndpoint: false,
+      },
     },
     {
       type: "Stage",
@@ -94,33 +92,45 @@ module.exports = pipe([
       Client: Authorizer,
       omitProperties: ["AuthorizerId", "ApiName"],
       filterLive: () =>
-        pick([
-          "AuthorizerType",
-          "IdentitySource",
-          "AuthorizerPayloadFormatVersion",
-          "AuthorizerResultTtlInSeconds",
-          "EnableSimpleResponses",
-          "IdentityValidationExpression",
-          "JwtConfiguration",
+        pipe([
+          pick([
+            "AuthorizerType",
+            "IdentitySource",
+            "AuthorizerPayloadFormatVersion",
+            "AuthorizerResultTtlInSeconds",
+            "EnableSimpleResponses",
+            "IdentityValidationExpression",
+            "JwtConfiguration",
+          ]),
+          when(
+            pipe([
+              get("JwtConfiguration.Issuer", ""),
+              callProp("startsWith", "https://cognito-idp"),
+            ]),
+            omit(["JwtConfiguration.Issuer"])
+          ),
         ]),
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
+        userPool: { type: "UserPool", group: "CognitoIdentityServiceProvider" },
       },
     },
     {
       type: "ApiMapping",
       Client: ApiMapping,
-      //TODO inferName
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({
+        properties: { ApiMappingKey },
+        dependenciesSpec: { domainName, api, stage },
+      }) =>
         pipe([
-          dependencies,
-          tap(({ domainName, api, stage }) => {
+          tap(() => {
             assert(domainName);
             assert(api);
             assert(stage);
+            //TODO
+            //assert(ApiMappingKey);
           }),
-          ({ domainName, api, stage }) =>
-            `apimapping::${domainName.name}::${api.name}::${stage.name}::${properties.ApiMappingKey}`,
+          () => `apimapping::${domainName}::${api}::${stage}::${ApiMappingKey}`,
         ])(),
       omitProperties: ["ApiMappingId", "ApiName"],
       filterLive: () => pipe([pick(["ApiMappingKey"])]),
@@ -133,21 +143,23 @@ module.exports = pipe([
     {
       type: "Integration",
       Client: Integration,
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({
+        properties,
+        dependenciesSpec: { api, lambdaFunction, eventBus },
+      }) =>
         pipe([
           //TODO other target
-          dependencies,
-          tap(({ api }) => {
+          tap(() => {
             assert(api);
           }),
-          ({ api, lambdaFunction, eventBus }) =>
+          () =>
             pipe([
-              () => `integration::${api.name}`,
+              () => `integration::${api}`,
               switchCase([
                 () => lambdaFunction,
-                append(`::${lambdaFunction?.name}`),
+                append(`::${lambdaFunction}`),
                 () => eventBus,
-                append(`::${eventBus?.name}`),
+                append(`::${eventBus}`),
                 append(`::UNKNOWN`),
               ]),
             ])(),
@@ -190,13 +202,13 @@ module.exports = pipe([
         AuthorizationType: "NONE",
         RequestModels: {},
       },
-      inferName: ({ properties, dependencies }) =>
+      inferName: ({ properties: { RouteKey }, dependenciesSpec: { api } }) =>
         pipe([
           tap((params) => {
-            assert(properties.RouteKey);
+            assert(RouteKey);
+            assert(api);
           }),
-          dependencies,
-          ({ api }) => `route::${api.name}::${properties.RouteKey}`,
+          () => `route::${api}::${RouteKey}`,
         ])(),
       omitProperties: ["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"],
       dependencies: {
@@ -219,8 +231,13 @@ module.exports = pipe([
         "ApiGatewayV2::Integration",
       ],
       Client: Deployment,
-      inferName: ({ properties, dependencies }) =>
-        pipe([dependencies, ({ api }) => `deployment::${api.name}`])(),
+      inferName: ({ properties, dependenciesSpec: { api } }) =>
+        pipe([
+          tap((params) => {
+            assert(api);
+          }),
+          () => `deployment::${api}`,
+        ])(),
       omitProperties: [
         "StageName",
         "CreatedDate",
