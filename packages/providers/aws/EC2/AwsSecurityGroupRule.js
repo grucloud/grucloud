@@ -11,8 +11,7 @@ const {
   not,
   or,
   map,
-  fork,
-  assign,
+  lte,
   pick,
   flatMap,
   omit,
@@ -35,13 +34,12 @@ const {
   pluck,
 } = require("rubico/x");
 const util = require("util");
-const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
-const { findValueInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags, findEksCluster } = require("../AwsCommon");
 const { createEC2 } = require("./EC2Common");
@@ -81,35 +79,6 @@ const groupNameFromId = ({ GroupId, lives, config }) =>
       }
     }),
   ])();
-
-const fromSecurityGroup = ({ lives, config }) =>
-  pipe([
-    tap((params) => {
-      assert(lives);
-    }),
-    get("UserIdGroupPairs"),
-    first,
-    get("GroupId"),
-    switchCase([
-      isEmpty,
-      () => "",
-      (GroupId) =>
-        pipe([
-          () =>
-            lives.getByType({
-              type: "SecurityGroup",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
-          find(eq(get("id"), GroupId)),
-          get("name"),
-          tap((name) => {
-            assert(name);
-          }),
-          switchCase([not(isEmpty), (name) => `-from-${name}`, () => ""]),
-        ])(),
-    ]),
-  ]);
 
 const ruleDefaultToName =
   ({ kind, lives, config }) =>
@@ -240,6 +209,14 @@ const SecurityGroupRuleBase = ({ config }) => {
           assert(lives.getById);
         }),
         and([
+          pipe([
+            () => live,
+            get("IpPermission.UserIdGroupPairs"),
+            and([
+              lte(size, 1),
+              pipe([first, or([isEmpty, eq(get("GroupId"), live.GroupId)])]),
+            ]),
+          ]),
           or([
             () => IsEgress,
             and([
@@ -253,14 +230,9 @@ const SecurityGroupRuleBase = ({ config }) => {
                   }),
                 get("managedByOther"),
               ]),
-              pipe([
-                () => live,
-                get("IpPermission.UserIdGroupPairs"),
-                first,
-                or([isEmpty, eq(get("GroupId"), live.GroupId)]),
-              ]),
             ]),
           ]),
+          // Ingress
           pipe([
             () => live,
             get("IpPermission"),
@@ -343,7 +315,7 @@ const SecurityGroupRuleBase = ({ config }) => {
 
   const securityGroupToRules = ({ IsEgress }) =>
     pipe([
-      flatMap(({ GroupId, IpPermissions, IpPermissionsEgress }) =>
+      flatMap(({ GroupId, GroupName, IpPermissions, IpPermissionsEgress }) =>
         pipe([
           switchCase([
             () => IsEgress,
@@ -356,7 +328,7 @@ const SecurityGroupRuleBase = ({ config }) => {
               tap((params) => {
                 assert(true);
               }),
-              (IpPermission) => ({ IpPermission, GroupId }),
+              (IpPermission) => ({ IpPermission, GroupId, GroupName }),
             ])
           ),
         ])()
@@ -629,7 +601,13 @@ exports.compareSecurityGroupRule = compareAws({
   getLiveTags: () => [],
 })({
   filterAll: () =>
-    pipe([omit(["IpPermission.UserIdGroupPairs", "SecurityGroupRuleId"])]),
+    pipe([
+      omit([
+        "IpPermission.UserIdGroupPairs",
+        "SecurityGroupRuleId",
+        "GroupName",
+      ]),
+    ]),
   filterTarget: () =>
     pipe([
       ({ GroupId, IpPermissions }) => ({

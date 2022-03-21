@@ -296,7 +296,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleEgress",
     group: "EC2",
-    name: "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5-rule-egress-tcp-80-from-CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",

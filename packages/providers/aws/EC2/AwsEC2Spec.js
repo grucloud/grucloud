@@ -25,6 +25,8 @@ const {
   append,
   defaultsDeep,
   when,
+  isDeepEqual,
+  callProp,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
@@ -161,6 +163,57 @@ const securityGroupRuleDependencies = {
         ])(),
   },
 };
+
+const sortByFromPort = pipe([
+  callProp("sort", (a, b) => a.FromPort - b.FromPort),
+]);
+
+const getIpPermissions =
+  ({ type, targetResources }) =>
+  ({ GroupName }) =>
+    pipe([
+      tap(() => {
+        assert(type);
+        assert(targetResources);
+        assert(GroupName);
+      }),
+      () => targetResources,
+      filter(eq(get("type"), type)),
+      filter(
+        eq(
+          ({ dependencies }) =>
+            pipe([dependencies, get("securityGroup.name")])(),
+          GroupName
+        )
+      ),
+      map(({ properties }) =>
+        pipe([
+          () => properties({}),
+          get("IpPermission"),
+          omit(["UserIdGroupPairs"]),
+        ])()
+      ),
+      sortByFromPort,
+    ])();
+
+const filterPermissions = pipe([
+  map(
+    pipe([
+      omitIfEmpty(["PrefixListIds", "Ipv6Ranges", "IpRanges"]),
+      omit(["UserIdGroupPairs"]),
+    ])
+  ),
+  filter(
+    (rule) =>
+      !isDeepEqual(rule, {
+        FromPort: undefined,
+        IpProtocol: "-1",
+        IpRanges: [{ CidrIp: "0.0.0.0/0", Description: undefined }],
+        ToPort: undefined,
+      })
+  ),
+  sortByFromPort,
+]);
 
 module.exports = pipe([
   () => [
@@ -472,8 +525,30 @@ module.exports = pipe([
       includeDefaultDependencies: true,
       findDefault: findDefaultWithVpcDependency,
       compare: compareEC2({
-        filterTarget: () => pipe([pick(["Description"])]),
-        filterLive: () => pipe([pick(["Description"])]),
+        filterTarget: ({ lives, config, targetResources }) =>
+          pipe([
+            assign({
+              IpPermissions: getIpPermissions({
+                type: "SecurityGroupRuleIngress",
+                targetResources,
+              }),
+              IpPermissionsEgress: getIpPermissions({
+                type: "SecurityGroupRuleEgress",
+                targetResources,
+              }),
+            }),
+          ]),
+        filterLive: () =>
+          pipe([
+            assign({
+              IpPermissions: pipe([get("IpPermissions"), filterPermissions]),
+              IpPermissionsEgress: pipe([
+                get("IpPermissionsEgress"),
+                filterPermissions,
+              ]),
+            }),
+          ]),
+        filterAll: () => pipe([omit(["VpcId", "OwnerId", "GroupId"])]),
       }),
       filterLive: () => pick(["Description"]),
       dependencies: {

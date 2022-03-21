@@ -267,7 +267,7 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const planUpdate = ({ resource, target, live }) =>
+  const planUpdate = ({ resource, target, live, targetResources }) =>
     pipe([
       tap(() => {
         // logger.debug(
@@ -275,9 +275,11 @@ exports.ResourceMaker = ({
         //     target
         //   )}, live: ${tos(live)}`
         // );
+        assert(targetResources);
       }),
       () =>
         spec.compare({
+          // DO we still need omitProperties, pick pickProperties and propertiesDefault ? let's provider spec instead
           omitProperties: spec.omitProperties,
           pickProperties: spec.pickProperties,
           propertiesDefault: spec.propertiesDefault,
@@ -287,6 +289,7 @@ exports.ResourceMaker = ({
           lives: provider.lives,
           config,
           programOptions,
+          targetResources,
         }),
       tap((diff) => {
         assert(diff);
@@ -759,11 +762,12 @@ exports.ResourceMaker = ({
       updateTags({ diff, live }),
     ])();
 
-  const planUpsert = ({ resource, lives }) =>
+  const planUpsert = ({ resource, lives, targetResources }) =>
     pipe([
       tap((params) => {
         logger.info(`planUpsert resource: ${resource.toString()}`);
         assert(lives);
+        assert(targetResources);
       }),
       () => resource,
       switchCase([
@@ -813,7 +817,8 @@ exports.ResourceMaker = ({
                 providerName: resource.toJSON().providerName,
               },
             ],
-            ({ live, target }) => planUpdate({ live, target, resource }),
+            ({ live, target }) =>
+              planUpdate({ live, target, resource, targetResources }),
           ]),
         ]),
       ]),

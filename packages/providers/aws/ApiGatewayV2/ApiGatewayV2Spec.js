@@ -127,7 +127,8 @@ module.exports = pipe([
             assert(domainName);
             assert(api);
             assert(stage);
-            assert(ApiMappingKey);
+            //TODO
+            //assert(ApiMappingKey);
           }),
           () => `apimapping::${domainName}::${api}::${stage}::${ApiMappingKey}`,
         ])(),

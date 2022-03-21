@@ -10,6 +10,7 @@ const {
   filter,
   not,
   omit,
+  fork,
 } = require("rubico");
 const {
   find,
@@ -21,6 +22,8 @@ const {
   when,
   prepend,
   first,
+  unless,
+  differenceWith,
 } = require("rubico/x");
 const {
   buildTags,
@@ -180,6 +183,60 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     getById,
   });
 
+  const ipPermissionsEquals = (a, b) =>
+    a.FromPort === b.FromPort &&
+    a.ToPort === b.ToPort &&
+    a.IpProtocol &&
+    b.IpProtocol;
+
+  const revokePermissionDelete =
+    ({ types, method }) =>
+    ({ target, live, liveIn }) =>
+      pipe([
+        tap((params) => {
+          assert(types);
+          assert(target);
+          assert(live);
+          assert(liveIn);
+          assert(liveIn.GroupId);
+          assert(method);
+        }),
+        () => target[types],
+        differenceWith(ipPermissionsEquals, live[types]),
+        unless(
+          isEmpty,
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            (IpPermissions) =>
+              ec2()[method]({
+                GroupId: liveIn.GroupId,
+                IpPermissions,
+              }),
+          ])
+        ),
+      ])();
+
+  const update = async ({ diff }) =>
+    pipe([
+      () => diff,
+      fork({
+        ingress: pipe([
+          revokePermissionDelete({
+            types: "IpPermissions",
+            method: "revokeSecurityGroupIngress",
+          }),
+        ]),
+        egress: pipe([
+          revokePermissionDelete({
+            types: "IpPermissionsEgress",
+            method: "revokeSecurityGroupEgress",
+          }),
+        ]),
+      }),
+    ])();
+
   const revokeIngressRules = ({ live }) =>
     pipe([
       tap(() => {
@@ -240,6 +297,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     managedByOther,
     getList,
     create,
+    update,
     destroy,
     configDefault,
     tagResource: tagResource({ ec2 }),
