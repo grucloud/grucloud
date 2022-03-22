@@ -57,7 +57,7 @@ exports.AwsVolume = ({ spec, config }) => {
                 id: InstanceId,
               }),
             tap((instance) => {
-              assert(instance, `cannot find ec2 instanceId: ${InstanceId}`);
+              //assert(instance, `cannot find ec2 instanceId: ${InstanceId}`);
             }),
             eq(get("live.RootDeviceName"), Device),
           ])()
@@ -194,6 +194,7 @@ exports.AwsVolume = ({ spec, config }) => {
   const findNamespace = ({ live, lives }) =>
     pipe([
       () => findNamespaceInTags(config)({ live }),
+      //when
       switchCase([
         isEmpty,
         () => findNamespaceFromInstanceId({ live, lives }),
