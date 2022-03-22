@@ -357,6 +357,9 @@ exports.AwsClient =
             get("liveDiff.updated", {}),
             defaultsDeep(get("liveDiff.added", {})(diff)),
             defaultsDeep(pickId(live)),
+            tap((result) => {
+              logger.debug(`update filterParams: ${JSON.stringify(result)}`);
+            }),
           ])(),
         getById,
         isInstanceUp = identity,
@@ -373,7 +376,9 @@ exports.AwsClient =
             assert(pickId);
             assert(compare);
             assert(getById);
-            logger.info(`update ${type}, ${name}`);
+            logger.info(
+              `update type: ${type}, method: ${method}, name: ${name}`
+            );
             logger.debug(
               `${JSON.stringify({
                 payload,
@@ -384,11 +389,14 @@ exports.AwsClient =
           }),
           preUpdate({ name, live, payload, diff, programOptions }),
           () => filterParams({ pickId, extraParam, payload, diff, live }),
-          defaultsDeep(extraParam),
           tap((params) => {
+            assert(true);
+          }),
+          defaultsDeep(extraParam),
+          tap((input) => {
             logger.debug(
               `update ${type}, ${name}, params: ${JSON.stringify(
-                params,
+                input,
                 null,
                 4
               )}`
@@ -396,11 +404,11 @@ exports.AwsClient =
           }),
           tryCatch(
             pipe([
-              (payload) =>
+              (input) =>
                 retryCall({
                   name: `update ${type} ${name}`,
                   fn: pipe([
-                    () => payload,
+                    () => input,
                     endpoint()[method],
                     tap((results) => {
                       logger.debug(

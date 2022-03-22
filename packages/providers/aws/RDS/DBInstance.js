@@ -58,11 +58,13 @@ exports.DBInstance = ({ spec, config }) => {
     },
   ];
 
+  const decorate = () => pipe([renameTagList]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
   const getList = client.getList({
     method: "describeDBInstances",
     getParam: "DBInstances",
-    decorate: () => pipe([renameTagList]),
+    decorate,
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -72,6 +74,7 @@ exports.DBInstance = ({ spec, config }) => {
     method: "describeDBInstances",
     getField: "DBInstances",
     ignoreErrorCodes: ["DBInstanceNotFound"],
+    decorate,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBInstance-property
@@ -114,7 +117,6 @@ exports.DBInstance = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "modifyDBInstance",
-    filterParams: () => pipe([omit(["Tags"])]),
     extraParam: { ApplyImmediately: true },
     getById,
     config: { ...config, retryDelay: 10e3, retryCount: 200 },
