@@ -5,7 +5,7 @@ title: Resources List
 List of resources for provider aws:
 
 * APIGateway: 
-[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Resource](./resources/APIGateway/Resource.md), [Method](./resources/APIGateway/Method.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md)
+[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Deployment](./resources/APIGateway/Deployment.md), [Integration](./resources/APIGateway/Integration.md), [Resource](./resources/APIGateway/Resource.md), [Method](./resources/APIGateway/Method.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md)
 * ApiGatewayV2: 
 [DomainName](./resources/ApiGatewayV2/DomainName.md), [Api](./resources/ApiGatewayV2/Api.md), [Stage](./resources/ApiGatewayV2/Stage.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Deployment](./resources/ApiGatewayV2/Deployment.md)
 * AppRunner: 
@@ -18,12 +18,14 @@ List of resources for provider aws:
 [Certificate](./resources/ACM/Certificate.md)
 * CloudFront: 
 [Distribution](./resources/CloudFront/Distribution.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md)
+* CloudFormation: 
+[Stack](./resources/CloudFormation/Stack.md)
 * CloudWatchEvents: 
 [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md)
 * CloudWatchLogs: 
 [LogGroup](./resources/CloudWatchLogs/LogGroup.md)
 * CognitoIdentityServiceProvider: 
-[UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md)
+[IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md), [UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [UserPoolClient](./resources/CognitoIdentityServiceProvider/UserPoolClient.md), [UserPoolDomain](./resources/CognitoIdentityServiceProvider/UserPoolDomain.md)
 * DynamoDB: 
 [Table](./resources/DynamoDB/Table.md)
 * EC2: 

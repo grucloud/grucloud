@@ -19,9 +19,8 @@ const model = {
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AwsCertificate = ({ spec, config }) => {
   const acm = createACM(config);
-  const client = AwsClient({ spec, config })(acm);
 
-  return createAwsResource({ spec, client, model })({
+  return createAwsResource({ spec, endpoint: acm, config, model })({
     findName: get("live.DomainName"),
     findId: get("live.CertificateArn"),
     decorate: ({}) =>

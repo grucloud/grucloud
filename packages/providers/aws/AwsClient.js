@@ -71,7 +71,7 @@ const shouldRetryOnExceptionDefault = ({
     shouldRetryOnExceptionMessagesDefault(shouldRetryOnExceptionMessages),
   ]);
 
-exports.AwsClient =
+const AwsClient =
   ({ spec, config }) =>
   (endpoint) => {
     const { type, group } = spec;
@@ -525,6 +525,9 @@ exports.AwsClient =
             pipe([
               tap(() => preDestroy({ name, live, lives })),
               () => live,
+              tap((params) => {
+                assert(true);
+              }),
               pickId,
               tap((params) => {
                 logger.debug(
@@ -615,8 +618,10 @@ exports.AwsClient =
     };
   };
 
+exports.AwsClient = AwsClient;
+
 exports.createAwsResource =
-  ({ spec, client, model }) =>
+  ({ spec, endpoint, config, model }) =>
   ({
     findName,
     findId,
@@ -632,58 +637,64 @@ exports.createAwsResource =
     configDefault,
   }) =>
     pipe([
-      () => ({
-        spec,
-        getByName,
-        findName,
-        findId,
-        tagResource,
-        untagResource,
-        cannotBeDeleted,
-        findNamespace,
-        pickId,
-        configDefault,
-      }),
-      defaultsDeep({
-        pickId: pipe([pick[model.pickIds]]),
-        getById: client.getById({
-          pickId,
-          ...model.getById,
-          ignoreErrorCodes: model.ignoreErrorCodes,
-          decorate,
-        }),
-      }),
-      assign({
-        getList: ({ getById }) =>
-          client.getList({
-            ...model.getList,
-            decorate: () => getById,
-          }),
-        create: ({ getById }) =>
-          client.create({
-            getById,
-            ...model.create,
-            isInstanceUp,
-          }),
-        destroy: ({ getById, pickId }) =>
-          client.destroy({
+      () => endpoint,
+      AwsClient({ spec, config }),
+      (client) =>
+        pipe([
+          () => ({
+            spec,
+            getByName,
+            findName,
+            findId,
+            tagResource,
+            untagResource,
+            cannotBeDeleted,
+            findNamespace,
             pickId,
-            getById,
-            ignoreErrorCodes: model.ignoreErrorCodes,
-            ...model.destroy,
-            isInstanceDown,
+            configDefault,
           }),
-      }),
-      assign({
-        getByName: ({ getList, findName }) => getByName({ getList, findName }),
-      }),
-      defaultsDeep({
-        tagResource,
-        untagResource,
-        cannotBeDeleted,
-        findNamespace,
-      }),
-      tap((params) => {
-        assert(true);
-      }),
+          defaultsDeep({
+            pickId: pipe([pick([model.pickIds])]),
+            getById: client.getById({
+              pickId,
+              ...model.getById,
+              ignoreErrorCodes: model.ignoreErrorCodes,
+              decorate,
+            }),
+          }),
+          assign({
+            getList: ({ getById }) =>
+              client.getList({
+                ...model.getList,
+                decorate: () => getById,
+              }),
+            create: ({ getById }) =>
+              client.create({
+                getById,
+                ...model.create,
+                isInstanceUp,
+              }),
+            destroy: ({ getById, pickId }) =>
+              client.destroy({
+                pickId,
+                getById,
+                ignoreErrorCodes: model.ignoreErrorCodes,
+                ...model.destroy,
+                isInstanceDown,
+              }),
+          }),
+          assign({
+            getByName: ({ getList, findName }) =>
+              getByName({ getList, findName }),
+          }),
+          defaultsDeep({
+            tagResource,
+            untagResource,
+            cannotBeDeleted,
+            findNamespace,
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
     ])();

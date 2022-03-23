@@ -209,7 +209,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
   },
 });
 
-const createEndpoint = (client) => (config) =>
+const createEndpointProxy = (client) => (config) =>
   pipe([
     tap((params) => {
       assert(client);
@@ -219,6 +219,25 @@ const createEndpoint = (client) => (config) =>
     (endpoint) =>
       new Proxy({}, proxyHandler({ endpointName: client.name, endpoint })),
   ]);
+
+exports.createEndpointProxy = createEndpointProxy;
+
+const createEndpoint = (packageName, entryPoint) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    () => `@aws-sdk/client-${packageName}`,
+    require,
+    tap((params) => {
+      assert(true);
+    }),
+    get(entryPoint),
+    tap((params) => {
+      assert(true);
+    }),
+    createEndpointProxy,
+  ])();
 
 exports.createEndpoint = createEndpoint;
 

@@ -5,10 +5,9 @@ const Axios = require("axios");
 const fs = require("fs").promises;
 const AdmZip = require("adm-zip");
 const crypto = require("crypto");
-const { Lambda } = require("@aws-sdk/client-lambda");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createLambda = createEndpoint(Lambda);
+exports.createLambda = createEndpoint("lambda", "Lambda");
 
 exports.fetchZip =
   () =>

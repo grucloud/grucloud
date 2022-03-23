@@ -2,10 +2,9 @@ const assert = require("assert");
 const { pipe, get, eq, tap } = require("rubico");
 const { find } = require("rubico/x");
 
-const { AppSync } = require("@aws-sdk/client-appsync");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createAppSync = createEndpoint(AppSync);
+exports.createAppSync = createEndpoint("appsync", "AppSync");
 
 exports.ignoreErrorCodes = ["NotFoundException"];
 

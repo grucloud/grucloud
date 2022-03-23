@@ -1,9 +1,8 @@
 const assert = require("assert");
 const { pipe, tap, get } = require("rubico");
-const { SQS } = require("@aws-sdk/client-sqs");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createSQS = createEndpoint(SQS);
+exports.createSQS = createEndpoint("sqs", "SQS");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#tagQueue-property
 exports.tagResource =

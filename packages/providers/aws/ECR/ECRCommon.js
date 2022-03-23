@@ -1,9 +1,8 @@
 const { pipe, tap } = require("rubico");
 
-const { ECR } = require("@aws-sdk/client-ecr");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createECR = createEndpoint(ECR);
+exports.createECR = createEndpoint("ecr", "ECR");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#tagResource-property
 exports.tagResource =

@@ -1,8 +1,7 @@
 const { pipe, get } = require("rubico");
-const { CloudFront } = require("@aws-sdk/client-cloudfront");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createCloudFront = createEndpoint(CloudFront);
+exports.createCloudFront = createEndpoint("cloudfront", "CloudFront");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#tagResource-property
 exports.tagResource =

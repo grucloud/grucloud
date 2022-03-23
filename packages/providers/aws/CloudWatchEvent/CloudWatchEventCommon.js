@@ -1,8 +1,10 @@
 const { pipe, get } = require("rubico");
-const { CloudWatchEvents } = require("@aws-sdk/client-cloudwatch-events");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createCloudWatchEvents = createEndpoint(CloudWatchEvents);
+exports.createCloudWatchEvents = createEndpoint(
+  "cloudwatch-events",
+  "CloudWatchEvents"
+);
 
 exports.ignoreErrorCodes = ["ResourceNotFoundException"];
 

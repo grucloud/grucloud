@@ -1,9 +1,11 @@
 const assert = require("assert");
 const { pipe, tap } = require("rubico");
-const { CloudWatchLogs } = require("@aws-sdk/client-cloudwatch-logs");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createCloudWatchLogs = createEndpoint(CloudWatchLogs);
+exports.createCloudWatchLogs = createEndpoint(
+  "cloudwatch-logs",
+  "CloudWatchLogs"
+);
 
 exports.ignoreErrorCodes = ["ResourceNotFoundException"];
 

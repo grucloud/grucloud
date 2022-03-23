@@ -1,9 +1,8 @@
 const { pipe, tap } = require("rubico");
 
-const { DynamoDB } = require("@aws-sdk/client-dynamodb");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createDynamoDB = createEndpoint(DynamoDB);
+exports.createDynamoDB = createEndpoint("dynamodb", "DynamoDB");
 
 exports.ignoreErrorCodes = ["ResourceNotFoundException"];
 

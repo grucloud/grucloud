@@ -1,14 +1,13 @@
 const assert = require("assert");
 const { assign, map, pipe, get, tryCatch, tap } = require("rubico");
 const { find, first, keys } = require("rubico/x");
-const { IAM } = require("@aws-sdk/client-iam");
 const querystring = require("querystring");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamCommon" });
 
-exports.createIAM = createEndpoint(IAM);
+exports.createIAM = createEndpoint("iam", "IAM");
 
 exports.tagResourceIam =
   ({ field, method }) =>
