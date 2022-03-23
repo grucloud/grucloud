@@ -49,11 +49,11 @@ exports.SQSQueue = ({ spec, config }) => {
     }),
   ]);
 
-  const decorate = (params) =>
+  const decorate = ({ live }) =>
     pipe([
       tap((input) => {
         assert(input);
-        assert(params);
+        assert(live);
       }),
       when(
         get("Policy"),
@@ -61,7 +61,7 @@ exports.SQSQueue = ({ spec, config }) => {
           Policy: pipe([get("Policy"), JSON.parse]),
         })
       ),
-      (Attributes) => ({ ...params, Attributes }),
+      (Attributes) => ({ ...live, Attributes }),
       assignTags,
     ]);
 
