@@ -46,7 +46,7 @@ exports.Route = ({ spec, config }) => {
     pickId,
     method: "getRoute",
     ignoreErrorCodes,
-    decorate: ({ ApiId }) =>
+    decorate: ({ live: { ApiId } }) =>
       pipe([
         defaultsDeep({
           ApiId,

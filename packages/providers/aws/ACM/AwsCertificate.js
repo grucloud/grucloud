@@ -4,10 +4,12 @@ const { first, defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
-const { AwsClient, createAwsResource } = require("../AwsClient");
-const { createACM, tagResource, untagResource } = require("./ACMCommon");
+const { createAwsResource } = require("../AwsClient");
+const { tagResource, untagResource } = require("./ACMCommon");
 
 const model = {
+  package: "acm",
+  client: "ACM",
   pickIds: ["CertificateArn"],
   ignoreErrorCodes: ["ResourceNotFoundException"],
   getById: { method: "describeCertificate", getField: "Certificate" },
@@ -17,20 +19,23 @@ const model = {
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
-exports.AwsCertificate = ({ spec, config }) => {
-  const acm = createACM(config);
-
-  return createAwsResource({ spec, endpoint: acm, config, model })({
+exports.AwsCertificate = ({ spec, config }) =>
+  createAwsResource({
+    model,
+    config,
+    spec,
     findName: get("live.DomainName"),
     findId: get("live.CertificateArn"),
-    decorate: ({}) =>
-      assign({
-        Tags: pipe([
-          pick(["CertificateArn"]),
-          acm().listTagsForCertificate,
-          get("Tags"),
-        ]),
-      }),
+    decorate: ({ endpoint }) =>
+      pipe([
+        assign({
+          Tags: pipe([
+            pick(["CertificateArn"]),
+            endpoint().listTagsForCertificate,
+            get("Tags"),
+          ]),
+        }),
+      ]),
     isInstanceUp: pipe([
       get("DomainValidationOptions"),
       first,
@@ -38,15 +43,10 @@ exports.AwsCertificate = ({ spec, config }) => {
     ]),
     getByName: getByNameCore,
     cannotBeDeleted: () => true,
-    tagResource: tagResource({ acm }),
-    untagResource: untagResource({ acm }),
+    tagResource,
+    untagResource,
     findNamespace: findNamespaceInTags(config),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies,
-    }) =>
+    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
@@ -56,4 +56,3 @@ exports.AwsCertificate = ({ spec, config }) => {
         }),
       ])(),
   });
-};

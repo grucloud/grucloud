@@ -105,7 +105,7 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
     method: "describeVolumes",
     getField: "Volumes",
     ignoreErrorCodes,
-    decorate: ({ VolumeId, InstanceId }) =>
+    decorate: ({ live: { VolumeId, InstanceId } }) =>
       pipe([
         tap((params) => {
           assert(InstanceId);

@@ -1,25 +1,24 @@
 const assert = require("assert");
 const { map, pipe, tap, get } = require("rubico");
 
-const { createEndpoint } = require("../AwsCommon");
-
-exports.createACM = createEndpoint("acm", "ACM");
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#addTagsToCertificate-property
 exports.tagResource =
-  ({ acm }) =>
+  ({ endpoint }) =>
   ({ id }) =>
     pipe([
+      tap((params) => {
+        assert(true);
+      }),
       (Tags) => ({ CertificateArn: id, Tags }),
-      acm().addTagsToCertificate,
+      endpoint().addTagsToCertificate,
     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#removeTagsFromCertificate-property
 exports.untagResource =
-  ({ acm }) =>
+  ({ endpoint }) =>
   ({ id }) =>
     pipe([
       map((Key) => ({ Key })),
       (Tags) => ({ CertificateArn: id, Tags }),
-      acm().removeTagsFromCertificate,
+      endpoint().removeTagsFromCertificate,
     ]);
