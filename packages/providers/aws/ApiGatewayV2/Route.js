@@ -61,13 +61,13 @@ exports.Route = ({ spec, config }) => {
     method: "getRoutes",
     getParam: "Items",
     config,
-    decorate: ({ parent: { ApiId, Name: ApiName, Tags } }) =>
+    decorate: ({ parent: { ApiId, Name: ApiName } }) =>
       pipe([
         tap((params) => {
           assert(ApiId);
           assert(ApiName);
         }),
-        defaultsDeep({ ApiId, ApiName /*, Tags*/ }),
+        defaultsDeep({ ApiId, ApiName }),
       ]),
   });
 

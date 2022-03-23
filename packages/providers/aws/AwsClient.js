@@ -12,7 +12,8 @@ const {
   filter,
   any,
   or,
-  eq,
+  assign,
+  pick,
 } = require("rubico");
 const {
   flatten,
@@ -613,3 +614,76 @@ exports.AwsClient =
       destroy,
     };
   };
+
+exports.createAwsResource =
+  ({ spec, client, model }) =>
+  ({
+    findName,
+    findId,
+    decorate,
+    isInstanceUp,
+    isInstanceDown,
+    tagResource,
+    untagResource,
+    cannotBeDeleted,
+    findNamespace,
+    pickId,
+    getByName,
+    configDefault,
+  }) =>
+    pipe([
+      () => ({
+        spec,
+        getByName,
+        findName,
+        findId,
+        tagResource,
+        untagResource,
+        cannotBeDeleted,
+        findNamespace,
+        pickId,
+        configDefault,
+      }),
+      defaultsDeep({
+        pickId: pipe([pick[model.pickIds]]),
+        getById: client.getById({
+          pickId,
+          ...model.getById,
+          ignoreErrorCodes: model.ignoreErrorCodes,
+          decorate,
+        }),
+      }),
+      assign({
+        getList: ({ getById }) =>
+          client.getList({
+            ...model.getList,
+            decorate: () => getById,
+          }),
+        create: ({ getById }) =>
+          client.create({
+            getById,
+            ...model.create,
+            isInstanceUp,
+          }),
+        destroy: ({ getById, pickId }) =>
+          client.destroy({
+            pickId,
+            getById,
+            ignoreErrorCodes: model.ignoreErrorCodes,
+            ...model.destroy,
+            isInstanceDown,
+          }),
+      }),
+      assign({
+        getByName: ({ getList, findName }) => getByName({ getList, findName }),
+      }),
+      defaultsDeep({
+        tagResource,
+        untagResource,
+        cannotBeDeleted,
+        findNamespace,
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
