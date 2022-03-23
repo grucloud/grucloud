@@ -63,12 +63,13 @@ exports.DBCluster = ({ spec, config }) => {
       ids: [get("KmsKeyId")(live)],
     },
   ];
+  const decorate = () => pipe([renameTagList]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBClusters-property
   const getList = client.getList({
     method: "describeDBClusters",
     getParam: "DBClusters",
-    decorate: () => pipe([renameTagList]),
+    decorate,
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -78,6 +79,7 @@ exports.DBCluster = ({ spec, config }) => {
     method: "describeDBClusters",
     getField: "DBClusters",
     ignoreErrorCodes,
+    decorate,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBCluster-property
@@ -111,7 +113,6 @@ exports.DBCluster = ({ spec, config }) => {
   const update = client.update({
     pickId,
     method: "modifyDBCluster",
-    filterParams: () => pipe([omit(["Tags"])]),
     getById,
   });
 

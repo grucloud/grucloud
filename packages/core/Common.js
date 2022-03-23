@@ -435,7 +435,10 @@ exports.compare = ({
       assert(filterTarget);
     }),
     assign({
+      targetIn: get("target"),
       liveIn: get("live"),
+    }),
+    assign({
       target: ({
         target = {},
         propertiesDefault = {},
