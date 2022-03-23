@@ -481,7 +481,18 @@ const displayPlanItemUpdate =
       ),
       tap.if(
         get("hasTagsDiff"),
-        pipe([get("tags.diffTags"), displayJsonDiff({ tableItem })])
+        pipe([
+          tap(() =>
+            tableItem.push([
+              {
+                colSpan: 2,
+                content: colors.yellow(`UPDATE TAGS`),
+              },
+            ])
+          ),
+          get("tags.diffTags"),
+          displayJsonDiff({ tableItem }),
+        ])
       ),
     ])();
 
