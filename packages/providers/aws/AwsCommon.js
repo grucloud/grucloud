@@ -832,6 +832,20 @@ const replaceAccountAndRegion = ({ providerConfig }) =>
 
 exports.replaceAccountAndRegion = replaceAccountAndRegion;
 
+const assignPolicyResource = ({ providerConfig }) =>
+  assign({
+    Resource: pipe([
+      get("Resource"),
+      switchCase([
+        Array.isArray,
+        map(replaceAccountAndRegion({ providerConfig })),
+        replaceAccountAndRegion({ providerConfig }),
+      ]),
+    ]),
+  });
+
+exports.assignPolicyResource = assignPolicyResource;
+
 const assignPolicyAccountAndRegion = ({ providerConfig }) =>
   assign({
     Statement: pipe([
@@ -889,16 +903,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig }) =>
               ]),
             })
           ),
-          assign({
-            Resource: pipe([
-              get("Resource"),
-              switchCase([
-                Array.isArray,
-                map(replaceAccountAndRegion({ providerConfig })),
-                replaceAccountAndRegion({ providerConfig }),
-              ]),
-            ]),
-          }),
+          assignPolicyResource({ providerConfig }),
         ])
       ),
     ]),
