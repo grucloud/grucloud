@@ -5,7 +5,7 @@
   "private": true,
   "homepage": "https://www.grucloud.com",
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "lerna bootstrap --no-ci",
     "download-manifest": "npm run download-manifest",
     "gen-code": "npm run --workspace @grucloud/example-* gencode -- -- --no-inventory-fetch",
     "gencode": "npm run  --workspace @grucloud/example-*   gencode",
