@@ -1,3 +1,3 @@
 # S3 Event bridge
 
-Send event when the event bus from a change of S3 Objects.
+Send events to the event bus from a change in S3 Objects
