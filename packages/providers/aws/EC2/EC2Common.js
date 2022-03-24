@@ -1,10 +1,9 @@
 const assert = require("assert");
 const { map, tap, pipe, get } = require("rubico");
 const { pluck } = require("rubico/x");
-const { EC2 } = require("@aws-sdk/client-ec2");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createEC2 = createEndpoint(EC2);
+exports.createEC2 = createEndpoint("ec2", "EC2");
 
 exports.findDependenciesVpc = ({ live }) => ({
   type: "Vpc",

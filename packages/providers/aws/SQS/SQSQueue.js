@@ -49,11 +49,11 @@ exports.SQSQueue = ({ spec, config }) => {
     }),
   ]);
 
-  const decorate = (params) =>
+  const decorate = ({ live }) =>
     pipe([
       tap((input) => {
         assert(input);
-        assert(params);
+        assert(live);
       }),
       when(
         get("Policy"),
@@ -61,7 +61,7 @@ exports.SQSQueue = ({ spec, config }) => {
           Policy: pipe([get("Policy"), JSON.parse]),
         })
       ),
-      (Attributes) => ({ ...params, Attributes }),
+      (Attributes) => ({ ...live, Attributes }),
       assignTags,
     ]);
 
@@ -121,6 +121,16 @@ exports.SQSQueue = ({ spec, config }) => {
           first,
           not(isEmpty),
         ])(),
+    ]),
+    filterPayload: pipe([
+      assign({
+        Attributes: pipe([
+          get("Attributes"),
+          assign({
+            Policy: pipe([get("Policy"), JSON.stringify]),
+          }),
+        ]),
+      }),
     ]),
     config: { retryDelay: 65e3, retryCount: 2 },
     configIsUp: { repeatCount: 1, repeatDelay: 60e3 },

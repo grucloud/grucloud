@@ -66,7 +66,8 @@ exports.Layer = ({ spec, config }) => {
     method: "listLayerVersions",
     getField: "LayerVersions",
     ignoreErrorCodes: ["NotFoundException"],
-    decorate: ({ LayerName }) => pipe([defaultsDeep({ LayerName }), decorate]),
+    decorate: ({ live: { LayerName } }) =>
+      pipe([defaultsDeep({ LayerName }), decorate]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listLayers-property

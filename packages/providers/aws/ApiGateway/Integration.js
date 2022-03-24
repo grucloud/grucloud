@@ -136,7 +136,7 @@ exports.Integration = ({ spec, config }) => {
     pickId,
     method: "getIntegration",
     ignoreErrorCodes,
-    decorate: (method) =>
+    decorate: ({ live: { method } }) =>
       pipe([
         tap((params) => {
           assert(method);

@@ -209,7 +209,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
   },
 });
 
-const createEndpoint = (client) => (config) =>
+const createEndpointProxy = (client) => (config) =>
   pipe([
     tap((params) => {
       assert(client);
@@ -219,6 +219,25 @@ const createEndpoint = (client) => (config) =>
     (endpoint) =>
       new Proxy({}, proxyHandler({ endpointName: client.name, endpoint })),
   ]);
+
+exports.createEndpointProxy = createEndpointProxy;
+
+const createEndpoint = (packageName, entryPoint) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    () => `@aws-sdk/client-${packageName}`,
+    require,
+    tap((params) => {
+      assert(true);
+    }),
+    get(entryPoint),
+    tap((params) => {
+      assert(true);
+    }),
+    createEndpointProxy,
+  ])();
 
 exports.createEndpoint = createEndpoint;
 
@@ -810,53 +829,85 @@ const replaceAccountAndRegion = ({ providerConfig }) =>
     (resource) => () => "`" + resource + "`",
   ]);
 
+exports.replaceAccountAndRegion = replaceAccountAndRegion;
+
+const assignPolicyAccountAndRegion = ({ providerConfig }) =>
+  assign({
+    Statement: pipe([
+      get("Statement"),
+      map(
+        pipe([
+          when(
+            get("Condition"),
+            assign({
+              Condition: pipe([
+                get("Condition"),
+                when(
+                  get("StringEquals"),
+                  assign({
+                    StringEquals: pipe([
+                      get("StringEquals"),
+                      when(
+                        get("aws:SourceAccount"),
+                        assign({
+                          "aws:SourceAccount": pipe([
+                            get("aws:SourceAccount"),
+                            replaceAccountAndRegion({ providerConfig }),
+                          ]),
+                        })
+                      ),
+                      when(
+                        get("AWS:SourceOwner"),
+                        assign({
+                          "AWS:SourceOwner": pipe([
+                            get("AWS:SourceOwner"),
+                            replaceAccountAndRegion({ providerConfig }),
+                          ]),
+                        })
+                      ),
+                    ]),
+                  })
+                ),
+                when(
+                  get("ArnEquals"),
+                  assign({
+                    ArnEquals: pipe([
+                      get("ArnEquals"),
+                      when(
+                        get("aws:PrincipalArn"),
+                        assign({
+                          "aws:PrincipalArn": pipe([
+                            get("aws:PrincipalArn"),
+                            replaceAccountAndRegion({ providerConfig }),
+                          ]),
+                        })
+                      ),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
+          assign({
+            Resource: pipe([
+              get("Resource"),
+              switchCase([
+                Array.isArray,
+                map(replaceAccountAndRegion({ providerConfig })),
+                replaceAccountAndRegion({ providerConfig }),
+              ]),
+            ]),
+          }),
+        ])
+      ),
+    ]),
+  });
+exports.assignPolicyAccountAndRegion = assignPolicyAccountAndRegion;
+
 exports.assignPolicyDocumentAccountAndRegion = ({ providerConfig }) =>
   assign({
     PolicyDocument: pipe([
       get("PolicyDocument"),
-      assign({
-        Statement: pipe([
-          get("Statement"),
-          map(
-            pipe([
-              when(
-                get("Condition"),
-                assign({
-                  Condition: pipe([
-                    get("Condition"),
-                    when(
-                      get("ArnEquals"),
-                      assign({
-                        ArnEquals: pipe([
-                          get("ArnEquals"),
-                          when(
-                            get("aws:PrincipalArn"),
-                            assign({
-                              "aws:PrincipalArn": pipe([
-                                get("aws:PrincipalArn"),
-                                replaceAccountAndRegion({ providerConfig }),
-                              ]),
-                            })
-                          ),
-                        ]),
-                      })
-                    ),
-                  ]),
-                })
-              ),
-              assign({
-                Resource: pipe([
-                  get("Resource"),
-                  switchCase([
-                    Array.isArray,
-                    map(replaceAccountAndRegion({ providerConfig })),
-                    replaceAccountAndRegion({ providerConfig }),
-                  ]),
-                ]),
-              }),
-            ])
-          ),
-        ]),
-      }),
+      assignPolicyAccountAndRegion({ providerConfig }),
     ]),
   });

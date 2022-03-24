@@ -54,6 +54,15 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives }) => [
     {
+      type: "Topic",
+      group: "SNS",
+      ids: pipe([
+        () => live,
+        get("NotificationConfiguration.TopicConfigurations"),
+        pluck("TopicArn"),
+      ])(),
+    },
+    {
       type: "OriginAccessIdentity",
       group: "CloudFront",
       ids: pipe([

@@ -1,10 +1,9 @@
 const { pipe, tap } = require("rubico");
 const { buildTags } = require("../AwsCommon");
 
-const { ECS } = require("@aws-sdk/client-ecs");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createECS = createEndpoint(ECS);
+exports.createECS = createEndpoint("ecs", "ECS");
 
 exports.buildTagsEcs = ({ name, config, namespace, tags }) =>
   buildTags({

@@ -1,9 +1,8 @@
 const assert = require("assert");
 const { pipe, tap } = require("rubico");
-const { KMS } = require("@aws-sdk/client-kms");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createKMS = createEndpoint(KMS);
+exports.createKMS = createEndpoint("kms", "KMS");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#tagResource-property
 exports.tagResource =

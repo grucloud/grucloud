@@ -1,12 +1,12 @@
 const { pipe, tap, eq, get } = require("rubico");
 const { find } = require("rubico/x");
 
-const {
-  CognitoIdentityProvider,
-} = require("@aws-sdk/client-cognito-identity-provider");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createCognitoIdentityProvider = createEndpoint(CognitoIdentityProvider);
+exports.createCognitoIdentityProvider = createEndpoint(
+  "cognito-identity-provider",
+  "CognitoIdentityProvider"
+);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#tagResource-property
 exports.tagResource =

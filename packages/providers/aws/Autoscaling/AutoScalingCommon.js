@@ -1,10 +1,9 @@
 const assert = require("assert");
 const { map, pipe, tap } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { AutoScaling } = require("@aws-sdk/client-auto-scaling");
 const { createEndpoint } = require("../AwsCommon");
 
-exports.createAutoScaling = createEndpoint(AutoScaling);
+exports.createAutoScaling = createEndpoint("auto-scaling", "AutoScaling");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createOrUpdateTags-property
 exports.tagResource =

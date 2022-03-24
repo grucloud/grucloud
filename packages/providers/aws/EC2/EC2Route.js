@@ -176,7 +176,7 @@ exports.EC2Route = ({ spec, config }) => {
     ]),
     method: "describeRouteTables",
     getField: "RouteTables",
-    decorate: findRoute,
+    decorate: pipe([get("live"), findRoute]),
     ignoreErrorCodes,
   });
 

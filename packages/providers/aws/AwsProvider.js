@@ -58,6 +58,7 @@ const RDS = require("./RDS");
 const Route53 = require("./Route53");
 const Route53Domain = require("./Route53Domain");
 const S3 = require("./S3");
+const SNS = require("./SNS");
 const SQS = require("./SQS");
 const SSM = require("./SSM");
 
@@ -91,6 +92,7 @@ const fnSpecs = (config) =>
       ...Route53(),
       ...Route53Domain(),
       ...S3(),
+      ...SNS(),
       ...SQS(),
       ...SSM(),
     ],

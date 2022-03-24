@@ -32,7 +32,7 @@ const util = require("util");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
 const { retryCall } = require("@grucloud/core/Retry");
-const { assignTagsSort } = require("./AwsCommon");
+const { assignTagsSort, createEndpoint } = require("./AwsCommon");
 
 const shouldRetryOnExceptionCodesDefault =
   (shouldRetryOnExceptionCodes) =>
@@ -71,7 +71,7 @@ const shouldRetryOnExceptionDefault = ({
     shouldRetryOnExceptionMessagesDefault(shouldRetryOnExceptionMessages),
   ]);
 
-exports.AwsClient =
+const AwsClient =
   ({ spec, config }) =>
   (endpoint) => {
     const { type, group } = spec;
@@ -88,7 +88,7 @@ exports.AwsClient =
         ignoreErrorCodes = [],
         ignoreErrorMessages = [],
       }) =>
-      (params) =>
+      (live) =>
         pipe([
           tap(() => {
             assert(method);
@@ -96,7 +96,7 @@ exports.AwsClient =
           }),
           tryCatch(
             pipe([
-              () => params,
+              () => live,
               pickId,
               defaultsDeep(extraParams),
               tap((params) => {
@@ -108,7 +108,10 @@ exports.AwsClient =
               }),
               when(() => getField, get(getField)),
               when(Array.isArray, first),
-              unless(isEmpty, pipe([decorate(params), assignTagsSort])),
+              unless(
+                isEmpty,
+                pipe([decorate({ live, endpoint }), assignTagsSort])
+              ),
             ]),
             switchCase([
               or([
@@ -143,6 +146,7 @@ exports.AwsClient =
         decorate = () => identity,
         filterResource = () => true,
         extraParam = {},
+        getById,
       }) =>
       ({ lives, params = {} } = {}) =>
         pipe([
@@ -164,7 +168,10 @@ exports.AwsClient =
           get(getParam, []),
           transformList,
           filter(filterResource),
-          map(decorate({ lives })),
+          tap((params) => {
+            assert(true);
+          }),
+          map(decorate({ lives, endpoint, getById })),
           tap((params) => {
             assert(true);
           }),
@@ -174,6 +181,10 @@ exports.AwsClient =
             logger.info(`getList ${type} #items ${size(items)}`);
           }),
           filter(not(isEmpty)),
+          tap((items) => {
+            assert(Array.isArray(items));
+            logger.info(`getList ${type} final #items ${size(items)}`);
+          }),
         ])();
 
     const getListWithParent =
@@ -220,7 +231,7 @@ exports.AwsClient =
                   switchCase([
                     Array.isArray,
                     pipe([
-                      map(decorate({ name, parent: live, lives })),
+                      map(decorate({ name, parent: live, lives, endpoint })),
                       tap((params) => {
                         assert(true);
                       }),
@@ -230,13 +241,19 @@ exports.AwsClient =
                       tap((params) => {
                         assert(true);
                       }),
-                      decorate({ name, parent: live, lives }),
+                      decorate({ name, parent: live, lives, endpoint }),
                       (result) => [result],
                     ]),
                   ]),
                 ]),
                 pipe([
-                  decorate({ name, managedByOther, parent: live, lives }),
+                  decorate({
+                    name,
+                    managedByOther,
+                    parent: live,
+                    lives,
+                    endpoint,
+                  }),
                   unless(Array.isArray, (result) => [result]),
                 ]),
               ]),
@@ -525,6 +542,9 @@ exports.AwsClient =
             pipe([
               tap(() => preDestroy({ name, live, lives })),
               () => live,
+              tap((params) => {
+                assert(true);
+              }),
               pickId,
               tap((params) => {
                 logger.debug(
@@ -615,75 +635,114 @@ exports.AwsClient =
     };
   };
 
-exports.createAwsResource =
-  ({ spec, client, model }) =>
-  ({
-    findName,
-    findId,
-    decorate,
-    isInstanceUp,
-    isInstanceDown,
-    tagResource,
-    untagResource,
-    cannotBeDeleted,
-    findNamespace,
-    pickId,
-    getByName,
-    configDefault,
-  }) =>
-    pipe([
-      () => ({
-        spec,
-        getByName,
-        findName,
-        findId,
-        tagResource,
-        untagResource,
-        cannotBeDeleted,
-        findNamespace,
-        pickId,
-        configDefault,
-      }),
-      defaultsDeep({
-        pickId: pipe([pick[model.pickIds]]),
-        getById: client.getById({
-          pickId,
-          ...model.getById,
-          ignoreErrorCodes: model.ignoreErrorCodes,
-          decorate,
-        }),
-      }),
-      assign({
-        getList: ({ getById }) =>
-          client.getList({
-            ...model.getList,
-            decorate: () => getById,
-          }),
-        create: ({ getById }) =>
-          client.create({
-            getById,
-            ...model.create,
-            isInstanceUp,
-          }),
-        destroy: ({ getById, pickId }) =>
-          client.destroy({
-            pickId,
-            getById,
-            ignoreErrorCodes: model.ignoreErrorCodes,
-            ...model.destroy,
-            isInstanceDown,
-          }),
-      }),
-      assign({
-        getByName: ({ getList, findName }) => getByName({ getList, findName }),
-      }),
-      defaultsDeep({
-        tagResource,
-        untagResource,
-        cannotBeDeleted,
-        findNamespace,
-      }),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+exports.AwsClient = AwsClient;
+
+exports.createAwsResource = ({
+  spec,
+  config,
+  model,
+  findName,
+  findId,
+  decorate,
+  decorateList = ({ getById }) => getById,
+  isInstanceUp,
+  isInstanceDown,
+  tagResource,
+  untagResource,
+  cannotBeDeleted,
+  findNamespace,
+  pickId,
+  getByName,
+  configDefault,
+  findDependencies,
+  createFilterPayload,
+  pickCreated,
+}) =>
+  pipe([
+    tap((params) => {
+      if (!config) {
+        assert(config);
+      }
+    }),
+    () => createEndpoint(model.package, model.client)(config),
+    (endpoint) =>
+      pipe([
+        () => endpoint,
+        AwsClient({ spec, config }),
+        (client) =>
+          pipe([
+            () => ({
+              spec,
+              getByName,
+              findName,
+              findId,
+              findDependencies,
+              cannotBeDeleted,
+              findNamespace,
+              pickId,
+              configDefault,
+            }),
+            when(
+              () => tagResource,
+              assign({
+                tagResource: () => tagResource({ endpoint }),
+                untagResource: () => untagResource({ endpoint }),
+              })
+            ),
+            defaultsDeep({
+              pickId: pipe([pick(model.pickIds)]),
+            }),
+            assign({
+              getById: ({ pickId }) =>
+                client.getById({
+                  pickId,
+                  ...model.getById,
+                  ignoreErrorCodes: model.ignoreErrorCodes,
+                  decorate,
+                }),
+            }),
+            assign({
+              getList: ({ getById }) =>
+                client.getList({
+                  getById,
+                  ...model.getList,
+                  decorate: decorateList,
+                }),
+              create: ({ getById }) =>
+                client.create({
+                  getById,
+                  pickCreated,
+                  filterPayload: createFilterPayload,
+                  ...model.create,
+                  isInstanceUp,
+                }),
+              update: ({ getById, pickId }) =>
+                client.update({
+                  pickId,
+                  getById,
+                  ...model.update,
+                  isInstanceUp,
+                }),
+              destroy: ({ getById, pickId }) =>
+                client.destroy({
+                  pickId,
+                  getById,
+                  ignoreErrorCodes: model.ignoreErrorCodes,
+                  ...model.destroy,
+                  isInstanceDown,
+                }),
+            }),
+            assign({
+              getByName: ({ getList, findName, getById }) =>
+                getByName({ getList, findName, getById }),
+            }),
+            defaultsDeep({
+              cannotBeDeleted,
+              findNamespace,
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
+      ])(),
+  ])();

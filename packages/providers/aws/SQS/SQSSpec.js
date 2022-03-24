@@ -1,11 +1,13 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, tap, get, eq } = require("rubico");
-const { when } = require("rubico/x");
-const defaultsDeep = require("rubico/x/defaultsDeep");
+const { when, defaultsDeep } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
 
-const { isOurMinionObject } = require("../AwsCommon");
+const {
+  isOurMinionObject,
+  assignPolicyAccountAndRegion,
+} = require("../AwsCommon");
 
 const { SQSQueue } = require("./SQSQueue");
 
@@ -40,12 +42,21 @@ module.exports = pipe([
         "Attributes.LastModifiedTimestamp",
         "Attributes.SqsManagedSseEnabled",
       ],
-      filterLive: () =>
+      filterLive: ({ providerConfig }) =>
         pipe([
           omit(["QueueUrl"]),
           assign({
             Attributes: pipe([
               get("Attributes"),
+              when(
+                get("Policy"),
+                assign({
+                  Policy: pipe([
+                    get("Policy"),
+                    assignPolicyAccountAndRegion({ providerConfig }),
+                  ]),
+                })
+              ),
               when(
                 eq(get("Policy.Id"), "__default_policy_ID"),
                 omit(["Policy"])
