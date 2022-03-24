@@ -122,6 +122,16 @@ exports.SQSQueue = ({ spec, config }) => {
           not(isEmpty),
         ])(),
     ]),
+    filterPayload: pipe([
+      assign({
+        Attributes: pipe([
+          get("Attributes"),
+          assign({
+            Policy: pipe([get("Policy"), JSON.stringify]),
+          }),
+        ]),
+      }),
+    ]),
     config: { retryDelay: 65e3, retryCount: 2 },
     configIsUp: { repeatCount: 1, repeatDelay: 60e3 },
   });

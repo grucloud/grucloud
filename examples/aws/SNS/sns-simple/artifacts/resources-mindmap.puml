@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project sns-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ SNS
+++++ Topic (1)
+@endmindmap

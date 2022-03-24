@@ -146,6 +146,7 @@ const AwsClient =
         decorate = () => identity,
         filterResource = () => true,
         extraParam = {},
+        getById,
       }) =>
       ({ lives, params = {} } = {}) =>
         pipe([
@@ -167,7 +168,10 @@ const AwsClient =
           get(getParam, []),
           transformList,
           filter(filterResource),
-          map(decorate({ lives, endpoint })),
+          tap((params) => {
+            assert(true);
+          }),
+          map(decorate({ lives, endpoint, getById })),
           tap((params) => {
             assert(true);
           }),
@@ -177,6 +181,10 @@ const AwsClient =
             logger.info(`getList ${type} #items ${size(items)}`);
           }),
           filter(not(isEmpty)),
+          tap((items) => {
+            assert(Array.isArray(items));
+            logger.info(`getList ${type} final #items ${size(items)}`);
+          }),
         ])();
 
     const getListWithParent =
@@ -636,6 +644,7 @@ exports.createAwsResource = ({
   findName,
   findId,
   decorate,
+  decorateList = ({ getById }) => getById,
   isInstanceUp,
   isInstanceDown,
   tagResource,
@@ -646,6 +655,7 @@ exports.createAwsResource = ({
   getByName,
   configDefault,
   findDependencies,
+  createFilterPayload,
   pickCreated,
 }) =>
   pipe([
@@ -655,9 +665,6 @@ exports.createAwsResource = ({
       }
     }),
     () => createEndpoint(model.package, model.client)(config),
-    tap((params) => {
-      assert(true);
-    }),
     (endpoint) =>
       pipe([
         () => endpoint,
@@ -670,32 +677,42 @@ exports.createAwsResource = ({
               findName,
               findId,
               findDependencies,
-              tagResource: tagResource({ endpoint }),
-              untagResource: untagResource({ endpoint }),
               cannotBeDeleted,
               findNamespace,
               pickId,
               configDefault,
             }),
+            when(
+              () => tagResource,
+              assign({
+                tagResource: () => tagResource({ endpoint }),
+                untagResource: () => untagResource({ endpoint }),
+              })
+            ),
             defaultsDeep({
-              pickId: pipe([pick([model.pickIds])]),
-              getById: client.getById({
-                pickId,
-                ...model.getById,
-                ignoreErrorCodes: model.ignoreErrorCodes,
-                decorate,
-              }),
+              pickId: pipe([pick(model.pickIds)]),
+            }),
+            assign({
+              getById: ({ pickId }) =>
+                client.getById({
+                  pickId,
+                  ...model.getById,
+                  ignoreErrorCodes: model.ignoreErrorCodes,
+                  decorate,
+                }),
             }),
             assign({
               getList: ({ getById }) =>
                 client.getList({
+                  getById,
                   ...model.getList,
-                  decorate: () => getById,
+                  decorate: decorateList,
                 }),
               create: ({ getById }) =>
                 client.create({
                   getById,
                   pickCreated,
+                  filterPayload: createFilterPayload,
                   ...model.create,
                   isInstanceUp,
                 }),

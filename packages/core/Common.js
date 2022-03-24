@@ -16,9 +16,9 @@ const {
   not,
   or,
   switchCase,
-  fork,
 } = require("rubico");
 const {
+  size,
   isObject,
   find,
   callProp,
@@ -239,6 +239,7 @@ exports.getByNameCore =
       () => getList({ deep, lives, resources }),
       tap((items) => {
         assert(Array.isArray(items));
+        logger.debug(`getByNameCore ${name}: #${size(items)}`);
       }),
       find((live) => isDeepEqual(name, findName({ live, lives }))), //TODO check on meta
       tap((instance) => {

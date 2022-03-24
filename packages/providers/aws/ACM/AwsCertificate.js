@@ -26,6 +26,7 @@ exports.AwsCertificate = ({ spec, config }) =>
     spec,
     findName: get("live.DomainName"),
     findId: get("live.CertificateArn"),
+    pickId: pick(["CertificateArn"]),
     decorate: ({ endpoint }) =>
       pipe([
         assign({

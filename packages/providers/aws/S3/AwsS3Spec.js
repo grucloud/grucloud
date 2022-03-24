@@ -8,7 +8,11 @@ const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 
 const { AwsS3Bucket } = require("./AwsS3Bucket");
 const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
-const { compareAws, isOurMinion } = require("../AwsCommon");
+const {
+  compareAws,
+  isOurMinion,
+  replaceAccountAndRegion,
+} = require("../AwsCommon");
 const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "S3";
@@ -40,6 +44,7 @@ module.exports = pipe([
           group: "CloudFront",
           list: true,
         },
+        snsTopic: { type: "Topic", group: "SNS" },
       },
       compare: compareS3({
         filterTarget: () =>
@@ -78,7 +83,7 @@ module.exports = pipe([
             ]),
           ]),
       }),
-      filterLive: ({ lives }) =>
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
           pick([
             "AccelerateConfiguration",
@@ -95,6 +100,33 @@ module.exports = pipe([
             "LifecycleConfiguration",
             "WebsiteConfiguration",
           ]),
+          when(
+            get("NotificationConfiguration"),
+            assign({
+              NotificationConfiguration: pipe([
+                get("NotificationConfiguration"),
+                when(
+                  get("TopicConfigurations"),
+                  assign({
+                    TopicConfigurations: pipe([
+                      get("TopicConfigurations"),
+                      map(
+                        pipe([
+                          omit("Id"),
+                          assign({
+                            TopicArn: pipe([
+                              get("TopicArn"),
+                              replaceAccountAndRegion({ providerConfig }),
+                            ]),
+                          }),
+                        ])
+                      ),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
           omitIfEmpty(["LocationConstraint"]),
           omit(["WebsiteConfiguration.RoutingRules"]),
           when(
@@ -135,12 +167,7 @@ module.exports = pipe([
                               })
                             ),
                           ]),
-                          Resource: pipe([
-                            get("Resource"),
-                            tap((params) => {
-                              assert(true);
-                            }),
-                          ]),
+                          Resource: pipe([get("Resource")]),
                         }),
                       ])
                     ),
