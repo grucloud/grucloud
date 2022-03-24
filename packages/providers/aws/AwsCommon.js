@@ -182,7 +182,8 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
             }),
             or([
               pipe([
-                () => ["ECONNRESET", "ENETDOWN", "EPROTO"],
+                //TODO common with Retry.js
+                () => ["ECONNRESET", "ENETDOWN", "EPROTO", "ENOTFOUND"],
                 includes(error.code),
               ]),
               pipe([
