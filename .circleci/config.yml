@@ -6,7 +6,7 @@ jobs:
       - aws-cli/install
       - checkout
       - node/install:
-          node-version: "16.14"
+          node-version: "16.14.2"
       - run: npm install
       - run: node --version
       - run: openssl version
