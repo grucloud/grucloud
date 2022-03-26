@@ -1,6 +1,12 @@
 const assert = require("assert");
 const { tap, pipe, assign, map, omit, pick, get, or } = require("rubico");
-const { when, includes, isObject, callProp } = require("rubico/x");
+const {
+  when,
+  includes,
+  isObject,
+  callProp,
+  defaultsDeep,
+} = require("rubico/x");
 
 const mime = require("mime-types");
 
@@ -12,8 +18,8 @@ const {
   compareAws,
   isOurMinion,
   replaceAccountAndRegion,
+  assignPolicyResource,
 } = require("../AwsCommon");
-const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "S3";
 
@@ -27,10 +33,13 @@ const objectFileNameFromLive = ({
   commandOptions,
 }) => `s3/${Bucket}/${Key}.${mime.extension(ContentType)}`;
 
+//TODO
 const ignoreBuckets = or([
   callProp("startsWith", "cdk-"),
   callProp("startsWith", "aws-sam-cli"),
 ]);
+
+const ignoreObjects = or([callProp("startsWith", "AWSLogs")]);
 
 module.exports = pipe([
   () => [
@@ -167,8 +176,8 @@ module.exports = pipe([
                               })
                             ),
                           ]),
-                          Resource: pipe([get("Resource")]),
                         }),
+                        assignPolicyResource({ providerConfig }),
                       ])
                     ),
                   ]),
@@ -185,7 +194,11 @@ module.exports = pipe([
       },
       Client: AwsS3Object,
       compare: compareS3Object,
-      ignoreResource: () => pipe([get("live.Bucket"), ignoreBuckets]),
+      ignoreResource: () =>
+        or([
+          pipe([get("live.Bucket"), ignoreBuckets]),
+          pipe([get("name"), ignoreObjects]),
+        ]),
       filterLive: ({ commandOptions, programOptions, resource: { live } }) =>
         pipe([
           pick(["ContentType", "ServerSideEncryption", "StorageClass"]),
