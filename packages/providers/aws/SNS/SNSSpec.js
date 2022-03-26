@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, tap, get, eq, switchCase } = require("rubico");
-const { defaultsDeep, append } = require("rubico/x");
+const { defaultsDeep, append, includes, when } = require("rubico/x");
 
 const { compareAws, assignPolicyAccountAndRegion } = require("../AwsCommon");
 
@@ -82,6 +82,11 @@ module.exports = pipe([
           tap((params) => {
             assert(true);
           }),
+          when(
+            ({ Protocol }) =>
+              pipe([() => ["lambda", "sqs"], includes(Protocol)]),
+            omit(["Protocol", "Endpoint"])
+          ),
         ]),
     },
   ],

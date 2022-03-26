@@ -27,7 +27,7 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       DBInstanceClass: "db.t3.micro",
       Engine: "postgres",
-      EngineVersion: "12.6",
+      EngineVersion: "14.2",
       AllocatedStorage: 20,
       MaxAllocatedStorage: 1000,
       PubliclyAccessible: true,

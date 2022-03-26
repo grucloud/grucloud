@@ -18,7 +18,6 @@ const {
 const {
   first,
   unless,
-  identity,
   isEmpty,
   find,
   last,
@@ -149,6 +148,7 @@ const securityGroupRuleDependencies = {
   securityGroupFrom: {
     type: "SecurityGroup",
     group: "EC2",
+    list: true,
     filterDependency:
       ({ resource }) =>
       (dependency) =>
@@ -158,8 +158,8 @@ const securityGroupRuleDependencies = {
             assert(dependency.live.GroupId);
             assert(resource.live.GroupId);
           }),
-          get("live.IpPermission.UserIdGroupPairs[0].GroupId", ""),
-          eq(identity, dependency.live.GroupId),
+          get("live.IpPermission.UserIdGroupPairs"),
+          any(eq(get("GroupId"), dependency.live.GroupId)),
         ])(),
   },
 };

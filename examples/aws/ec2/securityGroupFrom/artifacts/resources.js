@@ -51,7 +51,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "ClusterSharedNode",
-      securityGroupFrom: "eks-cluster-sg-my-cluster",
+      securityGroupFrom: ["eks-cluster-sg-my-cluster"],
     }),
   },
 ];

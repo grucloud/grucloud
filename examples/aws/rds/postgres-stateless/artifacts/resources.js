@@ -210,7 +210,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "security-group-postgres",
-      securityGroupFrom: "security-group-public",
+      securityGroupFrom: ["security-group-public"],
     }),
   },
   {

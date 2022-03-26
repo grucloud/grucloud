@@ -79,7 +79,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "security-group-node-group-test",
-      securityGroupFrom: "security-group-cluster-test",
+      securityGroupFrom: ["security-group-cluster-test"],
     }),
   },
   {

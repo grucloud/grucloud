@@ -262,6 +262,13 @@ const SecurityGroupRuleBase = ({ config }) => {
       switchCase([
         isEmpty,
         () => ({}),
+        Array.isArray,
+        pipe([
+          map((sg) => ({
+            UserIdGroupPairs: [{ GroupId: getField(sg, "GroupId") }],
+          })),
+          (IpPermissions) => ({ IpPermissions }),
+        ]),
         () => ({
           IpPermissions: [
             {

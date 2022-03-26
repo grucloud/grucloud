@@ -41,7 +41,7 @@ const AutoScaling = require("./Autoscaling");
 const CertificateManager = require("./ACM");
 const CloudFront = require("./CloudFront");
 const CloudFormation = require("./CloudFormation");
-
+const CloudTrail = require("./CloudTrail");
 const CloudWatchEvent = require("./CloudWatchEvent");
 const CloudWatchLogs = require("./CloudWatchLogs");
 const CognitoIdentityServiceProvider = require("./CognitoIdentityServiceProvider");
@@ -76,6 +76,7 @@ const fnSpecs = (config) =>
       ...CertificateManager(),
       ...CloudFront(),
       ...CloudFormation(),
+      ...CloudTrail(),
       ...CloudWatchEvent(),
       ...CloudWatchLogs(),
       ...CognitoIdentityServiceProvider(),

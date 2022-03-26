@@ -269,8 +269,9 @@ exports.createResources = () => [
     dependencies: () => ({
       securityGroup:
         "CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
-      securityGroupFrom:
+      securityGroupFrom: [
         "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
+      ],
     }),
   },
   {
@@ -306,8 +307,9 @@ exports.createResources = () => [
     dependencies: () => ({
       securityGroup:
         "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
-      securityGroupFrom:
+      securityGroupFrom: [
         "CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
+      ],
     }),
   },
   {

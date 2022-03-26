@@ -33,7 +33,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "ClusterSharedNode",
-      securityGroupFrom: "ClusterSharedNode",
+      securityGroupFrom: ["ClusterSharedNode"],
     }),
   },
 ];

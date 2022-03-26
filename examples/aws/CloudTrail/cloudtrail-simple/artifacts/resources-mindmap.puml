@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project cloudtrail-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudTrail
+++++ Trail (1)
++++ S3
+++++ Bucket (1)
+@endmindmap
