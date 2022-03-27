@@ -246,7 +246,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: "ClusterSharedNodeSecurityGroup",
+      securityGroupFrom: ["ClusterSharedNodeSecurityGroup"],
     }),
   },
   {
@@ -259,7 +259,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: "eks-cluster-sg-my-cluster-1909614887",
+      securityGroupFrom: ["eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   {
@@ -272,7 +272,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "eks-cluster-sg-my-cluster-1909614887",
-      securityGroupFrom: "ClusterSharedNodeSecurityGroup",
+      securityGroupFrom: ["ClusterSharedNodeSecurityGroup"],
     }),
   },
   { type: "ElasticIpAddress", group: "EC2", name: "NATIP" },

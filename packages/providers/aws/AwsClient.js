@@ -354,6 +354,7 @@ const AwsClient =
                 resolvedDependencies,
                 dependencies,
                 lives,
+                endpoint,
               }),
               tap(() => {
                 logger.info(`created ${type}, ${name}`);
@@ -657,6 +658,7 @@ exports.createAwsResource = ({
   findDependencies,
   createFilterPayload,
   pickCreated,
+  postCreate,
 }) =>
   pipe([
     tap((params) => {
@@ -712,6 +714,7 @@ exports.createAwsResource = ({
                 client.create({
                   getById,
                   pickCreated,
+                  postCreate,
                   filterPayload: createFilterPayload,
                   ...model.create,
                   isInstanceUp,

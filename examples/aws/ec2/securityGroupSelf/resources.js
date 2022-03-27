@@ -42,7 +42,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "ClusterSharedNode",
-      securityGroupFrom: "ClusterSharedNode",
+      securityGroupFrom: ["ClusterSharedNode"],
     }),
   },
   {
@@ -55,7 +55,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "sg-default-VPC",
-      securityGroupFrom: "sg-default-VPC",
+      securityGroupFrom: ["sg-default-VPC"],
     }),
   },
 ];

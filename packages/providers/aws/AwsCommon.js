@@ -418,6 +418,9 @@ const assignTagsSort = pipe([
   switchCase([
     pipe([get("Tags"), Array.isArray]),
     assign({ Tags: pipe([get("Tags"), sortTags()]) }),
+    pipe([get("TagsList"), Array.isArray]),
+    //CloudTrail
+    assign({ TagsList: pipe([get("TagsList"), sortTags()]) }),
     pipe([get("tags"), Array.isArray]),
     assign({ tags: pipe([get("tags"), sortTags()]) }),
     identity,

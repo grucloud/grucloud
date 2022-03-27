@@ -152,7 +152,7 @@ module.exports = pipe([
                           Principal: pipe([
                             get("Principal"),
                             when(
-                              isObject,
+                              get("AWS"),
                               assign({
                                 AWS: pipe([
                                   get("AWS"),
