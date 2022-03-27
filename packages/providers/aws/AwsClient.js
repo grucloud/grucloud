@@ -447,40 +447,43 @@ const AwsClient =
                     }),
                   ]),
                 }),
-              () =>
-                retryCall({
-                  name: `isUpById: ${name}`,
-                  fn: pipe([
-                    () => live,
-                    getById,
-                    tap((params) => {
-                      assert(true);
-                    }),
-                    filterAll({ name }),
-                    and([
-                      isInstanceUp,
-                      pipe([
-                        (live) =>
-                          compare({
-                            ...spec,
-                            live,
-                            target: filterAll({ name })(payload),
+              tap.if(
+                () => isFunction(getById),
+                () =>
+                  retryCall({
+                    name: `isUpById: ${name}`,
+                    fn: pipe([
+                      () => live,
+                      getById,
+                      tap((params) => {
+                        assert(true);
+                      }),
+                      filterAll({ name }),
+                      and([
+                        isInstanceUp,
+                        pipe([
+                          (live) =>
+                            compare({
+                              ...spec,
+                              live,
+                              target: filterAll({ name })(payload),
+                            }),
+                          tap((diff) => {
+                            logger.debug(
+                              `updating ${type}, ${name}, diff: ${JSON.stringify(
+                                diff,
+                                null,
+                                4
+                              )}`
+                            );
                           }),
-                        tap((diff) => {
-                          logger.debug(
-                            `updating ${type}, ${name}, diff: ${JSON.stringify(
-                              diff,
-                              null,
-                              4
-                            )}`
-                          );
-                        }),
-                        not(get("hasDataDiff")),
+                          not(get("hasDataDiff")),
+                        ]),
                       ]),
                     ]),
-                  ]),
-                  config,
-                }),
+                    config,
+                  })
+              ),
             ]),
             (error, params) =>
               pipe([
@@ -570,7 +573,7 @@ const AwsClient =
               () => live,
               tap(postDestroy),
               tap.if(
-                () => getById,
+                () => isFunction(getById),
                 () =>
                   retryCall({
                     name: `isDestroyed ${type}`,

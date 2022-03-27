@@ -33,7 +33,7 @@ exports.createResources = () => [
 - [S3 Bucket](../S3/Bucket.md)
 - [CloudWatchLogs LogGroup](../CloudWatchLogs/LogGroup.md)
 - [IAM Role](../IAM/Role.md)
-- [SNS Topic](../SNS/Topic)
+- [SNS Topic](../SNS/Topic.md)
 - [KMS Key](../KMS/Key.md)
 
 ## Full Examples

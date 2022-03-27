@@ -58,16 +58,13 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     },
   ];
 
-  const decorate = () =>
+  const decorate = ({ parent }) =>
     pipe([
+      tap((params) => {
+        assert(parent);
+      }),
       assign({
         EventPattern: parseEventPattern,
-        Targets: pipe([
-          ({ Name, EventBusName }) => ({ Rule: Name, EventBusName }),
-          //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#listTargetsByRule-property
-          cloudWatchEvents().listTargetsByRule,
-          get("Targets"),
-        ]),
         Tags: pipe([
           buildArn({ config }),
           (ResourceARN) => ({ ResourceARN }),
@@ -132,29 +129,8 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     getById,
   });
 
-  const destroyTargets = pipe([
-    get("live"),
-    ({ Targets, Name, EventBusName }) =>
-      pipe([
-        () => Targets,
-        unless(
-          isEmpty,
-          pipe([
-            pluck("Id"),
-            (Ids) => ({
-              Ids,
-              Rule: Name,
-              EventBusName,
-            }),
-            cloudWatchEvents().removeTargets,
-          ])
-        ),
-      ])(),
-  ]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#deleteRule-property
   const destroy = client.destroy({
-    preDestroy: destroyTargets,
     pickId,
     method: "deleteRule",
     getById,

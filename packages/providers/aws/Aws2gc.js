@@ -117,10 +117,15 @@ const downloadS3Objects = ({ lives, commandOptions, programOptions }) =>
           tap((params) => {
             assert(true);
           }),
-          get("Bucket"),
           or([
-            callProp("startsWith", "cdk-"),
-            callProp("startsWith", "aws-sam"),
+            pipe([
+              get("Bucket"),
+              or([
+                callProp("startsWith", "cdk-"),
+                callProp("startsWith", "aws-sam"),
+              ]),
+            ]),
+            pipe([get("Key"), or([callProp("startsWith", "AWSLogs")])]),
           ]),
         ])
       )
