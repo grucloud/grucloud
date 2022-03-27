@@ -4,15 +4,12 @@ const {
   pipe,
   tap,
   get,
-  eq,
   assign,
   filter,
-  omit,
   tryCatch,
-  switchCase,
   pick,
 } = require("rubico");
-const { pluck, defaultsDeep, includes, callProp } = require("rubico/x");
+const { pluck, defaultsDeep, includes, callProp, when } = require("rubico/x");
 const path = require("path");
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
 
@@ -55,6 +52,24 @@ exports.Function = ({ spec, config }) => {
       type: "Role",
       group: "IAM",
       ids: [live.Configuration.Role],
+    },
+    {
+      type: "Key",
+      group: "KMS",
+      ids: [live.Configuration.KMSKeyArn],
+    },
+    {
+      type: "Subnets",
+      group: "EC2",
+      ids: pipe([() => live, get("Configuration.VpcConfig.SubnetIds")])(),
+    },
+    {
+      type: "SecurityGroup",
+      group: "EC2",
+      ids: pipe([
+        () => live,
+        get("Configuration.VpcConfig.SecurityGroupIds"),
+      ])(),
     },
     {
       type: "Layer",
@@ -109,16 +124,10 @@ exports.Function = ({ spec, config }) => {
           Policy: tryCatch(
             pipe([
               get("Configuration"),
-              tap((params) => {
-                assert(true);
-              }),
               pick(["FunctionName"]),
               lambda().getPolicy,
               get("Policy"),
               tryCatch(JSON.parse, () => undefined),
-              tap((params) => {
-                assert(true);
-              }),
             ]),
             throwIfNotAwsError("ResourceNotFoundException")
           ),
@@ -189,7 +198,7 @@ exports.Function = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { role, layers = [] },
+    dependencies: { role, layers = [], kmsKey, subnets, securityGroups },
     programOptions,
   }) =>
     pipe([
@@ -215,6 +224,32 @@ exports.Function = ({ spec, config }) => {
             ])(),
             Code: { ZipFile },
           }),
+          when(
+            () => kmsKey,
+            defaultsDeep({ KMSKeyArn: getField(kmsKey, "Arn") })
+          ),
+          when(
+            () => subnets,
+            defaultsDeep({
+              VpcConfig: {
+                SubnetIds: pipe([
+                  () => subnets,
+                  map((subnet) => getField(subnet, "SubnetId")),
+                ])(),
+              },
+            })
+          ),
+          when(
+            () => securityGroups,
+            defaultsDeep({
+              VpcConfig: {
+                SecurityGroupIds: pipe([
+                  () => securityGroups,
+                  map((sg) => getField(sg, "GroupId")),
+                ])(),
+              },
+            })
+          ),
         ])(),
     ])();
 
@@ -243,33 +278,8 @@ exports.compareFunction = pipe([
     filterTarget: () =>
       pipe([
         assign({ CodeSha256: pipe([get("Code.ZipFile"), computeHash256]) }),
-        pick([
-          "Handler",
-          "PackageType",
-          "Runtime",
-          "Description",
-          "LicenseInfo",
-          "Timeout",
-          "MemorySize",
-          "Environment",
-          "CodeSha256",
-        ]),
       ]),
-    filterLive: () =>
-      pipe([
-        get("Configuration"),
-        pick([
-          "Handler",
-          "PackageType",
-          "Runtime",
-          "Description",
-          "LicenseInfo",
-          "Timeout",
-          "MemorySize",
-          "Environment",
-          "CodeSha256",
-        ]),
-      ]),
+    filterLive: () => pipe([get("Configuration")]),
   }),
   tap((diff) => {
     logger.debug(`compareFunction ${tos(diff)}`);

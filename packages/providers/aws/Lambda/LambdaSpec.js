@@ -60,18 +60,35 @@ module.exports = pipe([
       Client: Function,
       compare: compareFunction,
       displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
-      //TODO
-      pickProperties: [
-        "Handler",
-        "PackageType",
-        "Runtime",
-        "Description",
-        "LicenseInfo",
-        "Timeout",
-        "MemorySize",
-        "Environment",
+      omitProperties: [
         "CodeSha256",
+        "Code",
+        "CodeSize",
+        "FunctionArn",
+        "FunctionName",
+        "LastModified",
+        "LastUpdateStatus",
+        "LastUpdateStatusReason",
+        "LastUpdateStatusReasonCode",
+        "Layers",
+        "MasterArn",
+        "RevisionId",
+        "Role",
+        "SigningJobArn",
+        "State",
+        "StateReason",
+        "StateReasonCode",
+        "Version",
+        "VpcConfig",
       ],
+      propertiesDefault: {
+        Architectures: ["x86_64"],
+        Description: "",
+        MemorySize: 128,
+        Timeout: 3,
+        TracingConfig: { Mode: "PassThrough" },
+        EphemeralStorage: { Size: 512 },
+      },
       filterLive:
         ({ resource, programOptions }) =>
         (live) =>
@@ -82,16 +99,6 @@ module.exports = pipe([
             }),
             () => live,
             get("Configuration"),
-            pick([
-              "Handler",
-              "PackageType",
-              "Runtime",
-              "Description",
-              "LicenseInfo",
-              "Timeout",
-              "MemorySize",
-              "Environment",
-            ]),
             tap(
               pipe([
                 () => new AdmZip(Buffer.from(live.Code.Data, "base64")),
@@ -109,6 +116,8 @@ module.exports = pipe([
       dependencies: {
         layers: { type: "Layer", group: "Lambda", list: true },
         role: { type: "Role", group: "IAM" },
+        kmsKey: { type: "Key", group: "KMS" },
+        subnets: { type: "Subnet", group: "EC2", list: true },
       },
     },
     {
@@ -174,6 +183,14 @@ module.exports = pipe([
         lambdaFunction: { type: "Function", group: "Lambda", parent: true },
         sqsQueue: { type: "Queue", group: "SQS" },
         //TODO other event source
+        /*
+  Amazon DynamoDB Streams
+Amazon Kinesis
+Amazon SQS
+Amazon MQ and RabbitMQ
+Amazon MSK
+Apache Kafka
+*/
       },
     },
   ],

@@ -43,9 +43,6 @@ exports.createResources = () => [
       Handler: "app.handler",
       PackageType: "Zip",
       Runtime: "nodejs12.x",
-      Description: "",
-      Timeout: 3,
-      MemorySize: 128,
       Tags: {
         "lambda:createdBy": "SAM",
       },
