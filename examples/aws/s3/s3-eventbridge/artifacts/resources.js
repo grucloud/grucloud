@@ -13,7 +13,28 @@ exports.createResources = () => [
       IncludeGlobalServiceEvents: true,
       IsMultiRegionTrail: true,
       IsOrganizationTrail: false,
-      TagsList: [],
+      TagsList: [
+        {
+          Key: "gc-created-by-provider",
+          Value: "aws",
+        },
+        {
+          Key: "gc-managed-by",
+          Value: "grucloud",
+        },
+        {
+          Key: "gc-project-name",
+          Value: "s3-eventbridge",
+        },
+        {
+          Key: "gc-stage",
+          Value: "dev",
+        },
+        {
+          Key: "Name",
+          Value: "CloudTrailForS3ImagePushEvents",
+        },
+      ],
     }),
     dependencies: () => ({
       bucket: "grucloud-s3-event-bridge-logs",
