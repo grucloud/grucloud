@@ -46,7 +46,7 @@ describe("CloudTrail EventDataStore", async function () {
     pipe([
       () =>
         eventDataStore.getByName({
-          name: "124",
+          name: "a-124",
         }),
     ])
   );
