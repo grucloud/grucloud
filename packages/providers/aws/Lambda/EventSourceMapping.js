@@ -28,6 +28,14 @@ exports.EventSourceMapping = ({ spec, config }) => {
   const lambda = createLambda(config);
   const client = AwsClient({ spec, config })(lambda);
 
+  /*
+  Amazon DynamoDB Streams
+Amazon Kinesis
+Amazon SQS
+Amazon MQ and RabbitMQ
+Amazon MSK
+Apache Kafka
+*/
   const findDependencies = ({ live, lives }) => [
     {
       type: "Function",
@@ -45,6 +53,7 @@ exports.EventSourceMapping = ({ spec, config }) => {
         ])(),
       ],
     },
+    //TODO create function
     {
       type: "Queue",
       group: "SQS",
@@ -61,6 +70,7 @@ exports.EventSourceMapping = ({ spec, config }) => {
         ])(),
       ],
     },
+    //S3
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listEventSourceMappings-property
@@ -99,6 +109,15 @@ exports.EventSourceMapping = ({ spec, config }) => {
     ignoreErrorCodes: ["ResourceNotFoundException"],
   });
 
+  /*
+  TODO
+Amazon DynamoDB Streams
+Amazon Kinesis
+Amazon SQS
+Amazon MQ and RabbitMQ
+Amazon MSK
+Apache Kafka
+  */
   const configDefault = ({
     name,
     namespace,

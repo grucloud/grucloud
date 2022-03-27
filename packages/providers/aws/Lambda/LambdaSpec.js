@@ -183,6 +183,14 @@ module.exports = pipe([
         lambdaFunction: { type: "Function", group: "Lambda", parent: true },
         sqsQueue: { type: "Queue", group: "SQS" },
         //TODO other event source
+        /*
+  Amazon DynamoDB Streams
+Amazon Kinesis
+Amazon SQS
+Amazon MQ and RabbitMQ
+Amazon MSK
+Apache Kafka
+*/
       },
     },
   ],
