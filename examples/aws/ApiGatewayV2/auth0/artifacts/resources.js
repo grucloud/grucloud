@@ -149,9 +149,6 @@ exports.createResources = () => [
       Handler: "my-function.handler",
       PackageType: "Zip",
       Runtime: "nodejs14.x",
-      Description: "",
-      Timeout: 3,
-      MemorySize: 128,
     }),
     dependencies: () => ({
       role: "lambda-role",

@@ -20,8 +20,10 @@ List of resources for provider aws:
 [Distribution](./resources/CloudFront/Distribution.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md)
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
+* CloudTrail: 
+[Trail](./resources/CloudTrail/Trail.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
 * CloudWatchEvents: 
-[EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md)
+[EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
 [LogGroup](./resources/CloudWatchLogs/LogGroup.md)
 * CognitoIdentityServiceProvider: 
@@ -52,6 +54,8 @@ List of resources for provider aws:
 [Domain](./resources/Route53Domains/Domain.md)
 * S3: 
 [Bucket](./resources/S3/Bucket.md), [Object](./resources/S3/Object.md)
+* SNS: 
+[Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
 * SQS: 
 [Queue](./resources/SQS/Queue.md)
 * SSM: 
