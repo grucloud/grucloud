@@ -563,15 +563,15 @@ exports.replaceWithName =
   ({ lives, Id }) =>
     pipe([
       tap(() => {
-        assert(groupType);
+        //assert(groupType);
         //assert(Id);
       }),
       () => lives,
-      filter(eq(get("groupType"), groupType)),
+      when(() => groupType, filter(eq(get("groupType"), groupType))),
       tap((params) => {
         assert(true);
       }),
-      find(pipe([get(pathLive), (id) => Id.match(new RegExp(id))])),
+      find(pipe([get(pathLive), (id) => Id.match(new RegExp(`^${id}`))])),
       tap((params) => {
         assert(true);
       }),

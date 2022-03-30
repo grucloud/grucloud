@@ -27,6 +27,8 @@ module.exports = pipe([
         "LastAccessedDate",
         "LastChangedDate",
         "SecretVersionsToStages",
+        "SecretString.dbClusterIdentifier",
+        "SecretString.host",
       ],
       compare: compareSecretsManager({
         filterAll: () => pipe([omit(["SecretString", "SecretBinary"])]),

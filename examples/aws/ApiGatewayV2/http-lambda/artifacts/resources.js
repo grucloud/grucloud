@@ -4,6 +4,14 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Certificate",
+    group: "ACM",
+    name: "grucloud.org",
+    properties: ({}) => ({
+      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
+    }),
+  },
+  {
     type: "DomainName",
     group: "ApiGatewayV2",
     name: "grucloud.org",
@@ -89,14 +97,6 @@ exports.createResources = () => [
       stage: "my-api-stage-dev",
     }),
   },
-  {
-    type: "Certificate",
-    group: "ACM",
-    name: "grucloud.org",
-    properties: ({}) => ({
-      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
-    }),
-  },
   { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
   {
     type: "Role",
@@ -148,9 +148,6 @@ exports.createResources = () => [
       Handler: "my-function.handler",
       PackageType: "Zip",
       Runtime: "nodejs14.x",
-      Description: "",
-      Timeout: 3,
-      MemorySize: 128,
     }),
     dependencies: () => ({
       role: "lambda-role",

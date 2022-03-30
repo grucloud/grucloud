@@ -46,6 +46,7 @@ module.exports = pipe([
         secret: { type: "Secret", group: "SecretsManager" },
       },
       omitProperties: [
+        "DBClusterIdentifier",
         "SubnetIds",
         "VpcSecurityGroupIds",
         "MasterUserPassword",
@@ -111,16 +112,6 @@ module.exports = pipe([
       }),
       filterLive: () =>
         pipe([
-          pick([
-            "DatabaseName",
-            "Engine",
-            "EngineVersion",
-            "EngineMode",
-            "Port",
-            "ScalingConfigurationInfo",
-            "PreferredBackupWindow",
-            "PreferredMaintenanceWindow",
-          ]),
           assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
           omit(["ScalingConfigurationInfo"]),
         ]),

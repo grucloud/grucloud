@@ -1,6 +1,13 @@
 const assert = require("assert");
-const { map, pipe, tap, get } = require("rubico");
-const { defaultsDeep, first } = require("rubico/x");
+const { map, pipe, tap, get, any } = require("rubico");
+const {
+  defaultsDeep,
+  first,
+  pluck,
+  flatten,
+  includes,
+  find,
+} = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -29,7 +36,38 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
   const ecs = createECS(config);
   const client = AwsClient({ spec, config })(ecs);
 
-  const findDependencies = ({ live }) => [
+  const findDependenciesInEnvironment = ({
+    type,
+    group,
+    lives,
+    live,
+    config,
+  }) => ({
+    type,
+    group,
+    ids: [
+      pipe([
+        () =>
+          lives.getByType({
+            type,
+            group,
+            providerName: config.providerName,
+          }),
+        find(({ id }) =>
+          pipe([
+            () => live,
+            get("containerDefinitions"),
+            pluck("environment"),
+            flatten,
+            pluck("value"),
+            any(includes(id)),
+          ])()
+        ),
+      ])(),
+    ],
+  });
+
+  const findDependencies = ({ live, lives }) => [
     // efsVolumeConfiguration
     // fsxWindowsFileServerVolumeConfiguration
     {
@@ -37,6 +75,20 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
       group: "IAM",
       ids: [live.taskRoleArn, live.executionRoleArn],
     },
+    findDependenciesInEnvironment({
+      type: "Secret",
+      group: "SecretsManager",
+      live,
+      lives,
+      config,
+    }),
+    findDependenciesInEnvironment({
+      type: "DBCluster",
+      group: "RDS",
+      live,
+      lives,
+      config,
+    }),
   ];
 
   const findNamespace = pipe([() => ""]);

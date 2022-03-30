@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, assign, map, tap, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, get, map, tap, pick } = require("rubico");
+const { defaultsDeep, callProp } = require("rubico/x");
 const { isOurMinionObject } = require("../AwsCommon");
 const { compareAws } = require("../AwsCommon");
 
@@ -21,7 +21,10 @@ module.exports = pipe([
       type: "LogGroup",
       Client: CloudWatchLogsGroup,
       pickProperties: ["retentionInDays"],
+      ignoreResource: () =>
+        pipe([get("name"), callProp("startsWith", "/aws/")]),
       //TODO
+
       compare: compareCloudWatchLog({
         filterAll: () => pipe([pick(["retentionInDays"])]),
       }),

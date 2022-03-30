@@ -4,6 +4,14 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Certificate",
+    group: "ACM",
+    name: "grucloud.org",
+    properties: ({}) => ({
+      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
+    }),
+  },
+  {
     type: "DomainName",
     group: "ApiGatewayV2",
     name: "grucloud.org",
@@ -88,14 +96,6 @@ exports.createResources = () => [
     dependencies: () => ({
       api: "my-api",
       stage: "my-api-stage-dev",
-    }),
-  },
-  {
-    type: "Certificate",
-    group: "ACM",
-    name: "grucloud.org",
-    properties: ({}) => ({
-      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
     }),
   },
   { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
