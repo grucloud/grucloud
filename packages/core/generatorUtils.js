@@ -307,7 +307,9 @@ const configBuildPropertiesDefault = ({
     }),
     () =>
       !isEmpty(properties) && !resource.isDefault && !hasNoProperty
-        ? `\nproperties: ({config, getId}) => (${printProperties(properties)}),`
+        ? `\nproperties: ({config, getId, generatePassword}) => (${printProperties(
+            properties
+          )}),`
         : "",
     tap((params) => {
       assert(true);

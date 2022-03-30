@@ -1,4 +1,7 @@
-const { pipe, tap, assign, omit, get } = require("rubico");
+const assert = require("assert");
+const { pipe, tap, assign, omit, get, eq } = require("rubico");
+const { find } = require("rubico/x");
+
 const { createEndpoint } = require("../AwsCommon");
 
 exports.createRDS = createEndpoint("rds", "RDS");
@@ -22,3 +25,31 @@ exports.renameTagList = pipe([
   assign({ Tags: get("TagList") }),
   omit(["TagList"]),
 ]);
+
+exports.findDependenciesSecret = ({
+  live,
+  lives,
+  config,
+  secretField,
+  rdsUsernameField,
+}) => ({
+  type: "Secret",
+  group: "SecretsManager",
+  ids: [
+    pipe([
+      () =>
+        lives.getByType({
+          type: "Secret",
+          group: "SecretsManager",
+          providerName: config.providerName,
+        }),
+      tap((params) => {
+        assert(true);
+      }),
+      find(eq(get(`live.SecretString.${secretField}`), live[rdsUsernameField])),
+      tap((params) => {
+        assert(true);
+      }),
+    ])(),
+  ],
+});

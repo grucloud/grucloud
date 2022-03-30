@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick, assign, omit } = require("rubico");
-const { defaultsDeep, isEmpty, pluck } = require("rubico/x");
+const { map, pipe, tap, get, eq, pick } = require("rubico");
+const { defaultsDeep, isEmpty, pluck, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
@@ -11,6 +11,7 @@ const {
   tagResource,
   untagResource,
   renameTagList,
+  findDependenciesSecret,
 } = require("./RDSCommon");
 
 const findId = get("live.DBInstanceArn");
@@ -28,6 +29,13 @@ exports.DBInstance = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(rds);
 
   const findDependencies = ({ live, lives }) => [
+    findDependenciesSecret({
+      live,
+      lives,
+      config,
+      secretField: "username",
+      rdsUsernameField: "MasterUsername",
+    }),
     {
       type: "DBSubnetGroup",
       group: "RDS",
@@ -82,7 +90,7 @@ exports.DBInstance = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { dbSubnetGroup, securityGroups, kmsKey },
+    dependencies: { dbSubnetGroup, securityGroups, kmsKey, secret },
   }) =>
     pipe([
       tap(() => {
@@ -101,6 +109,13 @@ exports.DBInstance = ({ spec, config }) => {
         ...(kmsKey && { KmsKeyId: getField(kmsKey, "Arn") }),
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
+      when(
+        () => secret,
+        defaultsDeep({
+          MasterUsername: getField(secret, "SecretString.username"),
+          MasterUserPassword: getField(secret, "SecretString.password"),
+        })
+      ),
     ])();
 
   const create = client.create({

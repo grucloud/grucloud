@@ -33,71 +33,7 @@ const {
 
 const { generateCode } = require("./Aws2gc");
 const { createEC2 } = require("./EC2/EC2Common");
-const ApiGatewayV2 = require("./ApiGatewayV2");
-const ApiGateway = require("./ApiGateway");
-const AppRunner = require("./AppRunner");
-const AppSync = require("./AppSync");
-const AutoScaling = require("./Autoscaling");
-const CertificateManager = require("./ACM");
-const CloudFront = require("./CloudFront");
-const CloudFormation = require("./CloudFormation");
-const CloudTrail = require("./CloudTrail");
-const CloudWatchEvent = require("./CloudWatchEvent");
-const CloudWatchLogs = require("./CloudWatchLogs");
-const CognitoIdentityServiceProvider = require("./CognitoIdentityServiceProvider");
-const EC2 = require("./EC2");
-const DynamoDB = require("./DynamoDB");
-const ECR = require("./ECR");
-const ECS = require("./ECS");
-const EKS = require("./EKS");
-const ELBv2 = require("./ELBv2");
-const IAM = require("./IAM");
-const KMS = require("./KMS");
-const Lambda = require("./Lambda");
-const RDS = require("./RDS");
-const Route53 = require("./Route53");
-const Route53Domain = require("./Route53Domain");
-const S3 = require("./S3");
-const SNS = require("./SNS");
-const SQS = require("./SQS");
-const SSM = require("./SSM");
-
-const fnSpecs = (config) =>
-  pipe([
-    tap(() => {
-      assert(config);
-    }),
-    () => [
-      ...ApiGateway(),
-      ...ApiGatewayV2(),
-      ...AppRunner(),
-      ...AppSync(),
-      ...AutoScaling(),
-      ...CertificateManager(),
-      ...CloudFront(),
-      ...CloudFormation(),
-      ...CloudTrail(),
-      ...CloudWatchEvent(),
-      ...CloudWatchLogs(),
-      ...CognitoIdentityServiceProvider(),
-      ...DynamoDB(),
-      ...EC2(),
-      ...ECR(),
-      ...ECS(),
-      ...EKS(),
-      ...ELBv2(),
-      ...IAM(),
-      ...KMS(),
-      ...Lambda(),
-      ...RDS(),
-      ...Route53(),
-      ...Route53Domain(),
-      ...S3(),
-      ...SNS(),
-      ...SQS(),
-      ...SSM(),
-    ],
-  ])();
+const { fnSpecs } = require("./AwsProviderSpec");
 
 const getAvailabilityZonesName = ({ region }) =>
   pipe([
@@ -143,37 +79,6 @@ exports.AwsProvider = ({
   ...other
 }) => {
   assert(config ? isFunction(config) : true, "config must be a function");
-
-  // AWS.config.apiVersions = {
-  //   acm: "2015-12-08",
-  //   apigateway: "2015-07-09",
-  //   apigatewayv2: "2018-11-29",
-  //   apprunner: "2020-05-15",
-  //   appsync: "2017-07-25",
-  //   autoscaling: "2011-01-01",
-  //   cloudfront: "2020-05-31",
-  //   cloudwatchevents: "2015-10-07",
-  //   cloudwatchlogs: "2014-03-28",
-  //   cloudwatch: "2010-08-01",
-  //   cognitoidentityserviceprovider: "2016-04-18",
-  //   dynamodb: "2012-08-10",
-  //   ec2: "2016-11-15",
-  //   ecr: "2015-09-21",
-  //   ecs: "2014-11-13",
-  //   eks: "2017-11-01",
-  //   elb: "2012-06-01",
-  //   elbv2: "2015-12-01",
-  //   iam: "2010-05-08",
-  //   kms: "2014-11-01",
-  //   lambda: "2015-03-31",
-  //   rds: "2014-10-31",
-  //   resourcegroupstaggingapi: "2017-01-26",
-  //   route53: "2013-04-01",
-  //   route53domains: "2014-05-15",
-  //   s3: "2006-03-01",
-  //   sqs: "2012-11-05",
-  //   ssm: "2014-11-06",
-  // };
 
   const { AWSAccessKeyId, AWSSecretKey } = process.env;
 

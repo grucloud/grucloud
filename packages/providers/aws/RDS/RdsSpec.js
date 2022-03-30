@@ -43,6 +43,7 @@ module.exports = pipe([
           type: "Key",
           group: "KMS",
         },
+        secret: { type: "Secret", group: "SecretsManager" },
       },
       omitProperties: [
         "SubnetIds",
@@ -131,6 +132,7 @@ module.exports = pipe([
       dependencies: {
         dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        secret: { type: "Secret", group: "SecretsManager" },
       },
       propertiesDefault: {
         BackupRetentionPeriod: 1,

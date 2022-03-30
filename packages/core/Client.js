@@ -242,7 +242,7 @@ const decorateLives = ({ client, config, options, readOnly, lives }) =>
       )
     ),
     tap((results) => {
-      assert(Array.isArray(results));
+      assert(Array.isArray(results), `no results for ${client.spec.groupType}`);
     }),
   ]);
 

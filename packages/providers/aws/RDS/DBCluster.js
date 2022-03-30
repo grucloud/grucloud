@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { map, pipe, tap, get, eq, pick, omit } = require("rubico");
-const { defaultsDeep, pluck } = require("rubico/x");
+const { defaultsDeep, pluck, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -11,6 +11,7 @@ const {
   tagResource,
   untagResource,
   renameTagList,
+  findDependenciesSecret,
 } = require("./RDSCommon");
 
 const ignoreErrorCodes = ["DBClusterNotFoundFault"];
@@ -30,6 +31,13 @@ exports.DBCluster = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(rds);
 
   const findDependencies = ({ live, lives }) => [
+    findDependenciesSecret({
+      live,
+      lives,
+      config,
+      secretField: "username",
+      rdsUsernameField: "MasterUsername",
+    }),
     {
       type: "DBSubnetGroup",
       group: "RDS",
@@ -87,7 +95,7 @@ exports.DBCluster = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { dbSubnetGroup, securityGroups },
+    dependencies: { dbSubnetGroup, securityGroups, secret },
   }) =>
     pipe([
       () => otherProps,
@@ -99,6 +107,13 @@ exports.DBCluster = ({ spec, config }) => {
         ),
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
+      when(
+        () => secret,
+        defaultsDeep({
+          MasterUsername: getField(secret, "SecretString.username"),
+          MasterUserPassword: getField(secret, "SecretString.password"),
+        })
+      ),
     ])();
 
   const create = client.create({

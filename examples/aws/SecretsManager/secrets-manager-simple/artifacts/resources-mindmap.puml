@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project secrets-manager-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ SecretsManager
+++++ Secret (1)
+@endmindmap
