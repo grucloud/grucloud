@@ -7,7 +7,11 @@ exports.createResources = () => [
     type: "Secret",
     group: "SecretsManager",
     name: "prod/myapp/db",
-    properties: ({}) => ({
+    properties: ({ generatePassword }) => ({
+      SecretString: {
+        password: generatePassword({ length: 32 }),
+        username: "demousername",
+      },
       Description: "access postgres",
       Tags: [
         {

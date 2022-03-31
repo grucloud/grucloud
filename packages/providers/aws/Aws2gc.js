@@ -44,7 +44,6 @@ const {
   createWritersSpec,
 } = require("@grucloud/core/generatorUtils");
 const { configTpl } = require("./configTpl");
-const { isString } = require("util");
 
 const bucketFileNameFromLive = ({ live: { Name }, commandOptions }) =>
   `s3/${Name}/`;

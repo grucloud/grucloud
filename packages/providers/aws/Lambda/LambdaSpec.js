@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, tap, pick, get } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
 const AdmZip = require("adm-zip");
 const path = require("path");
@@ -99,26 +99,29 @@ module.exports = pipe([
             }),
             () => live,
             get("Configuration"),
-            assign({
-              Environment: pipe([
-                get("Environment"),
-                assign({
-                  Variables: pipe([
-                    get("Variables"),
-                    map((value) =>
-                      pipe([
-                        () => ({ Id: value, lives }),
-                        replaceWithName({
-                          groupType: "AppSync::GraphqlApi",
-                          pathLive: "live.uris.GRAPHQL",
-                          path: "live.uris.GRAPHQL",
-                        }),
-                      ])()
-                    ),
-                  ]),
-                }),
-              ]),
-            }),
+            when(
+              get("Environment"),
+              assign({
+                Environment: pipe([
+                  get("Environment"),
+                  assign({
+                    Variables: pipe([
+                      get("Variables"),
+                      map((value) =>
+                        pipe([
+                          () => ({ Id: value, lives }),
+                          replaceWithName({
+                            groupType: "AppSync::GraphqlApi",
+                            pathLive: "live.uris.GRAPHQL",
+                            path: "live.uris.GRAPHQL",
+                          }),
+                        ])()
+                      ),
+                    ]),
+                  }),
+                ]),
+              })
+            ),
             tap(
               pipe([
                 () => new AdmZip(Buffer.from(live.Code.Data, "base64")),

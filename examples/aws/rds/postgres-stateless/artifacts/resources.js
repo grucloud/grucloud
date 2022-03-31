@@ -273,23 +273,25 @@ exports.createResources = () => [
     group: "RDS",
     name: "cluster-postgres-stateless",
     properties: ({}) => ({
+      AllocatedStorage: 1,
       DatabaseName: "dev",
       Engine: "aurora-postgresql",
       EngineVersion: "10.14",
-      EngineMode: "serverless",
+      MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
       PreferredBackupWindow: "01:39-02:09",
       PreferredMaintenanceWindow: "sun:00:47-sun:01:17",
-      ScalingConfiguration: {
-        MinCapacity: 2,
-        MaxCapacity: 4,
-      },
+      EngineMode: "serverless",
+      AutoMinorVersionUpgrade: false,
       Tags: [
         {
           Key: "mykey1",
           Value: "myvalue",
         },
       ],
-      MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
+      ScalingConfiguration: {
+        MinCapacity: 2,
+        MaxCapacity: 4,
+      },
       MasterUserPassword:
         process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USER_PASSWORD,
     }),

@@ -221,6 +221,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
+      dynamoDbTable: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
     }),
   },
 ];

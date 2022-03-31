@@ -56,47 +56,49 @@ exports.Function = ({ spec, config }) => {
   const lambda = createLambda(config);
   const client = AwsClient({ spec, config })(lambda);
 
+  const findDependenciesInEnvironment = ({
+    pathLive,
+    type,
+    group,
+    live,
+    lives,
+  }) => ({
+    type,
+    group,
+    ids: pipe([
+      () => live,
+      get("Configuration.Environment.Variables"),
+      map((value) =>
+        pipe([
+          () =>
+            lives.getByType({
+              providerName: config.providerName,
+              type,
+              group,
+            }),
+          find(eq(get(pathLive), value)),
+          get("id"),
+        ])()
+      ),
+      values,
+    ])(),
+  });
+
   const findDependencies = ({ live, lives }) => [
-    {
+    findDependenciesInEnvironment({
+      pathLive: "live.uris.GRAPHQL",
       type: "GraphqlApi",
       group: "AppSync",
-      ids: pipe([
-        () => live,
-        get("Configuration.Environment.Variables"),
-        map((GRAPHQL) =>
-          pipe([
-            () =>
-              lives.getByType({
-                providerName: config.providerName,
-                type: "GraphqlApi",
-                group: "AppSync",
-              }),
-            find(eq(get("live.uris.GRAPHQL"), GRAPHQL)),
-            get("id"),
-          ])()
-        ),
-        values,
-      ])(),
-    },
-    {
+      live,
+      lives,
+    }),
+    findDependenciesInEnvironment({
+      pathLive: "live.TableName",
       type: "Table",
       group: "DynamoDB",
-      ids: pipe([
-        () => live,
-        get("Configuration.Environment.Variables"),
-        map((TABLE) =>
-          pipe([
-            () =>
-              lives.getByType({
-                providerName: config.providerName,
-                type: "Table",
-                group: "DynamoDB",
-              }),
-            find(eq(get("live.TableName"), TABLE)),
-          ])()
-        ),
-      ])(),
-    },
+      live,
+      lives,
+    }),
     {
       type: "Role",
       group: "IAM",

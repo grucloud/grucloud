@@ -125,7 +125,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
     properties: ({ config }) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -162,7 +161,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
     properties: ({ config }) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -202,26 +200,28 @@ exports.createResources = () => [
         },
       ],
     }),
+    dependencies: () => ({
+      table: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
+    }),
   },
   {
     type: "Function",
     group: "Lambda",
     name: "lambda-fns",
     properties: ({}) => ({
-      Handler: "main.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs12.x",
-      Description: "",
-      Timeout: 3,
-      MemorySize: 1024,
       Environment: {
         Variables: {
           NOTES_TABLE: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
         },
       },
+      Handler: "main.handler",
+      MemorySize: 1024,
+      PackageType: "Zip",
+      Runtime: "nodejs12.x",
     }),
     dependencies: () => ({
       role: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
+      dynamoDbTable: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
     }),
   },
 ];

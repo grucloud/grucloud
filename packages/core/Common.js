@@ -571,7 +571,12 @@ exports.replaceWithName =
       tap((params) => {
         assert(true);
       }),
-      find(pipe([get(pathLive), (id) => Id.match(new RegExp(`^${id}`))])),
+      find(
+        pipe([
+          get(pathLive),
+          (id) => Id.match(new RegExp(groupType ? `${id}` : `^${id}`)),
+        ])
+      ),
       tap((params) => {
         assert(true);
       }),
