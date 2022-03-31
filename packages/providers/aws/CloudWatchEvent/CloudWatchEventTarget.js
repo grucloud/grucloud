@@ -79,6 +79,11 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
         ])(),
       ],
     },
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [live.RoleArn],
+    },
     findTargetDependency({ type: "Queue", group: "SQS", live, lives }),
     findTargetDependency({ type: "Topic", group: "SNS", live, lives }),
     findTargetDependency({
@@ -96,6 +101,12 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     }),
     findTargetDependency({ type: "Task", group: "ECS", live, lives }),
     findTargetDependency({ type: "Function", group: "Lambda", live, lives }),
+    findTargetDependency({
+      type: "StateMachine",
+      group: "StepFunctions",
+      live,
+      lives,
+    }),
   ];
 
   const decorate = ({ parent }) =>
@@ -199,7 +210,7 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { rule, sqsQueue, snsTopic },
+    dependencies: { rule, sqsQueue, snsTopic, sfnStateMachine },
   }) =>
     pipe([
       tap((params) => {
@@ -220,6 +231,11 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
         () => snsTopic,
         defaultsDeep({
           Arn: getField(snsTopic, "TopicArn"),
+        }),
+        // StepFunctions StateMachine
+        () => sfnStateMachine,
+        defaultsDeep({
+          Arn: getField(sfnStateMachine, "stateMachineArn"),
         }),
       ]),
     ])();

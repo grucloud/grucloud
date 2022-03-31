@@ -192,7 +192,9 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
     //assert(endpointName);
     assert(endpoint);
-    assert(isFunction(endpoint[name]), `${name} is not a function`);
+    if (!isFunction(endpoint[name])) {
+      assert(isFunction(endpoint[name]), `${name} is not a function`);
+    }
     return (...args) =>
       retryCall({
         name: `${endpointName}.${name} ${JSON.stringify(args)}`,
@@ -269,8 +271,8 @@ const createEndpoint = (packageName, entryPoint) =>
       assert(true);
     }),
     get(entryPoint),
-    tap((params) => {
-      assert(true);
+    tap((endpoint) => {
+      assert(endpoint, `no endpoint ${packageName}:${entryPoint}`);
     }),
     createEndpointProxy,
   ])();

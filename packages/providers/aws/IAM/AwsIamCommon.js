@@ -10,12 +10,15 @@ const logger = require("@grucloud/core/logger")({ prefix: "IamCommon" });
 exports.createIAM = createEndpoint("iam", "IAM");
 
 exports.tagResourceIam =
-  ({ field, method }) =>
+  ({ propertyName, field, method }) =>
   ({ iam }) =>
   ({ live }) =>
     pipe([
+      tap((params) => {
+        assert(live[field]);
+      }),
       (Tags) => ({
-        [field]: live[field],
+        [propertyName || field]: live[field],
         Tags,
       }),
       iam()[method],

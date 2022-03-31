@@ -283,7 +283,11 @@ module.exports = pipe([
       filterLive: switchCase([
         get("resource.cannotBeDeleted"),
         () => pick(["Arn"]),
-        () => pick(["PolicyDocument", "Path", "Description"]),
+        ({ providerConfig }) =>
+          pipe([
+            pick(["PolicyDocument", "Path", "Description"]),
+            assignPolicyDocumentAccountAndRegion({ providerConfig }),
+          ]),
       ]),
     },
     {

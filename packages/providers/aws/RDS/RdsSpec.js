@@ -97,6 +97,7 @@ module.exports = pipe([
         },
       },
       compare: compareRDS({
+        filterAll: () => omit(["HttpEndpointEnabled"]), //TODO kludge: updating HttpEndpointEnabled does not work
         filterTarget: () =>
           pipe([
             when(

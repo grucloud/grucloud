@@ -43,13 +43,15 @@ const {
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagPolicy-property
 const tagResource = tagResourceIam({
-  field: "PolicyArn",
+  field: "Arn",
+  propertyName: "PolicyArn",
   method: "tagPolicy",
 });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagPolicy-property
 const untagResource = untagResourceIam({
-  field: "PolicyArn",
+  field: "Arn",
+  propertyName: "PolicyArn",
   method: "untagPolicy",
 });
 

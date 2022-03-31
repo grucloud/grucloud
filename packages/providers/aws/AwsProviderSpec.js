@@ -27,6 +27,7 @@ const GROUPS = [
   "Route53Domain",
   "S3",
   "SecretsManager",
+  "StepFunctions",
   "SNS",
   "SQS",
   "SSM",
