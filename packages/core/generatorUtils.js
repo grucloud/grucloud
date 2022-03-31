@@ -338,7 +338,9 @@ const envTpl = ({ resource, environmentVariables = [] }) =>
 const dependencyValue = ({ key, list, resource }) =>
   pipe([
     tap((dependencyVarNames) => {
-      assert(Array.isArray(dependencyVarNames));
+      if (!Array.isArray(dependencyVarNames)) {
+        assert(Array.isArray(dependencyVarNames));
+      }
       if (!list) {
         if (size(dependencyVarNames) > 1) {
           assert(key);

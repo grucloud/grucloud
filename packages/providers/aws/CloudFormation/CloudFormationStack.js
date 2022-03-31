@@ -1,7 +1,6 @@
 const assert = require("assert");
-const { map, pipe, tap, get, not, pick, assign } = require("rubico");
+const { pipe, tap, get, pick, eq } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { getByNameCore } = require("@grucloud/core/Common");
 
 const { AwsClient } = require("../AwsClient");
 const { createCloudFormation } = require("./CloudFormationCommon");
@@ -9,13 +8,7 @@ const { createCloudFormation } = require("./CloudFormationCommon");
 const ignoreErrorCodes = ["NoSuchCloudFormationOriginAccessIdentity"];
 const ignoreErrorMessages = ["does not exist"];
 
-const findName = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  get("live.StackName"),
-]);
-
+const findName = pipe([get("live.StackName")]);
 const findId = get("live.StackId");
 
 const pickId = pipe([
@@ -55,11 +48,7 @@ exports.CloudFormationStack = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#createStack-property
   const configDefault = ({ name, properties, dependencies: {} }) =>
-    pipe([
-      () => properties,
-      //
-      defaultsDeep({ StackName: name }),
-    ])();
+    pipe([() => properties, defaultsDeep({ StackName: name })])();
 
   const create = client.create({
     method: "createStack",
@@ -73,6 +62,7 @@ exports.CloudFormationStack = ({ spec, config }) => {
     getById,
     ignoreErrorCodes,
     ignoreErrorMessages,
+    isInstanceError: pipe([eq(get("StackStatus"), "DELETE_FAILED")]),
   });
 
   return {

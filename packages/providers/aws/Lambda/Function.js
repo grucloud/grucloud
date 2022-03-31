@@ -8,8 +8,17 @@ const {
   filter,
   tryCatch,
   pick,
+  eq,
 } = require("rubico");
-const { pluck, defaultsDeep, includes, callProp, when } = require("rubico/x");
+const {
+  pluck,
+  values,
+  defaultsDeep,
+  includes,
+  callProp,
+  when,
+  find,
+} = require("rubico/x");
 const path = require("path");
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
 
@@ -48,6 +57,46 @@ exports.Function = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(lambda);
 
   const findDependencies = ({ live, lives }) => [
+    {
+      type: "GraphqlApi",
+      group: "AppSync",
+      ids: pipe([
+        () => live,
+        get("Configuration.Environment.Variables"),
+        map((GRAPHQL) =>
+          pipe([
+            () =>
+              lives.getByType({
+                providerName: config.providerName,
+                type: "GraphqlApi",
+                group: "AppSync",
+              }),
+            find(eq(get("live.uris.GRAPHQL"), GRAPHQL)),
+            get("id"),
+          ])()
+        ),
+        values,
+      ])(),
+    },
+    {
+      type: "Table",
+      group: "DynamoDB",
+      ids: pipe([
+        () => live,
+        get("Configuration.Environment.Variables"),
+        map((TABLE) =>
+          pipe([
+            () =>
+              lives.getByType({
+                providerName: config.providerName,
+                type: "Table",
+                group: "DynamoDB",
+              }),
+            find(eq(get("live.TableName"), TABLE)),
+          ])()
+        ),
+      ])(),
+    },
     {
       type: "Role",
       group: "IAM",

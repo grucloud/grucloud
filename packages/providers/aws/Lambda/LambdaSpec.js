@@ -5,7 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const AdmZip = require("adm-zip");
 const path = require("path");
 
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const { compareAws, isOurMinionObject } = require("../AwsCommon");
 
 const { Function, compareFunction } = require("./Function");
@@ -90,7 +90,7 @@ module.exports = pipe([
         EphemeralStorage: { Size: 512 },
       },
       filterLive:
-        ({ resource, programOptions }) =>
+        ({ resource, programOptions, lives }) =>
         (live) =>
           pipe([
             tap(() => {
@@ -99,6 +99,26 @@ module.exports = pipe([
             }),
             () => live,
             get("Configuration"),
+            assign({
+              Environment: pipe([
+                get("Environment"),
+                assign({
+                  Variables: pipe([
+                    get("Variables"),
+                    map((value) =>
+                      pipe([
+                        () => ({ Id: value, lives }),
+                        replaceWithName({
+                          groupType: "AppSync::GraphqlApi",
+                          pathLive: "live.uris.GRAPHQL",
+                          path: "live.uris.GRAPHQL",
+                        }),
+                      ])()
+                    ),
+                  ]),
+                }),
+              ]),
+            }),
             tap(
               pipe([
                 () => new AdmZip(Buffer.from(live.Code.Data, "base64")),
@@ -118,6 +138,8 @@ module.exports = pipe([
         role: { type: "Role", group: "IAM" },
         kmsKey: { type: "Key", group: "KMS" },
         subnets: { type: "Subnet", group: "EC2", list: true },
+        graphqlApi: { type: "GraphqlApi", group: "AppSync" },
+        dynamoDbTable: { type: "Table", group: "DynamoDB" },
       },
     },
     {

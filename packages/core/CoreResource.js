@@ -81,6 +81,7 @@ exports.ResourceMaker = ({
         assert(group);
         assert(type);
         assert(name);
+        assert(path);
       }),
       () =>
         provider.lives.getByName({
@@ -89,6 +90,9 @@ exports.ResourceMaker = ({
           type,
           providerName: config.providerName,
         }),
+      tap((params) => {
+        assert(true);
+      }),
       get(
         path,
         `<< ${path} of ${group}::${type}::${name} not available yet >>`

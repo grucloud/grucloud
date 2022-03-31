@@ -1,0 +1,35 @@
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type ModelTodoConnection {
+  items: [Todo]
+  nextToken: String
+}
+
+type Mutation {
+  createTodo(description: String, id: ID, name: String!): Todo
+  deleteTodo(id: ID!): Todo
+  updateTodo(description: String, id: ID!, name: String): Todo
+}
+
+type Query {
+  getTodo(id: ID!): Todo
+  listTodos(limit: Int, nextToken: String): ModelTodoConnection
+}
+
+type Subscription {
+  onCreateTodo: Todo @aws_subscribe(mutations : ["createTodo"])
+  onDeleteTodo: Todo @aws_subscribe(mutations : ["deleteTodo"])
+  onUpdateTodo: Todo @aws_subscribe(mutations : ["updateTodo"])
+}
+
+type Todo {
+  createdAt: AWSDateTime!
+  description: String
+  id: ID!
+  name: String!
+  updatedAt: AWSDateTime!
+}

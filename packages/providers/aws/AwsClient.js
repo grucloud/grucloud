@@ -534,6 +534,7 @@ const AwsClient =
         ]),
         isExpectedResult,
         config,
+        isInstanceError = (live) => false,
       }) =>
       ({ name, live, lives }) =>
         pipe([
@@ -583,6 +584,13 @@ const AwsClient =
                         assert(true);
                       }),
                       getById,
+                      tap.if(isInstanceError, (live) => {
+                        const error = new Error(
+                          `error destroying resource ${name}`
+                        );
+                        error.live = live;
+                        throw error;
+                      }),
                       isInstanceDown,
                     ]),
                     config,

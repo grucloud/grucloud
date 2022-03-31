@@ -54,11 +54,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description:
         "Automatic deployment triggered by changes to the Api configuration",
-      AutoDeployed: true,
     }),
     dependencies: () => ({
       api: "MyHttpApi",
-      stage: "$default",
     }),
   },
   {
@@ -67,9 +65,11 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description:
         "Automatic deployment triggered by changes to the Api configuration",
+      AutoDeployed: true,
     }),
     dependencies: () => ({
       api: "MyHttpApi",
+      stage: "$default",
     }),
   },
   { type: "EventBus", group: "CloudWatchEvents", name: "MyEventBus" },
@@ -187,9 +187,7 @@ exports.createResources = () => [
       Handler: "index.handler",
       PackageType: "Zip",
       Runtime: "nodejs12.x",
-      Description: "",
       Timeout: 120,
-      MemorySize: 128,
     }),
     dependencies: () => ({
       role: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-4YDZM1JYBBAN",

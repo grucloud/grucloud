@@ -34,6 +34,7 @@ const {
   keys,
   isDeepEqual,
   differenceWith,
+  isObject,
 } = require("rubico/x");
 const util = require("util");
 const Diff = require("diff");
@@ -71,14 +72,34 @@ exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 const extractKeys = ({ key }) =>
   switchCase([Array.isArray, pipe([pluck(key)]), keys]);
 
-const filterTags = filter(
-  not(
+const filterTags = pipe([
+  switchCase([
+    Array.isArray,
+    filter(
+      not(
+        pipe([
+          switchCase([
+            get("Key"),
+            get("Key"),
+            get("key"),
+            get("key"),
+            () => "",
+          ]),
+          callProp("startsWith", "aws:"),
+        ])
+      )
+    ),
+    isObject,
     pipe([
-      switchCase([get("Key"), get("Key"), get("key"), get("key"), () => ""]),
-      callProp("startsWith", "aws:"),
-    ])
-  )
-);
+      Object.entries,
+      filter(not(pipe([first, callProp("startsWith", "aws:")]))),
+      Object.fromEntries,
+    ]),
+    () => {
+      assert(false, "tags should be an array or object");
+    },
+  ]),
+]);
 
 const compareAwsTags = ({ getTargetTags, getLiveTags, tagsKey, key }) =>
   pipe([
