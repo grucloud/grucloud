@@ -96,7 +96,6 @@ exports.createResources = () => [
       PreferredBackupWindow: "03:02-03:32",
       PreferredMaintenanceWindow: "tue:06:58-tue:07:28",
       EngineMode: "serverless",
-      AutoMinorVersionUpgrade: false,
       ScalingConfiguration: {
         MinCapacity: 2,
         MaxCapacity: 2,

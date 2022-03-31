@@ -145,16 +145,11 @@ exports.createResources = () => [
     type: "Secret",
     group: "SecretsManager",
     name: "demordsservice-demostage-credentials",
-    properties: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      ({ generatePassword }) => ({
-        SecretString: {
-          password: generatePassword({ length: 32 }),
-          username: "demousername",
-        },
-      }),
-    ]),
+    properties: ({ generatePassword }) => ({
+      SecretString: {
+        password: generatePassword({ length: 32 }),
+        username: "demousername",
+      },
+    }),
   },
 ];

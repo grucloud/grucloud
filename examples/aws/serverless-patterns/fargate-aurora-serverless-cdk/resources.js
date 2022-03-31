@@ -687,7 +687,6 @@ exports.createResources = () => [
       PreferredMaintenanceWindow: "sun:03:14-sun:03:44",
       EngineMode: "serverless",
       HttpEndpointEnabled: true,
-      AutoMinorVersionUpgrade: false,
       ScalingConfiguration: {
         MinCapacity: 1,
         MaxCapacity: 2,

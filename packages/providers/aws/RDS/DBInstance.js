@@ -3,7 +3,7 @@ const { map, pipe, tap, get, eq, pick } = require("rubico");
 const { defaultsDeep, isEmpty, pluck, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { buildTags } = require("../AwsCommon");
+const { buildTags, createEndpoint } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
 const {
@@ -27,6 +27,10 @@ const isInstanceUp = pipe([eq(get("DBInstanceStatus"), "available")]);
 exports.DBInstance = ({ spec, config }) => {
   const rds = createRDS(config);
   const client = AwsClient({ spec, config })(rds);
+  const secretEndpoint = createEndpoint(
+    "secrets-manager",
+    "SecretsManager"
+  )(config);
 
   const findDependencies = ({ live, lives }) => [
     findDependenciesSecret({
@@ -125,6 +129,31 @@ exports.DBInstance = ({ spec, config }) => {
     isInstanceUp,
     config: { ...config, retryCount: 100 },
     configIsUp: { ...config, retryCount: 500 },
+    postCreate: ({ resolvedDependencies: { secret } }) =>
+      pipe([
+        when(
+          () => secret,
+          pipe([
+            tap(({ DBInstanceIdentifier, Endpoint, Port }) => {
+              assert(DBInstanceIdentifier);
+              assert(Endpoint);
+              assert(Port);
+              assert(secret.live.Name);
+              assert(secret.live.SecretString);
+            }),
+            ({ DBInstanceIdentifier, Endpoint, Port }) => ({
+              SecretId: secret.live.Name,
+              SecretString: JSON.stringify({
+                ...secret.live.SecretString,
+                DBInstanceIdentifier,
+                host: Endpoint,
+                port: Port,
+              }),
+            }),
+            secretEndpoint().putSecretValue,
+          ])
+        ),
+      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyDBInstance-property
