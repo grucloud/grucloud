@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project dns-record-ip-address
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ ElasticIpAddress (1)
++++ Route53
+++++ HostedZone (1)
+++++ Record (1)
++++ Route53Domains
+++++ Domain (1)
+@endmindmap

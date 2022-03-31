@@ -139,7 +139,7 @@ exports.createResources = () => [
         },
       },
       deployment: {
-        stageName: "prod",
+        stageName: undefined,
       },
     }),
   },

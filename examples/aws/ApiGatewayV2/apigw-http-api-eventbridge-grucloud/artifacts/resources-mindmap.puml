@@ -6,9 +6,9 @@ skinparam monochrome true
 +++ ApiGatewayV2
 ++++ Api (1)
 ++++ Stage (1)
-++++ Deployment (1)
 ++++ Integration (1)
 ++++ Route (1)
+++++ Deployment (1)
 +++ CloudWatchEvents
 ++++ EventBus (1)
 ++++ Rule (1)

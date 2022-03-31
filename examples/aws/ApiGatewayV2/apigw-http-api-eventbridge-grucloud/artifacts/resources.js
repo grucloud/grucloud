@@ -54,6 +54,18 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description:
         "Automatic deployment triggered by changes to the Api configuration",
+      AutoDeployed: true,
+    }),
+    dependencies: () => ({
+      api: "MyHttpApi",
+    }),
+  },
+  {
+    type: "Deployment",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      Description:
+        "Automatic deployment triggered by changes to the Api configuration",
     }),
     dependencies: () => ({
       api: "MyHttpApi",
@@ -86,14 +98,6 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       eventBus: "MyEventBus",
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/events/MyEventBus",
-    properties: ({}) => ({
-      retentionInDays: 731,
     }),
   },
   {

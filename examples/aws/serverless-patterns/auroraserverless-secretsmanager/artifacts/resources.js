@@ -87,7 +87,6 @@ exports.createResources = () => [
     group: "RDS",
     name: "aurora-serverless",
     properties: ({}) => ({
-      AllocatedStorage: 1,
       DatabaseName: "dbname",
       Engine: "aurora",
       EngineVersion: "5.6.10a",

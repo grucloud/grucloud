@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project internet-gateway
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+@endmindmap

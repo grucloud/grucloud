@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project ssm-param
+skinparam monochrome true
++ Infra
+++ aws
++++ SSM
+++++ Parameter (1)
+@endmindmap

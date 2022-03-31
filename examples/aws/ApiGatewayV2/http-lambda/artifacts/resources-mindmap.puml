@@ -8,9 +8,9 @@ skinparam monochrome true
 ++++ Api (1)
 ++++ Stage (1)
 ++++ ApiMapping (1)
-++++ Deployment (1)
 ++++ Integration (1)
 ++++ Route (1)
+++++ Deployment (1)
 +++ ACM
 ++++ Certificate (1)
 +++ CloudWatchLogs

@@ -302,31 +302,31 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/Vpc/PublicSubnet2",
   },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    name: "com.amazonaws.vpce.us-east-1.vpce-svc-0ff33532fa2a4a999",
-    properties: ({}) => ({
-      ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-0ff33532fa2a4a999",
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: `*`,
-          },
-        ],
-      },
-      PrivateDnsEnabled: false,
-      RequesterManaged: true,
-      VpcEndpointType: "Interface",
-    }),
-    dependencies: () => ({
-      vpc: "CdkStack/Vpc",
-      subnets: ["CdkStack/Vpc/PrivateSubnet1", "CdkStack/Vpc/PrivateSubnet2"],
-    }),
-  },
+  // {
+  //   type: "VpcEndpoint",
+  //   group: "EC2",
+  //   name: "com.amazonaws.vpce.us-east-1.vpce-svc-0ff33532fa2a4a999",
+  //   properties: ({}) => ({
+  //     ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-0ff33532fa2a4a999",
+  //     PolicyDocument: {
+  //       Statement: [
+  //         {
+  //           Action: "*",
+  //           Effect: "Allow",
+  //           Principal: "*",
+  //           Resource: `*`,
+  //         },
+  //       ],
+  //     },
+  //     PrivateDnsEnabled: false,
+  //     RequesterManaged: true,
+  //     VpcEndpointType: "Interface",
+  //   }),
+  //   dependencies: () => ({
+  //     vpc: "CdkStack/Vpc",
+  //     subnets: ["CdkStack/Vpc/PrivateSubnet1", "CdkStack/Vpc/PrivateSubnet2"],
+  //   }),
+  // },
   {
     type: "Repository",
     group: "ECR",
@@ -675,7 +675,6 @@ exports.createResources = () => [
     group: "RDS",
     name: "cdkstack-auroraserverlessclusterb4a18ef1-hn3j216axa36",
     properties: ({}) => ({
-      AllocatedStorage: 1,
       DatabaseName: "aurora_db",
       Engine: "aurora",
       EngineVersion: "5.6.10a",

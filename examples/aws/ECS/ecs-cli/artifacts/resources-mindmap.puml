@@ -1,0 +1,23 @@
+@startmindmap
+title Resources for project ECS created by ecs-cli
+skinparam monochrome true
++ Infra
+++ aws
++++ AutoScaling
+++++ AutoScalingGroup (1)
+++++ LaunchConfiguration (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ Subnet (2)
+++++ RouteTable (1)
+++++ RouteTableAssociation (2)
+++++ Route (1)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
++++ ECS
+++++ Cluster (1)
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
+@endmindmap
