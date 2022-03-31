@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project iam-user-policy
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Policy (1)
+@endmindmap

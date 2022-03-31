@@ -15,6 +15,7 @@ const {
   omit,
   fork,
   map,
+  filter,
 } = require("rubico");
 const {
   callProp,
@@ -33,6 +34,7 @@ const {
   keys,
   isDeepEqual,
   differenceWith,
+  isObject,
 } = require("rubico/x");
 const util = require("util");
 const Diff = require("diff");
@@ -62,10 +64,42 @@ const throwIfNotAwsError = (code) =>
 
 exports.throwIfNotAwsError = throwIfNotAwsError;
 
+exports.replaceRegion = (providerConfig) =>
+  callProp("replace", providerConfig.region, "${config.region}");
+
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
 const extractKeys = ({ key }) =>
   switchCase([Array.isArray, pipe([pluck(key)]), keys]);
+
+const filterTags = pipe([
+  switchCase([
+    Array.isArray,
+    filter(
+      not(
+        pipe([
+          switchCase([
+            get("Key"),
+            get("Key"),
+            get("key"),
+            get("key"),
+            () => "",
+          ]),
+          callProp("startsWith", "aws:"),
+        ])
+      )
+    ),
+    isObject,
+    pipe([
+      Object.entries,
+      filter(not(pipe([first, callProp("startsWith", "aws:")]))),
+      Object.fromEntries,
+    ]),
+    () => {
+      assert(false, "tags should be an array or object");
+    },
+  ]),
+]);
 
 const compareAwsTags = ({ getTargetTags, getLiveTags, tagsKey, key }) =>
   pipe([
@@ -80,6 +114,7 @@ const compareAwsTags = ({ getTargetTags, getLiveTags, tagsKey, key }) =>
       liveTags: pipe([
         get("live"),
         switchCase([() => getLiveTags, getLiveTags, get(tagsKey, [])]),
+        filterTags,
       ]),
     }),
     tap((params) => {
@@ -626,7 +661,7 @@ const findNameInTags =
       switchCase([
         Array.isArray,
         (tags) => {
-          for (fn of [findNameInKeyCloudFormation, findNameInKeyName]) {
+          for (fn of [findNameInKeyName, findNameInKeyCloudFormation]) {
             const name = fn(tags);
             if (!isEmpty(name)) {
               return name;

@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project repository
+skinparam monochrome true
++ Infra
+++ aws
++++ ECR
+++++ Registry (1)
+++++ Repository (1)
+@endmindmap

@@ -1,0 +1,32 @@
+{
+  "name": "@grucloud/example-aws-lambda-sqs-nodejs",
+  "version": "5.10.0",
+  "description": "Lambda connected to SQS",
+  "private": true,
+  "main": "iac.js",
+  "scripts": {
+    "tree": "gc tree",
+    "graph": "gc graph",
+    "gencode": "gc gencode",
+    "list": "gc list",
+    "list-graph": "gc list -g",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "onDeployed": "gc run --onDeployed",
+    "onDestroyed": "gc run --onDestroyed",
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^5.10.0",
+    "@grucloud/provider-aws": "^5.10.0",
+    "adm-zip": "^0.5.5",
+    "rubico": "^1.6.26"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3",
+    "mocha-junit-reporter": "^2.0.2"
+  }
+}

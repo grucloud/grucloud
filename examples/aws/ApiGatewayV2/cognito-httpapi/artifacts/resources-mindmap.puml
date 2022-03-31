@@ -1,0 +1,21 @@
+@startmindmap
+title Resources for project cognito-httpapi
+skinparam monochrome true
++ Infra
+++ aws
++++ ApiGatewayV2
+++++ Api (1)
+++++ Stage (1)
+++++ Authorizer (1)
+++++ Integration (1)
+++++ Route (1)
+++++ Deployment (1)
++++ CognitoIdentityServiceProvider
+++++ UserPool (1)
+++++ UserPoolClient (1)
+++++ UserPoolDomain (1)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
+@endmindmap

@@ -7,6 +7,7 @@
   "scripts": {
     "test": "mocha --exit './{,!(node_modules)/**}/*.test.js' ",
     "test-examples": "mocha --exit '../../../examples/aws/**/iac.test.js' ",
+    "test-serverless": "mocha --exit '../../../examples/aws/serverless-patterns/**/iac.test.js' ",
     "test-modules": "mocha --exit '../../modules/aws/**/iac.test.js' ",
     "coverage": "nyc npm run test-all",
     "coverage-examples": "nyc npm run test-examples",
@@ -41,6 +42,7 @@
     "@aws-sdk/client-route-53": "^3.56.0",
     "@aws-sdk/client-route-53-domains": "^3.56.0",
     "@aws-sdk/client-s3": "^3.56.0",
+    "@aws-sdk/client-secrets-manager": "^3.56.0",
     "@aws-sdk/client-sns": "^3.56.0",
     "@aws-sdk/client-sqs": "^3.56.0",
     "@aws-sdk/client-ssm": "^3.57.0",

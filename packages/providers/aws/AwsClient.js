@@ -151,7 +151,7 @@ const AwsClient =
       ({ lives, params = {} } = {}) =>
         pipe([
           tap(() => {
-            logger.info(`getList ${type}`);
+            logger.info(`getList ${type}, method: ${method}`);
             assert(method);
             assert(getParam);
             assert(isFunction(endpoint()[method]));
@@ -534,6 +534,7 @@ const AwsClient =
         ]),
         isExpectedResult,
         config,
+        isInstanceError = (live) => false,
       }) =>
       ({ name, live, lives }) =>
         pipe([
@@ -583,6 +584,13 @@ const AwsClient =
                         assert(true);
                       }),
                       getById,
+                      tap.if(isInstanceError, (live) => {
+                        const error = new Error(
+                          `error destroying resource ${name}`
+                        );
+                        error.live = live;
+                        throw error;
+                      }),
                       isInstanceDown,
                     ]),
                     config,
@@ -662,6 +670,11 @@ exports.createAwsResource = ({
   createFilterPayload,
   pickCreated,
   postCreate,
+  updateFilterParams,
+  getList,
+  create,
+  update,
+  destroy,
 }) =>
   pipe([
     tap((params) => {
@@ -707,36 +720,56 @@ exports.createAwsResource = ({
                 }),
             }),
             assign({
-              getList: ({ getById }) =>
-                client.getList({
-                  getById,
-                  ...model.getList,
-                  decorate: decorateList,
-                }),
-              create: ({ getById }) =>
-                client.create({
-                  getById,
-                  pickCreated,
-                  postCreate,
-                  filterPayload: createFilterPayload,
-                  ...model.create,
-                  isInstanceUp,
-                }),
-              update: ({ getById, pickId }) =>
-                client.update({
-                  pickId,
-                  getById,
-                  ...model.update,
-                  isInstanceUp,
-                }),
-              destroy: ({ getById, pickId }) =>
-                client.destroy({
-                  pickId,
-                  getById,
-                  ignoreErrorCodes: model.ignoreErrorCodes,
-                  ...model.destroy,
-                  isInstanceDown,
-                }),
+              getList: switchCase([
+                () => getList,
+                pipe([
+                  ({ getById }) =>
+                    getList({ client, endpoint, getById, config }),
+                ]),
+                ({ getById }) =>
+                  client.getList({
+                    getById,
+                    ...model.getList,
+                    decorate: decorateList,
+                  }),
+              ]),
+              create: switchCase([
+                () => create,
+                ({ getById }) => create({ endpoint, getById }),
+                ({ getById }) =>
+                  client.create({
+                    getById,
+                    pickCreated,
+                    postCreate,
+                    filterPayload: createFilterPayload,
+                    ...model.create,
+                    isInstanceUp,
+                  }),
+              ]),
+              update: switchCase([
+                () => update,
+                ({ getById }) => update({ endpoint, getById }),
+                ({ getById, pickId }) =>
+                  client.update({
+                    pickId,
+                    getById,
+                    filterParams: updateFilterParams,
+                    ...model.update,
+                    isInstanceUp,
+                  }),
+              ]),
+              destroy: switchCase([
+                () => destroy,
+                ({ getById }) => destroy({ endpoint, getById }),
+                ({ getById, pickId }) =>
+                  client.destroy({
+                    pickId,
+                    getById,
+                    ignoreErrorCodes: model.ignoreErrorCodes,
+                    ...model.destroy,
+                    isInstanceDown,
+                  }),
+              ]),
             }),
             assign({
               getByName: ({ getList, findName, getById }) =>

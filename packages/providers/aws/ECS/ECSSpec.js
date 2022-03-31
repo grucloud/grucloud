@@ -1,7 +1,11 @@
 const assert = require("assert");
 const { assign, map, pipe, get, omit, pick, eq, tap } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
-const { compareAws, isOurMinionFactory } = require("../AwsCommon");
+const {
+  compareAws,
+  isOurMinionFactory,
+  replaceRegion,
+} = require("../AwsCommon");
 const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 
 const { ECSCluster } = require("./ECSCluster");
@@ -77,6 +81,8 @@ module.exports = pipe([
     {
       type: "TaskDefinition",
       dependencies: {
+        secret: { type: "Secret", group: "SecretsManager" },
+        rdsDbCluster: { type: "DBCluster", group: "RDS" },
         taskRole: {
           type: "Role",
           group: "IAM",
@@ -116,8 +122,57 @@ module.exports = pipe([
         filterAll: () =>
           pipe([omitIfEmpty(["volumes", "placementConstraints"])]),
       }),
-      filterLive: () =>
-        pipe([omitIfEmpty(["volumes", "placementConstraints"])]),
+      filterLive: ({ lives, providerConfig }) =>
+        pipe([
+          omitIfEmpty(["volumes", "placementConstraints"]),
+          assign({
+            containerDefinitions: pipe([
+              get("containerDefinitions"),
+              when(
+                get("logConfiguration"),
+                assign({
+                  logConfiguration: pipe([
+                    get("logConfiguration"),
+                    when(
+                      get("options"),
+                      assign({
+                        options: pipe([
+                          get("options"),
+                          when(
+                            get("awslogs-region"),
+                            assign({
+                              ["awslogs-region"]: pipe([
+                                get("awslogs-region"),
+                                replaceRegion(providerConfig),
+                                (resource) => () => "`" + resource + "`",
+                              ]),
+                            })
+                          ),
+                        ]),
+                      })
+                    ),
+                  ]),
+                })
+              ),
+              map(
+                assign({
+                  environment: pipe([
+                    get("environment"),
+                    map(
+                      assign({
+                        value: ({ value }) =>
+                          pipe([
+                            () => ({ Id: value, lives }),
+                            replaceWithName({ path: "id" }),
+                          ])(),
+                      })
+                    ),
+                  ]),
+                })
+              ),
+            ]),
+          }),
+        ]),
     },
     {
       type: "Service",

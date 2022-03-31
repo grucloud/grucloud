@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project subnet
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ NatGateway (1)
+++++ Subnet (4)
+++++ RouteTable (4)
+++++ RouteTableAssociation (4)
+++++ Route (6)
+++++ ElasticIpAddress (1)
+++++ VpcEndpoint (1)
+@endmindmap

@@ -49,6 +49,7 @@ exports.createResources = () => [
 - [DB Subnet Group](./DBSubnetGroup.md)
 - [Security Group](../EC2/SecurityGroup.md)
 - [KMS Key](../KMS/Key.md)
+- [Secret](../SecretsManager/Secret.md)
 
 ## List
 

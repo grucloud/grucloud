@@ -3,6 +3,15 @@ title Resources for project identity-provider
 skinparam monochrome true
 + Infra
 ++ aws
++++ ACM
+++++ Certificate (1)
 +++ CognitoIdentityServiceProvider
 ++++ UserPool (1)
+++++ UserPoolClient (1)
+++++ UserPoolDomain (1)
++++ Route53
+++++ HostedZone (1)
+++++ Record (3)
++++ Route53Domains
+++++ Domain (1)
 @endmindmap

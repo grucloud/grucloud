@@ -1,16 +1,17 @@
 const assert = require("assert");
 const { map, pipe, tap, get, eq, pick, omit } = require("rubico");
-const { defaultsDeep, pluck } = require("rubico/x");
+const { defaultsDeep, pluck, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { buildTags } = require("../AwsCommon");
+const { buildTags, createEndpoint } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const {
   createRDS,
   tagResource,
   untagResource,
   renameTagList,
+  findDependenciesSecret,
 } = require("./RDSCommon");
 
 const ignoreErrorCodes = ["DBClusterNotFoundFault"];
@@ -27,9 +28,21 @@ const isInstanceUp = pipe([eq(get("Status"), "available")]);
 
 exports.DBCluster = ({ spec, config }) => {
   const rds = createRDS(config);
+  const secretEndpoint = createEndpoint(
+    "secrets-manager",
+    "SecretsManager"
+  )(config);
+
   const client = AwsClient({ spec, config })(rds);
 
   const findDependencies = ({ live, lives }) => [
+    findDependenciesSecret({
+      live,
+      lives,
+      config,
+      secretField: "username",
+      rdsUsernameField: "MasterUsername",
+    }),
     {
       type: "DBSubnetGroup",
       group: "RDS",
@@ -87,7 +100,7 @@ exports.DBCluster = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { dbSubnetGroup, securityGroups },
+    dependencies: { dbSubnetGroup, securityGroups, secret },
   }) =>
     pipe([
       () => otherProps,
@@ -99,6 +112,13 @@ exports.DBCluster = ({ spec, config }) => {
         ),
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
+      when(
+        () => secret,
+        defaultsDeep({
+          MasterUsername: getField(secret, "SecretString.username"),
+          MasterUserPassword: getField(secret, "SecretString.password"),
+        })
+      ),
     ])();
 
   const create = client.create({
@@ -107,6 +127,32 @@ exports.DBCluster = ({ spec, config }) => {
     getById,
     isInstanceUp,
     config: { ...config, retryCount: 100 },
+    postCreate: ({ resolvedDependencies: { secret } }) =>
+      pipe([
+        when(
+          () => secret,
+          pipe([
+            tap(({ DBClusterIdentifier, Endpoint, Port }) => {
+              assert(DBClusterIdentifier);
+              assert(Endpoint);
+              assert(Port);
+              assert(secret.live.Name);
+              assert(secret.live.SecretString);
+              assert(secretEndpoint().putSecretValue);
+            }),
+            ({ DBClusterIdentifier, Endpoint, Port }) => ({
+              SecretId: secret.live.Name,
+              SecretString: JSON.stringify({
+                ...secret.live.SecretString,
+                DBClusterIdentifier,
+                host: Endpoint,
+                port: Port,
+              }),
+            }),
+            secretEndpoint().putSecretValue,
+          ])
+        ),
+      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyDBCluster-property

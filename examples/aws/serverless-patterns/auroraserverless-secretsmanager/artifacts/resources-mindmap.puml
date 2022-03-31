@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project auroraserverless-secretsmanager
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
++++ RDS
+++++ DBSubnetGroup (1)
+++++ DBCluster (1)
++++ SecretsManager
+++++ Secret (1)
+@endmindmap

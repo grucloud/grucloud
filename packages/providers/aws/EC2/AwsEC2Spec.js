@@ -204,13 +204,16 @@ const filterPermissions = pipe([
     ])
   ),
   filter(
-    (rule) =>
-      !isDeepEqual(rule, {
-        FromPort: undefined,
-        IpProtocol: "-1",
-        IpRanges: [{ CidrIp: "0.0.0.0/0", Description: undefined }],
-        ToPort: undefined,
-      })
+    pipe([
+      assign({ IpRanges: pipe([get("IpRanges"), map(omit(["Description"]))]) }),
+      (rule) =>
+        !isDeepEqual(rule, {
+          FromPort: undefined,
+          IpProtocol: "-1",
+          IpRanges: [{ CidrIp: "0.0.0.0/0" }],
+          ToPort: undefined,
+        }),
+    ])
   ),
   sortByFromPort,
 ]);

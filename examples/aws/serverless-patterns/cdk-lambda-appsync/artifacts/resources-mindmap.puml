@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project cdk-lambda-appsync
+skinparam monochrome true
++ Infra
+++ aws
++++ AppSync
+++++ GraphqlApi (1)
+++++ DataSource (1)
+++++ Resolver (1)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
+@endmindmap

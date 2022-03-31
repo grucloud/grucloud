@@ -3,7 +3,6 @@ const {
   pipe,
   tap,
   get,
-  eq,
   pick,
   any,
   omit,

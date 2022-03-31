@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, get, pick } = require("rubico");
+const { pipe, assign, map, omit, tap, get, pick, not } = require("rubico");
 const { defaultsDeep, callProp, when } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 
@@ -15,7 +15,11 @@ const environmentVariables = [
   { path: "MasterUsername", suffix: "MASTER_USERNAME" },
   { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
 ];
-
+const isAuroraEngine = pipe([get("Engine"), callProp("startsWith", "aurora")]);
+const omitAutoMinorVersionUpgrade = when(
+  not(get("MultiAZ")),
+  omit(["AutoMinorVersionUpgrade"])
+);
 module.exports = pipe([
   () => [
     {
@@ -43,8 +47,10 @@ module.exports = pipe([
           type: "Key",
           group: "KMS",
         },
+        secret: { type: "Secret", group: "SecretsManager" },
       },
       omitProperties: [
+        "DBClusterIdentifier",
         "SubnetIds",
         "VpcSecurityGroupIds",
         "MasterUserPassword",
@@ -74,8 +80,6 @@ module.exports = pipe([
         "DomainMemberships",
       ],
       propertiesDefault: {
-        //AllocatedStorage: 1,
-        //AutoMinorVersionUpgrade: false,
         BackupRetentionPeriod: 1,
         MultiAZ: false,
         Port: 5432,
@@ -96,32 +100,24 @@ module.exports = pipe([
         filterTarget: () =>
           pipe([
             when(
-              pipe([get("Engine"), callProp("startsWith", "aurora")]),
+              isAuroraEngine,
               defaultsDeep({
                 AllocatedStorage: 1,
-                AutoMinorVersionUpgrade: false,
               })
             ),
           ]),
         filterLive: () =>
           pipe([
             assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
+            omitAutoMinorVersionUpgrade,
           ]),
       }),
       filterLive: () =>
         pipe([
-          pick([
-            "DatabaseName",
-            "Engine",
-            "EngineVersion",
-            "EngineMode",
-            "Port",
-            "ScalingConfigurationInfo",
-            "PreferredBackupWindow",
-            "PreferredMaintenanceWindow",
-          ]),
           assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
           omit(["ScalingConfigurationInfo"]),
+          omitAutoMinorVersionUpgrade,
+          when(isAuroraEngine, omit(["AllocatedStorage"])),
         ]),
       environmentVariables,
     },
@@ -131,6 +127,7 @@ module.exports = pipe([
       dependencies: {
         dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        secret: { type: "Secret", group: "SecretsManager" },
       },
       propertiesDefault: {
         BackupRetentionPeriod: 1,

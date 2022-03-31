@@ -176,9 +176,6 @@ exports.createResources = () => [
       Handler: "app.handler",
       PackageType: "Zip",
       Runtime: "nodejs14.x",
-      Description: "",
-      Timeout: 3,
-      MemorySize: 128,
     }),
     dependencies: () => ({
       role: "sam-app-AppFunctionRole-BXPIJ03LGY2Y",

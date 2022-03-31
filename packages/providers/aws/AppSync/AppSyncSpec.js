@@ -12,14 +12,15 @@ const {
 } = require("rubico");
 const { when, defaultsDeep, callProp } = require("rubico/x");
 
-const replaceRegion = (providerConfig) =>
-  callProp("replace", providerConfig.region, "${config.region}");
-
 const fs = require("fs").promises;
 const path = require("path");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { compareAws, isOurMinionObject } = require("../AwsCommon");
+const {
+  compareAws,
+  isOurMinionObject,
+  replaceRegion,
+} = require("../AwsCommon");
 
 const { AppSyncGraphqlApi } = require("./AppSyncGraphqlApi");
 const { AppSyncDataSource } = require("./AppSyncDataSource");

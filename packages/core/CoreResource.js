@@ -38,7 +38,7 @@ const {
   when,
   values,
 } = require("rubico/x");
-
+const generator = require("generate-password");
 const { mergeWith } = require("lodash/fp");
 const util = require("util");
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -81,6 +81,7 @@ exports.ResourceMaker = ({
         assert(group);
         assert(type);
         assert(name);
+        assert(path);
       }),
       () =>
         provider.lives.getByName({
@@ -89,6 +90,9 @@ exports.ResourceMaker = ({
           type,
           providerName: config.providerName,
         }),
+      tap((params) => {
+        assert(true);
+      }),
       get(
         path,
         `<< ${path} of ${group}::${type}::${name} not available yet >>`
@@ -115,7 +119,11 @@ exports.ResourceMaker = ({
           );
         }),
         () => ({
-          properties: properties({ config, getId }),
+          properties: properties({
+            config,
+            getId,
+            generatePassword: generator.generate,
+          }),
           dependenciesSpec: dependencies(),
           dependencies: getDependencies(),
         }),
@@ -593,6 +601,7 @@ exports.ResourceMaker = ({
                 config: provider.getConfig(),
                 dependencies: resolvedDependencies,
                 getId,
+                generatePassword: generator.generate,
               }),
             (properties = {}) =>
               getClient().configDefault({

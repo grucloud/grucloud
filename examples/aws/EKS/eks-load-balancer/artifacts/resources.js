@@ -4,6 +4,14 @@ const { find } = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Certificate",
+    group: "ACM",
+    name: "grucloud.org",
+    properties: ({}) => ({
+      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
+    }),
+  },
+  {
     type: "AutoScalingGroup",
     group: "AutoScaling",
     name: "asg-ng-1",
@@ -46,14 +54,6 @@ exports.createResources = () => [
     dependencies: () => ({
       autoScalingGroup: "asg-ng-1",
       targetGroup: "target-group-web",
-    }),
-  },
-  {
-    type: "Certificate",
-    group: "ACM",
-    name: "grucloud.org",
-    properties: ({}) => ({
-      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
     }),
   },
   {

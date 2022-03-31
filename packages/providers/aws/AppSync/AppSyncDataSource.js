@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -117,7 +117,6 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     pipe([
       tap(() => {
         assert(graphqlApi, "missing 'graphqlApi' dependency");
-        assert(serviceRole, "missing 'serviceRole' dependency");
       }),
       () => properties,
       tap.if(eq(get("type"), "AWS_LAMBDA"), () => {
@@ -126,16 +125,22 @@ exports.AppSyncDataSource = ({ spec, config }) => {
       defaultsDeep({
         name,
         apiId: getField(graphqlApi, "apiId"),
-        serviceRoleArn: getField(serviceRole, "Arn"),
-        ...(lambdaFunction && {
+      }),
+      when(
+        () => lambdaFunction,
+        defaultsDeep({
           lambdaConfig: {
             lambdaFunctionArn: getField(
               lambdaFunction,
               "Configuration.FunctionArn"
             ),
           },
-        }),
-      }),
+        })
+      ),
+      when(
+        () => serviceRole,
+        defaultsDeep({ serviceRoleArn: getField(serviceRole, "Arn") })
+      ),
     ])();
 
   return {

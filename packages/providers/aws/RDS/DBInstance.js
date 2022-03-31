@@ -1,9 +1,9 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick, assign, omit } = require("rubico");
-const { defaultsDeep, isEmpty, pluck } = require("rubico/x");
+const { map, pipe, tap, get, eq, pick } = require("rubico");
+const { defaultsDeep, isEmpty, pluck, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { buildTags } = require("../AwsCommon");
+const { buildTags, createEndpoint } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
 const {
@@ -11,6 +11,7 @@ const {
   tagResource,
   untagResource,
   renameTagList,
+  findDependenciesSecret,
 } = require("./RDSCommon");
 
 const findId = get("live.DBInstanceArn");
@@ -26,8 +27,19 @@ const isInstanceUp = pipe([eq(get("DBInstanceStatus"), "available")]);
 exports.DBInstance = ({ spec, config }) => {
   const rds = createRDS(config);
   const client = AwsClient({ spec, config })(rds);
+  const secretEndpoint = createEndpoint(
+    "secrets-manager",
+    "SecretsManager"
+  )(config);
 
   const findDependencies = ({ live, lives }) => [
+    findDependenciesSecret({
+      live,
+      lives,
+      config,
+      secretField: "username",
+      rdsUsernameField: "MasterUsername",
+    }),
     {
       type: "DBSubnetGroup",
       group: "RDS",
@@ -82,7 +94,7 @@ exports.DBInstance = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { dbSubnetGroup, securityGroups, kmsKey },
+    dependencies: { dbSubnetGroup, securityGroups, kmsKey, secret },
   }) =>
     pipe([
       tap(() => {
@@ -101,6 +113,13 @@ exports.DBInstance = ({ spec, config }) => {
         ...(kmsKey && { KmsKeyId: getField(kmsKey, "Arn") }),
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
+      when(
+        () => secret,
+        defaultsDeep({
+          MasterUsername: getField(secret, "SecretString.username"),
+          MasterUserPassword: getField(secret, "SecretString.password"),
+        })
+      ),
     ])();
 
   const create = client.create({
@@ -110,6 +129,31 @@ exports.DBInstance = ({ spec, config }) => {
     isInstanceUp,
     config: { ...config, retryCount: 100 },
     configIsUp: { ...config, retryCount: 500 },
+    postCreate: ({ resolvedDependencies: { secret } }) =>
+      pipe([
+        when(
+          () => secret,
+          pipe([
+            tap(({ DBInstanceIdentifier, Endpoint, Port }) => {
+              assert(DBInstanceIdentifier);
+              assert(Endpoint);
+              assert(Port);
+              assert(secret.live.Name);
+              assert(secret.live.SecretString);
+            }),
+            ({ DBInstanceIdentifier, Endpoint, Port }) => ({
+              SecretId: secret.live.Name,
+              SecretString: JSON.stringify({
+                ...secret.live.SecretString,
+                DBInstanceIdentifier,
+                host: Endpoint,
+                port: Port,
+              }),
+            }),
+            secretEndpoint().putSecretValue,
+          ])
+        ),
+      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyDBInstance-property
