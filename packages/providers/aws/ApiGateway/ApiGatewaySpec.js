@@ -12,7 +12,11 @@ const {
 } = require("rubico/x");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { isOurMinionObject, compareAws } = require("../AwsCommon");
+const {
+  isOurMinionObject,
+  compareAws,
+  replaceAccountAndRegion,
+} = require("../AwsCommon");
 
 const { RestApi } = require("./RestApi");
 const { Stage } = require("./Stage");
@@ -88,6 +92,7 @@ module.exports = pipe([
     {
       type: "Deployment",
       Client: Deployment,
+      ignoreResource: () => () => true,
       omitProperties: ["createdDate", "id", "restApiId", "restApiName"],
       propertiesDefault: {},
       dependencies: {
@@ -266,13 +271,9 @@ module.exports = pipe([
                                     assign({
                                       credentials: pipe([
                                         get("credentials"),
-                                        callProp(
-                                          "replace",
-                                          providerConfig.accountId(),
-                                          "${config.accountId()}"
-                                        ),
-                                        (resource) => () =>
-                                          "`" + resource + "`",
+                                        replaceAccountAndRegion({
+                                          providerConfig,
+                                        }),
                                       ]),
                                     })
                                   ),
@@ -281,13 +282,9 @@ module.exports = pipe([
                                     assign({
                                       uri: pipe([
                                         get("uri"),
-                                        callProp(
-                                          "replace",
-                                          providerConfig.region,
-                                          "${config.region}"
-                                        ),
-                                        (resource) => () =>
-                                          "`" + resource + "`",
+                                        replaceAccountAndRegion({
+                                          providerConfig,
+                                        }),
                                       ]),
                                     })
                                   ),

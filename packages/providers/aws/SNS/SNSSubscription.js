@@ -9,7 +9,7 @@ const {
   switchCase,
   fork,
 } = require("rubico");
-const { defaultsDeep, callProp, last, when } = require("rubico/x");
+const { defaultsDeep, callProp, last, when, unless } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
@@ -101,12 +101,13 @@ exports.SNSSubscription = ({ spec, config }) =>
     ],
     decorateList: ({ endpoint, getById }) =>
       pipe([
-        tap(({ SubscriptionArn }) => {
+        tap(({ SubscriptionArn, ...otherProp }) => {
           assert(SubscriptionArn);
           assert(getById);
           assert(endpoint);
+          assert(otherProp);
         }),
-        getById,
+        unless(eq(get("SubscriptionArn"), "PendingConfirmation"), getById),
       ]),
     decorate: ({ endpoint }) =>
       pipe([
@@ -153,4 +154,5 @@ exports.SNSSubscription = ({ spec, config }) =>
           assert(true);
         }),
       ])(),
+    cannotBeDeleted: eq(get("live.SubscriptionArn"), "PendingConfirmation"),
   });

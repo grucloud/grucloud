@@ -28,6 +28,8 @@ const ignoreResourceWithTags = [
 ];
 
 const ignoredTags = [
+  "Name",
+  "gc-",
   "aws",
   "alpha.eksctl.io",
   "eksctl.cluster.k8s.io",

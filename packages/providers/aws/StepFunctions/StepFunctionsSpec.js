@@ -24,6 +24,7 @@ module.exports = pipe([
       ],
       propertiesDefault: {
         type: "STANDARD",
+        loggingConfiguration: { includeExecutionData: false, level: "OFF" },
         tracingConfiguration: {
           enabled: false,
         },

@@ -98,14 +98,6 @@ exports.createResources = () => [
           },
         },
       },
-      // loggingConfiguration: {
-      //   includeExecutionData: false,
-      //   level: "OFF",
-      // },
-      // tracingConfiguration: {
-      //   enabled: false,
-      // },
-      type: "STANDARD",
       tags: [
         {
           key: "stateMachine:createdBy",

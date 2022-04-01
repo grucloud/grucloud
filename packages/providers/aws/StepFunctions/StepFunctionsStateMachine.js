@@ -82,18 +82,13 @@ exports.StepFunctionsStateMachine = ({ spec, config }) =>
         definition: pipe([get("definition"), JSON.stringify]),
       }),
     ]),
-    // pickCreated:
-    //   ({ payload }) =>
-    //   () =>
-    //     payload,
-
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
     configDefault: ({
       name,
       namespace,
-      properties: { Tags, ...otherProps },
+      properties: { tags, ...otherProps },
       dependencies: { role },
     }) =>
       pipe([
@@ -103,7 +98,14 @@ exports.StepFunctionsStateMachine = ({ spec, config }) =>
         () => otherProps,
         defaultsDeep({
           name,
-          tags: buildTags({ name, config, namespace, UserTags: Tags }),
+          tags: buildTags({
+            name,
+            config,
+            namespace,
+            UserTags: tags,
+            key: "key",
+            value: "value",
+          }),
           roleArn: getField(role, "Arn"),
         }),
       ])(),

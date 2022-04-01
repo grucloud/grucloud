@@ -42,6 +42,7 @@ const {
   isOurMinion,
   ignoreResourceCdk,
   assignPolicyDocumentAccountAndRegion,
+  assignPolicyAccountAndRegion,
 } = require("../AwsCommon");
 const defaultsDeep = require("rubico/x/defaultsDeep");
 
@@ -208,6 +209,15 @@ module.exports = pipe([
                     ])()
                   )
                 ),
+              ]),
+            })
+          ),
+          when(
+            get("AssumeRolePolicyDocument"),
+            assign({
+              AssumeRolePolicyDocument: pipe([
+                get("AssumeRolePolicyDocument"),
+                assignPolicyAccountAndRegion({ providerConfig }),
               ]),
             })
           ),
