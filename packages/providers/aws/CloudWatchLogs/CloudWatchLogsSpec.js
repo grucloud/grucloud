@@ -21,8 +21,8 @@ module.exports = pipe([
       type: "LogGroup",
       Client: CloudWatchLogsGroup,
       pickProperties: ["retentionInDays"],
-      ignoreResource: () =>
-        pipe([get("name"), callProp("startsWith", "/aws/")]),
+      // ignoreResource: () =>
+      //   pipe([get("name"), callProp("startsWith", "/aws/")]),
       //TODO
 
       compare: compareCloudWatchLog({

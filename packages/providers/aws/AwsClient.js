@@ -668,6 +668,7 @@ exports.createAwsResource = ({
   configDefault,
   findDependencies,
   createFilterPayload,
+  createShouldRetryOnExceptionCodes,
   pickCreated,
   postCreate,
   updateFilterParams,
@@ -742,6 +743,8 @@ exports.createAwsResource = ({
                     pickCreated,
                     postCreate,
                     filterPayload: createFilterPayload,
+                    shouldRetryOnExceptionCodes:
+                      createShouldRetryOnExceptionCodes,
                     ...model.create,
                     isInstanceUp,
                   }),

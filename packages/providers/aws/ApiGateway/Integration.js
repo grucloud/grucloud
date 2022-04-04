@@ -21,6 +21,9 @@ const { createAPIGateway, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findName = pipe([
   get("live"),
+  tap((params) => {
+    assert(true);
+  }),
   tap(({ restApiName, path, httpMethod }) => {
     assert(restApiName);
     assert(path);
@@ -136,14 +139,16 @@ exports.Integration = ({ spec, config }) => {
     pickId,
     method: "getIntegration",
     ignoreErrorCodes,
-    decorate: ({ live: { method } }) =>
+    decorate: ({ live }) =>
       pipe([
         tap((params) => {
-          assert(method);
+          //assert(method);
+          assert(live);
+          //assert(restApiName);
         }),
         defaultsDeep(
           pipe([
-            () => method,
+            () => live,
             pick([
               "restApiId",
               "restApiName",
@@ -153,7 +158,7 @@ exports.Integration = ({ spec, config }) => {
             ]),
           ])()
         ),
-        assign({ httpMethod: () => method.httpMethod }),
+        assign({ httpMethod: () => live.httpMethod }),
         tap((params) => {
           assert(true);
         }),

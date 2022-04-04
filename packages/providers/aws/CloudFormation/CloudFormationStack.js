@@ -36,12 +36,6 @@ exports.CloudFormationStack = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeStacks",
     getParam: "Stacks",
-    decorate: () =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
   });
 
   const getByName = pipe([({ name }) => ({ StackName: name }), getById]);

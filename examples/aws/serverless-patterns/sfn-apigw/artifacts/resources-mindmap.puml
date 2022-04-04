@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project sfn-apigw
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ RestApi (1)
+++++ Stage (2)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

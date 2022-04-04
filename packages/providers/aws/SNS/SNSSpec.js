@@ -50,6 +50,13 @@ module.exports = pipe([
         lambdaFunction: { type: "Function", group: "Lambda" },
         sqsQueue: { type: "Queue", group: "SQS" },
       },
+      ignoreResource: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          eq(get("live.SubscriptionArn"), "PendingConfirmation"),
+        ]),
       propertiesDefault: {},
       omitProperties: ["Name", "TopicArn", "SubscriptionArn", "Owner"],
       inferName: ({
@@ -59,6 +66,7 @@ module.exports = pipe([
         pipe([
           tap(() => {
             assert(snsTopic);
+            assert(properties);
           }),
           () => "subscription",
           append("::"),
@@ -69,9 +77,14 @@ module.exports = pipe([
             pipe([append(`lambda::${lambdaFunction}`)]),
             () => sqsQueue,
             pipe([append(`queue::${sqsQueue}`)]),
-            () => {
-              assert(false, "TODO: missing SNS deps");
-            },
+            pipe([
+              append(properties.Protocol),
+              append("::"),
+              append(properties.Endpoint),
+            ]),
+            // () => {
+            //   assert(false, "TODO: missing SNS deps");
+            // },
           ]),
           tap((params) => {
             assert(true);
@@ -84,7 +97,7 @@ module.exports = pipe([
           }),
           when(
             ({ Protocol }) =>
-              pipe([() => ["lambda", "sqs"], includes(Protocol)]),
+              pipe([() => ["lambda", "sqs"], includes(Protocol)])(),
             omit(["Protocol", "Endpoint"])
           ),
         ]),

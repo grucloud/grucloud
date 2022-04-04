@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project sfn-sns
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
++++ StepFunctions
+++++ StateMachine (1)
++++ SNS
+++++ Topic (1)
+++++ Subscription (1)
+@endmindmap

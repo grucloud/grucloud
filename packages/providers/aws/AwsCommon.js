@@ -192,7 +192,9 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
     //assert(endpointName);
     assert(endpoint);
-    assert(isFunction(endpoint[name]), `${name} is not a function`);
+    if (!isFunction(endpoint[name])) {
+      assert(isFunction(endpoint[name]), `${name} is not a function`);
+    }
     return (...args) =>
       retryCall({
         name: `${endpointName}.${name} ${JSON.stringify(args)}`,
@@ -269,8 +271,8 @@ const createEndpoint = (packageName, entryPoint) =>
       assert(true);
     }),
     get(entryPoint),
-    tap((params) => {
-      assert(true);
+    tap((endpoint) => {
+      assert(endpoint, `no endpoint ${packageName}:${entryPoint}`);
     }),
     createEndpointProxy,
   ])();
@@ -863,24 +865,37 @@ exports.ignoreResourceCdk = () =>
 
 const replaceAccountAndRegion = ({ providerConfig }) =>
   pipe([
-    callProp("replace", providerConfig.accountId(), "${config.accountId()}"),
-    callProp("replace", providerConfig.region, "${config.region}"),
+    callProp(
+      "replace",
+      new RegExp(providerConfig.accountId(), "g"),
+      "${config.accountId()}"
+    ),
+    callProp(
+      "replace",
+      new RegExp(providerConfig.region, "g"),
+      "${config.region}"
+    ),
     (resource) => () => "`" + resource + "`",
   ]);
 
 exports.replaceAccountAndRegion = replaceAccountAndRegion;
 
 const assignPolicyResource = ({ providerConfig }) =>
-  assign({
-    Resource: pipe([
+  pipe([
+    when(
       get("Resource"),
-      switchCase([
-        Array.isArray,
-        map(replaceAccountAndRegion({ providerConfig })),
-        replaceAccountAndRegion({ providerConfig }),
-      ]),
-    ]),
-  });
+      assign({
+        Resource: pipe([
+          get("Resource"),
+          switchCase([
+            Array.isArray,
+            map(replaceAccountAndRegion({ providerConfig })),
+            replaceAccountAndRegion({ providerConfig }),
+          ]),
+        ]),
+      })
+    ),
+  ]);
 
 exports.assignPolicyResource = assignPolicyResource;
 
@@ -890,6 +905,23 @@ const assignPolicyAccountAndRegion = ({ providerConfig }) =>
       get("Statement"),
       map(
         pipe([
+          when(
+            get("Principal"),
+            assign({
+              Principal: pipe([
+                get("Principal"),
+                when(
+                  get("Service"),
+                  assign({
+                    Service: pipe([
+                      get("Service"),
+                      replaceAccountAndRegion({ providerConfig }),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
           when(
             get("Condition"),
             assign({

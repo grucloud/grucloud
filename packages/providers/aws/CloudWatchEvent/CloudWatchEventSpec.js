@@ -1,12 +1,19 @@
 const assert = require("assert");
-const { tap, pipe, map, omit, pick, get } = require("rubico");
-const { defaultsDeep, unless, callProp } = require("rubico/x");
+const { tap, pipe, map, omit, pick, get, assign } = require("rubico");
+const { defaultsDeep, unless, callProp, when } = require("rubico/x");
 
-const { compareAws, isOurMinion } = require("../AwsCommon");
+const {
+  compareAws,
+  isOurMinion,
+  replaceAccountAndRegion,
+} = require("../AwsCommon");
 
 const { CloudWatchEventBus } = require("./CloudWatchEventBus");
 const { CloudWatchEventRule } = require("./CloudWatchEventRule");
 const { CloudWatchEventTarget } = require("./CloudWatchEventTarget");
+
+//TODO Connection
+//TODO ApiDestinations
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html
 const GROUP = "CloudWatchEvents";
@@ -23,12 +30,28 @@ module.exports = pipe([
     {
       type: "Rule",
       Client: CloudWatchEventRule,
-      omitProperties: ["Name", "Arn", "CreatedBy"],
+      omitProperties: ["Name", "Arn", "CreatedBy", "EventBusName"],
       compare: compareCloudWatchEvent({
         filterTarget: () => pipe([defaultsDeep({ EventBusName: "default" })]),
         filterLive: () => pipe([omit(["Arn", "CreatedBy"])]),
       }),
-      filterLive: ({ lives }) => pipe([omit(["Name", "Arn", "EventBusName"])]),
+      filterLive: ({ lives, providerConfig }) =>
+        pipe([
+          assign({
+            EventPattern: pipe([
+              get("EventPattern"),
+              when(
+                get("account"),
+                assign({
+                  account: pipe([
+                    get("account"),
+                    map(replaceAccountAndRegion({ providerConfig })),
+                  ]),
+                })
+              ),
+            ]),
+          }),
+        ]),
       dependencies: {
         eventBus: { type: "EventBus", group: "CloudWatchEvents", parent: true },
       },
@@ -44,7 +67,7 @@ module.exports = pipe([
           }),
           () => `target::${rule}::${Id}`,
         ])(),
-      omitProperties: ["EventBusName", "Rule"],
+      omitProperties: ["EventBusName", "Rule", "RoleArn"],
       filterLive: () =>
         pipe([
           tap((params) => {
@@ -57,6 +80,7 @@ module.exports = pipe([
         ]),
       dependencies: {
         rule: { type: "Rule", group: "CloudWatchEvents", parent: true },
+        role: { type: "Role", group: "IAM" },
         //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putTargets-property
         logGroup: { type: "LogGroup", group: "CloudWatchLogs" },
         sqsQueue: { type: "Queue", group: "SQS" },
@@ -65,6 +89,7 @@ module.exports = pipe([
         eventBus: { type: "EventBus", group: "CloudWatchEvents" },
         ecsTask: { type: "Task", group: "ECS" },
         lambdaFunction: { type: "Function", group: "Lambda" },
+        sfnStateMachine: { type: "StateMachine", group: "StepFunctions" },
       },
     },
   ],

@@ -6,7 +6,27 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-LeR3z3gTutTd",
+    name: "/aws/rds/cluster/cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0/error",
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-54U2jnJfonsp",
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n",
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-r9VueUVpvwep",
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-ZF99ZrezsQ4n",
   },
   {
     type: "Vpc",
@@ -204,7 +224,7 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "CdkStack-AuroraServerlessClusterSecurityGroup5A67466E-11JEB9PLM8T9V",
+    name: "CdkStack-AuroraServerlessClusterSecurityGroup5A67466E-X9V6DZN5GHP3",
     properties: ({}) => ({
       Description: "RDS security group",
     }),
@@ -215,7 +235,7 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "CdkStack-FargateServiceLBSecurityGroup5F444C78-6BGFMDZ87GPX",
+    name: "CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
     properties: ({}) => ({
       Description:
         "Automatically created Security Group for ELB CdkStackFargateServiceLB29CE988E",
@@ -227,7 +247,7 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "CdkStack-FargateServiceSecurityGroup262B61DD-11KWJT85SGW74",
+    name: "CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
     properties: ({}) => ({
       Description: "CdkStack/FargateService/Service/SecurityGroup",
     }),
@@ -253,7 +273,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-6BGFMDZ87GPX",
+        "CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
     }),
   },
   {
@@ -268,9 +288,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-FargateServiceSecurityGroup262B61DD-11KWJT85SGW74",
+        "CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
       securityGroupFrom: [
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-6BGFMDZ87GPX",
+        "CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
       ],
     }),
   },
@@ -286,9 +306,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-6BGFMDZ87GPX",
+        "CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
       securityGroupFrom: [
-        "CdkStack-FargateServiceSecurityGroup262B61DD-11KWJT85SGW74",
+        "CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
       ],
     }),
   },
@@ -302,49 +322,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/Vpc/PublicSubnet2",
   },
-  // {
-  //   type: "VpcEndpoint",
-  //   group: "EC2",
-  //   name: "com.amazonaws.vpce.us-east-1.vpce-svc-0ff33532fa2a4a999",
-  //   properties: ({}) => ({
-  //     ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-0ff33532fa2a4a999",
-  //     PolicyDocument: {
-  //       Statement: [
-  //         {
-  //           Action: "*",
-  //           Effect: "Allow",
-  //           Principal: "*",
-  //           Resource: `*`,
-  //         },
-  //       ],
-  //     },
-  //     PrivateDnsEnabled: false,
-  //     RequesterManaged: true,
-  //     VpcEndpointType: "Interface",
-  //   }),
-  //   dependencies: () => ({
-  //     vpc: "CdkStack/Vpc",
-  //     subnets: ["CdkStack/Vpc/PrivateSubnet1", "CdkStack/Vpc/PrivateSubnet2"],
-  //   }),
-  // },
-  {
-    type: "Repository",
-    group: "ECR",
-    name: "aws-cdk/assets",
-    properties: ({}) => ({
-      imageTagMutability: "MUTABLE",
-      imageScanningConfiguration: {
-        scanOnPush: true,
-      },
-      encryptionConfiguration: {
-        encryptionType: "AES256",
-      },
-    }),
-  },
   {
     type: "Cluster",
     group: "ECS",
-    name: "CdkStack-ClusterEB0386A7-VHj5aFHGogSe",
+    name: "CdkStack-ClusterEB0386A7-1MSjvijRu7By",
     properties: ({}) => ({
       settings: [
         {
@@ -374,7 +355,7 @@ exports.createResources = () => [
               value: `${getId({
                 type: "DBCluster",
                 group: "RDS",
-                name: "cdkstack-auroraserverlessclusterb4a18ef1-hn3j216axa36",
+                name: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
               })}`,
             },
             {
@@ -394,13 +375,13 @@ exports.createResources = () => [
           essential: true,
           extraHosts: [],
           image:
-            "840541460064.dkr.ecr.us-east-1.amazonaws.com/aws-cdk/assets:ad758bca7c4674905c156fb09c1cdc499a660e8bd2f563b4a0987f2385ecaf90",
+            "840541460064.dkr.ecr.us-east-1.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-us-east-1:ad758bca7c4674905c156fb09c1cdc499a660e8bd2f563b4a0987f2385ecaf90",
           links: [],
           logConfiguration: {
             logDriver: "awslogs",
             options: {
               "awslogs-group":
-                "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-LeR3z3gTutTd",
+                "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n",
               "awslogs-region": "us-east-1",
               "awslogs-stream-prefix": "FargateService",
             },
@@ -458,16 +439,16 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       secret: "aurora-user-secret",
-      rdsDbCluster: "cdkstack-auroraserverlessclusterb4a18ef1-hn3j216axa36",
-      taskRole: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-1I13W56GTB71S",
+      rdsDbCluster: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
+      taskRole: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-1HTR9O8XQQI4P",
       executionRole:
-        "CdkStack-FargateServiceTaskDefExecutionRole9194820-109N4DKVMHG1M",
+        "CdkStack-FargateServiceTaskDefExecutionRole9194820-18VY1XIQQ7L55",
     }),
   },
   {
     type: "Service",
     group: "ECS",
-    name: "CdkStack-FargateServiceECC8084D-vbBQwtRLsYBm",
+    name: "CdkStack-FargateServiceECC8084D-c9wCaLN6rjPU",
     properties: ({ getId }) => ({
       deploymentConfiguration: {
         deploymentCircuitBreaker: {
@@ -489,7 +470,7 @@ exports.createResources = () => [
           targetGroupArn: `${getId({
             type: "TargetGroup",
             group: "ELBv2",
-            name: "CdkSt-Farga-F9TYJDF7M1SI",
+            name: "CdkSt-Farga-1SEGM16UZSRPF",
           })}`,
         },
       ],
@@ -503,22 +484,22 @@ exports.createResources = () => [
       platformFamily: "Linux",
       platformVersion: "LATEST",
       schedulingStrategy: "REPLICA",
-      serviceName: "CdkStack-FargateServiceECC8084D-vbBQwtRLsYBm",
+      serviceName: "CdkStack-FargateServiceECC8084D-c9wCaLN6rjPU",
     }),
     dependencies: () => ({
-      cluster: "CdkStack-ClusterEB0386A7-VHj5aFHGogSe",
+      cluster: "CdkStack-ClusterEB0386A7-1MSjvijRu7By",
       taskDefinition: "CdkStackFargateServiceTaskDef2C533A52",
       subnets: ["CdkStack/Vpc/PrivateSubnet1", "CdkStack/Vpc/PrivateSubnet2"],
       securityGroups: [
-        "CdkStack-FargateServiceSecurityGroup262B61DD-11KWJT85SGW74",
+        "CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
       ],
-      targetGroups: ["CdkSt-Farga-F9TYJDF7M1SI"],
+      targetGroups: ["CdkSt-Farga-1SEGM16UZSRPF"],
     }),
   },
   {
     type: "LoadBalancer",
     group: "ELBv2",
-    name: "CdkSt-Farga-S1JFFK5YDTJC",
+    name: "CdkSt-Farga-SRS4XA0Y0M8",
     properties: ({}) => ({
       Scheme: "internet-facing",
       Type: "application",
@@ -527,14 +508,14 @@ exports.createResources = () => [
     dependencies: () => ({
       subnets: ["CdkStack/Vpc/PublicSubnet1", "CdkStack/Vpc/PublicSubnet2"],
       securityGroups: [
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-6BGFMDZ87GPX",
+        "CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
       ],
     }),
   },
   {
     type: "TargetGroup",
     group: "ELBv2",
-    name: "CdkSt-Farga-F9TYJDF7M1SI",
+    name: "CdkSt-Farga-1SEGM16UZSRPF",
     properties: ({}) => ({
       Protocol: "HTTP",
       Port: 80,
@@ -553,14 +534,14 @@ exports.createResources = () => [
       Protocol: "HTTP",
     }),
     dependencies: () => ({
-      loadBalancer: "CdkSt-Farga-S1JFFK5YDTJC",
-      targetGroup: "CdkSt-Farga-F9TYJDF7M1SI",
+      loadBalancer: "CdkSt-Farga-SRS4XA0Y0M8",
+      targetGroup: "CdkSt-Farga-1SEGM16UZSRPF",
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "CdkStack-FargateServiceTaskDefExecutionRole9194820-109N4DKVMHG1M",
+    name: "CdkStack-FargateServiceTaskDefExecutionRole9194820-18VY1XIQQ7L55",
     properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -568,7 +549,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "ecs-tasks.amazonaws.com",
+              Service: `ecs-tasks.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -587,7 +568,9 @@ exports.createResources = () => [
                 ],
                 Resource: `arn:aws:ecr:${
                   config.region
-                }:${config.accountId()}:repository/aws-cdk/assets`,
+                }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${
+                  config.region
+                }`,
                 Effect: "Allow",
               },
               {
@@ -599,7 +582,7 @@ exports.createResources = () => [
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
                 Resource: `arn:aws:logs:${
                   config.region
-                }:${config.accountId()}:log-group:CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-LeR3z3gTutTd:*`,
+                }:${config.accountId()}:log-group:CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n:*`,
                 Effect: "Allow",
               },
             ],
@@ -612,7 +595,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-1I13W56GTB71S",
+    name: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-1HTR9O8XQQI4P",
     properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -620,7 +603,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "ecs-tasks.amazonaws.com",
+              Service: `ecs-tasks.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -649,7 +632,7 @@ exports.createResources = () => [
                 ],
                 Resource: `arn:aws:secretsmanager:${
                   config.region
-                }:${config.accountId()}:secret:aurora-user-secret-kmA8oG`,
+                }:${config.accountId()}:secret:aurora-user-secret-kEn5kv`,
                 Effect: "Allow",
               },
             ],
@@ -662,7 +645,7 @@ exports.createResources = () => [
   {
     type: "DBSubnetGroup",
     group: "RDS",
-    name: "cdkstack-auroraserverlessclustersubnets734af39a-wrxm6th5wqjh",
+    name: "cdkstack-auroraserverlessclustersubnets734af39a-c9biv9kwphqk",
     properties: ({}) => ({
       DBSubnetGroupDescription: "Subnets for AuroraServerlessCluster database",
     }),
@@ -673,7 +656,7 @@ exports.createResources = () => [
   {
     type: "DBCluster",
     group: "RDS",
-    name: "cdkstack-auroraserverlessclusterb4a18ef1-hn3j216axa36",
+    name: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
     properties: ({}) => ({
       DatabaseName: "aurora_db",
       Engine: "aurora",
@@ -681,9 +664,9 @@ exports.createResources = () => [
       Port: 3306,
       MasterUsername:
         process.env
-          .CDKSTACK_AURORASERVERLESSCLUSTERB4A18EF1_HN3J216AXA36_MASTER_USERNAME,
-      PreferredBackupWindow: "04:06-04:36",
-      PreferredMaintenanceWindow: "sun:03:14-sun:03:44",
+          .CDKSTACK_AURORASERVERLESSCLUSTERB4A18EF1_APXIDHEWYAZ0_MASTER_USERNAME,
+      PreferredBackupWindow: "07:52-08:22",
+      PreferredMaintenanceWindow: "fri:09:30-fri:10:00",
       EngineMode: "serverless",
       HttpEndpointEnabled: true,
       ScalingConfiguration: {
@@ -693,13 +676,13 @@ exports.createResources = () => [
       },
       MasterUserPassword:
         process.env
-          .CDKSTACK_AURORASERVERLESSCLUSTERB4A18EF1_HN3J216AXA36_MASTER_USER_PASSWORD,
+          .CDKSTACK_AURORASERVERLESSCLUSTERB4A18EF1_APXIDHEWYAZ0_MASTER_USER_PASSWORD,
     }),
     dependencies: () => ({
       dbSubnetGroup:
-        "cdkstack-auroraserverlessclustersubnets734af39a-wrxm6th5wqjh",
+        "cdkstack-auroraserverlessclustersubnets734af39a-c9biv9kwphqk",
       securityGroups: [
-        "CdkStack-AuroraServerlessClusterSecurityGroup5A67466E-11JEB9PLM8T9V",
+        "CdkStack-AuroraServerlessClusterSecurityGroup5A67466E-X9V6DZN5GHP3",
       ],
       secret: "aurora-user-secret",
     }),

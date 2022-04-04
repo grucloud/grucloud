@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project sfn-dynamodb
+skinparam monochrome true
++ Infra
+++ aws
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

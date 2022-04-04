@@ -736,6 +736,12 @@ module.exports = pipe([
         // NetworkInterfaceIds ?
         // SecurityGroup ?
       },
+      //TODO double check
+      ignoreResource: () =>
+        pipe([
+          get("live.ServiceName"),
+          callProp("startsWith", "com.amazonaws.vpce"),
+        ]),
       Client: EC2VpcEndpoint,
       compare: compareEC2({
         filterTarget: () => pipe([pick(["PolicyDocument"])]),

@@ -42,6 +42,7 @@ const {
   isOurMinion,
   ignoreResourceCdk,
   assignPolicyDocumentAccountAndRegion,
+  assignPolicyAccountAndRegion,
 } = require("../AwsCommon");
 const defaultsDeep = require("rubico/x/defaultsDeep");
 
@@ -211,6 +212,15 @@ module.exports = pipe([
               ]),
             })
           ),
+          when(
+            get("AssumeRolePolicyDocument"),
+            assign({
+              AssumeRolePolicyDocument: pipe([
+                get("AssumeRolePolicyDocument"),
+                assignPolicyAccountAndRegion({ providerConfig }),
+              ]),
+            })
+          ),
           assign({
             Policies: pipe([
               get("Policies", []),
@@ -283,7 +293,11 @@ module.exports = pipe([
       filterLive: switchCase([
         get("resource.cannotBeDeleted"),
         () => pick(["Arn"]),
-        () => pick(["PolicyDocument", "Path", "Description"]),
+        ({ providerConfig }) =>
+          pipe([
+            pick(["PolicyDocument", "Path", "Description"]),
+            assignPolicyDocumentAccountAndRegion({ providerConfig }),
+          ]),
       ]),
     },
     {

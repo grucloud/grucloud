@@ -17,7 +17,6 @@ skinparam monochrome true
 ++++ SecurityGroupRuleIngress (2)
 ++++ SecurityGroupRuleEgress (1)
 ++++ ElasticIpAddress (2)
-++++ VpcEndpoint (1)
 +++ ECR
 ++++ Repository (1)
 +++ ECS

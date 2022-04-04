@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, and, switchCase } = require("rubico");
-const { defaultsDeep, callProp, find } = require("rubico/x");
+const { defaultsDeep, callProp, find, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -79,6 +79,11 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
         ])(),
       ],
     },
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [live.RoleArn],
+    },
     findTargetDependency({ type: "Queue", group: "SQS", live, lives }),
     findTargetDependency({ type: "Topic", group: "SNS", live, lives }),
     findTargetDependency({
@@ -96,6 +101,12 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     }),
     findTargetDependency({ type: "Task", group: "ECS", live, lives }),
     findTargetDependency({ type: "Function", group: "Lambda", live, lives }),
+    findTargetDependency({
+      type: "StateMachine",
+      group: "StepFunctions",
+      live,
+      lives,
+    }),
   ];
 
   const decorate = ({ parent }) =>
@@ -199,7 +210,7 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { rule, sqsQueue, snsTopic },
+    dependencies: { rule, role, sqsQueue, snsTopic, sfnStateMachine, logGroup },
   }) =>
     pipe([
       tap((params) => {
@@ -210,6 +221,12 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
         EventBusName: getField(rule, "EventBusName"),
         Rule: getField(rule, "Name"),
       }),
+      when(
+        () => role,
+        defaultsDeep({
+          RoleArn: getField(role, "Arn"),
+        })
+      ),
       switchCase([
         // SQS Queue
         () => sqsQueue,
@@ -221,6 +238,20 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
         defaultsDeep({
           Arn: getField(snsTopic, "TopicArn"),
         }),
+        // StepFunctions StateMachine
+        () => sfnStateMachine,
+        defaultsDeep({
+          Arn: getField(sfnStateMachine, "stateMachineArn"),
+        }),
+        // Log Group
+        () => logGroup,
+        defaultsDeep({
+          Arn: getField(logGroup, "arn"),
+        }),
+        // TODO complete all dependencies
+        () => {
+          assert(false, "TODO: implement me");
+        },
       ]),
     ])();
 
