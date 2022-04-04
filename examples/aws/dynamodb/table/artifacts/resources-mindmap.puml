@@ -1,8 +1,0 @@
-@startmindmap
-title Resources for project table
-skinparam monochrome true
-+ Infra
-++ aws
-+++ DynamoDB
-++++ Table (1)
-@endmindmap
