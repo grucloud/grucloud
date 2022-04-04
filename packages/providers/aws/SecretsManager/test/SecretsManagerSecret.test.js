@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe.only("Secrets Manager Secret", async function () {
+describe("Secrets Manager Secret", async function () {
   let config;
   let provider;
   let secret;
