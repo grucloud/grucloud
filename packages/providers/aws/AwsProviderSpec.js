@@ -10,6 +10,7 @@ const GROUPS = [
   "AutoScaling",
   "CloudFront",
   "CloudFormation",
+  "CloudTrail",
   "CloudWatchEvent",
   "CloudWatchLogs",
   "CognitoIdentityServiceProvider",

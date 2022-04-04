@@ -20,6 +20,8 @@ List of resources for provider aws:
 [Distribution](./resources/CloudFront/Distribution.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md)
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
+* CloudTrail: 
+[Trail](./resources/CloudTrail/Trail.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
 * CloudWatchEvents: 
 [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
