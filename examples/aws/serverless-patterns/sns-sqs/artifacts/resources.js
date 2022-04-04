@@ -71,7 +71,7 @@ exports.createResources = () => [
               Sid: "Allow SNS publish to SQS",
               Effect: "Allow",
               Principal: {
-                Service: "sns.amazonaws.com",
+                Service: `sns.amazonaws.com`,
               },
               Action: "SQS:SendMessage",
               Resource: `arn:aws:sqs:${

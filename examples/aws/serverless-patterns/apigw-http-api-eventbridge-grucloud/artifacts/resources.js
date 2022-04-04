@@ -54,18 +54,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description:
         "Automatic deployment triggered by changes to the Api configuration",
-      AutoDeployed: true,
-    }),
-    dependencies: () => ({
-      api: "MyHttpApi",
-    }),
-  },
-  {
-    type: "Deployment",
-    group: "ApiGatewayV2",
-    properties: ({}) => ({
-      Description:
-        "Automatic deployment triggered by changes to the Api configuration",
     }),
     dependencies: () => ({
       api: "MyHttpApi",
@@ -101,6 +89,14 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "/aws/events/MyEventBus",
+    properties: ({}) => ({
+      retentionInDays: 731,
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     name: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-4YDZM1JYBBAN",
@@ -111,7 +107,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "lambda.amazonaws.com",
+              Service: `lambda.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -158,7 +154,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "apigateway.amazonaws.com",
+              Service: `apigateway.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
