@@ -13,22 +13,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
-    group: "APIGateway",
-    name: "deployment::ApiDynamoRestApi",
-    dependencies: () => ({
-      restApi: "ApiDynamoRestApi",
-    }),
-  },
-  {
-    type: "Deployment",
-    group: "APIGateway",
-    name: "deployment::ApiDynamoRestApi",
-    dependencies: () => ({
-      restApi: "ApiDynamoRestApi",
-    }),
-  },
-  {
     type: "RestApi",
     group: "APIGateway",
     name: "ApiDynamoRestApi",
@@ -182,7 +166,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "apigateway.amazonaws.com",
+              Service: `apigateway.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -208,7 +192,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "apigateway.amazonaws.com",
+              Service: `apigateway.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },

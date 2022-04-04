@@ -27,7 +27,7 @@ module.exports = pipe([
         "LastAccessedDate",
         "LastChangedDate",
         "SecretVersionsToStages",
-        "SecretString.dbClusterIdentifier",
+        "SecretString.DBClusterIdentifier",
         "SecretString.host",
       ],
       compare: compareSecretsManager({

@@ -128,31 +128,35 @@ module.exports = pipe([
           assign({
             containerDefinitions: pipe([
               get("containerDefinitions"),
-              when(
-                get("logConfiguration"),
-                assign({
-                  logConfiguration: pipe([
+              map(
+                pipe([
+                  when(
                     get("logConfiguration"),
-                    when(
-                      get("options"),
-                      assign({
-                        options: pipe([
+                    assign({
+                      logConfiguration: pipe([
+                        get("logConfiguration"),
+                        when(
                           get("options"),
-                          when(
-                            get("awslogs-region"),
-                            assign({
-                              ["awslogs-region"]: pipe([
+                          assign({
+                            options: pipe([
+                              get("options"),
+                              when(
                                 get("awslogs-region"),
-                                replaceRegion(providerConfig),
-                                (resource) => () => "`" + resource + "`",
-                              ]),
-                            })
-                          ),
-                        ]),
-                      })
-                    ),
-                  ]),
-                })
+                                assign({
+                                  ["awslogs-region"]: pipe([
+                                    get("awslogs-region"),
+                                    replaceRegion(providerConfig),
+                                    (resource) => () => "`" + resource + "`",
+                                  ]),
+                                })
+                              ),
+                            ]),
+                          })
+                        ),
+                      ]),
+                    })
+                  ),
+                ])
               ),
               map(
                 assign({
