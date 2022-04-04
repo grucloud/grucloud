@@ -1,8 +1,0 @@
-@startmindmap
-title Resources for project logs
-skinparam monochrome true
-+ Infra
-++ aws
-+++ CloudWatchLogs
-++++ LogGroup (1)
-@endmindmap
