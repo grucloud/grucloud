@@ -1,8 +1,0 @@
-@startmindmap
-title Resources for project iam-user
-skinparam monochrome true
-+ Infra
-++ aws
-+++ IAM
-++++ User (1)
-@endmindmap

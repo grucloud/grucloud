@@ -1,9 +1,0 @@
-@startmindmap
-title Resources for project iam-ecs
-skinparam monochrome true
-+ Infra
-++ aws
-+++ IAM
-++++ Role (1)
-++++ InstanceProfile (1)
-@endmindmap

@@ -1,8 +1,0 @@
-@startmindmap
-title Resources for project iam-group
-skinparam monochrome true
-+ Infra
-++ aws
-+++ IAM
-++++ Group (1)
-@endmindmap
