@@ -8,12 +8,13 @@ const {
   replaceAccountAndRegion,
 } = require("../AwsCommon");
 
+const { CloudWatchEventConnection } = require("./CloudWatchEventConnection");
 const { CloudWatchEventBus } = require("./CloudWatchEventBus");
 const { CloudWatchEventRule } = require("./CloudWatchEventRule");
 const { CloudWatchEventTarget } = require("./CloudWatchEventTarget");
-
-//TODO Connection
-//TODO ApiDestinations
+const {
+  CloudWatchEventApiDestination,
+} = require("./CloudWatchEventApiDestination");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html
 const GROUP = "CloudWatchEvents";
@@ -21,6 +22,59 @@ const compareCloudWatchEvent = compareAws({});
 
 module.exports = pipe([
   () => [
+    {
+      type: "ApiDestination",
+      Client: CloudWatchEventApiDestination,
+      dependencies: {
+        connection: { type: "Connection", group: GROUP, parent: true },
+      },
+      omitProperties: [
+        "Name",
+        "ConnectionArn",
+        "ApiDestinationArn",
+        "ApiDestinationState",
+        "CreationTime",
+        "LastModifiedTime",
+      ],
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+    },
+    {
+      type: "Connection",
+      Client: CloudWatchEventConnection,
+      dependencies: {
+        //secret: { type: "Secret", group: "SecretsManager", autoCreated:true },
+      },
+      omitProperties: [
+        "Name",
+        "ConnectionArn",
+        "CreationTime",
+        "LastAuthorizedTime",
+        "LastModifiedTime",
+        "ConnectionState",
+        "SecretArn",
+      ],
+      environmentVariables: [
+        {
+          path: "AuthParameters.ApiKeyAuthParameters.ApiKeyValue",
+          suffix: "API_KEY_VALUE",
+        },
+      ],
+      compare: compareCloudWatchEvent({
+        filterAll: () =>
+          pipe([omit(["AuthParameters.ApiKeyAuthParameters.ApiKeyValue"])]),
+      }),
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+    },
     {
       type: "EventBus",
       Client: CloudWatchEventBus,
