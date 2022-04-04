@@ -1,9 +1,0 @@
-@startmindmap
-title Resources for project S3 Simple
-skinparam monochrome true
-+ Infra
-++ aws
-+++ S3
-++++ Bucket (1)
-++++ Object (1)
-@endmindmap
