@@ -4,6 +4,8 @@ title: Resources List
 ---
 List of resources for provider aws:
 
+* ACM: 
+[Certificate](./resources/ACM/Certificate.md)
 * APIGateway: 
 [Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Deployment](./resources/APIGateway/Deployment.md), [Integration](./resources/APIGateway/Integration.md), [Resource](./resources/APIGateway/Resource.md), [Method](./resources/APIGateway/Method.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md)
 * ApiGatewayV2: 
@@ -14,14 +16,10 @@ List of resources for provider aws:
 [GraphqlApi](./resources/AppSync/GraphqlApi.md), [DataSource](./resources/AppSync/DataSource.md), [Resolver](./resources/AppSync/Resolver.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
-* ACM: 
-[Certificate](./resources/ACM/Certificate.md)
 * CloudFront: 
 [Distribution](./resources/CloudFront/Distribution.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md)
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
-* CloudTrail: 
-[Trail](./resources/CloudTrail/Trail.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
 * CloudWatchEvents: 
 [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
@@ -54,6 +52,10 @@ List of resources for provider aws:
 [Domain](./resources/Route53Domains/Domain.md)
 * S3: 
 [Bucket](./resources/S3/Bucket.md), [Object](./resources/S3/Object.md)
+* SecretsManager: 
+[Secret](./resources/SecretsManager/Secret.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
+* StepFunctions: 
+[StateMachine](./resources/StepFunctions/StateMachine.md)
 * SNS: 
 [Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
 * SQS: 
