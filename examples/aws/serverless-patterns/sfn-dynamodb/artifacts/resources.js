@@ -34,7 +34,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "states.us-east-1.amazonaws.com",
+              Service: `states.${config.region}.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -99,26 +99,6 @@ exports.createResources = () => [
         },
       },
       tags: [
-        {
-          key: "gc-created-by-provider",
-          value: "aws",
-        },
-        {
-          key: "gc-managed-by",
-          value: "grucloud",
-        },
-        {
-          key: "gc-project-name",
-          value: "sfn-dynamodb",
-        },
-        {
-          key: "gc-stage",
-          value: "dev",
-        },
-        {
-          key: "Name",
-          value: "StateMachinetoDDB-OZxx41bNDei3",
-        },
         {
           key: "stateMachine:createdBy",
           value: "SAM",

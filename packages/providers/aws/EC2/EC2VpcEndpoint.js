@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, assign } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, assign, map } = require("rubico");
+const { defaultsDeep, pluck, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
@@ -41,8 +41,23 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
       group: "EC2",
       ids: live.SubnetIds,
     },
-    //TODO
-    // RouteTableIds:
+    {
+      type: "RouteTable",
+      group: "EC2",
+      ids: live.RouteTableIds,
+    },
+    {
+      type: "SecurityGroup",
+      group: "EC2",
+      ids: pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        () => live,
+        get("Groups"),
+        pluck("GroupId"),
+      ])(),
+    },
   ];
 
   const decorate = () =>
@@ -98,12 +113,8 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: {
-      Tags,
-
-      ...otherProps
-    },
-    dependencies: { vpc },
+    properties: { Tags, ...otherProps },
+    dependencies: { vpc, subnets, securityGroups, routeTables },
   }) =>
     pipe([
       () => otherProps,
@@ -113,7 +124,6 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
       defaultsDeep({
         ServiceName: name,
         VpcId: getField(vpc, "VpcId"),
-
         TagSpecifications: [
           {
             ResourceType: "vpc-endpoint",
@@ -121,6 +131,33 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
           },
         ],
       }),
+      when(
+        () => subnets,
+        defaultsDeep({
+          SubnetIds: pipe([
+            () => subnets,
+            map((subnet) => getField(subnet, "SubnetId")),
+          ])(),
+        })
+      ),
+      when(
+        () => securityGroups,
+        defaultsDeep({
+          SecurityGroupIds: pipe([
+            () => securityGroups,
+            map((securityGroup) => getField(securityGroup, "GroupId")),
+          ])(),
+        })
+      ),
+      when(
+        () => routeTables,
+        defaultsDeep({
+          RouteTableIds: pipe([
+            () => routeTables,
+            map((routeTable) => getField(routeTable, "RouteTableId")),
+          ])(),
+        })
+      ),
     ])();
 
   return {

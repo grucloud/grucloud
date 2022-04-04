@@ -12,6 +12,9 @@ const { CloudWatchEventBus } = require("./CloudWatchEventBus");
 const { CloudWatchEventRule } = require("./CloudWatchEventRule");
 const { CloudWatchEventTarget } = require("./CloudWatchEventTarget");
 
+//TODO Connection
+//TODO ApiDestinations
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html
 const GROUP = "CloudWatchEvents";
 const compareCloudWatchEvent = compareAws({});

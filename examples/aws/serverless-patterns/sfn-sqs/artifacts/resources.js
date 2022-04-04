@@ -6,15 +6,15 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-WorkflowExecutionRole-7I137IX4DEEI",
-    properties: ({}) => ({
+    name: "sam-app-MyStateMachineExecutionRole-QOU5CX1BS6DH",
+    properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: `states.amazonaws.com`,
+              Service: `states.${config.region}.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -26,34 +26,38 @@ exports.createResources = () => [
             Version: "2012-10-17",
             Statement: [
               {
-                Action: ["s3:PutObject"],
-                Resource: `arn:aws:s3:::gc-my-sfn-bucket-destination/*`,
+                Action: ["sqs:SendMessage"],
+                Resource: `arn:aws:sqs:${
+                  config.region
+                }:${config.accountId()}:sam-app-MyQueue-AqSTiBlPUT32`,
                 Effect: "Allow",
               },
             ],
           },
-          PolicyName: "S3Write",
+          PolicyName: "SQSPolicy",
         },
       ],
     }),
+    dependencies: () => ({
+      queue: "sam-app-MyQueue-AqSTiBlPUT32",
+    }),
   },
-  { type: "Bucket", group: "S3", name: "gc-my-sfn-bucket-destination" },
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "MyStateMachine-SwVayjQIlTdv",
+    name: "StateMachinetoSQS-Fy79sSx0sTLU",
     properties: ({}) => ({
       definition: {
-        StartAt: "SendCustomEvent",
+        StartAt: "SendToMyQueue",
         States: {
-          SendCustomEvent: {
+          SendToMyQueue: {
             End: true,
             Parameters: {
-              Body: "Hello World",
-              Bucket: "gc-my-sfn-bucket-destination",
-              Key: "filename.txt",
+              "MessageBody.$": "$.message",
+              QueueUrl:
+                "https://sqs.us-east-1.amazonaws.com/840541460064/sam-app-MyQueue-AqSTiBlPUT32",
             },
-            Resource: "arn:aws:states:::aws-sdk:s3:putObject",
+            Resource: "arn:aws:states:::sqs:sendMessage",
             Type: "Task",
           },
         },
@@ -66,7 +70,8 @@ exports.createResources = () => [
       ],
     }),
     dependencies: () => ({
-      role: "sam-app-WorkflowExecutionRole-7I137IX4DEEI",
+      role: "sam-app-MyStateMachineExecutionRole-QOU5CX1BS6DH",
     }),
   },
+  { type: "Queue", group: "SQS", name: "sam-app-MyQueue-AqSTiBlPUT32" },
 ];

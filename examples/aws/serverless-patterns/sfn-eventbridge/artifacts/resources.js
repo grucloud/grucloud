@@ -46,7 +46,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "states.amazonaws.com",
+              Service: `states.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },

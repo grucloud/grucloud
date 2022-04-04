@@ -354,6 +354,10 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       vpc: "Vpc8378EB38",
+      subnets: [
+        "VpcPrivateSubnet1Subnet536B997A",
+        "VpcPrivateSubnet2Subnet3788AAA1",
+      ],
     }),
   },
   {
@@ -575,7 +579,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "ecs-tasks.amazonaws.com",
+              Service: `ecs-tasks.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -594,7 +598,9 @@ exports.createResources = () => [
                 ],
                 Resource: `arn:aws:ecr:${
                   config.region
-                }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-840541460064-us-east-1`,
+                }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${
+                  config.region
+                }`,
                 Effect: "Allow",
               },
               {
@@ -627,7 +633,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "ecs-tasks.amazonaws.com",
+              Service: `ecs-tasks.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },

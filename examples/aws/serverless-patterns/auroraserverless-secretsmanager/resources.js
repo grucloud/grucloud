@@ -74,34 +74,6 @@ exports.createResources = () => [
       subnet: "VpcauroraisolatedSubnet2SubnetCB56E2A8",
     }),
   },
-  // {
-  //   type: "VpcEndpoint",
-  //   group: "EC2",
-  //   name: "com.amazonaws.vpce.us-east-1.vpce-svc-0ff33532fa2a4a999",
-  //   properties: ({}) => ({
-  //     ServiceName: "com.amazonaws.vpce.us-east-1.vpce-svc-0ff33532fa2a4a999",
-  //     PolicyDocument: {
-  //       Statement: [
-  //         {
-  //           Action: "*",
-  //           Effect: "Allow",
-  //           Principal: "*",
-  //           Resource: `*`,
-  //         },
-  //       ],
-  //     },
-  //     PrivateDnsEnabled: false,
-  //     RequesterManaged: true,
-  //     VpcEndpointType: "Interface",
-  //   }),
-  //   dependencies: () => ({
-  //     vpc: "Vpc8378EB38",
-  //     subnets: [
-  //       "VpcauroraisolatedSubnet1Subnet5370B90B",
-  //       "VpcauroraisolatedSubnet2SubnetCB56E2A8",
-  //     ],
-  //   }),
-  // },
   {
     type: "DBSubnetGroup",
     group: "RDS",

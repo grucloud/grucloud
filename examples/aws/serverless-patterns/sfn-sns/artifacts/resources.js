@@ -14,7 +14,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "states.us-east-1.amazonaws.com",
+              Service: `states.${config.region}.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -129,17 +129,6 @@ exports.createResources = () => [
           },
         },
       },
-    }),
-  },
-  {
-    type: "Subscription",
-    group: "SNS",
-    properties: ({}) => ({
-      Protocol: "email",
-      Endpoint: "frederic.heem@gmail.com",
-    }),
-    dependencies: () => ({
-      snsTopic: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
     }),
   },
 ];
