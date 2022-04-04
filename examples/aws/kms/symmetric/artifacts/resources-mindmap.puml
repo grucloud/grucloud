@@ -1,8 +1,0 @@
-@startmindmap
-title Resources for project KMS Symmetric key
-skinparam monochrome true
-+ Infra
-++ aws
-+++ KMS
-++++ Key (1)
-@endmindmap
