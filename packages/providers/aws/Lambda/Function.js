@@ -215,10 +215,10 @@ exports.Function = ({ spec, config }) => {
     method: "createFunction",
     pickCreated: () =>
       pipe([
-        tap((params) => {
-          assert(true);
+        tap(({ FunctionArn }) => {
+          assert(FunctionArn);
         }),
-        ({ FunctionArn }) => ({ Configuration: { FunctionArn: FunctionArn } }),
+        ({ FunctionArn }) => ({ Configuration: { FunctionArn } }),
       ]),
     shouldRetryOnExceptionCodes: ["InvalidParameterValueException"],
     getById,

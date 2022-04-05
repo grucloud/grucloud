@@ -136,6 +136,7 @@ module.exports = pipe([
         rule: { type: "Rule", group: "CloudWatchEvents", parent: true },
         role: { type: "Role", group: "IAM" },
         //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putTargets-property
+        apiDestination: { type: "ApiDestination", group: "CloudWatchEvents" },
         logGroup: { type: "LogGroup", group: "CloudWatchLogs" },
         sqsQueue: { type: "Queue", group: "SQS" },
         snsTopic: { type: "Topic", group: "SNS" },
