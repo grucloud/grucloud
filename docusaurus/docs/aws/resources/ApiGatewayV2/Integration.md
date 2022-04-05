@@ -105,6 +105,8 @@ exports.createResources = () => [
 - [API](./Api.md)
 - [Lambda Function](../Lambda/Function.md)
 - [Event Bus](../CloudWatchEvents/EventBus.md)
+- [Load Balancer Listener](../ELBv2/Listener.md)
+- [Vpc Link](./VpcLink.md)
 
 ## Used By
 
@@ -113,6 +115,7 @@ exports.createResources = () => [
 ## Full Examples
 
 - [Http with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/http-lambda)
+- [apigw-vpclink-pvt-alb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-vpclink-pvt-alb)
 
 ## List
 

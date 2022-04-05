@@ -53,6 +53,10 @@ The list of properties are defined in [CreateListenerCommandInput](https://docs.
 - [TargetGroup](./TargetGroup.md)
 - [Certificate](../ACM/Certificate.md)
 
+## Used By
+
+- [Api Gateway V2 Integration](../ELBv2/Integration.md)
+
 ## List
 
 ```sh

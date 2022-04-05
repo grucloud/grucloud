@@ -30,36 +30,33 @@ const { createLambda } = require("../Lambda/LambdaCommon");
 
 const findId = get("live.IntegrationId");
 
-const uriToName = pipe([
+const lambdaUriToName = pipe([
   callProp("split", ":"),
   last,
   callProp("replace", "/invocations", ""),
 ]);
 
-const eventBusUriToName = pipe([callProp("split", "/"), last]);
+// IntegrationUri:'arn:aws:elasticloadbalancing:us-east-1:00000000:listener/app/sam-a-LoadB-EC9ZTKNG2RSH/3c8adf5c996cb063/fe8cc6c608b3208e'
+const listenerUriToName = ({ lives, config }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("IntegrationUri"),
+    (id) =>
+      lives.getById({
+        id,
+        type: "Listener",
+        group: "ELBv2",
+        providerName: config.providerName,
+      }),
+    get("name"),
+    tap((name) => {
+      assert(name);
+    }),
+  ]);
 
-const findName = pipe([
-  get("live"),
-  tap((params) => {
-    assert(true);
-  }),
-  fork({
-    apiName: pipe([({ ApiName }) => `integration::${ApiName}::`]),
-    integration: switchCase([
-      get("IntegrationUri"),
-      pipe([get("IntegrationUri"), uriToName]),
-      get("RequestParameters.EventBusName"),
-      pipe([get("RequestParameters.EventBusName"), eventBusUriToName]),
-      (params) => {
-        assert(false);
-      },
-    ]),
-  }),
-  tap((params) => {
-    assert(true);
-  }),
-  ({ apiName, integration }) => `${apiName}${integration}`,
-]);
+const eventBusUriToName = pipe([callProp("split", "/"), last]);
 
 const pickId = pick(["ApiId", "IntegrationId"]);
 
@@ -67,6 +64,36 @@ exports.Integration = ({ spec, config }) => {
   const apiGateway = createApiGatewayV2(config);
   const lambda = createLambda(config);
   const client = AwsClient({ spec, config })(apiGateway);
+
+  const findName = ({ live, lives }) =>
+    pipe([
+      () => live,
+      tap((params) => {
+        assert(true);
+      }),
+      fork({
+        apiName: pipe([({ ApiName }) => `integration::${ApiName}::`]),
+        integration: switchCase([
+          get("IntegrationUri"),
+          pipe([
+            switchCase([
+              eq(get("ConnectionType"), "VPC_LINK"),
+              pipe([listenerUriToName({ lives, config })]),
+              pipe([get("IntegrationUri"), lambdaUriToName]),
+            ]),
+          ]),
+          get("RequestParameters.EventBusName"),
+          pipe([get("RequestParameters.EventBusName"), eventBusUriToName]),
+          (params) => {
+            assert(false);
+          },
+        ]),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+      ({ apiName, integration }) => `${apiName}${integration}`,
+    ])();
 
   // Integration findDependencies
   const findDependencies = ({ live, lives }) => [
@@ -84,6 +111,45 @@ exports.Integration = ({ spec, config }) => {
         filter(pipe([get("id"), (id) => includes(id)(live.IntegrationUri)])),
       ])(),
     },
+    {
+      type: "Listener",
+      group: "ELBv2",
+      ids: pipe([
+        () =>
+          lives.getByType({
+            type: "Listener",
+            group: "ELBv2",
+            providerName: config.providerName,
+          }),
+        tap((params) => {
+          assert(true);
+        }),
+        filter(eq(get("id"), live.IntegrationUri)),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
+    },
+    {
+      type: "VpcLink",
+      group: "ApiGatewayV2",
+      ids: pipe([
+        () =>
+          lives.getByType({
+            type: "VpcLink",
+            group: "ApiGatewayV2",
+            providerName: config.providerName,
+          }),
+        tap((params) => {
+          assert(true);
+        }),
+        filter(eq(get("id"), live.ConnectionId)),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
+    },
+
     {
       type: "EventBus",
       group: "CloudWatchEvents",
@@ -195,7 +261,7 @@ exports.Integration = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { api, lambdaFunction, eventBus, role },
+    dependencies: { api, lambdaFunction, eventBus, role, listener, vpcLink },
   }) =>
     pipe([
       tap(() => {
@@ -205,6 +271,18 @@ exports.Integration = ({ spec, config }) => {
       defaultsDeep({
         ApiId: getField(api, "ApiId"),
       }),
+      when(
+        () => vpcLink,
+        defaultsDeep({
+          ConnectionId: getField(vpcLink, "VpcLinkId"),
+        })
+      ),
+      when(
+        () => listener,
+        defaultsDeep({
+          IntegrationUri: getField(listener, "ListenerArn"),
+        })
+      ),
       when(
         () => lambdaFunction,
         defaultsDeep({

@@ -84,7 +84,9 @@ exports.Api = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    tagResource: tagResource({ apiGateway, buildResourceArn }),
-    untagResource: untagResource({ apiGateway, buildResourceArn }),
+    tagResource: tagResource({ buildResourceArn })({ endpoint: apiGateway }),
+    untagResource: untagResource({ buildResourceArn })({
+      endpoint: apiGateway,
+    }),
   };
 };
