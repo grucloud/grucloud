@@ -7,6 +7,7 @@ const {
   isOurMinion,
   replaceAccountAndRegion,
 } = require("../AwsCommon");
+const { envVarName } = require("@grucloud/core/generatorUtils");
 
 const { CloudWatchEventConnection } = require("./CloudWatchEventConnection");
 const { CloudWatchEventBus } = require("./CloudWatchEventBus");
@@ -62,18 +63,66 @@ module.exports = pipe([
         {
           path: "AuthParameters.ApiKeyAuthParameters.ApiKeyValue",
           suffix: "API_KEY_VALUE",
+          handledByResource: true,
+        },
+        {
+          path: "AuthParameters.BasicAuthParameters.Password",
+          suffix: "PASSWORD",
+          handledByResource: true,
         },
       ],
       compare: compareCloudWatchEvent({
         filterAll: () =>
-          pipe([omit(["AuthParameters.ApiKeyAuthParameters.ApiKeyValue"])]),
+          pipe([
+            omit([
+              "AuthParameters.ApiKeyAuthParameters.ApiKeyValue",
+              "AuthParameters.BasicAuthParameters.Password",
+            ]),
+          ]),
       }),
-      filterLive: () =>
+      filterLive: () => (live) =>
         pipe([
-          tap((params) => {
-            assert(true);
+          () => live,
+          assign({
+            AuthParameters: pipe([
+              get("AuthParameters"),
+              when(
+                get("ApiKeyAuthParameters"),
+                pipe([
+                  assign({
+                    ApiKeyAuthParameters: pipe([
+                      get("ApiKeyAuthParameters"),
+                      assign({
+                        ApiKeyValue: () => () =>
+                          `process.env.${envVarName({
+                            name: live.Name,
+                            suffix: "API_KEY_VALUE",
+                          })}`,
+                      }),
+                    ]),
+                  }),
+                ])
+              ),
+              when(
+                get("BasicAuthParameters"),
+                pipe([
+                  assign({
+                    BasicAuthParameters: pipe([
+                      get("BasicAuthParameters"),
+                      assign({
+                        Password: () => () =>
+                          `process.env.${envVarName({
+                            name: live.Name,
+                            suffix: "PASSWORD",
+                          })}`,
+                      }),
+                    ]),
+                  }),
+                ])
+              ),
+            ]),
           }),
-        ]),
+        ])(),
     },
     {
       type: "EventBus",

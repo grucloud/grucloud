@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, assign, pick } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
@@ -39,12 +39,6 @@ exports.CloudWatchEventConnection = ({ spec, config }) =>
       pick(["Name"]),
     ]),
     findId: get("live.ConnectionArn"),
-    // decorateList: ({ endpoint, getById }) =>
-    //   pipe([
-    //     tap((params) => {
-    //       assert(true);
-    //     }),
-    //   ]),
     findDependencies: ({ live }) => [
       {
         type: "Secret",
@@ -60,14 +54,11 @@ exports.CloudWatchEventConnection = ({ spec, config }) =>
         assign({}),
       ]),
     getByName: getByNameCore,
-    //tagResource: tagResource,
-    //untagResource: untagResource,
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
           Name: name,
-          //Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
       ])(),
     pickCreated:

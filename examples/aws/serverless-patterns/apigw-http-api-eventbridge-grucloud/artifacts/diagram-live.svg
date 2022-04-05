@@ -25,9 +25,9 @@
 <!-- Api::::MyHttpApi -->
 <g id="node1" class="node">
 <title>Api::::MyHttpApi</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="927,-349 755,-349 755,-291 927,-291 927,-349"/>
-<text text-anchor="start" x="767" y="-329.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ApiGatewayV2::Api</text>
-<text text-anchor="start" x="767" y="-304.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">MyHttpApi</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="927,-353 755,-353 755,-295 927,-295 927,-353"/>
+<text text-anchor="start" x="767" y="-333.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ApiGatewayV2::Api</text>
+<text text-anchor="start" x="767" y="-308.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">MyHttpApi</text>
 </g>
 <!-- Deployment::::deployment::MyHttpApi -->
 <g id="node2" class="node">
@@ -39,20 +39,14 @@
 <!-- Deployment::::deployment::MyHttpApi&#45;&gt;Api::::MyHttpApi -->
 <g id="edge1" class="edge">
 <title>Deployment::::deployment::MyHttpApi&#45;&gt;Api::::MyHttpApi</title>
-<path fill="none" stroke="#707070" d="M293.53,-315.97C422.18,-310.32 625.53,-308.13 744.52,-311.34"/>
-<polygon fill="#707070" stroke="#707070" points="744.61,-314.84 754.71,-311.63 744.81,-307.84 744.61,-314.84"/>
+<path fill="none" stroke="#707070" d="M293.53,-321.99C422.18,-319.16 625.53,-318.07 744.52,-319.67"/>
+<polygon fill="#707070" stroke="#707070" points="744.66,-323.17 754.71,-319.82 744.76,-316.17 744.66,-323.17"/>
 </g>
 <!-- Deployment::::deployment::MyHttpApi&#45;&gt;Api::::MyHttpApi -->
 <g id="edge2" class="edge">
 <title>Deployment::::deployment::MyHttpApi&#45;&gt;Api::::MyHttpApi</title>
-<path fill="none" stroke="#707070" d="M293.53,-326.58C422.18,-325.03 625.53,-322.58 744.52,-321.15"/>
-<polygon fill="#707070" stroke="#707070" points="744.75,-324.65 754.71,-321.03 744.67,-317.65 744.75,-324.65"/>
-</g>
-<!-- Deployment::::deployment::MyHttpApi&#45;&gt;Api::::MyHttpApi -->
-<g id="edge3" class="edge">
-<title>Deployment::::deployment::MyHttpApi&#45;&gt;Api::::MyHttpApi</title>
-<path fill="none" stroke="#707070" d="M293.53,-337.19C422.18,-339.74 625.53,-337.03 744.52,-330.96"/>
-<polygon fill="#707070" stroke="#707070" points="744.91,-334.45 754.71,-330.42 744.54,-327.46 744.91,-334.45"/>
+<path fill="none" stroke="#707070" d="M293.53,-332.59C422.18,-333.87 625.53,-332.52 744.52,-329.48"/>
+<polygon fill="#707070" stroke="#707070" points="744.81,-332.97 754.71,-329.21 744.62,-325.98 744.81,-332.97"/>
 </g>
 <!-- Stage::::$default -->
 <g id="node5" class="node">
@@ -62,7 +56,7 @@
 <text text-anchor="start" x="428.5" y="-352.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">$default</text>
 </g>
 <!-- Deployment::::deployment::MyHttpApi&#45;&gt;Stage::::$default -->
-<g id="edge4" class="edge">
+<g id="edge3" class="edge">
 <title>Deployment::::deployment::MyHttpApi&#45;&gt;Stage::::$default</title>
 <path fill="none" stroke="#707070" d="M293.61,-342.1C330.37,-346.49 370.62,-351.3 406.35,-355.56"/>
 <polygon fill="#707070" stroke="#707070" points="405.96,-359.04 416.31,-356.75 406.79,-352.09 405.96,-359.04"/>
@@ -75,36 +69,36 @@
 <text text-anchor="start" x="383.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">integration::MyHttpApi::MyEventB...</text>
 </g>
 <!-- Integration::::integration::MyHttpApi::MyEventBus&#45;&gt;Api::::MyHttpApi -->
-<g id="edge5" class="edge">
+<g id="edge4" class="edge">
 <title>Integration::::integration::MyHttpApi::MyEventBus&#45;&gt;Api::::MyHttpApi</title>
-<path fill="none" stroke="#707070" d="M651.86,-280.94C683.17,-287.44 715.69,-294.19 744.71,-300.21"/>
-<polygon fill="#707070" stroke="#707070" points="744.31,-303.71 754.82,-302.31 745.74,-296.85 744.31,-303.71"/>
+<path fill="none" stroke="#707070" d="M644.76,-281.08C678.24,-288.44 713.55,-296.2 744.79,-303.07"/>
+<polygon fill="#707070" stroke="#707070" points="744.26,-306.54 754.78,-305.27 745.77,-299.7 744.26,-306.54"/>
 </g>
 <!-- EventBus::::MyEventBus -->
 <g id="node6" class="node">
 <title>EventBus::::MyEventBus</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="967.5,-197 714.5,-197 714.5,-139 967.5,-139 967.5,-197"/>
-<text text-anchor="start" x="727" y="-177.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::EventBus</text>
-<text text-anchor="start" x="727" y="-152.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">MyEventBus</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="967.5,-201 714.5,-201 714.5,-143 967.5,-143 967.5,-201"/>
+<text text-anchor="start" x="727" y="-181.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::EventBus</text>
+<text text-anchor="start" x="727" y="-156.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">MyEventBus</text>
 </g>
 <!-- Integration::::integration::MyHttpApi::MyEventBus&#45;&gt;EventBus::::MyEventBus -->
-<g id="edge6" class="edge">
+<g id="edge5" class="edge">
 <title>Integration::::integration::MyHttpApi::MyEventBus&#45;&gt;EventBus::::MyEventBus</title>
-<path fill="none" stroke="#707070" d="M627.19,-222.9C638.95,-219.9 650.72,-216.89 662,-214 680.17,-209.34 699.37,-204.4 718.18,-199.55"/>
-<polygon fill="#707070" stroke="#707070" points="719.16,-202.91 727.97,-197.02 717.42,-196.13 719.16,-202.91"/>
+<path fill="none" stroke="#707070" d="M631.66,-222.89C657.53,-216.57 685,-209.86 711.22,-203.46"/>
+<polygon fill="#707070" stroke="#707070" points="712.32,-206.79 721.2,-201.02 710.66,-199.99 712.32,-206.79"/>
 </g>
 <!-- Role::::ApiEventbridgeStack&#45;EventBridgeIntegrationRoleB322&#45;V1AK3L262GGK -->
 <g id="node10" class="node">
 <title>Role::::ApiEventbridgeStack&#45;EventBridgeIntegrationRoleB322&#45;V1AK3L262GGK</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="984,-273 698,-273 698,-215 984,-215 984,-273"/>
-<text text-anchor="start" x="710" y="-253.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
-<text text-anchor="start" x="710" y="-228.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ApiEventbridgeStack&#45;EventBridgeI...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="984,-277 698,-277 698,-219 984,-219 984,-277"/>
+<text text-anchor="start" x="710" y="-257.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
+<text text-anchor="start" x="710" y="-232.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ApiEventbridgeStack&#45;EventBridgeI...</text>
 </g>
 <!-- Integration::::integration::MyHttpApi::MyEventBus&#45;&gt;Role::::ApiEventbridgeStack&#45;EventBridgeIntegrationRoleB322&#45;V1AK3L262GGK -->
-<g id="edge7" class="edge">
+<g id="edge6" class="edge">
 <title>Integration::::integration::MyHttpApi::MyEventBus&#45;&gt;Role::::ApiEventbridgeStack&#45;EventBridgeIntegrationRoleB322&#45;V1AK3L262GGK</title>
-<path fill="none" stroke="#707070" d="M651.86,-248.6C663.77,-248.3 675.84,-248.01 687.84,-247.72"/>
-<polygon fill="#707070" stroke="#707070" points="687.97,-251.21 697.89,-247.47 687.8,-244.22 687.97,-251.21"/>
+<path fill="none" stroke="#707070" d="M651.86,-250.3C663.77,-250.15 675.84,-250 687.84,-249.86"/>
+<polygon fill="#707070" stroke="#707070" points="687.93,-253.36 697.89,-249.74 687.84,-246.36 687.93,-253.36"/>
 </g>
 <!-- Route::::route::MyHttpApi::POST / -->
 <g id="node4" class="node">
@@ -114,22 +108,22 @@
 <text text-anchor="start" x="83.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">route::MyHttpApi::POST /</text>
 </g>
 <!-- Route::::route::MyHttpApi::POST /&#45;&gt;Api::::MyHttpApi -->
-<g id="edge8" class="edge">
+<g id="edge7" class="edge">
 <title>Route::::route::MyHttpApi::POST /&#45;&gt;Api::::MyHttpApi</title>
-<path fill="none" stroke="#707070" d="M277.61,-275.58C304.6,-281.08 333.79,-286.38 361,-290 493.42,-307.62 647.85,-314.94 744.79,-317.95"/>
-<polygon fill="#707070" stroke="#707070" points="744.76,-321.45 754.86,-318.25 744.97,-314.45 744.76,-321.45"/>
+<path fill="none" stroke="#707070" d="M277.63,-275.42C304.62,-280.92 333.81,-286.27 361,-290 493.42,-308.18 647.85,-316.93 744.78,-320.92"/>
+<polygon fill="#707070" stroke="#707070" points="744.72,-324.42 754.86,-321.33 745.01,-317.43 744.72,-324.42"/>
 </g>
 <!-- Route::::route::MyHttpApi::POST /&#45;&gt;Integration::::integration::MyHttpApi::MyEventBus -->
-<g id="edge9" class="edge">
+<g id="edge8" class="edge">
 <title>Route::::route::MyHttpApi::POST /&#45;&gt;Integration::::integration::MyHttpApi::MyEventBus</title>
 <path fill="none" stroke="#707070" d="M277.83,-252C304.14,-252 332.98,-252 361.14,-252"/>
 <polygon fill="#707070" stroke="#707070" points="361.47,-255.5 371.47,-252 361.47,-248.5 361.47,-255.5"/>
 </g>
 <!-- Stage::::$default&#45;&gt;Api::::MyHttpApi -->
-<g id="edge10" class="edge">
+<g id="edge9" class="edge">
 <title>Stage::::$default&#45;&gt;Api::::MyHttpApi</title>
-<path fill="none" stroke="#707070" d="M606.79,-354.18C650.09,-347.83 701.34,-340.32 744.76,-333.96"/>
-<polygon fill="#707070" stroke="#707070" points="745.37,-337.41 754.76,-332.49 744.36,-330.48 745.37,-337.41"/>
+<path fill="none" stroke="#707070" d="M606.79,-355.33C650.09,-349.51 701.34,-342.63 744.76,-336.8"/>
+<polygon fill="#707070" stroke="#707070" points="745.31,-340.25 754.76,-335.45 744.38,-333.32 745.31,-340.25"/>
 </g>
 <!-- Rule::::ApiEventbridgeStack&#45;EventLoggerRuleC0DD3E40&#45;J60T1BNGR6C6 -->
 <g id="node7" class="node">
@@ -139,10 +133,10 @@
 <text text-anchor="start" x="375.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ApiEventbridgeStack&#45;EventLoggerR...</text>
 </g>
 <!-- Rule::::ApiEventbridgeStack&#45;EventLoggerRuleC0DD3E40&#45;J60T1BNGR6C6&#45;&gt;EventBus::::MyEventBus -->
-<g id="edge11" class="edge">
+<g id="edge10" class="edge">
 <title>Rule::::ApiEventbridgeStack&#45;EventLoggerRuleC0DD3E40&#45;J60T1BNGR6C6&#45;&gt;EventBus::::MyEventBus</title>
-<path fill="none" stroke="#707070" d="M659.96,-172.4C674.72,-172.04 689.66,-171.67 704.29,-171.31"/>
-<polygon fill="#707070" stroke="#707070" points="704.45,-174.81 714.37,-171.07 704.28,-167.81 704.45,-174.81"/>
+<path fill="none" stroke="#707070" d="M659.96,-174.2C674.72,-174.02 689.66,-173.84 704.29,-173.66"/>
+<polygon fill="#707070" stroke="#707070" points="704.41,-177.16 714.37,-173.53 704.32,-170.16 704.41,-177.16"/>
 </g>
 <!-- LogGroup::::/aws/events/MyEventBus -->
 <g id="node8" class="node">
@@ -166,7 +160,7 @@
 <text text-anchor="start" x="36.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ApiEventbridgeStack&#45;AWS679f53fac...</text>
 </g>
 <!-- Function::::ApiEventbridgeStack&#45;AWS679f53fac002430cb0da5b7982b&#45;WT09pJuMy2gE&#45;&gt;Role::::ApiEventbridgeStack&#45;AWS679f53fac002430cb0da5b7982b&#45;4YDZM1JYBBAN -->
-<g id="edge12" class="edge">
+<g id="edge11" class="edge">
 <title>Function::::ApiEventbridgeStack&#45;AWS679f53fac002430cb0da5b7982b&#45;WT09pJuMy2gE&#45;&gt;Role::::ApiEventbridgeStack&#45;AWS679f53fac002430cb0da5b7982b&#45;4YDZM1JYBBAN</title>
 <path fill="none" stroke="#707070" d="M325.36,-100C333.72,-100 342.14,-100 350.54,-100"/>
 <polygon fill="#707070" stroke="#707070" points="350.76,-103.5 360.76,-100 350.76,-96.5 350.76,-103.5"/>
