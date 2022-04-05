@@ -15,7 +15,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: "lambda.amazonaws.com",
+              Service: `lambda.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -37,12 +37,12 @@ exports.createResources = () => [
           {
             Action: ["logs:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
           {
             Action: ["sqs:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
         ],
       },

@@ -339,7 +339,7 @@ exports.createResources = () => [
     type: "TaskDefinition",
     group: "ECS",
     name: "CdkStackFargateServiceTaskDef2C533A52",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       containerDefinitions: [
         {
           command: [],
@@ -382,7 +382,7 @@ exports.createResources = () => [
             options: {
               "awslogs-group":
                 "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n",
-              "awslogs-region": "us-east-1",
+              "awslogs-region": `${config.region}`,
               "awslogs-stream-prefix": "FargateService",
             },
             secretOptions: [],
@@ -668,7 +668,6 @@ exports.createResources = () => [
       PreferredBackupWindow: "07:52-08:22",
       PreferredMaintenanceWindow: "fri:09:30-fri:10:00",
       EngineMode: "serverless",
-      HttpEndpointEnabled: true,
       ScalingConfiguration: {
         MinCapacity: 1,
         MaxCapacity: 2,

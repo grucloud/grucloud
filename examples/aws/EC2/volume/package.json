@@ -23,6 +23,7 @@
     "@grucloud/core": "^5.10.0",
     "@grucloud/provider-aws": "^5.10.0",
     "ping": "^0.4.1",
+    "rubico": "^1.8.11",
     "ssh2": "^0.8.9"
   },
   "devDependencies": {

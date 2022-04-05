@@ -323,7 +323,10 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "eks-cluster-sg-my-cluster-1909614887",
-      securityGroupFrom: ["eks-cluster-sg-my-cluster-1909614887"],
+      securityGroupFrom: [
+        "eks-cluster-sg-my-cluster-1909614887",
+        "load-balancer",
+      ],
     }),
   },
   {
@@ -568,7 +571,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "eks.amazonaws.com",
+              Service: `eks.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -629,7 +632,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "ec2.amazonaws.com",
+              Service: `ec2.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },

@@ -120,7 +120,6 @@ exports.createResources = () => [
       SecretString: {
         password: generatePassword({ length: 32 }),
         username: "demousername",
-        DBClusterIdentifier: "aurora-serverless",
         port: 3306,
       },
     }),
