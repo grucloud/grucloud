@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project 5-zendesk
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ Connection (1)
+++++ EventBus (1)
++++ SQS
+++++ Queue (1)
+@endmindmap

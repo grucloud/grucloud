@@ -7,13 +7,15 @@ const {
   isOurMinion,
   replaceAccountAndRegion,
 } = require("../AwsCommon");
+const { envVarName } = require("@grucloud/core/generatorUtils");
 
+const { CloudWatchEventConnection } = require("./CloudWatchEventConnection");
 const { CloudWatchEventBus } = require("./CloudWatchEventBus");
 const { CloudWatchEventRule } = require("./CloudWatchEventRule");
 const { CloudWatchEventTarget } = require("./CloudWatchEventTarget");
-
-//TODO Connection
-//TODO ApiDestinations
+const {
+  CloudWatchEventApiDestination,
+} = require("./CloudWatchEventApiDestination");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html
 const GROUP = "CloudWatchEvents";
@@ -21,6 +23,107 @@ const compareCloudWatchEvent = compareAws({});
 
 module.exports = pipe([
   () => [
+    {
+      type: "ApiDestination",
+      Client: CloudWatchEventApiDestination,
+      dependencies: {
+        connection: { type: "Connection", group: GROUP, parent: true },
+      },
+      omitProperties: [
+        "Name",
+        "ConnectionArn",
+        "ApiDestinationArn",
+        "ApiDestinationState",
+        "CreationTime",
+        "LastModifiedTime",
+      ],
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+    },
+    {
+      type: "Connection",
+      Client: CloudWatchEventConnection,
+      dependencies: {
+        //secret: { type: "Secret", group: "SecretsManager", autoCreated:true },
+      },
+      omitProperties: [
+        "Name",
+        "ConnectionArn",
+        "CreationTime",
+        "LastAuthorizedTime",
+        "LastModifiedTime",
+        "ConnectionState",
+        "SecretArn",
+      ],
+      environmentVariables: [
+        {
+          path: "AuthParameters.ApiKeyAuthParameters.ApiKeyValue",
+          suffix: "API_KEY_VALUE",
+          handledByResource: true,
+        },
+        {
+          path: "AuthParameters.BasicAuthParameters.Password",
+          suffix: "PASSWORD",
+          handledByResource: true,
+        },
+      ],
+      compare: compareCloudWatchEvent({
+        filterAll: () =>
+          pipe([
+            omit([
+              "AuthParameters.ApiKeyAuthParameters.ApiKeyValue",
+              "AuthParameters.BasicAuthParameters.Password",
+            ]),
+          ]),
+      }),
+      filterLive: () => (live) =>
+        pipe([
+          () => live,
+          assign({
+            AuthParameters: pipe([
+              get("AuthParameters"),
+              when(
+                get("ApiKeyAuthParameters"),
+                pipe([
+                  assign({
+                    ApiKeyAuthParameters: pipe([
+                      get("ApiKeyAuthParameters"),
+                      assign({
+                        ApiKeyValue: () => () =>
+                          `process.env.${envVarName({
+                            name: live.Name,
+                            suffix: "API_KEY_VALUE",
+                          })}`,
+                      }),
+                    ]),
+                  }),
+                ])
+              ),
+              when(
+                get("BasicAuthParameters"),
+                pipe([
+                  assign({
+                    BasicAuthParameters: pipe([
+                      get("BasicAuthParameters"),
+                      assign({
+                        Password: () => () =>
+                          `process.env.${envVarName({
+                            name: live.Name,
+                            suffix: "PASSWORD",
+                          })}`,
+                      }),
+                    ]),
+                  }),
+                ])
+              ),
+            ]),
+          }),
+        ])(),
+    },
     {
       type: "EventBus",
       Client: CloudWatchEventBus,
@@ -82,6 +185,7 @@ module.exports = pipe([
         rule: { type: "Rule", group: "CloudWatchEvents", parent: true },
         role: { type: "Role", group: "IAM" },
         //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putTargets-property
+        apiDestination: { type: "ApiDestination", group: "CloudWatchEvents" },
         logGroup: { type: "LogGroup", group: "CloudWatchLogs" },
         sqsQueue: { type: "Queue", group: "SQS" },
         snsTopic: { type: "Topic", group: "SNS" },

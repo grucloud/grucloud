@@ -70,6 +70,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       vpc: "project-vpc-endpoint-vpc",
+      routeTables: ["project-vpc-endpoint-rtb-private1-us-east-1a"],
     }),
   },
 ];

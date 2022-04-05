@@ -36,7 +36,7 @@ exports.createResources = () => [
             {
               Effect: "Allow",
               Principal: {
-                Service: "s3.amazonaws.com",
+                Service: `s3.amazonaws.com`,
               },
               Action: "sns:Publish",
               Resource: `arn:aws:sns:${

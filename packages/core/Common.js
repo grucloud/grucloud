@@ -241,7 +241,15 @@ exports.getByNameCore =
         assert(Array.isArray(items));
         logger.debug(`getByNameCore ${name}: #${size(items)}`);
       }),
-      find((live) => isDeepEqual(name, findName({ live, lives }))), //TODO check on meta
+      find(
+        pipe([
+          (live) => findName({ live, lives }),
+          tap((currentName) => {
+            logger.debug(`getByNameCore ${name}: findName: ${currentName}`);
+          }),
+          (currentName) => isDeepEqual(name, currentName),
+        ])
+      ), //TODO check on meta
       tap((instance) => {
         logger.info(`getByNameCore ${name}: ${instance ? "UP" : "DOWN"}`);
         logger.debug(`getByNameCore ${name}: ${tos({ instance })}`);

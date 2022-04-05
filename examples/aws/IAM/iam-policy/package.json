@@ -18,7 +18,8 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^5.10.0",
-    "@grucloud/provider-aws": "^5.10.0"
+    "@grucloud/provider-aws": "^5.10.0",
+    "rubico": "^1.8.11"
   },
   "devDependencies": {
     "mocha": "^9.0.3",

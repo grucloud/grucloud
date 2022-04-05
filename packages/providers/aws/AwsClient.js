@@ -36,12 +36,12 @@ const { assignTagsSort, createEndpoint } = require("./AwsCommon");
 
 const shouldRetryOnExceptionCodesDefault =
   (shouldRetryOnExceptionCodes) =>
-  ({ error }) =>
+  ({ error, name }) =>
     pipe([
       tap(() => {
         assert(error.name);
-        logger.error(
-          `shouldRetryOnExceptionCodesDefault ${util.inspect(error)}`
+        logger.debug(
+          `shouldRetryOnExceptionCodesDefault ${name} ${util.inspect(error)}`
         );
       }),
       () => shouldRetryOnExceptionCodes,
@@ -50,12 +50,14 @@ const shouldRetryOnExceptionCodesDefault =
 
 const shouldRetryOnExceptionMessagesDefault =
   (shouldRetryOnExceptionMessages) =>
-  ({ error }) =>
+  ({ error, name }) =>
     pipe([
       tap(() => {
         assert(error.message);
-        logger.error(
-          `shouldRetryOnExceptionMessagesDefault ${util.inspect(error)}`
+        logger.debug(
+          `shouldRetryOnExceptionMessagesDefault  ${name} ${util.inspect(
+            error
+          )}`
         );
       }),
       () => shouldRetryOnExceptionMessages,

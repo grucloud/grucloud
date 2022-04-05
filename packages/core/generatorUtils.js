@@ -146,10 +146,10 @@ const findDependencyNames = ({
     (dependencyVarNames) => ({ list, dependencyVarNames }),
   ])();
 
-const envVarName = ({ resource, suffix }) =>
-  `${snakeCase(resource.name).toUpperCase()}_${snakeCase(
-    suffix
-  ).toUpperCase()}`;
+const envVarName = ({ name, suffix }) =>
+  `${snakeCase(name).toUpperCase()}_${snakeCase(suffix).toUpperCase()}`;
+
+exports.envVarName = envVarName;
 
 const isNotOurTagKey = not(
   or([
@@ -236,6 +236,10 @@ const buildProperties = ({
           assert(props);
         }),
         () => environmentVariables,
+        filter(not(get("handledByResource"))),
+        tap((params) => {
+          assert(true);
+        }),
         tap.if(not(isEmpty), (params) => {
           assert(true);
         }),
@@ -243,7 +247,7 @@ const buildProperties = ({
           (acc, { path, suffix }) =>
             set(
               path,
-              () => `process.env.${envVarName({ resource, suffix })}`
+              () => `process.env.${envVarName({ name: resource.name, suffix })}`
             )(acc),
           props
         ),
@@ -331,7 +335,7 @@ exports.hasDependency = ({ type, group }) =>
 const envTpl = ({ resource, environmentVariables = [] }) =>
   pipe([
     () => environmentVariables,
-    map(({ suffix }) => `${envVarName({ resource, suffix })}=\n`),
+    map(({ suffix }) => `${envVarName({ name: resource.name, suffix })}=\n`),
     callProp("join", ""),
   ])();
 
@@ -1027,6 +1031,9 @@ const writeEnv =
   (resourceMap) =>
     pipe([
       () => resourceMap,
+      tap((params) => {
+        assert(true);
+      }),
       map(({ group, types }) =>
         pipe([
           () => types,

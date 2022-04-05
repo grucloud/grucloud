@@ -15,7 +15,7 @@ exports.createResources = () => [
             Sid: "VisualEditor0",
             Effect: "Allow",
             Action: "s3:*",
-            Resource: "*",
+            Resource: `*`,
           },
         ],
       },

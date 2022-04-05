@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project 1-webhook-site
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ ApiDestination (1)
+++++ Connection (1)
+++++ EventBus (1)
+@endmindmap

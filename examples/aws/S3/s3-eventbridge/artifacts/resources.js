@@ -160,7 +160,7 @@ exports.createResources = () => [
             {
               Effect: "Allow",
               Principal: {
-                Service: "events.amazonaws.com",
+                Service: `events.amazonaws.com`,
               },
               Action: "SQS:SendMessage",
               Resource: `arn:aws:sqs:${

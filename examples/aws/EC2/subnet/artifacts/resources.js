@@ -224,6 +224,10 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       vpc: "vpc-wizard-vpc",
+      routeTables: [
+        "vpc-wizard-rtb-private1-us-east-1a",
+        "vpc-wizard-rtb-private2-us-east-1b",
+      ],
     }),
   },
 ];

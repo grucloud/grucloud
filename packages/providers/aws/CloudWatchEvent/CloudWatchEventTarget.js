@@ -210,7 +210,15 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { rule, role, sqsQueue, snsTopic, sfnStateMachine, logGroup },
+    dependencies: {
+      rule,
+      role,
+      apiDestination,
+      sqsQueue,
+      snsTopic,
+      sfnStateMachine,
+      logGroup,
+    },
   }) =>
     pipe([
       tap((params) => {
@@ -228,6 +236,11 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
         })
       ),
       switchCase([
+        // CloudWatch Events Api Destination
+        () => apiDestination,
+        defaultsDeep({
+          RoleArn: getField(apiDestination, "ApiDestinationArn"),
+        }),
         // SQS Queue
         () => sqsQueue,
         defaultsDeep({
