@@ -166,7 +166,7 @@ exports.createResources = () => [
     type: "StateMachine",
     group: "StepFunctions",
     name: "StateMachinetoAPIGW-uB4wAPaxm1sp",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       definition: {
         Comment:
           "A Retry example of the Amazon States Language using an AWS API GW Endpoint",
@@ -174,9 +174,9 @@ exports.createResources = () => [
         States: {
           invokeAPI: {
             Type: "Task",
-            Resource: "arn:aws:states:::apigateway:invoke",
+            Resource: `arn:aws:states:::apigateway:invoke`,
             Parameters: {
-              ApiEndpoint: "60lo2hkcu3.execute-api.us-east-1.amazonaws.com",
+              ApiEndpoint: `60lo2hkcu3.execute-api.${config.region}.amazonaws.com`,
               Method: "GET",
               Stage: "Prod",
               Path: "/",

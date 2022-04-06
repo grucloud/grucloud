@@ -1,0 +1,26 @@
+@startmindmap
+title Resources for project cdk-vpc-lambda-sfn
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ NatGateway (1)
+++++ Subnet (6)
+++++ RouteTable (6)
+++++ RouteTableAssociation (6)
+++++ Route (4)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (2)
+++++ ElasticIpAddress (1)
+++++ VpcEndpoint (1)
++++ IAM
+++++ Role (3)
++++ Lambda
+++++ Function (2)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

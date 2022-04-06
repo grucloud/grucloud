@@ -967,6 +967,15 @@ const assignPolicyAccountAndRegion = ({ providerConfig }) =>
                           ]),
                         })
                       ),
+                      when(
+                        get("aws:SourceArn"),
+                        assign({
+                          "aws:SourceArn": pipe([
+                            get("aws:SourceArn"),
+                            replaceAccountAndRegion({ providerConfig }),
+                          ]),
+                        })
+                      ),
                     ]),
                   })
                 ),
