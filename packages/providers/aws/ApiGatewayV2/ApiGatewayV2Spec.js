@@ -12,6 +12,7 @@ const { DomainName } = require("./DomainName");
 const { ApiMapping } = require("./ApiMapping");
 const { Authorizer } = require("./Authorizer");
 
+const { ApiGatewayV2VpcLink } = require("./ApiGatewayV2VpcLink");
 const GROUP = "ApiGatewayV2";
 
 const compareApiGatewayV2 = compareAws({});
@@ -145,7 +146,7 @@ module.exports = pipe([
       Client: Integration,
       inferName: ({
         properties,
-        dependenciesSpec: { api, lambdaFunction, eventBus },
+        dependenciesSpec: { api, lambdaFunction, listener, eventBus },
       }) =>
         pipe([
           //TODO other target
@@ -160,6 +161,8 @@ module.exports = pipe([
                 append(`::${lambdaFunction}`),
                 () => eventBus,
                 append(`::${eventBus}`),
+                () => listener,
+                append(`::${listener}`),
                 append(`::UNKNOWN`),
               ]),
             ])(),
@@ -167,7 +170,9 @@ module.exports = pipe([
       propertiesDefault: { TimeoutInMillis: 30e3, Description: "" },
       omitProperties: [
         "RouteId",
+        "ConnectionId",
         "IntegrationId",
+        "IntegrationUri",
         "ApiName",
         "RequestParameters.EventBusName",
         "CredentialsArn",
@@ -188,6 +193,8 @@ module.exports = pipe([
         ]),
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
+        listener: { type: "Listener", group: "ELBv2", parent: true }, //Intergration name depends on listener name
+        vpcLink: { type: "VpcLink", group: "ApiGatewayV2" },
         lambdaFunction: { type: "Function", group: "Lambda" },
         eventBus: { type: "EventBus", group: "CloudWatchEvents" },
         role: { type: "Role", group: "IAM" },
@@ -253,6 +260,30 @@ module.exports = pipe([
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
         stage: { type: "Stage", group: "ApiGatewayV2", parent: true },
       },
+    },
+    {
+      type: "VpcLink",
+      Client: ApiGatewayV2VpcLink,
+      dependencies: {
+        subnets: { type: "Subnet", group: "EC2", list: true },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+      },
+      omitProperties: [
+        "Name",
+        "CreatedDate",
+        "SecurityGroupIds",
+        "SubnetIds",
+        "VpcLinkId",
+        "VpcLinkStatus",
+        "VpcLinkStatusMessage",
+        "VpcLinkVersion",
+      ],
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
     },
   ],
   map(

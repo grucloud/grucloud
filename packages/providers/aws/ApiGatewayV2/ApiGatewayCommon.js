@@ -30,18 +30,20 @@ exports.findDependenciesApi = ({ live, lives }) => ({
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#tagResource-property
 exports.tagResource =
-  ({ apiGateway, buildResourceArn }) =>
+  ({ buildResourceArn }) =>
+  ({ endpoint }) =>
   ({ live }) =>
     pipe([
       (Tags) => ({ ResourceArn: buildResourceArn(live), Tags }),
-      apiGateway().tagResource,
+      endpoint().tagResource,
     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#untagResource-property
 exports.untagResource =
-  ({ apiGateway, buildResourceArn }) =>
+  ({ buildResourceArn }) =>
+  ({ endpoint }) =>
   ({ live }) =>
     pipe([
       (TagKeys) => ({ ResourceArn: buildResourceArn(live), TagKeys }),
-      apiGateway().untagResource,
+      endpoint().untagResource,
     ]);

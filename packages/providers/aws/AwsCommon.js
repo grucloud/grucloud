@@ -85,7 +85,7 @@ const filterTags = pipe([
             get("key"),
             () => "",
           ]),
-          callProp("startsWith", "aws:"),
+          callProp("startsWith", "aws"),
         ])
       )
     ),

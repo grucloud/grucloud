@@ -127,7 +127,9 @@ exports.Stage = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    tagResource: tagResource({ apiGateway, buildResourceArn }),
-    untagResource: untagResource({ apiGateway, buildResourceArn }),
+    tagResource: tagResource({ buildResourceArn })({ endpoint: apiGateway }),
+    untagResource: untagResource({ buildResourceArn })({
+      endpoint: apiGateway,
+    }),
   };
 };
