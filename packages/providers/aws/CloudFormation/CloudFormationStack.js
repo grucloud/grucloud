@@ -23,6 +23,14 @@ exports.CloudFormationStack = ({ spec, config }) => {
   const cloudFormation = createCloudFormation(config);
   const client = AwsClient({ spec, config })(cloudFormation);
 
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [live.RoleARN],
+    },
+  ];
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#describeStacks-property
   const getById = client.getById({
     pickId,
@@ -69,5 +77,6 @@ exports.CloudFormationStack = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    findDependencies,
   };
 };
