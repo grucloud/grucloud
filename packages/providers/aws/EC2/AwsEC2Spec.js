@@ -750,7 +750,6 @@ module.exports = pipe([
       filterLive: ({ providerConfig }) =>
         pipe([
           pick([
-            "ServiceName",
             "PolicyDocument",
             "PrivateDnsEnabled",
             "RequesterManaged",

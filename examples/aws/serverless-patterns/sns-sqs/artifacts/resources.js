@@ -79,8 +79,9 @@ exports.createResources = () => [
               }:${config.accountId()}:sam-app-MySqsQueue-KMqXSqHYypds`,
               Condition: {
                 ArnEquals: {
-                  "aws:SourceArn":
-                    "arn:aws:sns:us-east-1:840541460064:sam-app-MySnsTopic-7ZOEL49PL4BA",
+                  "aws:SourceArn": `arn:aws:sns:${
+                    config.region
+                  }:${config.accountId()}:sam-app-MySnsTopic-7ZOEL49PL4BA`,
                 },
               },
             },

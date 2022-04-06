@@ -1,10 +1,15 @@
 const assert = require("assert");
-const { assign, map, pipe, tap, get } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { assign, map, pipe, tap, get, and, or, switchCase } = require("rubico");
+const { defaultsDeep, when, callProp, isString } = require("rubico/x");
+const { cloneDeepWith } = require("lodash/fp");
 
 const { replaceWithName } = require("@grucloud/core/Common");
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const {
+  isOurMinion,
+  compareAws,
+  replaceAccountAndRegion,
+} = require("../AwsCommon");
 const { StepFunctionsStateMachine } = require("./StepFunctionsStateMachine");
 
 const GROUP = "StepFunctions";
@@ -33,8 +38,28 @@ module.exports = pipe([
         role: { type: "Role", group: "IAM" },
         logGroup: { type: "LogGroup", group: "CloudWatchLogs", list: true },
       },
-      filterLive: ({ lives }) =>
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
+          assign({
+            definition: pipe([
+              get("definition"),
+              cloneDeepWith(
+                pipe([
+                  switchCase([
+                    and([
+                      isString,
+                      or([
+                        callProp("startsWith", "arn:"),
+                        callProp("endsWith", ".amazonaws.com"),
+                      ]),
+                    ]),
+                    replaceAccountAndRegion({ providerConfig }),
+                    () => undefined,
+                  ]),
+                ])
+              ),
+            ]),
+          }),
           assign({
             loggingConfiguration: pipe([
               get("loggingConfiguration"),

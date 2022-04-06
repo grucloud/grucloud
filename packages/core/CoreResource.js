@@ -535,7 +535,7 @@ exports.ResourceMaker = ({
   const customizerMergeArray = (objValue, srcValue) =>
     when(
       () => Array.isArray(objValue),
-      () => [...objValue, ...srcValue]
+      () => srcValue
     )();
 
   const resolveConfig = ({ live, resolvedDependencies, deep = false } = {}) =>

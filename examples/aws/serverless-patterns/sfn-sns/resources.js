@@ -14,7 +14,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "states.us-east-1.amazonaws.com",
+              Service: `states.${config.region}.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -44,21 +44,22 @@ exports.createResources = () => [
     type: "StateMachine",
     group: "StepFunctions",
     name: "StateMachineExpressSynctoSNS-s4flfbpCO2tF",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       definition: {
         Comment: "An example of the Amazon States Language using AWS SNS",
         StartAt: "SendSNSMessage",
         States: {
           SendSNSMessage: {
             Type: "Task",
-            Resource: "arn:aws:states:::sns:publish",
+            Resource: `arn:aws:states:::sns:publish`,
             Parameters: {
               Message: {
                 Input: "You just received a message from the state machine!",
                 "Message.$": "$.message",
               },
-              TopicArn:
-                "arn:aws:sns:us-east-1:840541460064:sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
+              TopicArn: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:sam-app-StateMachineSNSTopic-C6WGCI64MKY2`,
             },
             End: true,
           },
@@ -129,17 +130,6 @@ exports.createResources = () => [
           },
         },
       },
-    }),
-  },
-  {
-    type: "Subscription",
-    group: "SNS",
-    properties: ({}) => ({
-      Protocol: "email",
-      Endpoint: "frederic.heem@gmail.com",
-    }),
-    dependencies: () => ({
-      snsTopic: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
     }),
   },
 ];
