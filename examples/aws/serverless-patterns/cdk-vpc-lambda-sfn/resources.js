@@ -497,9 +497,11 @@ exports.createResources = () => [
     group: "Lambda",
     name: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-c8VHz1jOeFFc",
     properties: ({}) => ({
-      Handler: "index.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
+      Configuration: {
+        Handler: "index.handler",
+        PackageType: "Zip",
+        Runtime: "nodejs14.x",
+      },
     }),
     dependencies: () => ({
       role: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-26SWWUB5R0PQ",

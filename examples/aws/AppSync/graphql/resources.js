@@ -209,15 +209,17 @@ exports.createResources = () => [
     group: "Lambda",
     name: "lambda-fns",
     properties: ({}) => ({
-      Environment: {
-        Variables: {
-          NOTES_TABLE: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
+      Configuration: {
+        Environment: {
+          Variables: {
+            NOTES_TABLE:
+              "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
+          },
         },
+        Handler: "main.handler",
+        MemorySize: 1024,
+        Runtime: "nodejs12.x",
       },
-      Handler: "main.handler",
-      MemorySize: 1024,
-      PackageType: "Zip",
-      Runtime: "nodejs12.x",
     }),
     dependencies: () => ({
       role: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",

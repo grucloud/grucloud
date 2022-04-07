@@ -291,12 +291,9 @@ exports.createResources = () => [
     group: "RDS",
     name: "sam-app-mysql-node-1",
     properties: ({}) => ({
+      DBInstanceIdentifier: "sam-app-mysql-node-1",
       DBInstanceClass: "db.r5.large",
       Engine: "aurora-mysql",
-      MasterUsername: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USERNAME,
-      DBName: "mylab",
-      PreferredBackupWindow: "04:46-05:16",
-      BackupRetentionPeriod: 1,
       PreferredMaintenanceWindow: "thu:06:23-thu:06:53",
       EngineVersion: "5.7.mysql_aurora.2.09.1",
       PubliclyAccessible: false,
@@ -307,8 +304,7 @@ exports.createResources = () => [
       MonitoringInterval: 1,
       PerformanceInsightsEnabled: true,
       PerformanceInsightsRetentionPeriod: 7,
-      DeletionProtection: false,
-      EnablePerformanceInsights: true,
+      MasterUsername: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USERNAME,
       MasterUserPassword: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USER_PASSWORD,
     }),
     dependencies: () => ({

@@ -64,12 +64,10 @@ exports.createResources = () => [
     group: "Lambda",
     name: "lambda-hello-world",
     properties: ({}) => ({
-      Handler: "helloworld.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
-      Description: "",
-      Timeout: 3,
-      MemorySize: 128,
+      Configuration: {
+        Handler: "helloworld.handler",
+        Runtime: "nodejs14.x",
+      },
     }),
     dependencies: () => ({
       role: "lambda-role",
@@ -94,7 +92,7 @@ exports.createResources = () => [
 - [Iam Role](../IAM/Role.md)
 - [SecretsManager Secret](../SecretsManager/Secrets.md)
 - [RDS Cluster](../RDS/Cluster.md)
-- [Dynamo Table](../DynampDB/Table.md)
+- [DynamoDB Table](../DynampDB/Table.md)
 - [AppSync Graphql](../AppSync/GraphqlApi)
 
 ## UsedBy

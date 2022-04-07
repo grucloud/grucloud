@@ -20,6 +20,7 @@ const {
   callProp,
   when,
   find,
+  first,
 } = require("rubico/x");
 const path = require("path");
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
@@ -190,6 +191,13 @@ exports.Function = ({ spec, config }) => {
         lambda().getFunction,
         pick(["Configuration", "Code", "Tags"]),
         assign({
+          FunctionUrlConfig: pipe([
+            get("Configuration"),
+            pick(["FunctionName"]),
+            lambda().listFunctionUrlConfigs,
+            get("FunctionUrlConfigs"),
+            first,
+          ]),
           Policy: tryCatch(
             pipe([
               get("Configuration"),
@@ -231,6 +239,8 @@ exports.Function = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunction-property
   const create = client.create({
     method: "createFunction",
+    filterPayload: ({ Configuration, Tags }) =>
+      pipe([() => ({ ...Configuration, Tags })])(),
     pickCreated: () =>
       pipe([
         tap(({ FunctionArn }) => {
@@ -240,6 +250,29 @@ exports.Function = ({ spec, config }) => {
       ]),
     shouldRetryOnExceptionCodes: ["InvalidParameterValueException"],
     getById,
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunctionUrlConfig-property
+    postCreate:
+      ({
+        payload: {
+          Configuration: { FunctionName },
+          FunctionUrlConfig,
+        },
+      }) =>
+      ({}) =>
+        when(
+          () => FunctionUrlConfig,
+          pipe([
+            tap(() => {
+              assert(FunctionName);
+            }),
+            () => FunctionUrlConfig,
+            defaultsDeep({ FunctionName }),
+            tap((params) => {
+              assert(true);
+            }),
+            lambda().createFunctionUrlConfig,
+          ])()
+        ),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateFunctionConfiguration-property
@@ -251,24 +284,54 @@ exports.Function = ({ spec, config }) => {
         assert(diff);
       }),
       () => ({
-        FunctionName: payload.FunctionName,
-        ZipFile: payload.Code.ZipFile,
+        FunctionName: payload.Configuration.FunctionName,
+        ZipFile: payload.Configuration.Code.ZipFile,
       }),
+      // updateFunctionConfiguration
       lambda().updateFunctionCode,
       () =>
         retryCall({
           name: `update function code ${name}`,
           fn: pipe([
             () => payload,
+            tap((params) => {
+              assert(true);
+            }),
+            get("Configuration"),
             pick(["FunctionName"]),
+            tap((params) => {
+              assert(true);
+            }),
             lambda().getFunction,
             eq(get("Configuration.LastUpdateStatus"), "Successful"),
           ]),
         }),
       // updateFunctionConfiguration
-      () => payload,
-      omit(["Code"]),
-      lambda().updateFunctionConfiguration,
+      when(
+        () => diff.liveDiff.updated.Configuration,
+        pipe([
+          () => payload,
+          get("Configuration"),
+          lambda().updateFunctionConfiguration,
+          tap(() => {
+            logger.info(`updated function done ${name}`);
+          }),
+        ])
+      ),
+      // updateFunctionUrlConfig
+      when(
+        () => diff.liveDiff.updated.FunctionUrlConfig,
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => ({
+            FunctionName: payload.Configuration.FunctionName,
+            ...payload.FunctionUrlConfig,
+          }),
+          lambda().updateFunctionUrlConfig,
+        ])
+      ),
       tap(() => {
         logger.info(`updated function done ${name}`);
       }),
@@ -276,6 +339,18 @@ exports.Function = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
   const destroy = client.destroy({
+    preDestroy: ({ name, live }) =>
+      pipe([
+        () => live,
+        when(
+          get("FunctionUrlConfig"),
+          pipe([
+            get("Configuration"),
+            pick(["FunctionName"]),
+            lambda().deleteFunctionUrlConfig,
+          ])
+        ),
+      ])(),
     pickId,
     method: "deleteFunction",
     getById,
@@ -303,14 +378,21 @@ exports.Function = ({ spec, config }) => {
         pipe([
           () => otherProps,
           defaultsDeep({
-            FunctionName: name,
-            Role: getField(role, "Arn"),
-            Tags: buildTagsObject({ config, namespace, name, userTags: Tags }),
-            Layers: pipe([
-              () => layers,
-              map((layer) => getField(layer, "LayerVersionArn")),
-            ])(),
-            Code: { ZipFile },
+            Tags: buildTagsObject({
+              config,
+              namespace,
+              name,
+              userTags: Tags,
+            }),
+            Configuration: {
+              FunctionName: name,
+              Role: getField(role, "Arn"),
+              Layers: pipe([
+                () => layers,
+                map((layer) => getField(layer, "LayerVersionArn")),
+              ])(),
+              Code: { ZipFile },
+            },
           }),
           when(
             () => kmsKey,
@@ -358,16 +440,40 @@ exports.Function = ({ spec, config }) => {
   };
 };
 
+const filterFunctionUrlConfig = pipe([
+  get("FunctionUrlConfig"),
+  omit(["CreationTime", "LastModifiedTime", "FunctionArn", "FunctionUrl"]),
+]);
+
+exports.filterFunctionUrlConfig = filterFunctionUrlConfig;
 exports.compareFunction = pipe([
   tap((params) => {
     assert(true);
   }),
   compareLambda({
-    filterTarget: () =>
+    filterTarget: () => (target) =>
       pipe([
-        assign({ CodeSha256: pipe([get("Code.ZipFile"), computeHash256]) }),
+        () => target,
+        tap((params) => {
+          assert(target);
+        }),
+        defaultsDeep({
+          Configuration: {
+            CodeSha256: pipe([
+              () => target,
+              get("Configuration.Code.ZipFile"),
+              computeHash256,
+            ])(),
+          },
+        }),
+      ])(),
+    filterLive: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        assign({ FunctionUrlConfig: filterFunctionUrlConfig }),
       ]),
-    filterLive: () => pipe([get("Configuration")]),
   }),
   tap((diff) => {
     logger.debug(`compareFunction ${tos(diff)}`);

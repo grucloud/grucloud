@@ -146,12 +146,11 @@ exports.createResources = () => [
     group: "Lambda",
     name: "my-function",
     properties: ({}) => ({
-      Handler: "my-function.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
-      Description: "",
-      Timeout: 3,
-      MemorySize: 128,
+      Configuration: {
+        Handler: "my-function.handler",
+        PackageType: "Zip",
+        Runtime: "nodejs14.x",
+      },
     }),
     dependencies: () => ({
       role: "lambda-role",

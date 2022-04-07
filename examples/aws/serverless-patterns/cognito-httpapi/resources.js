@@ -162,12 +162,10 @@ exports.createResources = () => [
     group: "Lambda",
     name: "sam-app-AppFunction-gKUxwsmxX2fK",
     properties: ({}) => ({
-      Handler: "app.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
-      Description: "",
-      Timeout: 3,
-      MemorySize: 128,
+      Configuration: {
+        Handler: "app.handler",
+        Runtime: "nodejs14.x",
+      },
     }),
     dependencies: () => ({
       role: "sam-app-AppFunctionRole-BXPIJ03LGY2Y",
