@@ -71,6 +71,7 @@ module.exports = pipe([
         "CreatedDate",
         "UpdatedDate",
         "Status",
+        "Endpoint",
       ],
       filterLive: ({ lives }) =>
         pipe([
@@ -188,15 +189,12 @@ module.exports = pipe([
         "ActivityStreamStatus",
         "DomainMemberships",
         "EarliestBacktrackTime",
+        "ReaderEndpoint",
       ],
       propertiesDefault: {
-        BackupRetentionPeriod: 1,
         MultiAZ: false,
         Port: 5432,
         StorageEncrypted: true,
-        //IAMDatabaseAuthenticationEnabled: false,
-        DeletionProtection: false,
-        HttpEndpointEnabled: false,
         CopyTagsToSnapshot: false,
         CrossAccountClone: false,
       },
@@ -214,15 +212,8 @@ module.exports = pipe([
               defaultsDeep({
                 AllocatedStorage: 1,
               }),
+              defaultsDeep({}),
             ]),
-            defaultsDeep({
-              ScalingConfiguration: {
-                AutoPause: true,
-                SecondsUntilAutoPause: 300,
-                SecondsBeforeTimeout: 300,
-                TimeoutAction: "RollbackCapacityChange",
-              },
-            }),
           ]),
         filterLive: () =>
           pipe([
@@ -243,14 +234,7 @@ module.exports = pipe([
           switchCase([
             isAuroraEngine,
             omit(["AllocatedStorage"]),
-            defaultsDeep({
-              ScalingConfiguration: {
-                AutoPause: true,
-                SecondsUntilAutoPause: 300,
-                SecondsBeforeTimeout: 300,
-                TimeoutAction: "RollbackCapacityChange",
-              },
-            }),
+            defaultsDeep({}),
           ]),
         ]),
       environmentVariables,
@@ -276,7 +260,6 @@ module.exports = pipe([
         CopyTagsToSnapshot: false,
         MonitoringInterval: 0,
         IAMDatabaseAuthenticationEnabled: false,
-
         PerformanceInsightsEnabled: false,
         AssociatedRoles: [],
         CustomerOwnedIpEnabled: false,

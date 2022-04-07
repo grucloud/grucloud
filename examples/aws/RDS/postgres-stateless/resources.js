@@ -278,6 +278,7 @@ exports.createResources = () => [
     group: "RDS",
     name: "cluster-postgres-stateless",
     properties: ({}) => ({
+      BackupRetentionPeriod: 1,
       DatabaseName: "dev",
       Engine: "aurora-postgresql",
       EngineVersion: "10.14",
@@ -286,6 +287,8 @@ exports.createResources = () => [
       PreferredMaintenanceWindow: "sun:00:47-sun:01:17",
       IAMDatabaseAuthenticationEnabled: false,
       EngineMode: "serverless",
+      DeletionProtection: false,
+      HttpEndpointEnabled: false,
       Tags: [
         {
           Key: "mykey1",
@@ -295,6 +298,10 @@ exports.createResources = () => [
       ScalingConfiguration: {
         MinCapacity: 2,
         MaxCapacity: 4,
+        AutoPause: true,
+        SecondsUntilAutoPause: 300,
+        TimeoutAction: "RollbackCapacityChange",
+        SecondsBeforeTimeout: 300,
       },
       MasterUserPassword:
         process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USER_PASSWORD,

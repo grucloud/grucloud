@@ -11,6 +11,11 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
+    name: "/aws/rds/cluster/cluster-postgres-stateless/postgresql",
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
     name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-54U2jnJfonsp",
   },
   {
@@ -27,6 +32,14 @@ exports.createResources = () => [
     type: "LogGroup",
     group: "CloudWatchLogs",
     name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-ZF99ZrezsQ4n",
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "RDSOSMetrics",
+    properties: ({}) => ({
+      retentionInDays: 30,
+    }),
   },
   {
     type: "Vpc",
@@ -339,7 +352,7 @@ exports.createResources = () => [
     type: "TaskDefinition",
     group: "ECS",
     name: "CdkStackFargateServiceTaskDef2C533A52",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       containerDefinitions: [
         {
           command: [],
@@ -382,7 +395,7 @@ exports.createResources = () => [
             options: {
               "awslogs-group":
                 "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n",
-              "awslogs-region": "us-east-1",
+              "awslogs-region": `${config.region}`,
               "awslogs-stream-prefix": "FargateService",
             },
             secretOptions: [],
@@ -658,6 +671,7 @@ exports.createResources = () => [
     group: "RDS",
     name: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
     properties: ({}) => ({
+      BackupRetentionPeriod: 1,
       DatabaseName: "aurora_db",
       Engine: "aurora",
       EngineVersion: "5.6.10a",
@@ -667,12 +681,17 @@ exports.createResources = () => [
           .CDKSTACK_AURORASERVERLESSCLUSTERB4A18EF1_APXIDHEWYAZ0_MASTER_USERNAME,
       PreferredBackupWindow: "07:52-08:22",
       PreferredMaintenanceWindow: "fri:09:30-fri:10:00",
+      IAMDatabaseAuthenticationEnabled: false,
       EngineMode: "serverless",
-      HttpEndpointEnabled: true,
+      DeletionProtection: false,
+      HttpEndpointEnabled: false,
       ScalingConfiguration: {
         MinCapacity: 1,
         MaxCapacity: 2,
+        AutoPause: true,
         SecondsUntilAutoPause: 600,
+        TimeoutAction: "RollbackCapacityChange",
+        SecondsBeforeTimeout: 300,
       },
       MasterUserPassword:
         process.env

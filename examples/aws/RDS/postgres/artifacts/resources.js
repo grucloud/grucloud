@@ -175,9 +175,11 @@ exports.createResources = () => [
       MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
       AllocatedStorage: 20,
       PreferredBackupWindow: "22:10-22:40",
+      BackupRetentionPeriod: 1,
       PreferredMaintenanceWindow: "fri:23:40-sat:00:10",
       EngineVersion: "14.2",
       PubliclyAccessible: true,
+      DeletionProtection: false,
       MaxAllocatedStorage: 50,
       Tags: [
         {

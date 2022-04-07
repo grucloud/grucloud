@@ -92,6 +92,7 @@ exports.createResources = () => [
     group: "RDS",
     name: "aurora-serverless",
     properties: ({}) => ({
+      BackupRetentionPeriod: 1,
       DatabaseName: "dbname",
       Engine: "aurora",
       EngineVersion: "5.6.10a",
@@ -101,6 +102,8 @@ exports.createResources = () => [
       PreferredMaintenanceWindow: "tue:06:58-tue:07:28",
       IAMDatabaseAuthenticationEnabled: false,
       EngineMode: "serverless",
+      DeletionProtection: false,
+      HttpEndpointEnabled: false,
       ScalingConfiguration: {
         MinCapacity: 2,
         MaxCapacity: 2,
