@@ -323,10 +323,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "eks-cluster-sg-my-cluster-1909614887",
-      securityGroupFrom: [
-        "eks-cluster-sg-my-cluster-1909614887",
-        "load-balancer",
-      ],
+      securityGroupFrom: ["eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   {

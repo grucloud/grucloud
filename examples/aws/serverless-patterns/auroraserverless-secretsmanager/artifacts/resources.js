@@ -99,6 +99,7 @@ exports.createResources = () => [
       MasterUsername: process.env.AURORA_SERVERLESS_MASTER_USERNAME,
       PreferredBackupWindow: "03:02-03:32",
       PreferredMaintenanceWindow: "tue:06:58-tue:07:28",
+      IAMDatabaseAuthenticationEnabled: false,
       EngineMode: "serverless",
       ScalingConfiguration: {
         MinCapacity: 2,

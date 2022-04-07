@@ -11,7 +11,7 @@ const {
 const { defaultsDeep, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { buildTags, isAwsError } = require("../AwsCommon");
+const { buildTags, isAwsError, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./SecretsManagerCommon");
 
@@ -72,12 +72,7 @@ exports.SecretsManagerSecret = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: pipe([
-      get("live.Name"),
-      tap((Name) => {
-        assert(Name);
-      }),
-    ]),
+    findName: findNameInTagsOrId({ findId: get("live.Name") }),
     pickId: pipe([
       tap(({ Name }) => {
         assert(Name);

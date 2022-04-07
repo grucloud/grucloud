@@ -91,8 +91,11 @@ exports.createResources = () => [
 ## Dependencies
 
 - [Layer](./Layer.md)
-
 - [Iam Role](../IAM/Role.md)
+- [SecretsManager Secret](../SecretsManager/Secrets.md)
+- [RDS Cluster](../RDS/Cluster.md)
+- [Dynamo Table](../DynampDB/Table.md)
+- [AppSync Graphql](../AppSync/GraphqlApi)
 
 ## UsedBy
 

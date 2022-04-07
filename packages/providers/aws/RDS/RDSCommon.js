@@ -8,17 +8,20 @@ exports.createRDS = createEndpoint("rds", "RDS");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#addTagsToResource-property
 exports.tagResource =
-  ({ rds }) =>
+  ({ endpoint }) =>
   ({ id }) =>
-    pipe([(Tags) => ({ ResourceName: id, Tags }), rds().addTagsToResource]);
+    pipe([
+      (Tags) => ({ ResourceName: id, Tags }),
+      endpoint().addTagsToResource,
+    ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#removeTagsFromResource-property
 exports.untagResource =
-  ({ rds }) =>
+  ({ endpoint }) =>
   ({ id }) =>
     pipe([
       (TagKeys) => ({ ResourceName: id, TagKeys }),
-      rds().removeTagsFromResource,
+      endpoint().removeTagsFromResource,
     ]);
 
 exports.renameTagList = pipe([
@@ -43,13 +46,7 @@ exports.findDependenciesSecret = ({
           group: "SecretsManager",
           providerName: config.providerName,
         }),
-      tap((params) => {
-        assert(true);
-      }),
       find(eq(get(`live.SecretString.${secretField}`), live[rdsUsernameField])),
-      tap((params) => {
-        assert(true);
-      }),
     ])(),
   ],
 });

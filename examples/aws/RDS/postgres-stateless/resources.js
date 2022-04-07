@@ -3,6 +3,11 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "/aws/rds/cluster/cluster-postgres-stateless/postgresql",
+  },
   { type: "KeyPair", group: "EC2", name: "kp-postgres-stateless" },
   {
     type: "Vpc",
@@ -193,9 +198,8 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 5432,
-        ToPort: 5432,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -206,6 +210,7 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: 5432,
       },
     }),
     dependencies: () => ({
@@ -218,9 +223,8 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 22,
-        ToPort: 22,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -231,6 +235,7 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: 22,
       },
     }),
     dependencies: () => ({
@@ -276,20 +281,21 @@ exports.createResources = () => [
       DatabaseName: "dev",
       Engine: "aurora-postgresql",
       EngineVersion: "10.14",
-      EngineMode: "serverless",
+      MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
       PreferredBackupWindow: "01:39-02:09",
       PreferredMaintenanceWindow: "sun:00:47-sun:01:17",
-      ScalingConfiguration: {
-        MinCapacity: 2,
-        MaxCapacity: 4,
-      },
+      IAMDatabaseAuthenticationEnabled: false,
+      EngineMode: "serverless",
       Tags: [
         {
           Key: "mykey1",
           Value: "myvalue",
         },
       ],
-      MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
+      ScalingConfiguration: {
+        MinCapacity: 2,
+        MaxCapacity: 4,
+      },
       MasterUserPassword:
         process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USER_PASSWORD,
     }),

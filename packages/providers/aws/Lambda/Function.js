@@ -9,6 +9,8 @@ const {
   tryCatch,
   pick,
   eq,
+  fork,
+  omit,
 } = require("rubico");
 const {
   pluck,
@@ -21,6 +23,7 @@ const {
 } = require("rubico/x");
 const path = require("path");
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
+const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "Function",
@@ -86,12 +89,27 @@ exports.Function = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives }) => [
     findDependenciesInEnvironment({
+      pathLive: "live.ARN",
+      type: "Secret",
+      group: "SecretsManager",
+      live,
+      lives,
+    }),
+    findDependenciesInEnvironment({
       pathLive: "live.uris.GRAPHQL",
       type: "GraphqlApi",
       group: "AppSync",
       live,
       lives,
     }),
+    findDependenciesInEnvironment({
+      pathLive: "live.DBClusterArn",
+      type: "DBCluster",
+      group: "RDS",
+      live,
+      lives,
+    }),
+
     findDependenciesInEnvironment({
       pathLive: "live.TableName",
       type: "Table",
@@ -224,18 +242,37 @@ exports.Function = ({ spec, config }) => {
     getById,
   });
 
-  const update = client.update({
-    filterParams: ({ payload, live, diff }) =>
-      pipe([
-        () => ({
-          FunctionName: payload.FunctionName,
-          ZipFile: payload.Code.ZipFile,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateFunctionConfiguration-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateFunctionCode-property
+  const update = ({ name, payload, diff, live }) =>
+    pipe([
+      tap(() => {
+        logger.info(`update function: ${name}`);
+        assert(diff);
+      }),
+      () => ({
+        FunctionName: payload.FunctionName,
+        ZipFile: payload.Code.ZipFile,
+      }),
+      lambda().updateFunctionCode,
+      () =>
+        retryCall({
+          name: `update function code ${name}`,
+          fn: pipe([
+            () => payload,
+            pick(["FunctionName"]),
+            lambda().getFunction,
+            eq(get("Configuration.LastUpdateStatus"), "Successful"),
+          ]),
         }),
-      ])(),
-    method: "updateFunctionCode",
-    config,
-    getById,
-  });
+      // updateFunctionConfiguration
+      () => payload,
+      omit(["Code"]),
+      lambda().updateFunctionConfiguration,
+      tap(() => {
+        logger.info(`updated function done ${name}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
   const destroy = client.destroy({

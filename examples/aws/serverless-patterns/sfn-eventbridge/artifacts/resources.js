@@ -93,7 +93,7 @@ exports.createResources = () => [
                 },
               ],
             },
-            Resource: "arn:aws:states:::events:putEvents",
+            Resource: `arn:aws:states:::events:putEvents`,
             Type: "Task",
           },
         },

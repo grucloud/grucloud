@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick } = require("rubico");
+const { map, pipe, tap, get, eq, pick, switchCase, omit } = require("rubico");
 const { defaultsDeep, isEmpty, pluck, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -41,6 +41,24 @@ exports.DBInstance = ({ spec, config }) => {
       rdsUsernameField: "MasterUsername",
     }),
     {
+      type: "DBCluster",
+      group: "RDS",
+      ids: [
+        pipe([
+          () => live,
+          get("DBClusterIdentifier"),
+          (name) =>
+            lives.getByName({
+              name,
+              providerName: config.providerName,
+              type: "DBCluster",
+              group: "RDS",
+            }),
+          get("id"),
+        ])(),
+      ],
+    },
+    {
       type: "DBSubnetGroup",
       group: "RDS",
       ids: [
@@ -62,6 +80,11 @@ exports.DBInstance = ({ spec, config }) => {
       type: "SecurityGroup",
       group: "EC2",
       ids: pipe([get("VpcSecurityGroups"), pluck("VpcSecurityGroupId")])(live),
+    },
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [live.MonitoringRoleArn],
     },
     {
       type: "Key",
@@ -94,30 +117,58 @@ exports.DBInstance = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { dbSubnetGroup, securityGroups, kmsKey, secret },
+    dependencies: {
+      dbCluster,
+      dbSubnetGroup,
+      securityGroups,
+      kmsKey,
+      secret,
+      monitoringRole,
+    },
   }) =>
     pipe([
-      tap(() => {
-        assert(
-          !isEmpty(otherProps.MasterUserPassword),
-          "MasterUserPassword is empty"
-        );
-      }),
       () => otherProps,
       defaultsDeep({
         DBInstanceIdentifier: name,
         DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
-        VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
-          securityGroups
-        ),
-        ...(kmsKey && { KmsKeyId: getField(kmsKey, "Arn") }),
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
+      when(() => kmsKey, defaultsDeep({ KmsKeyId: getField(kmsKey, "Arn") })),
+      switchCase([
+        () => dbCluster,
+        // Remove DBName, security group and password when cluster is set
+        pipe([omit("DBName")]),
+        pipe([
+          defaultsDeep({
+            VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
+              securityGroups
+            ),
+          }),
+          switchCase([
+            () => secret,
+            defaultsDeep({
+              MasterUsername: getField(secret, "SecretString.username"),
+              MasterUserPassword: getField(secret, "SecretString.password"),
+            }),
+            defaultsDeep({
+              MasterUsername: () =>
+                `process.env.${envVarName({
+                  name,
+                  suffix: "MasterUsername",
+                })}`,
+              MasterUserPassword: () =>
+                `process.env.${envVarName({
+                  name,
+                  suffix: "MasterUserPassword",
+                })}`,
+            }),
+          ]),
+        ]),
+      ]),
       when(
-        () => secret,
+        () => monitoringRole,
         defaultsDeep({
-          MasterUsername: getField(secret, "SecretString.username"),
-          MasterUserPassword: getField(secret, "SecretString.password"),
+          MonitoringRoleArn: getField(monitoringRole, "Arn"),
         })
       ),
     ])();
@@ -129,10 +180,10 @@ exports.DBInstance = ({ spec, config }) => {
     isInstanceUp,
     config: { ...config, retryCount: 100 },
     configIsUp: { ...config, retryCount: 500 },
-    postCreate: ({ resolvedDependencies: { secret } }) =>
+    postCreate: ({ resolvedDependencies: { secret, dbCluster } }) =>
       pipe([
         when(
-          () => secret,
+          () => secret && !dbCluster,
           pipe([
             tap(({ DBInstanceIdentifier, Endpoint, Port }) => {
               assert(DBInstanceIdentifier);
@@ -174,7 +225,11 @@ exports.DBInstance = ({ spec, config }) => {
     },
     method: "deleteDBInstance",
     getById,
-    ignoreErrorCodes: ["DBInstanceNotFound", "InvalidDBInstanceStateFault"],
+    ignoreErrorCodes: [
+      "DBInstanceNotFound",
+      "InvalidDBInstanceStateFault",
+      "InvalidDBInstanceState",
+    ],
     config,
   });
 
@@ -190,7 +245,7 @@ exports.DBInstance = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    tagResource: tagResource({ rds }),
-    untagResource: untagResource({ rds }),
+    tagResource: tagResource({ endpoint: rds }),
+    untagResource: untagResource({ endpoint: rds }),
   };
 };

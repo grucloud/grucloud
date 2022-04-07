@@ -327,7 +327,6 @@ exports.createResources = () => [
     group: "EC2",
     name: "com.amazonaws.us-east-1.events",
     properties: ({ config }) => ({
-      ServiceName: "com.amazonaws.us-east-1.events",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [

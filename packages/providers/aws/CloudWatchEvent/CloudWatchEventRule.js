@@ -23,7 +23,7 @@ const buildArn =
   ({ Name, EventBusName }) =>
     pipe([
       () => `arn:aws:events:${config.region}:${config.accountId()}:rule/`,
-      unless(eq(EventBusName, "default"), append(`${EventBusName}/`)),
+      unless(() => EventBusName === "default", append(`${EventBusName}/`)),
       append(Name),
     ])();
 

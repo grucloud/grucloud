@@ -1,12 +1,28 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, pick, get } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const {
+  pipe,
+  assign,
+  map,
+  omit,
+  tap,
+  pick,
+  get,
+  switchCase,
+  any,
+  and,
+  eq,
+} = require("rubico");
+const { defaultsDeep, when, isFunction, unless } = require("rubico/x");
 
 const AdmZip = require("adm-zip");
 const path = require("path");
 
 const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
-const { compareAws, isOurMinionObject } = require("../AwsCommon");
+const {
+  compareAws,
+  isOurMinionObject,
+  replaceAccountAndRegion,
+} = require("../AwsCommon");
 
 const { Function, compareFunction } = require("./Function");
 const { Layer, compareLayer } = require("./Layer");
@@ -14,6 +30,21 @@ const { EventSourceMapping } = require("./EventSourceMapping");
 
 const GROUP = "Lambda";
 const compareLambda = compareAws({});
+
+const hasIdInLive = ({ idToMatch, lives, groupType }) =>
+  pipe([
+    tap(() => {
+      assert(groupType);
+      assert(idToMatch);
+    }),
+    () => lives,
+    any(
+      and([
+        eq(get("groupType"), groupType),
+        ({ id }) => idToMatch.match(new RegExp(id)),
+      ])
+    ),
+  ]);
 
 module.exports = pipe([
   () => [
@@ -90,7 +121,7 @@ module.exports = pipe([
         EphemeralStorage: { Size: 512 },
       },
       filterLive:
-        ({ resource, programOptions, lives }) =>
+        ({ resource, programOptions, lives, providerConfig }) =>
         (live) =>
           pipe([
             tap(() => {
@@ -110,11 +141,35 @@ module.exports = pipe([
                       map((value) =>
                         pipe([
                           () => ({ Id: value, lives }),
-                          replaceWithName({
-                            groupType: "AppSync::GraphqlApi",
-                            pathLive: "live.uris.GRAPHQL",
-                            path: "live.uris.GRAPHQL",
-                          }),
+                          switchCase([
+                            hasIdInLive({
+                              idToMatch: value,
+                              lives,
+                              groupType: "AppSync::GraphqlApi",
+                            }),
+                            pipe([
+                              replaceWithName({
+                                groupType: "AppSync::GraphqlApi",
+                                pathLive: "live.uris.GRAPHQL",
+                                path: "live.uris.GRAPHQL",
+                              }),
+                            ]),
+                            hasIdInLive({
+                              idToMatch: value,
+                              lives,
+                              groupType: "SecretsManager::Secret",
+                            }),
+                            pipe([
+                              replaceWithName({
+                                groupType: "SecretsManager::Secret",
+                                path: "id",
+                              }),
+                            ]),
+                            pipe([
+                              get("Id"),
+                              replaceAccountAndRegion({ providerConfig }),
+                            ]),
+                          ]),
                         ])()
                       ),
                     ]),
@@ -140,9 +195,11 @@ module.exports = pipe([
         layers: { type: "Layer", group: "Lambda", list: true },
         role: { type: "Role", group: "IAM" },
         kmsKey: { type: "Key", group: "KMS" },
+        secret: { type: "Secret", group: "SecretsManager", parent: true },
         subnets: { type: "Subnet", group: "EC2", list: true },
-        graphqlApi: { type: "GraphqlApi", group: "AppSync" },
-        dynamoDbTable: { type: "Table", group: "DynamoDB" },
+        graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
+        dynamoDbTable: { type: "Table", group: "DynamoDB", parent: true },
+        dbCluster: { type: "DBCluster", group: "RDS", parent: true },
       },
     },
     {

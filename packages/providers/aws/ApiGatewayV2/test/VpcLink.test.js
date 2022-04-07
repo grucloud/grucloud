@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe.only("Api GatewayV2 VpcLink", async function () {
+describe("Api GatewayV2 VpcLink", async function () {
   let config;
   let provider;
   let vpcLink;

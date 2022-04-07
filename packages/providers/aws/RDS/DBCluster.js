@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick, omit } = require("rubico");
+const { assign, map, pipe, tap, get, eq, pick, omit } = require("rubico");
 const { defaultsDeep, pluck, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -75,6 +75,11 @@ exports.DBCluster = ({ spec, config }) => {
       group: "KMS",
       ids: [get("KmsKeyId")(live)],
     },
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [live.MonitoringRoleArn],
+    },
   ];
   const decorate = () => pipe([renameTagList]);
 
@@ -100,23 +105,39 @@ exports.DBCluster = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { dbSubnetGroup, securityGroups, secret },
+    dependencies: { dbSubnetGroup, securityGroups, secret, monitoringRole },
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
         DBClusterIdentifier: name,
-        DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
-        VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
-          securityGroups
-        ),
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
+      when(
+        () => securityGroups,
+        defaultsDeep({
+          VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
+            securityGroups
+          ),
+        })
+      ),
+      when(
+        () => dbSubnetGroup,
+        assign({
+          DBSubnetGroupName: () => dbSubnetGroup.config.DBSubnetGroupName,
+        })
+      ),
       when(
         () => secret,
         defaultsDeep({
           MasterUsername: getField(secret, "SecretString.username"),
           MasterUserPassword: getField(secret, "SecretString.password"),
+        })
+      ),
+      when(
+        () => monitoringRole,
+        defaultsDeep({
+          MonitoringRoleArn: getField(monitoringRole, "Arn"),
         })
       ),
     ])();
@@ -184,7 +205,7 @@ exports.DBCluster = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    tagResource: tagResource({ rds }),
-    untagResource: untagResource({ rds }),
+    tagResource: tagResource({ endpoint: rds }),
+    untagResource: untagResource({ endpoint: rds }),
   };
 };

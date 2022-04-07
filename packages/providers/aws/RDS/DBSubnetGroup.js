@@ -22,6 +22,8 @@ exports.DBSubnetGroup = ({ spec, config }) => {
   const rds = createRDS(config);
   const client = AwsClient({ spec, config })(rds);
 
+  const isDefault = pipe([eq(get("live.DBSubnetGroupName"), "default")]);
+
   const findDependencies = ({ live, lives }) => [
     {
       type: "Subnet",
@@ -112,7 +114,9 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    tagResource: tagResource({ rds }),
-    untagResource: untagResource({ rds }),
+    isDefault,
+    managedByOther: isDefault,
+    tagResource: tagResource({ endpoint: rds }),
+    untagResource: untagResource({ endpoint: rds }),
   };
 };

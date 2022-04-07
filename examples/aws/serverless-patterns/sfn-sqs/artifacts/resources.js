@@ -57,7 +57,7 @@ exports.createResources = () => [
               QueueUrl:
                 "https://sqs.us-east-1.amazonaws.com/840541460064/sam-app-MyQueue-AqSTiBlPUT32",
             },
-            Resource: "arn:aws:states:::sqs:sendMessage",
+            Resource: `arn:aws:states:::sqs:sendMessage`,
             Type: "Task",
           },
         },

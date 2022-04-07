@@ -58,7 +58,7 @@ exports.EC2Route = ({ spec, config }) => {
       switchCase([
         () => live.NatGatewayId,
         append("-nat-gateway"),
-        eq(live.GatewayId, "local"),
+        () => live.GatewayId === "local",
         append("-local"),
         pipe([
           () => live,
