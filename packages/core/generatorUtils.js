@@ -1049,6 +1049,7 @@ const writeEnv =
         ])()
       ),
       filter(not(isEmpty)),
+      flatten,
       callProp("join", "\n"),
       unless(isEmpty, (formatted) =>
         pipe([

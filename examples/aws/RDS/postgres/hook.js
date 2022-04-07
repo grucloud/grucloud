@@ -16,11 +16,13 @@ module.exports = ({ provider }) => {
         ].getLive();
         assert(dbInstanceLive);
         assert(process.env.DB_INSTANCE_MASTER_USER_PASSWORD);
+        assert(dbInstanceLive.Endpoint.Port);
+        assert(dbInstanceLive.Endpoint.Address);
 
         const client = new Client({
           user: dbInstanceLive.MasterUsername,
           host: dbInstanceLive.Endpoint.Address,
-          //database: "dev",
+          database: "postgres",
           password: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
           port: dbInstanceLive.Endpoint.Port,
         });
@@ -31,7 +33,13 @@ module.exports = ({ provider }) => {
             await client.connect();
             return true;
           },
-          shouldRetryOnException: () => true,
+          shouldRetryOnException: (error) =>
+            pipe([
+              tap((params) => {
+                assert(error);
+              }),
+              () => true,
+            ])(),
           config: { retryCount: 40, retryDelay: 5e3 },
         });
 

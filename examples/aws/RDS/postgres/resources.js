@@ -4,6 +4,14 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "RDSOSMetrics",
+    properties: ({}) => ({
+      retentionInDays: 30,
+    }),
+  },
+  {
     type: "Vpc",
     group: "EC2",
     name: "vpc-postgres",
@@ -95,9 +103,8 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 5432,
-        ToPort: 5432,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -108,6 +115,7 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: 5432,
       },
     }),
     dependencies: () => ({
@@ -125,12 +133,12 @@ exports.createResources = () => [
           {
             Action: ["logs:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
           {
             Action: ["sqs:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
         ],
       },
@@ -161,21 +169,22 @@ exports.createResources = () => [
     group: "RDS",
     name: "db-instance",
     properties: ({}) => ({
+      DBInstanceIdentifier: "db-instance",
       DBInstanceClass: "db.t3.micro",
       Engine: "postgres",
-      EngineVersion: "14.2",
+      MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
       AllocatedStorage: 20,
-      MaxAllocatedStorage: 50,
-      PubliclyAccessible: true,
       PreferredBackupWindow: "22:10-22:40",
       PreferredMaintenanceWindow: "fri:23:40-sat:00:10",
+      EngineVersion: "14.2",
+      PubliclyAccessible: true,
+      MaxAllocatedStorage: 50,
       Tags: [
         {
           Key: "mykey2",
           Value: "myvalue",
         },
       ],
-      MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
       MasterUserPassword: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
     }),
     dependencies: () => ({

@@ -2,23 +2,20 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("Api GatewayV2 VpcLink", async function () {
+describe("DBProxy", async function () {
   let config;
   let provider;
-  let vpcLink;
+  let dbProxy;
 
   before(async function () {
     provider = AwsProvider({ config });
-    vpcLink = provider.getClient({
-      groupType: "ApiGatewayV2::VpcLink",
-    });
+    dbProxy = provider.getClient({ groupType: "RDS::DBProxy" });
     await provider.start();
   });
-  after(async () => {});
   it(
     "list",
     pipe([
-      () => vpcLink.getList(),
+      () => dbProxy.getList(),
       tap(({ items }) => {
         assert(Array.isArray(items));
       }),
@@ -28,13 +25,27 @@ describe("Api GatewayV2 VpcLink", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        vpcLink.destroy({
-          live: { VpcLinkId: "12345" },
+        dbProxy.destroy({
+          live: { DBProxyName: "dbProxy-12345" },
         }),
     ])
   );
   it(
     "getById with invalid id",
-    pipe([() => vpcLink.getById({ VpcLinkId: "12345" })])
+    pipe([
+      () =>
+        dbProxy.getById({
+          DBProxyName: "dbProxy-12345",
+        }),
+    ])
+  );
+  it(
+    "getByName with invalid id",
+    pipe([
+      () =>
+        dbProxy.getByName({
+          name: "dbProxy-12345",
+        }),
+    ])
   );
 });

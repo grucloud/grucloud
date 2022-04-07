@@ -86,47 +86,45 @@ const omitIfEmpty = (paths) => (obj) =>
   ])();
 exports.omitIfEmpty = omitIfEmpty;
 
-const differenceObject = (exclude) => (target) =>
-  pipe([
-    tap(() => {
-      assert(target);
-      assert(exclude);
-    }),
-    () => target,
-    switchCase([
-      Array.isArray,
-      pipe([() => exclude, differenceWith(isDeepEqual, target)]),
-      pipe([
-        keys,
-        reduce(
-          (acc, key) =>
-            pipe([
-              switchCase([
-                () => exclude.hasOwnProperty(key),
+const differenceObject =
+  (exclude = {}) =>
+  (target = {}) =>
+    pipe([
+      () => target,
+      switchCase([
+        Array.isArray,
+        pipe([() => exclude, differenceWith(isDeepEqual, target)]),
+        pipe([
+          keys,
+          reduce(
+            (acc, key) =>
+              pipe([
                 switchCase([
-                  () => isObject(exclude[key]),
-                  pipe([
-                    pipe([() => differenceObject(exclude[key])(target[key])]),
+                  () => exclude.hasOwnProperty(key),
+                  switchCase([
+                    () => isObject(exclude[key]),
+                    pipe([
+                      pipe([() => differenceObject(exclude[key])(target[key])]),
+                      switchCase([
+                        isEmpty,
+                        () => acc,
+                        pipe([(value) => ({ ...acc, [key]: value })]),
+                      ]),
+                    ]),
                     switchCase([
-                      isEmpty,
+                      pipe([eq(exclude[key], target[key])]),
                       () => acc,
-                      pipe([(value) => ({ ...acc, [key]: value })]),
+                      () => ({ ...acc, [key]: target[key] }),
                     ]),
                   ]),
-                  switchCase([
-                    pipe([eq(exclude[key], target[key])]),
-                    () => acc,
-                    () => ({ ...acc, [key]: target[key] }),
-                  ]),
+                  () => ({ ...acc, [key]: target[key] }),
                 ]),
-                () => ({ ...acc, [key]: target[key] }),
-              ]),
-            ])(),
-          {}
-        ),
+              ])(),
+            {}
+          ),
+        ]),
       ]),
-    ]),
-  ])();
+    ])();
 
 exports.differenceObject = differenceObject;
 

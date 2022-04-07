@@ -75,6 +75,11 @@ exports.DBCluster = ({ spec, config }) => {
       group: "KMS",
       ids: [get("KmsKeyId")(live)],
     },
+    {
+      type: "Role",
+      group: "IAM",
+      ids: [live.MonitoringRoleArn],
+    },
   ];
   const decorate = () => pipe([renameTagList]);
 
@@ -100,7 +105,7 @@ exports.DBCluster = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { dbSubnetGroup, securityGroups, secret },
+    dependencies: { dbSubnetGroup, securityGroups, secret, monitoringRole },
   }) =>
     pipe([
       () => otherProps,
@@ -117,6 +122,12 @@ exports.DBCluster = ({ spec, config }) => {
         defaultsDeep({
           MasterUsername: getField(secret, "SecretString.username"),
           MasterUserPassword: getField(secret, "SecretString.password"),
+        })
+      ),
+      when(
+        () => monitoringRole,
+        defaultsDeep({
+          MonitoringRoleArn: getField(monitoringRole, "Arn"),
         })
       ),
     ])();
@@ -184,7 +195,7 @@ exports.DBCluster = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    tagResource: tagResource({ rds }),
-    untagResource: untagResource({ rds }),
+    tagResource: tagResource({ endpoint: rds }),
+    untagResource: untagResource({ endpoint: rds }),
   };
 };

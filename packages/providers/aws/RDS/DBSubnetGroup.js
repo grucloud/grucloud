@@ -112,7 +112,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    tagResource: tagResource({ rds }),
-    untagResource: untagResource({ rds }),
+    tagResource: tagResource({ endpoint: rds }),
+    untagResource: untagResource({ endpoint: rds }),
   };
 };
