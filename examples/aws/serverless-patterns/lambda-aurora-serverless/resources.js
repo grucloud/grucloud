@@ -75,23 +75,24 @@ exports.createResources = () => [
     group: "Lambda",
     name: "aurora-test-cluster-function",
     properties: ({ config, getId }) => ({
-      Environment: {
-        Variables: {
-          SecretArn: `${getId({
-            type: "Secret",
-            group: "SecretsManager",
-            name: "DBSecret",
-          })}`,
-          DBClusterArn: `arn:aws:rds:${
-            config.region
-          }:${config.accountId()}:cluster:aurora-test-cluster`,
-          DBName: `aurora_test_db`,
+      Configuration: {
+        Environment: {
+          Variables: {
+            SecretArn: `${getId({
+              type: "Secret",
+              group: "SecretsManager",
+              name: "DBSecret",
+            })}`,
+            DBClusterArn: `arn:aws:rds:${
+              config.region
+            }:${config.accountId()}:cluster:aurora-test-cluster`,
+            DBName: `aurora_test_db`,
+          },
         },
+        Handler: "app.handler",
+        Runtime: "nodejs14.x",
+        Timeout: 30,
       },
-      Handler: "app.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
-      Timeout: 30,
       Tags: {
         "lambda:createdBy": "SAM",
       },

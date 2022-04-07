@@ -24,7 +24,11 @@ const {
   replaceAccountAndRegion,
 } = require("../AwsCommon");
 
-const { Function, compareFunction } = require("./Function");
+const {
+  Function,
+  compareFunction,
+  filterFunctionUrlConfig,
+} = require("./Function");
 const { Layer, compareLayer } = require("./Layer");
 const { EventSourceMapping } = require("./EventSourceMapping");
 
@@ -92,33 +96,38 @@ module.exports = pipe([
       compare: compareFunction,
       displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
       omitProperties: [
-        "CodeSha256",
         "Code",
-        "CodeSize",
-        "FunctionArn",
-        "FunctionName",
-        "LastModified",
-        "LastUpdateStatus",
-        "LastUpdateStatusReason",
-        "LastUpdateStatusReasonCode",
-        "Layers",
-        "MasterArn",
-        "RevisionId",
-        "Role",
-        "SigningJobArn",
-        "State",
-        "StateReason",
-        "StateReasonCode",
-        "Version",
-        "VpcConfig",
+        "Policy",
+        "Configuration.CodeSha256",
+        "Configuration.Code",
+        "Configuration.CodeSize",
+        "Configuration.FunctionArn",
+        "Configuration.FunctionName",
+        "Configuration.LastModified",
+        "Configuration.LastUpdateStatus",
+        "Configuration.LastUpdateStatusReason",
+        "Configuration.LastUpdateStatusReasonCode",
+        "Configuration.Layers",
+        "Configuration.MasterArn",
+        "Configuration.RevisionId",
+        "Configuration.Role",
+        "Configuration.SigningJobArn",
+        "Configuration.State",
+        "Configuration.StateReason",
+        "Configuration.StateReasonCode",
+        "Configuration.Version",
+        "Configuration.VpcConfig",
       ],
       propertiesDefault: {
-        Architectures: ["x86_64"],
-        Description: "",
-        MemorySize: 128,
-        Timeout: 3,
-        TracingConfig: { Mode: "PassThrough" },
-        EphemeralStorage: { Size: 512 },
+        Configuration: {
+          Architectures: ["x86_64"],
+          Description: "",
+          MemorySize: 128,
+          Timeout: 3,
+          PackageType: "Zip",
+          TracingConfig: { Mode: "PassThrough" },
+          EphemeralStorage: { Size: 512 },
+        },
       },
       filterLive:
         ({ resource, programOptions, lives, providerConfig }) =>
@@ -129,54 +138,60 @@ module.exports = pipe([
               assert(live.Code.Data);
             }),
             () => live,
-            get("Configuration"),
-            when(
-              get("Environment"),
-              assign({
-                Environment: pipe([
+            assign({
+              FunctionUrlConfig: filterFunctionUrlConfig,
+              Configuration: pipe([
+                get("Configuration"),
+                when(
                   get("Environment"),
                   assign({
-                    Variables: pipe([
-                      get("Variables"),
-                      map((value) =>
-                        pipe([
-                          () => ({ Id: value, lives }),
-                          switchCase([
-                            hasIdInLive({
-                              idToMatch: value,
-                              lives,
-                              groupType: "AppSync::GraphqlApi",
-                            }),
+                    Environment: pipe([
+                      get("Environment"),
+                      assign({
+                        Variables: pipe([
+                          get("Variables"),
+                          map((value) =>
                             pipe([
-                              replaceWithName({
-                                groupType: "AppSync::GraphqlApi",
-                                pathLive: "live.uris.GRAPHQL",
-                                path: "live.uris.GRAPHQL",
-                              }),
-                            ]),
-                            hasIdInLive({
-                              idToMatch: value,
-                              lives,
-                              groupType: "SecretsManager::Secret",
-                            }),
-                            pipe([
-                              replaceWithName({
-                                groupType: "SecretsManager::Secret",
-                                path: "id",
-                              }),
-                            ]),
-                            pipe([
-                              get("Id"),
-                              replaceAccountAndRegion({ providerConfig }),
-                            ]),
-                          ]),
-                        ])()
-                      ),
+                              () => ({ Id: value, lives }),
+                              switchCase([
+                                hasIdInLive({
+                                  idToMatch: value,
+                                  lives,
+                                  groupType: "AppSync::GraphqlApi",
+                                }),
+                                pipe([
+                                  replaceWithName({
+                                    groupType: "AppSync::GraphqlApi",
+                                    pathLive: "live.uris.GRAPHQL",
+                                    path: "live.uris.GRAPHQL",
+                                  }),
+                                ]),
+                                hasIdInLive({
+                                  idToMatch: value,
+                                  lives,
+                                  groupType: "SecretsManager::Secret",
+                                }),
+                                pipe([
+                                  replaceWithName({
+                                    groupType: "SecretsManager::Secret",
+                                    path: "id",
+                                  }),
+                                ]),
+                                pipe([
+                                  get("Id"),
+                                  replaceAccountAndRegion({ providerConfig }),
+                                ]),
+                              ]),
+                            ])()
+                          ),
+                        ]),
+                      }),
                     ]),
-                  }),
-                ]),
-              })
-            ),
+                  })
+                ),
+              ]),
+            }),
+            omitIfEmpty(["FunctionUrlConfig"]),
             tap(
               pipe([
                 () => new AdmZip(Buffer.from(live.Code.Data, "base64")),

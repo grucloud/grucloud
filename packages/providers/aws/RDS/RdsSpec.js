@@ -214,15 +214,15 @@ module.exports = pipe([
               defaultsDeep({
                 AllocatedStorage: 1,
               }),
-              defaultsDeep({
-                ScalingConfiguration: {
-                  AutoPause: true,
-                  SecondsUntilAutoPause: 300,
-                  SecondsBeforeTimeout: 300,
-                  TimeoutAction: "RollbackCapacityChange",
-                },
-              }),
             ]),
+            defaultsDeep({
+              ScalingConfiguration: {
+                AutoPause: true,
+                SecondsUntilAutoPause: 300,
+                SecondsBeforeTimeout: 300,
+                TimeoutAction: "RollbackCapacityChange",
+              },
+            }),
           ]),
         filterLive: () =>
           pipe([

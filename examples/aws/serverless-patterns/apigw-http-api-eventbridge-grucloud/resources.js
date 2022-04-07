@@ -173,12 +173,11 @@ exports.createResources = () => [
     group: "Lambda",
     name: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-WT09pJuMy2gE",
     properties: ({}) => ({
-      Handler: "index.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs12.x",
-      Description: "",
-      Timeout: 120,
-      MemorySize: 128,
+      Configuration: {
+        Handler: "index.handler",
+        Runtime: "nodejs12.x",
+        Timeout: 120,
+      },
     }),
     dependencies: () => ({
       role: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-4YDZM1JYBBAN",

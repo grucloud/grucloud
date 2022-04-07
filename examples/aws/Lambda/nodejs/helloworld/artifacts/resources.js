@@ -60,9 +60,10 @@ exports.createResources = () => [
     group: "Lambda",
     name: "lambda-hello-world",
     properties: ({}) => ({
-      Handler: "helloworld.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
+      Configuration: {
+        Handler: "helloworld.handler",
+        Runtime: "nodejs14.x",
+      },
       Tags: {
         mykey: "value",
       },

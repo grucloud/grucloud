@@ -6,13 +6,13 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "lambda-role",
+    name: "my-function-url-role-t2xxsa8e",
     properties: ({}) => ({
+      Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
-            Sid: "",
             Effect: "Allow",
             Principal: {
               Service: `lambda.amazonaws.com`,
@@ -23,68 +23,56 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      policies: ["lambda-policy"],
+      policies: [
+        "AWSLambdaBasicExecutionRole-9c3ecdb3-2e09-4c84-b290-82222512354a",
+      ],
     }),
   },
   {
     type: "Policy",
     group: "IAM",
-    name: "lambda-policy",
-    properties: ({}) => ({
+    name: "AWSLambdaBasicExecutionRole-9c3ecdb3-2e09-4c84-b290-82222512354a",
+    properties: ({ config }) => ({
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
-            Action: ["logs:*"],
             Effect: "Allow",
-            Resource: `*`,
+            Action: "logs:CreateLogGroup",
+            Resource: `arn:aws:logs:${config.region}:${config.accountId()}:*`,
           },
           {
-            Action: ["sqs:*"],
             Effect: "Allow",
-            Resource: `*`,
+            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+            Resource: [
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/lambda/my-function-url:*`,
+            ],
           },
         ],
       },
-      Path: "/",
-      Description: "Allow logs",
+      Path: "/service-role/",
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    name: "lambda-hello-world",
+    name: "my-function-url",
     properties: ({}) => ({
       Configuration: {
-        Handler: "helloworld.handler",
+        Handler: "index.handler",
         Runtime: "nodejs14.x",
       },
-    }),
-    dependencies: () => ({
-      role: "lambda-role",
-    }),
-  },
-  {
-    type: "EventSourceMapping",
-    group: "Lambda",
-    name: "mapping-lambda-hello-world-my-queue-lambda",
-    properties: ({}) => ({
-      BatchSize: 10,
-      MaximumBatchingWindowInSeconds: 0,
-    }),
-    dependencies: () => ({
-      lambdaFunction: "lambda-hello-world",
-      sqsQueue: "my-queue-lambda",
-    }),
-  },
-  {
-    type: "Queue",
-    group: "SQS",
-    name: "my-queue-lambda",
-    properties: ({}) => ({
-      tags: {
-        "my-tag": "my-value",
+      FunctionUrlConfig: {
+        AuthType: "NONE",
+        Cors: {
+          AllowOrigins: ["*"],
+        },
       },
+    }),
+    dependencies: () => ({
+      role: "my-function-url-role-t2xxsa8e",
     }),
   },
 ];
