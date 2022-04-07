@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, pick, omit } = require("rubico");
+const { assign, map, pipe, tap, get, eq, pick, omit } = require("rubico");
 const { defaultsDeep, pluck, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -111,12 +111,22 @@ exports.DBCluster = ({ spec, config }) => {
       () => otherProps,
       defaultsDeep({
         DBClusterIdentifier: name,
-        DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
-        VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
-          securityGroups
-        ),
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
+      when(
+        () => securityGroups,
+        defaultsDeep({
+          VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
+            securityGroups
+          ),
+        })
+      ),
+      when(
+        () => dbSubnetGroup,
+        assign({
+          DBSubnetGroupName: () => dbSubnetGroup.config.DBSubnetGroupName,
+        })
+      ),
       when(
         () => secret,
         defaultsDeep({

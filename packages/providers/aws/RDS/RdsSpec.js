@@ -138,6 +138,7 @@ module.exports = pipe([
         "Subnets",
         "DBSubnetGroupArn",
       ],
+      ignoreResource: () => pipe([get("isDefault")]),
       filterLive: () => pick(["DBSubnetGroupDescription"]),
       dependencies: {
         subnets: { type: "Subnet", group: "EC2", list: true },
