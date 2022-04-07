@@ -206,7 +206,6 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpc-wizard-vpce-s3",
     properties: ({}) => ({
-      ServiceName: "com.amazonaws.us-east-1.s3",
       PolicyDocument: {
         Version: "2008-10-17",
         Statement: [

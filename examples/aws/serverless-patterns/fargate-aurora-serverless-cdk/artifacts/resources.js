@@ -667,6 +667,7 @@ exports.createResources = () => [
           .CDKSTACK_AURORASERVERLESSCLUSTERB4A18EF1_APXIDHEWYAZ0_MASTER_USERNAME,
       PreferredBackupWindow: "07:52-08:22",
       PreferredMaintenanceWindow: "fri:09:30-fri:10:00",
+      IAMDatabaseAuthenticationEnabled: false,
       EngineMode: "serverless",
       ScalingConfiguration: {
         MinCapacity: 1,

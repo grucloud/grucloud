@@ -3,6 +3,11 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "/aws/rds/cluster/cluster-postgres-stateless/postgresql",
+  },
   { type: "KeyPair", group: "EC2", name: "kp-postgres-stateless" },
   {
     type: "Vpc",
@@ -273,13 +278,13 @@ exports.createResources = () => [
     group: "RDS",
     name: "cluster-postgres-stateless",
     properties: ({}) => ({
-      AllocatedStorage: 1,
       DatabaseName: "dev",
       Engine: "aurora-postgresql",
       EngineVersion: "10.14",
       MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
       PreferredBackupWindow: "01:39-02:09",
       PreferredMaintenanceWindow: "sun:00:47-sun:01:17",
+      IAMDatabaseAuthenticationEnabled: false,
       EngineMode: "serverless",
       Tags: [
         {

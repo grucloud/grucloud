@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, get, pick, not } = require("rubico");
+const {
+  pipe,
+  assign,
+  map,
+  omit,
+  tap,
+  get,
+  pick,
+  not,
+  switchCase,
+} = require("rubico");
 const { defaultsDeep, callProp, when } = require("rubico/x");
 const { replaceWithName } = require("@grucloud/core/Common");
 
@@ -188,12 +198,6 @@ module.exports = pipe([
         HttpEndpointEnabled: false,
         CopyTagsToSnapshot: false,
         CrossAccountClone: false,
-        ScalingConfiguration: {
-          AutoPause: true,
-          SecondsUntilAutoPause: 300,
-          SecondsBeforeTimeout: 300,
-          TimeoutAction: "RollbackCapacityChange",
-        },
       },
       compare: compareRDS({
         filterAll: () =>
@@ -204,12 +208,20 @@ module.exports = pipe([
           ]), //TODO kludge: updating HttpEndpointEnabled does not work
         filterTarget: () =>
           pipe([
-            when(
+            switchCase([
               isAuroraEngine,
               defaultsDeep({
                 AllocatedStorage: 1,
-              })
-            ),
+              }),
+              defaultsDeep({
+                ScalingConfiguration: {
+                  AutoPause: true,
+                  SecondsUntilAutoPause: 300,
+                  SecondsBeforeTimeout: 300,
+                  TimeoutAction: "RollbackCapacityChange",
+                },
+              }),
+            ]),
           ]),
         filterLive: () =>
           pipe([
@@ -227,7 +239,18 @@ module.exports = pipe([
             ])
           ),
           omitAutoMinorVersionUpgrade,
-          when(isAuroraEngine, omit(["AllocatedStorage"])),
+          switchCase([
+            isAuroraEngine,
+            omit(["AllocatedStorage"]),
+            defaultsDeep({
+              ScalingConfiguration: {
+                AutoPause: true,
+                SecondsUntilAutoPause: 300,
+                SecondsBeforeTimeout: 300,
+                TimeoutAction: "RollbackCapacityChange",
+              },
+            }),
+          ]),
         ]),
       environmentVariables,
     },
@@ -242,7 +265,6 @@ module.exports = pipe([
         monitoringRole: { type: "Role", group: "IAM" },
       },
       propertiesDefault: {
-        BackupRetentionPeriod: 1,
         DBSecurityGroups: [],
         MultiAZ: false,
         AutoMinorVersionUpgrade: true,
@@ -253,7 +275,7 @@ module.exports = pipe([
         CopyTagsToSnapshot: false,
         MonitoringInterval: 0,
         IAMDatabaseAuthenticationEnabled: false,
-        DeletionProtection: false,
+
         PerformanceInsightsEnabled: false,
         AssociatedRoles: [],
         CustomerOwnedIpEnabled: false,
@@ -296,7 +318,14 @@ module.exports = pipe([
           tap((params) => {
             assert(true);
           }),
-          when(isAuroraEngine, omit(["AllocatedStorage"])),
+          switchCase([
+            isAuroraEngine,
+            omit(["AllocatedStorage"]),
+            defaultsDeep({
+              BackupRetentionPeriod: 1,
+              DeletionProtection: false,
+            }),
+          ]),
           // AWS weirdness/absurdities:
           // PerformanceInsightsEnabled is returned by listing but
           // EnablePerformanceInsights is used for creating.

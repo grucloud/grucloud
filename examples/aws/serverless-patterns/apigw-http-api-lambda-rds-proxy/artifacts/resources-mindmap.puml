@@ -1,0 +1,23 @@
+@startmindmap
+title Resources for project apigw-http-api-lambda-rds-proxy
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (3)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (3)
+++++ SecurityGroup (2)
+++++ SecurityGroupRuleIngress (3)
+++++ SecurityGroupRuleEgress (1)
++++ IAM
+++++ Role (2)
++++ RDS
+++++ DBProxy (1)
+++++ DBSubnetGroup (1)
+++++ DBCluster (1)
+++++ DBInstance (1)
++++ SecretsManager
+++++ Secret (1)
+@endmindmap
