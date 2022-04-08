@@ -747,7 +747,7 @@ module.exports = pipe([
         filterTarget: () => pipe([pick(["PolicyDocument"])]),
         filterLive: () => pipe([pick(["PolicyDocument"])]),
       }),
-      filterLive: ({ providerConfig }) =>
+      filterLive: ({ providerConfig, lives }) =>
         pipe([
           pick([
             "PolicyDocument",
@@ -755,7 +755,7 @@ module.exports = pipe([
             "RequesterManaged",
             "VpcEndpointType",
           ]),
-          assignPolicyDocumentAccountAndRegion({ providerConfig }),
+          assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
         ]),
     },
   ],

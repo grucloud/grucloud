@@ -497,9 +497,10 @@ exports.createResources = () => [
     group: "Lambda",
     name: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-c8VHz1jOeFFc",
     properties: ({}) => ({
-      Handler: "index.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
+      Configuration: {
+        Handler: "index.handler",
+        Runtime: "nodejs14.x",
+      },
     }),
     dependencies: () => ({
       role: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-26SWWUB5R0PQ",
@@ -510,11 +511,12 @@ exports.createResources = () => [
     group: "Lambda",
     name: "test-lambdaFunction",
     properties: ({}) => ({
-      Architectures: ["arm64"],
-      Handler: "app.lambdaHandler",
-      MemorySize: 512,
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
+      Configuration: {
+        Architectures: ["arm64"],
+        Handler: "app.lambdaHandler",
+        MemorySize: 512,
+        Runtime: "nodejs14.x",
+      },
     }),
     dependencies: () => ({
       role: "lambdaStack-testLambdaServiceRole955E2289-1QPXU9XXN6BM8",

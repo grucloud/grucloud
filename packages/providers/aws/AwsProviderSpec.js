@@ -18,6 +18,7 @@ const GROUPS = [
   "EC2",
   "ECR",
   "ECS",
+  "EFS",
   "EKS",
   "ELBv2",
   "IAM",

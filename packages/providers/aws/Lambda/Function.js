@@ -240,7 +240,12 @@ exports.Function = ({ spec, config }) => {
   const create = client.create({
     method: "createFunction",
     filterPayload: ({ Configuration, Tags }) =>
-      pipe([() => ({ ...Configuration, Tags })])(),
+      pipe([
+        tap(() => {
+          assert(Configuration);
+        }),
+        () => ({ ...Configuration, Tags }),
+      ])(),
     pickCreated: () =>
       pipe([
         tap(({ FunctionArn }) => {
@@ -248,7 +253,9 @@ exports.Function = ({ spec, config }) => {
         }),
         ({ FunctionArn }) => ({ Configuration: { FunctionArn } }),
       ]),
-    shouldRetryOnExceptionCodes: ["InvalidParameterValueException"],
+    shouldRetryOnExceptionMessages: [
+      "The role defined for the function cannot be assumed by Lambda",
+    ],
     getById,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunctionUrlConfig-property
     postCreate:
@@ -271,7 +278,7 @@ exports.Function = ({ spec, config }) => {
               assert(true);
             }),
             lambda().createFunctionUrlConfig,
-          ])()
+          ])
         ),
   });
 

@@ -635,7 +635,7 @@ exports.ResourceMaker = ({
     pipe([
       tap(() => {
         logger.info(`create ${tos({ resourceName: getResourceName(), type })}`);
-        logger.debug(`create ${tos({ payload })}`);
+        //logger.debug(`create ${tos({ payload })}`);
         assert(payload);
         assert(resolvedDependencies);
       }),

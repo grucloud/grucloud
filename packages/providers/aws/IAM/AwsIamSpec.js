@@ -217,14 +217,16 @@ module.exports = pipe([
             assign({
               AssumeRolePolicyDocument: pipe([
                 get("AssumeRolePolicyDocument"),
-                assignPolicyAccountAndRegion({ providerConfig }),
+                assignPolicyAccountAndRegion({ providerConfig, lives }),
               ]),
             })
           ),
           assign({
             Policies: pipe([
               get("Policies", []),
-              map(assignPolicyDocumentAccountAndRegion({ providerConfig })),
+              map(
+                assignPolicyDocumentAccountAndRegion({ providerConfig, lives })
+              ),
             ]),
           }),
           omitIfEmpty(["Description", "Policies", "AttachedPolicies"]),
@@ -269,6 +271,7 @@ module.exports = pipe([
         },
         table: { type: "Table", group: "DynamoDB" },
         queue: { type: "Queue", group: "SQS" },
+        efsAccessPoint: { type: "AccessPoint", group: "EFS" },
       },
       hasNoProperty: ({ resource }) =>
         pipe([
@@ -293,10 +296,10 @@ module.exports = pipe([
       filterLive: switchCase([
         get("resource.cannotBeDeleted"),
         () => pick(["Arn"]),
-        ({ providerConfig }) =>
+        ({ providerConfig, lives }) =>
           pipe([
             pick(["PolicyDocument", "Path", "Description"]),
-            assignPolicyDocumentAccountAndRegion({ providerConfig }),
+            assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
           ]),
       ]),
     },

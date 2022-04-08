@@ -408,7 +408,7 @@ exports.RestApi = ({ spec, config }) => {
                     pipe([
                       () => value,
                       when(
-                        eq(key, "$ref"),
+                        () => key === "$ref",
                         pipe([
                           callProp("split", "/"),
                           last,

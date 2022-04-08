@@ -42,7 +42,11 @@ const Diff = require("diff");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
-const { configProviderDefault, compare } = require("@grucloud/core/Common");
+const {
+  configProviderDefault,
+  compare,
+  replaceWithName,
+} = require("@grucloud/core/Common");
 
 const isAwsError = (code) =>
   pipe([
@@ -899,7 +903,7 @@ const assignPolicyResource = ({ providerConfig }) =>
 
 exports.assignPolicyResource = assignPolicyResource;
 
-const assignPolicyAccountAndRegion = ({ providerConfig }) =>
+const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
   assign({
     Statement: pipe([
       get("Statement"),
@@ -932,6 +936,19 @@ const assignPolicyAccountAndRegion = ({ providerConfig }) =>
                   assign({
                     StringEquals: pipe([
                       get("StringEquals"),
+                      when(
+                        get("elasticfilesystem:AccessPointArn"),
+                        assign({
+                          "elasticfilesystem:AccessPointArn": pipe([
+                            get("elasticfilesystem:AccessPointArn"),
+                            (Id) => ({ Id, lives }),
+                            replaceWithName({
+                              groupType: "EFS::AccessPoint",
+                              path: "id",
+                            }),
+                          ]),
+                        })
+                      ),
                       when(
                         get("aws:SourceAccount"),
                         assign({
@@ -989,10 +1006,10 @@ const assignPolicyAccountAndRegion = ({ providerConfig }) =>
   });
 exports.assignPolicyAccountAndRegion = assignPolicyAccountAndRegion;
 
-exports.assignPolicyDocumentAccountAndRegion = ({ providerConfig }) =>
+exports.assignPolicyDocumentAccountAndRegion = ({ providerConfig, lives }) =>
   assign({
     PolicyDocument: pipe([
       get("PolicyDocument"),
-      assignPolicyAccountAndRegion({ providerConfig }),
+      assignPolicyAccountAndRegion({ providerConfig, lives }),
     ]),
   });

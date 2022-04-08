@@ -88,21 +88,17 @@ exports.createResources = () => [
     type: "Function",
     group: "Lambda",
     name: "CdkLambdaCallAppSyncStack-trigger73DC69F8-Fn5wBU5v76VC",
-    properties: ({ getId }) => ({
-      Environment: {
-        Variables: {
-          AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
-          GRAPHQL_URL: `${getId({
-            type: "GraphqlApi",
-            group: "AppSync",
-            name: "TriggeredByLambda",
-            path: "live.uris.GRAPHQL",
-          })}`,
+    properties: ({ config }) => ({
+      Configuration: {
+        Environment: {
+          Variables: {
+            AWS_NODEJS_CONNECTION_REUSE_ENABLED: `1`,
+            GRAPHQL_URL: `https://7hkopzodhzdyvkunbqsx6rzqfa.appsync-api.${config.region}.amazonaws.com/graphql`,
+          },
         },
+        Handler: "index.handler",
+        Runtime: "nodejs14.x",
       },
-      Handler: "index.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
     }),
     dependencies: () => ({
       role: "CdkLambdaCallAppSyncStack-triggerServiceRole07E9AB-5S1U4A7Y9DDX",
