@@ -11,7 +11,7 @@ const model = {
   package: "efs",
   client: "EFS",
   ignoreErrorCodes: ["MountTargetNotFound"],
-  getById: { method: "describeMountTargets", getParam: "MountTargets" },
+  getById: { method: "describeMountTargets", getField: "MountTargets" },
   create: { method: "createMountTarget" },
   update: { method: "updateMountTarget" },
   destroy: { method: "deleteMountTarget" },

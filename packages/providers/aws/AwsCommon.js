@@ -761,69 +761,70 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
       assert(Name);
       assert(Array.isArray(Values));
     }),
-    () =>
-      ec2().describeNetworkInterfaces({
-        Filters: [{ Name, Values }],
-      }),
+    () => ({
+      Filters: [{ Name, Values }],
+    }),
+    ec2().describeNetworkInterfaces,
     get("NetworkInterfaces", []),
     tap((NetworkInterfaces) => {
-      logger.debug(`#NetworkInterfaces ${NetworkInterfaces.length}`);
+      logger.debug(
+        `#NetworkInterfaces ${JSON.stringify(NetworkInterfaces, null, 4)}`
+      );
     }),
-    tap(
-      forEach(
-        pipe([
-          get("Attachment.AttachmentId"),
-          tap.if(
-            not(isEmpty),
-            tryCatch(
-              (AttachmentId) => ec2().detachNetworkInterface({ AttachmentId }),
-              switchCase([
-                isAwsError("AuthFailure"),
-                () => undefined,
-                (error) => {
-                  logger.error(
-                    `deleteNetworkInterface error code: ${error.code}`
+    forEach(
+      pipe([
+        ({ NetworkInterfaceId, Attachment }) =>
+          retryCall({
+            name: `detachNetworkInterface NetworkInterfaceId ${NetworkInterfaceId}, AttachmentId: ${Attachment?.AttachmentId}`,
+            fn: pipe([
+              // detachNetworkInterface
+              () => Attachment,
+              get("AttachmentId"),
+              unless(
+                isEmpty,
+                tryCatch(
+                  pipe([
+                    (AttachmentId) => ({
+                      AttachmentId,
+                      Force: true,
+                    }),
+                    ec2().detachNetworkInterface,
+                  ]),
+                  // Ignore error
+                  (error) => {
+                    logger.info(
+                      `detachNetworkInterface shouldRetryOnException: error: ${error.name}`
+                    );
+                  }
+                )
+              ),
+              // deleteNetworkInterface
+              () => ({ NetworkInterfaceId }),
+              ec2().deleteNetworkInterface,
+            ]),
+            isExpectedResult: () => true,
+            config: { retryDelay: 10e3, retryCount: 45 * 6 },
+            shouldRetryOnException: ({ error, name }) =>
+              pipe([
+                tap(() => {
+                  logger.info(
+                    `deleteNetworkInterface shouldRetryOnException: ${name}, error: ${util.inspect(
+                      error
+                    )}`
                   );
-                  throw Error(error.message);
-                },
-              ])
-            )
-          ),
-        ])
-      )
-    ),
-    tap(
-      forEach(
-        pipe([
-          get("NetworkInterfaceId"),
-          tap((NetworkInterfaceId) => {
-            logger.debug(`deleteNetworkInterface: ${NetworkInterfaceId}`);
-            assert(NetworkInterfaceId);
+                }),
+                () => error,
+                switchCase([
+                  or([
+                    isAwsError("InvalidParameterValue"),
+                    isAwsError("OperationNotPermitted"),
+                  ]),
+                  () => true,
+                  () => false,
+                ]),
+              ])(),
           }),
-          tryCatch(
-            (NetworkInterfaceId) =>
-              ec2().deleteNetworkInterface({ NetworkInterfaceId }),
-            switchCase([
-              or([
-                isAwsError("InvalidNetworkInterfaceID.NotFound"),
-                isAwsError("InvalidParameterValue"),
-                isAwsError("OperationNotPermitted"),
-              ]),
-              (error) => {
-                logger.error(
-                  `deleteNetworkInterface ignore error code: ${error.code}`
-                );
-              },
-              (error) => {
-                logger.error(
-                  `deleteNetworkInterface error code: ${error.code}`
-                );
-                throw Error(error.message);
-              },
-            ])
-          ),
-        ])
-      )
+      ])
     ),
   ])();
 

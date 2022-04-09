@@ -260,6 +260,7 @@ exports.Function = ({ spec, config }) => {
       ]),
     shouldRetryOnExceptionMessages: [
       "The role defined for the function cannot be assumed by Lambda",
+      "EFS file system",
     ],
     getById,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunctionUrlConfig-property
