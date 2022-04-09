@@ -72,9 +72,6 @@ module.exports = pipe([
               "CompatibleRuntimes",
               "LicenseInfo",
             ]),
-            tap((params) => {
-              assert(true);
-            }),
             tap(
               pipe([
                 () => new AdmZip(Buffer.from(live.Content.Data, "base64")),
@@ -156,9 +153,6 @@ module.exports = pipe([
                                 groupType: "EFS::AccessPoint",
                                 path: "id",
                               }),
-                              tap((params) => {
-                                assert(true);
-                              }),
                             ])(),
                         })
                       ),
@@ -231,10 +225,11 @@ module.exports = pipe([
         kmsKey: { type: "Key", group: "KMS" },
         secret: { type: "Secret", group: "SecretsManager", parent: true },
         subnets: { type: "Subnet", group: "EC2", list: true },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
         graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
         dynamoDbTable: { type: "Table", group: "DynamoDB", parent: true },
         dbCluster: { type: "DBCluster", group: "RDS", parent: true },
-        efsMountPoint: { type: "MountPoint", group: "EFS" },
+        efsAccessPoint: { type: "AccessPoint", group: "EFS", list: true },
       },
     },
     {

@@ -129,7 +129,7 @@ exports.Function = ({ spec, config }) => {
       ids: [live.Configuration.KMSKeyArn],
     },
     {
-      type: "Subnets",
+      type: "Subnet",
       group: "EC2",
       ids: pipe([() => live, get("Configuration.VpcConfig.SubnetIds")])(),
     },
@@ -171,6 +171,11 @@ exports.Function = ({ spec, config }) => {
           ])(),
         pluck("id"),
       ])(),
+    },
+    {
+      type: "AccessPoint",
+      group: "EFS",
+      ids: pipe([() => live, get("FileSystemConfigs"), pluck("Arn")])(),
     },
   ];
 
@@ -408,22 +413,26 @@ exports.Function = ({ spec, config }) => {
           when(
             () => subnets,
             defaultsDeep({
-              VpcConfig: {
-                SubnetIds: pipe([
-                  () => subnets,
-                  map((subnet) => getField(subnet, "SubnetId")),
-                ])(),
+              Configuration: {
+                VpcConfig: {
+                  SubnetIds: pipe([
+                    () => subnets,
+                    map((subnet) => getField(subnet, "SubnetId")),
+                  ])(),
+                },
               },
             })
           ),
           when(
             () => securityGroups,
             defaultsDeep({
-              VpcConfig: {
-                SecurityGroupIds: pipe([
-                  () => securityGroups,
-                  map((sg) => getField(sg, "GroupId")),
-                ])(),
+              Configuration: {
+                VpcConfig: {
+                  SecurityGroupIds: pipe([
+                    () => securityGroups,
+                    map((sg) => getField(sg, "GroupId")),
+                  ])(),
+                },
               },
             })
           ),
@@ -453,6 +462,7 @@ const filterFunctionUrlConfig = pipe([
 ]);
 
 exports.filterFunctionUrlConfig = filterFunctionUrlConfig;
+
 exports.compareFunction = pipe([
   tap((params) => {
     assert(true);

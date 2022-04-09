@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, map, tap, omit, assign, get } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, prepend, last } = require("rubico/x");
 
 const { compareAws, replaceAccountAndRegion } = require("../AwsCommon");
 const { EFSFileSystem } = require("./EFSFileSystem");
@@ -66,6 +66,21 @@ module.exports = pipe([
     {
       type: "MountTarget",
       Client: EFSMountTarget,
+      inferName: ({
+        properties: { AvailabilityZoneName },
+        dependenciesSpec: { fileSystem },
+      }) =>
+        pipe([
+          tap(() => {
+            assert(fileSystem);
+            assert(AvailabilityZoneName);
+          }),
+          () => AvailabilityZoneName,
+          last,
+          prepend("::"),
+          prepend(fileSystem),
+          prepend("mount-target::"),
+        ])(),
       dependencies: {
         fileSystem: { type: "FileSystem", group: "EFS", parent: true },
         subnet: { type: "Subnet", group: "EC2" },

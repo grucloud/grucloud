@@ -2,6 +2,7 @@ const assert = require("assert");
 const { pipe, tap, get, assign, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
@@ -10,7 +11,7 @@ const { tagResource, untagResource } = require("./EFSCommon");
 const model = {
   package: "efs",
   client: "EFS",
-  ignoreErrorCodes: ["BadRequest"],
+  ignoreErrorCodes: ["AccessPointNotFound", "BadRequest"],
   getById: { method: "describeAccessPoints", getParam: "AccessPoints" },
   getList: { method: "describeAccessPoints", getParam: "AccessPoints" },
   create: { method: "createAccessPoint" },
@@ -29,7 +30,7 @@ exports.EFSAccessPoint = ({ spec, config }) =>
       tap(({ AccessPointId }) => {
         assert(AccessPointId);
       }),
-      pick(["AccessPointId", "FileSystemId"]),
+      pick(["AccessPointId" /*, "FileSystemId"*/]),
     ]),
     findId: pipe([get("live.AccessPointArn")]),
     findDependencies: ({ live }) => [
@@ -43,10 +44,16 @@ exports.EFSAccessPoint = ({ spec, config }) =>
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      dependencies: { fileSystem },
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
+          FileSystemId: getField(fileSystem, "FileSystemId"),
           Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
       ])(),

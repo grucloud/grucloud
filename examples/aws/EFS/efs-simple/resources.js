@@ -4,70 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Api",
-    group: "ApiGatewayV2",
-    name: "sam-app",
-    properties: ({}) => ({
-      Tags: {
-        "httpapi:createdBy": "SAM",
-      },
-    }),
-  },
-  {
-    type: "Stage",
-    group: "ApiGatewayV2",
-    name: "$default",
-    properties: ({}) => ({
-      AutoDeploy: true,
-      Tags: {
-        "httpapi:createdBy": "SAM",
-      },
-    }),
-    dependencies: () => ({
-      api: "sam-app",
-    }),
-  },
-  {
-    type: "Integration",
-    group: "ApiGatewayV2",
-    properties: ({}) => ({
-      ConnectionType: "INTERNET",
-      IntegrationMethod: "POST",
-      IntegrationType: "AWS_PROXY",
-      PayloadFormatVersion: "2.0",
-    }),
-    dependencies: () => ({
-      api: "sam-app",
-      lambdaFunction: "sam-app-HelloEfsFunction-7tBAF2VQrleG",
-    }),
-  },
-  {
-    type: "Route",
-    group: "ApiGatewayV2",
-    properties: ({}) => ({
-      RequestParameters: {},
-      RouteKey: "$default",
-    }),
-    dependencies: () => ({
-      api: "sam-app",
-      integration:
-        "integration::sam-app::sam-app-HelloEfsFunction-7tBAF2VQrleG",
-    }),
-  },
-  {
-    type: "Deployment",
-    group: "ApiGatewayV2",
-    properties: ({}) => ({
-      Description:
-        "Automatic deployment triggered by changes to the Api configuration",
-      AutoDeployed: true,
-    }),
-    dependencies: () => ({
-      api: "sam-app",
-      stage: "$default",
-    }),
-  },
-  {
     type: "Vpc",
     group: "EC2",
     name: "EfsLambdaVpc",
@@ -102,7 +38,7 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "sam-app-EfsLambdaSecurityGroup-JLAY31AJ7BL9",
+    name: "sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
     properties: ({}) => ({
       Description: "EFS + Lambda on SAM Security Group",
     }),
@@ -126,7 +62,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "sam-app-EfsLambdaSecurityGroup-JLAY31AJ7BL9",
+      securityGroup: "sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
     }),
   },
   {
@@ -145,13 +81,13 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "sam-app-EfsLambdaSecurityGroup-JLAY31AJ7BL9",
+      securityGroup: "sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
     }),
   },
   {
     type: "FileSystem",
     group: "EFS",
-    name: "fs-0aaaf7b0715648e5b",
+    name: "fs-0c95a09faadb73087",
     properties: ({}) => ({
       Encrypted: false,
       PerformanceMode: "generalPurpose",
@@ -161,7 +97,7 @@ exports.createResources = () => [
   {
     type: "AccessPoint",
     group: "EFS",
-    name: "fsap-0b3ae155f60ccbb8c",
+    name: "fsap-0ef29121aa02af8f7",
     properties: ({}) => ({
       PosixUser: {
         Gid: 1000,
@@ -178,39 +114,37 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      fileSystem: "fs-0aaaf7b0715648e5b",
+      fileSystem: "fs-0c95a09faadb73087",
     }),
   },
   {
     type: "MountTarget",
     group: "EFS",
-    name: "fsmt-01fe71fea58077ae7",
     properties: ({ config }) => ({
       AvailabilityZoneName: `${config.region}a`,
     }),
     dependencies: () => ({
-      fileSystem: "fs-0aaaf7b0715648e5b",
+      fileSystem: "fs-0c95a09faadb73087",
       subnet: "EfsLambdaSubnetA",
-      securityGroups: ["sam-app-EfsLambdaSecurityGroup-JLAY31AJ7BL9"],
+      securityGroups: ["sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY"],
     }),
   },
   {
     type: "MountTarget",
     group: "EFS",
-    name: "fsmt-0fda94134613a4f1c",
     properties: ({ config }) => ({
       AvailabilityZoneName: `${config.region}b`,
     }),
     dependencies: () => ({
-      fileSystem: "fs-0aaaf7b0715648e5b",
+      fileSystem: "fs-0c95a09faadb73087",
       subnet: "EfsLambdaSubnetB",
-      securityGroups: ["sam-app-EfsLambdaSecurityGroup-JLAY31AJ7BL9"],
+      securityGroups: ["sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY"],
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-HelloEfsFunctionRole-52M4AEGBPGE5",
+    name: "sam-app-HelloEfsFunctionRole-15LXBM09R2ILE",
     properties: ({ config, getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -234,7 +168,7 @@ exports.createResources = () => [
                     "elasticfilesystem:AccessPointArn": `${getId({
                       type: "AccessPoint",
                       group: "EFS",
-                      name: "fsap-0b3ae155f60ccbb8c",
+                      name: "fsap-0ef29121aa02af8f7",
                     })}`,
                   },
                 },
@@ -244,7 +178,7 @@ exports.createResources = () => [
                 ],
                 Resource: `arn:aws:elasticfilesystem:${
                   config.region
-                }:${config.accountId()}:file-system/fs-0aaaf7b0715648e5b`,
+                }:${config.accountId()}:file-system/fs-0c95a09faadb73087`,
                 Effect: "Allow",
               },
             ],
@@ -275,7 +209,7 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-HelloEfsFunction-7tBAF2VQrleG",
+    name: "sam-app-HelloEfsFunction-kAB4qyDAUDSl",
     properties: ({ getId }) => ({
       Configuration: {
         FileSystemConfigs: [
@@ -283,7 +217,7 @@ exports.createResources = () => [
             Arn: `${getId({
               type: "AccessPoint",
               group: "EFS",
-              name: "fsap-0b3ae155f60ccbb8c",
+              name: "fsap-0ef29121aa02af8f7",
             })}`,
             LocalMountPath: "/mnt/msg",
           },
@@ -297,7 +231,10 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      role: "sam-app-HelloEfsFunctionRole-52M4AEGBPGE5",
+      role: "sam-app-HelloEfsFunctionRole-15LXBM09R2ILE",
+      subnets: ["EfsLambdaSubnetA", "EfsLambdaSubnetB"],
+      securityGroups: ["sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY"],
+      efsAccessPoint: ["fsap-0ef29121aa02af8f7"],
     }),
   },
 ];

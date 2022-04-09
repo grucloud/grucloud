@@ -57,17 +57,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
-    group: "ApiGatewayV2",
-    properties: ({}) => ({
-      Description:
-        "Automatic deployment triggered by changes to the Api configuration",
-    }),
-    dependencies: () => ({
-      api: "serverlessland-pvt-endpoint",
-    }),
-  },
-  {
     type: "VpcLink",
     group: "ApiGatewayV2",
     name: "APIGWVpcLinkToPrivateHTTPEndpoint",

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, pick } = require("rubico");
+const { pipe, tap, get, assign, pick, eq } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -10,8 +10,8 @@ const { tagResource, untagResource } = require("./EFSCommon");
 const model = {
   package: "efs",
   client: "EFS",
-  ignoreErrorCodes: ["BadRequest"],
-  getById: { method: "describeFileSystems", getParam: "FileSystems" },
+  ignoreErrorCodes: ["FileSystemNotFound", "BadRequest"],
+  getById: { method: "describeFileSystems", getField: "FileSystems" },
   getList: { method: "describeFileSystems", getParam: "FileSystems" },
   create: { method: "createFileSystem" },
   update: { method: "updateFileSystem" },
@@ -40,6 +40,7 @@ exports.EFSFileSystem = ({ spec, config }) =>
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
+    isInstanceUp: eq(get("LifeCycleState"), "available"),
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
         () => otherProps,

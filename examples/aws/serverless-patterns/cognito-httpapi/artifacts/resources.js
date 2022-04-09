@@ -85,17 +85,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
-    group: "ApiGatewayV2",
-    properties: ({}) => ({
-      Description:
-        "Automatic deployment triggered by changes to the Api configuration",
-    }),
-    dependencies: () => ({
-      api: "sam-app",
-    }),
-  },
-  {
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
     name: "UserPool-3Fx2HozhHSsp",

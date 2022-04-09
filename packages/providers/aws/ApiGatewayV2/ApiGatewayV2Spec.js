@@ -200,7 +200,7 @@ module.exports = pipe([
         ]),
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
-        listener: { type: "Listener", group: "ELBv2", parent: true }, //Intergration name depends on listener name
+        listener: { type: "Listener", group: "ELBv2", parent: true }, //Integration name depends on listener name
         vpcLink: { type: "VpcLink", group: "ApiGatewayV2" },
         lambdaFunction: { type: "Function", group: "Lambda" },
         eventBus: { type: "EventBus", group: "CloudWatchEvents" },
