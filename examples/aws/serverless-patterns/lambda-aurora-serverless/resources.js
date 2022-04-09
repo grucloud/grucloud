@@ -109,6 +109,8 @@ exports.createResources = () => [
     name: "aurora-test-cluster",
     properties: ({}) => ({
       DatabaseName: "aurora_test_db",
+      BackupRetentionPeriod: 1,
+      DeletionProtection: false,
       Engine: "aurora",
       EngineVersion: "5.6.10a",
       Port: 3306,

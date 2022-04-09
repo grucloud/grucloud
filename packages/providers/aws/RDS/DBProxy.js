@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, pick, assign } = require("rubico");
+const { map, pipe, tap, get, pick, assign, tryCatch } = require("rubico");
 const { defaultsDeep, when, pluck } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
@@ -55,16 +55,18 @@ exports.DBProxy = ({ spec, config }) =>
           assert(true);
         }),
         assign({
-          Tags: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            ({ DBProxyArn }) => ({
-              ResourceName: DBProxyArn,
-            }),
-            endpoint().listTagsForResource,
-            get("TagList"),
-          ]),
+          // 1. create proxy
+          // 2. listTagsForResource may return DBProxyNotFoundFault
+          Tags: tryCatch(
+            pipe([
+              ({ DBProxyArn }) => ({
+                ResourceName: DBProxyArn,
+              }),
+              endpoint().listTagsForResource,
+              get("TagList"),
+            ]),
+            () => undefined
+          ),
         }),
       ]),
     pickCreated:

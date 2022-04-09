@@ -46,11 +46,10 @@ const filterLiveDbInstance = pipe([
       "IAMDatabaseAuthenticationEnabled",
       "MasterUsername",
       "EnabledCloudwatchLogsExports",
-      "DeletionProtection",
+      "DeletionProtection", // Deletion Protection can only be applied on the Cluster level, not for individual instances
       "DBName",
-      "BackupRetentionPeriod",
+      "BackupRetentionPeriod", // The requested DB Instance will be a member of a DB Cluster. Set backup retention period for the DB Cluster.
       "AllocatedStorage",
-      "EnablePerformanceInsights",
       "ScalingConfiguration",
     ])
   ),
@@ -204,6 +203,8 @@ module.exports = pipe([
             "MultiAZ",
             "IAMDatabaseAuthenticationEnabled",
             "HttpEndpointEnabled",
+            "DeletionProtection",
+            "BackupRetentionPeriod",
           ]), //TODO kludge: updating HttpEndpointEnabled does not work
         filterTarget: () =>
           pipe([
@@ -295,7 +296,8 @@ module.exports = pipe([
         "PerformanceInsightsKMSKeyId",
       ],
       compare: compareRDS({
-        filterAll: () => filterLiveDbInstance,
+        filterAll: () =>
+          pipe([filterLiveDbInstance, omit(["EnablePerformanceInsights"])]),
       }),
       filterLive: () =>
         pipe([

@@ -40,9 +40,10 @@ exports.createResources = () => [
     group: "Lambda",
     name: "sam-app-TopicConsumerFunction1-OL7tADpZDByC",
     properties: ({}) => ({
-      Handler: "app.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs12.x",
+      Configuration: {
+        Handler: "app.handler",
+        Runtime: "nodejs12.x",
+      },
       Tags: {
         "lambda:createdBy": "SAM",
       },

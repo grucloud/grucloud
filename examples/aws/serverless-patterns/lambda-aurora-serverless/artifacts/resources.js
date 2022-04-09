@@ -75,23 +75,24 @@ exports.createResources = () => [
     group: "Lambda",
     name: "aurora-test-cluster-function",
     properties: ({ config, getId }) => ({
-      Environment: {
-        Variables: {
-          SecretArn: `${getId({
-            type: "Secret",
-            group: "SecretsManager",
-            name: "DBSecret",
-          })}`,
-          DBClusterArn: `arn:aws:rds:${
-            config.region
-          }:${config.accountId()}:cluster:aurora-test-cluster`,
-          DBName: `aurora_test_db`,
+      Configuration: {
+        Environment: {
+          Variables: {
+            SecretArn: `${getId({
+              type: "Secret",
+              group: "SecretsManager",
+              name: "DBSecret",
+            })}`,
+            DBClusterArn: `arn:aws:rds:${
+              config.region
+            }:${config.accountId()}:cluster:aurora-test-cluster`,
+            DBName: `aurora_test_db`,
+          },
         },
+        Handler: "app.handler",
+        Runtime: "nodejs14.x",
+        Timeout: 30,
       },
-      Handler: "app.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
-      Timeout: 30,
       Tags: {
         "lambda:createdBy": "SAM",
       },
@@ -107,6 +108,7 @@ exports.createResources = () => [
     group: "RDS",
     name: "aurora-test-cluster",
     properties: ({}) => ({
+      BackupRetentionPeriod: 1,
       DatabaseName: "aurora_test_db",
       Engine: "aurora",
       EngineVersion: "5.6.10a",
@@ -116,6 +118,8 @@ exports.createResources = () => [
       PreferredMaintenanceWindow: "thu:06:25-thu:06:55",
       IAMDatabaseAuthenticationEnabled: false,
       EngineMode: "serverless",
+      DeletionProtection: false,
+      HttpEndpointEnabled: false,
       ScalingConfiguration: {
         MinCapacity: 1,
         MaxCapacity: 2,

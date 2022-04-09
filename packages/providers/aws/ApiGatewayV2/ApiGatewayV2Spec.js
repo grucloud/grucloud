@@ -1,6 +1,13 @@
 const assert = require("assert");
 const { pipe, map, omit, tap, eq, get, pick, switchCase } = require("rubico");
-const { when, defaultsDeep, append, callProp } = require("rubico/x");
+const {
+  when,
+  defaultsDeep,
+  append,
+  callProp,
+  find,
+  isEmpty,
+} = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { compareAws, isOurMinionObject } = require("../AwsCommon");
 const { Api } = require("./Api");
@@ -238,6 +245,13 @@ module.exports = pipe([
         "ApiGatewayV2::Integration",
       ],
       Client: Deployment,
+      ignoreResource: (xxx) =>
+        pipe([
+          get("dependencies"),
+          find(eq(get("type"), "Stage")),
+          get("ids"),
+          isEmpty,
+        ]),
       inferName: ({ properties, dependenciesSpec: { api } }) =>
         pipe([
           tap((params) => {
