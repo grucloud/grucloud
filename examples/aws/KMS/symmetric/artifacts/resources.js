@@ -10,7 +10,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Tags: [
         {
-          TagKey: "mykey13",
+          TagKey: "mykey",
           TagValue: "value",
         },
       ],

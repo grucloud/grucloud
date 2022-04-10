@@ -8,9 +8,10 @@ exports.createResources = () => [
     group: "KMS",
     name: "key-test",
     properties: ({}) => ({
+      Enabled: true,
       Tags: [
         {
-          TagKey: "mykey13",
+          TagKey: "mykey",
           TagValue: "value",
         },
       ],

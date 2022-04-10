@@ -18,6 +18,12 @@ describe(title, async function () {
           configs: [config],
         },
         { createStack, configs: [config] },
+        {
+          createStack,
+          createResources: require("./resourcesUpdate2").createResources,
+          configs: [config],
+        },
+        { createStack, configs: [config] },
       ],
     });
   }).timeout(10 * 60e3);
