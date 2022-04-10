@@ -804,6 +804,9 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
             ]),
             isExpectedResult: () => true,
             config: { retryDelay: 10e3, retryCount: 45 * 6 },
+            isExpectedException: pipe([
+              or([isAwsError("InvalidNetworkInterfaceID.NotFound")]),
+            ]),
             shouldRetryOnException: ({ error, name }) =>
               pipe([
                 tap(() => {

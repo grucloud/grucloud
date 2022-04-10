@@ -264,14 +264,13 @@ exports.Function = ({ spec, config }) => {
     ],
     getById,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunctionUrlConfig-property
-    postCreate:
-      ({
-        payload: {
-          Configuration: { FunctionName },
-          FunctionUrlConfig,
-        },
-      }) =>
-      ({}) =>
+    postCreate: ({
+      payload: {
+        Configuration: { FunctionName },
+        FunctionUrlConfig,
+      },
+    }) =>
+      pipe([
         when(
           () => FunctionUrlConfig,
           pipe([
@@ -280,12 +279,10 @@ exports.Function = ({ spec, config }) => {
             }),
             () => FunctionUrlConfig,
             defaultsDeep({ FunctionName }),
-            tap((params) => {
-              assert(true);
-            }),
             lambda().createFunctionUrlConfig,
           ])
         ),
+      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateFunctionConfiguration-property
