@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-aws",
-  "version": "5.12.0",
+  "version": "5.12.2",
   "description": "The GruCloud AWS provider",
   "main": "AwsProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/aws",
@@ -50,7 +50,7 @@
     "@aws-sdk/client-ssm": "^3.58.0",
     "@aws-sdk/client-sts": "^3.58.0",
     "@aws-sdk/s3-request-presigner": "^3.58.0",
-    "@grucloud/core": "^5.12.0",
+    "@grucloud/core": "^5.12.2",
     "adm-zip": "^0.5.9",
     "axios": "^0.26.1",
     "chance": "^1.1.8",
