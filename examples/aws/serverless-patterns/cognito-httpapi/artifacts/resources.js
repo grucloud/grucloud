@@ -77,17 +77,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description:
         "Automatic deployment triggered by changes to the Api configuration",
-    }),
-    dependencies: () => ({
-      api: "sam-app",
-    }),
-  },
-  {
-    type: "Deployment",
-    group: "ApiGatewayV2",
-    properties: ({}) => ({
-      Description:
-        "Automatic deployment triggered by changes to the Api configuration",
       AutoDeployed: true,
     }),
     dependencies: () => ({
@@ -173,9 +162,10 @@ exports.createResources = () => [
     group: "Lambda",
     name: "sam-app-AppFunction-gKUxwsmxX2fK",
     properties: ({}) => ({
-      Handler: "app.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
+      Configuration: {
+        Handler: "app.handler",
+        Runtime: "nodejs14.x",
+      },
     }),
     dependencies: () => ({
       role: "sam-app-AppFunctionRole-BXPIJ03LGY2Y",

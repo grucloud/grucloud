@@ -264,6 +264,7 @@ exports.createResources = () => [
     group: "RDS",
     name: "sam-app-mysql-cluster",
     properties: ({}) => ({
+      BackupRetentionPeriod: 1,
       DatabaseName: "mylab",
       Engine: "aurora-mysql",
       EngineVersion: "5.7.mysql_aurora.2.09.1",
@@ -274,6 +275,8 @@ exports.createResources = () => [
       IAMDatabaseAuthenticationEnabled: false,
       BacktrackWindow: 86400,
       EngineMode: "provisioned",
+      DeletionProtection: false,
+      HttpEndpointEnabled: false,
       MasterUserPassword:
         process.env.SAM_APP_MYSQL_CLUSTER_MASTER_USER_PASSWORD,
     }),
@@ -301,6 +304,7 @@ exports.createResources = () => [
       MonitoringInterval: 1,
       PerformanceInsightsEnabled: true,
       PerformanceInsightsRetentionPeriod: 7,
+      EnablePerformanceInsights: true,
       MasterUsername: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USERNAME,
       MasterUserPassword: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USER_PASSWORD,
     }),

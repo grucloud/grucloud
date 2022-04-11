@@ -66,17 +66,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
-    group: "ApiGatewayV2",
-    properties: ({}) => ({
-      Description:
-        "Automatic deployment triggered by changes to the Api configuration",
-    }),
-    dependencies: () => ({
-      api: "ApigwFargate",
-    }),
-  },
-  {
     type: "VpcLink",
     group: "ApiGatewayV2",
     name: "V2 VPC Link",

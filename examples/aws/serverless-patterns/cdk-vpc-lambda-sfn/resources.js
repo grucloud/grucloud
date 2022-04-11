@@ -512,11 +512,12 @@ exports.createResources = () => [
     group: "Lambda",
     name: "test-lambdaFunction",
     properties: ({}) => ({
-      Architectures: ["arm64"],
-      Handler: "app.lambdaHandler",
-      MemorySize: 512,
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
+      Configuration: {
+        Architectures: ["arm64"],
+        Handler: "app.lambdaHandler",
+        MemorySize: 512,
+        Runtime: "nodejs14.x",
+      },
     }),
     dependencies: () => ({
       role: "lambdaStack-testLambdaServiceRole955E2289-1QPXU9XXN6BM8",

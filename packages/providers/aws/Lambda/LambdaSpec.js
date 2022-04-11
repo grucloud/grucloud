@@ -72,9 +72,6 @@ module.exports = pipe([
               "CompatibleRuntimes",
               "LicenseInfo",
             ]),
-            tap((params) => {
-              assert(true);
-            }),
             tap(
               pipe([
                 () => new AdmZip(Buffer.from(live.Content.Data, "base64")),
@@ -143,6 +140,26 @@ module.exports = pipe([
               Configuration: pipe([
                 get("Configuration"),
                 when(
+                  get("FileSystemConfigs"),
+                  assign({
+                    FileSystemConfigs: pipe([
+                      get("FileSystemConfigs"),
+                      map(
+                        assign({
+                          Arn: ({ Arn }) =>
+                            pipe([
+                              () => ({ Id: Arn, lives }),
+                              replaceWithName({
+                                groupType: "EFS::AccessPoint",
+                                path: "id",
+                              }),
+                            ])(),
+                        })
+                      ),
+                    ]),
+                  })
+                ),
+                when(
                   get("Environment"),
                   assign({
                     Environment: pipe([
@@ -154,11 +171,7 @@ module.exports = pipe([
                             pipe([
                               () => ({ Id: value, lives }),
                               switchCase([
-                                hasIdInLive({
-                                  idToMatch: value,
-                                  lives,
-                                  groupType: "AppSync::GraphqlApi",
-                                }),
+                                () => value.endsWith(".amazonaws.com/graphql"),
                                 pipe([
                                   replaceWithName({
                                     groupType: "AppSync::GraphqlApi",
@@ -212,9 +225,11 @@ module.exports = pipe([
         kmsKey: { type: "Key", group: "KMS" },
         secret: { type: "Secret", group: "SecretsManager", parent: true },
         subnets: { type: "Subnet", group: "EC2", list: true },
+        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
         graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
         dynamoDbTable: { type: "Table", group: "DynamoDB", parent: true },
         dbCluster: { type: "DBCluster", group: "RDS", parent: true },
+        efsAccessPoint: { type: "AccessPoint", group: "EFS", list: true },
       },
     },
     {

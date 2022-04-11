@@ -93,7 +93,8 @@ exports.createResources = () => [
 - [SecretsManager Secret](../SecretsManager/Secrets.md)
 - [RDS Cluster](../RDS/Cluster.md)
 - [DynamoDB Table](../DynampDB/Table.md)
-- [AppSync Graphql](../AppSync/GraphqlApi)
+- [AppSync Graphql](../AppSync/GraphqlApi.md)
+- [EFS MountPoint](../EFS/MountPoint.md)
 
 ## UsedBy
 

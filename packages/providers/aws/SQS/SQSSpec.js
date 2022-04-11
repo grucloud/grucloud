@@ -42,7 +42,7 @@ module.exports = pipe([
         "Attributes.LastModifiedTimestamp",
         "Attributes.SqsManagedSseEnabled",
       ],
-      filterLive: ({ providerConfig }) =>
+      filterLive: ({ providerConfig, lives }) =>
         pipe([
           omit(["QueueUrl"]),
           assign({
@@ -53,7 +53,7 @@ module.exports = pipe([
                 assign({
                   Policy: pipe([
                     get("Policy"),
-                    assignPolicyAccountAndRegion({ providerConfig }),
+                    assignPolicyAccountAndRegion({ providerConfig, lives }),
                   ]),
                 })
               ),

@@ -27,7 +27,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-MyStateMachineExecutionRole-ZVCE4J344HAN",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -47,9 +47,11 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["dynamodb:PutItem", "dynamodb:GetItem"],
-                Resource: `arn:aws:dynamodb:${
-                  config.region
-                }:${config.accountId()}:table/my-table`,
+                Resource: `${getId({
+                  type: "Table",
+                  group: "DynamoDB",
+                  name: "my-table",
+                })}`,
                 Effect: "Allow",
               },
             ],

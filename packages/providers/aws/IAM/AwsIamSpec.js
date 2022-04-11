@@ -217,14 +217,16 @@ module.exports = pipe([
             assign({
               AssumeRolePolicyDocument: pipe([
                 get("AssumeRolePolicyDocument"),
-                assignPolicyAccountAndRegion({ providerConfig }),
+                assignPolicyAccountAndRegion({ providerConfig, lives }),
               ]),
             })
           ),
           assign({
             Policies: pipe([
               get("Policies", []),
-              map(assignPolicyDocumentAccountAndRegion({ providerConfig })),
+              map(
+                assignPolicyDocumentAccountAndRegion({ providerConfig, lives })
+              ),
             ]),
           }),
           omitIfEmpty(["Description", "Policies", "AttachedPolicies"]),
@@ -266,9 +268,20 @@ module.exports = pipe([
         openIdConnectProvider: {
           type: "OpenIDConnectProvider",
           group: "IAM",
+          parent: true,
         },
-        table: { type: "Table", group: "DynamoDB" },
-        queue: { type: "Queue", group: "SQS" },
+        table: { type: "Table", group: "DynamoDB", parent: true },
+        queue: { type: "Queue", group: "SQS", parent: true },
+        efsFileSystems: {
+          type: "FileSystem",
+          group: "EFS",
+          list: true,
+        },
+        efsAccessPoints: {
+          type: "AccessPoint",
+          group: "EFS",
+          list: true,
+        },
       },
       hasNoProperty: ({ resource }) =>
         pipe([
@@ -293,10 +306,10 @@ module.exports = pipe([
       filterLive: switchCase([
         get("resource.cannotBeDeleted"),
         () => pick(["Arn"]),
-        ({ providerConfig }) =>
+        ({ providerConfig, lives }) =>
           pipe([
             pick(["PolicyDocument", "Path", "Description"]),
-            assignPolicyDocumentAccountAndRegion({ providerConfig }),
+            assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
           ]),
       ]),
     },

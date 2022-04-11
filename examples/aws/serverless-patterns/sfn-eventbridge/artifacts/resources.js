@@ -39,7 +39,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-WorkflowExecutionRole-WM87YTOPGZ2D",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -59,9 +59,11 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "events:PutEvents",
-                Resource: `arn:aws:events:${
-                  config.region
-                }:${config.accountId()}:event-bus/sam-app-EventBus`,
+                Resource: `${getId({
+                  type: "EventBus",
+                  group: "CloudWatchEvents",
+                  name: "sam-app-EventBus",
+                })}`,
                 Effect: "Allow",
               },
             ],

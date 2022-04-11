@@ -27,7 +27,7 @@ module.exports = pipe([
         "Attributes.SubscriptionsDeleted",
         "Attributes.SubscriptionsConfirmed",
       ],
-      filterLive: ({ providerConfig }) =>
+      filterLive: ({ providerConfig, lives }) =>
         pipe([
           assign({
             Attributes: pipe([
@@ -35,7 +35,7 @@ module.exports = pipe([
               assign({
                 Policy: pipe([
                   get("Policy"),
-                  assignPolicyAccountAndRegion({ providerConfig }),
+                  assignPolicyAccountAndRegion({ providerConfig, lives }),
                 ]),
               }),
             ]),

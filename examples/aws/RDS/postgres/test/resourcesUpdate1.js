@@ -36,6 +36,7 @@ exports.createResources = () => [
       BackupRetentionPeriod: 1,
       MasterUsername: process.env.DB_INSTANCE_MASTER_USERNAME,
       MasterUserPassword: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
+      DeletionProtection: false,
       Tags: [
         {
           Key: "mykey1",

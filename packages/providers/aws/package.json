@@ -33,6 +33,7 @@
     "@aws-sdk/client-ec2": "^3.60.0",
     "@aws-sdk/client-ecr": "^3.58.0",
     "@aws-sdk/client-ecs": "^3.61.0",
+    "@aws-sdk/client-efs": "^3.58.0",
     "@aws-sdk/client-eks": "^3.58.0",
     "@aws-sdk/client-elastic-load-balancing-v2": "^3.58.0",
     "@aws-sdk/client-iam": "^3.58.0",

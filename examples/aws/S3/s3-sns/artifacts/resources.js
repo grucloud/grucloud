@@ -28,7 +28,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "sam-app-SNSTopic-15XRP2Y8B6PO1",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       Attributes: {
         Policy: {
           Version: "2012-10-17",
@@ -39,9 +39,11 @@ exports.createResources = () => [
                 Service: `s3.amazonaws.com`,
               },
               Action: "sns:Publish",
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:sam-app-SNSTopic-15XRP2Y8B6PO1`,
+              Resource: `${getId({
+                type: "Topic",
+                group: "SNS",
+                name: "sam-app-SNSTopic-15XRP2Y8B6PO1",
+              })}`,
               Condition: {
                 StringEquals: {
                   "aws:SourceAccount": `${config.accountId()}`,

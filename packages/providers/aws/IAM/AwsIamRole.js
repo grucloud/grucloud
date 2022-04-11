@@ -24,6 +24,7 @@ const {
   includes,
   keys,
   first,
+  append,
 } = require("rubico/x");
 const moment = require("moment");
 const querystring = require("querystring");
@@ -71,9 +72,21 @@ exports.AwsIamRole = ({ spec, config }) => {
       pluck("PolicyDocument"),
       pluck("Statement"),
       flatten,
-      flatMap(
-        pipe([get("Resource"), unless(Array.isArray, (resource) => [resource])])
+      tap((params) => {
+        assert(true);
+      }),
+      flatMap(({ Condition, Resource }) =>
+        pipe([
+          () => Resource,
+          unless(Array.isArray, (resource) => [resource]),
+          append(
+            get("StringEquals.elasticfilesystem:AccessPointArn")(Condition)
+          ),
+        ])()
       ),
+      tap((params) => {
+        assert(true);
+      }),
       filter(not(isEmpty)),
       filter((id) =>
         lives.getById({
@@ -104,6 +117,18 @@ exports.AwsIamRole = ({ spec, config }) => {
     findDependenciesInPolicies({
       type: "Queue",
       group: "SQS",
+      live,
+      lives,
+    }),
+    findDependenciesInPolicies({
+      type: "FileSystem",
+      group: "EFS",
+      live,
+      lives,
+    }),
+    findDependenciesInPolicies({
+      type: "AccessPoint",
+      group: "EFS",
       live,
       lives,
     }),

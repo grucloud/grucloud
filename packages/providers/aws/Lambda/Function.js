@@ -129,7 +129,7 @@ exports.Function = ({ spec, config }) => {
       ids: [live.Configuration.KMSKeyArn],
     },
     {
-      type: "Subnets",
+      type: "Subnet",
       group: "EC2",
       ids: pipe([() => live, get("Configuration.VpcConfig.SubnetIds")])(),
     },
@@ -170,6 +170,15 @@ exports.Function = ({ spec, config }) => {
             ),
           ])(),
         pluck("id"),
+      ])(),
+    },
+    {
+      type: "AccessPoint",
+      group: "EFS",
+      ids: pipe([
+        () => live,
+        get("Configuration.FileSystemConfigs"),
+        pluck("Arn"),
       ])(),
     },
   ];
@@ -240,7 +249,12 @@ exports.Function = ({ spec, config }) => {
   const create = client.create({
     method: "createFunction",
     filterPayload: ({ Configuration, Tags }) =>
-      pipe([() => ({ ...Configuration, Tags })])(),
+      pipe([
+        tap(() => {
+          assert(Configuration);
+        }),
+        () => ({ ...Configuration, Tags }),
+      ])(),
     pickCreated: () =>
       pipe([
         tap(({ FunctionArn }) => {
@@ -248,17 +262,19 @@ exports.Function = ({ spec, config }) => {
         }),
         ({ FunctionArn }) => ({ Configuration: { FunctionArn } }),
       ]),
-    shouldRetryOnExceptionCodes: ["InvalidParameterValueException"],
+    shouldRetryOnExceptionMessages: [
+      "The role defined for the function cannot be assumed by Lambda",
+      "EFS file system",
+    ],
     getById,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunctionUrlConfig-property
-    postCreate:
-      ({
-        payload: {
-          Configuration: { FunctionName },
-          FunctionUrlConfig,
-        },
-      }) =>
-      ({}) =>
+    postCreate: ({
+      payload: {
+        Configuration: { FunctionName },
+        FunctionUrlConfig,
+      },
+    }) =>
+      pipe([
         when(
           () => FunctionUrlConfig,
           pipe([
@@ -267,12 +283,10 @@ exports.Function = ({ spec, config }) => {
             }),
             () => FunctionUrlConfig,
             defaultsDeep({ FunctionName }),
-            tap((params) => {
-              assert(true);
-            }),
             lambda().createFunctionUrlConfig,
-          ])()
+          ])
         ),
+      ]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateFunctionConfiguration-property
@@ -401,22 +415,26 @@ exports.Function = ({ spec, config }) => {
           when(
             () => subnets,
             defaultsDeep({
-              VpcConfig: {
-                SubnetIds: pipe([
-                  () => subnets,
-                  map((subnet) => getField(subnet, "SubnetId")),
-                ])(),
+              Configuration: {
+                VpcConfig: {
+                  SubnetIds: pipe([
+                    () => subnets,
+                    map((subnet) => getField(subnet, "SubnetId")),
+                  ])(),
+                },
               },
             })
           ),
           when(
             () => securityGroups,
             defaultsDeep({
-              VpcConfig: {
-                SecurityGroupIds: pipe([
-                  () => securityGroups,
-                  map((sg) => getField(sg, "GroupId")),
-                ])(),
+              Configuration: {
+                VpcConfig: {
+                  SecurityGroupIds: pipe([
+                    () => securityGroups,
+                    map((sg) => getField(sg, "GroupId")),
+                  ])(),
+                },
               },
             })
           ),
@@ -446,6 +464,7 @@ const filterFunctionUrlConfig = pipe([
 ]);
 
 exports.filterFunctionUrlConfig = filterFunctionUrlConfig;
+
 exports.compareFunction = pipe([
   tap((params) => {
     assert(true);

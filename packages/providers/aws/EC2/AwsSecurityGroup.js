@@ -29,6 +29,7 @@ const {
   buildTags,
   findNamespaceInTagsOrEksCluster,
   revokeSecurityGroupIngress,
+  destroyNetworkInterfaces,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags, findEksCluster } = require("../AwsCommon");
@@ -257,8 +258,12 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     ])();
 
   const destroy = client.destroy({
+    preDestroy: pipe([
+      tap(revokeIngressRules),
+      ({ live: { GroupId } }) =>
+        destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [GroupId] }),
+    ]),
     pickId,
-    preDestroy: revokeIngressRules,
     method: "deleteSecurityGroup",
     getById,
     ignoreErrorCodes: ["InvalidGroup.NotFound"],

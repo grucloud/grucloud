@@ -326,20 +326,26 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     name: "com.amazonaws.us-east-1.events",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Condition: {
               ArnEquals: {
-                "aws:PrincipalArn": `arn:aws:iam::${config.accountId()}:role/CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL`,
+                "aws:PrincipalArn": `${getId({
+                  type: "Role",
+                  group: "IAM",
+                  name: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
+                })}`,
               },
             },
             Action: "events:PutEvents",
-            Resource: `arn:aws:events:${
-              config.region
-            }:${config.accountId()}:event-bus/DemoEventBus`,
+            Resource: `${getId({
+              type: "EventBus",
+              group: "CloudWatchEvents",
+              name: "DemoEventBus",
+            })}`,
             Effect: "Allow",
             Principal: {
               AWS: "*",
@@ -625,7 +631,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -645,9 +651,11 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "events:PutEvents",
-                Resource: `arn:aws:events:${
-                  config.region
-                }:${config.accountId()}:event-bus/DemoEventBus`,
+                Resource: `${getId({
+                  type: "EventBus",
+                  group: "CloudWatchEvents",
+                  name: "DemoEventBus",
+                })}`,
                 Effect: "Allow",
               },
             ],

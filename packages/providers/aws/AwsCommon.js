@@ -42,7 +42,11 @@ const Diff = require("diff");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
-const { configProviderDefault, compare } = require("@grucloud/core/Common");
+const {
+  configProviderDefault,
+  compare,
+  replaceWithName,
+} = require("@grucloud/core/Common");
 
 const isAwsError = (code) =>
   pipe([
@@ -757,69 +761,73 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
       assert(Name);
       assert(Array.isArray(Values));
     }),
-    () =>
-      ec2().describeNetworkInterfaces({
-        Filters: [{ Name, Values }],
-      }),
+    () => ({
+      Filters: [{ Name, Values }],
+    }),
+    ec2().describeNetworkInterfaces,
     get("NetworkInterfaces", []),
     tap((NetworkInterfaces) => {
-      logger.debug(`#NetworkInterfaces ${NetworkInterfaces.length}`);
+      logger.debug(
+        `#NetworkInterfaces ${JSON.stringify(NetworkInterfaces, null, 4)}`
+      );
     }),
-    tap(
-      forEach(
-        pipe([
-          get("Attachment.AttachmentId"),
-          tap.if(
-            not(isEmpty),
-            tryCatch(
-              (AttachmentId) => ec2().detachNetworkInterface({ AttachmentId }),
-              switchCase([
-                isAwsError("AuthFailure"),
-                () => undefined,
-                (error) => {
-                  logger.error(
-                    `deleteNetworkInterface error code: ${error.code}`
+    forEach(
+      pipe([
+        ({ NetworkInterfaceId, Attachment }) =>
+          retryCall({
+            name: `detachNetworkInterface NetworkInterfaceId ${NetworkInterfaceId}, AttachmentId: ${Attachment?.AttachmentId}`,
+            fn: pipe([
+              // detachNetworkInterface
+              () => Attachment,
+              get("AttachmentId"),
+              unless(
+                isEmpty,
+                tryCatch(
+                  pipe([
+                    (AttachmentId) => ({
+                      AttachmentId,
+                      Force: true,
+                    }),
+                    ec2().detachNetworkInterface,
+                  ]),
+                  // Ignore error
+                  (error) => {
+                    logger.info(
+                      `detachNetworkInterface shouldRetryOnException: error: ${error.name}`
+                    );
+                  }
+                )
+              ),
+              // deleteNetworkInterface
+              () => ({ NetworkInterfaceId }),
+              ec2().deleteNetworkInterface,
+            ]),
+            isExpectedResult: () => true,
+            config: { retryDelay: 10e3, retryCount: 45 * 6 },
+            isExpectedException: pipe([
+              or([isAwsError("InvalidNetworkInterfaceID.NotFound")]),
+            ]),
+            shouldRetryOnException: ({ error, name }) =>
+              pipe([
+                tap(() => {
+                  logger.info(
+                    `deleteNetworkInterface shouldRetryOnException: ${name}, error: ${util.inspect(
+                      error
+                    )}`
                   );
-                  throw Error(error.message);
-                },
-              ])
-            )
-          ),
-        ])
-      )
-    ),
-    tap(
-      forEach(
-        pipe([
-          get("NetworkInterfaceId"),
-          tap((NetworkInterfaceId) => {
-            logger.debug(`deleteNetworkInterface: ${NetworkInterfaceId}`);
-            assert(NetworkInterfaceId);
+                }),
+                () => error,
+                switchCase([
+                  or([
+                    isAwsError("InvalidParameterValue"),
+                    isAwsError("OperationNotPermitted"),
+                  ]),
+                  () => true,
+                  () => false,
+                ]),
+              ])(),
           }),
-          tryCatch(
-            (NetworkInterfaceId) =>
-              ec2().deleteNetworkInterface({ NetworkInterfaceId }),
-            switchCase([
-              or([
-                isAwsError("InvalidNetworkInterfaceID.NotFound"),
-                isAwsError("InvalidParameterValue"),
-                isAwsError("OperationNotPermitted"),
-              ]),
-              (error) => {
-                logger.error(
-                  `deleteNetworkInterface ignore error code: ${error.code}`
-                );
-              },
-              (error) => {
-                logger.error(
-                  `deleteNetworkInterface error code: ${error.code}`
-                );
-                throw Error(error.message);
-              },
-            ])
-          ),
-        ])
-      )
+      ])
     ),
   ])();
 
@@ -863,25 +871,38 @@ exports.destroyAutoScalingGroupById = ({ autoScalingGroup, lives, config }) =>
 exports.ignoreResourceCdk = () =>
   pipe([get("name"), callProp("startsWith", "cdk-")]);
 
-const replaceAccountAndRegion = ({ providerConfig }) =>
-  pipe([
-    callProp(
-      "replace",
-      new RegExp(providerConfig.accountId(), "g"),
-      "${config.accountId()}"
-    ),
-    callProp(
-      "replace",
-      new RegExp(providerConfig.region, "g"),
-      "${config.region}"
-    ),
-    (resource) => () => "`" + resource + "`",
-  ]);
+const replaceAccountAndRegion =
+  ({ providerConfig, lives }) =>
+  (Id) =>
+    pipe([
+      () => lives,
+      switchCase([
+        any(eq(get("id"), Id)),
+        pipe([() => ({ Id, lives }), replaceWithName({ path: "id" })]),
+        pipe([
+          () => Id,
+          callProp(
+            "replace",
+            new RegExp(providerConfig.accountId(), "g"),
+            "${config.accountId()}"
+          ),
+          callProp(
+            "replace",
+            new RegExp(providerConfig.region, "g"),
+            "${config.region}"
+          ),
+          (resource) => () => "`" + resource + "`",
+        ]),
+      ]),
+    ])();
 
 exports.replaceAccountAndRegion = replaceAccountAndRegion;
 
-const assignPolicyResource = ({ providerConfig }) =>
+const assignPolicyResource = ({ providerConfig, lives }) =>
   pipe([
+    tap((params) => {
+      assert(true);
+    }),
     when(
       get("Resource"),
       assign({
@@ -889,8 +910,8 @@ const assignPolicyResource = ({ providerConfig }) =>
           get("Resource"),
           switchCase([
             Array.isArray,
-            map(replaceAccountAndRegion({ providerConfig })),
-            replaceAccountAndRegion({ providerConfig }),
+            map(replaceAccountAndRegion({ providerConfig, lives })),
+            replaceAccountAndRegion({ providerConfig, lives }),
           ]),
         ]),
       })
@@ -899,7 +920,7 @@ const assignPolicyResource = ({ providerConfig }) =>
 
 exports.assignPolicyResource = assignPolicyResource;
 
-const assignPolicyAccountAndRegion = ({ providerConfig }) =>
+const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
   assign({
     Statement: pipe([
       get("Statement"),
@@ -915,7 +936,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig }) =>
                   assign({
                     Service: pipe([
                       get("Service"),
-                      replaceAccountAndRegion({ providerConfig }),
+                      replaceAccountAndRegion({ providerConfig, lives }),
                     ]),
                   })
                 ),
@@ -933,11 +954,27 @@ const assignPolicyAccountAndRegion = ({ providerConfig }) =>
                     StringEquals: pipe([
                       get("StringEquals"),
                       when(
+                        get("elasticfilesystem:AccessPointArn"),
+                        assign({
+                          "elasticfilesystem:AccessPointArn": pipe([
+                            get("elasticfilesystem:AccessPointArn"),
+                            tap((params) => {
+                              assert(true);
+                            }),
+                            (Id) => ({ Id, lives }),
+                            replaceWithName({
+                              groupType: "EFS::AccessPoint",
+                              path: "id",
+                            }),
+                          ]),
+                        })
+                      ),
+                      when(
                         get("aws:SourceAccount"),
                         assign({
                           "aws:SourceAccount": pipe([
                             get("aws:SourceAccount"),
-                            replaceAccountAndRegion({ providerConfig }),
+                            replaceAccountAndRegion({ providerConfig, lives }),
                           ]),
                         })
                       ),
@@ -946,7 +983,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig }) =>
                         assign({
                           "AWS:SourceOwner": pipe([
                             get("AWS:SourceOwner"),
-                            replaceAccountAndRegion({ providerConfig }),
+                            replaceAccountAndRegion({ providerConfig, lives }),
                           ]),
                         })
                       ),
@@ -963,7 +1000,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig }) =>
                         assign({
                           "aws:PrincipalArn": pipe([
                             get("aws:PrincipalArn"),
-                            replaceAccountAndRegion({ providerConfig }),
+                            replaceAccountAndRegion({ providerConfig, lives }),
                           ]),
                         })
                       ),
@@ -972,7 +1009,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig }) =>
                         assign({
                           "aws:SourceArn": pipe([
                             get("aws:SourceArn"),
-                            replaceAccountAndRegion({ providerConfig }),
+                            replaceAccountAndRegion({ providerConfig, lives }),
                           ]),
                         })
                       ),
@@ -982,17 +1019,17 @@ const assignPolicyAccountAndRegion = ({ providerConfig }) =>
               ]),
             })
           ),
-          assignPolicyResource({ providerConfig }),
+          assignPolicyResource({ providerConfig, lives }),
         ])
       ),
     ]),
   });
 exports.assignPolicyAccountAndRegion = assignPolicyAccountAndRegion;
 
-exports.assignPolicyDocumentAccountAndRegion = ({ providerConfig }) =>
+exports.assignPolicyDocumentAccountAndRegion = ({ providerConfig, lives }) =>
   assign({
     PolicyDocument: pipe([
       get("PolicyDocument"),
-      assignPolicyAccountAndRegion({ providerConfig }),
+      assignPolicyAccountAndRegion({ providerConfig, lives }),
     ]),
   });
