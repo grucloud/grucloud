@@ -1,6 +1,6 @@
 {
   "name": "s3-sns",
-  "version": "5.11.0",
+  "version": "5.12.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^5.11.0",
-    "@grucloud/provider-aws": "^5.11.0",
+    "@grucloud/core": "^5.12.0",
+    "@grucloud/provider-aws": "^5.12.0",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
