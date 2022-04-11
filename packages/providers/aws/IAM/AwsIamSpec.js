@@ -272,6 +272,7 @@ module.exports = pipe([
         },
         table: { type: "Table", group: "DynamoDB", parent: true },
         queue: { type: "Queue", group: "SQS", parent: true },
+        snsTopic: { type: "Topic", group: "SNS", parent: true },
         efsFileSystems: {
           type: "FileSystem",
           group: "EFS",

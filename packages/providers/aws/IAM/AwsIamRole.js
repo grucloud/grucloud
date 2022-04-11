@@ -115,6 +115,12 @@ exports.AwsIamRole = ({ spec, config }) => {
       lives,
     }),
     findDependenciesInPolicies({
+      type: "Topic",
+      group: "SNS",
+      live,
+      lives,
+    }),
+    findDependenciesInPolicies({
       type: "Queue",
       group: "SQS",
       live,

@@ -74,6 +74,10 @@ exports.Function = ({ spec, config }) => {
       get("Configuration.Environment.Variables"),
       map((value) =>
         pipe([
+          tap((params) => {
+            assert(value);
+            assert(pathLive);
+          }),
           () =>
             lives.getByType({
               providerName: config.providerName,
@@ -110,11 +114,17 @@ exports.Function = ({ spec, config }) => {
       live,
       lives,
     }),
-
     findDependenciesInEnvironment({
       pathLive: "live.TableName",
       type: "Table",
       group: "DynamoDB",
+      live,
+      lives,
+    }),
+    findDependenciesInEnvironment({
+      pathLive: "id",
+      type: "Topic",
+      group: "SNS",
       live,
       lives,
     }),
