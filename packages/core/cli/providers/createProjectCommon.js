@@ -63,7 +63,7 @@ exports.execCommandShell =
             (code, stdout, stderr) =>
               pipe([
                 switchCase([
-                  eq(code, 0),
+                  () => code === 0,
                   pipe([
                     tap((params) => {
                       assert(true);
