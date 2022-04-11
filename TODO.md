@@ -85,6 +85,25 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Aws
 
+- AWS::SSM::Document
+- AWS::Glue::Job
+- AWS::Route53::RecordSetGroup
+- AWS::Route53::HealthCheck
+- AWS::Route53::RecordSetGroup
+- AWS::AmazonMQ::Broker
+- AWS::Kinesis::Stream
+- AWS::Pinpoint::App
+- AWS::CodeBuild::Project
+- AWS::RUM::AppMonitor
+- AWS::Cognito::IdentityPool
+- AWS::Cognito::IdentityPoolRoleAttachment
+- AWS::CloudFront::CachePolicy
+- AWS::WAFv2::WebACL
+- AWS::WAFv2::WebACLAssociation
+- AWS::ApiGateway::UsagePlan
+- AWS::CloudWatch::Alarm
+- AWS::CloudWatch::Dashboard
+
 - apprunner example npm test
 - inferName OpenIDConnectProvider
 - example vpc-use still using make and use
@@ -101,19 +120,9 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 - document create key pair
 - UserData: ec2 update and displayResource
 - Resource pages
-
 - aws_route53_delegation_set
 
-- security group update
-
-aws iam create-user --user-name terraform-user
-aws iam put-user-policy --user-name terraform-user --policy-name least-privilege --policy-document file://policy.json
-
-- s3 notificationConfiguration example with ServerLess function, sns
-
 - s3 analytics configuration
-
-* cloudtrail
 
 ## TODO Goggle
 

@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "sam-app-MySnsTopic-7ZOEL49PL4BA",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       Attributes: {
         Policy: {
           Version: "2008-10-17",
@@ -29,9 +29,11 @@ exports.createResources = () => [
                 "SNS:ListSubscriptionsByTopic",
                 "SNS:Publish",
               ],
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:sam-app-MySnsTopic-7ZOEL49PL4BA`,
+              Resource: `${getId({
+                type: "Topic",
+                group: "SNS",
+                name: "sam-app-MySnsTopic-7ZOEL49PL4BA",
+              })}`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,
@@ -62,7 +64,7 @@ exports.createResources = () => [
     type: "Queue",
     group: "SQS",
     name: "sam-app-MySqsQueue-KMqXSqHYypds",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       Attributes: {
         Policy: {
           Version: "2012-10-17",
@@ -74,14 +76,18 @@ exports.createResources = () => [
                 Service: `sns.amazonaws.com`,
               },
               Action: "SQS:SendMessage",
-              Resource: `arn:aws:sqs:${
-                config.region
-              }:${config.accountId()}:sam-app-MySqsQueue-KMqXSqHYypds`,
+              Resource: `${getId({
+                type: "Queue",
+                group: "SQS",
+                name: "sam-app-MySqsQueue-KMqXSqHYypds",
+              })}`,
               Condition: {
                 ArnEquals: {
-                  "aws:SourceArn": `arn:aws:sns:${
-                    config.region
-                  }:${config.accountId()}:sam-app-MySnsTopic-7ZOEL49PL4BA`,
+                  "aws:SourceArn": `${getId({
+                    type: "Topic",
+                    group: "SNS",
+                    name: "sam-app-MySnsTopic-7ZOEL49PL4BA",
+                  })}`,
                 },
               },
             },

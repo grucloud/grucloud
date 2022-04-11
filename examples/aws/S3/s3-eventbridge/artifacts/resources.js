@@ -152,7 +152,7 @@ exports.createResources = () => [
     type: "Queue",
     group: "SQS",
     name: "sam-app-NewImageEventQueue-DGEXqRa9ZM4Z",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       Attributes: {
         Policy: {
           Version: "2008-10-17",
@@ -163,9 +163,11 @@ exports.createResources = () => [
                 Service: `events.amazonaws.com`,
               },
               Action: "SQS:SendMessage",
-              Resource: `arn:aws:sqs:${
-                config.region
-              }:${config.accountId()}:sam-app-NewImageEventQueue-DGEXqRa9ZM4Z`,
+              Resource: `${getId({
+                type: "Queue",
+                group: "SQS",
+                name: "sam-app-NewImageEventQueue-DGEXqRa9ZM4Z",
+              })}`,
             },
           ],
         },

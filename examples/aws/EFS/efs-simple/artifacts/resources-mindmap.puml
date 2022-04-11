@@ -1,0 +1,20 @@
+@startmindmap
+title Resources for project efs-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
+++++ SecurityGroupRuleEgress (1)
++++ EFS
+++++ FileSystem (1)
+++++ AccessPoint (1)
+++++ MountTarget (2)
++++ IAM
+++++ Role (1)
++++ Lambda
+++++ Function (1)
+@endmindmap

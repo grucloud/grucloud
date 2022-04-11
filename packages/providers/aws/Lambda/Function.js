@@ -175,7 +175,11 @@ exports.Function = ({ spec, config }) => {
     {
       type: "AccessPoint",
       group: "EFS",
-      ids: pipe([() => live, get("FileSystemConfigs"), pluck("Arn")])(),
+      ids: pipe([
+        () => live,
+        get("Configuration.FileSystemConfigs"),
+        pluck("Arn"),
+      ])(),
     },
   ];
 

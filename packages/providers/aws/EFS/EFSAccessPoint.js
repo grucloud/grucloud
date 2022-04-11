@@ -6,7 +6,11 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./EFSCommon");
+const {
+  tagResource,
+  untagResource,
+  findDependenciesFileSystem,
+} = require("./EFSCommon");
 
 const model = {
   package: "efs",
@@ -30,11 +34,11 @@ exports.EFSAccessPoint = ({ spec, config }) =>
       tap(({ AccessPointId }) => {
         assert(AccessPointId);
       }),
-      pick(["AccessPointId" /*, "FileSystemId"*/]),
+      pick(["AccessPointId"]),
     ]),
     findId: pipe([get("live.AccessPointArn")]),
-    findDependencies: ({ live }) => [
-      { type: "FileSystem", group: "EFS", ids: [live.FileSystemId] },
+    findDependencies: ({ live, lives }) => [
+      findDependenciesFileSystem({ live, lives, config }),
     ],
     decorateList:
       ({ endpoint, getById }) =>

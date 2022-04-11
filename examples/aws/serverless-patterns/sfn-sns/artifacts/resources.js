@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -27,9 +27,11 @@ exports.createResources = () => [
               {
                 Action: ["sns:Publish"],
                 Resource: [
-                  `arn:aws:sns:${
-                    config.region
-                  }:${config.accountId()}:sam-app-StateMachineSNSTopic-C6WGCI64MKY2`,
+                  `${getId({
+                    type: "Topic",
+                    group: "SNS",
+                    name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
+                  })}`,
                 ],
                 Effect: "Allow",
               },
@@ -81,7 +83,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       Attributes: {
         Policy: {
           Version: "2008-10-17",
@@ -103,9 +105,11 @@ exports.createResources = () => [
                 "SNS:ListSubscriptionsByTopic",
                 "SNS:Publish",
               ],
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:sam-app-StateMachineSNSTopic-C6WGCI64MKY2`,
+              Resource: `${getId({
+                type: "Topic",
+                group: "SNS",
+                name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
+              })}`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,

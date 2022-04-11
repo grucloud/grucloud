@@ -1,10 +1,14 @@
 const assert = require("assert");
 const { pipe, tap, get, assign, pick, map, eq } = require("rubico");
-const { defaultsDeep, when, prepend, append, last } = require("rubico/x");
+const { defaultsDeep, when, prepend, append, last, find } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./EFSCommon");
+const {
+  tagResource,
+  untagResource,
+  findDependenciesFileSystem,
+} = require("./EFSCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const model = {
@@ -29,13 +33,16 @@ exports.EFSMountTarget = ({ spec, config }) =>
           assert(live.FileSystemId);
         }),
         () =>
-          lives.getById({
-            id: live.FileSystemId,
+          lives.getByType({
             type: "FileSystem",
             group: "EFS",
             providerName: config.providerName,
           }),
+        find(eq(get("live.FileSystemId"), live.FileSystemId)),
         get("name"),
+        tap((name) => {
+          assert(name);
+        }),
         prepend("mount-target::"),
         append("::"),
         append(pipe([() => live.AvailabilityZoneName, last])()),
@@ -48,8 +55,8 @@ exports.EFSMountTarget = ({ spec, config }) =>
     ]),
     findId: pipe([get("live.MountTargetId")]),
     isInstanceUp: eq(get("LifeCycleState"), "available"),
-    findDependencies: ({ live }) => [
-      { type: "FileSystem", group: "EFS", ids: [live.FileSystemId] },
+    findDependencies: ({ live, lives }) => [
+      findDependenciesFileSystem({ live, lives, config }),
       { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
       { type: "SecurityGroup", group: "EC2", ids: live.SecurityGroups },
     ],

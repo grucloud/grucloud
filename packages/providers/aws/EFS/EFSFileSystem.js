@@ -31,7 +31,7 @@ exports.EFSFileSystem = ({ spec, config }) =>
       }),
       pick(["FileSystemId"]),
     ]),
-    findId: pipe([get("live.FileSystemId")]),
+    findId: pipe([get("live.FileSystemArn")]),
     decorateList:
       ({ endpoint, getById }) =>
       (live) =>

@@ -7,11 +7,11 @@ const config = require("../config");
 const title = pkg.name;
 
 describe(title, async function () {
-  it.skip("run", async function () {
+  it("run", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       title,
       steps: [{ createStack, configs: [config] }],
     });
-  }).timeout(30 * 60e3);
+  }).timeout(50 * 60e3);
 });

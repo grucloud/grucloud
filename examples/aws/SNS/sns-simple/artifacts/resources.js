@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "my-topic",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       Attributes: {
         Policy: {
           Version: "2008-10-17",
@@ -29,9 +29,11 @@ exports.createResources = () => [
                 "SNS:ListSubscriptionsByTopic",
                 "SNS:Publish",
               ],
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:my-topic`,
+              Resource: `${getId({
+                type: "Topic",
+                group: "SNS",
+                name: "my-topic",
+              })}`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,

@@ -387,7 +387,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "lambdaStack-testLambdaServiceRole955E2289-1QPXU9XXN6BM8",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -413,9 +413,11 @@ exports.createResources = () => [
                   "ec2:AssignPrivateIpAddresses",
                   "ec2:UnassignPrivateIpAddresses",
                 ],
-                Resource: `arn:aws:lambda:${
-                  config.region
-                }:${config.accountId()}:function:test-lambdaFunction`,
+                Resource: `${getId({
+                  type: "Function",
+                  group: "Lambda",
+                  name: "test-lambdaFunction",
+                })}`,
                 Effect: "Allow",
               },
             ],
@@ -441,7 +443,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sfnStack-testtestMachineFlowRoleE75B9154-1EL1S8LF75X2B",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -476,9 +478,11 @@ exports.createResources = () => [
               {
                 Action: "lambda:InvokeFunction",
                 Resource: [
-                  `arn:aws:lambda:${
-                    config.region
-                  }:${config.accountId()}:function:test-lambdaFunction`,
+                  `${getId({
+                    type: "Function",
+                    group: "Lambda",
+                    name: "test-lambdaFunction",
+                  })}`,
                   `arn:aws:lambda:${
                     config.region
                   }:${config.accountId()}:function:test-lambdaFunction:*`,

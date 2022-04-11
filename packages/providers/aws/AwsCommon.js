@@ -871,25 +871,38 @@ exports.destroyAutoScalingGroupById = ({ autoScalingGroup, lives, config }) =>
 exports.ignoreResourceCdk = () =>
   pipe([get("name"), callProp("startsWith", "cdk-")]);
 
-const replaceAccountAndRegion = ({ providerConfig }) =>
-  pipe([
-    callProp(
-      "replace",
-      new RegExp(providerConfig.accountId(), "g"),
-      "${config.accountId()}"
-    ),
-    callProp(
-      "replace",
-      new RegExp(providerConfig.region, "g"),
-      "${config.region}"
-    ),
-    (resource) => () => "`" + resource + "`",
-  ]);
+const replaceAccountAndRegion =
+  ({ providerConfig, lives }) =>
+  (Id) =>
+    pipe([
+      () => lives,
+      switchCase([
+        any(eq(get("id"), Id)),
+        pipe([() => ({ Id, lives }), replaceWithName({ path: "id" })]),
+        pipe([
+          () => Id,
+          callProp(
+            "replace",
+            new RegExp(providerConfig.accountId(), "g"),
+            "${config.accountId()}"
+          ),
+          callProp(
+            "replace",
+            new RegExp(providerConfig.region, "g"),
+            "${config.region}"
+          ),
+          (resource) => () => "`" + resource + "`",
+        ]),
+      ]),
+    ])();
 
 exports.replaceAccountAndRegion = replaceAccountAndRegion;
 
-const assignPolicyResource = ({ providerConfig }) =>
+const assignPolicyResource = ({ providerConfig, lives }) =>
   pipe([
+    tap((params) => {
+      assert(true);
+    }),
     when(
       get("Resource"),
       assign({
@@ -897,8 +910,8 @@ const assignPolicyResource = ({ providerConfig }) =>
           get("Resource"),
           switchCase([
             Array.isArray,
-            map(replaceAccountAndRegion({ providerConfig })),
-            replaceAccountAndRegion({ providerConfig }),
+            map(replaceAccountAndRegion({ providerConfig, lives })),
+            replaceAccountAndRegion({ providerConfig, lives }),
           ]),
         ]),
       })
@@ -923,7 +936,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
                   assign({
                     Service: pipe([
                       get("Service"),
-                      replaceAccountAndRegion({ providerConfig }),
+                      replaceAccountAndRegion({ providerConfig, lives }),
                     ]),
                   })
                 ),
@@ -945,6 +958,9 @@ const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
                         assign({
                           "elasticfilesystem:AccessPointArn": pipe([
                             get("elasticfilesystem:AccessPointArn"),
+                            tap((params) => {
+                              assert(true);
+                            }),
                             (Id) => ({ Id, lives }),
                             replaceWithName({
                               groupType: "EFS::AccessPoint",
@@ -958,7 +974,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
                         assign({
                           "aws:SourceAccount": pipe([
                             get("aws:SourceAccount"),
-                            replaceAccountAndRegion({ providerConfig }),
+                            replaceAccountAndRegion({ providerConfig, lives }),
                           ]),
                         })
                       ),
@@ -967,7 +983,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
                         assign({
                           "AWS:SourceOwner": pipe([
                             get("AWS:SourceOwner"),
-                            replaceAccountAndRegion({ providerConfig }),
+                            replaceAccountAndRegion({ providerConfig, lives }),
                           ]),
                         })
                       ),
@@ -984,7 +1000,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
                         assign({
                           "aws:PrincipalArn": pipe([
                             get("aws:PrincipalArn"),
-                            replaceAccountAndRegion({ providerConfig }),
+                            replaceAccountAndRegion({ providerConfig, lives }),
                           ]),
                         })
                       ),
@@ -993,7 +1009,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
                         assign({
                           "aws:SourceArn": pipe([
                             get("aws:SourceArn"),
-                            replaceAccountAndRegion({ providerConfig }),
+                            replaceAccountAndRegion({ providerConfig, lives }),
                           ]),
                         })
                       ),
@@ -1003,7 +1019,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
               ]),
             })
           ),
-          assignPolicyResource({ providerConfig }),
+          assignPolicyResource({ providerConfig, lives }),
         ])
       ),
     ]),

@@ -124,7 +124,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -144,9 +144,11 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "lambda:InvokeFunction",
-                Resource: `arn:aws:lambda:${
-                  config.region
-                }:${config.accountId()}:function:lambda-fns`,
+                Resource: `${getId({
+                  type: "Function",
+                  group: "Lambda",
+                  name: "lambda-fns",
+                })}`,
                 Effect: "Allow",
               },
             ],
@@ -160,7 +162,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -181,9 +183,11 @@ exports.createResources = () => [
               {
                 Action: "dynamodb:*",
                 Resource: [
-                  `arn:aws:dynamodb:${
-                    config.region
-                  }:${config.accountId()}:table/AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R`,
+                  `${getId({
+                    type: "Table",
+                    group: "DynamoDB",
+                    name: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
+                  })}`,
                 ],
                 Effect: "Allow",
               },
