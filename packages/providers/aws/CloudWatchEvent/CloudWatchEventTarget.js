@@ -239,12 +239,12 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
         // Lambda
         () => lambdaFunction,
         defaultsDeep({
-          RoleArn: getField(lambdaFunction, "Configuration.FunctionArn"),
+          Arn: getField(lambdaFunction, "Configuration.FunctionArn"),
         }),
         // CloudWatch Events Api Destination
         () => apiDestination,
         defaultsDeep({
-          RoleArn: getField(apiDestination, "ApiDestinationArn"),
+          Arn: getField(apiDestination, "ApiDestinationArn"),
         }),
         // SQS Queue
         () => sqsQueue,
@@ -271,8 +271,8 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
           assert(false, "TODO: implement me");
         },
       ]),
-      tap(({ RoleArn }) => {
-        assert(RoleArn);
+      tap(({ Arn }) => {
+        assert(Arn);
       }),
     ])();
 

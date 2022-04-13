@@ -190,6 +190,11 @@ exports.createResources = () => [
 
 - [Iam Policy](./Policy.md)
 - [Iam OpenIDConnectProvider](./OpenIDConnectProvider.md)
+- [DynamoDB Table](../DynamoDB/Table.md)
+- [SQS Queue](../SQS/Queue.md)
+- [SNS Topic](../SNS/Topic.md)
+- [EFS FileSystem](../EFS/FileSystem.md)
+- [EFS AccessPoint](../EFS/AccessPoint.md)
 
 ### Used By
 
