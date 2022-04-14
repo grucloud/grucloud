@@ -11,11 +11,13 @@ const {
   any,
   and,
   eq,
+  fork,
 } = require("rubico");
-const { defaultsDeep, when, isFunction, unless } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
 const AdmZip = require("adm-zip");
 const path = require("path");
+const os = require("os");
 
 const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const {
@@ -31,6 +33,7 @@ const {
 } = require("./Function");
 const { Layer, compareLayer } = require("./Layer");
 const { EventSourceMapping } = require("./EventSourceMapping");
+const logger = require("@grucloud/core/logger")({ prefix: "Lambda" });
 
 const GROUP = "Lambda";
 const compareLambda = compareAws({});
@@ -49,6 +52,8 @@ const hasIdInLive = ({ idToMatch, lives, groupType }) =>
       ])
     ),
   ]);
+
+const createTempDir = () => os.tmpdir();
 
 module.exports = pipe([
   () => [
@@ -72,6 +77,20 @@ module.exports = pipe([
               "CompatibleRuntimes",
               "LicenseInfo",
             ]),
+            tap(
+              pipe([
+                fork({
+                  zip: () =>
+                    new AdmZip(Buffer.from(live.Content.Data, "base64")),
+                  zipFile: () =>
+                    path.resolve(createTempDir(), `${resource.name}.zip`),
+                }),
+                tap(({ zipFile }) => {
+                  logger.debug(`zip written to`, zipFile);
+                }),
+                ({ zip, zipFile }) => zip.writeZip(zipFile),
+              ])
+            ),
             tap(
               pipe([
                 () => new AdmZip(Buffer.from(live.Content.Data, "base64")),

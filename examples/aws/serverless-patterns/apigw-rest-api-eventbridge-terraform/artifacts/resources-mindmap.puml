@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project apigw-rest-api-eventbridge-terraform
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ RestApi (1)
+++++ Stage (1)
++++ CloudWatchEvents
+++++ EventBus (1)
+++++ Rule (1)
+++++ Target (1)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
+@endmindmap

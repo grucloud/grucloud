@@ -394,10 +394,10 @@ exports.Function = ({ spec, config }) => {
         assert(role, "missing role dependencies");
         assert(Array.isArray(layers), "layers must be an array");
       }),
-      () =>
-        createZipBuffer({
-          localPath: path.resolve(programOptions.workingDirectory, name),
-        }),
+      () => ({
+        localPath: path.resolve(programOptions.workingDirectory, name),
+      }),
+      createZipBuffer,
       (ZipFile) =>
         pipe([
           () => otherProps,
@@ -505,6 +505,6 @@ exports.compareFunction = pipe([
       ]),
   }),
   tap((diff) => {
-    logger.debug(`compareFunction ${tos(diff)}`);
+    //logger.debug(`compareFunction ${tos(diff)}`);
   }),
 ]);

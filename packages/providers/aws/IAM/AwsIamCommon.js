@@ -1,6 +1,23 @@
 const assert = require("assert");
-const { assign, map, pipe, get, tryCatch, tap } = require("rubico");
-const { find, first, keys } = require("rubico/x");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  assign,
+  filter,
+  not,
+} = require("rubico");
+const {
+  isEmpty,
+  unless,
+  when,
+  keys,
+  first,
+  append,
+  find,
+} = require("rubico/x");
 const querystring = require("querystring");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { createEndpoint } = require("../AwsCommon");
@@ -78,3 +95,37 @@ exports.assignAttachedPolicies = ({ policies = [] }) =>
       ),
     ]),
   });
+
+exports.findInStatement =
+  ({ type, group, lives, config }) =>
+  ({ Condition, Resource }) =>
+    pipe([
+      tap(() => {
+        assert(Resource);
+      }),
+      () => Resource,
+      unless(Array.isArray, (resource) => [resource]),
+      when(
+        () => Condition,
+        append(get("StringEquals.elasticfilesystem:AccessPointArn")(Condition))
+      ),
+      filter(not(isEmpty)),
+      map((id) =>
+        lives.getById({
+          id,
+          providerName: config.providerName,
+          type,
+          group,
+        })
+      ),
+    ])();
+
+exports.dependenciesPoliciesKind = [
+  { type: "Table", group: "DynamoDB" },
+  { type: "Topic", group: "SNS" },
+  { type: "Queue", group: "SQS" },
+  { type: "FileSystem", group: "EFS" },
+  { type: "AccessPoint", group: "EFS" },
+  { type: "AccessPoint", group: "EFS" },
+  { type: "EventBus", group: "CloudWatchEvents" },
+];

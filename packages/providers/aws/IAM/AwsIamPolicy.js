@@ -15,6 +15,7 @@ const {
   not,
   gte,
   any,
+  flatMap,
 } = require("rubico");
 const {
   find,
@@ -39,6 +40,8 @@ const {
   tagResourceIam,
   untagResourceIam,
   createFetchPolicyDocument,
+  dependenciesPoliciesKind,
+  findInStatement,
 } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagPolicy-property
@@ -68,6 +71,34 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(iam);
   const fetchPolicyDocument = createFetchPolicyDocument({ iam });
   const findId = get("live.Arn");
+
+  const findDependencyPolicyCommon = ({
+    type,
+    group,
+    live,
+    lives,
+    config,
+  }) => ({
+    type,
+    group,
+    ids: pipe([
+      () => live,
+      get("PolicyDocument.Statement"),
+      flatMap(findInStatement({ type, group, lives, config })),
+    ])(),
+  });
+
+  const findDependenciesPolicyCommon = ({ live, lives, config }) =>
+    pipe([
+      () => dependenciesPoliciesKind,
+      map(({ type, group }) =>
+        findDependencyPolicyCommon({ type, group, live, lives, config })
+      ),
+    ])();
+
+  const findDependencies = ({ live, lives }) => [
+    ...findDependenciesPolicyCommon({ live, lives, config }),
+  ];
 
   const findName = ({ live }) =>
     pipe([
@@ -359,6 +390,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     update,
     destroy,
     getList,
+    findDependencies,
     configDefault,
     managedByOther: cannotBeDeleted,
     cannotBeDeleted: cannotBeDeleted,

@@ -379,7 +379,7 @@ const AwsClient =
             defaultsDeep(get("liveDiff.added", {})(diff)),
             defaultsDeep(pickId(live)),
             tap((result) => {
-              logger.debug(`update filterParams: ${JSON.stringify(result)}`);
+              //logger.debug(`update filterParams: ${JSON.stringify(result)}`);
             }),
           ])(),
         getById,
@@ -400,13 +400,13 @@ const AwsClient =
             logger.info(
               `update type: ${type}, method: ${method}, name: ${name}`
             );
-            logger.debug(
-              `${JSON.stringify({
-                payload,
-                live,
-                diff,
-              })}`
-            );
+            // logger.debug(
+            //   `${JSON.stringify({
+            //     payload,
+            //     live,
+            //     diff,
+            //   })}`
+            // );
           }),
           preUpdate({ name, live, payload, diff, programOptions }),
           () => filterParams({ pickId, extraParam, payload, diff, live }),
@@ -415,13 +415,13 @@ const AwsClient =
           }),
           defaultsDeep(extraParam),
           tap((input) => {
-            logger.debug(
-              `update ${type}, ${name}, params: ${JSON.stringify(
-                input,
-                null,
-                4
-              )}`
-            );
+            // logger.debug(
+            //   `update ${type}, ${name}, params: ${JSON.stringify(
+            //     input,
+            //     null,
+            //     4
+            //   )}`
+            // );
           }),
           tryCatch(
             pipe([
@@ -432,11 +432,11 @@ const AwsClient =
                     () => input,
                     endpoint()[method],
                     tap((results) => {
-                      logger.debug(
-                        `updated ${type} ${name}, response: ${JSON.stringify(
-                          results
-                        )}`
-                      );
+                      // logger.debug(
+                      //   `updated ${type} ${name}, response: ${JSON.stringify(
+                      //     results
+                      //   )}`
+                      // );
                     }),
                   ]),
                   config,
@@ -471,13 +471,13 @@ const AwsClient =
                               target: filterAll({ name })(payload),
                             }),
                           tap((diff) => {
-                            logger.debug(
-                              `updating ${type}, ${name}, diff: ${JSON.stringify(
-                                diff,
-                                null,
-                                4
-                              )}`
-                            );
+                            // logger.debug(
+                            //   `updating ${type}, ${name}, diff: ${JSON.stringify(
+                            //     diff,
+                            //     null,
+                            //     4
+                            //   )}`
+                            // );
                           }),
                           not(get("hasDataDiff")),
                         ]),

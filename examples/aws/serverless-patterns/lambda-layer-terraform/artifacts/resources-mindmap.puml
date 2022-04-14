@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project lambda-layer-terraform
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (3)
++++ Lambda
+++++ Layer (1)
+++++ Function (2)
+@endmindmap

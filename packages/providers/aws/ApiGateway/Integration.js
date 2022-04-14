@@ -168,7 +168,10 @@ exports.Integration = ({ spec, config }) => {
             when(
               get("application/json"),
               assign({
-                "application/json": pipe([get("application/json"), JSON.parse]),
+                "application/json": pipe([
+                  get("application/json"),
+                  tryCatch(JSON.parse, (error, data) => data),
+                ]),
               })
             ),
           ]),

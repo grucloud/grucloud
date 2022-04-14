@@ -320,6 +320,9 @@ module.exports = pipe([
               ]),
             }),
           ])(),
+      dependencies: {
+        role: { type: "Role", group: "IAM" },
+      },
     },
     {
       type: "Stage",

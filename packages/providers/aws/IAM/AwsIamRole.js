@@ -42,6 +42,8 @@ const {
   createIAM,
   tagResourceIam,
   untagResourceIam,
+  dependenciesPoliciesKind,
+  findInStatement,
 } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagRole-property
@@ -63,7 +65,7 @@ exports.AwsIamRole = ({ spec, config }) => {
   const findId = get("live.Arn");
   const pickId = pick(["RoleName"]);
 
-  const findDependenciesInPolicies = ({ type, group, live, lives }) => ({
+  const findDependencyRoleCommon = ({ type, group, live, lives, config }) => ({
     type,
     group,
     ids: pipe([
@@ -72,35 +74,18 @@ exports.AwsIamRole = ({ spec, config }) => {
       pluck("PolicyDocument"),
       pluck("Statement"),
       flatten,
-      tap((params) => {
-        assert(true);
-      }),
-      flatMap(({ Condition, Resource }) =>
-        pipe([
-          () => Resource,
-          unless(Array.isArray, (resource) => [resource]),
-          append(
-            get("StringEquals.elasticfilesystem:AccessPointArn")(Condition)
-          ),
-        ])()
-      ),
-      tap((params) => {
-        assert(true);
-      }),
+      flatMap(findInStatement({ type, group, lives, config })),
       filter(not(isEmpty)),
-      filter((id) =>
-        lives.getById({
-          id,
-          providerName: config.providerName,
-          type,
-          group,
-        })
-      ),
-      tap((params) => {
-        assert(true);
-      }),
     ])(),
   });
+
+  const findDependenciesRoleCommon = ({ live, lives, config }) =>
+    pipe([
+      () => dependenciesPoliciesKind,
+      map(({ type, group }) =>
+        findDependencyRoleCommon({ type, group, live, lives, config })
+      ),
+    ])();
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -108,36 +93,6 @@ exports.AwsIamRole = ({ spec, config }) => {
       group: "IAM",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
     },
-    findDependenciesInPolicies({
-      type: "Table",
-      group: "DynamoDB",
-      live,
-      lives,
-    }),
-    findDependenciesInPolicies({
-      type: "Topic",
-      group: "SNS",
-      live,
-      lives,
-    }),
-    findDependenciesInPolicies({
-      type: "Queue",
-      group: "SQS",
-      live,
-      lives,
-    }),
-    findDependenciesInPolicies({
-      type: "FileSystem",
-      group: "EFS",
-      live,
-      lives,
-    }),
-    findDependenciesInPolicies({
-      type: "AccessPoint",
-      group: "EFS",
-      live,
-      lives,
-    }),
     {
       type: "OpenIDConnectProvider",
       group: "IAM",
@@ -161,6 +116,7 @@ exports.AwsIamRole = ({ spec, config }) => {
           ])(),
       ])(),
     },
+    ...findDependenciesRoleCommon({ live, lives, config }),
   ];
 
   const listAttachedRolePolicies = pipe([
