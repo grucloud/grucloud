@@ -1,9 +1,9 @@
 const assert = require("assert");
 const { pipe, tap, eq, get, tryCatch, not } = require("rubico");
-const { callProp } = require("rubico/x");
+const { callProp, last } = require("rubico/x");
 const Axios = require("axios");
 const fs = require("fs").promises;
-const AdmZip = require("adm-zip");
+const zipDir = require("zip-dir");
 const crypto = require("crypto");
 const { createEndpoint } = require("../AwsCommon");
 
@@ -36,10 +36,24 @@ exports.createZipBuffer = ({ localPath }) =>
       assert(localPath);
     }),
     () => localPath,
-    fileExist,
-    () => new AdmZip(),
-    tap(callProp("addLocalFolder", localPath, "")),
-    callProp("toBuffer"),
+    tap(fileExist),
+    () =>
+      zipDir(localPath, {
+        filter: pipe([not(callProp("endsWith", ".DS_Store"))]),
+      }),
+    // tap(
+    //   pipe([
+    //     (data) =>
+    //       fs.writeFile(
+    //         `${pipe([
+    //           () => localPath,
+    //           callProp("split", "/"),
+    //           last,
+    //         ])()}.target.zip`,
+    //         data
+    //       ),
+    //   ])
+    // ),
   ])();
 
 exports.computeHash256 = (ZipFile) =>

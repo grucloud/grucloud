@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, assign, tryCatch, omit, pick } = require("rubico");
-const { first, defaultsDeep } = require("rubico/x");
+const { first, defaultsDeep, size } = require("rubico/x");
 const path = require("path");
 
 const logger = require("@grucloud/core/logger")({
@@ -10,11 +10,7 @@ const logger = require("@grucloud/core/logger")({
 const { tos } = require("@grucloud/core/tos");
 const { AwsClient } = require("../AwsClient");
 
-const {
-  tagsRemoveFromDescription,
-  compareAws,
-  throwIfNotAwsError,
-} = require("../AwsCommon");
+const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
 
 const {
   createLambda,
@@ -93,7 +89,7 @@ exports.Layer = ({ spec, config }) => {
       getList,
       first,
       tap((result) => {
-        logger.debug(`getByName result: ${tos(result)}`);
+        //logger.debug(`getByName result: ${tos(result)}`);
       }),
     ])();
 
@@ -137,6 +133,9 @@ exports.Layer = ({ spec, config }) => {
       createZipBuffer,
       (ZipFile) =>
         pipe([
+          tap((params) => {
+            assert(ZipFile);
+          }),
           () => otherProps,
           defaultsDeep({
             LayerName: name,
@@ -163,20 +162,48 @@ exports.compareLayer = pipe([
   compareAws({})({
     filterTarget: () =>
       pipe([
+        tap((params) => {
+          assert(true);
+        }),
         assign({
           Content: pipe([
             get("Content"),
             assign({
               CodeSha256: pipe([get("ZipFile"), computeHash256]),
+              CodeSize: pipe([get("ZipFile"), size]),
+            }),
+            tap(({ CodeSize }) => {
+              //console.log("CodeSize target ", CodeSize);
             }),
           ]),
         }),
-        pick(["Content.CodeSha256", "Description", "CompatibleRuntimes"]),
+        pick([
+          //"Content.CodeSha256", TODO aws returns a wrong CodeSha256
+          "Content.CodeSize",
+          "Description",
+          "CompatibleRuntimes",
+        ]),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
     filterLive: () =>
-      pipe([pick(["CompatibleRuntimes", "Description", "Content.CodeSha256"])]),
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        pick([
+          "CompatibleRuntimes",
+          "Description",
+          // "Content.CodeSha256",  TODO aws returns a wrong CodeSha256
+          "Content.CodeSize",
+        ]),
+        tap(({ Content: { CodeSize } }) => {
+          //console.log("CodeSize live  ", CodeSize);
+        }),
+      ]),
   }),
   tap((diff) => {
-    logger.debug(`compareLayer ${tos(diff)}`);
+    //logger.debug(`compareLayer ${tos(diff)}`);
   }),
 ]);
