@@ -162,7 +162,6 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
       tap((params) => {
         assert(true);
       }),
-
       getById({ lives }),
       tap((params) => {
         assert(true);
@@ -213,6 +212,7 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     dependencies: {
       rule,
       role,
+      lambdaFunction,
       apiDestination,
       sqsQueue,
       snsTopic,
@@ -236,10 +236,15 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
         })
       ),
       switchCase([
+        // Lambda
+        () => lambdaFunction,
+        defaultsDeep({
+          Arn: getField(lambdaFunction, "Configuration.FunctionArn"),
+        }),
         // CloudWatch Events Api Destination
         () => apiDestination,
         defaultsDeep({
-          RoleArn: getField(apiDestination, "ApiDestinationArn"),
+          Arn: getField(apiDestination, "ApiDestinationArn"),
         }),
         // SQS Queue
         () => sqsQueue,
@@ -266,6 +271,9 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
           assert(false, "TODO: implement me");
         },
       ]),
+      tap(({ Arn }) => {
+        assert(Arn);
+      }),
     ])();
 
   return {

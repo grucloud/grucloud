@@ -201,7 +201,9 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
     }
     return (...args) =>
       retryCall({
-        name: `${endpointName}.${name} ${JSON.stringify(args)}`,
+        name: `${endpointName}.${name} ${JSON.stringify(
+          omit(["Content"])(args)
+        )}`,
         fn: pipe([
           () => endpoint[name](...args),
           tap((params) => {
@@ -896,6 +898,19 @@ const replaceAccountAndRegion =
       ]),
     ])();
 
+const replaceAccount = ({ providerConfig }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    callProp(
+      "replace",
+      new RegExp(providerConfig.accountId(), "g"),
+      "${config.accountId()}"
+    ),
+    (resource) => () => "`" + resource + "`",
+  ]);
+
 exports.replaceAccountAndRegion = replaceAccountAndRegion;
 
 const assignPolicyResource = ({ providerConfig, lives }) =>
@@ -983,7 +998,7 @@ const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
                         assign({
                           "AWS:SourceOwner": pipe([
                             get("AWS:SourceOwner"),
-                            replaceAccountAndRegion({ providerConfig, lives }),
+                            replaceAccount({ providerConfig }),
                           ]),
                         })
                       ),

@@ -140,20 +140,23 @@ module.exports = pipe([
       }),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
-          assign({
-            EventPattern: pipe([
-              get("EventPattern"),
-              when(
-                get("account"),
-                assign({
-                  account: pipe([
-                    get("account"),
-                    map(replaceAccountAndRegion({ providerConfig })),
-                  ]),
-                })
-              ),
-            ]),
-          }),
+          when(
+            get("EventPattern"),
+            assign({
+              EventPattern: pipe([
+                get("EventPattern"),
+                when(
+                  get("account"),
+                  assign({
+                    account: pipe([
+                      get("account"),
+                      map(replaceAccountAndRegion({ providerConfig })),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
         ]),
       dependencies: {
         eventBus: { type: "EventBus", group: "CloudWatchEvents", parent: true },
@@ -170,7 +173,8 @@ module.exports = pipe([
           }),
           () => `target::${rule}::${Id}`,
         ])(),
-      omitProperties: ["EventBusName", "Rule", "RoleArn"],
+      //TODO check update
+      omitProperties: ["EventBusName", "Rule", "RoleArn", "Arn"],
       filterLive: () =>
         pipe([
           tap((params) => {

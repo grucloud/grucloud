@@ -190,6 +190,17 @@ module.exports = pipe([
                                     path: "id",
                                   }),
                                 ]),
+                                hasIdInLive({
+                                  idToMatch: value,
+                                  lives,
+                                  groupType: "SNS::Topic",
+                                }),
+                                pipe([
+                                  replaceWithName({
+                                    groupType: "SNS::Topic",
+                                    path: "id",
+                                  }),
+                                ]),
                                 pipe([
                                   get("Id"),
                                   replaceAccountAndRegion({ providerConfig }),
@@ -228,6 +239,7 @@ module.exports = pipe([
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
         graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
         dynamoDbTable: { type: "Table", group: "DynamoDB", parent: true },
+        snsTopic: { type: "Topic", group: "SNS", parent: true },
         dbCluster: { type: "DBCluster", group: "RDS", parent: true },
         efsAccessPoint: { type: "AccessPoint", group: "EFS", list: true },
       },

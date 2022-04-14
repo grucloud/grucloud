@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { assign, pipe, tap, get, eq, pick, omit } = require("rubico");
-const { defaultsDeep, isEmpty, pluck, unless, append } = require("rubico/x");
+const { defaultsDeep, when, unless, append } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
@@ -11,6 +11,7 @@ const {
   tagResource,
   untagResource,
 } = require("./CloudWatchEventCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const findId = get("live.Arn");
 const pickId = pick(["Name", "EventBusName"]);
@@ -30,7 +31,7 @@ const buildArn =
 const assignEvenPattern = assign({
   EventPattern: pipe([get("EventPattern"), JSON.stringify]),
 });
-const parseEventPattern = pipe([get("EventPattern", {}), JSON.parse]);
+const parseEventPattern = pipe([get("EventPattern", "{}"), JSON.parse]);
 
 exports.CloudWatchEventRule = ({ spec, config }) => {
   const cloudWatchEvents = createCloudWatchEvents(config);
@@ -63,8 +64,13 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
       tap((params) => {
         assert(parent);
       }),
+      when(
+        get("EventPattern"),
+        assign({
+          EventPattern: parseEventPattern,
+        })
+      ),
       assign({
-        EventPattern: parseEventPattern,
         Tags: pipe([
           buildArn({ config }),
           (ResourceARN) => ({ ResourceARN }),
