@@ -1,9 +1,20 @@
 const assert = require("assert");
+const { pipe, tap } = require("rubico");
 const { isDeepEqual } = require("rubico/x");
 
-const { differenceObject } = require("../Common");
+const { differenceObject, flattenObject } = require("../Common");
 
 describe("Common", function () {
+  it("flattenObject", async function () {
+    const result = flattenObject({
+      filterKey: pipe([(key) => key === "c"]),
+    })({
+      a: true,
+      b: { c: "toto" },
+    });
+    assert.equal(result[0], "toto");
+  });
+
   it("differenceObject 1", async function () {
     const result = differenceObject({ b: true })({ a: true });
     assert(

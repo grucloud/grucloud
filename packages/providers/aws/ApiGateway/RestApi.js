@@ -35,7 +35,11 @@ const {
 const logger = require("@grucloud/core/logger")({
   prefix: "RestApi",
 });
-const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
+const {
+  getByNameCore,
+  buildTagsObject,
+  flattenObject,
+} = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
 const { throwIfNotAwsError } = require("../AwsCommon");
@@ -61,6 +65,30 @@ exports.RestApi = ({ spec, config }) => {
   const apiGateway = createAPIGateway(config);
 
   const client = AwsClient({ spec, config })(apiGateway);
+
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "Role",
+      group: "IAM",
+      ids: pipe([
+        () => live,
+        get("schema.paths"),
+        flattenObject({ filterKey: (key) => key === "credentials" }),
+        map(
+          pipe([
+            (id) =>
+              lives.getById({
+                id,
+                type: "Role",
+                group: "IAM",
+                providerName: config.providerName,
+              }),
+            get("id"),
+          ])
+        ),
+      ])(),
+    },
+  ];
 
   const buildName = pipe([callProp("split", "."), last]);
 
@@ -691,6 +719,7 @@ exports.RestApi = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
+    findDependencies,
     tagResource: tagResource({ apiGateway, buildResourceArn }),
     untagResource: untagResource({ apiGateway, buildResourceArn }),
   };

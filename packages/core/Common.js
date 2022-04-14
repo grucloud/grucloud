@@ -16,9 +16,11 @@ const {
   not,
   or,
   switchCase,
+  flatMap,
 } = require("rubico");
 const {
   size,
+  flatten,
   isObject,
   find,
   callProp,
@@ -627,3 +629,33 @@ exports.shellRun = (fullCommand) =>
       },
     ]),
   ])();
+
+const flattenObject =
+  ({ filterKey = () => true, parentPath = [], accumulator = [] }) =>
+  (properties = {}) =>
+    pipe([
+      () => properties,
+      Object.entries,
+      flatMap(([key, value]) =>
+        pipe([
+          () => value,
+          switchCase([
+            isObject,
+            pipe([
+              flattenObject({
+                filterKey,
+                parentPath: [...parentPath, key],
+                accumulator,
+              }),
+            ]),
+            pipe([() => filterKey(key)]),
+            pipe([() => [value]]),
+            pipe([() => []]),
+          ]),
+        ])()
+      ),
+      (results) => [...accumulator, results],
+      flatten,
+    ])();
+
+exports.flattenObject = flattenObject;

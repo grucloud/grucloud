@@ -50,6 +50,28 @@ const GROUP = "IAM";
 
 const compareIAM = compareAws({});
 
+const dependenciesPolicy = {
+  openIdConnectProvider: {
+    type: "OpenIDConnectProvider",
+    group: "IAM",
+    parent: true,
+  },
+  table: { type: "Table", group: "DynamoDB", parent: true },
+  queue: { type: "Queue", group: "SQS", parent: true },
+  snsTopic: { type: "Topic", group: "SNS", parent: true },
+  efsFileSystems: {
+    type: "FileSystem",
+    group: "EFS",
+    list: true,
+  },
+  efsAccessPoints: {
+    type: "AccessPoint",
+    group: "EFS",
+    list: true,
+  },
+  eventBus: { type: "EventBus", group: "CloudWatchEvents" },
+};
+
 const filterAttachedPolicies = ({ lives }) =>
   pipe([
     assign({
@@ -313,6 +335,7 @@ module.exports = pipe([
             assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
           ]),
       ]),
+      dependencies: dependenciesPolicy,
     },
     {
       type: "InstanceProfile",
