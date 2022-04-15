@@ -84,12 +84,10 @@ module.exports = pipe([
         "LastUpdatedDate",
         "AccessLogSettings.DestinationArn",
         "LastDeploymentStatusMessage",
+        "ApiId",
+        "StageName",
       ],
-      filterLive: () =>
-        pipe([
-          pick(["AccessLogSettings", "StageVariables", "AutoDeploy"]),
-          omitIfEmpty(["StageVariables"]),
-        ]),
+      filterLive: () => pipe([omitIfEmpty(["StageVariables"])]),
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
         logGroup: { type: "LogGroup", group: "CloudWatchLogs" },
@@ -183,21 +181,8 @@ module.exports = pipe([
         "ApiName",
         "RequestParameters.EventBusName",
         "CredentialsArn",
+        "ApiId",
       ],
-      filterLive: () =>
-        pipe([
-          pick([
-            "ConnectionType",
-            "Description",
-            "IntegrationMethod",
-            "IntegrationType",
-            "IntegrationSubtype",
-            "PayloadFormatVersion",
-            "RequestParameters",
-            "RequestTemplates",
-            "TimeoutInMillis",
-          ]),
-        ]),
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
         listener: { type: "Listener", group: "ELBv2", parent: true }, //Integration name depends on listener name
@@ -237,13 +222,6 @@ module.exports = pipe([
     },
     {
       type: "Deployment",
-      //TODO
-      dependsOn: [
-        "ApiGatewayV2::Api",
-        "ApiGatewayV2::Route",
-        "ApiGatewayV2::Stage",
-        "ApiGatewayV2::Integration",
-      ],
       Client: Deployment,
       ignoreResource: (xxx) =>
         pipe([
@@ -273,6 +251,16 @@ module.exports = pipe([
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
         stage: { type: "Stage", group: "ApiGatewayV2", parent: true },
+        route: {
+          type: "Route",
+          group: "ApiGatewayV2",
+          dependsOnTypeOnly: true,
+        },
+        integration: {
+          type: "Integration",
+          group: "ApiGatewayV2",
+          dependsOnTypeOnly: true,
+        },
       },
     },
     {

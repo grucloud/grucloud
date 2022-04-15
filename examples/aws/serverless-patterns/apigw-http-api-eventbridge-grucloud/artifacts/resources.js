@@ -20,8 +20,8 @@ exports.createResources = () => [
     group: "ApiGatewayV2",
     properties: ({}) => ({
       ConnectionType: "INTERNET",
-      IntegrationType: "AWS_PROXY",
       IntegrationSubtype: "EventBridge-PutEvents",
+      IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "1.0",
       RequestParameters: {
         DetailType: "MyDetailType",

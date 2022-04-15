@@ -99,7 +99,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      role: "ApiGatewayEventBridgeRole",
+      roles: ["ApiGatewayEventBridgeRole"],
     }),
   },
   {

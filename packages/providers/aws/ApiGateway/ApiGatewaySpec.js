@@ -130,7 +130,6 @@ module.exports = pipe([
             statusCode: "200",
           },
         },
-        passthroughBehavior: "WHEN_NO_TEMPLATES",
       },
       dependencies: {
         method: { type: "Method", group: "APIGateway", parent: true },
@@ -321,7 +320,7 @@ module.exports = pipe([
             }),
           ])(),
       dependencies: {
-        role: { type: "Role", group: "IAM" },
+        roles: { type: "Role", group: "IAM", list: true },
       },
     },
     {

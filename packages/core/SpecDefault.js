@@ -157,6 +157,14 @@ exports.createSpec =
           ]),
         })
       ),
+      assign({
+        dependsOnType: pipe([
+          get("dependencies"),
+          filter(get("dependsOnTypeOnly")),
+          values,
+          map(buildGroupType),
+        ]),
+      }),
       defaultsDeep(SpecDefault(config)),
       tap((params) => {
         assert(true);

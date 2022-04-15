@@ -101,23 +101,24 @@ const dependsOnTypeForward = (dependsOnType) =>
     }),
     () => dependsOnType,
     map((spec) => ({
-      providerName: spec.providerName,
-      type: spec.type,
       group: spec.group,
+      type: spec.type,
+      providerName: spec.providerName,
       dependsOn: pipe([
-        () => spec.dependsOn,
+        () => spec.dependsOnType,
         map(
           pipe([
             (fullType) => parseFullType(fullType),
             ([group, type]) => ({
-              type,
               group,
+              type,
               providerName: spec.providerName,
             }),
           ])
         ),
       ])(),
     })),
+    //filter(pipe([get("dependsOn"), not(isEmpty)])),
     tap((xxx) => {
       assert(true);
     }),
@@ -277,13 +278,13 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
           name,
           uri,
           dependsOn: uniq([
-            // ...findDependsOnType({
-            //   providerName,
-            //   group,
-            //   type,
-            //   plans,
-            //   dependsOnType: dependsOnTypeForward(dependsOnType),
-            // }),
+            ...findDependsOnType({
+              providerName,
+              group,
+              type,
+              plans,
+              dependsOnType: dependsOnTypeForward(dependsOnType),
+            }),
             ...findDependsOnInstance({
               uri,
               plans,

@@ -19,6 +19,7 @@ const {
   flatMap,
 } = require("rubico");
 const {
+  uniq,
   size,
   flatten,
   isObject,
@@ -656,6 +657,7 @@ const flattenObject =
       ),
       (results) => [...accumulator, results],
       flatten,
+      uniq,
     ])();
 
 exports.flattenObject = flattenObject;
