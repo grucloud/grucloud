@@ -84,9 +84,7 @@ exports.Integration = ({ spec, config }) => {
           ]),
           get("RequestParameters.EventBusName"),
           pipe([get("RequestParameters.EventBusName"), eventBusUriToName]),
-          (params) => {
-            assert(false);
-          },
+          () => "NO-INTEGRATION",
         ]),
       }),
       tap((params) => {
