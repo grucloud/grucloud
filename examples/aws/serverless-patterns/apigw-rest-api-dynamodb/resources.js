@@ -13,22 +13,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Deployment",
-    group: "APIGateway",
-    name: "deployment::ApiDynamoRestApi",
-    dependencies: () => ({
-      restApi: "ApiDynamoRestApi",
-    }),
-  },
-  {
-    type: "Deployment",
-    group: "APIGateway",
-    name: "deployment::ApiDynamoRestApi",
-    dependencies: () => ({
-      restApi: "ApiDynamoRestApi",
-    }),
-  },
-  {
     type: "RestApi",
     group: "APIGateway",
     name: "ApiDynamoRestApi",
@@ -142,6 +126,9 @@ exports.createResources = () => [
         stageName: "prod",
       },
     }),
+    dependencies: () => ({
+      roles: ["ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX"],
+    }),
   },
   {
     type: "Stage",
@@ -182,7 +169,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "apigateway.amazonaws.com",
+              Service: `apigateway.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -201,14 +188,14 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "apigateway.amazonaws.com",
+              Service: `apigateway.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -234,9 +221,11 @@ exports.createResources = () => [
                   "dynamodb:DeleteItem",
                 ],
                 Resource: [
-                  `arn:aws:dynamodb:${
-                    config.region
-                  }:${config.accountId()}:table/ApiDynamoStack-ApiDynamoTable66095DD3-1B90VIOP8H5XN`,
+                  `${getId({
+                    type: "Table",
+                    group: "DynamoDB",
+                    name: "ApiDynamoStack-ApiDynamoTable66095DD3-1B90VIOP8H5XN",
+                  })}`,
                 ],
                 Effect: "Allow",
               },

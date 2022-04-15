@@ -1,6 +1,4 @@
 const assert = require("assert");
-const fs = require("fs").promises;
-const path = require("path");
 const {
   map,
   pipe,
@@ -30,11 +28,13 @@ const {
   prepend,
   isObject,
   size,
+  uniq,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "RestApi",
 });
+
 const {
   getByNameCore,
   buildTagsObject,
@@ -86,6 +86,8 @@ exports.RestApi = ({ spec, config }) => {
             get("id"),
           ])
         ),
+        //TODO move uniq to flattenObject
+        uniq,
       ])(),
     },
   ];

@@ -126,6 +126,9 @@ exports.createResources = () => [
         stageName: "prod",
       },
     }),
+    dependencies: () => ({
+      roles: ["ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX"],
+    }),
   },
   {
     type: "Stage",
