@@ -251,10 +251,15 @@ module.exports = pipe([
       dependencies: {
         api: { type: "Api", group: "ApiGatewayV2", parent: true },
         stage: { type: "Stage", group: "ApiGatewayV2", parent: true },
-        route: { type: "Route", group: "ApiGatewayV2" },
+        route: {
+          type: "Route",
+          group: "ApiGatewayV2",
+          dependsOnTypeOnly: true,
+        },
         integration: {
           type: "Integration",
           group: "ApiGatewayV2",
+          dependsOnTypeOnly: true,
         },
       },
     },

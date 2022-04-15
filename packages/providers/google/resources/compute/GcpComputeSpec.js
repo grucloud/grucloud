@@ -185,6 +185,7 @@ module.exports = pipe([
         "metadata.fingerprint",
         "metadata.kind",
       ],
+      //TODO remove dependsOnList
       dependsOnList: ["compute::Disk"],
       dependencies: {
         ip: { type: "Address", group: "compute" },
