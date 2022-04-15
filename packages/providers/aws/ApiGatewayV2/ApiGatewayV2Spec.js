@@ -168,7 +168,7 @@ module.exports = pipe([
                 append(`::${eventBus}`),
                 () => listener,
                 append(`::${listener}`),
-                append(`::UNKNOWN`),
+                append(`::NO-INTEGRATION`),
               ]),
             ])(),
         ])(),

@@ -101,7 +101,7 @@ exports.findInStatement =
   ({ Condition, Resource }) =>
     pipe([
       tap(() => {
-        assert(Resource);
+        //assert(Resource);
       }),
       () => Resource,
       unless(Array.isArray, (resource) => [resource]),

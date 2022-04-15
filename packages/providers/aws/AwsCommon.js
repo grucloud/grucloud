@@ -934,115 +934,144 @@ const assignPolicyResource = ({ providerConfig, lives }) =>
 
 exports.assignPolicyResource = assignPolicyResource;
 
+const replaceStatement = ({ providerConfig, lives }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    when(
+      get("Principal"),
+      assign({
+        Principal: pipe([
+          get("Principal"),
+          when(
+            get("Service"),
+            assign({
+              Service: pipe([
+                get("Service"),
+                replaceAccountAndRegion({ providerConfig, lives }),
+              ]),
+            })
+          ),
+        ]),
+      })
+    ),
+    when(
+      get("Condition"),
+      assign({
+        Condition: pipe([
+          get("Condition"),
+          when(
+            get("StringEquals"),
+            assign({
+              StringEquals: pipe([
+                get("StringEquals"),
+                when(
+                  get("elasticfilesystem:AccessPointArn"),
+                  assign({
+                    "elasticfilesystem:AccessPointArn": pipe([
+                      get("elasticfilesystem:AccessPointArn"),
+                      tap((params) => {
+                        assert(true);
+                      }),
+                      (Id) => ({ Id, lives }),
+                      replaceWithName({
+                        groupType: "EFS::AccessPoint",
+                        path: "id",
+                      }),
+                    ]),
+                  })
+                ),
+                when(
+                  get("aws:SourceAccount"),
+                  assign({
+                    "aws:SourceAccount": pipe([
+                      get("aws:SourceAccount"),
+                      replaceAccountAndRegion({
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  })
+                ),
+                when(
+                  get("AWS:SourceOwner"),
+                  assign({
+                    "AWS:SourceOwner": pipe([
+                      get("AWS:SourceOwner"),
+                      replaceAccount({ providerConfig }),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
+          when(
+            get("ArnEquals"),
+            assign({
+              ArnEquals: pipe([
+                get("ArnEquals"),
+                when(
+                  get("aws:PrincipalArn"),
+                  assign({
+                    "aws:PrincipalArn": pipe([
+                      get("aws:PrincipalArn"),
+                      replaceAccountAndRegion({
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  })
+                ),
+                when(
+                  get("aws:SourceArn"),
+                  assign({
+                    "aws:SourceArn": pipe([
+                      get("aws:SourceArn"),
+                      replaceAccountAndRegion({
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
+        ]),
+      })
+    ),
+    assignPolicyResource({ providerConfig, lives }),
+  ]);
+
 const assignPolicyAccountAndRegion = ({ providerConfig, lives }) =>
-  assign({
-    Statement: pipe([
-      get("Statement"),
-      map(
-        pipe([
-          when(
-            get("Principal"),
-            assign({
-              Principal: pipe([
-                get("Principal"),
-                when(
-                  get("Service"),
-                  assign({
-                    Service: pipe([
-                      get("Service"),
-                      replaceAccountAndRegion({ providerConfig, lives }),
-                    ]),
-                  })
-                ),
-              ]),
-            })
-          ),
-          when(
-            get("Condition"),
-            assign({
-              Condition: pipe([
-                get("Condition"),
-                when(
-                  get("StringEquals"),
-                  assign({
-                    StringEquals: pipe([
-                      get("StringEquals"),
-                      when(
-                        get("elasticfilesystem:AccessPointArn"),
-                        assign({
-                          "elasticfilesystem:AccessPointArn": pipe([
-                            get("elasticfilesystem:AccessPointArn"),
-                            tap((params) => {
-                              assert(true);
-                            }),
-                            (Id) => ({ Id, lives }),
-                            replaceWithName({
-                              groupType: "EFS::AccessPoint",
-                              path: "id",
-                            }),
-                          ]),
-                        })
-                      ),
-                      when(
-                        get("aws:SourceAccount"),
-                        assign({
-                          "aws:SourceAccount": pipe([
-                            get("aws:SourceAccount"),
-                            replaceAccountAndRegion({ providerConfig, lives }),
-                          ]),
-                        })
-                      ),
-                      when(
-                        get("AWS:SourceOwner"),
-                        assign({
-                          "AWS:SourceOwner": pipe([
-                            get("AWS:SourceOwner"),
-                            replaceAccount({ providerConfig }),
-                          ]),
-                        })
-                      ),
-                    ]),
-                  })
-                ),
-                when(
-                  get("ArnEquals"),
-                  assign({
-                    ArnEquals: pipe([
-                      get("ArnEquals"),
-                      when(
-                        get("aws:PrincipalArn"),
-                        assign({
-                          "aws:PrincipalArn": pipe([
-                            get("aws:PrincipalArn"),
-                            replaceAccountAndRegion({ providerConfig, lives }),
-                          ]),
-                        })
-                      ),
-                      when(
-                        get("aws:SourceArn"),
-                        assign({
-                          "aws:SourceArn": pipe([
-                            get("aws:SourceArn"),
-                            replaceAccountAndRegion({ providerConfig, lives }),
-                          ]),
-                        })
-                      ),
-                    ]),
-                  })
-                ),
-              ]),
-            })
-          ),
-          assignPolicyResource({ providerConfig, lives }),
-        ])
-      ),
-    ]),
-  });
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    assign({
+      Statement: pipe([
+        get("Statement"),
+        tap((params) => {
+          assert(true);
+        }),
+        switchCase([
+          Array.isArray,
+          map(replaceStatement({ providerConfig, lives })),
+          replaceStatement({ providerConfig, lives }),
+        ]),
+      ]),
+    }),
+  ]);
+
 exports.assignPolicyAccountAndRegion = assignPolicyAccountAndRegion;
 
 exports.assignPolicyDocumentAccountAndRegion = ({ providerConfig, lives }) =>
   assign({
     PolicyDocument: pipe([
+      tap((params) => {
+        assert(true);
+      }),
       get("PolicyDocument"),
       assignPolicyAccountAndRegion({ providerConfig, lives }),
     ]),
