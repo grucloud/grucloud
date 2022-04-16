@@ -126,6 +126,9 @@ exports.createResources = () => [
         },
       ],
     }),
+    dependencies: () => ({
+      eventBus: "AppSyncEventBus",
+    }),
   },
   {
     type: "Role",

@@ -72,6 +72,9 @@ exports.createResources = () => [
         },
       ],
     }),
+    dependencies: () => ({
+      eventBus: "sam-app-EventBus",
+    }),
   },
   {
     type: "StateMachine",
