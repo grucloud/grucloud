@@ -169,6 +169,9 @@ exports.createResources = () => [
         },
       ],
     }),
+    dependencies: () => ({
+      eventBus: "MyEventBus",
+    }),
   },
   {
     type: "Function",

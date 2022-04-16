@@ -163,11 +163,26 @@ const AwsClient =
           tap((params) => {
             logger.debug(`getList ${type}, params: ${JSON.stringify(params)}`);
           }),
-          endpoint()[method],
+          async (params) => {
+            let NextToken;
+            let data = [];
+            do {
+              const results = await endpoint()[method]({
+                ...params,
+                NextToken,
+              });
+              NextToken = results.NextToken;
+              const newData = get(getParam)(results);
+              if (newData) {
+                data = [...data, ...newData];
+              }
+            } while (NextToken);
+            return data;
+          },
           tap((params) => {
             assert(true);
           }),
-          get(getParam, []),
+          //get(getParam, []),
           transformList,
           filter(filterResource),
           tap((params) => {
