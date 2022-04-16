@@ -118,6 +118,7 @@ exports.findInStatement =
           group,
         })
       ),
+      filter(not(isEmpty)),
     ])();
 
 exports.dependenciesPoliciesKind = [

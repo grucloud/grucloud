@@ -1,0 +1,22 @@
+@startmindmap
+title Resources for project apigw-http-api-eventbridge-cdk
+skinparam monochrome true
++ Infra
+++ aws
++++ ApiGatewayV2
+++++ Api (1)
+++++ Stage (1)
+++++ Integration (1)
+++++ Route (1)
+++++ Deployment (1)
++++ CloudWatchEvents
+++++ EventBus (1)
+++++ Rule (1)
+++++ Target (1)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (1)
+@endmindmap
