@@ -287,24 +287,7 @@ module.exports = pipe([
               }),
             ])(),
         },
-        openIdConnectProvider: {
-          type: "OpenIDConnectProvider",
-          group: "IAM",
-          parent: true,
-        },
-        table: { type: "Table", group: "DynamoDB", parent: true },
-        queue: { type: "Queue", group: "SQS", parent: true },
-        snsTopic: { type: "Topic", group: "SNS", parent: true },
-        efsFileSystems: {
-          type: "FileSystem",
-          group: "EFS",
-          list: true,
-        },
-        efsAccessPoints: {
-          type: "AccessPoint",
-          group: "EFS",
-          list: true,
-        },
+        ...dependenciesPolicy,
       },
       hasNoProperty: ({ resource }) =>
         pipe([

@@ -9,8 +9,8 @@ const {
   tryCatch,
   pick,
   eq,
-  fork,
   omit,
+  any,
 } = require("rubico");
 const {
   pluck,
@@ -21,6 +21,7 @@ const {
   when,
   find,
   first,
+  append,
 } = require("rubico/x");
 const path = require("path");
 const { fetchZip, createZipBuffer, computeHash256 } = require("./LambdaCommon");
@@ -29,7 +30,7 @@ const { retryCall } = require("@grucloud/core/Retry");
 const logger = require("@grucloud/core/logger")({
   prefix: "Function",
 });
-const { tos } = require("@grucloud/core/tos");
+
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { throwIfNotAwsError, compareAws } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -59,6 +60,23 @@ const removeVersion = pipe([
 exports.Function = ({ spec, config }) => {
   const lambda = createLambda(config);
   const client = AwsClient({ spec, config })(lambda);
+
+  const managedByOther = ({ live, lives }) =>
+    pipe([
+      () =>
+        lives.getByType({
+          type: "Stack",
+          group: "CloudFormation",
+          providerName: config.providerName,
+        }),
+      any(
+        pipe([
+          get("name"),
+          append("-AWS"),
+          (stackName) => live.Configuration.FunctionName.includes(stackName),
+        ])
+      ),
+    ])();
 
   const findDependenciesInEnvironment = ({
     pathLive,
@@ -463,6 +481,7 @@ exports.Function = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
+    managedByOther,
     tagResource: tagResource({ lambda }),
     untagResource: untagResource({ lambda }),
   };

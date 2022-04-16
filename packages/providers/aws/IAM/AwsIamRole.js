@@ -13,9 +13,9 @@ const {
   omit,
   and,
   flatMap,
+  any,
 } = require("rubico");
 const {
-  unless,
   flatten,
   defaultsDeep,
   isEmpty,
@@ -65,6 +65,23 @@ exports.AwsIamRole = ({ spec, config }) => {
   const findId = get("live.Arn");
   const pickId = pick(["RoleName"]);
 
+  const managedByOther = ({ live, lives }) =>
+    pipe([
+      () =>
+        lives.getByType({
+          type: "Stack",
+          group: "CloudFormation",
+          providerName: config.providerName,
+        }),
+      any(
+        pipe([
+          get("name"),
+          append("-AWS"),
+          (stackName) => live.RoleName.includes(stackName),
+        ])
+      ),
+    ])();
+
   const findDependencyRoleCommon = ({ type, group, live, lives, config }) => ({
     type,
     group,
@@ -73,9 +90,21 @@ exports.AwsIamRole = ({ spec, config }) => {
       get("Policies"),
       pluck("PolicyDocument"),
       pluck("Statement"),
+      tap((params) => {
+        assert(true);
+      }),
       flatten,
+      tap((params) => {
+        assert(true);
+      }),
       flatMap(findInStatement({ type, group, lives, config })),
       filter(not(isEmpty)),
+      tap((params) => {
+        assert(true);
+      }),
+      tap.if(not(isEmpty), (id) => {
+        assert(id);
+      }),
     ])(),
   });
 
@@ -383,6 +412,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    managedByOther,
     tagResource: tagResource({ iam }),
     untagResource: untagResource({ iam }),
   };
