@@ -228,13 +228,22 @@ exports.Function = ({ spec, config }) => {
         lambda().getFunction,
         pick(["Configuration", "Code", "Tags"]),
         assign({
-          FunctionUrlConfig: pipe([
-            get("Configuration"),
-            pick(["FunctionName"]),
-            lambda().listFunctionUrlConfigs,
-            get("FunctionUrlConfigs"),
-            first,
-          ]),
+          FunctionUrlConfig: tryCatch(
+            pipe([
+              get("Configuration"),
+              pick(["FunctionName"]),
+              tap((params) => {
+                assert(true);
+              }),
+              lambda().listFunctionUrlConfigs,
+              get("FunctionUrlConfigs"),
+              first,
+            ]),
+            (error, params) => {
+              assert(params);
+              throw error;
+            }
+          ),
           Policy: tryCatch(
             pipe([
               get("Configuration"),

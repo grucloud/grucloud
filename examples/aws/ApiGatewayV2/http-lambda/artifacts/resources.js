@@ -97,6 +97,11 @@ exports.createResources = () => [
       stage: "my-api-stage-dev",
     }),
   },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "/aws/lambda/my-function",
+  },
   { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
   {
     type: "Role",
