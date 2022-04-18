@@ -78,9 +78,11 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [hello world lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Lambda/nodejs/helloworkd/resources.js)
+- [hello world lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Lambda/nodejs/helloworld)
 
-- [lambda called by an Api gateway](https://github.com/grucloud/grucloud/blob/main/example/aws/api-gateway/lambda/resources.js)
+- [lambda called by an Api gateway](https://github.com/grucloud/grucloud/blob/main/example/aws/api-gateway/lambda)
+
+- [lambda triggered by a write to an S3 Bucket](https://github.com/grucloud/grucloud/blob/main/example/aws/serverless-patterns/xray-lambdalayers-cdk-python)
 
 ## Properties
 
@@ -99,6 +101,7 @@ exports.createResources = () => [
 ## UsedBy
 
 - [ApiGateway Integration](../ApiGatewayV2/Integration.md)
+- [S3 Bucket](../S3/Bucket.md)
 
 ## List
 
@@ -109,5 +112,47 @@ gc list -t Function
 ```
 
 ```txt
-
+┌──────────────────────────────────────────────────────────────────┐
+│ 2 Lambda::Function from aws                                      │
+├──────────────────────────────────────────────────────────────────┤
+│ name: LambdaLayerXRayStackStack-BucketNotificationsHandl-1XcDZ1… │
+│ managedByUs: Yes                                                 │
+│ live:                                                            │
+│   Configuration:                                                 │
+│     Architectures:                                               │
+│       - "x86_64"                                                 │
+│     CodeSha256: hzxBwXE8vF5htCF3abiYzTqjRnM2KRxbveRsojrrXhs=     │
+│     CodeSize: 1337                                               │
+│     Description: AWS CloudFormation handler for "Custom::S3Buck… │
+│     EphemeralStorage:                                            │
+│       Size: 512                                                  │
+│     FunctionArn: arn:aws:lambda:us-east-1:840541460064:function… │
+│     FunctionName: LambdaLayerXRayStackStack-BucketNotifications… │
+│     Handler: index.handler                                       │
+│     LastModified: 2022-04-17T18:32:29.881+0000                   │
+│     LastUpdateStatus: Successful                                 │
+│     MemorySize: 128                                              │
+│     PackageType: Zip                                             │
+│     RevisionId: fee4d397-44a6-4dfe-b070-9b0c8204d012             │
+│     Role: arn:aws:iam::840541460064:role/LambdaLayerXRayStackSt… │
+│     Runtime: python3.7                                           │
+│     State: Active                                                │
+│     Timeout: 300                                                 │
+│     TracingConfig:                                               │
+│       Mode: PassThrough                                          │
+│     Version: $LATEST                                             │
+│   Code:                                                          │
+│     Location: https://prod-04-2014-tasks.s3.us-east-1.amazonaws… │
+│     RepositoryType: S3                                           │
+│   Tags:                                                          │
+│     aws:cloudformation:stack-name: LambdaLayerXRayStackStack     │
+│     gc-project-name: xray-lambdalayers-cdk-python                │
+│     aws:cloudformation:stack-id: arn:aws:cloudformation:us-east… │
+│     aws:cloudformation:logical-id: BucketNotificationsHandler05… │
+│     gc-managed-by: grucloud                                      │
+│     gc-stage: dev                                                │
+│     gc-created-by-provider: aws                                  │
+│     Name: LambdaLayerXRayStackStack-BucketNotificationsHandl-1X… │
+│                                                                  │
+├──────────────────────────────────────────────────────────────────┤
 ```

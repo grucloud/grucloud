@@ -63,6 +63,15 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       ])(),
     },
     {
+      type: "Function",
+      group: "Lambda",
+      ids: pipe([
+        () => live,
+        get("NotificationConfiguration.LambdaFunctionConfigurations"),
+        pluck("LambdaFunctionArn"),
+      ])(),
+    },
+    {
       type: "OriginAccessIdentity",
       group: "CloudFront",
       ids: pipe([

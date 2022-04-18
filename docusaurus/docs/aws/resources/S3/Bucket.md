@@ -411,6 +411,7 @@ exports.createResources = () => [
 
 - [CloudFront Origin Access Identity](../CloudFront/OriginAccessIdentity.md)
 - [SNS Topic](../SNS/Topic.md)
+- [Lambda Function](../Lambda/Function.md)
 
 ## AWS CLI
 
