@@ -90,18 +90,9 @@ exports.AwsIamRole = ({ spec, config }) => {
       get("Policies"),
       pluck("PolicyDocument"),
       pluck("Statement"),
-      tap((params) => {
-        assert(true);
-      }),
       flatten,
-      tap((params) => {
-        assert(true);
-      }),
       flatMap(findInStatement({ type, group, lives, config })),
       filter(not(isEmpty)),
-      tap((params) => {
-        assert(true);
-      }),
       tap.if(not(isEmpty), (id) => {
         assert(id);
       }),

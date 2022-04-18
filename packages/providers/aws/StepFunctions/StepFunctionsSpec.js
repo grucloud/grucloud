@@ -36,8 +36,8 @@ module.exports = pipe([
       },
       dependencies: {
         role: { type: "Role", group: "IAM" },
-        logGroup: { type: "LogGroup", group: "CloudWatchLogs", list: true },
-        lambdaFunction: { type: "Function", group: "Lambda", list: true },
+        logGroups: { type: "LogGroup", group: "CloudWatchLogs", list: true },
+        lambdaFunctions: { type: "Function", group: "Lambda", list: true },
       },
       filterLive: ({ lives, providerConfig }) =>
         pipe([

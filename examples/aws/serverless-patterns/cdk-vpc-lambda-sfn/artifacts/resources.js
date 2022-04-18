@@ -578,7 +578,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "sfnStack-testtestMachineFlowRoleE75B9154-1EL1S8LF75X2B",
-      logGroup: ["testlambdatest-"],
+      logGroups: ["testlambdatest-"],
     }),
   },
 ];

@@ -124,16 +124,21 @@ const dependsOnTypeForward = (dependsOnType) =>
     }),
   ])();
 
-const dependsOnTypeReverse = (dependsOnType) =>
+const dependsOnTypeReverse = (specs) =>
   pipe([
-    () => dependsOnType,
+    tap((params) => {
+      assert(specs);
+    }),
+    () => specs,
     map((spec) => ({
       providerName: spec.providerName,
       type: spec.type,
       group: spec.group,
       dependsOn: pipe([
-        () => dependsOnType,
-        filter(pipe([get("dependsOn", []), includes(displayType(spec))])),
+        () => specs,
+        filter(
+          pipe([get("dependsOnTypeDestroy", []), includes(displayType(spec))])
+        ),
         map(pick(["providerName", "type", "group"])),
       ])(),
     })),
@@ -240,6 +245,7 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
   assert(Array.isArray(plans));
   assert(Array.isArray(dependsOnType));
   assert(Array.isArray(dependsOnInstance));
+
   return switchCase([
     () => down,
     // DOWN

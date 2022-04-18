@@ -221,7 +221,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "sam-app-StatesExecutionRole-VZMKU2P2QBYH",
-      logGroup: ["stepfunctions/StateMachinetoAPIGW"],
+      logGroups: ["stepfunctions/StateMachinetoAPIGW"],
     }),
   },
 ];

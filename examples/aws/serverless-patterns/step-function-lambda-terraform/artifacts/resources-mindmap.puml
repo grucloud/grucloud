@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project step-function-lambda-terraform
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ Rule (1)
+++++ Target (1)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (3)
++++ Lambda
+++++ Function (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap
