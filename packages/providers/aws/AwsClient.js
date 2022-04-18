@@ -134,9 +134,10 @@ const AwsClient =
             ])
           ),
           tap((result) => {
-            logger.debug(
-              `getById ${type} result: ${JSON.stringify(result, null, 4)}`
-            );
+            // logger.debug(
+            //   `getById ${type} result: ${JSON.stringify(result, null, 4)}`
+            // );
+            logger.debug(`getById ${type} done`);
           }),
         ])();
 
@@ -350,9 +351,10 @@ const AwsClient =
               pickCreated({ pickId, payload, name, resolvedDependencies }),
               tap((params) => {
                 assert(isObject(params));
-                logger.debug(
-                  `create isUpById: ${name}, ${JSON.stringify(params)}`
-                );
+                // logger.debug(
+                //   `create isUpById: ${name}, ${JSON.stringify(params)}`
+                // );
+                logger.debug(`create isUpById: ${name}`);
               }),
               tap.if(
                 () => isFunction(getById),

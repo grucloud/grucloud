@@ -54,6 +54,7 @@ module.exports = pipe([
           list: true,
         },
         snsTopic: { type: "Topic", group: "SNS" },
+        lambdaFunction: { type: "Function", group: "Lambda" },
       },
       compare: compareS3({
         filterTarget: () =>
@@ -114,6 +115,25 @@ module.exports = pipe([
             assign({
               NotificationConfiguration: pipe([
                 get("NotificationConfiguration"),
+                when(
+                  get("LambdaFunctionConfigurations"),
+                  assign({
+                    LambdaFunctionConfigurations: pipe([
+                      get("LambdaFunctionConfigurations"),
+                      map(
+                        pipe([
+                          omit("Id"),
+                          assign({
+                            LambdaFunctionArn: pipe([
+                              get("LambdaFunctionArn"),
+                              replaceAccountAndRegion({ providerConfig }),
+                            ]),
+                          }),
+                        ])
+                      ),
+                    ]),
+                  })
+                ),
                 when(
                   get("TopicConfigurations"),
                   assign({
