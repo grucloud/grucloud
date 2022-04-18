@@ -1,12 +1,12 @@
 const assert = require("assert");
 const { map, pipe, tap, get, pick, assign, filter, any } = require("rubico");
-const { defaultsDeep, pluck, find } = require("rubico/x");
+const { defaultsDeep, pluck, find, uniq } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./StepFunctionsCommon");
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, flattenObject } = require("@grucloud/core/Common");
 
 const model = {
   package: "sfn",
@@ -33,6 +33,29 @@ exports.StepFunctionsStateMachine = ({ spec, config }) =>
         type: "Role",
         group: "IAM",
         ids: [live.roleArn],
+      },
+      {
+        type: "Function",
+        group: "Lambda",
+        ids: pipe([
+          () => live,
+          get("definition.States"),
+          flattenObject({ filterKey: (key) => key === "FunctionName" }),
+          map(
+            pipe([
+              (id) =>
+                lives.getById({
+                  id,
+                  type: "Function",
+                  group: "Lambda",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ])
+          ),
+          //TODO move uniq to flattenObject
+          uniq,
+        ])(),
       },
       {
         type: "LogGroup",
