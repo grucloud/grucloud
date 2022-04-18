@@ -215,9 +215,9 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
         shouldRetryOnException: ({ error, name }) =>
           pipe([
             tap(() => {
-              logger.info(
-                `shouldRetryOnException: ${name}, error: ${util.inspect(error)}`
-              );
+              // logger.info(
+              //   `shouldRetryOnException: ${name}, error: ${util.inspect(error)}`
+              // );
               logger.info(
                 `shouldRetryOnException: name: ${error.name}, code: ${error.code}`
               );
@@ -241,7 +241,6 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
                 includes(error.name),
               ]),
             ]),
-
             tap.if(identity, () => {
               logger.info(
                 `shouldRetryOnException: ${name}: retrying, name: ${error.name}`

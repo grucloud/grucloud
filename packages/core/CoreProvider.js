@@ -1649,11 +1649,11 @@ function CoreProvider({
             }),
         }),
         tap(({ resolvedDependencies }) => {
-          logger.debug(
-            `upsertResources: ${resource.name} ${tos({
-              resolvedDependencies,
-            })}`
-          );
+          // logger.debug(
+          //   `upsertResources: ${resource.name} ${tos({
+          //     resolvedDependencies,
+          //   })}`
+          // );
         }),
         assign({
           input: ({ engine, resolvedDependencies }) =>
