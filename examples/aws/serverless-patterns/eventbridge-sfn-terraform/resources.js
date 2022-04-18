@@ -179,7 +179,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "terraform-20220331194511828100000004",
-      logGroup: [
+      logGroups: [
         "/aws/vendedlogs/states/StateMachine-terraform-20220331194511828000000001",
       ],
     }),

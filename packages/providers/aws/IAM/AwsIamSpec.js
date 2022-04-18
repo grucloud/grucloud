@@ -21,6 +21,7 @@ const {
   callProp,
   isEmpty,
   find,
+  defaultsDeep,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
@@ -37,6 +38,7 @@ const {
   AwsIamOpenIDConnectProvider,
 } = require("./AwsIamOpenIDConnectProvider");
 
+const { dependenciesPolicy } = require("./AwsIamCommon");
 const {
   compareAws,
   isOurMinion,
@@ -44,33 +46,10 @@ const {
   assignPolicyDocumentAccountAndRegion,
   assignPolicyAccountAndRegion,
 } = require("../AwsCommon");
-const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "IAM";
 
 const compareIAM = compareAws({});
-
-const dependenciesPolicy = {
-  openIdConnectProvider: {
-    type: "OpenIDConnectProvider",
-    group: "IAM",
-    parent: true,
-  },
-  table: { type: "Table", group: "DynamoDB", parent: true },
-  queue: { type: "Queue", group: "SQS", parent: true },
-  snsTopic: { type: "Topic", group: "SNS", parent: true },
-  efsFileSystems: {
-    type: "FileSystem",
-    group: "EFS",
-    list: true,
-  },
-  efsAccessPoints: {
-    type: "AccessPoint",
-    group: "EFS",
-    list: true,
-  },
-  eventBus: { type: "EventBus", group: "CloudWatchEvents" },
-};
 
 const filterAttachedPolicies = ({ lives }) =>
   pipe([

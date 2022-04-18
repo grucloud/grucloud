@@ -237,7 +237,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "orders-stack-StateMachineRole-1RWAR7ZEDPVDJ",
-      lambdaFunction: ["OrderState"],
+      lambdaFunctions: ["OrderState"],
     }),
   },
 ];

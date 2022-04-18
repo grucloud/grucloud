@@ -129,4 +129,40 @@ exports.dependenciesPoliciesKind = [
   { type: "AccessPoint", group: "EFS" },
   { type: "AccessPoint", group: "EFS" },
   { type: "EventBus", group: "CloudWatchEvents" },
+  { type: "Function", group: "Lambda" },
+  { type: "StateMachine", group: "StepFunctions" },
 ];
+
+exports.dependenciesPolicy = {
+  openIdConnectProvider: {
+    type: "OpenIDConnectProvider",
+    group: "IAM",
+    parent: true,
+  },
+  table: { type: "Table", group: "DynamoDB", parent: true },
+  queue: { type: "Queue", group: "SQS", parent: true },
+  snsTopic: { type: "Topic", group: "SNS", parent: true },
+  efsFileSystems: {
+    type: "FileSystem",
+    group: "EFS",
+    list: true,
+  },
+  efsAccessPoints: {
+    type: "AccessPoint",
+    group: "EFS",
+    list: true,
+  },
+  eventBus: { type: "EventBus", group: "CloudWatchEvents" },
+  lambdaFunctions: {
+    type: "Function",
+    group: "Lambda",
+    list: true,
+    ignoreOnDestroy: true,
+  },
+  stateMachines: {
+    type: "StateMachine",
+    group: "StepFunctions",
+    list: true,
+    ignoreOnDestroy: true,
+  },
+};

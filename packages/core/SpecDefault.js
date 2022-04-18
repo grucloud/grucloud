@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, tap, pipe, assign, eq, get, filter } = require("rubico");
+const { map, tap, pipe, assign, eq, get, filter, not } = require("rubico");
 const {
   defaultsDeep,
   find,
@@ -161,6 +161,14 @@ exports.createSpec =
         dependsOnType: pipe([
           get("dependencies"),
           filter(get("dependsOnTypeOnly")),
+          values,
+          map(buildGroupType),
+        ]),
+      }),
+      assign({
+        dependsOnTypeDestroy: pipe([
+          get("dependencies"),
+          filter(not(get("ignoreOnDestroy"))),
           values,
           map(buildGroupType),
         ]),

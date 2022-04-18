@@ -875,6 +875,9 @@ const replaceAccountAndRegion =
   ({ providerConfig, lives }) =>
   (Id) =>
     pipe([
+      tap((params) => {
+        assert(Id);
+      }),
       () => lives,
       switchCase([
         any(eq(get("id"), Id)),
@@ -948,7 +951,11 @@ const replaceStatement = ({ providerConfig, lives }) =>
             assign({
               Service: pipe([
                 get("Service"),
-                replaceAccountAndRegion({ providerConfig, lives }),
+                switchCase([
+                  Array.isArray,
+                  map(replaceAccountAndRegion({ providerConfig, lives })),
+                  replaceAccountAndRegion({ providerConfig, lives }),
+                ]),
               ]),
             })
           ),

@@ -85,6 +85,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Aws
 
+- gc gencode lambda with java.
 - AWS::SSM::Document
 - AWS::Glue::Job
 - AWS::Route53::RecordSetGroup
@@ -112,16 +113,10 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 - Nat gateway handle deleting
 - EC2 Instance placement
 - resource schema
-
-- Lambda env var dependencies with DynamoDB table
-- Policy dependencies with other resources: DynamoDB table
-
-- ec2::SecurityGroupRuleIngress 0/1 client.update is not a function
 - document create key pair
 - UserData: ec2 update and displayResource
 - Resource pages
 - aws_route53_delegation_set
-
 - s3 analytics configuration
 
 ## TODO Goggle
