@@ -157,6 +157,9 @@ exports.createResources = () => [
         },
       ],
     }),
+    dependencies: () => ({
+      lambdaFunctions: ["lambda-fns"],
+    }),
   },
   {
     type: "Role",

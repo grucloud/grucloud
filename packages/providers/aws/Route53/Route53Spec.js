@@ -28,10 +28,13 @@ module.exports = pipe([
   () => [
     {
       type: "HostedZone",
-      dependsOn: ["Route53Domains::Domain"],
       dependencies: {
         domain: { type: "Domain", group: "Route53Domains" },
-        hostedZone: { type: "HostedZone", group: "Route53" },
+        hostedZone: {
+          type: "HostedZone",
+          group: "Route53",
+          ignoreOnDestroy: true,
+        },
       },
       Client: Route53HostedZone,
       compare: compareRoute53({
