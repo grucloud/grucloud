@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project sqs-lambda-terraform-python
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ Lambda
+++++ Function (1)
+++++ EventSourceMapping (1)
++++ SQS
+++++ Queue (1)
+@endmindmap
