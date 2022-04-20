@@ -69,6 +69,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       queue: "sqs-lambda-demo",
+      logGroups: ["/aws/lambda/sqs-lambda-demo"],
     }),
   },
   {

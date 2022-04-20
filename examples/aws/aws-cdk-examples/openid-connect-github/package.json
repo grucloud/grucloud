@@ -1,6 +1,6 @@
 {
-  "name": "cdk-vpc-lambda-sfn",
-  "version": "5.13.0",
+  "name": "openid-connect-github",
+  "version": "5.12.2",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -15,13 +15,13 @@
     "destroy": "gc destroy -f",
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
-    "test": "mocha"
+    "test": "mocha --exit"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^5.13.0",
-    "@grucloud/provider-aws": "^5.13.0",
+    "@grucloud/core": "^5.12.2",
+    "@grucloud/provider-aws": "^5.12.2",
     "rubico": "^1.8.3"
   },
   "devDependencies": {

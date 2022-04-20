@@ -10,18 +10,14 @@ const {
   pick,
   not,
 } = require("rubico");
-const { defaultsDeep, isEmpty, find } = require("rubico/x");
+const { defaultsDeep, isEmpty, find, prepend, callProp } = require("rubico/x");
 const tls = require("tls");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "IamOIDC",
 });
 
-const {
-  buildTags,
-  findNameInTagsOrId,
-  findNamespaceInTags,
-} = require("../AwsCommon");
+const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -86,13 +82,15 @@ const ignoreErrorCodes = ["NoSuchEntity"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagOpenIDConnectProvider-property
 const tagResource = tagResourceIam({
-  field: "OpenIDConnectProviderArn",
+  propertyName: "OpenIDConnectProviderArn",
+  field: "Arn",
   method: "tagOpenIDConnectProvider",
 });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagOpenIDConnectProvider-property
 const untagResource = untagResourceIam({
-  field: "OpenIDConnectProviderArn",
+  propertyName: "OpenIDConnectProviderArn",
+  field: "Arn",
   method: "untagOpenIDConnectProvider",
 });
 
@@ -103,14 +101,19 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const { providerName } = config;
 
   const findId = get("live.Arn");
-  const pickId = pipe([
-    tap(({ Arn }) => {
-      assert(Arn);
-    }),
-    ({ Arn }) => ({ OpenIDConnectProviderArn: Arn }),
-  ]);
+  const pickId = pipe([({ Arn }) => ({ OpenIDConnectProviderArn: Arn })]);
+
   //TODO look for cluster name
-  const findName = findNameInTagsOrId({ findId });
+  const findName = ({ live }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => live,
+      get("Url"),
+      callProp("replace", "https://", ""),
+      prepend("oidp::"),
+    ])();
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -181,11 +184,15 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     filterPayload: (payload) =>
       pipe([
         tap(() => {
-          assert(Url);
+          assert(payload.Url);
         }),
         () => fetchThumbprint({ Url: payload.Url }),
         (thumbprint) => defaultsDeep({ ThumbprintList: [thumbprint] })(payload),
       ])(),
+    pickCreated: ({ payload }) =>
+      pipe([
+        ({ OpenIDConnectProviderArn }) => ({ Arn: OpenIDConnectProviderArn }),
+      ]),
     getById,
   });
 
@@ -213,6 +220,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
 
   const configDefault = ({
     name,
+    namespace,
     properties: { Tags, ...otherProps },
     dependencies: { cluster },
   }) =>

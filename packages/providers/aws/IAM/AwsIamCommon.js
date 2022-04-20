@@ -24,6 +24,59 @@ const { createEndpoint } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamCommon" });
 
+exports.dependenciesPoliciesKind = [
+  { type: "Table", group: "DynamoDB" },
+  { type: "Topic", group: "SNS" },
+  { type: "Queue", group: "SQS" },
+  { type: "FileSystem", group: "EFS" },
+  { type: "AccessPoint", group: "EFS" },
+  { type: "AccessPoint", group: "EFS" },
+  { type: "EventBus", group: "CloudWatchEvents" },
+  { type: "Function", group: "Lambda" },
+  { type: "StateMachine", group: "StepFunctions" },
+  { type: "LogGroup", group: "CloudWatchLogs" },
+];
+
+exports.dependenciesPolicy = {
+  openIdConnectProvider: {
+    type: "OpenIDConnectProvider",
+    group: "IAM",
+    parent: true,
+  },
+  table: { type: "Table", group: "DynamoDB", parent: true },
+  queue: { type: "Queue", group: "SQS", parent: true },
+  snsTopic: { type: "Topic", group: "SNS", parent: true },
+  efsFileSystems: {
+    type: "FileSystem",
+    group: "EFS",
+    list: true,
+  },
+  efsAccessPoints: {
+    type: "AccessPoint",
+    group: "EFS",
+    list: true,
+  },
+  eventBus: { type: "EventBus", group: "CloudWatchEvents" },
+  lambdaFunctions: {
+    type: "Function",
+    group: "Lambda",
+    list: true,
+    ignoreOnDestroy: true,
+  },
+  stateMachines: {
+    type: "StateMachine",
+    group: "StepFunctions",
+    list: true,
+    ignoreOnDestroy: true,
+  },
+  logGroups: {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    list: true,
+    ignoreOnDestroy: true,
+  },
+};
+
 exports.createIAM = createEndpoint("iam", "IAM");
 
 exports.tagResourceIam =
@@ -110,59 +163,22 @@ exports.findInStatement =
         append(get("StringEquals.elasticfilesystem:AccessPointArn")(Condition))
       ),
       filter(not(isEmpty)),
-      map((id) =>
-        lives.getById({
-          id,
-          providerName: config.providerName,
-          type,
-          group,
-        })
+      tap((params) => {
+        assert(true);
+      }),
+      map((arn) =>
+        pipe([
+          () =>
+            lives.getByType({
+              providerName: config.providerName,
+              type,
+              group,
+            }),
+          find(({ id }) => arn.includes(id)),
+          tap((params) => {
+            assert(true);
+          }),
+        ])()
       ),
       filter(not(isEmpty)),
     ])();
-
-exports.dependenciesPoliciesKind = [
-  { type: "Table", group: "DynamoDB" },
-  { type: "Topic", group: "SNS" },
-  { type: "Queue", group: "SQS" },
-  { type: "FileSystem", group: "EFS" },
-  { type: "AccessPoint", group: "EFS" },
-  { type: "AccessPoint", group: "EFS" },
-  { type: "EventBus", group: "CloudWatchEvents" },
-  { type: "Function", group: "Lambda" },
-  { type: "StateMachine", group: "StepFunctions" },
-];
-
-exports.dependenciesPolicy = {
-  openIdConnectProvider: {
-    type: "OpenIDConnectProvider",
-    group: "IAM",
-    parent: true,
-  },
-  table: { type: "Table", group: "DynamoDB", parent: true },
-  queue: { type: "Queue", group: "SQS", parent: true },
-  snsTopic: { type: "Topic", group: "SNS", parent: true },
-  efsFileSystems: {
-    type: "FileSystem",
-    group: "EFS",
-    list: true,
-  },
-  efsAccessPoints: {
-    type: "AccessPoint",
-    group: "EFS",
-    list: true,
-  },
-  eventBus: { type: "EventBus", group: "CloudWatchEvents" },
-  lambdaFunctions: {
-    type: "Function",
-    group: "Lambda",
-    list: true,
-    ignoreOnDestroy: true,
-  },
-  stateMachines: {
-    type: "StateMachine",
-    group: "StepFunctions",
-    list: true,
-    ignoreOnDestroy: true,
-  },
-};

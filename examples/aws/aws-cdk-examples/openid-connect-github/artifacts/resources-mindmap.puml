@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project openid-connect-github
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (2)
++++ IAM
+++++ OpenIDConnectProvider (1)
+++++ Role (2)
++++ Lambda
+++++ Function (1)
+@endmindmap

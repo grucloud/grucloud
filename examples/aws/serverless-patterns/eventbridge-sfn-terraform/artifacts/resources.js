@@ -124,6 +124,9 @@ exports.createResources = () => [
       },
       Path: "/",
     }),
+    dependencies: () => ({
+      stateMachines: ["eventbridge-state-machine-demo-840541460064"],
+    }),
   },
   {
     type: "StateMachine",
