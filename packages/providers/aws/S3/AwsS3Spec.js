@@ -74,6 +74,32 @@ module.exports = pipe([
               "PolicyStatus.IsPublic",
               "ServerSideEncryptionConfiguration.Rules[0].BucketKeyEnabled",
             ]),
+            when(
+              get("NotificationConfiguration"),
+              assign({
+                NotificationConfiguration: pipe([
+                  get("NotificationConfiguration"),
+                  when(
+                    get("LambdaFunctionConfigurations"),
+                    assign({
+                      LambdaFunctionConfigurations: pipe([
+                        get("LambdaFunctionConfigurations"),
+                        map(pipe([omit(["Id"])])),
+                      ]),
+                    })
+                  ),
+                  when(
+                    get("TopicConfigurations"),
+                    assign({
+                      TopicConfigurations: pipe([
+                        get("TopicConfigurations"),
+                        map(pipe([omit(["Id"])])),
+                      ]),
+                    })
+                  ),
+                ]),
+              })
+            ),
             omitIfEmpty([
               "AccelerateConfiguration",
               "ServerSideEncryptionConfiguration",
@@ -122,7 +148,7 @@ module.exports = pipe([
                       get("LambdaFunctionConfigurations"),
                       map(
                         pipe([
-                          omit("Id"),
+                          omit(["Id"]),
                           assign({
                             LambdaFunctionArn: pipe([
                               get("LambdaFunctionArn"),
@@ -141,7 +167,7 @@ module.exports = pipe([
                       get("TopicConfigurations"),
                       map(
                         pipe([
-                          omit("Id"),
+                          omit(["Id"]),
                           assign({
                             TopicArn: pipe([
                               get("TopicArn"),

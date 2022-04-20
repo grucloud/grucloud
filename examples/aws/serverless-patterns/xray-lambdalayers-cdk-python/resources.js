@@ -6,12 +6,12 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/lambda/LambdaLayerXRayStackStack-BucketNotificationsHandl-1XcDZ1JQT7M7",
+    name: "/aws/lambda/LambdaLayerXRayStackStack-BucketNotificationsHandl-lPmJ5yz8wDoN",
   },
   {
     type: "Role",
     group: "IAM",
-    name: "LambdaLayerXRayStackStack-BucketNotificationsHandl-L16QD0UXFZOK",
+    name: "LambdaLayerXRayStackStack-BucketNotificationsHandl-LMJ0SRM09GES",
     properties: ({}) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -53,7 +53,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "LambdaLayerXRayStackStack-Lambdarole1548FC71-4BIZWD58MRGT",
+    name: "LambdaLayerXRayStackStack-Lambdarole1548FC71-15YPKGUKW0B06",
     properties: ({}) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -117,7 +117,7 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "LambdaLayerXRayStackStack-BucketNotificationsHandl-1XcDZ1JQT7M7",
+    name: "LambdaLayerXRayStackStack-BucketNotificationsHandl-lPmJ5yz8wDoN",
     properties: ({}) => ({
       Configuration: {
         Description:
@@ -128,14 +128,14 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      role: "LambdaLayerXRayStackStack-BucketNotificationsHandl-L16QD0UXFZOK",
+      role: "LambdaLayerXRayStackStack-BucketNotificationsHandl-LMJ0SRM09GES",
     }),
   },
   {
     type: "Function",
     group: "Lambda",
     name: "xray-handler",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       Configuration: {
         Handler: "lambda-handler.lambda_handler",
         Runtime: "python3.8",
@@ -143,10 +143,35 @@ exports.createResources = () => [
           Mode: "Active",
         },
       },
+      Policy: {
+        Version: "2012-10-17",
+        Id: "default",
+        Statement: [
+          {
+            Sid: "LambdaLayerXRayStackStack-SourceBucketAllowBucketNotificationsToLambdaLayerXRayStackSt-1OG7OFD62CBRQ",
+            Effect: "Allow",
+            Principal: {
+              Service: `s3.amazonaws.com`,
+            },
+            Action: "lambda:InvokeFunction",
+            Resource: `arn:aws:lambda:${
+              config.region
+            }:${config.accountId()}:function:xray-handler`,
+            Condition: {
+              StringEquals: {
+                "AWS:SourceAccount": `${config.accountId()}`,
+              },
+              ArnLike: {
+                "AWS:SourceArn": "arn:aws:s3:::paperino-thumbnail-upload-372",
+              },
+            },
+          },
+        ],
+      },
     }),
     dependencies: () => ({
       layers: ["xraylayerF67027DB"],
-      role: "LambdaLayerXRayStackStack-Lambdarole1548FC71-4BIZWD58MRGT",
+      role: "LambdaLayerXRayStackStack-Lambdarole1548FC71-15YPKGUKW0B06",
     }),
   },
   {
@@ -157,7 +182,6 @@ exports.createResources = () => [
       NotificationConfiguration: {
         LambdaFunctionConfigurations: [
           {
-            Id: "ZDFhNTQ1NWItMDI1My00MjFjLTg3OTEtNmEwZTc4NjhiZmM5",
             LambdaFunctionArn: `arn:aws:lambda:${
               config.region
             }:${config.accountId()}:function:xray-handler`,

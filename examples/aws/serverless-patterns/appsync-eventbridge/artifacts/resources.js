@@ -93,7 +93,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "AppsyncEventbridgeStack-ApieventsServiceRole531FB6-1OV5AQSZ4CWBK",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -113,11 +113,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "events:PutEvents",
-                Resource: `${getId({
-                  type: "EventBus",
-                  group: "CloudWatchEvents",
-                  name: "AppSyncEventBus",
-                })}`,
+                Resource: `arn:aws:events:${
+                  config.region
+                }:${config.accountId()}:event-bus/AppSyncEventBus`,
                 Effect: "Allow",
               },
             ],

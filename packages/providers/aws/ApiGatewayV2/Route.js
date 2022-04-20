@@ -24,7 +24,7 @@ exports.Route = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live, lives }) => [
-    findDependenciesApi({ live }),
+    findDependenciesApi({ live, config }),
     {
       type: "Integration",
       group: "ApiGatewayV2",

@@ -161,14 +161,41 @@ exports.createResources = () => [
     type: "Function",
     group: "Lambda",
     name: "sam-app-AppFunction-gKUxwsmxX2fK",
-    properties: ({}) => ({
+    properties: ({ config, getId }) => ({
       Configuration: {
         Handler: "app.handler",
         Runtime: "nodejs14.x",
       },
+      Policy: {
+        Version: "2012-10-17",
+        Id: "default",
+        Statement: [
+          {
+            Sid: "4yymkbc",
+            Effect: "Allow",
+            Principal: {
+              Service: `apigateway.amazonaws.com`,
+            },
+            Action: "lambda:InvokeFunction",
+            Resource: `arn:aws:lambda:${
+              config.region
+            }:${config.accountId()}:function:sam-app-AppFunction-gKUxwsmxX2fK`,
+            Condition: {
+              ArnLike: {
+                "AWS:SourceArn": `${getId({
+                  type: "Api",
+                  group: "ApiGatewayV2",
+                  name: "sam-app",
+                })}/*/*/sam-app-AppFunction-gKUxwsmxX2fK`,
+              },
+            },
+          },
+        ],
+      },
     }),
     dependencies: () => ({
       role: "sam-app-AppFunctionRole-BXPIJ03LGY2Y",
+      apiGatewayV2s: ["sam-app"],
     }),
   },
 ];

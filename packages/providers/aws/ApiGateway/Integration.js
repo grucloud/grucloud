@@ -197,19 +197,6 @@ exports.Integration = ({ spec, config }) => {
         tap(() => {
           assert(method);
         }),
-        when(
-          () => lambdaFunction,
-          lambdaAddPermission({
-            lambda,
-            lambdaFunction,
-            SourceArn: () =>
-              `arn:aws:execute-api:${
-                config.region
-              }:${config.accountId()}:${getField(method, "restApiId")}/*/*/${
-                lambdaFunction.resource.name
-              }`,
-          })
-        ),
       ]),
   });
 

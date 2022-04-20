@@ -24,6 +24,7 @@ const {
   compareAws,
   isOurMinionObject,
   replaceAccountAndRegion,
+  assignPolicyAccountAndRegion,
 } = require("../AwsCommon");
 
 const {
@@ -113,7 +114,6 @@ module.exports = pipe([
       displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
       omitProperties: [
         "Code",
-        "Policy",
         "Configuration.CodeSha256",
         "Configuration.Code",
         "Configuration.CodeSize",
@@ -234,6 +234,15 @@ module.exports = pipe([
                 ),
               ]),
             }),
+            when(
+              get("Policy"),
+              assign({
+                Policy: pipe([
+                  get("Policy"),
+                  assignPolicyAccountAndRegion({ providerConfig, lives }),
+                ]),
+              })
+            ),
             omitIfEmpty(["FunctionUrlConfig"]),
             tap(
               pipe([
@@ -261,6 +270,7 @@ module.exports = pipe([
         snsTopic: { type: "Topic", group: "SNS", parent: true },
         dbCluster: { type: "DBCluster", group: "RDS", parent: true },
         efsAccessPoint: { type: "AccessPoint", group: "EFS", list: true },
+        apiGatewayV2s: { type: "Api", group: "ApiGatewayV2", list: true },
       },
     },
     {

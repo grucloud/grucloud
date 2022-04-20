@@ -614,7 +614,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-1HTR9O8XQQI4P",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -648,11 +648,9 @@ exports.createResources = () => [
                   "secretsmanager:GetSecretValue",
                   "secretsmanager:DescribeSecret",
                 ],
-                Resource: `${getId({
-                  type: "Secret",
-                  group: "SecretsManager",
-                  name: "aurora-user-secret",
-                })}`,
+                Resource: `arn:aws:secretsmanager:${
+                  config.region
+                }:${config.accountId()}:secret:aurora-user-secret-kEn5kv`,
                 Effect: "Allow",
               },
             ],

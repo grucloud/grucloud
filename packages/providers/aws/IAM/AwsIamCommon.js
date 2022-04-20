@@ -30,9 +30,8 @@ exports.dependenciesPoliciesKind = [
   { type: "Queue", group: "SQS" },
   { type: "FileSystem", group: "EFS" },
   { type: "AccessPoint", group: "EFS" },
-  { type: "AccessPoint", group: "EFS" },
   { type: "EventBus", group: "CloudWatchEvents" },
-  { type: "Function", group: "Lambda" },
+  //{ type: "Function", group: "Lambda" },
   { type: "StateMachine", group: "StepFunctions" },
   { type: "LogGroup", group: "CloudWatchLogs" },
 ];
@@ -57,12 +56,12 @@ exports.dependenciesPolicy = {
     list: true,
   },
   eventBus: { type: "EventBus", group: "CloudWatchEvents" },
-  lambdaFunctions: {
-    type: "Function",
-    group: "Lambda",
-    list: true,
-    ignoreOnDestroy: true,
-  },
+  // lambdaFunctions: {
+  //   type: "Function",
+  //   group: "Lambda",
+  //   list: true,
+  //   ignoreOnDestroy: true,
+  // },
   stateMachines: {
     type: "StateMachine",
     group: "StepFunctions",
@@ -161,6 +160,10 @@ exports.findInStatement =
       when(
         () => Condition,
         append(get("StringEquals.elasticfilesystem:AccessPointArn")(Condition))
+      ),
+      when(
+        () => Condition,
+        append(get(["ArnLike", "AWS:SourceArn"])(Condition))
       ),
       filter(not(isEmpty)),
       tap((params) => {
