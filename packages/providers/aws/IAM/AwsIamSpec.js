@@ -78,18 +78,27 @@ module.exports = pipe([
             omit(["ThumbprintList", "CreateDate", "Arn"]),
           ]),
       }),
-      filterLive: () => pick(["ClientIDList"]),
+      filterLive: () => pick(["ClientIDList", "Url"]),
       dependencies: {
         cluster: { type: "Cluster", group: "EKS" },
-        role: { type: "Role", group: "IAM" },
       },
       inferName: ({ properties, dependenciesSpec }) =>
         pipe([
           () => dependenciesSpec,
+          tap((params) => {
+            assert(true);
+          }),
           switchCase([
             get("cluster"),
             pipe([get("cluster"), prepend("EKS::Cluster::")]),
-            () => "",
+            pipe([
+              () => properties,
+              get("Url"),
+              tap((Url) => {
+                assert(Url);
+              }),
+              callProp("replace", "https://", ""),
+            ]),
           ]),
           prepend("oidp::"),
         ])(),

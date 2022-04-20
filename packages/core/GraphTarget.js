@@ -19,7 +19,7 @@ const buildNode =
   <table color='${cluster.node.color}' border="0">
      <tr><td align="text"><FONT color='${
        cluster.node.type.fontColor
-     }' POINT-SIZE="${cluster.node.type.pointSize}"><B>${
+     }' POINT-SIZE="${cluster.node.type.pointSize}"><B>${resource.group}::${
       resource.type
     }</B></FONT><br align="left" /></td></tr>
      <tr><td align="text"><FONT color='${

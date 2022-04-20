@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project xray-lambdalayers-cdk-python
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Layer (1)
+++++ Function (2)
++++ S3
+++++ Bucket (2)
+@endmindmap

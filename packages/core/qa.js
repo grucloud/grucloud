@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { pipe, map, tap, and, get, tryCatch } = require("rubico");
 const { isEmpty, first, callProp } = require("rubico/x");
+const util = require("util");
 const logger = require("./logger")({ prefix: "ProviderGru" });
 
 const { Cli } = require("./cli/cliCommands");
@@ -162,7 +163,7 @@ exports.testEnd2End = ({
     ]),
     (error) => {
       logger.error("Error running tests:");
-      logger.error(JSON.stringify(error, null, 4));
+      logger.error(util.inspect(error));
       logger.error(error.stack);
       throw error;
     }

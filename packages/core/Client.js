@@ -17,6 +17,7 @@ const {
 } = require("rubico");
 
 const {
+  uniq,
   isEmpty,
   isString,
   isObject,
@@ -156,7 +157,7 @@ const decorateLive =
                 assign({
                   providerName: () => client.spec.providerName,
                   groupType: buildGroupType,
-                  ids: pipe([get("ids"), filter(not(isEmpty))]),
+                  ids: pipe([get("ids", []), filter(not(isEmpty)), uniq]),
                 }),
               ])
             ),

@@ -147,6 +147,9 @@ exports.createResources = () => [
         },
       ],
     }),
+    dependencies: () => ({
+      lambdaFunctions: ["sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT"],
+    }),
   },
   {
     type: "Function",

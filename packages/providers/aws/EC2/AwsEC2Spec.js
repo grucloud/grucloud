@@ -523,7 +523,6 @@ module.exports = pipe([
     },
     {
       type: "SecurityGroup",
-      dependsOn: ["EC2::Vpc", "EC2::Subnet"],
       Client: AwsSecurityGroup,
       includeDefaultDependencies: true,
       findDefault: findDefaultWithVpcDependency,
@@ -560,6 +559,7 @@ module.exports = pipe([
         eksCluster: {
           type: "Cluster",
           group: "EKS",
+          ignoreOnDestroy: true,
         },
       },
       addCode: ({ resource, lives }) =>

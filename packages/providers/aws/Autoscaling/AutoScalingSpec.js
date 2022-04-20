@@ -49,7 +49,6 @@ module.exports = pipe([
   () => [
     {
       type: "AutoScalingGroup",
-      //TODO dependsOn: ["ELBv2::LoadBalancer", "EKS::Cluster"],
       dependencies: {
         subnets: { type: "Subnet", group: "EC2", list: true },
         launchTemplate: { type: "LaunchTemplate", group: "EC2" },
