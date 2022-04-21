@@ -104,7 +104,7 @@ exports.Function = ({ spec, config }) => {
     group,
     ids: pipe([
       () => live,
-      get("Policy.Statement"),
+      get("Policy.Statement", []),
       flatMap(findInStatement({ type, group, lives, config })),
     ])(),
   });
