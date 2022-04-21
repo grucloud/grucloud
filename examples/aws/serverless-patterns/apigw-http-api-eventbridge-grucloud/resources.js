@@ -20,8 +20,8 @@ exports.createResources = () => [
     group: "ApiGatewayV2",
     properties: ({}) => ({
       ConnectionType: "INTERNET",
-      IntegrationType: "AWS_PROXY",
       IntegrationSubtype: "EventBridge-PutEvents",
+      IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "1.0",
       RequestParameters: {
         DetailType: "MyDetailType",
@@ -96,7 +96,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "lambda.amazonaws.com",
+              Service: `lambda.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -136,14 +136,14 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-V1AK3L262GGK",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "apigateway.amazonaws.com",
+              Service: `apigateway.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -156,9 +156,11 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "events:PutEvents",
-                Resource: `arn:aws:events:${
-                  config.region
-                }:${config.accountId()}:event-bus/MyEventBus`,
+                Resource: `${getId({
+                  type: "EventBus",
+                  group: "CloudWatchEvents",
+                  name: "MyEventBus",
+                })}`,
                 Effect: "Allow",
               },
             ],
@@ -166,6 +168,9 @@ exports.createResources = () => [
           PolicyName: "EventBridgeIntegrationRoleDefaultPolicy16371A00",
         },
       ],
+    }),
+    dependencies: () => ({
+      eventBus: "MyEventBus",
     }),
   },
   {

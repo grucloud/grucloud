@@ -883,7 +883,9 @@ const replaceAccountAndRegion =
         any(
           and([
             ({ id }) => Id.includes(id),
-            () => !Id.startsWith("arn:aws:lambda"),
+            //TODO
+            () =>
+              !Id.startsWith("arn:aws:lambda") && !Id.startsWith("arn:aws:rds"),
           ])
         ),
         pipe([() => ({ Id, lives }), replaceWithName({ path: "id" })]),
@@ -904,20 +906,24 @@ const replaceAccountAndRegion =
       ]),
     ])();
 
+exports.replaceAccountAndRegion = replaceAccountAndRegion;
+
 const replaceAccount = ({ providerConfig }) =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
     callProp(
       "replace",
       new RegExp(providerConfig.accountId(), "g"),
       "${config.accountId()}"
     ),
+    callProp(
+      "replace",
+      new RegExp(providerConfig.region, "g"),
+      "${config.region}"
+    ),
     (resource) => () => "`" + resource + "`",
   ]);
 
-exports.replaceAccountAndRegion = replaceAccountAndRegion;
+exports.replaceAccount = replaceAccount;
 
 const assignPolicyResource = ({ providerConfig, lives }) =>
   pipe([

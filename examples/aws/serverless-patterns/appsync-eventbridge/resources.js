@@ -74,7 +74,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "appsync.amazonaws.com",
+              Service: `appsync.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -93,14 +93,14 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "AppsyncEventbridgeStack-ApieventsServiceRole531FB6-1OV5AQSZ4CWBK",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "appsync.amazonaws.com",
+              Service: `appsync.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -113,9 +113,11 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "events:PutEvents",
-                Resource: `arn:aws:events:${
-                  config.region
-                }:${config.accountId()}:event-bus/AppSyncEventBus`,
+                Resource: `${getId({
+                  type: "EventBus",
+                  group: "CloudWatchEvents",
+                  name: "AppSyncEventBus",
+                })}`,
                 Effect: "Allow",
               },
             ],
@@ -123,6 +125,9 @@ exports.createResources = () => [
           PolicyName: "ApieventsServiceRoleDefaultPolicyE6AB81C4",
         },
       ],
+    }),
+    dependencies: () => ({
+      eventBus: "AppSyncEventBus",
     }),
   },
   {
@@ -136,7 +141,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "appsync.amazonaws.com",
+              Service: `appsync.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },

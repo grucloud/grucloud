@@ -4,7 +4,7 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ CloudWatchLogs
-++++ LogGroup (2)
+++++ LogGroup (7)
 +++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)
@@ -17,8 +17,6 @@ skinparam monochrome true
 ++++ SecurityGroupRuleIngress (2)
 ++++ SecurityGroupRuleEgress (1)
 ++++ ElasticIpAddress (2)
-+++ ECR
-++++ Repository (1)
 +++ ECS
 ++++ Cluster (1)
 ++++ TaskDefinition (1)

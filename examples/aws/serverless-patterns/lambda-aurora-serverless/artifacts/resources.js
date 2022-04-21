@@ -12,7 +12,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-LambdaFunctionRole-11TTATG2VDRQ2",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -45,11 +45,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "rds-data:ExecuteStatement",
-                Resource: `${getId({
-                  type: "DBCluster",
-                  group: "RDS",
-                  name: "aurora-test-cluster",
-                })}`,
+                Resource: `arn:aws:rds:${
+                  config.region
+                }:${config.accountId()}:cluster:aurora-test-cluster`,
                 Effect: "Allow",
               },
             ],
@@ -76,7 +74,7 @@ exports.createResources = () => [
     type: "Function",
     group: "Lambda",
     name: "aurora-test-cluster-function",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       Configuration: {
         Environment: {
           Variables: {
@@ -85,11 +83,9 @@ exports.createResources = () => [
               group: "SecretsManager",
               name: "DBSecret",
             })}`,
-            DBClusterArn: `${getId({
-              type: "DBCluster",
-              group: "RDS",
-              name: "aurora-test-cluster",
-            })}`,
+            DBClusterArn: `arn:aws:rds:${
+              config.region
+            }:${config.accountId()}:cluster:aurora-test-cluster`,
             DBName: `aurora_test_db`,
           },
         },

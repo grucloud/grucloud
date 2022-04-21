@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     name: "sam-app",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
@@ -26,7 +26,11 @@ exports.createResources = () => [
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_MATCH",
                 type: "AWS_PROXY",
-                uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:840541460064:function:sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT/invocations",
+                uri: `arn:aws:apigateway:${
+                  config.region
+                }:lambda:path/2015-03-31/functions/arn:aws:lambda:${
+                  config.region
+                }:${config.accountId()}:function:sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT/invocations`,
               },
             },
           },

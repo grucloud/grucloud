@@ -108,9 +108,8 @@ exports.createResources = () => [
     group: "RDS",
     name: "aurora-test-cluster",
     properties: ({}) => ({
-      DatabaseName: "aurora_test_db",
       BackupRetentionPeriod: 1,
-      DeletionProtection: false,
+      DatabaseName: "aurora_test_db",
       Engine: "aurora",
       EngineVersion: "5.6.10a",
       Port: 3306,
@@ -119,6 +118,8 @@ exports.createResources = () => [
       PreferredMaintenanceWindow: "thu:06:25-thu:06:55",
       IAMDatabaseAuthenticationEnabled: false,
       EngineMode: "serverless",
+      DeletionProtection: false,
+      HttpEndpointEnabled: false,
       ScalingConfiguration: {
         MinCapacity: 1,
         MaxCapacity: 2,

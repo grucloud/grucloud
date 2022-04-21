@@ -31,9 +31,11 @@ exports.dependenciesPoliciesKind = [
   { type: "FileSystem", group: "EFS" },
   { type: "AccessPoint", group: "EFS" },
   { type: "EventBus", group: "CloudWatchEvents" },
-  //{ type: "Function", group: "Lambda" },
   { type: "StateMachine", group: "StepFunctions" },
   { type: "LogGroup", group: "CloudWatchLogs" },
+  { type: "Secret", group: "SecretsManager" },
+  //{ type: "Function", group: "Lambda" },
+  //{ type: "DBCluster", group: "RDS" },
 ];
 
 exports.dependenciesPolicy = {
@@ -74,6 +76,12 @@ exports.dependenciesPolicy = {
     list: true,
     ignoreOnDestroy: true,
   },
+  secrets: {
+    type: "Secret",
+    group: "SecretsManager",
+    list: true,
+  },
+  //dbClusters: { type: "DBCluster", group: "RDS", list: true },
 };
 
 exports.createIAM = createEndpoint("iam", "IAM");
