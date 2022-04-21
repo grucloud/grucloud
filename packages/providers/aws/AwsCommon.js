@@ -875,6 +875,9 @@ const replaceAccountAndRegion =
   ({ providerConfig, lives }) =>
   (Id) =>
     pipe([
+      tap((params) => {
+        assert(lives);
+      }),
       () => lives,
       switchCase([
         any(

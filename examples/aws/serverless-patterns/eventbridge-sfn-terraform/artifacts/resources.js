@@ -107,15 +107,17 @@ exports.createResources = () => [
     type: "Policy",
     group: "IAM",
     name: "terraform-20220331194525123300000007",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       PolicyDocument: {
         Statement: [
           {
             Action: ["states:StartExecution"],
             Effect: "Allow",
-            Resource: `arn:aws:states:${
-              config.region
-            }:${config.accountId()}:stateMachine:eventbridge-state-machine-demo-${config.accountId()}`,
+            Resource: `${getId({
+              type: "StateMachine",
+              group: "StepFunctions",
+              name: "eventbridge-state-machine-demo-840541460064",
+            })}`,
           },
         ],
         Version: "2012-10-17",

@@ -326,20 +326,26 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     name: "com.amazonaws.us-east-1.events",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Condition: {
               ArnEquals: {
-                "aws:PrincipalArn": `arn:aws:iam::${config.accountId()}:role/CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL`,
+                "aws:PrincipalArn": `${getId({
+                  type: "Role",
+                  group: "IAM",
+                  name: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
+                })}`,
               },
             },
             Action: "events:PutEvents",
-            Resource: `arn:aws:events:${
-              config.region
-            }:${config.accountId()}:event-bus/DemoEventBus`,
+            Resource: `${getId({
+              type: "EventBus",
+              group: "CloudWatchEvents",
+              name: "DemoEventBus",
+            })}`,
             Effect: "Allow",
             Principal: {
               AWS: "*",
@@ -571,7 +577,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "CdkStack-FargateServiceTaskDefExecutionRole9194820-138OPFQCAE04H",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -609,9 +615,11 @@ exports.createResources = () => [
               },
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-                Resource: `arn:aws:logs:${
-                  config.region
-                }:${config.accountId()}:log-group:CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N:*`,
+                Resource: `${getId({
+                  type: "LogGroup",
+                  group: "CloudWatchLogs",
+                  name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N",
+                })}:*`,
                 Effect: "Allow",
               },
             ],
@@ -630,7 +638,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -650,9 +658,11 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "events:PutEvents",
-                Resource: `arn:aws:events:${
-                  config.region
-                }:${config.accountId()}:event-bus/DemoEventBus`,
+                Resource: `${getId({
+                  type: "EventBus",
+                  group: "CloudWatchEvents",
+                  name: "DemoEventBus",
+                })}`,
                 Effect: "Allow",
               },
             ],

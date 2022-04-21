@@ -272,6 +272,7 @@ module.exports = pipe([
                                         get("credentials"),
                                         replaceAccountAndRegion({
                                           providerConfig,
+                                          lives,
                                         }),
                                       ]),
                                     })
@@ -283,6 +284,7 @@ module.exports = pipe([
                                         get("uri"),
                                         replaceAccountAndRegion({
                                           providerConfig,
+                                          lives,
                                         }),
                                       ]),
                                     })

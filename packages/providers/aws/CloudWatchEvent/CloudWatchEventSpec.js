@@ -150,7 +150,7 @@ module.exports = pipe([
                   assign({
                     account: pipe([
                       get("account"),
-                      map(replaceAccountAndRegion({ providerConfig })),
+                      map(replaceAccountAndRegion({ providerConfig, lives })),
                     ]),
                   })
                 ),

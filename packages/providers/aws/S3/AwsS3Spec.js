@@ -152,7 +152,10 @@ module.exports = pipe([
                           assign({
                             LambdaFunctionArn: pipe([
                               get("LambdaFunctionArn"),
-                              replaceAccountAndRegion({ providerConfig }),
+                              replaceAccountAndRegion({
+                                providerConfig,
+                                lives,
+                              }),
                             ]),
                           }),
                         ])
@@ -171,7 +174,10 @@ module.exports = pipe([
                           assign({
                             TopicArn: pipe([
                               get("TopicArn"),
-                              replaceAccountAndRegion({ providerConfig }),
+                              replaceAccountAndRegion({
+                                providerConfig,
+                                lives,
+                              }),
                             ]),
                           }),
                         ])

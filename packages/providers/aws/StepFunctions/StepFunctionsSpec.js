@@ -54,7 +54,7 @@ module.exports = pipe([
                         callProp("endsWith", ".amazonaws.com"),
                       ]),
                     ]),
-                    replaceAccountAndRegion({ providerConfig }),
+                    replaceAccountAndRegion({ providerConfig, lives }),
                     () => undefined,
                   ]),
                 ])

@@ -76,7 +76,7 @@ exports.createResources = () => [
     type: "Function",
     group: "Lambda",
     name: "aurora-test-cluster-function",
-    properties: ({ config, getId }) => ({
+    properties: ({ getId }) => ({
       Configuration: {
         Environment: {
           Variables: {
@@ -85,9 +85,11 @@ exports.createResources = () => [
               group: "SecretsManager",
               name: "DBSecret",
             })}`,
-            DBClusterArn: `arn:aws:rds:${
-              config.region
-            }:${config.accountId()}:cluster:aurora-test-cluster`,
+            DBClusterArn: `${getId({
+              type: "DBCluster",
+              group: "RDS",
+              name: "aurora-test-cluster",
+            })}`,
             DBName: `aurora_test_db`,
           },
         },

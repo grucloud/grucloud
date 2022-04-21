@@ -57,7 +57,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "CdkAppSyncSqSStack-ApisqsServiceRole50810242-HDLGB9CWGUOH",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -81,9 +81,11 @@ exports.createResources = () => [
                   "sqs:GetQueueAttributes",
                   "sqs:GetQueueUrl",
                 ],
-                Resource: `arn:aws:sqs:${
-                  config.region
-                }:${config.accountId()}:CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6`,
+                Resource: `${getId({
+                  type: "Queue",
+                  group: "SQS",
+                  name: "CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6",
+                })}`,
                 Effect: "Allow",
               },
             ],

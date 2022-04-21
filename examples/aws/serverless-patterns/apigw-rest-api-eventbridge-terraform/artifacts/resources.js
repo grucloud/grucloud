@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     name: "rest-api-eb-fOaf",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
@@ -54,7 +54,11 @@ exports.createResources = () => [
                 },
               },
               "x-amazon-apigateway-integration": {
-                credentials: `arn:aws:iam::${config.accountId()}:role/ApiGatewayEventBridgeRole`,
+                credentials: `${getId({
+                  type: "Role",
+                  group: "IAM",
+                  name: "ApiGatewayEventBridgeRole",
+                })}`,
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_TEMPLATES",
                 requestTemplates: {
@@ -177,15 +181,17 @@ exports.createResources = () => [
     type: "Policy",
     group: "IAM",
     name: "EBPutEvents",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       PolicyDocument: {
         Statement: [
           {
             Action: "events:PutEvents",
             Effect: "Allow",
-            Resource: `arn:aws:events:${
-              config.region
-            }:${config.accountId()}:event-bus/MyIntegrationCustomBus`,
+            Resource: `${getId({
+              type: "EventBus",
+              group: "CloudWatchEvents",
+              name: "MyIntegrationCustomBus",
+            })}`,
           },
         ],
         Version: "2012-10-17",

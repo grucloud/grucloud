@@ -49,7 +49,7 @@ exports.createResources = () => [
     type: "StateMachine",
     group: "StepFunctions",
     name: "StateMachineExpressSynctoSNS-s4flfbpCO2tF",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       definition: {
         Comment: "An example of the Amazon States Language using AWS SNS",
         StartAt: "SendSNSMessage",
@@ -62,9 +62,11 @@ exports.createResources = () => [
                 Input: "You just received a message from the state machine!",
                 "Message.$": "$.message",
               },
-              TopicArn: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:sam-app-StateMachineSNSTopic-C6WGCI64MKY2`,
+              TopicArn: `${getId({
+                type: "Topic",
+                group: "SNS",
+                name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
+              })}`,
             },
             End: true,
           },

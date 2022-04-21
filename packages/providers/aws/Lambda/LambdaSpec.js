@@ -222,7 +222,10 @@ module.exports = pipe([
                                 ]),
                                 pipe([
                                   get("Id"),
-                                  replaceAccountAndRegion({ providerConfig }),
+                                  replaceAccountAndRegion({
+                                    providerConfig,
+                                    lives,
+                                  }),
                                 ]),
                               ]),
                             ])()

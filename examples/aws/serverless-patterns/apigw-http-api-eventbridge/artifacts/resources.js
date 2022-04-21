@@ -98,7 +98,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-MyHttpApiRole-KV1DOMSBSRDO",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -118,9 +118,11 @@ exports.createResources = () => [
             Statement: {
               Action: ["events:PutEvents"],
               Resource: [
-                `arn:aws:events:${
-                  config.region
-                }:${config.accountId()}:event-bus/default`,
+                `${getId({
+                  type: "EventBus",
+                  group: "CloudWatchEvents",
+                  name: "default",
+                })}`,
               ],
               Effect: "Allow",
             },

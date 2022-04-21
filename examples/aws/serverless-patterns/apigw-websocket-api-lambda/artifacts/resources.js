@@ -154,7 +154,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-OnConnectLambdaFunctionRole-BWZIV6IR9OMV",
-    properties: ({ config, getId }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -190,9 +190,11 @@ exports.createResources = () => [
                     group: "DynamoDB",
                     name: "sam-app-websocket_connections",
                   })}`,
-                  `arn:aws:dynamodb:${
-                    config.region
-                  }:${config.accountId()}:table/sam-app-websocket_connections/index/*`,
+                  `${getId({
+                    type: "Table",
+                    group: "DynamoDB",
+                    name: "sam-app-websocket_connections",
+                  })}/index/*`,
                 ],
                 Effect: "Allow",
               },
@@ -223,7 +225,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-OnDisconnectLambdaFunctionRole-1K1VHGSO99JHS",
-    properties: ({ config, getId }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -259,9 +261,11 @@ exports.createResources = () => [
                     group: "DynamoDB",
                     name: "sam-app-websocket_connections",
                   })}`,
-                  `arn:aws:dynamodb:${
-                    config.region
-                  }:${config.accountId()}:table/sam-app-websocket_connections/index/*`,
+                  `${getId({
+                    type: "Table",
+                    group: "DynamoDB",
+                    name: "sam-app-websocket_connections",
+                  })}/index/*`,
                 ],
                 Effect: "Allow",
               },
@@ -328,9 +332,11 @@ exports.createResources = () => [
                     group: "DynamoDB",
                     name: "sam-app-websocket_connections",
                   })}`,
-                  `arn:aws:dynamodb:${
-                    config.region
-                  }:${config.accountId()}:table/sam-app-websocket_connections/index/*`,
+                  `${getId({
+                    type: "Table",
+                    group: "DynamoDB",
+                    name: "sam-app-websocket_connections",
+                  })}/index/*`,
                 ],
                 Effect: "Allow",
               },

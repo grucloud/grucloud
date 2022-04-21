@@ -110,7 +110,7 @@ module.exports = pipe([
           assign({
             AvailabilityZoneName: pipe([
               get("AvailabilityZoneName"),
-              replaceAccountAndRegion({ providerConfig }),
+              replaceAccountAndRegion({ providerConfig, lives }),
             ]),
           }),
         ]),
