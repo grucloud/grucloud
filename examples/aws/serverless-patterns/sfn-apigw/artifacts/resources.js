@@ -101,7 +101,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-StatesExecutionRole-VZMKU2P2QBYH",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -121,11 +121,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["lambda:InvokeFunction"],
-                Resource: `${getId({
-                  type: "Function",
-                  group: "Lambda",
-                  name: "sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT",
-                })}`,
+                Resource: `arn:aws:lambda:${
+                  config.region
+                }:${config.accountId()}:function:sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT`,
                 Effect: "Allow",
               },
             ],
@@ -146,9 +144,6 @@ exports.createResources = () => [
           PolicyName: "LogPermissions",
         },
       ],
-    }),
-    dependencies: () => ({
-      lambdaFunctions: ["sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT"],
     }),
   },
   {

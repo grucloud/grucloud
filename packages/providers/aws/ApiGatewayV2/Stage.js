@@ -23,7 +23,7 @@ exports.Stage = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live, lives }) => [
-    findDependenciesApi({ live }),
+    findDependenciesApi({ live, config }),
     {
       type: "LogGroup",
       group: "CloudWatchLogs",

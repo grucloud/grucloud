@@ -27,7 +27,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
-    properties: ({ config, getId }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -56,9 +56,11 @@ exports.createResources = () => [
                     group: "DynamoDB",
                     name: "sam-app-DynamoTable-1TM3ILOZ1A36J",
                   })}`,
-                  `arn:aws:dynamodb:${
-                    config.region
-                  }:${config.accountId()}:table/sam-app-DynamoTable-1TM3ILOZ1A36J/index/*`,
+                  `${getId({
+                    type: "Table",
+                    group: "DynamoDB",
+                    name: "sam-app-DynamoTable-1TM3ILOZ1A36J",
+                  })}/index/*`,
                 ],
                 Effect: "Allow",
               },

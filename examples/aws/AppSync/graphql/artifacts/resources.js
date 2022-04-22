@@ -124,7 +124,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -144,11 +144,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "lambda:InvokeFunction",
-                Resource: `${getId({
-                  type: "Function",
-                  group: "Lambda",
-                  name: "lambda-fns",
-                })}`,
+                Resource: `arn:aws:lambda:${
+                  config.region
+                }:${config.accountId()}:function:lambda-fns`,
                 Effect: "Allow",
               },
             ],
@@ -156,9 +154,6 @@ exports.createResources = () => [
           PolicyName: "ApilambdaDatasourceServiceRoleDefaultPolicy3A97E34D",
         },
       ],
-    }),
-    dependencies: () => ({
-      lambdaFunctions: ["lambda-fns"],
     }),
   },
   {

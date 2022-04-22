@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -27,9 +27,11 @@ exports.createResources = () => [
               {
                 Action: ["sns:Publish"],
                 Resource: [
-                  `arn:aws:sns:${
-                    config.region
-                  }:${config.accountId()}:sam-app-StateMachineSNSTopic-C6WGCI64MKY2`,
+                  `${getId({
+                    type: "Topic",
+                    group: "SNS",
+                    name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
+                  })}`,
                 ],
                 Effect: "Allow",
               },
@@ -39,12 +41,15 @@ exports.createResources = () => [
         },
       ],
     }),
+    dependencies: () => ({
+      snsTopic: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
+    }),
   },
   {
     type: "StateMachine",
     group: "StepFunctions",
     name: "StateMachineExpressSynctoSNS-s4flfbpCO2tF",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       definition: {
         Comment: "An example of the Amazon States Language using AWS SNS",
         StartAt: "SendSNSMessage",
@@ -57,9 +62,11 @@ exports.createResources = () => [
                 Input: "You just received a message from the state machine!",
                 "Message.$": "$.message",
               },
-              TopicArn: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:sam-app-StateMachineSNSTopic-C6WGCI64MKY2`,
+              TopicArn: `${getId({
+                type: "Topic",
+                group: "SNS",
+                name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
+              })}`,
             },
             End: true,
           },
@@ -75,13 +82,14 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",
+      snsTopics: ["sam-app-StateMachineSNSTopic-C6WGCI64MKY2"],
     }),
   },
   {
     type: "Topic",
     group: "SNS",
     name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       Attributes: {
         Policy: {
           Version: "2008-10-17",

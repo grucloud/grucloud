@@ -15,17 +15,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "GraphqlApi",
-    group: "AppSync",
-    name: "ToSqSApi",
-    properties: ({}) => ({
-      authenticationType: "API_KEY",
-      xrayEnabled: false,
-      apiKeys: [{}],
-      schemaFile: "ToSqSApi.graphql",
-    }),
-  },
-  {
     type: "DataSource",
     group: "AppSync",
     name: "sqs",
@@ -68,14 +57,14 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "CdkAppSyncSqSStack-ApisqsServiceRole50810242-HDLGB9CWGUOH",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "appsync.amazonaws.com",
+              Service: `appsync.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -92,9 +81,11 @@ exports.createResources = () => [
                   "sqs:GetQueueAttributes",
                   "sqs:GetQueueUrl",
                 ],
-                Resource: `arn:aws:sqs:${
-                  config.region
-                }:${config.accountId()}:CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6`,
+                Resource: `${getId({
+                  type: "Queue",
+                  group: "SQS",
+                  name: "CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6",
+                })}`,
                 Effect: "Allow",
               },
             ],

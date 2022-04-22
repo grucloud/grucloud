@@ -6,6 +6,22 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
+    name: "/aws/lambda/lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-c8VHz1jOeFFc",
+    properties: ({}) => ({
+      retentionInDays: 1,
+    }),
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "/aws/lambda/test-lambdaFunction",
+    properties: ({}) => ({
+      retentionInDays: 7,
+    }),
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
     name: "testlambdatest-",
     properties: ({}) => ({
       retentionInDays: 30,
@@ -271,12 +287,12 @@ exports.createResources = () => [
         IpProtocol: "tcp",
         IpRanges: [
           {
-            CidrIp: "10.0.0.0/16",
-            Description: "from 10.0.0.0/16:443",
-          },
-          {
             CidrIp: "0.0.0.0/0",
             Description: "allow HTTPS traffic",
+          },
+          {
+            CidrIp: "10.0.0.0/16",
+            Description: "from 10.0.0.0/16:443",
           },
         ],
         ToPort: 443,
@@ -341,7 +357,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-26SWWUB5R0PQ",
+    name: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-130PK942BIJRK",
     properties: ({}) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -386,8 +402,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "lambdaStack-testLambdaServiceRole955E2289-1QPXU9XXN6BM8",
-    properties: ({ getId }) => ({
+    name: "lambdaStack-testLambdaServiceRole955E2289-1GZAHWTU2CITG",
+    properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -413,11 +429,9 @@ exports.createResources = () => [
                   "ec2:AssignPrivateIpAddresses",
                   "ec2:UnassignPrivateIpAddresses",
                 ],
-                Resource: `${getId({
-                  type: "Function",
-                  group: "Lambda",
-                  name: "test-lambdaFunction",
-                })}`,
+                Resource: `arn:aws:lambda:${
+                  config.region
+                }:${config.accountId()}:function:test-lambdaFunction`,
                 Effect: "Allow",
               },
             ],
@@ -442,8 +456,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sfnStack-testtestMachineFlowRoleE75B9154-1EL1S8LF75X2B",
-    properties: ({ config, getId }) => ({
+    name: "sfnStack-testtestMachineFlowRoleE75B9154-Y7HS9EGY2IQE",
+    properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -478,11 +492,9 @@ exports.createResources = () => [
               {
                 Action: "lambda:InvokeFunction",
                 Resource: [
-                  `${getId({
-                    type: "Function",
-                    group: "Lambda",
-                    name: "test-lambdaFunction",
-                  })}`,
+                  `arn:aws:lambda:${
+                    config.region
+                  }:${config.accountId()}:function:test-lambdaFunction`,
                   `arn:aws:lambda:${
                     config.region
                   }:${config.accountId()}:function:test-lambdaFunction:*`,
@@ -507,7 +519,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      role: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-26SWWUB5R0PQ",
+      role: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-130PK942BIJRK",
     }),
   },
   {
@@ -523,7 +535,12 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      role: "lambdaStack-testLambdaServiceRole955E2289-1QPXU9XXN6BM8",
+      role: "lambdaStack-testLambdaServiceRole955E2289-1GZAHWTU2CITG",
+      subnets: [
+        "test-VPC-test-private-subnet-1-us-east-1a",
+        "test-VPC-test-private-subnet-1-us-east-1b",
+      ],
+      securityGroups: ["test-vpcSG"],
     }),
   },
   {
@@ -577,8 +594,9 @@ exports.createResources = () => [
       tags: [],
     }),
     dependencies: () => ({
-      role: "sfnStack-testtestMachineFlowRoleE75B9154-1EL1S8LF75X2B",
+      role: "sfnStack-testtestMachineFlowRoleE75B9154-Y7HS9EGY2IQE",
       logGroups: ["testlambdatest-"],
+      lambdaFunctions: ["test-lambdaFunction"],
     }),
   },
 ];

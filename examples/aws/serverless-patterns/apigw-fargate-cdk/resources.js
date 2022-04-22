@@ -568,7 +568,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "CdkStack-MyFargateServiceTaskDefExecutionRoleD6305-1DPVFNV7DEJTX",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -606,9 +606,11 @@ exports.createResources = () => [
               },
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-                Resource: `arn:aws:logs:${
-                  config.region
-                }:${config.accountId()}:log-group:CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-0cga6xIMrwPR:*`,
+                Resource: `${getId({
+                  type: "LogGroup",
+                  group: "CloudWatchLogs",
+                  name: "CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-0cga6xIMrwPR",
+                })}:*`,
                 Effect: "Allow",
               },
             ],
@@ -616,6 +618,11 @@ exports.createResources = () => [
           PolicyName:
             "MyFargateServiceTaskDefExecutionRoleDefaultPolicyEC22B20F",
         },
+      ],
+    }),
+    dependencies: () => ({
+      logGroups: [
+        "CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-0cga6xIMrwPR",
       ],
     }),
   },

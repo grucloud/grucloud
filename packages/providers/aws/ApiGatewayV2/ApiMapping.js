@@ -31,7 +31,7 @@ exports.ApiMapping = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live, lives }) => [
-    findDependenciesApi({ live }),
+    findDependenciesApi({ live, config }),
     {
       type: "DomainName",
       group: "ApiGatewayV2",
@@ -68,7 +68,9 @@ exports.ApiMapping = ({ spec, config }) => {
             ApiName: pipe([
               ({ ApiId }) =>
                 lives.getById({
-                  id: ApiId,
+                  id: `arn:aws:execute-api:${
+                    config.region
+                  }:${config.accountId()}:${ApiId}`,
                   providerName: config.providerName,
                   type: "Api",
                   group: "ApiGatewayV2",

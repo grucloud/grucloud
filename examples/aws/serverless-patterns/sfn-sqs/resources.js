@@ -7,14 +7,14 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-MyStateMachineExecutionRole-QOU5CX1BS6DH",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "states.us-east-1.amazonaws.com",
+              Service: `states.${config.region}.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -27,9 +27,11 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["sqs:SendMessage"],
-                Resource: `arn:aws:sqs:${
-                  config.region
-                }:${config.accountId()}:sam-app-MyQueue-AqSTiBlPUT32`,
+                Resource: `${getId({
+                  type: "Queue",
+                  group: "SQS",
+                  name: "sam-app-MyQueue-AqSTiBlPUT32",
+                })}`,
                 Effect: "Allow",
               },
             ],
@@ -46,7 +48,7 @@ exports.createResources = () => [
     type: "StateMachine",
     group: "StepFunctions",
     name: "StateMachinetoSQS-Fy79sSx0sTLU",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       definition: {
         StartAt: "SendToMyQueue",
         States: {
@@ -54,10 +56,11 @@ exports.createResources = () => [
             End: true,
             Parameters: {
               "MessageBody.$": "$.message",
-              QueueUrl:
-                "https://sqs.us-east-1.amazonaws.com/840541460064/sam-app-MyQueue-AqSTiBlPUT32",
+              QueueUrl: `https://sqs.${
+                config.region
+              }.amazonaws.com/${config.accountId()}/sam-app-MyQueue-AqSTiBlPUT32`,
             },
-            Resource: "arn:aws:states:::sqs:sendMessage",
+            Resource: `arn:aws:states:::sqs:sendMessage`,
             Type: "Task",
           },
         },
@@ -71,6 +74,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "sam-app-MyStateMachineExecutionRole-QOU5CX1BS6DH",
+      sqsQueues: ["sam-app-MyQueue-AqSTiBlPUT32"],
     }),
   },
   { type: "Queue", group: "SQS", name: "sam-app-MyQueue-AqSTiBlPUT32" },

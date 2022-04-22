@@ -24,6 +24,7 @@ const {
   compareAws,
   isOurMinionObject,
   replaceAccountAndRegion,
+  assignPolicyAccountAndRegion,
 } = require("../AwsCommon");
 
 const {
@@ -113,7 +114,6 @@ module.exports = pipe([
       displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
       omitProperties: [
         "Code",
-        "Policy",
         "Configuration.CodeSha256",
         "Configuration.Code",
         "Configuration.CodeSize",
@@ -222,7 +222,10 @@ module.exports = pipe([
                                 ]),
                                 pipe([
                                   get("Id"),
-                                  replaceAccountAndRegion({ providerConfig }),
+                                  replaceAccountAndRegion({
+                                    providerConfig,
+                                    lives,
+                                  }),
                                 ]),
                               ]),
                             ])()
@@ -234,6 +237,15 @@ module.exports = pipe([
                 ),
               ]),
             }),
+            when(
+              get("Policy"),
+              assign({
+                Policy: pipe([
+                  get("Policy"),
+                  assignPolicyAccountAndRegion({ providerConfig, lives }),
+                ]),
+              })
+            ),
             omitIfEmpty(["FunctionUrlConfig"]),
             tap(
               pipe([
@@ -256,11 +268,18 @@ module.exports = pipe([
         secret: { type: "Secret", group: "SecretsManager", parent: true },
         subnets: { type: "Subnet", group: "EC2", list: true },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        s3Bucket: {
+          type: "Bucket",
+          group: "S3",
+          parent: true,
+          ignoreOnDestroy: true,
+        },
         graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
         dynamoDbTable: { type: "Table", group: "DynamoDB", parent: true },
         snsTopic: { type: "Topic", group: "SNS", parent: true },
         dbCluster: { type: "DBCluster", group: "RDS", parent: true },
         efsAccessPoint: { type: "AccessPoint", group: "EFS", list: true },
+        apiGatewayV2s: { type: "Api", group: "ApiGatewayV2", list: true },
       },
     },
     {

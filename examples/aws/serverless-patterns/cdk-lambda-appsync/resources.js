@@ -52,7 +52,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "lambda.amazonaws.com",
+              Service: `lambda.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -92,7 +92,7 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
+            AWS_NODEJS_CONNECTION_REUSE_ENABLED: `1`,
             GRAPHQL_URL: `${getId({
               type: "GraphqlApi",
               group: "AppSync",

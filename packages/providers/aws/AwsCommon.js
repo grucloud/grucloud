@@ -876,11 +876,21 @@ const replaceAccountAndRegion =
   (Id) =>
     pipe([
       tap((params) => {
-        assert(Id);
+        assert(lives);
       }),
       () => lives,
       switchCase([
-        any(eq(get("id"), Id)),
+        any(
+          and([
+            ({ id }) => Id.includes(id),
+            //TODO
+            () =>
+              !Id.startsWith("arn:aws:lambda") &&
+              !Id.startsWith("arn:aws:rds") &&
+              !Id.startsWith("arn:aws:sqs") &&
+              !Id.startsWith("arn:aws:sns"),
+          ])
+        ),
         pipe([() => ({ Id, lives }), replaceWithName({ path: "id" })]),
         pipe([
           () => Id,
@@ -899,20 +909,24 @@ const replaceAccountAndRegion =
       ]),
     ])();
 
+exports.replaceAccountAndRegion = replaceAccountAndRegion;
+
 const replaceAccount = ({ providerConfig }) =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
     callProp(
       "replace",
       new RegExp(providerConfig.accountId(), "g"),
       "${config.accountId()}"
     ),
+    callProp(
+      "replace",
+      new RegExp(providerConfig.region, "g"),
+      "${config.region}"
+    ),
     (resource) => () => "`" + resource + "`",
   ]);
 
-exports.replaceAccountAndRegion = replaceAccountAndRegion;
+exports.replaceAccount = replaceAccount;
 
 const assignPolicyResource = ({ providerConfig, lives }) =>
   pipe([
@@ -968,6 +982,26 @@ const replaceStatement = ({ providerConfig, lives }) =>
         Condition: pipe([
           get("Condition"),
           when(
+            get("ArnLike"),
+            assign({
+              ArnLike: pipe([
+                get("ArnLike"),
+                when(
+                  get("AWS:SourceArn"),
+                  assign({
+                    "AWS:SourceArn": pipe([
+                      get("AWS:SourceArn"),
+                      replaceAccountAndRegion({
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
+          when(
             get("StringEquals"),
             assign({
               StringEquals: pipe([
@@ -988,11 +1022,24 @@ const replaceStatement = ({ providerConfig, lives }) =>
                     ]),
                   })
                 ),
+                //TODO create function
                 when(
                   get("aws:SourceAccount"),
                   assign({
                     "aws:SourceAccount": pipe([
                       get("aws:SourceAccount"),
+                      replaceAccountAndRegion({
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                  })
+                ),
+                when(
+                  get("AWS:SourceAccount"),
+                  assign({
+                    "AWS:SourceAccount": pipe([
+                      get("AWS:SourceAccount"),
                       replaceAccountAndRegion({
                         providerConfig,
                         lives,

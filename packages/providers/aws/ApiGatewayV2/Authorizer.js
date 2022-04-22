@@ -1,13 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick, filter } = require("rubico");
-const {
-  defaultsDeep,
-  isEmpty,
-  callProp,
-  last,
-  unless,
-  when,
-} = require("rubico/x");
+const { pipe, tap, get, eq, pick, filter, switchCase } = require("rubico");
+const { defaultsDeep, isEmpty, callProp, last, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -28,7 +21,7 @@ exports.Authorizer = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(apiGateway);
 
   const findDependencies = ({ live, lives }) => [
-    findDependenciesApi({ live }),
+    findDependenciesApi({ live, config }),
     {
       type: "UserPool",
       group: "CognitoIdentityServiceProvider",
@@ -37,17 +30,20 @@ exports.Authorizer = ({ spec, config }) => {
         get("JwtConfiguration.Issuer", ""),
         callProp("split", "/"),
         last,
-        unless(isEmpty, (Id) =>
-          pipe([
-            () =>
-              lives.getByType({
-                type: "UserPool",
-                group: "CognitoIdentityServiceProvider",
-                providerName: config.providerName,
-              }),
-            filter(eq(get("live.Id"), Id)),
-          ])()
-        ),
+        switchCase([
+          isEmpty,
+          () => undefined,
+          (Id) =>
+            pipe([
+              () =>
+                lives.getByType({
+                  type: "UserPool",
+                  group: "CognitoIdentityServiceProvider",
+                  providerName: config.providerName,
+                }),
+              filter(eq(get("live.Id"), Id)),
+            ])(),
+        ]),
       ])(),
     },
   ];

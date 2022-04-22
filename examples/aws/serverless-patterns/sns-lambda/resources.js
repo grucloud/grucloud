@@ -14,7 +14,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "lambda.amazonaws.com",
+              Service: `lambda.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -56,7 +56,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "sam-app-MySnsTopic-1Q2VS8SMOPR20",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       Attributes: {
         Policy: {
           Version: "2008-10-17",
@@ -78,9 +78,11 @@ exports.createResources = () => [
                 "SNS:ListSubscriptionsByTopic",
                 "SNS:Publish",
               ],
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:sam-app-MySnsTopic-1Q2VS8SMOPR20`,
+              Resource: `${getId({
+                type: "Topic",
+                group: "SNS",
+                name: "sam-app-MySnsTopic-1Q2VS8SMOPR20",
+              })}`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,

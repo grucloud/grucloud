@@ -16,7 +16,7 @@ exports.createResources = () => [
     type: "Target",
     group: "CloudWatchEvents",
     properties: ({}) => ({
-      Id: "terraform-20220418170914366300000002",
+      Id: "terraform-20220421132955317100000002",
     }),
     dependencies: () => ({
       rule: "stf_trigger_rule",
@@ -103,7 +103,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "aws-stf-role",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -125,20 +125,15 @@ exports.createResources = () => [
               {
                 Action: ["lambda:InvokeFunction"],
                 Effect: "Allow",
-                Resource: `${getId({
-                  type: "Function",
-                  group: "Lambda",
-                  name: "aws_lambda_example",
-                })}`,
+                Resource: `arn:aws:lambda:${
+                  config.region
+                }:${config.accountId()}:function:aws_lambda_example`,
               },
             ],
           },
           PolicyName: "aws-stf-policy",
         },
       ],
-    }),
-    dependencies: () => ({
-      lambdaFunctions: ["aws_lambda_example"],
     }),
   },
   {
@@ -214,6 +209,7 @@ exports.createResources = () => [
           },
         },
       },
+      tags: [],
     }),
     dependencies: () => ({
       role: "aws-stf-role",

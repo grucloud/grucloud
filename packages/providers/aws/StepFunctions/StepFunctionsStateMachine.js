@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, pick, assign, filter, any } = require("rubico");
+const { map, pipe, tap, get, pick, assign, eq } = require("rubico");
 const { defaultsDeep, pluck, find, uniq } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -52,6 +52,29 @@ exports.StepFunctionsStateMachine = ({ spec, config }) =>
                 }),
               get("id"),
             ])
+          ),
+          //TODO move uniq to flattenObject
+          uniq,
+        ])(),
+      },
+      {
+        type: "Queue",
+        group: "SQS",
+        ids: pipe([
+          () => live,
+          get("definition.States"),
+          flattenObject({ filterKey: (key) => key === "QueueUrl" }),
+          map((QueueUrl) =>
+            pipe([
+              () =>
+                lives.getByType({
+                  type: "Queue",
+                  group: "SQS",
+                  providerName: config.providerName,
+                }),
+              find(eq(get("live.QueueUrl"), QueueUrl)),
+              get("id"),
+            ])()
           ),
           //TODO move uniq to flattenObject
           uniq,

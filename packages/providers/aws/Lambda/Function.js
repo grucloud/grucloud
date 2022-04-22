@@ -11,6 +11,7 @@ const {
   eq,
   omit,
   any,
+  flatMap,
 } = require("rubico");
 const {
   pluck,
@@ -31,11 +32,25 @@ const logger = require("@grucloud/core/logger")({
   prefix: "Function",
 });
 
-const { buildTagsObject } = require("@grucloud/core/Common");
+const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
 const { throwIfNotAwsError, compareAws } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createLambda, tagResource, untagResource } = require("./LambdaCommon");
+
+const { findInStatement } = require("../IAM/AwsIamCommon");
+//TODO
+const dependenciesPoliciesKind = [
+  // { type: "Table", group: "DynamoDB" },
+  // { type: "Topic", group: "SNS" },
+  // { type: "Queue", group: "SQS" },
+  // { type: "FileSystem", group: "EFS" },
+  // { type: "AccessPoint", group: "EFS" },
+  // { type: "EventBus", group: "CloudWatchEvents" },
+  // { type: "StateMachine", group: "StepFunctions" },
+  // { type: "LogGroup", group: "CloudWatchLogs" },
+  { type: "Api", group: "ApiGatewayV2" },
+];
 
 const compareLambda = compareAws({});
 const findId = get("live.Configuration.FunctionArn");
@@ -78,6 +93,30 @@ exports.Function = ({ spec, config }) => {
       ),
     ])();
 
+  const findDependencyPolicyCommon = ({
+    type,
+    group,
+    live,
+    lives,
+    config,
+  }) => ({
+    type,
+    group,
+    ids: pipe([
+      () => live,
+      get("Policy.Statement", []),
+      flatMap(findInStatement({ type, group, lives, config })),
+    ])(),
+  });
+
+  const findDependenciesPolicyCommon = ({ live, lives, config }) =>
+    pipe([
+      () => dependenciesPoliciesKind,
+      map(({ type, group }) =>
+        findDependencyPolicyCommon({ type, group, live, lives, config })
+      ),
+    ])();
+
   const findDependenciesInEnvironment = ({
     pathLive,
     type,
@@ -111,6 +150,7 @@ exports.Function = ({ spec, config }) => {
   });
 
   const findDependencies = ({ live, lives }) => [
+    ...findDependenciesPolicyCommon({ live, lives, config }),
     findDependenciesInEnvironment({
       pathLive: "live.ARN",
       type: "Secret",
@@ -143,6 +183,13 @@ exports.Function = ({ spec, config }) => {
       pathLive: "id",
       type: "Topic",
       group: "SNS",
+      live,
+      lives,
+    }),
+    findDependenciesInEnvironment({
+      pathLive: "name",
+      type: "Bucket",
+      group: "S3",
       live,
       lives,
     }),
@@ -232,9 +279,6 @@ exports.Function = ({ spec, config }) => {
             pipe([
               get("Configuration"),
               pick(["FunctionName"]),
-              tap((params) => {
-                assert(true);
-              }),
               lambda().listFunctionUrlConfigs,
               get("FunctionUrlConfigs"),
               first,
@@ -274,6 +318,10 @@ exports.Function = ({ spec, config }) => {
           //   get("ReservedConcurrentExecutions"),
           // ]),
         }),
+        omitIfEmpty(["Policy"]),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
   });
 
@@ -281,6 +329,37 @@ exports.Function = ({ spec, config }) => {
     ({ name }) => ({ Configuration: { FunctionArn: name } }),
     getById,
   ]);
+
+  const lambdaAddPermission = ({ Policy, FunctionName }) =>
+    pipe([
+      () => Policy,
+      get("Statement"),
+      map(({ Principal, Sid, Condition }) =>
+        pipe([
+          () => ({
+            Action: "lambda:InvokeFunction",
+            FunctionName,
+            Principal: Principal.Service,
+            StatementId: Sid,
+          }),
+          when(
+            () => get(["ArnLike", "AWS:SourceArn"])(Condition),
+            defaultsDeep({
+              SourceArn: get(["ArnLike", "AWS:SourceArn"])(Condition),
+            })
+          ),
+          when(
+            () => get(["StringEquals", "AWS:SourceAccount"])(Condition),
+            defaultsDeep({
+              SourceAccount: get(["StringEquals", "AWS:SourceAccount"])(
+                Condition
+              ),
+            })
+          ),
+          lambda().addPermission,
+        ])()
+      ),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunction-property
   const create = client.create({
@@ -309,9 +388,11 @@ exports.Function = ({ spec, config }) => {
       payload: {
         Configuration: { FunctionName },
         FunctionUrlConfig,
+        Policy,
       },
     }) =>
       pipe([
+        when(() => Policy, lambdaAddPermission({ Policy, FunctionName })),
         when(
           () => FunctionUrlConfig,
           pipe([
@@ -359,7 +440,7 @@ exports.Function = ({ spec, config }) => {
         }),
       // updateFunctionConfiguration
       when(
-        () => diff.liveDiff.updated.Configuration,
+        () => get("liveDiff.updated.Configuration")(diff),
         pipe([
           () => payload,
           get("Configuration"),
@@ -371,7 +452,7 @@ exports.Function = ({ spec, config }) => {
       ),
       // updateFunctionUrlConfig
       when(
-        () => diff.liveDiff.updated.FunctionUrlConfig,
+        () => get("liveDiff.updated.FunctionUrlConfig")(diff),
         pipe([
           tap((params) => {
             assert(true);
@@ -381,6 +462,18 @@ exports.Function = ({ spec, config }) => {
             ...payload.FunctionUrlConfig,
           }),
           lambda().updateFunctionUrlConfig,
+        ])
+      ),
+      when(
+        () =>
+          get("liveDiff.updated.Policy")(diff) ||
+          get("liveDiff.added.Policy")(diff),
+        pipe([
+          () => ({
+            FunctionName: payload.Configuration.FunctionName,
+            Policy: payload.Policy,
+          }),
+          lambdaAddPermission,
         ])
       ),
       tap(() => {

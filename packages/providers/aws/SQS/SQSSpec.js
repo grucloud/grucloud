@@ -31,6 +31,9 @@ module.exports = pipe([
           ReceiveMessageWaitTimeSeconds: "0",
         },
       },
+      dependencies: {
+        snsTopics: { type: "Topic", group: "SNS", list: true },
+      },
       omitProperties: [
         "QueueName",
         "QueueUrl",

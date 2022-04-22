@@ -558,7 +558,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "ECSServiceStack-amazonecssampleTaskDefExecutionRol-J2QX8M2WSOJS",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -578,9 +578,11 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-                Resource: `arn:aws:logs:${
-                  config.region
-                }:${config.accountId()}:log-group:ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-gsrOrJO5GcFM:*`,
+                Resource: `${getId({
+                  type: "LogGroup",
+                  group: "CloudWatchLogs",
+                  name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-gsrOrJO5GcFM",
+                })}:*`,
                 Effect: "Allow",
               },
             ],

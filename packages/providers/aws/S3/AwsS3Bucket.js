@@ -451,6 +451,26 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       config: { retryCount: 5, retryDelay: config.retryDelay },
     });
 
+  //TODO
+  const updateProperties =
+    ({ Name }) =>
+    ({ NotificationConfiguration }) =>
+      pipe([
+        tap((params) => {
+          assert(Name);
+        }),
+        tap.if(
+          () => NotificationConfiguration,
+          pipe([
+            () =>
+              s3().putBucketNotificationConfiguration({
+                Bucket: Name,
+                NotificationConfiguration,
+              }),
+          ])
+        ),
+      ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
   const create = async ({ name: Bucket, namespace, payload }) => {
     assert(Bucket);
@@ -654,13 +674,27 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     } catch (error) {
       logger.error("s3 bucket put error");
       logger.error(error);
-      await destroy({ live: { Bucket } });
+      await destroy({ live: { Name: Bucket } });
       throw error;
     }
     logger.info(`created final ${Bucket}`);
-
     return { Location };
   };
+  //TODO
+  const update = ({ name, payload, diff, live }) =>
+    pipe([
+      tap(() => {
+        logger.info(`update s3: ${name}`);
+        logger.debug(tos({ payload, diff, live }));
+      }),
+      () => diff.liveDiff.added,
+      tryCatch(updateProperties(live), (error) => {
+        throw error;
+      }),
+      tap(() => {
+        logger.info(`s3 updated ${name}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucket-property
   const destroy = ({ live: { Name: Bucket } }) =>
@@ -769,6 +803,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,

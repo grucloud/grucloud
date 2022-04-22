@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "sam-app-MySnsTopic-7ZOEL49PL4BA",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       Attributes: {
         Policy: {
           Version: "2008-10-17",
@@ -29,11 +29,9 @@ exports.createResources = () => [
                 "SNS:ListSubscriptionsByTopic",
                 "SNS:Publish",
               ],
-              Resource: `${getId({
-                type: "Topic",
-                group: "SNS",
-                name: "sam-app-MySnsTopic-7ZOEL49PL4BA",
-              })}`,
+              Resource: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:sam-app-MySnsTopic-7ZOEL49PL4BA`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,
@@ -64,7 +62,7 @@ exports.createResources = () => [
     type: "Queue",
     group: "SQS",
     name: "sam-app-MySqsQueue-KMqXSqHYypds",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       Attributes: {
         Policy: {
           Version: "2012-10-17",
@@ -76,24 +74,23 @@ exports.createResources = () => [
                 Service: `sns.amazonaws.com`,
               },
               Action: "SQS:SendMessage",
-              Resource: `${getId({
-                type: "Queue",
-                group: "SQS",
-                name: "sam-app-MySqsQueue-KMqXSqHYypds",
-              })}`,
+              Resource: `arn:aws:sqs:${
+                config.region
+              }:${config.accountId()}:sam-app-MySqsQueue-KMqXSqHYypds`,
               Condition: {
                 ArnEquals: {
-                  "aws:SourceArn": `${getId({
-                    type: "Topic",
-                    group: "SNS",
-                    name: "sam-app-MySnsTopic-7ZOEL49PL4BA",
-                  })}`,
+                  "aws:SourceArn": `arn:aws:sns:${
+                    config.region
+                  }:${config.accountId()}:sam-app-MySnsTopic-7ZOEL49PL4BA`,
                 },
               },
             },
           ],
         },
       },
+    }),
+    dependencies: () => ({
+      snsTopics: ["sam-app-MySnsTopic-7ZOEL49PL4BA"],
     }),
   },
 ];

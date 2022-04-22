@@ -11,7 +11,6 @@ exports.createResources = () => [
       NotificationConfiguration: {
         TopicConfigurations: [
           {
-            Id: "9a7d3588-ebef-4652-b9ac-e8aa7afd820b",
             TopicArn: `arn:aws:sns:${
               config.region
             }:${config.accountId()}:sam-app-SNSTopic-15XRP2Y8B6PO1`,

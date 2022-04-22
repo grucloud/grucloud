@@ -37,8 +37,8 @@ exports.createResources = () => [
                   "s3:DeleteObject",
                 ],
                 Resource: [
-                  `arn:aws:s3:::gc-destination-example`,
-                  `arn:aws:s3:::gc-destination-example/*`,
+                  "arn:aws:s3:::gc-destination-example",
+                  "arn:aws:s3:::gc-destination-example/*",
                 ],
                 Effect: "Allow",
               },
@@ -66,11 +66,15 @@ exports.createResources = () => [
     type: "Function",
     group: "Lambda",
     name: "sam-app-PutObjectFunction-UHg0AjQBqco2",
-    properties: ({}) => ({
+    properties: ({ getId }) => ({
       Configuration: {
         Environment: {
           Variables: {
-            DestinationBucketName: `gc-destination-example`,
+            DestinationBucketName: `${getId({
+              type: "Bucket",
+              group: "S3",
+              name: "gc-destination-example",
+            })}`,
           },
         },
         Handler: "app.lambda_handler",
@@ -82,6 +86,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "sam-app-PutObjectFunctionRole-TFR4FTCB12K2",
+      s3Bucket: "gc-destination-example",
     }),
   },
   { type: "Bucket", group: "S3", name: "gc-destination-example" },

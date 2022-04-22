@@ -27,14 +27,14 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-MyStateMachineExecutionRole-ZVCE4J344HAN",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "states.us-east-1.amazonaws.com",
+              Service: `states.${config.region}.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -47,9 +47,11 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["dynamodb:PutItem", "dynamodb:GetItem"],
-                Resource: `arn:aws:dynamodb:${
-                  config.region
-                }:${config.accountId()}:table/my-table`,
+                Resource: `${getId({
+                  type: "Table",
+                  group: "DynamoDB",
+                  name: "my-table",
+                })}`,
                 Effect: "Allow",
               },
             ],
@@ -79,7 +81,7 @@ exports.createResources = () => [
               },
               TableName: "my-table",
             },
-            Resource: "arn:aws:states:::dynamodb:getItem",
+            Resource: `arn:aws:states:::dynamodb:getItem`,
             ResultPath: "$.output_from_ddb_get",
             Type: "Task",
           },
@@ -92,7 +94,7 @@ exports.createResources = () => [
               },
               TableName: "my-table",
             },
-            Resource: "arn:aws:states:::dynamodb:putItem",
+            Resource: `arn:aws:states:::dynamodb:putItem`,
             ResultPath: "$.output_from_ddb_put",
             Type: "Task",
           },

@@ -5,7 +5,6 @@ skinparam monochrome true
 ++ aws
 +++ APIGateway
 ++++ Account (1)
-++++ Deployment (1)
 ++++ RestApi (1)
 ++++ Stage (1)
 +++ DynamoDB

@@ -30,11 +30,12 @@ exports.dependenciesPoliciesKind = [
   { type: "Queue", group: "SQS" },
   { type: "FileSystem", group: "EFS" },
   { type: "AccessPoint", group: "EFS" },
-  { type: "AccessPoint", group: "EFS" },
   { type: "EventBus", group: "CloudWatchEvents" },
-  { type: "Function", group: "Lambda" },
   { type: "StateMachine", group: "StepFunctions" },
   { type: "LogGroup", group: "CloudWatchLogs" },
+  { type: "Secret", group: "SecretsManager" },
+  //{ type: "Function", group: "Lambda" },
+  //{ type: "DBCluster", group: "RDS" },
 ];
 
 exports.dependenciesPolicy = {
@@ -57,12 +58,12 @@ exports.dependenciesPolicy = {
     list: true,
   },
   eventBus: { type: "EventBus", group: "CloudWatchEvents" },
-  lambdaFunctions: {
-    type: "Function",
-    group: "Lambda",
-    list: true,
-    ignoreOnDestroy: true,
-  },
+  // lambdaFunctions: {
+  //   type: "Function",
+  //   group: "Lambda",
+  //   list: true,
+  //   ignoreOnDestroy: true,
+  // },
   stateMachines: {
     type: "StateMachine",
     group: "StepFunctions",
@@ -75,6 +76,12 @@ exports.dependenciesPolicy = {
     list: true,
     ignoreOnDestroy: true,
   },
+  secrets: {
+    type: "Secret",
+    group: "SecretsManager",
+    list: true,
+  },
+  //dbClusters: { type: "DBCluster", group: "RDS", list: true },
 };
 
 exports.createIAM = createEndpoint("iam", "IAM");
@@ -154,7 +161,7 @@ exports.findInStatement =
   ({ Condition, Resource }) =>
     pipe([
       tap(() => {
-        //assert(Resource);
+        assert(true);
       }),
       () => Resource,
       unless(Array.isArray, (resource) => [resource]),
@@ -162,10 +169,15 @@ exports.findInStatement =
         () => Condition,
         append(get("StringEquals.elasticfilesystem:AccessPointArn")(Condition))
       ),
+      when(
+        () => Condition,
+        append(get(["ArnLike", "AWS:SourceArn"])(Condition))
+      ),
+      when(
+        () => Condition,
+        append(get(["ArnEquals", "aws:SourceArn"])(Condition))
+      ),
       filter(not(isEmpty)),
-      tap((params) => {
-        assert(true);
-      }),
       map((arn) =>
         pipe([
           () =>
@@ -175,9 +187,6 @@ exports.findInStatement =
               group,
             }),
           find(({ id }) => arn.includes(id)),
-          tap((params) => {
-            assert(true);
-          }),
         ])()
       ),
       filter(not(isEmpty)),

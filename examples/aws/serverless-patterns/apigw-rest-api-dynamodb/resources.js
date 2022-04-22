@@ -16,7 +16,7 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     name: "ApiDynamoRestApi",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
@@ -47,7 +47,11 @@ exports.createResources = () => [
                 },
               },
               "x-amazon-apigateway-integration": {
-                credentials: `arn:aws:iam::${config.accountId()}:role/ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX`,
+                credentials: `${getId({
+                  type: "Role",
+                  group: "IAM",
+                  name: "ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX",
+                })}`,
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_TEMPLATES",
                 requestParameters: {
@@ -83,7 +87,11 @@ exports.createResources = () => [
                 },
               },
               "x-amazon-apigateway-integration": {
-                credentials: `arn:aws:iam::${config.accountId()}:role/ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX`,
+                credentials: `${getId({
+                  type: "Role",
+                  group: "IAM",
+                  name: "ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX",
+                })}`,
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_TEMPLATES",
                 requestTemplates: {

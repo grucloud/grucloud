@@ -95,7 +95,7 @@ exports.Integration = ({ spec, config }) => {
 
   // Integration findDependencies
   const findDependencies = ({ live, lives }) => [
-    findDependenciesApi({ live }),
+    findDependenciesApi({ live, config }),
     {
       type: "Function",
       group: "Lambda",
@@ -147,7 +147,6 @@ exports.Integration = ({ spec, config }) => {
         }),
       ])(),
     },
-
     {
       type: "EventBus",
       group: "CloudWatchEvents",
@@ -193,19 +192,19 @@ exports.Integration = ({ spec, config }) => {
         tap(() => {
           assert(api);
         }),
-        when(
-          () => lambdaFunction,
-          lambdaAddPermission({
-            lambda,
-            lambdaFunction,
-            SourceArn: () =>
-              `arn:aws:execute-api:${
-                config.region
-              }:${config.accountId()}:${getField(api, "ApiId")}/*/*/${
-                lambdaFunction.resource.name
-              }`,
-          })
-        ),
+        // when(
+        //   () => lambdaFunction,
+        //   lambdaAddPermission({
+        //     lambda,
+        //     lambdaFunction,
+        //     SourceArn: () =>
+        //       `arn:aws:execute-api:${
+        //         config.region
+        //       }:${config.accountId()}:${getField(api, "ApiId")}/*/*/${
+        //         lambdaFunction.resource.name
+        //       }`,
+        //   })
+        // ),
       ]),
   });
 
