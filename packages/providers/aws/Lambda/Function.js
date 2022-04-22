@@ -186,6 +186,13 @@ exports.Function = ({ spec, config }) => {
       live,
       lives,
     }),
+    findDependenciesInEnvironment({
+      pathLive: "name",
+      type: "Bucket",
+      group: "S3",
+      live,
+      lives,
+    }),
     {
       type: "Role",
       group: "IAM",

@@ -127,6 +127,7 @@ exports.EcrRepository = ({ spec, config }) => {
     config,
   });
 
+  //TODO user tags
   const configDefault = ({
     name,
     namespace,

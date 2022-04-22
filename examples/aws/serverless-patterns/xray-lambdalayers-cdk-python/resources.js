@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/lambda/LambdaLayerXRayStackStack-BucketNotificationsHandl-lPmJ5yz8wDoN",
+    name: "/aws/lambda/LambdaLayerXRayStackStack-BucketNotificationsHandl-1XcDZ1JQT7M7",
   },
   {
     type: "Role",
@@ -118,7 +118,7 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "LambdaLayerXRayStackStack-BucketNotificationsHandl-lPmJ5yz8wDoN",
+    name: "LambdaLayerXRayStackStack-BucketNotificationsHandl-1XcDZ1JQT7M7",
     properties: ({}) => ({
       Configuration: {
         Description:

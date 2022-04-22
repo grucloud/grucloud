@@ -663,6 +663,9 @@ exports.createResources = () => [
         },
       ],
     }),
+    dependencies: () => ({
+      secrets: ["aurora-user-secret"],
+    }),
   },
   {
     type: "DBSubnetGroup",

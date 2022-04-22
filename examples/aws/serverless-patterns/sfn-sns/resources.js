@@ -82,6 +82,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",
+      snsTopics: ["sam-app-StateMachineSNSTopic-C6WGCI64MKY2"],
     }),
   },
   {
@@ -110,11 +111,9 @@ exports.createResources = () => [
                 "SNS:ListSubscriptionsByTopic",
                 "SNS:Publish",
               ],
-              Resource: `${getId({
-                type: "Topic",
-                group: "SNS",
-                name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
-              })}`,
+              Resource: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:sam-app-StateMachineSNSTopic-C6WGCI64MKY2`,
               Condition: {
                 StringEquals: {
                   "AWS:SourceOwner": `${config.accountId()}`,

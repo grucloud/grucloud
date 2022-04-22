@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/lambda/lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-XpJmJ9QgPVDQ",
+    name: "/aws/lambda/lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-c8VHz1jOeFFc",
     properties: ({}) => ({
       retentionInDays: 1,
     }),
@@ -511,7 +511,7 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-XpJmJ9QgPVDQ",
+    name: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-c8VHz1jOeFFc",
     properties: ({}) => ({
       Configuration: {
         Handler: "index.handler",

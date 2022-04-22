@@ -161,7 +161,7 @@ exports.findInStatement =
   ({ Condition, Resource }) =>
     pipe([
       tap(() => {
-        //assert(Resource);
+        assert(true);
       }),
       () => Resource,
       unless(Array.isArray, (resource) => [resource]),
@@ -173,10 +173,11 @@ exports.findInStatement =
         () => Condition,
         append(get(["ArnLike", "AWS:SourceArn"])(Condition))
       ),
+      when(
+        () => Condition,
+        append(get(["ArnEquals", "aws:SourceArn"])(Condition))
+      ),
       filter(not(isEmpty)),
-      tap((params) => {
-        assert(true);
-      }),
       map((arn) =>
         pipe([
           () =>
@@ -186,9 +187,6 @@ exports.findInStatement =
               group,
             }),
           find(({ id }) => arn.includes(id)),
-          tap((params) => {
-            assert(true);
-          }),
         ])()
       ),
       filter(not(isEmpty)),

@@ -885,7 +885,10 @@ const replaceAccountAndRegion =
             ({ id }) => Id.includes(id),
             //TODO
             () =>
-              !Id.startsWith("arn:aws:lambda") && !Id.startsWith("arn:aws:rds"),
+              !Id.startsWith("arn:aws:lambda") &&
+              !Id.startsWith("arn:aws:rds") &&
+              !Id.startsWith("arn:aws:sqs") &&
+              !Id.startsWith("arn:aws:sns"),
           ])
         ),
         pipe([() => ({ Id, lives }), replaceWithName({ path: "id" })]),

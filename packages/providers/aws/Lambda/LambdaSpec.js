@@ -268,6 +268,12 @@ module.exports = pipe([
         secret: { type: "Secret", group: "SecretsManager", parent: true },
         subnets: { type: "Subnet", group: "EC2", list: true },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        s3Bucket: {
+          type: "Bucket",
+          group: "S3",
+          parent: true,
+          ignoreOnDestroy: true,
+        },
         graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
         dynamoDbTable: { type: "Table", group: "DynamoDB", parent: true },
         snsTopic: { type: "Topic", group: "SNS", parent: true },

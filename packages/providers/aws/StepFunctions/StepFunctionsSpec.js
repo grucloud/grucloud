@@ -38,6 +38,8 @@ module.exports = pipe([
         role: { type: "Role", group: "IAM" },
         logGroups: { type: "LogGroup", group: "CloudWatchLogs", list: true },
         lambdaFunctions: { type: "Function", group: "Lambda", list: true },
+        snsTopics: { type: "Topic", group: "SNS", list: true },
+        sqsQueues: { type: "Queue", group: "SQS", list: true },
       },
       filterLive: ({ lives, providerConfig }) =>
         pipe([
@@ -50,11 +52,12 @@ module.exports = pipe([
                     and([
                       isString,
                       or([
+                        callProp("startsWith", "https://"),
                         callProp("startsWith", "arn:"),
                         callProp("endsWith", ".amazonaws.com"),
                       ]),
                     ]),
-                    replaceAccountAndRegion({ providerConfig, lives }),
+                    pipe([replaceAccountAndRegion({ providerConfig, lives })]),
                     () => undefined,
                   ]),
                 ])

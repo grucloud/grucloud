@@ -10,7 +10,14 @@ const {
   omit,
   eq,
 } = require("rubico");
-const { defaultsDeep, isEmpty, when, isDeepEqual, size } = require("rubico/x");
+const {
+  defaultsDeep,
+  isEmpty,
+  when,
+  isDeepEqual,
+  size,
+  prepend,
+} = require("rubico/x");
 const { retryCall } = require("@grucloud/core/Retry");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
@@ -21,7 +28,7 @@ const { throwIfNotAwsError } = require("../AwsCommon");
 const { createECR, tagResource, untagResource } = require("./ECRCommon");
 
 const findName = () => "default";
-const findId = get("live.registryId");
+const findId = pipe([get("live.registryId"), prepend("arn::aws::")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 exports.EcrRegistry = ({ spec, config }) => {
