@@ -58,39 +58,6 @@ exports.createResources = () => [
     name: "sam-app-MySnsTopic-1Q2VS8SMOPR20",
     properties: ({ config, getId }) => ({
       Attributes: {
-        Policy: {
-          Version: "2008-10-17",
-          Id: "__default_policy_ID",
-          Statement: [
-            {
-              Sid: "__default_statement_ID",
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
-              Action: [
-                "SNS:GetTopicAttributes",
-                "SNS:SetTopicAttributes",
-                "SNS:AddPermission",
-                "SNS:RemovePermission",
-                "SNS:DeleteTopic",
-                "SNS:Subscribe",
-                "SNS:ListSubscriptionsByTopic",
-                "SNS:Publish",
-              ],
-              Resource: `${getId({
-                type: "Topic",
-                group: "SNS",
-                name: "sam-app-MySnsTopic-1Q2VS8SMOPR20",
-              })}`,
-              Condition: {
-                StringEquals: {
-                  "AWS:SourceOwner": `${config.accountId()}`,
-                },
-              },
-            },
-          ],
-        },
         DisplayName: "",
         DeliveryPolicy: {
           http: {

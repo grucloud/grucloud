@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-MyStateMachineExecutionRole-QOU5CX1BS6DH",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -27,11 +27,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["sqs:SendMessage"],
-                Resource: `${getId({
-                  type: "Queue",
-                  group: "SQS",
-                  name: "sam-app-MyQueue-AqSTiBlPUT32",
-                })}`,
+                Resource: `arn:aws:sqs:${
+                  config.region
+                }:${config.accountId()}:sam-app-MyQueue-AqSTiBlPUT32`,
                 Effect: "Allow",
               },
             ],
