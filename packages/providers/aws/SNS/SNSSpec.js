@@ -12,6 +12,11 @@ const GROUP = "SNS";
 
 const compareSNS = compareAws({});
 
+const omitDefaultPolicy = when(
+  eq(get("Policy.Id"), "__default_policy_ID"),
+  omit(["Policy"])
+);
+
 module.exports = pipe([
   () => [
     {
@@ -27,6 +32,14 @@ module.exports = pipe([
         "Attributes.SubscriptionsDeleted",
         "Attributes.SubscriptionsConfirmed",
       ],
+      compare: compareSNS({
+        filterLive: () =>
+          pipe([
+            assign({
+              Attributes: pipe([get("Attributes"), omitDefaultPolicy]),
+            }),
+          ]),
+      }),
       filterLive: ({ providerConfig, lives }) =>
         pipe([
           assign({
@@ -38,6 +51,7 @@ module.exports = pipe([
                   assignPolicyAccountAndRegion({ providerConfig, lives }),
                 ]),
               }),
+              omitDefaultPolicy,
             ]),
           }),
         ]),
