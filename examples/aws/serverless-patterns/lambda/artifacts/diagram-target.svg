@@ -26,14 +26,14 @@
 <g id="node1" class="node">
 <title>Role::sam&#45;app&#45;SimpleFunctionRole&#45;QY12848QLJZP</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="683,-129 376,-129 376,-71 683,-71 683,-129"/>
-<text text-anchor="start" x="388.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="388.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="388.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;SimpleFunctionRole&#45;QY128...</text>
 </g>
 <!-- Function::sam&#45;app&#45;SimpleFunction&#45;Ts3MqUXuWKqN -->
 <g id="node2" class="node">
 <title>Function::sam&#45;app&#45;SimpleFunction&#45;Ts3MqUXuWKqN</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="340,-129 24,-129 24,-71 340,-71 340,-129"/>
-<text text-anchor="start" x="36" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Function</text>
+<text text-anchor="start" x="36" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::Function</text>
 <text text-anchor="start" x="36" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;SimpleFunction&#45;Ts3MqUXuW...</text>
 </g>
 <!-- Function::sam&#45;app&#45;SimpleFunction&#45;Ts3MqUXuWKqN&#45;&gt;Role::sam&#45;app&#45;SimpleFunctionRole&#45;QY12848QLJZP -->

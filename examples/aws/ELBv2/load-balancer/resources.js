@@ -4,6 +4,14 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Certificate",
+    group: "ACM",
+    name: "grucloud.org",
+    properties: ({}) => ({
+      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
+    }),
+  },
+  {
     type: "AutoScalingGroup",
     group: "AutoScaling",
     name: "ag",
@@ -31,14 +39,6 @@ exports.createResources = () => [
     dependencies: () => ({
       autoScalingGroup: "ag",
       targetGroup: "target-group-web",
-    }),
-  },
-  {
-    type: "Certificate",
-    group: "ACM",
-    name: "grucloud.org",
-    properties: ({}) => ({
-      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
     }),
   },
   {
@@ -120,7 +120,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "sg-default-vpc",
     isDefault: true,
     dependencies: () => ({
       vpc: "vpc",
@@ -154,7 +153,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       subnets: ["subnet-a", "subnet-b"],
-      securityGroups: ["sg-default-vpc"],
+      securityGroups: ["sg::vpc::default"],
     }),
   },
   {

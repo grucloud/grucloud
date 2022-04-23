@@ -43,7 +43,7 @@
 <polygon fill="#707070" stroke="#707070" points="725.42,-319.56 735.43,-316.07 725.43,-312.56 725.42,-319.56"/>
 </g>
 <!-- Deployment::::deployment::API Gateway HTTP API to EventBridge&#45;&gt;Api::::API Gateway HTTP API to EventBridge -->
-<g id="edge2" class="edge">
+<g id="edge3" class="edge">
 <title>Deployment::::deployment::API Gateway HTTP API to EventBridge&#45;&gt;Api::::API Gateway HTTP API to EventBridge</title>
 <path fill="none" stroke="#707070" d="M324.41,-331.94C442.24,-332.07 606.02,-330.23 725.13,-327.45"/>
 <polygon fill="#707070" stroke="#707070" points="725.51,-330.94 735.43,-327.2 725.35,-323.94 725.51,-330.94"/>
@@ -56,7 +56,7 @@
 <text text-anchor="start" x="437" y="-352.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">$default</text>
 </g>
 <!-- Deployment::::deployment::API Gateway HTTP API to EventBridge&#45;&gt;Stage::::$default -->
-<g id="edge3" class="edge">
+<g id="edge2" class="edge">
 <title>Deployment::::deployment::API Gateway HTTP API to EventBridge&#45;&gt;Stage::::$default</title>
 <path fill="none" stroke="#707070" d="M324.38,-345.37C354.88,-348.92 386.33,-352.57 414.83,-355.89"/>
 <polygon fill="#707070" stroke="#707070" points="414.45,-359.37 424.78,-357.04 415.25,-352.41 414.45,-359.37"/>

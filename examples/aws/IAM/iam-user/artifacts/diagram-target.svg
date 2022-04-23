@@ -19,15 +19,15 @@
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_aws_</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="48,-54 48,-137 147,-137 147,-54 48,-54"/>
-<text text-anchor="start" x="97.36" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="40,-54 40,-137 156,-137 156,-54 40,-54"/>
+<text text-anchor="start" x="97.86" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
 <!-- User::my&#45;user -->
 <g id="node1" class="node">
 <title>User::my&#45;user</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="139,-129 56,-129 56,-71 139,-71 139,-129"/>
-<text text-anchor="start" x="68.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">User</text>
-<text text-anchor="start" x="68.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;user</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="148,-129 48,-129 48,-71 148,-71 148,-129"/>
+<text text-anchor="start" x="60" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::User</text>
+<text text-anchor="start" x="60" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;user</text>
 </g>
 </g>
 </svg>

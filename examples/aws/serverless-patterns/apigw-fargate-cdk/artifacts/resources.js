@@ -277,8 +277,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
     properties: ({}) => ({
+      GroupName:
+        "CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
       Description:
         "Automatically created Security Group for ELB CdkStackMyFargateServiceLBE7D87832",
     }),
@@ -289,8 +290,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
     properties: ({}) => ({
+      GroupName: "CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
       Description: "CdkStack/MyFargateService/Service/SecurityGroup",
     }),
     dependencies: () => ({
@@ -315,7 +316,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
     }),
   },
   {
@@ -330,9 +331,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
       securityGroupFrom: [
-        "CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
       ],
     }),
   },
@@ -348,9 +349,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
       securityGroupFrom: [
-        "CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
       ],
     }),
   },
@@ -514,7 +515,7 @@ exports.createResources = () => [
         "CdkStack/MyVpc/PrivateSubnet2",
       ],
       securityGroups: [
-        "CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
       ],
       targetGroups: ["CdkSt-MyFar-JZPHMT1E0V5K"],
     }),
@@ -534,7 +535,7 @@ exports.createResources = () => [
         "CdkStack/MyVpc/PrivateSubnet2",
       ],
       securityGroups: [
-        "CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
+        "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
       ],
     }),
   },

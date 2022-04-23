@@ -90,8 +90,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "security-group",
     properties: ({}) => ({
+      GroupName: "security-group",
       Description: "Managed By GruCloud",
     }),
     dependencies: () => ({
@@ -119,7 +119,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "security-group",
+      securityGroup: "sg::vpc-postgres::security-group",
     }),
   },
   {
@@ -191,7 +191,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       dbSubnetGroup: "subnet-group-postgres",
-      securityGroups: ["security-group"],
+      securityGroups: ["sg::vpc-postgres::security-group"],
     }),
   },
 ];

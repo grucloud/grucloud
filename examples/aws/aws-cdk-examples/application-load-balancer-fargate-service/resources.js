@@ -278,8 +278,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
     properties: ({}) => ({
+      GroupName:
+        "ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
       Description:
         "Automatically created Security Group for ELB ECSServiceStackamazonecssampleLB36F3E7CB",
     }),
@@ -290,8 +291,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
     properties: ({}) => ({
+      GroupName:
+        "ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
       Description: "ECSServiceStack/amazon-ecs-sample/Service/SecurityGroup",
     }),
     dependencies: () => ({
@@ -316,7 +318,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
     }),
   },
   {
@@ -331,9 +333,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
       securityGroupFrom: [
-        "ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
       ],
     }),
   },
@@ -349,9 +351,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
       securityGroupFrom: [
-        "ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
       ],
     }),
   },
@@ -504,7 +506,7 @@ exports.createResources = () => [
         "ECSServiceStack/SkeletonVpc/applicationSubnet2",
       ],
       securityGroups: [
-        "ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
       ],
       targetGroups: ["ECSSe-amazo-319L9ODON698"],
     }),
@@ -524,7 +526,7 @@ exports.createResources = () => [
         "ECSServiceStack/SkeletonVpc/publicSubnet2",
       ],
       securityGroups: [
-        "ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
       ],
     }),
   },
@@ -558,7 +560,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "ECSServiceStack-amazonecssampleTaskDefExecutionRol-J2QX8M2WSOJS",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -578,9 +580,11 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-                Resource: `arn:aws:logs:${
-                  config.region
-                }:${config.accountId()}:log-group:ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-gsrOrJO5GcFM:*`,
+                Resource: `${getId({
+                  type: "LogGroup",
+                  group: "CloudWatchLogs",
+                  name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-gsrOrJO5GcFM",
+                })}:*`,
                 Effect: "Allow",
               },
             ],

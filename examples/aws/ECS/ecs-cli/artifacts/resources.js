@@ -39,7 +39,7 @@ exports.createResources = () => [
       instanceProfile:
         "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-1V2DBJVUCN7IT",
       securityGroups: [
-        "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
+        "sg::Vpc::amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
       ],
     }),
   },
@@ -156,8 +156,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
     properties: ({}) => ({
+      GroupName:
+        "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
       Description: "ECS Allowed Ports",
       Tags: [
         {
@@ -187,7 +188,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
+        "sg::Vpc::amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
     }),
   },
   {

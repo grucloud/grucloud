@@ -84,8 +84,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "security-group",
     properties: ({}) => ({
+      GroupName: "security-group",
       Description: "Managed By GruCloud",
     }),
     dependencies: () => ({
@@ -97,9 +97,8 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "icmp",
         FromPort: -1,
-        ToPort: -1,
+        IpProtocol: "icmp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -110,10 +109,11 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: -1,
       },
     }),
     dependencies: () => ({
-      securityGroup: "security-group",
+      securityGroup: "sg::vpc-ec2-example::security-group",
     }),
   },
   {
@@ -121,9 +121,8 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 22,
-        ToPort: 22,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
@@ -134,10 +133,11 @@ exports.createResources = () => [
             CidrIpv6: "::/0",
           },
         ],
+        ToPort: 22,
       },
     }),
     dependencies: () => ({
-      securityGroup: "security-group",
+      securityGroup: "sg::vpc-ec2-example::security-group",
     }),
   },
   { type: "ElasticIpAddress", group: "EC2", name: "myip" },
@@ -158,7 +158,7 @@ exports.createResources = () => [
       subnet: "subnet",
       keyPair: "kp-ec2-vpc",
       eip: "myip",
-      securityGroups: ["security-group"],
+      securityGroups: ["sg::vpc-ec2-example::security-group"],
     }),
   },
 ];

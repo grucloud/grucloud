@@ -49,6 +49,7 @@ exports.createResources = () => [
                 ],
               },
               provisionVMAgent: true,
+              enableVMAgentPlatformUpdates: false,
             },
             allowExtensionOperations: true,
             adminPassword:

@@ -280,39 +280,6 @@ exports.createResources = () => [
     name: "taEmailNotificationTopic",
     properties: ({ config, getId }) => ({
       Attributes: {
-        Policy: {
-          Version: "2008-10-17",
-          Id: "__default_policy_ID",
-          Statement: [
-            {
-              Sid: "__default_statement_ID",
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
-              Action: [
-                "SNS:GetTopicAttributes",
-                "SNS:SetTopicAttributes",
-                "SNS:AddPermission",
-                "SNS:RemovePermission",
-                "SNS:DeleteTopic",
-                "SNS:Subscribe",
-                "SNS:ListSubscriptionsByTopic",
-                "SNS:Publish",
-              ],
-              Resource: `${getId({
-                type: "Topic",
-                group: "SNS",
-                name: "taEmailNotificationTopic",
-              })}`,
-              Condition: {
-                StringEquals: {
-                  "AWS:SourceOwner": `${config.accountId()}`,
-                },
-              },
-            },
-          ],
-        },
         DisplayName: "taEmailNotificationTopic",
         DeliveryPolicy: {
           http: {

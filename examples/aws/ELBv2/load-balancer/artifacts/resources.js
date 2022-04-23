@@ -120,7 +120,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "sg-default-vpc",
     isDefault: true,
     dependencies: () => ({
       vpc: "vpc",
@@ -154,7 +153,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       subnets: ["subnet-a", "subnet-b"],
-      securityGroups: ["sg-default-vpc"],
+      securityGroups: ["sg::vpc::default"],
     }),
   },
   {

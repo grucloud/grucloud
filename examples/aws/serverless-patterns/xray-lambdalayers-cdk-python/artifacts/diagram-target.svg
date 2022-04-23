@@ -26,80 +26,80 @@
 <g id="node1" class="node">
 <title>LogGroup::/aws/lambda/LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;1XcDZ1JQT7M7</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="336,-357 24,-357 24,-299 336,-299 336,-357"/>
-<text text-anchor="start" x="36" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">LogGroup</text>
+<text text-anchor="start" x="36" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
 <text text-anchor="start" x="36" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">/aws/lambda/LambdaLayerXRayStack...</text>
 </g>
-<!-- Role::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;L16QD0UXFZOK -->
+<!-- Role::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;LMJ0SRM09GES -->
 <g id="node2" class="node">
-<title>Role::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;L16QD0UXFZOK</title>
+<title>Role::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;LMJ0SRM09GES</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="684,-281 372,-281 372,-223 684,-223 684,-281"/>
-<text text-anchor="start" x="384" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="384" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="384" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">LambdaLayerXRayStackStack&#45;Bucket...</text>
 </g>
-<!-- Role::LambdaLayerXRayStackStack&#45;Lambdarole1548FC71&#45;4BIZWD58MRGT -->
+<!-- Role::LambdaLayerXRayStackStack&#45;Lambdarole1548FC71&#45;15YPKGUKW0B06 -->
 <g id="node3" class="node">
-<title>Role::LambdaLayerXRayStackStack&#45;Lambdarole1548FC71&#45;4BIZWD58MRGT</title>
+<title>Role::LambdaLayerXRayStackStack&#45;Lambdarole1548FC71&#45;15YPKGUKW0B06</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1041,-167 720,-167 720,-109 1041,-109 1041,-167"/>
-<text text-anchor="start" x="732.5" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="732.5" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="732.5" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">LambdaLayerXRayStackStack&#45;Lambda...</text>
 </g>
 <!-- Layer::xraylayerF67027DB -->
 <g id="node4" class="node">
 <title>Layer::xraylayerF67027DB</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="964,-243 797,-243 797,-185 964,-185 964,-243"/>
-<text text-anchor="start" x="809.5" y="-223.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Layer</text>
+<text text-anchor="start" x="809.5" y="-223.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::Layer</text>
 <text text-anchor="start" x="809.5" y="-198.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">xraylayerF67027DB</text>
 </g>
 <!-- Function::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;1XcDZ1JQT7M7 -->
 <g id="node5" class="node">
 <title>Function::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;1XcDZ1JQT7M7</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="336,-281 24,-281 24,-223 336,-223 336,-281"/>
-<text text-anchor="start" x="36" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Function</text>
+<text text-anchor="start" x="36" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::Function</text>
 <text text-anchor="start" x="36" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">LambdaLayerXRayStackStack&#45;Bucket...</text>
 </g>
-<!-- Function::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;1XcDZ1JQT7M7&#45;&gt;Role::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;L16QD0UXFZOK -->
+<!-- Function::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;1XcDZ1JQT7M7&#45;&gt;Role::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;LMJ0SRM09GES -->
 <g id="edge1" class="edge">
-<title>Function::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;1XcDZ1JQT7M7&#45;&gt;Role::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;L16QD0UXFZOK</title>
+<title>Function::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;1XcDZ1JQT7M7&#45;&gt;Role::LambdaLayerXRayStackStack&#45;BucketNotificationsHandl&#45;LMJ0SRM09GES</title>
 <path fill="none" stroke="#707070" d="M336.04,-252C344.56,-252 353.15,-252 361.72,-252"/>
 <polygon fill="#707070" stroke="#707070" points="361.75,-255.5 371.75,-252 361.75,-248.5 361.75,-255.5"/>
 </g>
 <!-- Function::xray&#45;handler -->
 <g id="node6" class="node">
 <title>Function::xray&#45;handler</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="585.5,-205 470.5,-205 470.5,-147 585.5,-147 585.5,-205"/>
-<text text-anchor="start" x="483" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Function</text>
-<text text-anchor="start" x="483" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">xray&#45;handler</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="610,-205 446,-205 446,-147 610,-147 610,-205"/>
+<text text-anchor="start" x="458" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::Function</text>
+<text text-anchor="start" x="458" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">xray&#45;handler</text>
 </g>
-<!-- Function::xray&#45;handler&#45;&gt;Role::LambdaLayerXRayStackStack&#45;Lambdarole1548FC71&#45;4BIZWD58MRGT -->
+<!-- Function::xray&#45;handler&#45;&gt;Role::LambdaLayerXRayStackStack&#45;Lambdarole1548FC71&#45;15YPKGUKW0B06 -->
 <g id="edge3" class="edge">
-<title>Function::xray&#45;handler&#45;&gt;Role::LambdaLayerXRayStackStack&#45;Lambdarole1548FC71&#45;4BIZWD58MRGT</title>
-<path fill="none" stroke="#707070" d="M585.7,-169.85C619.75,-166.16 665.03,-161.25 709.82,-156.4"/>
-<polygon fill="#707070" stroke="#707070" points="710.41,-159.85 719.97,-155.3 709.65,-152.89 710.41,-159.85"/>
+<title>Function::xray&#45;handler&#45;&gt;Role::LambdaLayerXRayStackStack&#45;Lambdarole1548FC71&#45;15YPKGUKW0B06</title>
+<path fill="none" stroke="#707070" d="M610.29,-167.19C640.02,-163.96 674.86,-160.19 709.44,-156.44"/>
+<polygon fill="#707070" stroke="#707070" points="710.1,-159.89 719.67,-155.33 709.35,-152.93 710.1,-159.89"/>
 </g>
 <!-- Function::xray&#45;handler&#45;&gt;Layer::xraylayerF67027DB -->
 <g id="edge2" class="edge">
 <title>Function::xray&#45;handler&#45;&gt;Layer::xraylayerF67027DB</title>
-<path fill="none" stroke="#707070" d="M585.7,-182.15C639.96,-188.03 722.75,-197.01 786.63,-203.93"/>
-<polygon fill="#707070" stroke="#707070" points="786.39,-207.43 796.71,-205.02 787.15,-200.47 786.39,-207.43"/>
+<path fill="none" stroke="#707070" d="M610.29,-184.81C663.03,-190.53 731.88,-198 786.75,-203.94"/>
+<polygon fill="#707070" stroke="#707070" points="786.51,-207.44 796.82,-205.04 787.26,-200.48 786.51,-207.44"/>
 </g>
 <!-- Bucket::paperino&#45;thumbnail&#45;upload&#45;372 -->
 <g id="node7" class="node">
 <title>Bucket::paperino&#45;thumbnail&#45;upload&#45;372</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="305,-205 55,-205 55,-147 305,-147 305,-205"/>
-<text text-anchor="start" x="67" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="67" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Bucket</text>
 <text text-anchor="start" x="67" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">paperino&#45;thumbnail&#45;upload&#45;372</text>
 </g>
 <!-- Bucket::paperino&#45;thumbnail&#45;upload&#45;372&#45;&gt;Function::xray&#45;handler -->
 <g id="edge4" class="edge">
 <title>Bucket::paperino&#45;thumbnail&#45;upload&#45;372&#45;&gt;Function::xray&#45;handler</title>
-<path fill="none" stroke="#707070" d="M305.43,-176C357.62,-176 416.23,-176 460.06,-176"/>
-<polygon fill="#707070" stroke="#707070" points="460.3,-179.5 470.3,-176 460.3,-172.5 460.3,-179.5"/>
+<path fill="none" stroke="#707070" d="M305.43,-176C348.47,-176 395.87,-176 435.75,-176"/>
+<polygon fill="#707070" stroke="#707070" points="435.99,-179.5 445.99,-176 435.99,-172.5 435.99,-179.5"/>
 </g>
 <!-- Bucket::paperino&#45;thumbnail&#45;upload&#45;372&#45;resized -->
 <g id="node8" class="node">
 <title>Bucket::paperino&#45;thumbnail&#45;upload&#45;372&#45;resized</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="321.5,-129 38.5,-129 38.5,-71 321.5,-71 321.5,-129"/>
-<text text-anchor="start" x="51" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="51" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Bucket</text>
 <text text-anchor="start" x="51" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">paperino&#45;thumbnail&#45;upload&#45;372&#45;re...</text>
 </g>
 </g>

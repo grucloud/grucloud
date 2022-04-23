@@ -26,7 +26,7 @@
 <g id="node1" class="node">
 <title>Instance::web&#45;server&#45;ec2&#45;simple</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="252.5,-129 64.5,-129 64.5,-71 252.5,-71 252.5,-129"/>
-<text text-anchor="start" x="76.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Instance</text>
+<text text-anchor="start" x="76.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Instance</text>
 <text text-anchor="start" x="76.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">web&#45;server&#45;ec2&#45;simple</text>
 </g>
 </g>

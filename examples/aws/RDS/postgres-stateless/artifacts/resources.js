@@ -8,6 +8,14 @@ exports.createResources = () => [
     group: "CloudWatchLogs",
     name: "/aws/rds/cluster/cluster-postgres-stateless/postgresql",
   },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "RDSOSMetrics",
+    properties: ({}) => ({
+      retentionInDays: 30,
+    }),
+  },
   { type: "KeyPair", group: "EC2", name: "kp-postgres-stateless" },
   {
     type: "Vpc",
@@ -174,8 +182,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "security-group-postgres",
     properties: ({}) => ({
+      GroupName: "security-group-postgres",
       Description: "Managed By GruCloud",
     }),
     dependencies: () => ({
@@ -185,8 +193,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "security-group-public",
     properties: ({}) => ({
+      GroupName: "security-group-public",
       Description: "Managed By GruCloud",
     }),
     dependencies: () => ({
@@ -214,8 +222,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "security-group-postgres",
-      securityGroupFrom: ["security-group-public"],
+      securityGroup: "sg::vpc::security-group-postgres",
+      securityGroupFrom: ["sg::vpc::security-group-public"],
     }),
   },
   {
@@ -239,7 +247,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "security-group-public",
+      securityGroup: "sg::vpc::security-group-public",
     }),
   },
   { type: "ElasticIpAddress", group: "EC2", name: "eip-bastion" },
@@ -259,7 +267,7 @@ exports.createResources = () => [
       subnet: "subnet-public-a",
       keyPair: "kp-postgres-stateless",
       eip: "eip-bastion",
-      securityGroups: ["security-group-public"],
+      securityGroups: ["sg::vpc::security-group-public"],
     }),
   },
   {
@@ -308,7 +316,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       dbSubnetGroup: "subnet-group-postgres-stateless",
-      securityGroups: ["security-group-postgres"],
+      securityGroups: ["sg::vpc::security-group-postgres"],
     }),
   },
 ];

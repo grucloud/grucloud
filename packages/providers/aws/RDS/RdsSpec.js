@@ -205,6 +205,7 @@ module.exports = pipe([
             "HttpEndpointEnabled",
             "DeletionProtection",
             "BackupRetentionPeriod",
+            "MasterUsername",
           ]), //TODO kludge: updating HttpEndpointEnabled does not work
         filterTarget: () =>
           pipe([

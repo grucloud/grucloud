@@ -91,37 +91,6 @@ exports.createResources = () => [
     name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
     properties: ({ config, getId }) => ({
       Attributes: {
-        Policy: {
-          Version: "2008-10-17",
-          Id: "__default_policy_ID",
-          Statement: [
-            {
-              Sid: "__default_statement_ID",
-              Effect: "Allow",
-              Principal: {
-                AWS: "*",
-              },
-              Action: [
-                "SNS:GetTopicAttributes",
-                "SNS:SetTopicAttributes",
-                "SNS:AddPermission",
-                "SNS:RemovePermission",
-                "SNS:DeleteTopic",
-                "SNS:Subscribe",
-                "SNS:ListSubscriptionsByTopic",
-                "SNS:Publish",
-              ],
-              Resource: `arn:aws:sns:${
-                config.region
-              }:${config.accountId()}:sam-app-StateMachineSNSTopic-C6WGCI64MKY2`,
-              Condition: {
-                StringEquals: {
-                  "AWS:SourceOwner": `${config.accountId()}`,
-                },
-              },
-            },
-          ],
-        },
         DisplayName: "",
         DeliveryPolicy: {
           http: {

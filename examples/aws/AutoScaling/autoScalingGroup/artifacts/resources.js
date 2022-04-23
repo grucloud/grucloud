@@ -60,8 +60,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "EcsSecurityGroup",
     properties: ({}) => ({
+      GroupName: "EcsSecurityGroup",
       Description: "Managed By GruCloud",
     }),
     dependencies: () => ({
@@ -84,7 +84,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "EcsSecurityGroup",
+      securityGroup: "sg::Vpc::EcsSecurityGroup",
     }),
   },
   {

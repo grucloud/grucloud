@@ -19,15 +19,15 @@
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_aws_</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="107.5,-54 107.5,-137 205.5,-137 205.5,-54 107.5,-54"/>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="98.5,-54 98.5,-137 214.5,-137 214.5,-54 98.5,-54"/>
 <text text-anchor="start" x="156.36" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
 <!-- Key::key&#45;test -->
 <g id="node1" class="node">
 <title>Key::key&#45;test</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="197.5,-129 115.5,-129 115.5,-71 197.5,-71 197.5,-129"/>
-<text text-anchor="start" x="127.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Key</text>
-<text text-anchor="start" x="127.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">key&#45;test</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="206.5,-129 106.5,-129 106.5,-71 206.5,-71 206.5,-129"/>
+<text text-anchor="start" x="118.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">KMS::Key</text>
+<text text-anchor="start" x="118.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">key&#45;test</text>
 </g>
 </g>
 </svg>

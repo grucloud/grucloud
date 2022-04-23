@@ -15,8 +15,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "ClusterSharedNode",
     properties: ({}) => ({
+      GroupName: "ClusterSharedNode",
       Description: "Communication between all nodes in the cluster",
     }),
     dependencies: () => ({
@@ -26,8 +26,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "eks-cluster-sg-my-cluster",
     properties: ({}) => ({
+      GroupName: "eks-cluster-sg-my-cluster",
       Description:
         "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
       Tags: [
@@ -50,8 +50,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "ClusterSharedNode",
-      securityGroupFrom: ["eks-cluster-sg-my-cluster"],
+      securityGroup: "sg::VPC::ClusterSharedNode",
+      securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster"],
     }),
   },
 ];

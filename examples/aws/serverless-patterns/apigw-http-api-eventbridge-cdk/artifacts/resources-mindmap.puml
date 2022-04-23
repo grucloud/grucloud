@@ -16,7 +16,5 @@ skinparam monochrome true
 +++ CloudWatchLogs
 ++++ LogGroup (1)
 +++ IAM
-++++ Role (2)
-+++ Lambda
-++++ Function (1)
+++++ Role (1)
 @endmindmap

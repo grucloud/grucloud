@@ -13,7 +13,7 @@ const {
   eq,
   fork,
 } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { defaultsDeep, when, includes } = require("rubico/x");
 
 const AdmZip = require("adm-zip");
 const path = require("path");
@@ -112,6 +112,14 @@ module.exports = pipe([
       Client: Function,
       compare: compareFunction,
       displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
+      ignoreResource: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          get("name"),
+          includes("AWSCDK"),
+        ]),
       omitProperties: [
         "Code",
         "Configuration.CodeSha256",

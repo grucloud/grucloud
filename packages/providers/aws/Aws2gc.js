@@ -37,7 +37,7 @@ const ignoredTags = [
   "AmazonECSManaged",
 ];
 
-const { removeOurTags } = require("@grucloud/core/Common");
+const { removeOurTags, omitIfEmpty } = require("@grucloud/core/Common");
 
 const {
   generatorMain,
@@ -248,7 +248,8 @@ const removeTagsArray = ({ tagsKey, key }) =>
             )
           ),
         ]),
-      })
+      }),
+      omitIfEmpty([tagsKey])
     ),
   ]);
 
@@ -275,6 +276,7 @@ const filterModel = pipe([
         get("live"),
         removeOurTags,
         removeTagsArray({ tagsKey: "Tags", key: "Key" }),
+        removeTagsArray({ tagsKey: "TagsList", key: "Key" }),
         removeTagsArray({ tagsKey: "tags", key: "key" }),
       ]),
     })

@@ -12,7 +12,7 @@ exports.createResources = () => [
     dependencies: () => ({
       keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
-      securityGroups: ["EcsSecurityGroup"],
+      securityGroups: ["sg::Vpc::EcsSecurityGroup"],
     }),
   },
 ];

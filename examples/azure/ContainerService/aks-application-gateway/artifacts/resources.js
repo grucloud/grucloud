@@ -77,9 +77,7 @@ exports.createResources = () => [
           },
         },
         disableLocalAccounts: false,
-        servicePrincipalProfile: {
-          clientId: "msi",
-        },
+        servicePrincipalProfile: {},
       },
     }),
     dependencies: () => ({

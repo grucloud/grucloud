@@ -3,6 +3,8 @@ title Resources for project http-lambda
 skinparam monochrome true
 + Infra
 ++ aws
++++ ACM
+++++ Certificate (1)
 +++ ApiGatewayV2
 ++++ DomainName (1)
 ++++ Api (1)
@@ -11,10 +13,8 @@ skinparam monochrome true
 ++++ Integration (1)
 ++++ Route (1)
 ++++ Deployment (1)
-+++ ACM
-++++ Certificate (1)
 +++ CloudWatchLogs
-++++ LogGroup (1)
+++++ LogGroup (3)
 +++ IAM
 ++++ Role (1)
 ++++ Policy (1)

@@ -182,7 +182,12 @@ const getIpPermissions =
       filter(
         eq(
           ({ dependencies }) =>
-            pipe([dependencies, get("securityGroup.name")])(),
+            pipe([
+              dependencies,
+              get("securityGroup.name"),
+              callProp("split", "::"),
+              last,
+            ])(),
           GroupName
         )
       ),
@@ -552,7 +557,14 @@ module.exports = pipe([
           ]),
         filterAll: () => pipe([omit(["VpcId", "OwnerId", "GroupId"])]),
       }),
-      filterLive: () => pick(["Description"]),
+      filterLive: () => pick(["GroupName", "Description"]),
+      inferName: ({ properties, dependenciesSpec: { vpc } }) =>
+        pipe([
+          tap(() => {
+            assert(vpc);
+          }),
+          () => `sg::${vpc}::${properties.GroupName || "default"}`,
+        ])(),
       dependencies: {
         vpc: { type: "Vpc", group: "EC2" },
         subnet: { type: "Subnet", group: "EC2" },

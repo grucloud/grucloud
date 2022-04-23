@@ -26,21 +26,21 @@
 <g id="node1" class="node">
 <title>LogGroup::/aws/rds/cluster/aurora&#45;serverless/error</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="289,-338 24,-338 24,-280 289,-280 289,-338"/>
-<text text-anchor="start" x="36.5" y="-318.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">LogGroup</text>
+<text text-anchor="start" x="36.5" y="-318.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
 <text text-anchor="start" x="36.5" y="-293.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">/aws/rds/cluster/aurora&#45;serverle...</text>
 </g>
 <!-- Vpc::Vpc8378EB38 -->
 <g id="node2" class="node">
 <title>Vpc::Vpc8378EB38</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1123,-243 996,-243 996,-185 1123,-185 1123,-243"/>
-<text text-anchor="start" x="1008.5" y="-223.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Vpc</text>
+<text text-anchor="start" x="1008.5" y="-223.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
 <text text-anchor="start" x="1008.5" y="-198.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Vpc8378EB38</text>
 </g>
 <!-- Subnet::VpcauroraisolatedSubnet1Subnet5370B90B -->
 <g id="node3" class="node">
 <title>Subnet::VpcauroraisolatedSubnet1Subnet5370B90B</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="958.5,-281 660.5,-281 660.5,-223 958.5,-223 958.5,-281"/>
-<text text-anchor="start" x="672.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Subnet</text>
+<text text-anchor="start" x="672.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
 <text text-anchor="start" x="672.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">VpcauroraisolatedSubnet1Subnet53...</text>
 </g>
 <!-- Subnet::VpcauroraisolatedSubnet1Subnet5370B90B&#45;&gt;Vpc::Vpc8378EB38 -->
@@ -53,7 +53,7 @@
 <g id="node4" class="node">
 <title>Subnet::VpcauroraisolatedSubnet2SubnetCB56E2A8</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="960,-205 659,-205 659,-147 960,-147 960,-205"/>
-<text text-anchor="start" x="671.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Subnet</text>
+<text text-anchor="start" x="671.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
 <text text-anchor="start" x="671.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">VpcauroraisolatedSubnet2SubnetCB...</text>
 </g>
 <!-- Subnet::VpcauroraisolatedSubnet2SubnetCB56E2A8&#45;&gt;Vpc::Vpc8378EB38 -->
@@ -66,7 +66,7 @@
 <g id="node5" class="node">
 <title>RouteTable::VpcauroraisolatedSubnet1RouteTableA8F6E99C</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="958.5,-357 660.5,-357 660.5,-299 958.5,-299 958.5,-357"/>
-<text text-anchor="start" x="672.5" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RouteTable</text>
+<text text-anchor="start" x="672.5" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
 <text text-anchor="start" x="672.5" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">VpcauroraisolatedSubnet1RouteTab...</text>
 </g>
 <!-- RouteTable::VpcauroraisolatedSubnet1RouteTableA8F6E99C&#45;&gt;Vpc::Vpc8378EB38 -->
@@ -79,7 +79,7 @@
 <g id="node6" class="node">
 <title>RouteTable::VpcauroraisolatedSubnet2RouteTableBF363B67</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="958.5,-129 660.5,-129 660.5,-71 958.5,-71 958.5,-129"/>
-<text text-anchor="start" x="672.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RouteTable</text>
+<text text-anchor="start" x="672.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
 <text text-anchor="start" x="672.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">VpcauroraisolatedSubnet2RouteTab...</text>
 </g>
 <!-- RouteTable::VpcauroraisolatedSubnet2RouteTableBF363B67&#45;&gt;Vpc::Vpc8378EB38 -->
@@ -92,7 +92,7 @@
 <g id="node7" class="node">
 <title>RouteTableAssociation::rt&#45;assoc::VpcauroraisolatedSubnet1RouteTableA8F6E99C::VpcauroraisolatedSubnet1Subnet5370B90B</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="615,-357 333,-357 333,-299 615,-299 615,-357"/>
-<text text-anchor="start" x="345" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RouteTableAssociation</text>
+<text text-anchor="start" x="345" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
 <text text-anchor="start" x="345" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::VpcauroraisolatedSubne...</text>
 </g>
 <!-- RouteTableAssociation::rt&#45;assoc::VpcauroraisolatedSubnet1RouteTableA8F6E99C::VpcauroraisolatedSubnet1Subnet5370B90B&#45;&gt;Subnet::VpcauroraisolatedSubnet1Subnet5370B90B -->
@@ -111,7 +111,7 @@
 <g id="node8" class="node">
 <title>RouteTableAssociation::rt&#45;assoc::VpcauroraisolatedSubnet2RouteTableBF363B67::VpcauroraisolatedSubnet2SubnetCB56E2A8</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="615,-129 333,-129 333,-71 615,-71 615,-129"/>
-<text text-anchor="start" x="345" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RouteTableAssociation</text>
+<text text-anchor="start" x="345" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
 <text text-anchor="start" x="345" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::VpcauroraisolatedSubne...</text>
 </g>
 <!-- RouteTableAssociation::rt&#45;assoc::VpcauroraisolatedSubnet2RouteTableBF363B67::VpcauroraisolatedSubnet2SubnetCB56E2A8&#45;&gt;Subnet::VpcauroraisolatedSubnet2SubnetCB56E2A8 -->
@@ -130,7 +130,7 @@
 <g id="node9" class="node">
 <title>DBSubnetGroup::aurora&#45;serverless&#45;subnet&#45;group</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="599.5,-281 348.5,-281 348.5,-223 599.5,-223 599.5,-281"/>
-<text text-anchor="start" x="361" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">DBSubnetGroup</text>
+<text text-anchor="start" x="361" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RDS::DBSubnetGroup</text>
 <text text-anchor="start" x="361" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">aurora&#45;serverless&#45;subnet&#45;group</text>
 </g>
 <!-- DBSubnetGroup::aurora&#45;serverless&#45;subnet&#45;group&#45;&gt;Subnet::VpcauroraisolatedSubnet1Subnet5370B90B -->
@@ -149,7 +149,7 @@
 <g id="node10" class="node">
 <title>DBCluster::aurora&#45;serverless</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="232,-224 81,-224 81,-166 232,-166 232,-224"/>
-<text text-anchor="start" x="93.5" y="-204.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">DBCluster</text>
+<text text-anchor="start" x="93.5" y="-204.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RDS::DBCluster</text>
 <text text-anchor="start" x="93.5" y="-179.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">aurora&#45;serverless</text>
 </g>
 <!-- DBCluster::aurora&#45;serverless&#45;&gt;DBSubnetGroup::aurora&#45;serverless&#45;subnet&#45;group -->
@@ -162,7 +162,7 @@
 <g id="node11" class="node">
 <title>Secret::demordsservice&#45;demostage&#45;credentials</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="623,-205 325,-205 325,-147 623,-147 623,-205"/>
-<text text-anchor="start" x="337" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Secret</text>
+<text text-anchor="start" x="337" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SecretsManager::Secret</text>
 <text text-anchor="start" x="337" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">demordsservice&#45;demostage&#45;credent...</text>
 </g>
 <!-- DBCluster::aurora&#45;serverless&#45;&gt;Secret::demordsservice&#45;demostage&#45;credentials -->

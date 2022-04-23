@@ -1,0 +1,22 @@
+@startmindmap
+title Resources for project aurora-v2
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ Vpc (3)
+++++ InternetGateway (3)
+++++ Subnet (18)
+++++ RouteTable (3)
+++++ Route (3)
+++++ SecurityGroup (2)
+++++ SecurityGroupRuleIngress (2)
++++ IAM
+++++ Role (1)
++++ RDS
+++++ DBSubnetGroup (3)
+++++ DBCluster (1)
+++++ DBInstance (1)
+@endmindmap

@@ -29,7 +29,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "EcsSecurityGroup",
+      securityGroup: "sg::Vpc::EcsSecurityGroup",
     }),
   },
 ];

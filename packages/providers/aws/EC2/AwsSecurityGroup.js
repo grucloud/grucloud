@@ -11,6 +11,7 @@ const {
   not,
   omit,
   fork,
+  switchCase,
 } = require("rubico");
 const {
   find,
@@ -18,12 +19,13 @@ const {
   pluck,
   flatten,
   isEmpty,
-  identity,
-  when,
+  append,
   prepend,
   first,
   unless,
   differenceWith,
+  callProp,
+  last,
 } = require("rubico/x");
 const {
   buildTags,
@@ -50,32 +52,25 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     pipe([
       tap(() => {
         assert(lives);
+        assert(live.GroupName);
       }),
-      () => live,
-      get("GroupName"),
-      when(
-        eq(identity, "default"),
-        pipe([
-          () =>
-            lives.getById({
-              id: live.VpcId,
-              type: "Vpc",
-              group: "EC2",
-              providerName,
-            }),
-          tap((vpc) => {
-            assert(vpc);
-          }),
-          get("name"),
-          tap((vpcName) => {
-            assert(vpcName);
-          }),
-          prepend("sg-default-"),
-        ])
-      ),
-      tap((name) => {
-        assert(name);
+      () =>
+        lives.getById({
+          id: live.VpcId,
+          type: "Vpc",
+          group: "EC2",
+          providerName,
+        }),
+      tap((vpc) => {
+        assert(vpc);
       }),
+      get("name"),
+      tap((vpcName) => {
+        assert(vpcName);
+      }),
+      append("::"),
+      append(live.GroupName),
+      prepend("sg::"),
     ])();
 
   const findId = get("live.GroupId");
@@ -132,15 +127,38 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     getParam: "SecurityGroups",
   });
 
-  //TODO
-  const getByName = ({ name, dependencies }) =>
+  const extractGroupName = pipe([callProp("split", "::"), last]);
+
+  const getByName = ({ name, resolvedDependencies }) =>
     pipe([
-      () => ({
+      tap(() => {
+        assert(resolvedDependencies);
+      }),
+      fork({
+        groupName: pipe([() => name, extractGroupName]),
+        vpcId: pipe([
+          () => resolvedDependencies,
+          switchCase([
+            get("vpc"),
+            get("vpc.live.VpcId"),
+            get("securityGroup"),
+            get("securityGroup.live.VpcId"),
+          ]),
+        ]),
+      }),
+      tap(({ vpcId }) => {
+        assert(vpcId);
+      }),
+      ({ groupName, vpcId }) => ({
         params: {
           Filters: [
             {
               Name: "group-name",
-              Values: [name],
+              Values: [groupName],
+            },
+            {
+              Name: "vpc-id",
+              Values: [vpcId],
             },
           ],
         },
@@ -219,7 +237,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         ),
       ])();
 
-  const update = async ({ diff }) =>
+  const update = ({ diff }) =>
     pipe([
       () => diff,
       fork({

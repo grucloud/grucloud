@@ -4,6 +4,14 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Certificate",
+    group: "ACM",
+    name: "grucloud.org",
+    properties: ({}) => ({
+      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
+    }),
+  },
+  {
     type: "DomainName",
     group: "ApiGatewayV2",
     name: "grucloud.org",
@@ -90,14 +98,19 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Certificate",
-    group: "ACM",
-    name: "grucloud.org",
-    properties: ({}) => ({
-      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
-    }),
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "/aws/lambda/my-function",
   },
   { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "RDSOSMetrics",
+    properties: ({}) => ({
+      retentionInDays: 30,
+    }),
+  },
   {
     type: "Role",
     group: "IAM",
@@ -110,7 +123,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: "lambda.amazonaws.com",
+              Service: `lambda.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -132,7 +145,7 @@ exports.createResources = () => [
           {
             Action: ["logs:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
         ],
       },
@@ -144,14 +157,41 @@ exports.createResources = () => [
     type: "Function",
     group: "Lambda",
     name: "my-function",
-    properties: ({}) => ({
+    properties: ({ config, getId }) => ({
       Configuration: {
         Handler: "my-function.handler",
         Runtime: "nodejs14.x",
       },
+      Policy: {
+        Version: "2012-10-17",
+        Id: "default",
+        Statement: [
+          {
+            Sid: "lambda-f9a2e0dc-5300-469d-8bc9-25daea82056c",
+            Effect: "Allow",
+            Principal: {
+              Service: `apigateway.amazonaws.com`,
+            },
+            Action: "lambda:InvokeFunction",
+            Resource: `arn:aws:lambda:${
+              config.region
+            }:${config.accountId()}:function:my-function`,
+            Condition: {
+              ArnLike: {
+                "AWS:SourceArn": `${getId({
+                  type: "Api",
+                  group: "ApiGatewayV2",
+                  name: "my-api",
+                })}/*/*/my-function`,
+              },
+            },
+          },
+        ],
+      },
     }),
     dependencies: () => ({
       role: "lambda-role",
+      apiGatewayV2s: ["my-api"],
     }),
   },
   {

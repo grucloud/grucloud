@@ -7,15 +7,13 @@ exports.createResources = () => [
     type: "Bucket",
     group: "S3",
     name: "grucloud-s3-sns-test",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       NotificationConfiguration: {
         TopicConfigurations: [
           {
-            TopicArn: `${getId({
-              type: "Topic",
-              group: "SNS",
-              name: "sam-app-SNSTopic-15XRP2Y8B6PO1",
-            })}`,
+            TopicArn: `arn:aws:sns:${
+              config.region
+            }:${config.accountId()}:sam-app-SNSTopic-15XRP2Y8B6PO1`,
             Events: ["s3:ObjectCreated:*"],
           },
         ],
@@ -29,7 +27,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "sam-app-SNSTopic-15XRP2Y8B6PO1",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       Attributes: {
         Policy: {
           Version: "2012-10-17",
@@ -40,11 +38,9 @@ exports.createResources = () => [
                 Service: `s3.amazonaws.com`,
               },
               Action: "sns:Publish",
-              Resource: `${getId({
-                type: "Topic",
-                group: "SNS",
-                name: "sam-app-SNSTopic-15XRP2Y8B6PO1",
-              })}`,
+              Resource: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:sam-app-SNSTopic-15XRP2Y8B6PO1`,
               Condition: {
                 StringEquals: {
                   "aws:SourceAccount": `${config.accountId()}`,

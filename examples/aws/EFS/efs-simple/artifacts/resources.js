@@ -38,8 +38,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
     properties: ({}) => ({
+      GroupName: "sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
       Description: "EFS + Lambda on SAM Security Group",
     }),
     dependencies: () => ({
@@ -62,7 +62,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
+      securityGroup:
+        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
     }),
   },
   {
@@ -81,7 +82,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
+      securityGroup:
+        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
     }),
   },
   {
@@ -126,7 +128,9 @@ exports.createResources = () => [
     dependencies: () => ({
       fileSystem: "fs-0c95a09faadb73087",
       subnet: "EfsLambdaSubnetA",
-      securityGroups: ["sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY"],
+      securityGroups: [
+        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
+      ],
     }),
   },
   {
@@ -138,7 +142,9 @@ exports.createResources = () => [
     dependencies: () => ({
       fileSystem: "fs-0c95a09faadb73087",
       subnet: "EfsLambdaSubnetB",
-      securityGroups: ["sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY"],
+      securityGroups: [
+        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
+      ],
     }),
   },
   {
@@ -239,7 +245,9 @@ exports.createResources = () => [
     dependencies: () => ({
       role: "sam-app-HelloEfsFunctionRole-15LXBM09R2ILE",
       subnets: ["EfsLambdaSubnetA", "EfsLambdaSubnetB"],
-      securityGroups: ["sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY"],
+      securityGroups: [
+        "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
+      ],
       efsAccessPoint: ["fsap-0ef29121aa02af8f7"],
     }),
   },

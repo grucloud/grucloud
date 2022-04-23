@@ -16,8 +16,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "EcsSecurityGroup",
     properties: ({}) => ({
+      GroupName: "EcsSecurityGroup",
       Description: "Managed By GruCloud",
     }),
     dependencies: () => ({
@@ -29,18 +29,18 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 80,
-        ToPort: 80,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
           },
         ],
+        ToPort: 80,
       },
     }),
     dependencies: () => ({
-      securityGroup: "EcsSecurityGroup",
+      securityGroup: "sg::Vpc::EcsSecurityGroup",
     }),
   },
   {
@@ -56,7 +56,7 @@ exports.createResources = () => [
     dependencies: () => ({
       keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
-      securityGroups: ["EcsSecurityGroup"],
+      securityGroups: ["sg::Vpc::EcsSecurityGroup"],
     }),
   },
   {
@@ -64,14 +64,13 @@ exports.createResources = () => [
     group: "IAM",
     name: "role-ecs",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "ec2.amazonaws.com",
+              Service: `ec2.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -84,7 +83,12 @@ exports.createResources = () => [
     group: "IAM",
     name: "role-ecs",
     properties: ({}) => ({
-      Tags: [{ Key: "mykey", Value: "value" }],
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "value",
+        },
+      ],
     }),
     dependencies: () => ({
       roles: ["role-ecs"],

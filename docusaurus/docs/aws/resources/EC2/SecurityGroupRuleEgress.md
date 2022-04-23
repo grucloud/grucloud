@@ -15,7 +15,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroupRuleEgress",
     group: "EC2",
-    name: "sg-rule-cluster-egress",
     properties: ({}) => ({
       IpPermission: {
         IpProtocol: "tcp",
@@ -34,7 +33,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "security-group-cluster-test",
+      securityGroup: "sg::Vpc::security-group-cluster-test",
     }),
   },
 ];

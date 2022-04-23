@@ -105,7 +105,7 @@ module.exports = pipe([
       compare: compareEFS({
         filterAll: () => pipe([omit([])]),
       }),
-      filterLive: ({ providerConfig }) =>
+      filterLive: ({ providerConfig, lives }) =>
         pipe([
           assign({
             AvailabilityZoneName: pipe([

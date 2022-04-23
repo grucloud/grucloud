@@ -3,6 +3,8 @@ title Resources for project RDS Postgres
 skinparam monochrome true
 + Infra
 ++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
 +++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)

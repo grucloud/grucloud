@@ -104,6 +104,14 @@ exports.createResources = () => [
   },
   { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
   {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "RDSOSMetrics",
+    properties: ({}) => ({
+      retentionInDays: 30,
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     name: "lambda-role",
@@ -149,14 +157,41 @@ exports.createResources = () => [
     type: "Function",
     group: "Lambda",
     name: "my-function",
-    properties: ({}) => ({
+    properties: ({ config, getId }) => ({
       Configuration: {
         Handler: "my-function.handler",
         Runtime: "nodejs14.x",
       },
+      Policy: {
+        Version: "2012-10-17",
+        Id: "default",
+        Statement: [
+          {
+            Sid: "lambda-f9a2e0dc-5300-469d-8bc9-25daea82056c",
+            Effect: "Allow",
+            Principal: {
+              Service: `apigateway.amazonaws.com`,
+            },
+            Action: "lambda:InvokeFunction",
+            Resource: `arn:aws:lambda:${
+              config.region
+            }:${config.accountId()}:function:my-function`,
+            Condition: {
+              ArnLike: {
+                "AWS:SourceArn": `${getId({
+                  type: "Api",
+                  group: "ApiGatewayV2",
+                  name: "my-api",
+                })}/*/*/my-function`,
+              },
+            },
+          },
+        ],
+      },
     }),
     dependencies: () => ({
       role: "lambda-role",
+      apiGatewayV2s: ["my-api"],
     }),
   },
   {

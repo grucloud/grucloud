@@ -26,21 +26,21 @@
 <g id="node1" class="node">
 <title>Connection::MyZendeskConnection&#45;72YzHuvunzIi</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="333,-281 24,-281 24,-223 333,-223 333,-281"/>
-<text text-anchor="start" x="36.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Connection</text>
+<text text-anchor="start" x="36.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::Connection</text>
 <text text-anchor="start" x="36.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">MyZendeskConnection&#45;72YzHuvunzIi...</text>
 </g>
 <!-- EventBus::MyZendeskEventBus -->
 <g id="node2" class="node">
 <title>EventBus::MyZendeskEventBus</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="267.5,-205 89.5,-205 89.5,-147 267.5,-147 267.5,-205"/>
-<text text-anchor="start" x="101.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EventBus</text>
-<text text-anchor="start" x="101.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">MyZendeskEventBus</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="305,-205 52,-205 52,-147 305,-147 305,-205"/>
+<text text-anchor="start" x="64.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::EventBus</text>
+<text text-anchor="start" x="64.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">MyZendeskEventBus</text>
 </g>
 <!-- Queue::sam&#45;app&#45;MyDLQueue&#45;CW2qOFZz1Ml3 -->
 <g id="node3" class="node">
 <title>Queue::sam&#45;app&#45;MyDLQueue&#45;CW2qOFZz1Ml3</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="333,-129 24,-129 24,-71 333,-71 333,-129"/>
-<text text-anchor="start" x="36.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Queue</text>
+<text text-anchor="start" x="36.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SQS::Queue</text>
 <text text-anchor="start" x="36.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;MyDLQueue&#45;CW2qOFZz1Ml3</text>
 </g>
 </g>

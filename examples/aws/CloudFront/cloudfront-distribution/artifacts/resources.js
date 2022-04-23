@@ -160,7 +160,7 @@ exports.createResources = () => [
               )}`,
             },
             Action: "s3:GetObject",
-            Resource: `arn:aws:s3:::cloudfront-demo.grucloud.org/*`,
+            Resource: "arn:aws:s3:::cloudfront-demo.grucloud.org/*",
           },
         ],
       },

@@ -3,6 +3,8 @@ title Resources for project ApiGateway Auth0 Autorizer
 skinparam monochrome true
 + Infra
 ++ aws
++++ ACM
+++++ Certificate (1)
 +++ ApiGatewayV2
 ++++ DomainName (1)
 ++++ Api (1)
@@ -12,8 +14,6 @@ skinparam monochrome true
 ++++ Integration (1)
 ++++ Route (1)
 ++++ Deployment (1)
-+++ ACM
-++++ Certificate (1)
 +++ CloudWatchLogs
 ++++ LogGroup (1)
 +++ IAM

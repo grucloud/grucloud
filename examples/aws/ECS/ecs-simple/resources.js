@@ -44,7 +44,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       instanceProfile: "ecsInstanceRole",
-      securityGroups: ["EcsSecurityGroup"],
+      securityGroups: ["sg::Vpc::EcsSecurityGroup"],
     }),
   },
   {
@@ -127,8 +127,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "EcsSecurityGroup",
     properties: ({}) => ({
+      GroupName: "EcsSecurityGroup",
       Description: "Managed By GruCloud",
     }),
     dependencies: () => ({
@@ -151,7 +151,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "EcsSecurityGroup",
+      securityGroup: "sg::Vpc::EcsSecurityGroup",
     }),
   },
   {
@@ -290,7 +290,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: "ec2.amazonaws.com",
+              Service: `ec2.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },

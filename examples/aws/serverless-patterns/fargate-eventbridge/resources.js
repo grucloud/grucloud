@@ -205,8 +205,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
     properties: ({}) => ({
+      GroupName: "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
       Description:
         "Automatically created Security Group for ELB CdkStackFargateServiceLB29CE988E",
     }),
@@ -217,8 +217,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
     properties: ({}) => ({
+      GroupName: "CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
       Description: "CdkStack/FargateService/Service/SecurityGroup",
     }),
     dependencies: () => ({
@@ -228,8 +228,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "CdkStack-VpcEbInterfaceEndpointSecurityGroupE08A80D2-7XKKU5JDDTFV",
     properties: ({}) => ({
+      GroupName:
+        "CdkStack-VpcEbInterfaceEndpointSecurityGroupE08A80D2-7XKKU5JDDTFV",
       Description: "CdkStack/Vpc/EbInterfaceEndpoint/SecurityGroup",
     }),
     dependencies: () => ({
@@ -253,7 +254,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
+        "sg::Vpc8378EB38::CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
     }),
   },
   {
@@ -268,9 +269,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
+        "sg::Vpc8378EB38::CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
       securityGroupFrom: [
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
+        "sg::Vpc8378EB38::CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
       ],
     }),
   },
@@ -291,7 +292,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-VpcEbInterfaceEndpointSecurityGroupE08A80D2-7XKKU5JDDTFV",
+        "sg::Vpc8378EB38::CdkStack-VpcEbInterfaceEndpointSecurityGroupE08A80D2-7XKKU5JDDTFV",
     }),
   },
   {
@@ -306,9 +307,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
+        "sg::Vpc8378EB38::CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
       securityGroupFrom: [
-        "CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
+        "sg::Vpc8378EB38::CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
       ],
     }),
   },
@@ -523,7 +524,7 @@ exports.createResources = () => [
         "VpcPrivateSubnet2Subnet3788AAA1",
       ],
       securityGroups: [
-        "CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
+        "sg::Vpc8378EB38::CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
       ],
       targetGroups: ["CdkSt-Farga-18J680K747YUS"],
     }),
@@ -543,7 +544,7 @@ exports.createResources = () => [
         "VpcPublicSubnet2Subnet691E08A3",
       ],
       securityGroups: [
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
+        "sg::Vpc8378EB38::CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",
       ],
     }),
   },

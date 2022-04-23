@@ -442,82 +442,82 @@
 <path fill="none" stroke="#707070" d="M681.57,-883.3C697.22,-881.51 713.19,-879.69 728.95,-877.9"/>
 <polygon fill="#707070" stroke="#707070" points="729.74,-881.33 739.28,-876.72 728.95,-874.38 729.74,-881.33"/>
 </g>
-<!-- SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM -->
+<!-- SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM -->
 <g id="node30" class="node">
-<title>SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1044.5,-585 729.5,-585 729.5,-527 1044.5,-527 1044.5,-585"/>
-<text text-anchor="start" x="742" y="-565.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
-<text text-anchor="start" x="742" y="-540.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ECSServiceStack&#45;amazonecssampleL...</text>
+<title>SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1032.5,-585 741.5,-585 741.5,-527 1032.5,-527 1032.5,-585"/>
+<text text-anchor="start" x="754" y="-565.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
+<text text-anchor="start" x="754" y="-540.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::ECSServiceStack/SkeletonVpc:...</text>
 </g>
-<!-- SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;&gt;Vpc::ECSServiceStack/SkeletonVpc -->
+<!-- SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;&gt;Vpc::ECSServiceStack/SkeletonVpc -->
 <g id="edge36" class="edge">
-<title>SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;&gt;Vpc::ECSServiceStack/SkeletonVpc</title>
+<title>SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;&gt;Vpc::ECSServiceStack/SkeletonVpc</title>
 <path fill="none" stroke="#707070" d="M1029.47,-585.03C1035.18,-587.76 1040.72,-590.74 1046,-594 1123.87,-642.11 1185.79,-732.59 1216.63,-783.91"/>
 <polygon fill="#707070" stroke="#707070" points="1213.74,-785.9 1221.85,-792.72 1219.76,-782.33 1213.74,-785.9"/>
 </g>
-<!-- SecurityGroup::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC -->
+<!-- SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC -->
 <g id="node31" class="node">
-<title>SecurityGroup::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1045,-357 729,-357 729,-299 1045,-299 1045,-357"/>
-<text text-anchor="start" x="741" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
-<text text-anchor="start" x="741" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ECSServiceStack&#45;amazonecssampleS...</text>
+<title>SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1032.5,-357 741.5,-357 741.5,-299 1032.5,-299 1032.5,-357"/>
+<text text-anchor="start" x="754" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
+<text text-anchor="start" x="754" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::ECSServiceStack/SkeletonVpc:...</text>
 </g>
-<!-- SecurityGroup::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;&gt;Vpc::ECSServiceStack/SkeletonVpc -->
+<!-- SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;&gt;Vpc::ECSServiceStack/SkeletonVpc -->
 <g id="edge37" class="edge">
-<title>SecurityGroup::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;&gt;Vpc::ECSServiceStack/SkeletonVpc</title>
-<path fill="none" stroke="#707070" d="M1034.09,-357.17C1038.25,-359.87 1042.24,-362.8 1046,-366 1177.33,-477.55 1220.73,-694.26 1233.37,-782.84"/>
+<title>SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;&gt;Vpc::ECSServiceStack/SkeletonVpc</title>
+<path fill="none" stroke="#707070" d="M1032.65,-356.25C1037.34,-359.2 1041.81,-362.44 1046,-366 1177.33,-477.55 1220.73,-694.26 1233.37,-782.84"/>
 <polygon fill="#707070" stroke="#707070" points="1229.93,-783.56 1234.76,-793 1236.87,-782.61 1229.93,-783.56"/>
 </g>
-<!-- SecurityGroupRuleIngress::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;ingress&#45;tcp&#45;80 -->
+<!-- SecurityGroupRuleIngress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;ingress&#45;tcp&#45;80 -->
 <g id="node32" class="node">
-<title>SecurityGroupRuleIngress::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;ingress&#45;tcp&#45;80</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="691.5,-585 376.5,-585 376.5,-527 691.5,-527 691.5,-585"/>
-<text text-anchor="start" x="389" y="-565.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
-<text text-anchor="start" x="389" y="-540.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ECSServiceStack&#45;amazonecssampleL...</text>
+<title>SecurityGroupRuleIngress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;ingress&#45;tcp&#45;80</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="679.5,-585 388.5,-585 388.5,-527 679.5,-527 679.5,-585"/>
+<text text-anchor="start" x="401" y="-565.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
+<text text-anchor="start" x="401" y="-540.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::ECSServiceStack/SkeletonVpc:...</text>
 </g>
-<!-- SecurityGroupRuleIngress::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM -->
+<!-- SecurityGroupRuleIngress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM -->
 <g id="edge38" class="edge">
-<title>SecurityGroupRuleIngress::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM</title>
-<path fill="none" stroke="#707070" d="M691.51,-556C700.77,-556 710.11,-556 719.41,-556"/>
-<polygon fill="#707070" stroke="#707070" points="719.48,-559.5 729.48,-556 719.48,-552.5 719.48,-559.5"/>
+<title>SecurityGroupRuleIngress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM</title>
+<path fill="none" stroke="#707070" d="M679.54,-556C696.6,-556 714.06,-556 731.25,-556"/>
+<polygon fill="#707070" stroke="#707070" points="731.34,-559.5 741.34,-556 731.34,-552.5 731.34,-559.5"/>
 </g>
-<!-- SecurityGroupRuleIngress::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80 -->
+<!-- SecurityGroupRuleIngress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80 -->
 <g id="node33" class="node">
-<title>SecurityGroupRuleIngress::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="692,-433 376,-433 376,-375 692,-375 692,-433"/>
-<text text-anchor="start" x="388" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
-<text text-anchor="start" x="388" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ECSServiceStack&#45;amazonecssampleS...</text>
+<title>SecurityGroupRuleIngress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="679.5,-433 388.5,-433 388.5,-375 679.5,-375 679.5,-433"/>
+<text text-anchor="start" x="401" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
+<text text-anchor="start" x="401" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::ECSServiceStack/SkeletonVpc:...</text>
 </g>
-<!-- SecurityGroupRuleIngress::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM -->
+<!-- SecurityGroupRuleIngress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM -->
 <g id="edge40" class="edge">
-<title>SecurityGroupRuleIngress::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM</title>
-<path fill="none" stroke="#707070" d="M679.63,-433.2C683.94,-435.89 688.08,-438.81 692,-442 720.99,-465.59 698.99,-494.43 728,-518 729.35,-519.1 730.74,-520.17 732.14,-521.21"/>
-<polygon fill="#707070" stroke="#707070" points="730.21,-524.13 740.45,-526.84 734.14,-518.33 730.21,-524.13"/>
+<title>SecurityGroupRuleIngress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM</title>
+<path fill="none" stroke="#707070" d="M679.63,-433.2C683.94,-435.89 688.08,-438.81 692,-442 720.99,-465.59 698.99,-494.43 728,-518 729.56,-519.27 731.16,-520.49 732.78,-521.68"/>
+<polygon fill="#707070" stroke="#707070" points="730.92,-524.64 741.18,-527.29 734.81,-518.82 730.92,-524.64"/>
 </g>
-<!-- SecurityGroupRuleIngress::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC -->
+<!-- SecurityGroupRuleIngress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC -->
 <g id="edge39" class="edge">
-<title>SecurityGroupRuleIngress::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC</title>
+<title>SecurityGroupRuleIngress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC</title>
 <path fill="none" stroke="#707070" d="M668.95,-375C692.86,-369.82 717.86,-364.41 742.04,-359.17"/>
 <polygon fill="#707070" stroke="#707070" points="742.95,-362.56 751.98,-357.02 741.47,-355.71 742.95,-362.56"/>
 </g>
-<!-- SecurityGroupRuleEgress::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80 -->
+<!-- SecurityGroupRuleEgress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80 -->
 <g id="node34" class="node">
-<title>SecurityGroupRuleEgress::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="691.5,-357 376.5,-357 376.5,-299 691.5,-299 691.5,-357"/>
-<text text-anchor="start" x="389" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleEgress</text>
-<text text-anchor="start" x="389" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ECSServiceStack&#45;amazonecssampleL...</text>
+<title>SecurityGroupRuleEgress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="679.5,-357 388.5,-357 388.5,-299 679.5,-299 679.5,-357"/>
+<text text-anchor="start" x="401" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleEgress</text>
+<text text-anchor="start" x="401" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::ECSServiceStack/SkeletonVpc:...</text>
 </g>
-<!-- SecurityGroupRuleEgress::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM -->
+<!-- SecurityGroupRuleEgress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM -->
 <g id="edge41" class="edge">
-<title>SecurityGroupRuleEgress::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM</title>
-<path fill="none" stroke="#707070" d="M681.89,-357.19C685.45,-359.89 688.83,-362.82 692,-366 740.97,-415.21 678.99,-468.82 728,-518 728.8,-518.8 729.61,-519.58 730.43,-520.35"/>
-<polygon fill="#707070" stroke="#707070" points="728.27,-523.11 738.18,-526.86 732.77,-517.75 728.27,-523.11"/>
+<title>SecurityGroupRuleEgress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM</title>
+<path fill="none" stroke="#707070" d="M679.53,-355.45C683.96,-358.62 688.14,-362.12 692,-366 740.97,-415.21 678.99,-468.82 728,-518 729.66,-519.66 731.38,-521.26 733.15,-522.79"/>
+<polygon fill="#707070" stroke="#707070" points="731.2,-525.71 741.24,-529.09 735.5,-520.19 731.2,-525.71"/>
 </g>
-<!-- SecurityGroupRuleEgress::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC -->
+<!-- SecurityGroupRuleEgress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC -->
 <g id="edge42" class="edge">
-<title>SecurityGroupRuleEgress::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC</title>
-<path fill="none" stroke="#707070" d="M691.51,-328C700.54,-328 709.64,-328 718.71,-328"/>
-<polygon fill="#707070" stroke="#707070" points="718.94,-331.5 728.94,-328 718.94,-324.5 718.94,-331.5"/>
+<title>SecurityGroupRuleEgress::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM&#45;rule&#45;egress&#45;tcp&#45;80&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC</title>
+<path fill="none" stroke="#707070" d="M679.54,-328C696.6,-328 714.06,-328 731.25,-328"/>
+<polygon fill="#707070" stroke="#707070" points="731.34,-331.5 741.34,-328 731.34,-324.5 731.34,-331.5"/>
 </g>
 <!-- Cluster::service&#45;cluster -->
 <g id="node36" class="node">
@@ -578,9 +578,9 @@
 <path fill="none" stroke="#707070" d="M679.63,-281.2C683.94,-283.89 688.08,-286.81 692,-290 720.99,-313.59 698.99,-342.43 728,-366 729.35,-367.1 730.74,-368.17 732.14,-369.21"/>
 <polygon fill="#707070" stroke="#707070" points="730.21,-372.13 740.45,-374.84 734.14,-366.33 730.21,-372.13"/>
 </g>
-<!-- Service::ECSServiceStack&#45;amazonecssampleService537E3215&#45;Bnagarx67tDZ&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC -->
+<!-- Service::ECSServiceStack&#45;amazonecssampleService537E3215&#45;Bnagarx67tDZ&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC -->
 <g id="edge49" class="edge">
-<title>Service::ECSServiceStack&#45;amazonecssampleService537E3215&#45;Bnagarx67tDZ&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC</title>
+<title>Service::ECSServiceStack&#45;amazonecssampleService537E3215&#45;Bnagarx67tDZ&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleServiceSecurityGroup120A1640&#45;19GF52TMRSNVC</title>
 <path fill="none" stroke="#707070" d="M668.95,-281C692.86,-286.18 717.86,-291.59 742.04,-296.83"/>
 <polygon fill="#707070" stroke="#707070" points="741.47,-300.29 751.98,-298.98 742.95,-293.44 741.47,-300.29"/>
 </g>
@@ -628,11 +628,11 @@
 <path fill="none" stroke="#707070" d="M664.7,-736.08C689.79,-741.52 716.21,-747.24 741.73,-752.76"/>
 <polygon fill="#707070" stroke="#707070" points="741.32,-756.26 751.84,-754.95 742.8,-749.41 741.32,-756.26"/>
 </g>
-<!-- LoadBalancer::ECSSe&#45;amazo&#45;39P7SGVM3CD7&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM -->
+<!-- LoadBalancer::ECSSe&#45;amazo&#45;39P7SGVM3CD7&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM -->
 <g id="edge53" class="edge">
-<title>LoadBalancer::ECSSe&#45;amazo&#45;39P7SGVM3CD7&#45;&gt;SecurityGroup::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM</title>
-<path fill="none" stroke="#707070" d="M664.67,-686.89C674.46,-682.29 683.73,-676.73 692,-670 720.99,-646.41 698.99,-617.57 728,-594 729.35,-592.9 730.74,-591.83 732.14,-590.79"/>
-<polygon fill="#707070" stroke="#707070" points="734.14,-593.67 740.45,-585.16 730.21,-587.87 734.14,-593.67"/>
+<title>LoadBalancer::ECSSe&#45;amazo&#45;39P7SGVM3CD7&#45;&gt;SecurityGroup::sg::ECSServiceStack/SkeletonVpc::ECSServiceStack&#45;amazonecssampleLBSecurityGroup55736652&#45;DF8OON2J64PM</title>
+<path fill="none" stroke="#707070" d="M664.67,-686.89C674.46,-682.29 683.73,-676.73 692,-670 720.99,-646.41 698.99,-617.57 728,-594 729.56,-592.73 731.16,-591.51 732.78,-590.32"/>
+<polygon fill="#707070" stroke="#707070" points="734.81,-593.18 741.18,-584.71 730.92,-587.36 734.81,-593.18"/>
 </g>
 <!-- TargetGroup::ECSSe&#45;amazo&#45;319L9ODON698&#45;&gt;Vpc::ECSServiceStack/SkeletonVpc -->
 <g id="edge54" class="edge">

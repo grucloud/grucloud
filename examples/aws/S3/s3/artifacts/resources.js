@@ -78,7 +78,7 @@ exports.createResources = () => [
             Effect: "Deny",
             Principal: "*",
             Action: "s3:*",
-            Resource: `arn:aws:s3:::grucloud-policy/*`,
+            Resource: "arn:aws:s3:::grucloud-policy/*",
             Condition: {
               IpAddress: {
                 "aws:SourceIp": "8.8.8.8/32",

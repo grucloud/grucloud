@@ -19,15 +19,15 @@
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_aws_</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="28.5,-54 28.5,-137 121.5,-137 121.5,-54 28.5,-54"/>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="19.5,-54 19.5,-137 130.5,-137 130.5,-54 19.5,-54"/>
 <text text-anchor="start" x="74.86" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
 <!-- Vpc::my&#45;vpc -->
 <g id="node1" class="node">
 <title>Vpc::my&#45;vpc</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="113.5,-129 36.5,-129 36.5,-71 113.5,-71 113.5,-129"/>
-<text text-anchor="start" x="49" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Vpc</text>
-<text text-anchor="start" x="49" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;vpc</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="122.5,-129 27.5,-129 27.5,-71 122.5,-71 122.5,-129"/>
+<text text-anchor="start" x="40" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
+<text text-anchor="start" x="40" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;vpc</text>
 </g>
 </g>
 </svg>

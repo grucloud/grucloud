@@ -26,14 +26,14 @@
 <g id="node1" class="node">
 <title>Trail::CloudTrailForS3ImagePushEvents</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="297,-129 24,-129 24,-71 297,-71 297,-129"/>
-<text text-anchor="start" x="36.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Trail</text>
+<text text-anchor="start" x="36.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudTrail::Trail</text>
 <text text-anchor="start" x="36.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">CloudTrailForS3ImagePushEvents</text>
 </g>
 <!-- Bucket::grucloud&#45;s3&#45;event&#45;bridge&#45;logs -->
 <g id="node2" class="node">
 <title>Bucket::grucloud&#45;s3&#45;event&#45;bridge&#45;logs</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="573,-129 333,-129 333,-71 573,-71 573,-129"/>
-<text text-anchor="start" x="345" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="345" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Bucket</text>
 <text text-anchor="start" x="345" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;s3&#45;event&#45;bridge&#45;logs</text>
 </g>
 <!-- Trail::CloudTrailForS3ImagePushEvents&#45;&gt;Bucket::grucloud&#45;s3&#45;event&#45;bridge&#45;logs -->

@@ -134,8 +134,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ",
     properties: ({}) => ({
+      GroupName: "sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ",
       Description: "ECS Security Group",
     }),
     dependencies: () => ({
@@ -145,8 +145,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
     properties: ({}) => ({
+      GroupName: "sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
       Description: "LoadBalancer Security Group",
     }),
     dependencies: () => ({
@@ -164,8 +164,11 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ",
-      securityGroupFrom: ["sam-app-LoadBalancerSG-10GJVKU6RNTZ4"],
+      securityGroup:
+        "sg::vpclink-ex-vpc::sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ",
+      securityGroupFrom: [
+        "sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
+      ],
     }),
   },
   {
@@ -185,7 +188,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
+      securityGroup: "sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
     }),
   },
   {
@@ -199,8 +202,10 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
-      securityGroupFrom: ["sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ"],
+      securityGroup: "sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
+      securityGroupFrom: [
+        "sg::vpclink-ex-vpc::sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ",
+      ],
     }),
   },
   {
@@ -324,7 +329,9 @@ exports.createResources = () => [
         "vpclink-ex-subnet-private1-us-east-1a",
         "vpclink-ex-subnet-private2-us-east-1b",
       ],
-      securityGroups: ["sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ"],
+      securityGroups: [
+        "sg::vpclink-ex-vpc::sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ",
+      ],
       targetGroups: ["sam-a-LoadB-29TIQLVPQQY9"],
     }),
   },
@@ -342,7 +349,9 @@ exports.createResources = () => [
         "vpclink-ex-subnet-private1-us-east-1a",
         "vpclink-ex-subnet-private2-us-east-1b",
       ],
-      securityGroups: ["sam-app-LoadBalancerSG-10GJVKU6RNTZ4"],
+      securityGroups: [
+        "sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
+      ],
     }),
   },
   {
