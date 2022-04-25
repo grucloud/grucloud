@@ -18,7 +18,6 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const model = {
   package: "sns",
   client: "SNS",
-  pickIds: ["Attributes.SubscriptionArn"],
   ignoreErrorCodes: ["NotFound"],
   getById: { method: "getSubscriptionAttributes", getField: "Attributes" },
   getList: { method: "listSubscriptions", getParam: "Subscriptions" },

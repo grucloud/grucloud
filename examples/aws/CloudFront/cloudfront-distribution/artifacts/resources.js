@@ -7,7 +7,6 @@ exports.createResources = () => [
   {
     type: "Distribution",
     group: "CloudFront",
-    name: "E2P10W0URYHQV",
     properties: ({ getId }) => ({
       PriceClass: "PriceClass_100",
       Aliases: {
@@ -53,12 +52,7 @@ exports.createResources = () => [
         Quantity: 1,
         Items: [
           {
-            Id: `${getId({
-              type: "Bucket",
-              group: "S3",
-              name: "cloudfront-demo.grucloud.org",
-              path: "name",
-            })}.s3.us-east-1.amazonaws.com`,
+            Id: "cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com",
             DomainName: `${getId({
               type: "Bucket",
               group: "S3",
@@ -95,6 +89,12 @@ exports.createResources = () => [
         IncludeCookies: false,
         Bucket: "",
         Prefix: "",
+      },
+      ViewerCertificate: {
+        CloudFrontDefaultCertificate: false,
+        SSLSupportMethod: "sni-only",
+        MinimumProtocolVersion: "TLSv1.2_2019",
+        CertificateSource: "acm",
       },
       Tags: [
         {

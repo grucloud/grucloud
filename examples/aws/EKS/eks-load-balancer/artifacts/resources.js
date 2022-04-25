@@ -248,8 +248,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
+      GroupName: "ClusterSharedNodeSecurityGroup",
       Description: "Communication between all nodes in the cluster",
     }),
     dependencies: () => ({
@@ -259,8 +259,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "ControlPlaneSecurityGroup",
     properties: ({}) => ({
+      GroupName: "ControlPlaneSecurityGroup",
       Description:
         "Communication between the control plane and worker nodegroups",
     }),
@@ -271,7 +271,7 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "eks-cluster-sg-my-cluster-1909614887",
+    name: "sg::VPC::eks-cluster-sg-my-cluster-1909614887",
     readOnly: true,
     filterLives: ({ resources }) =>
       pipe([
@@ -292,8 +292,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "load-balancer",
     properties: ({}) => ({
+      GroupName: "load-balancer",
       Description: "Load Balancer",
     }),
     dependencies: () => ({
@@ -309,21 +309,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: ["eks-cluster-sg-my-cluster-1909614887"],
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-      },
-    }),
-    dependencies: () => ({
-      securityGroup: "eks-cluster-sg-my-cluster-1909614887",
-      securityGroupFrom: ["eks-cluster-sg-my-cluster-1909614887"],
+      securityGroup: "sg::VPC::ClusterSharedNodeSecurityGroup",
+      securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   {
@@ -342,7 +329,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "load-balancer",
+      securityGroup: "sg::VPC::load-balancer",
     }),
   },
   {
@@ -361,7 +348,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "load-balancer",
+      securityGroup: "sg::VPC::load-balancer",
     }),
   },
   { type: "ElasticIpAddress", group: "EC2", name: "NATIP" },
@@ -400,7 +387,7 @@ exports.createResources = () => [
         "SubnetPublicUSEAST1D",
         "SubnetPublicUSEAST1F",
       ],
-      securityGroups: ["ControlPlaneSecurityGroup"],
+      securityGroups: ["sg::VPC::ControlPlaneSecurityGroup"],
       role: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     }),
   },
@@ -438,7 +425,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
-      securityGroups: ["load-balancer"],
+      securityGroups: ["sg::VPC::load-balancer"],
     }),
   },
   {

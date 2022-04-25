@@ -218,6 +218,7 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
+    name: "sg::VPC::eks-cluster-sg-my-cluster-1909614887",
     readOnly: true,
     filterLives: ({ resources }) =>
       pipe([
@@ -245,19 +246,6 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup: "sg::VPC::ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-      },
-    }),
-    dependencies: () => ({
-      securityGroup: "sg::VPC::eks-cluster-sg-my-cluster-1909614887",
       securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },

@@ -41,6 +41,7 @@ const {
   convertError,
   mapPoolSize,
   md5FileBase64,
+  md5FileHex,
 } = require("@grucloud/core/Common");
 const { createS3 } = require("./AwsS3Common");
 
@@ -359,24 +360,28 @@ exports.compareS3Object = pipe([
         tap(() => {
           assert(programOptions);
         }),
-        (target) => ({
-          Metadata: {
-            md5hash: pipe([
-              tap(() => {
-                assert(programOptions.workingDirectory);
-                assert(target.source, "missing source");
-              }),
-              () =>
-                path.resolve(programOptions.workingDirectory, target.source),
-              md5FileBase64,
-              tap((targetHash) => {
-                assert(targetHash);
-              }),
-            ])(),
-          },
+        (target) =>
+          pipe([
+            tap(() => {
+              assert(programOptions.workingDirectory);
+              assert(target.source, "missing source");
+            }),
+            () => path.resolve(programOptions.workingDirectory, target.source),
+            md5FileHex,
+            tap((targetHex) => {
+              assert(targetHex);
+            }),
+          ])(),
+        (ETag) => ({
+          ETag,
         }),
       ]),
-    filterLive: () => pipe([pick(["Metadata.md5hash"])]),
+    filterLive: () =>
+      pipe([
+        get("ETag"),
+        callProp("replaceAll", '"', ""),
+        (ETag) => ({ ETag }),
+      ]),
   }),
   tap((params) => {
     assert(true);

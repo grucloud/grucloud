@@ -271,6 +271,7 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
+    name: "sg::VPC::eks-cluster-sg-my-cluster-1909614887",
     readOnly: true,
     filterLives: ({ resources }) =>
       pipe([

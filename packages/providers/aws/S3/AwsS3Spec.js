@@ -31,7 +31,15 @@ const compareS3 = compareAws({
 const objectFileNameFromLive = ({
   live: { Bucket, Key, ContentType },
   commandOptions,
-}) => `s3/${Bucket}/${Key}.${mime.extension(ContentType)}`;
+}) =>
+  pipe([
+    tap((params) => {
+      assert(Bucket);
+      assert(Key);
+    }),
+    //() => `s3/${Bucket}/${Key}.${mime.extension(ContentType)}`,
+    () => `s3/${Bucket}/${Key}`,
+  ])();
 
 //TODO
 const ignoreBuckets = or([

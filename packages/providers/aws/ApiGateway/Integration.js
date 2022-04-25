@@ -219,7 +219,16 @@ exports.Integration = ({ spec, config }) => {
             FunctionName: live.integrationUri,
             StatementId: live.id,
           }),
-          tryCatch(lambda().removePermission, throwIfNotAwsError),
+          //TODO common with V2
+          tryCatch(lambda().removePermission, (error) =>
+            pipe([
+              tap(() => {
+                logger.info(`lambdaRemovePermission ${tos(error)}`);
+              }),
+              () => error,
+              throwIfNotAwsError("ResourceNotFoundException"),
+            ])()
+          ),
         ])
       ),
     ])();

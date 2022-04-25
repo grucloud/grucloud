@@ -10,7 +10,6 @@ const { tagResource, untagResource } = require("./SNSCommon");
 const model = {
   package: "sns",
   client: "SNS",
-  pickIds: ["Attributes.TopicArn"],
   ignoreErrorCodes: ["NotFound"],
   getById: { method: "getTopicAttributes" },
   getList: { method: "listTopics", getParam: "Topics" },

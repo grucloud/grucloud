@@ -106,6 +106,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 - AWS::CloudWatch::Dashboard
 
 - apprunner example npm test
+- inferName Lambda layer
 - inferName OpenIDConnectProvider
 - example vpc-use still using make and use
 - RDS DBCluster AvailabilityZones

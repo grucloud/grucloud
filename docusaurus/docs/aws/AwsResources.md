@@ -9,7 +9,7 @@ List of resources for provider aws:
 * APIGateway: 
 [Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Deployment](./resources/APIGateway/Deployment.md), [Integration](./resources/APIGateway/Integration.md), [Resource](./resources/APIGateway/Resource.md), [Method](./resources/APIGateway/Method.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md)
 * ApiGatewayV2: 
-[DomainName](./resources/ApiGatewayV2/DomainName.md), [Api](./resources/ApiGatewayV2/Api.md), [Stage](./resources/ApiGatewayV2/Stage.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Deployment](./resources/ApiGatewayV2/Deployment.md)
+[DomainName](./resources/ApiGatewayV2/DomainName.md), [Api](./resources/ApiGatewayV2/Api.md), [Stage](./resources/ApiGatewayV2/Stage.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
 * AppRunner: 
 [Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md)
 * AppSync: 
@@ -17,7 +17,7 @@ List of resources for provider aws:
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
 * CloudFront: 
-[Distribution](./resources/CloudFront/Distribution.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md)
+[Distribution](./resources/CloudFront/Distribution.md), [CachePolicy](./resources/CloudFront/CachePolicy.md), [Function](./resources/CloudFront/Function.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md)
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
 * CloudTrail: 
@@ -36,6 +36,8 @@ List of resources for provider aws:
 [Repository](./resources/ECR/Repository.md), [Registry](./resources/ECR/Registry.md)
 * ECS: 
 [CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [TaskDefinition](./resources/ECS/TaskDefinition.md), [Service](./resources/ECS/Service.md), [TaskSet](./resources/ECS/TaskSet.md), [Task](./resources/ECS/Task.md), [ContainerInstance](./resources/ECS/ContainerInstance.md)
+* EFS: 
+[FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
 [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
 * ELBv2: 
@@ -47,7 +49,7 @@ List of resources for provider aws:
 * Lambda: 
 [Layer](./resources/Lambda/Layer.md), [Function](./resources/Lambda/Function.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md)
 * RDS: 
-[DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [DBCluster](./resources/RDS/DBCluster.md), [DBInstance](./resources/RDS/DBInstance.md)
+[DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [DBCluster](./resources/RDS/DBCluster.md), [DBInstance](./resources/RDS/DBInstance.md)
 * Route53: 
 [HostedZone](./resources/Route53/HostedZone.md), [Record](./resources/Route53/Record.md)
 * Route53Domains: 

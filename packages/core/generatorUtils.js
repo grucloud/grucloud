@@ -434,8 +434,12 @@ const buildPrefix = switchCase([
   () => "",
 ]);
 
-const buildName = ({ inferName, resourceName }) =>
-  switchCase([() => inferName, () => "", () => `name: "${resourceName}",`])();
+const buildName = ({ inferName, resourceName, resource }) =>
+  switchCase([
+    and([() => inferName, () => !resource.managedByOther]),
+    () => "",
+    () => `name: "${resourceName}",`,
+  ])();
 
 const codeTpl = ({
   providerName,
@@ -453,7 +457,7 @@ const codeTpl = ({
 }) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(resource);
     }),
     () => "{",
     append("type:'"),
@@ -462,7 +466,7 @@ const codeTpl = ({
     append("group:'"),
     append(group),
     append("',"),
-    append(buildName({ inferName, resourceName })),
+    append(buildName({ inferName, resourceName, resource })),
     append(buildPrefix(resource)),
     switchCase([
       () => additionalCode,

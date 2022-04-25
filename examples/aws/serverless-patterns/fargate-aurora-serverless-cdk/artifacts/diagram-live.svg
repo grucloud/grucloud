@@ -554,13 +554,13 @@
 <text text-anchor="start" x="1087.5" y="-984.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">CdkSt&#45;Farga&#45;SRS4XA0Y0M8</text>
 </g>
 <!-- LoadBalancer::::CdkSt&#45;Farga&#45;SRS4XA0Y0M8&#45;&gt;Subnet::::CdkStack/Vpc/PublicSubnet1 -->
-<g id="edge56" class="edge">
+<g id="edge55" class="edge">
 <title>LoadBalancer::::CdkSt&#45;Farga&#45;SRS4XA0Y0M8&#45;&gt;Subnet::::CdkStack/Vpc/PublicSubnet1</title>
 <path fill="none" stroke="#707070" d="M1294.85,-970.93C1310.96,-966.29 1327.44,-961.52 1343,-957 1366.29,-950.23 1391.26,-942.93 1414.97,-935.97"/>
 <polygon fill="#707070" stroke="#707070" points="1416.09,-939.29 1424.7,-933.12 1414.11,-932.58 1416.09,-939.29"/>
 </g>
 <!-- LoadBalancer::::CdkSt&#45;Farga&#45;SRS4XA0Y0M8&#45;&gt;Subnet::::CdkStack/Vpc/PublicSubnet2 -->
-<g id="edge55" class="edge">
+<g id="edge56" class="edge">
 <title>LoadBalancer::::CdkSt&#45;Farga&#45;SRS4XA0Y0M8&#45;&gt;Subnet::::CdkStack/Vpc/PublicSubnet2</title>
 <path fill="none" stroke="#707070" d="M1307.49,-970.92C1321.01,-963.39 1333.39,-953.92 1343,-942 1407.4,-862.14 1316.72,-795.52 1379,-714 1388.52,-701.54 1400.97,-691.4 1414.56,-683.18"/>
 <polygon fill="#707070" stroke="#707070" points="1416.66,-686.01 1423.65,-678.04 1413.22,-679.92 1416.66,-686.01"/>

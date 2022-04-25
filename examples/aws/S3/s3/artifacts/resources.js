@@ -116,7 +116,7 @@ exports.createResources = () => [
       ],
     }),
   },
-  { type: "Bucket", group: "S3", name: "grucloud-test-basic" },
+  { type: "Bucket", group: "S3", name: "grucloud-test-basic.txt" },
   {
     type: "Bucket",
     group: "S3",
@@ -139,7 +139,7 @@ exports.createResources = () => [
     name: "file-test",
     properties: ({}) => ({
       ContentType: "text/plain",
-      source: "s3/grucloud-test-basic/file-test.txt",
+      source: "s3/grucloud-test-basic.txt/file-test",
       Tags: [
         {
           Key: "Key1",
@@ -152,7 +152,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: () => ({
-      bucket: "grucloud-test-basic",
+      bucket: "grucloud-test-basic.txt",
     }),
   },
 ];

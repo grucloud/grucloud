@@ -14,7 +14,7 @@ const createResources = ({ provider }) => {
   });
 
   const s3Object = provider.S3.makeObject({
-    name: `${bucketPrefix}-file-test`,
+    name: `${bucketPrefix}-file-test.txt`,
     namespace,
     dependencies: () => ({ bucket: s3BucketName }),
     properties: () => ({

@@ -62,7 +62,7 @@ module.exports = ({ provider }) => {
           resources.Route53.HostedZone["cloudfront.aws.test.grucloud.org."];
         const distribution =
           resources.CloudFront.Distribution[
-            "distribution-cloudfront.aws.test.grucloud.org"
+            "S3-cloudfront.aws.test.grucloud.org"
           ];
         const certificate =
           resources.ACM.Certificate["cloudfront.aws.test.grucloud.org"];

@@ -11,7 +11,6 @@ exports.createResources = () => [
   {
     type: "Distribution",
     group: "CloudFront",
-    name: "distribution-cloudfront.aws.test.grucloud.org",
     properties: ({ getId }) => ({
       PriceClass: "PriceClass_100",
       Aliases: {
@@ -71,12 +70,7 @@ exports.createResources = () => [
         Quantity: 1,
         Items: [
           {
-            Id: `S3-${getId({
-              type: "Bucket",
-              group: "S3",
-              name: "cloudfront.aws.test.grucloud.org",
-              path: "name",
-            })}`,
+            Id: "S3-cloudfront.aws.test.grucloud.org",
             DomainName: `${getId({
               type: "Bucket",
               group: "S3",
@@ -115,6 +109,12 @@ exports.createResources = () => [
         Bucket: "",
         Prefix: "",
       },
+      ViewerCertificate: {
+        CloudFrontDefaultCertificate: false,
+        SSLSupportMethod: "sni-only",
+        MinimumProtocolVersion: "TLSv1.2_2019",
+        CertificateSource: "acm",
+      },
     }),
     dependencies: () => ({
       buckets: ["cloudfront.aws.test.grucloud.org"],
@@ -142,7 +142,7 @@ exports.createResources = () => [
     group: "Route53",
     dependencies: () => ({
       hostedZone: "cloudfront.aws.test.grucloud.org.",
-      distribution: "distribution-cloudfront.aws.test.grucloud.org",
+      distribution: "S3-cloudfront.aws.test.grucloud.org",
     }),
   },
   {
@@ -173,7 +173,7 @@ exports.createResources = () => [
     name: "build/bundle.css",
     properties: ({}) => ({
       ContentType: "text/css",
-      source: "s3/cloudfront.aws.test.grucloud.org/build/bundle.css.css",
+      source: "s3/cloudfront.aws.test.grucloud.org/build/bundle.css",
     }),
     dependencies: () => ({
       bucket: "cloudfront.aws.test.grucloud.org",
@@ -185,7 +185,7 @@ exports.createResources = () => [
     name: "build/bundle.js",
     properties: ({}) => ({
       ContentType: "application/javascript",
-      source: "s3/cloudfront.aws.test.grucloud.org/build/bundle.js.js",
+      source: "s3/cloudfront.aws.test.grucloud.org/build/bundle.js",
     }),
     dependencies: () => ({
       bucket: "cloudfront.aws.test.grucloud.org",
@@ -197,7 +197,7 @@ exports.createResources = () => [
     name: "favicon.png",
     properties: ({}) => ({
       ContentType: "image/png",
-      source: "s3/cloudfront.aws.test.grucloud.org/favicon.png.png",
+      source: "s3/cloudfront.aws.test.grucloud.org/favicon.png",
     }),
     dependencies: () => ({
       bucket: "cloudfront.aws.test.grucloud.org",
@@ -209,7 +209,7 @@ exports.createResources = () => [
     name: "global.css",
     properties: ({}) => ({
       ContentType: "text/css",
-      source: "s3/cloudfront.aws.test.grucloud.org/global.css.css",
+      source: "s3/cloudfront.aws.test.grucloud.org/global.css",
     }),
     dependencies: () => ({
       bucket: "cloudfront.aws.test.grucloud.org",
@@ -221,7 +221,7 @@ exports.createResources = () => [
     name: "index.html",
     properties: ({}) => ({
       ContentType: "text/html",
-      source: "s3/cloudfront.aws.test.grucloud.org/index.html.html",
+      source: "s3/cloudfront.aws.test.grucloud.org/index.html",
     }),
     dependencies: () => ({
       bucket: "cloudfront.aws.test.grucloud.org",

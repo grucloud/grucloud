@@ -10,7 +10,6 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const model = {
   package: "rds",
   client: "RDS",
-  pickIds: ["DBProxyName"],
   ignoreErrorCodes: ["DBProxyNotFoundFault"],
   getById: { method: "describeDBProxies", getField: "DBProxies" },
   getList: { method: "describeDBProxies", getParam: "DBProxies" },
@@ -27,6 +26,7 @@ exports.DBProxy = ({ spec, config }) =>
     config,
     findName: get("live.DBProxyName"),
     findId: get("live.DBProxyArn"),
+    pickId: pick(["DBProxyName"]),
     findDependencies: ({ live, lives }) => [
       {
         type: "Secret",

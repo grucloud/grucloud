@@ -9,7 +9,6 @@ const { tagResource, untagResource } = require("./SSMCommon");
 const model = {
   package: "ssm",
   client: "SSM",
-  pickIds: ["Name"],
   ignoreErrorCodes: ["ParameterNotFound"],
   getById: { method: "getParameter", getField: "Parameter" },
   getList: { method: "describeParameters", getParam: "Parameters" },
@@ -26,6 +25,7 @@ exports.SSMParameter = ({ spec, config }) =>
     config,
     findName: get("live.Name"),
     findId: get("live.Name"),
+    pickId: pick(["Name"]),
     findDependencies: ({ live }) => [
       {
         type: "Key",
