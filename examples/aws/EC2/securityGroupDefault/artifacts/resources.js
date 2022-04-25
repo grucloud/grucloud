@@ -7,6 +7,7 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
+    name: "sg::vpc-default::default",
     isDefault: true,
     dependencies: () => ({
       vpc: "vpc-default",

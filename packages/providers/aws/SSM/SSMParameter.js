@@ -24,8 +24,8 @@ exports.SSMParameter = ({ spec, config }) =>
     spec,
     config,
     findName: get("live.Name"),
-    findId: get("live.Name"),
-    pickId: pick(["Name"]),
+    findId: pipe([get("live.ARN")]),
+    pickId: pipe([pick(["Name"])]),
     findDependencies: ({ live }) => [
       {
         type: "Key",

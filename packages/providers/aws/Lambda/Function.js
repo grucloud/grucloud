@@ -193,6 +193,13 @@ exports.Function = ({ spec, config }) => {
       live,
       lives,
     }),
+    findDependenciesInEnvironment({
+      pathLive: "name",
+      type: "Parameter",
+      group: "SSM",
+      live,
+      lives,
+    }),
     {
       type: "Role",
       group: "IAM",

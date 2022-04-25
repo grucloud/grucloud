@@ -8,14 +8,6 @@ exports.createResources = () => [
     group: "CloudWatchLogs",
     name: "/aws/rds/cluster/cluster-postgres-stateless/postgresql",
   },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "RDSOSMetrics",
-    properties: ({}) => ({
-      retentionInDays: 30,
-    }),
-  },
   { type: "KeyPair", group: "EC2", name: "kp-postgres-stateless" },
   {
     type: "Vpc",
