@@ -85,6 +85,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Aws
 
+- retry on EHOSTUNREACH
 - gc gencode lambda with java.
 - AWS::SSM::Document
 - AWS::Glue::Job

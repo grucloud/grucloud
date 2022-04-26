@@ -567,6 +567,7 @@ module.exports = pipe([
           pipe([
             tap((params) => {
               assert(targetResources);
+              assert(lives);
             }),
             assign({
               IpPermissions: getIpPermissions({
