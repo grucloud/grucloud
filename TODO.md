@@ -2,6 +2,44 @@
 
 - check stage for all providers
 
+## Aws
+
+- retry on EHOSTUNREACH
+- gc gencode lambda with java.
+- AWS::SSM::Document
+- AWS::Glue::Job
+- AWS::Route53::RecordSetGroup
+- AWS::Route53::HealthCheck
+- AWS::Route53::RecordSetGroup
+- AWS::AmazonMQ::Broker
+- AWS::Kinesis::Stream
+- AWS::Pinpoint::App
+- AWS::CodeBuild::Project
+- AWS::RUM::AppMonitor
+- AWS::Cognito::IdentityPool
+- AWS::Cognito::IdentityPoolRoleAttachment
+- AWS::CloudFront::CachePolicy
+- AWS::WAFv2::WebACL
+- AWS::WAFv2::WebACLAssociation
+- AWS::ApiGateway::UsagePlan
+- AWS::CloudWatch::Alarm
+- AWS::CloudWatch::Dashboard
+
+- apprunner example npm test
+- inferName Lambda layer
+- inferName OpenIDConnectProvider
+- example vpc-use still using make and use
+- RDS DBCluster AvailabilityZones
+- inferName Route Table
+- Nat gateway handle deleting
+- EC2 Instance placement
+- resource schema
+- document create key pair
+- UserData: ec2 update and displayResource
+- Resource pages
+- aws_route53_delegation_set
+- s3 analytics configuration
+
 ## Refactoring
 
 ## Common:
@@ -82,44 +120,6 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 ## Aws2gc
 
 - ec2 image
-
-## Aws
-
-- retry on EHOSTUNREACH
-- gc gencode lambda with java.
-- AWS::SSM::Document
-- AWS::Glue::Job
-- AWS::Route53::RecordSetGroup
-- AWS::Route53::HealthCheck
-- AWS::Route53::RecordSetGroup
-- AWS::AmazonMQ::Broker
-- AWS::Kinesis::Stream
-- AWS::Pinpoint::App
-- AWS::CodeBuild::Project
-- AWS::RUM::AppMonitor
-- AWS::Cognito::IdentityPool
-- AWS::Cognito::IdentityPoolRoleAttachment
-- AWS::CloudFront::CachePolicy
-- AWS::WAFv2::WebACL
-- AWS::WAFv2::WebACLAssociation
-- AWS::ApiGateway::UsagePlan
-- AWS::CloudWatch::Alarm
-- AWS::CloudWatch::Dashboard
-
-- apprunner example npm test
-- inferName Lambda layer
-- inferName OpenIDConnectProvider
-- example vpc-use still using make and use
-- RDS DBCluster AvailabilityZones
-- inferName Route Table
-- Nat gateway handle deleting
-- EC2 Instance placement
-- resource schema
-- document create key pair
-- UserData: ec2 update and displayResource
-- Resource pages
-- aws_route53_delegation_set
-- s3 analytics configuration
 
 ## TODO Goggle
 
