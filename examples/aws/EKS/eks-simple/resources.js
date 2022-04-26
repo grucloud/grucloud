@@ -195,8 +195,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
+      GroupName: "ClusterSharedNodeSecurityGroup",
       Description: "Communication between all nodes in the cluster",
     }),
     dependencies: () => ({
@@ -206,8 +206,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "ControlPlaneSecurityGroup",
     properties: ({}) => ({
+      GroupName: "ControlPlaneSecurityGroup",
       Description:
         "Communication between the control plane and worker nodegroups",
     }),
@@ -218,7 +218,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "eks-cluster-sg-my-cluster-1909614887",
     readOnly: true,
     filterLives: ({ resources }) =>
       pipe([
@@ -245,8 +244,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: ["ClusterSharedNodeSecurityGroup"],
+      securityGroup: "sg::VPC::ClusterSharedNodeSecurityGroup",
+      securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   {
@@ -258,21 +257,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: ["eks-cluster-sg-my-cluster-1909614887"],
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-      },
-    }),
-    dependencies: () => ({
-      securityGroup: "eks-cluster-sg-my-cluster-1909614887",
-      securityGroupFrom: ["ClusterSharedNodeSecurityGroup"],
+      securityGroup: "sg::VPC::eks-cluster-sg-my-cluster-1909614887",
+      securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   { type: "ElasticIpAddress", group: "EC2", name: "NATIP" },
@@ -300,7 +286,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroups: ["eks-cluster-sg-my-cluster-1909614887"],
+      securityGroups: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   {
@@ -319,7 +305,7 @@ exports.createResources = () => [
         "SubnetPublicUSEAST1D",
         "SubnetPublicUSEAST1F",
       ],
-      securityGroups: ["ControlPlaneSecurityGroup"],
+      securityGroups: ["sg::VPC::ControlPlaneSecurityGroup"],
       role: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     }),
   },
@@ -354,14 +340,13 @@ exports.createResources = () => [
     group: "IAM",
     name: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "eks.amazonaws.com",
+              Service: `eks.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -416,14 +401,13 @@ exports.createResources = () => [
     group: "IAM",
     name: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "ec2.amazonaws.com",
+              Service: `ec2.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },

@@ -419,6 +419,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         or([
           eq(get("statusCode"), 404),
           and([eq(get("statusCode"), 400), isAwsError("BadRequest")]),
+          isAwsError("NotFound"),
         ]),
         () => false,
         (error) => {

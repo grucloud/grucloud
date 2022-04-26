@@ -19,15 +19,15 @@
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_aws_</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="51,-54 51,-137 160,-137 160,-54 51,-54"/>
-<text text-anchor="start" x="105.36" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="42,-54 42,-137 170,-137 170,-54 42,-54"/>
+<text text-anchor="start" x="105.86" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
 <!-- Group::my&#45;group -->
 <g id="node1" class="node">
 <title>Group::my&#45;group</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="152,-129 59,-129 59,-71 152,-71 152,-129"/>
-<text text-anchor="start" x="71.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Group</text>
-<text text-anchor="start" x="71.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;group</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="162,-129 50,-129 50,-71 162,-71 162,-129"/>
+<text text-anchor="start" x="62" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Group</text>
+<text text-anchor="start" x="62" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">my&#45;group</text>
 </g>
 </g>
 </svg>

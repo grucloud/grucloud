@@ -24,7 +24,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "security-group-cluster-test",
+      securityGroup: "sg::vpc-test-sg::security-group-cluster-test",
     }),
   },
 ];

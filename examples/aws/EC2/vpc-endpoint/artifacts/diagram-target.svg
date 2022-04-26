@@ -26,14 +26,14 @@
 <g id="node1" class="node">
 <title>Vpc::project&#45;vpc&#45;endpoint&#45;vpc</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="830,-205 628,-205 628,-147 830,-147 830,-205"/>
-<text text-anchor="start" x="640" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Vpc</text>
+<text text-anchor="start" x="640" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
 <text text-anchor="start" x="640" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">project&#45;vpc&#45;endpoint&#45;vpc</text>
 </g>
 <!-- Subnet::project&#45;vpc&#45;endpoint&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="node2" class="node">
 <title>Subnet::project&#45;vpc&#45;endpoint&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="592,-281 323,-281 323,-223 592,-223 592,-281"/>
-<text text-anchor="start" x="335.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Subnet</text>
+<text text-anchor="start" x="335.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
 <text text-anchor="start" x="335.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">project&#45;vpc&#45;endpoint&#45;subnet&#45;priv...</text>
 </g>
 <!-- Subnet::project&#45;vpc&#45;endpoint&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::project&#45;vpc&#45;endpoint&#45;vpc -->
@@ -46,7 +46,7 @@
 <g id="node3" class="node">
 <title>RouteTable::project&#45;vpc&#45;endpoint&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="589,-205 326,-205 326,-147 589,-147 589,-205"/>
-<text text-anchor="start" x="338.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RouteTable</text>
+<text text-anchor="start" x="338.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
 <text text-anchor="start" x="338.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">project&#45;vpc&#45;endpoint&#45;rtb&#45;private...</text>
 </g>
 <!-- RouteTable::project&#45;vpc&#45;endpoint&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::project&#45;vpc&#45;endpoint&#45;vpc -->
@@ -59,7 +59,7 @@
 <g id="node4" class="node">
 <title>RouteTableAssociation::rt&#45;assoc::project&#45;vpc&#45;endpoint&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::project&#45;vpc&#45;endpoint&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="286.5,-243 24.5,-243 24.5,-185 286.5,-185 286.5,-243"/>
-<text text-anchor="start" x="36.5" y="-223.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RouteTableAssociation</text>
+<text text-anchor="start" x="36.5" y="-223.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
 <text text-anchor="start" x="36.5" y="-198.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::project&#45;vpc&#45;endpoint&#45;r...</text>
 </g>
 <!-- RouteTableAssociation::rt&#45;assoc::project&#45;vpc&#45;endpoint&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::project&#45;vpc&#45;endpoint&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::project&#45;vpc&#45;endpoint&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
@@ -78,7 +78,7 @@
 <g id="node5" class="node">
 <title>Route::project&#45;vpc&#45;endpoint&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;vpce</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="287,-167 24,-167 24,-109 287,-109 287,-167"/>
-<text text-anchor="start" x="36.5" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route</text>
+<text text-anchor="start" x="36.5" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
 <text text-anchor="start" x="36.5" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">project&#45;vpc&#45;endpoint&#45;rtb&#45;private...</text>
 </g>
 <!-- Route::project&#45;vpc&#45;endpoint&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;vpce&#45;&gt;RouteTable::project&#45;vpc&#45;endpoint&#45;rtb&#45;private1&#45;us&#45;east&#45;1a -->
@@ -91,7 +91,7 @@
 <g id="node6" class="node">
 <title>VpcEndpoint::project&#45;vpc&#45;endpoint&#45;vpce&#45;s3</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="574.5,-129 340.5,-129 340.5,-71 574.5,-71 574.5,-129"/>
-<text text-anchor="start" x="352.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">VpcEndpoint</text>
+<text text-anchor="start" x="352.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::VpcEndpoint</text>
 <text text-anchor="start" x="352.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">project&#45;vpc&#45;endpoint&#45;vpce&#45;s3</text>
 </g>
 <!-- Route::project&#45;vpc&#45;endpoint&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;vpce&#45;&gt;VpcEndpoint::project&#45;vpc&#45;endpoint&#45;vpce&#45;s3 -->

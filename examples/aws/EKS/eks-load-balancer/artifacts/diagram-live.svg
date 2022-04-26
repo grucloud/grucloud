@@ -96,7 +96,7 @@
 <text text-anchor="start" x="1337" y="-484.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">SubnetPublicUSEAST1D</text>
 </g>
 <!-- AutoScalingGroup::::asg&#45;ng&#45;1&#45;&gt;Subnet::::SubnetPublicUSEAST1D -->
-<g id="edge5" class="edge">
+<g id="edge6" class="edge">
 <title>AutoScalingGroup::::asg&#45;ng&#45;1&#45;&gt;Subnet::::SubnetPublicUSEAST1D</title>
 <path fill="none" stroke="#707070" d="M945.77,-500C1056.06,-500 1210.65,-500 1314.14,-500"/>
 <polygon fill="#707070" stroke="#707070" points="1314.3,-503.5 1324.3,-500 1314.3,-496.5 1314.3,-503.5"/>
@@ -109,7 +109,7 @@
 <text text-anchor="start" x="1337" y="-570.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">SubnetPublicUSEAST1F</text>
 </g>
 <!-- AutoScalingGroup::::asg&#45;ng&#45;1&#45;&gt;Subnet::::SubnetPublicUSEAST1F -->
-<g id="edge6" class="edge">
+<g id="edge5" class="edge">
 <title>AutoScalingGroup::::asg&#45;ng&#45;1&#45;&gt;Subnet::::SubnetPublicUSEAST1F</title>
 <path fill="none" stroke="#707070" d="M945.52,-505.49C1039.21,-511 1167.06,-521.86 1278,-543 1293.68,-545.99 1310.09,-549.94 1326.03,-554.24"/>
 <polygon fill="#707070" stroke="#707070" points="1325.31,-557.67 1335.88,-556.96 1327.17,-550.92 1325.31,-557.67"/>
@@ -535,13 +535,13 @@
 <text text-anchor="start" x="1055.5" y="-580.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">load&#45;balancer</text>
 </g>
 <!-- LoadBalancer::::load&#45;balancer&#45;&gt;Subnet::::SubnetPublicUSEAST1D -->
-<g id="edge68" class="edge">
+<g id="edge69" class="edge">
 <title>LoadBalancer::::load&#45;balancer&#45;&gt;Subnet::::SubnetPublicUSEAST1D</title>
 <path fill="none" stroke="#707070" d="M1225.93,-566.94C1258.35,-556.04 1295.38,-543.59 1328.64,-532.4"/>
 <polygon fill="#707070" stroke="#707070" points="1330,-535.64 1338.37,-529.13 1327.77,-529 1330,-535.64"/>
 </g>
 <!-- LoadBalancer::::load&#45;balancer&#45;&gt;Subnet::::SubnetPublicUSEAST1F -->
-<g id="edge69" class="edge">
+<g id="edge68" class="edge">
 <title>LoadBalancer::::load&#45;balancer&#45;&gt;Subnet::::SubnetPublicUSEAST1F</title>
 <path fill="none" stroke="#707070" d="M1233.77,-592.7C1259.7,-591.79 1288.04,-590.8 1314.78,-589.86"/>
 <polygon fill="#707070" stroke="#707070" points="1315.07,-593.35 1324.94,-589.5 1314.82,-586.36 1315.07,-593.35"/>

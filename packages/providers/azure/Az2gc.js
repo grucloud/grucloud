@@ -6,7 +6,7 @@ const path = require("path");
 const {
   readModel,
   generatorMain,
-  createWriterSpec,
+  createWritersSpec,
   filterModel,
 } = require("@grucloud/core/generatorUtils");
 const { configTpl } = require("./configTpl");
@@ -56,14 +56,14 @@ const downloadBlobs = ({ lives, commandOptions, programOptions }) =>
     ),
   ])();
 
-const downloadAssets = ({ writersSpec, commandOptions, programOptions }) =>
+const downloadAssets = ({ specs, commandOptions, programOptions }) =>
   pipe([
     tap((params) => {
-      assert(writersSpec);
+      assert(specs);
     }),
     fork({
       lives: readModel({
-        writersSpec: createWriterSpec(spec),
+        writersSpec: createWritersSpec(specs),
         commandOptions,
         programOptions,
       }),

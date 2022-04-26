@@ -38,7 +38,7 @@ exports.createResources = () => [
     type: "Policy",
     group: "IAM",
     name: "sqs-lambda-demo-lambdapolicy",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       PolicyDocument: {
         Statement: [
           {
@@ -48,11 +48,9 @@ exports.createResources = () => [
               "sqs:GetQueueAttributes",
             ],
             Effect: "Allow",
-            Resource: `${getId({
-              type: "Queue",
-              group: "SQS",
-              name: "sqs-lambda-demo",
-            })}`,
+            Resource: `arn:aws:sqs:${
+              config.region
+            }:${config.accountId()}:sqs-lambda-demo`,
           },
           {
             Action: ["logs:CreateLogStream", "logs:PutLogEvents"],

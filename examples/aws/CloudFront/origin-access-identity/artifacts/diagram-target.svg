@@ -14,20 +14,20 @@
 <text text-anchor="start" x="12.5" y="-167.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_aws</title>
-<polygon fill="#f5f5f5" stroke="#f5f5f5" points="13,-8 13,-145 318,-145 318,-8 13,-8"/>
+<polygon fill="#f5f5f5" stroke="#f5f5f5" points="9,-8 9,-145 322,-145 322,-8 9,-8"/>
 <text text-anchor="start" x="103.5" y="-23" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#707070">Provider aws</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_aws_</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="21,-54 21,-137 310,-137 310,-54 21,-54"/>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="17,-54 17,-137 314,-137 314,-54 17,-54"/>
 <text text-anchor="start" x="165.36" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
 <!-- OriginAccessIdentity::access&#45;identity&#45;cloudfront&#45;demo.grucloud.org.s3.us&#45;east&#45;1.amazonaws.com -->
 <g id="node1" class="node">
 <title>OriginAccessIdentity::access&#45;identity&#45;cloudfront&#45;demo.grucloud.org.s3.us&#45;east&#45;1.amazonaws.com</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="302,-129 29,-129 29,-71 302,-71 302,-129"/>
-<text text-anchor="start" x="41.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">OriginAccessIdentity</text>
-<text text-anchor="start" x="41.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">access&#45;identity&#45;cloudfront&#45;demo....</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="306,-129 25,-129 25,-71 306,-71 306,-129"/>
+<text text-anchor="start" x="37.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudFront::OriginAccessIdentity</text>
+<text text-anchor="start" x="37.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">access&#45;identity&#45;cloudfront&#45;demo....</text>
 </g>
 </g>
 </svg>

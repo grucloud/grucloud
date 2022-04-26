@@ -26,14 +26,14 @@
 <g id="node1" class="node">
 <title>Bucket::grucloud&#45;s3&#45;sns&#45;test</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="196,-129 24,-129 24,-71 196,-71 196,-129"/>
-<text text-anchor="start" x="36" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="36" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Bucket</text>
 <text text-anchor="start" x="36" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;s3&#45;sns&#45;test</text>
 </g>
 <!-- Topic::sam&#45;app&#45;SNSTopic&#45;15XRP2Y8B6PO1 -->
 <g id="node2" class="node">
 <title>Topic::sam&#45;app&#45;SNSTopic&#45;15XRP2Y8B6PO1</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="531,-129 232,-129 232,-71 531,-71 531,-129"/>
-<text text-anchor="start" x="244.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Topic</text>
+<text text-anchor="start" x="244.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SNS::Topic</text>
 <text text-anchor="start" x="244.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;SNSTopic&#45;15XRP2Y8B6PO1</text>
 </g>
 <!-- Bucket::grucloud&#45;s3&#45;sns&#45;test&#45;&gt;Topic::sam&#45;app&#45;SNSTopic&#45;15XRP2Y8B6PO1 -->

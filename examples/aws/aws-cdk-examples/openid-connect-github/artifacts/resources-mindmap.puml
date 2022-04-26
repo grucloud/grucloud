@@ -4,10 +4,8 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ CloudWatchLogs
-++++ LogGroup (2)
+++++ LogGroup (1)
 +++ IAM
 ++++ OpenIDConnectProvider (1)
 ++++ Role (2)
-+++ Lambda
-++++ Function (1)
 @endmindmap

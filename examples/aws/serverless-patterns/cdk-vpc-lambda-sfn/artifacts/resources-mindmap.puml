@@ -4,7 +4,7 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ CloudWatchLogs
-++++ LogGroup (1)
+++++ LogGroup (3)
 +++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)

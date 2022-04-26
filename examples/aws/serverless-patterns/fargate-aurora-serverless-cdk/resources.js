@@ -237,8 +237,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "CdkStack-AuroraServerlessClusterSecurityGroup5A67466E-X9V6DZN5GHP3",
     properties: ({}) => ({
+      GroupName:
+        "CdkStack-AuroraServerlessClusterSecurityGroup5A67466E-X9V6DZN5GHP3",
       Description: "RDS security group",
     }),
     dependencies: () => ({
@@ -248,8 +249,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
     properties: ({}) => ({
+      GroupName: "CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
       Description:
         "Automatically created Security Group for ELB CdkStackFargateServiceLB29CE988E",
     }),
@@ -260,8 +261,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
     properties: ({}) => ({
+      GroupName: "CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
       Description: "CdkStack/FargateService/Service/SecurityGroup",
     }),
     dependencies: () => ({
@@ -286,7 +287,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
+        "sg::CdkStack/Vpc::CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
     }),
   },
   {
@@ -301,9 +302,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
+        "sg::CdkStack/Vpc::CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
       securityGroupFrom: [
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
+        "sg::CdkStack/Vpc::CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
       ],
     }),
   },
@@ -319,9 +320,9 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       securityGroup:
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
+        "sg::CdkStack/Vpc::CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
       securityGroupFrom: [
-        "CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
+        "sg::CdkStack/Vpc::CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
       ],
     }),
   },
@@ -504,7 +505,7 @@ exports.createResources = () => [
       taskDefinition: "CdkStackFargateServiceTaskDef2C533A52",
       subnets: ["CdkStack/Vpc/PrivateSubnet1", "CdkStack/Vpc/PrivateSubnet2"],
       securityGroups: [
-        "CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
+        "sg::CdkStack/Vpc::CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
       ],
       targetGroups: ["CdkSt-Farga-1SEGM16UZSRPF"],
     }),
@@ -521,7 +522,7 @@ exports.createResources = () => [
     dependencies: () => ({
       subnets: ["CdkStack/Vpc/PublicSubnet1", "CdkStack/Vpc/PublicSubnet2"],
       securityGroups: [
-        "CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
+        "sg::CdkStack/Vpc::CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
       ],
     }),
   },
@@ -713,7 +714,7 @@ exports.createResources = () => [
       dbSubnetGroup:
         "cdkstack-auroraserverlessclustersubnets734af39a-c9biv9kwphqk",
       securityGroups: [
-        "CdkStack-AuroraServerlessClusterSecurityGroup5A67466E-X9V6DZN5GHP3",
+        "sg::CdkStack/Vpc::CdkStack-AuroraServerlessClusterSecurityGroup5A67466E-X9V6DZN5GHP3",
       ],
       secret: "aurora-user-secret",
     }),

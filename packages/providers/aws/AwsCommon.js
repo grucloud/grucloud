@@ -931,7 +931,7 @@ exports.replaceAccount = replaceAccount;
 const assignPolicyResource = ({ providerConfig, lives }) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(lives);
     }),
     when(
       get("Resource"),
@@ -953,7 +953,7 @@ exports.assignPolicyResource = assignPolicyResource;
 const replaceStatement = ({ providerConfig, lives }) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(lives);
     }),
     when(
       get("Principal"),

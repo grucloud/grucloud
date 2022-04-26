@@ -67,9 +67,7 @@ exports.createResources = () => [
         apiServerAccessProfile: {
           enablePrivateCluster: false,
         },
-        servicePrincipalProfile: {
-          clientId: "msi",
-        },
+        servicePrincipalProfile: {},
       },
     }),
     dependencies: () => ({

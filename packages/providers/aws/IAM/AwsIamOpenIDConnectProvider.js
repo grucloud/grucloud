@@ -221,7 +221,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { Tags, Url, ...otherProps },
     dependencies: { cluster },
   }) =>
     pipe([
@@ -230,6 +230,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
       }),
       () => otherProps,
       defaultsDeep({
+        Url: `https://${Url}`,
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
       defaultsDeep(clusterProperties({ cluster })),

@@ -121,6 +121,9 @@ module.exports = pipe([
       }),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
+          tap((params) => {
+            assert(lives);
+          }),
           pick([
             "AccelerateConfiguration",
             "ACL",
@@ -229,7 +232,7 @@ module.exports = pipe([
                             ),
                           ]),
                         }),
-                        assignPolicyResource({ providerConfig }),
+                        assignPolicyResource({ providerConfig, lives }),
                       ])
                     ),
                   ]),

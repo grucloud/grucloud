@@ -14,27 +14,27 @@
 <text text-anchor="start" x="12.5" y="-243.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_aws</title>
-<polygon fill="#f5f5f5" stroke="#f5f5f5" points="31.5,-8 31.5,-221 179.5,-221 179.5,-8 31.5,-8"/>
+<polygon fill="#f5f5f5" stroke="#f5f5f5" points="14,-8 14,-221 197,-221 197,-8 14,-8"/>
 <text text-anchor="start" x="43.5" y="-23" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#707070">Provider aws</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_aws_</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="41.5,-54 41.5,-213 169.5,-213 169.5,-54 41.5,-54"/>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="22,-54 22,-213 189,-213 189,-54 22,-54"/>
 <text text-anchor="start" x="105.36" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
 <!-- Registry::default -->
 <g id="node1" class="node">
 <title>Registry::default</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="149.5,-205 61.5,-205 61.5,-147 149.5,-147 149.5,-205"/>
-<text text-anchor="start" x="73.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Registry</text>
-<text text-anchor="start" x="73.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="171.5,-205 39.5,-205 39.5,-147 171.5,-147 171.5,-205"/>
+<text text-anchor="start" x="51.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ECR::Registry</text>
+<text text-anchor="start" x="51.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">default</text>
 </g>
 <!-- Repository::starhackit/lb -->
 <g id="node2" class="node">
 <title>Repository::starhackit/lb</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="161.5,-129 49.5,-129 49.5,-71 161.5,-71 161.5,-129"/>
-<text text-anchor="start" x="61.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Repository</text>
-<text text-anchor="start" x="61.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">starhackit/lb</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="181,-129 30,-129 30,-71 181,-71 181,-129"/>
+<text text-anchor="start" x="42.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ECR::Repository</text>
+<text text-anchor="start" x="42.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">starhackit/lb</text>
 </g>
 </g>
 </svg>

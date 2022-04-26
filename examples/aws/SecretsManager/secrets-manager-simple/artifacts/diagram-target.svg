@@ -14,20 +14,20 @@
 <text text-anchor="start" x="12.5" y="-167.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_aws</title>
-<polygon fill="#f5f5f5" stroke="#f5f5f5" points="95,-8 95,-145 260,-145 260,-8 95,-8"/>
+<polygon fill="#f5f5f5" stroke="#f5f5f5" points="57.5,-8 57.5,-145 297.5,-145 297.5,-8 57.5,-8"/>
 <text text-anchor="start" x="115.5" y="-23" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#707070">Provider aws</text>
 </g>
 <g id="clust2" class="cluster">
 <title>cluster_aws_</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="103,-54 103,-137 252,-137 252,-54 103,-54"/>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="65.5,-54 65.5,-137 289.5,-137 289.5,-54 65.5,-54"/>
 <text text-anchor="start" x="177.36" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
 <!-- Secret::prod/myapp/db -->
 <g id="node1" class="node">
 <title>Secret::prod/myapp/db</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="244,-129 111,-129 111,-71 244,-71 244,-129"/>
-<text text-anchor="start" x="123.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Secret</text>
-<text text-anchor="start" x="123.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">prod/myapp/db</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="281.5,-129 73.5,-129 73.5,-71 281.5,-71 281.5,-129"/>
+<text text-anchor="start" x="85.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SecretsManager::Secret</text>
+<text text-anchor="start" x="85.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">prod/myapp/db</text>
 </g>
 </g>
 </svg>

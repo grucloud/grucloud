@@ -26,14 +26,14 @@
 <g id="node1" class="node">
 <title>Volume::volume&#45;test&#45;volume</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="502.5,-129 336.5,-129 336.5,-71 502.5,-71 502.5,-129"/>
-<text text-anchor="start" x="348.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Volume</text>
+<text text-anchor="start" x="348.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Volume</text>
 <text text-anchor="start" x="348.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">volume&#45;test&#45;volume</text>
 </g>
 <!-- VolumeAttachment::vol&#45;attachment::volume&#45;test&#45;volume::server&#45;4&#45;test&#45;volume -->
 <g id="node2" class="node">
 <title>VolumeAttachment::vol&#45;attachment::volume&#45;test&#45;volume::server&#45;4&#45;test&#45;volume</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="297,-167 24,-167 24,-109 297,-109 297,-167"/>
-<text text-anchor="start" x="36.5" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">VolumeAttachment</text>
+<text text-anchor="start" x="36.5" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::VolumeAttachment</text>
 <text text-anchor="start" x="36.5" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vol&#45;attachment::volume&#45;test&#45;volu...</text>
 </g>
 <!-- VolumeAttachment::vol&#45;attachment::volume&#45;test&#45;volume::server&#45;4&#45;test&#45;volume&#45;&gt;Volume::volume&#45;test&#45;volume -->
@@ -46,7 +46,7 @@
 <g id="node3" class="node">
 <title>Instance::server&#45;4&#45;test&#45;volume</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="506,-205 333,-205 333,-147 506,-147 506,-205"/>
-<text text-anchor="start" x="345.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Instance</text>
+<text text-anchor="start" x="345.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Instance</text>
 <text text-anchor="start" x="345.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">server&#45;4&#45;test&#45;volume</text>
 </g>
 <!-- VolumeAttachment::vol&#45;attachment::volume&#45;test&#45;volume::server&#45;4&#45;test&#45;volume&#45;&gt;Instance::server&#45;4&#45;test&#45;volume -->

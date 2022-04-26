@@ -26,14 +26,14 @@
 <g id="node1" class="node">
 <title>Table::sam&#45;app&#45;DynamoTable&#45;1TM3ILOZ1A36J</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1080,-139 755,-139 755,-81 1080,-81 1080,-139"/>
-<text text-anchor="start" x="767.5" y="-119.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Table</text>
+<text text-anchor="start" x="767.5" y="-119.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">DynamoDB::Table</text>
 <text text-anchor="start" x="767.5" y="-94.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;DynamoTable&#45;1TM3ILOZ1A36...</text>
 </g>
 <!-- Role::sam&#45;app&#45;LambdaPutDynamoDBRole&#45;1JME1YWZ5JTDV -->
 <g id="node2" class="node">
 <title>Role::sam&#45;app&#45;LambdaPutDynamoDBRole&#45;1JME1YWZ5JTDV</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="719,-149 393,-149 393,-91 719,-91 719,-149"/>
-<text text-anchor="start" x="405" y="-129.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="405" y="-129.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="405" y="-104.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;LambdaPutDynamoDBRole&#45;1J...</text>
 </g>
 <!-- Role::sam&#45;app&#45;LambdaPutDynamoDBRole&#45;1JME1YWZ5JTDV&#45;&gt;Table::sam&#45;app&#45;DynamoTable&#45;1TM3ILOZ1A36J -->
@@ -46,7 +46,7 @@
 <g id="node3" class="node">
 <title>Function::sam&#45;app&#45;LambdaPutDynamoDB&#45;sV19pC5rYHdK</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="357,-139 24,-139 24,-81 357,-81 357,-139"/>
-<text text-anchor="start" x="36.5" y="-119.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Function</text>
+<text text-anchor="start" x="36.5" y="-119.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::Function</text>
 <text text-anchor="start" x="36.5" y="-94.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;LambdaPutDynamoDB&#45;sV19pC...</text>
 </g>
 <!-- Function::sam&#45;app&#45;LambdaPutDynamoDB&#45;sV19pC5rYHdK&#45;&gt;Table::sam&#45;app&#45;DynamoTable&#45;1TM3ILOZ1A36J -->

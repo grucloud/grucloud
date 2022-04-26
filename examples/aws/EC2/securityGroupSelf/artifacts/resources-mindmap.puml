@@ -5,6 +5,6 @@ skinparam monochrome true
 ++ aws
 +++ EC2
 ++++ Vpc (1)
-++++ SecurityGroup (2)
-++++ SecurityGroupRuleIngress (2)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
 @endmindmap

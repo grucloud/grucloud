@@ -172,13 +172,13 @@
 <polygon fill="#707070" stroke="#707070" points="332.04,-204.38 341.93,-200.57 331.82,-197.38 332.04,-204.38"/>
 </g>
 <!-- DBSubnetGroup::::aurora&#45;serverless&#45;subnet&#45;group&#45;&gt;Subnet::::VpcauroraisolatedSubnet1Subnet5370B90B -->
-<g id="edge14" class="edge">
+<g id="edge13" class="edge">
 <title>DBSubnetGroup::::aurora&#45;serverless&#45;subnet&#45;group&#45;&gt;Subnet::::VpcauroraisolatedSubnet1Subnet5370B90B</title>
 <path fill="none" stroke="#707070" d="M616.66,-276.49C633.21,-277.08 650.35,-277.7 667.37,-278.31"/>
 <polygon fill="#707070" stroke="#707070" points="667.25,-281.81 677.37,-278.67 667.5,-274.81 667.25,-281.81"/>
 </g>
 <!-- DBSubnetGroup::::aurora&#45;serverless&#45;subnet&#45;group&#45;&gt;Subnet::::VpcauroraisolatedSubnet2SubnetCB56E2A8 -->
-<g id="edge13" class="edge">
+<g id="edge14" class="edge">
 <title>DBSubnetGroup::::aurora&#45;serverless&#45;subnet&#45;group&#45;&gt;Subnet::::VpcauroraisolatedSubnet2SubnetCB56E2A8</title>
 <path fill="none" stroke="#707070" d="M605.56,-242.99C617.2,-239.97 628.84,-236.94 640,-234 662.3,-228.13 686.08,-221.79 708.92,-215.65"/>
 <polygon fill="#707070" stroke="#707070" points="709.89,-219.01 718.64,-213.04 708.07,-212.26 709.89,-219.01"/>

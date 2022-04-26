@@ -4,6 +4,14 @@ const { find } = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Certificate",
+    group: "ACM",
+    name: "grucloud.org",
+    properties: ({}) => ({
+      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
+    }),
+  },
+  {
     type: "AutoScalingGroup",
     group: "AutoScaling",
     name: "asg-ng-1",
@@ -13,6 +21,20 @@ exports.createResources = () => [
       MaxSize: 1,
       DesiredCapacity: 1,
       HealthCheckGracePeriod: 15,
+      Tags: [
+        {
+          Key: "k8s.io/cluster-autoscaler/enabled",
+          Value: "true",
+        },
+        {
+          Key: "k8s.io/cluster-autoscaler/my-cluster",
+          Value: "owned",
+        },
+        {
+          Key: "kubernetes.io/cluster/my-cluster",
+          Value: "owned",
+        },
+      ],
     }),
     dependencies: () => ({
       subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
@@ -32,14 +54,6 @@ exports.createResources = () => [
     dependencies: () => ({
       autoScalingGroup: "asg-ng-1",
       targetGroup: "target-group-web",
-    }),
-  },
-  {
-    type: "Certificate",
-    group: "ACM",
-    name: "grucloud.org",
-    properties: ({}) => ({
-      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
     }),
   },
   {
@@ -234,8 +248,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "ClusterSharedNodeSecurityGroup",
     properties: ({}) => ({
+      GroupName: "ClusterSharedNodeSecurityGroup",
       Description: "Communication between all nodes in the cluster",
     }),
     dependencies: () => ({
@@ -245,8 +259,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "ControlPlaneSecurityGroup",
     properties: ({}) => ({
+      GroupName: "ControlPlaneSecurityGroup",
       Description:
         "Communication between the control plane and worker nodegroups",
     }),
@@ -257,7 +271,6 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "eks-cluster-sg-my-cluster-1909614887",
     readOnly: true,
     filterLives: ({ resources }) =>
       pipe([
@@ -278,8 +291,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "load-balancer",
     properties: ({}) => ({
+      GroupName: "load-balancer",
       Description: "Load Balancer",
     }),
     dependencies: () => ({
@@ -295,8 +308,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: ["ClusterSharedNodeSecurityGroup"],
+      securityGroup: "sg::VPC::ClusterSharedNodeSecurityGroup",
+      securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   {
@@ -308,8 +321,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: ["eks-cluster-sg-my-cluster-1909614887"],
+      securityGroup: "sg::VPC::eks-cluster-sg-my-cluster-1909614887",
+      securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   {
@@ -317,44 +330,18 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "-1",
-      },
-    }),
-    dependencies: () => ({
-      securityGroup: "eks-cluster-sg-my-cluster-1909614887",
-      securityGroupFrom: ["ClusterSharedNodeSecurityGroup"],
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-      },
-    }),
-    dependencies: () => ({
-      securityGroup: "eks-cluster-sg-my-cluster-1909614887",
-      securityGroupFrom: ["load-balancer"],
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 443,
-        ToPort: 443,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
           },
         ],
+        ToPort: 443,
       },
     }),
     dependencies: () => ({
-      securityGroup: "load-balancer",
+      securityGroup: "sg::VPC::load-balancer",
     }),
   },
   {
@@ -362,18 +349,18 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 80,
-        ToPort: 80,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
           },
         ],
+        ToPort: 80,
       },
     }),
     dependencies: () => ({
-      securityGroup: "load-balancer",
+      securityGroup: "sg::VPC::load-balancer",
     }),
   },
   { type: "ElasticIpAddress", group: "EC2", name: "NATIP" },
@@ -405,9 +392,6 @@ exports.createResources = () => [
     type: "Cluster",
     group: "EKS",
     name: "my-cluster",
-    properties: ({}) => ({
-      version: "1.20",
-    }),
     dependencies: () => ({
       subnets: [
         "SubnetPrivateUSEAST1D",
@@ -415,7 +399,7 @@ exports.createResources = () => [
         "SubnetPublicUSEAST1D",
         "SubnetPublicUSEAST1F",
       ],
-      securityGroups: ["ControlPlaneSecurityGroup"],
+      securityGroups: ["sg::VPC::ControlPlaneSecurityGroup"],
       role: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     }),
   },
@@ -426,9 +410,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       capacityType: "ON_DEMAND",
       scalingConfig: {
-        minSize: 1,
-        maxSize: 1,
         desiredSize: 1,
+        maxSize: 1,
+        minSize: 1,
       },
       labels: {
         "alpha.eksctl.io/cluster-name": "my-cluster",
@@ -453,7 +437,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
-      securityGroups: ["load-balancer"],
+      securityGroups: ["sg::VPC::load-balancer"],
     }),
   },
   {
@@ -464,17 +448,7 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 30020,
       HealthCheckProtocol: "HTTP",
-      HealthCheckPort: "traffic-port",
-      HealthCheckEnabled: true,
-      HealthCheckIntervalSeconds: 30,
-      HealthCheckTimeoutSeconds: 5,
-      HealthyThresholdCount: 5,
       HealthCheckPath: "/api/v1/version",
-      Matcher: {
-        HttpCode: "200",
-      },
-      TargetType: "instance",
-      ProtocolVersion: "HTTP1",
     }),
     dependencies: () => ({
       vpc: "VPC",
@@ -488,17 +462,6 @@ exports.createResources = () => [
       Protocol: "HTTP",
       Port: 30010,
       HealthCheckProtocol: "HTTP",
-      HealthCheckPort: "traffic-port",
-      HealthCheckEnabled: true,
-      HealthCheckIntervalSeconds: 30,
-      HealthCheckTimeoutSeconds: 5,
-      HealthyThresholdCount: 5,
-      HealthCheckPath: "/",
-      Matcher: {
-        HttpCode: "200",
-      },
-      TargetType: "instance",
-      ProtocolVersion: "HTTP1",
     }),
     dependencies: () => ({
       vpc: "VPC",
@@ -598,14 +561,13 @@ exports.createResources = () => [
     group: "IAM",
     name: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "eks.amazonaws.com",
+              Service: `eks.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -660,14 +622,13 @@ exports.createResources = () => [
     group: "IAM",
     name: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "ec2.amazonaws.com",
+              Service: `ec2.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -675,21 +636,21 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
+          PolicyName: "AmazonEKSWorkerNodePolicy",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+        },
+        {
           PolicyName: "AmazonEC2ContainerRegistryReadOnly",
           PolicyArn:
             "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
         },
         {
-          PolicyName: "AmazonEKSWorkerNodePolicy",
-          PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+          PolicyName: "AmazonSSMManagedInstanceCore",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
         },
         {
           PolicyName: "AmazonEKS_CNI_Policy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-        },
-        {
-          PolicyName: "AmazonSSMManagedInstanceCore",
-          PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
         },
       ],
     }),

@@ -8,8 +8,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "my-security-group",
     properties: ({}) => ({
+      GroupName: "my-security-group",
       Description: "my security group",
     }),
     dependencies: () => ({
@@ -21,18 +21,18 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 22,
-        ToPort: 22,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
           },
         ],
+        ToPort: 22,
       },
     }),
     dependencies: () => ({
-      securityGroup: "my-security-group",
+      securityGroup: "sg::vpc-default::my-security-group",
     }),
   },
   {
@@ -48,7 +48,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       keyPair: "kp-ec2",
-      securityGroups: ["my-security-group"],
+      securityGroups: ["sg::vpc-default::my-security-group"],
     }),
   },
 ];

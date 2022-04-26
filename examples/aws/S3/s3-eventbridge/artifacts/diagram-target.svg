@@ -26,14 +26,14 @@
 <g id="node1" class="node">
 <title>Trail::CloudTrailForS3ImagePushEvents</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="310,-281 37,-281 37,-223 310,-223 310,-281"/>
-<text text-anchor="start" x="49.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Trail</text>
+<text text-anchor="start" x="49.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudTrail::Trail</text>
 <text text-anchor="start" x="49.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">CloudTrailForS3ImagePushEvents</text>
 </g>
 <!-- Bucket::grucloud&#45;s3&#45;event&#45;bridge&#45;logs -->
 <g id="node5" class="node">
 <title>Bucket::grucloud&#45;s3&#45;event&#45;bridge&#45;logs</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="646,-281 406,-281 406,-223 646,-223 646,-281"/>
-<text text-anchor="start" x="418" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="418" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Bucket</text>
 <text text-anchor="start" x="418" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;s3&#45;event&#45;bridge&#45;logs</text>
 </g>
 <!-- Trail::CloudTrailForS3ImagePushEvents&#45;&gt;Bucket::grucloud&#45;s3&#45;event&#45;bridge&#45;logs -->
@@ -46,14 +46,14 @@
 <g id="node2" class="node">
 <title>Rule::sam&#45;app&#45;S3NewImageEvent&#45;W0968CSQOUFJ</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="693,-129 359,-129 359,-71 693,-71 693,-129"/>
-<text text-anchor="start" x="371" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Rule</text>
+<text text-anchor="start" x="371" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::Rule</text>
 <text text-anchor="start" x="371" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;S3NewImageEvent&#45;W0968CSQ...</text>
 </g>
 <!-- Target::target::sam&#45;app&#45;S3NewImageEvent&#45;W0968CSQOUFJ::S3NewImageEvent -->
 <g id="node3" class="node">
 <title>Target::target::sam&#45;app&#45;S3NewImageEvent&#45;W0968CSQOUFJ::S3NewImageEvent</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="323,-205 24,-205 24,-147 323,-147 323,-205"/>
-<text text-anchor="start" x="36.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target</text>
+<text text-anchor="start" x="36.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::Target</text>
 <text text-anchor="start" x="36.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">target::sam&#45;app&#45;S3NewImageEvent&#45;...</text>
 </g>
 <!-- Target::target::sam&#45;app&#45;S3NewImageEvent&#45;W0968CSQOUFJ::S3NewImageEvent&#45;&gt;Rule::sam&#45;app&#45;S3NewImageEvent&#45;W0968CSQOUFJ -->
@@ -66,7 +66,7 @@
 <g id="node6" class="node">
 <title>Queue::sam&#45;app&#45;NewImageEventQueue&#45;DGEXqRa9ZM4Z</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="692,-205 360,-205 360,-147 692,-147 692,-205"/>
-<text text-anchor="start" x="372" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Queue</text>
+<text text-anchor="start" x="372" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SQS::Queue</text>
 <text text-anchor="start" x="372" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;NewImageEventQueue&#45;DGEXq...</text>
 </g>
 <!-- Target::target::sam&#45;app&#45;S3NewImageEvent&#45;W0968CSQOUFJ::S3NewImageEvent&#45;&gt;Queue::sam&#45;app&#45;NewImageEventQueue&#45;DGEXqRa9ZM4Z -->
@@ -79,7 +79,7 @@
 <g id="node4" class="node">
 <title>Bucket::grucloud&#45;s3&#45;event&#45;bridge&#45;images</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="304.5,-129 42.5,-129 42.5,-71 304.5,-71 304.5,-129"/>
-<text text-anchor="start" x="54.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="54.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Bucket</text>
 <text text-anchor="start" x="54.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">grucloud&#45;s3&#45;event&#45;bridge&#45;images</text>
 </g>
 </g>

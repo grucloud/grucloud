@@ -15,8 +15,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "ClusterSharedNode",
     properties: ({}) => ({
+      GroupName: "ClusterSharedNode",
       Description: "Communication between all nodes in the cluster",
     }),
     dependencies: () => ({
@@ -32,8 +32,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "ClusterSharedNode",
-      securityGroupFrom: ["ClusterSharedNode"],
+      securityGroup: "sg::VPC::ClusterSharedNode",
+      securityGroupFrom: ["sg::VPC::ClusterSharedNode"],
     }),
   },
 ];

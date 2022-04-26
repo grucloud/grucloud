@@ -26,54 +26,54 @@
 <g id="node1" class="node">
 <title>Role::terraform&#45;20220413101619115900000001</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="330,-357 25,-357 25,-299 330,-299 330,-357"/>
-<text text-anchor="start" x="37.5" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="37.5" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="37.5" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">terraform&#45;2022041310161911590000...</text>
 </g>
 <!-- Role::terraform&#45;20220413213345705300000001 -->
 <g id="node2" class="node">
 <title>Role::terraform&#45;20220413213345705300000001</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="674,-129 367,-129 367,-71 674,-71 674,-129"/>
-<text text-anchor="start" x="379.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="379.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="379.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">terraform&#45;2022041321334570530000...</text>
 </g>
 <!-- Role::terraform&#45;20220413230455356200000001 -->
 <g id="node3" class="node">
 <title>Role::terraform&#45;20220413230455356200000001</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="331,-281 24,-281 24,-223 331,-223 331,-281"/>
-<text text-anchor="start" x="36.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="36.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="36.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">terraform&#45;2022041323045535620000...</text>
 </g>
 <!-- Layer::mysql&#45;connector&#45;python -->
 <g id="node4" class="node">
 <title>Layer::mysql&#45;connector&#45;python</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="619.5,-205 421.5,-205 421.5,-147 619.5,-147 619.5,-205"/>
-<text text-anchor="start" x="433.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Layer</text>
+<text text-anchor="start" x="433.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::Layer</text>
 <text text-anchor="start" x="433.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">mysql&#45;connector&#45;python</text>
 </g>
 <!-- Function::lambda_with_layer -->
 <g id="node5" class="node">
 <title>Function::lambda_with_layer</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="257.5,-205 97.5,-205 97.5,-147 257.5,-147 257.5,-205"/>
-<text text-anchor="start" x="109.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Function</text>
-<text text-anchor="start" x="109.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">lambda_with_layer</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="259.5,-205 95.5,-205 95.5,-147 259.5,-147 259.5,-205"/>
+<text text-anchor="start" x="107.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::Function</text>
+<text text-anchor="start" x="107.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">lambda_with_layer</text>
 </g>
 <!-- Function::lambda_with_layer&#45;&gt;Role::terraform&#45;20220413213345705300000001 -->
 <g id="edge2" class="edge">
 <title>Function::lambda_with_layer&#45;&gt;Role::terraform&#45;20220413213345705300000001</title>
-<path fill="none" stroke="#707070" d="M257.59,-158.37C293.75,-150.31 337.69,-140.52 379.17,-131.28"/>
-<polygon fill="#707070" stroke="#707070" points="380.09,-134.66 389.09,-129.06 378.57,-127.82 380.09,-134.66"/>
+<path fill="none" stroke="#707070" d="M259.74,-157.89C295.51,-149.92 338.56,-140.33 379.24,-131.26"/>
+<polygon fill="#707070" stroke="#707070" points="380.25,-134.62 389.25,-129.03 378.73,-127.79 380.25,-134.62"/>
 </g>
 <!-- Function::lambda_with_layer&#45;&gt;Layer::mysql&#45;connector&#45;python -->
 <g id="edge1" class="edge">
 <title>Function::lambda_with_layer&#45;&gt;Layer::mysql&#45;connector&#45;python</title>
-<path fill="none" stroke="#707070" d="M257.59,-176C303.24,-176 361.3,-176 411.15,-176"/>
-<polygon fill="#707070" stroke="#707070" points="411.33,-179.5 421.33,-176 411.33,-172.5 411.33,-179.5"/>
+<path fill="none" stroke="#707070" d="M259.74,-176C305.08,-176 362.14,-176 411.23,-176"/>
+<polygon fill="#707070" stroke="#707070" points="411.26,-179.5 421.26,-176 411.26,-172.5 411.26,-179.5"/>
 </g>
 <!-- Function::lambda_without_layer -->
 <g id="node6" class="node">
 <title>Function::lambda_without_layer</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="268.5,-129 86.5,-129 86.5,-71 268.5,-71 268.5,-129"/>
-<text text-anchor="start" x="98.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Function</text>
+<text text-anchor="start" x="98.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::Function</text>
 <text text-anchor="start" x="98.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">lambda_without_layer</text>
 </g>
 <!-- Function::lambda_without_layer&#45;&gt;Role::terraform&#45;20220413213345705300000001 -->

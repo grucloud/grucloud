@@ -6,22 +6,14 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/ecs/containerinsights/service-cluster/performance",
-    properties: ({}) => ({
-      retentionInDays: 1,
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-vHnABYxbSlJg",
+    name: "/aws/lambda/GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-Wc2cf40Nu4bv",
   },
   {
     type: "OpenIDConnectProvider",
     group: "IAM",
     properties: ({}) => ({
       ClientIDList: ["sts.amazonaws.com"],
-      Url: "https://token.actions.githubusercontent.com",
+      Url: "token.actions.githubusercontent.com",
     }),
   },
   {
@@ -35,7 +27,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-1R9ZKCSVYK50F",
+    name: "GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-ZLQBGMP1PWSP",
     properties: ({}) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -77,21 +69,6 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
         },
       ],
-    }),
-  },
-  {
-    type: "Function",
-    group: "Lambda",
-    name: "GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-vHnABYxbSlJg",
-    properties: ({}) => ({
-      Configuration: {
-        Handler: "__entrypoint__.handler",
-        Runtime: "nodejs12.x",
-        Timeout: 900,
-      },
-    }),
-    dependencies: () => ({
-      role: "GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-1R9ZKCSVYK50F",
     }),
   },
 ];

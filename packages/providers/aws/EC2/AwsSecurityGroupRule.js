@@ -422,7 +422,7 @@ const SecurityGroupRuleBase = ({ config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupEgress-property
   const create =
     ({ kind, authorizeSecurityGroup }) =>
-    ({ payload, name, namespace, dependencies, lives }) =>
+    ({ payload, name, namespace, dependencies, resolvedDependencies, lives }) =>
       tryCatch(
         pipe([
           tap(() => {
@@ -440,7 +440,12 @@ const SecurityGroupRuleBase = ({ config }) => {
               )}`
             );
           }),
-          tap(() => dependencies().securityGroup.getLive({ lives })),
+          tap(() =>
+            dependencies().securityGroup.getLive({
+              lives,
+              resolvedDependencies,
+            })
+          ),
           tap((result) => {
             logger.info(`created sg rule ${kind}, ${name} ${tos({ result })}`);
           }),

@@ -39,7 +39,7 @@ exports.createResources = () => [
       instanceProfile:
         "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-1V2DBJVUCN7IT",
       securityGroups: [
-        "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
+        "sg::Vpc::amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
       ],
     }),
   },
@@ -156,8 +156,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
     properties: ({}) => ({
+      GroupName:
+        "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
       Description: "ECS Allowed Ports",
       Tags: [
         {
@@ -175,19 +176,19 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       IpPermission: {
-        IpProtocol: "tcp",
         FromPort: 80,
-        ToPort: 80,
+        IpProtocol: "tcp",
         IpRanges: [
           {
             CidrIp: "0.0.0.0/0",
           },
         ],
+        ToPort: 80,
       },
     }),
     dependencies: () => ({
       securityGroup:
-        "amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
+        "sg::Vpc::amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
     }),
   },
   {
@@ -208,14 +209,13 @@ exports.createResources = () => [
     group: "IAM",
     name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-TERDPQNAO5Q2",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "ec2.amazonaws.com",
+              Service: `ec2.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },

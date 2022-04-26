@@ -26,21 +26,21 @@
 <g id="node1" class="node">
 <title>Role::sam&#45;app&#45;WorkflowExecutionRole&#45;7I137IX4DEEI</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="605,-129 310,-129 310,-71 605,-71 605,-129"/>
-<text text-anchor="start" x="322.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="322.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="322.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;WorkflowExecutionRole&#45;7I...</text>
 </g>
 <!-- Bucket::gc&#45;my&#45;sfn&#45;bucket&#45;destination -->
 <g id="node2" class="node">
 <title>Bucket::gc&#45;my&#45;sfn&#45;bucket&#45;destination</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="265.5,-205 32.5,-205 32.5,-147 265.5,-147 265.5,-205"/>
-<text text-anchor="start" x="45" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Bucket</text>
+<text text-anchor="start" x="45" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">S3::Bucket</text>
 <text text-anchor="start" x="45" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">gc&#45;my&#45;sfn&#45;bucket&#45;destination</text>
 </g>
 <!-- StateMachine::MyStateMachine&#45;SwVayjQIlTdv -->
 <g id="node3" class="node">
 <title>StateMachine::MyStateMachine&#45;SwVayjQIlTdv</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="274,-129 24,-129 24,-71 274,-71 274,-129"/>
-<text text-anchor="start" x="36" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">StateMachine</text>
+<text text-anchor="start" x="36" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">StepFunctions::StateMachine</text>
 <text text-anchor="start" x="36" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">MyStateMachine&#45;SwVayjQIlTdv</text>
 </g>
 <!-- StateMachine::MyStateMachine&#45;SwVayjQIlTdv&#45;&gt;Role::sam&#45;app&#45;WorkflowExecutionRole&#45;7I137IX4DEEI -->

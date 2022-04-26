@@ -270,8 +270,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "test-vpcSG",
     properties: ({}) => ({
+      GroupName: "test-vpcSG",
       Description: "Security Group for all AWS Services within VPC",
     }),
     dependencies: () => ({
@@ -299,7 +299,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "test-vpcSG",
+      securityGroup: "sg::vpcStack/test-VPC::test-vpcSG",
     }),
   },
   {
@@ -319,7 +319,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "test-vpcSG",
+      securityGroup: "sg::vpcStack/test-VPC::test-vpcSG",
     }),
   },
   {
@@ -540,7 +540,7 @@ exports.createResources = () => [
         "test-VPC-test-private-subnet-1-us-east-1a",
         "test-VPC-test-private-subnet-1-us-east-1b",
       ],
-      securityGroups: ["test-vpcSG"],
+      securityGroups: ["sg::vpcStack/test-VPC::test-vpcSG"],
     }),
   },
   {

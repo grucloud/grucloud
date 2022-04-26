@@ -25,62 +25,62 @@
 <!-- RestApi::sam&#45;app -->
 <g id="node1" class="node">
 <title>RestApi::sam&#45;app</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="588,-357 500,-357 500,-299 588,-299 588,-357"/>
-<text text-anchor="start" x="512" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RestApi</text>
-<text text-anchor="start" x="512" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="638,-357 450,-357 450,-299 638,-299 638,-357"/>
+<text text-anchor="start" x="462" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">APIGateway::RestApi</text>
+<text text-anchor="start" x="462" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app</text>
 </g>
 <!-- Stage::Prod -->
 <g id="node2" class="node">
 <title>Stage::Prod</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="221.5,-357 153.5,-357 153.5,-299 221.5,-299 221.5,-357"/>
-<text text-anchor="start" x="165.5" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Stage</text>
-<text text-anchor="start" x="165.5" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Prod</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="273.5,-357 101.5,-357 101.5,-299 273.5,-299 273.5,-357"/>
+<text text-anchor="start" x="113.5" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">APIGateway::Stage</text>
+<text text-anchor="start" x="113.5" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Prod</text>
 </g>
 <!-- Stage::Prod&#45;&gt;RestApi::sam&#45;app -->
 <g id="edge1" class="edge">
 <title>Stage::Prod&#45;&gt;RestApi::sam&#45;app</title>
-<path fill="none" stroke="#707070" d="M221.53,-328C283.01,-328 415.48,-328 489.75,-328"/>
-<polygon fill="#707070" stroke="#707070" points="489.83,-331.5 499.83,-328 489.83,-324.5 489.83,-331.5"/>
+<path fill="none" stroke="#707070" d="M273.86,-328C323.81,-328 387.21,-328 439.93,-328"/>
+<polygon fill="#707070" stroke="#707070" points="439.98,-331.5 449.98,-328 439.98,-324.5 439.98,-331.5"/>
 </g>
 <!-- Stage::Stage -->
 <g id="node3" class="node">
 <title>Stage::Stage</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="221.5,-281 153.5,-281 153.5,-223 221.5,-223 221.5,-281"/>
-<text text-anchor="start" x="165.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Stage</text>
-<text text-anchor="start" x="165.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Stage</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="273.5,-281 101.5,-281 101.5,-223 273.5,-223 273.5,-281"/>
+<text text-anchor="start" x="113.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">APIGateway::Stage</text>
+<text text-anchor="start" x="113.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Stage</text>
 </g>
 <!-- Stage::Stage&#45;&gt;RestApi::sam&#45;app -->
 <g id="edge2" class="edge">
 <title>Stage::Stage&#45;&gt;RestApi::sam&#45;app</title>
-<path fill="none" stroke="#707070" d="M221.53,-259.08C283.01,-272.26 415.48,-300.66 489.75,-316.58"/>
-<polygon fill="#707070" stroke="#707070" points="489.31,-320.07 499.83,-318.74 490.78,-313.23 489.31,-320.07"/>
+<path fill="none" stroke="#707070" d="M273.86,-270.3C323.81,-281.01 387.21,-294.6 439.93,-305.9"/>
+<polygon fill="#707070" stroke="#707070" points="439.47,-309.38 449.98,-308.06 440.94,-302.54 439.47,-309.38"/>
 </g>
 <!-- LogGroup::stepfunctions/StateMachinetoAPIGW -->
 <g id="node4" class="node">
 <title>LogGroup::stepfunctions/StateMachinetoAPIGW</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="688.5,-129 399.5,-129 399.5,-71 688.5,-71 688.5,-129"/>
-<text text-anchor="start" x="412" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">LogGroup</text>
+<text text-anchor="start" x="412" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
 <text text-anchor="start" x="412" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">stepfunctions/StateMachinetoAPIG...</text>
 </g>
 <!-- Role::sam&#45;app&#45;ExampleLambdaFunctionRole&#45;10XK3921W9OPT -->
 <g id="node5" class="node">
 <title>Role::sam&#45;app&#45;ExampleLambdaFunctionRole&#45;10XK3921W9OPT</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="701,-281 387,-281 387,-223 701,-223 701,-281"/>
-<text text-anchor="start" x="399" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="399" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="399" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;ExampleLambdaFunctionRol...</text>
 </g>
 <!-- Role::sam&#45;app&#45;StatesExecutionRole&#45;VZMKU2P2QBYH -->
 <g id="node6" class="node">
 <title>Role::sam&#45;app&#45;StatesExecutionRole&#45;VZMKU2P2QBYH</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="697,-205 391,-205 391,-147 697,-147 697,-205"/>
-<text text-anchor="start" x="403" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Role</text>
+<text text-anchor="start" x="403" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="403" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;StatesExecutionRole&#45;VZMK...</text>
 </g>
 <!-- Function::sam&#45;app&#45;ExampleLambdaFunction&#45;DjN0ovBJ6PsT -->
 <g id="node7" class="node">
 <title>Function::sam&#45;app&#45;ExampleLambdaFunction&#45;DjN0ovBJ6PsT</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="342.5,-205 32.5,-205 32.5,-147 342.5,-147 342.5,-205"/>
-<text text-anchor="start" x="44.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Function</text>
+<text text-anchor="start" x="44.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Lambda::Function</text>
 <text text-anchor="start" x="44.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;ExampleLambdaFunction&#45;Dj...</text>
 </g>
 <!-- Function::sam&#45;app&#45;ExampleLambdaFunction&#45;DjN0ovBJ6PsT&#45;&gt;Role::sam&#45;app&#45;ExampleLambdaFunctionRole&#45;10XK3921W9OPT -->
@@ -93,7 +93,7 @@
 <g id="node8" class="node">
 <title>StateMachine::StateMachinetoAPIGW&#45;uB4wAPaxm1sp</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="351,-129 24,-129 24,-71 351,-71 351,-129"/>
-<text text-anchor="start" x="36.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">StateMachine</text>
+<text text-anchor="start" x="36.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">StepFunctions::StateMachine</text>
 <text text-anchor="start" x="36.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">StateMachinetoAPIGW&#45;uB4wAPaxm1sp...</text>
 </g>
 <!-- StateMachine::StateMachinetoAPIGW&#45;uB4wAPaxm1sp&#45;&gt;LogGroup::stepfunctions/StateMachinetoAPIGW -->

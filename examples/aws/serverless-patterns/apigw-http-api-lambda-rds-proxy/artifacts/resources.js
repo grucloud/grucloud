@@ -69,8 +69,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "lambda-sg",
     properties: ({}) => ({
+      GroupName: "lambda-sg",
       Description: "Security Groups for the AWS Lambda for accessing RDS/Proxy",
     }),
     dependencies: () => ({
@@ -80,8 +80,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "sam-app-database-sg",
     properties: ({}) => ({
+      GroupName: "sam-app-database-sg",
       Description: "security group (firewall)",
     }),
     dependencies: () => ({
@@ -104,7 +104,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "lambda-sg",
+      securityGroup: "sg::sam-app-vpc::lambda-sg",
     }),
   },
   {
@@ -116,8 +116,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "sam-app-database-sg",
-      securityGroupFrom: ["sam-app-database-sg"],
+      securityGroup: "sg::sam-app-vpc::sam-app-database-sg",
+      securityGroupFrom: ["sg::sam-app-vpc::sam-app-database-sg"],
     }),
   },
   {
@@ -131,8 +131,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "sam-app-database-sg",
-      securityGroupFrom: ["lambda-sg"],
+      securityGroup: "sg::sam-app-vpc::sam-app-database-sg",
+      securityGroupFrom: ["sg::sam-app-vpc::lambda-sg"],
     }),
   },
   {
@@ -151,7 +151,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "lambda-sg",
+      securityGroup: "sg::sam-app-vpc::lambda-sg",
     }),
   },
   {
@@ -243,7 +243,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       subnets: ["sam-app-prv-sub-1", "sam-app-prv-sub-2", "sam-app-prv-sub-3"],
-      securityGroups: ["sam-app-database-sg"],
+      securityGroups: ["sg::sam-app-vpc::sam-app-database-sg"],
       secret: ["sam-app-cluster-secret"],
       role: "sam-app-dbProxyRole-1BMIN3H39UUK3",
     }),
@@ -282,7 +282,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       dbSubnetGroup: "sam-app-db-subnet-group",
-      securityGroups: ["sam-app-database-sg"],
+      securityGroups: ["sg::sam-app-vpc::sam-app-database-sg"],
       secret: "sam-app-cluster-secret",
     }),
   },
@@ -310,7 +310,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       dbSubnetGroup: "sam-app-db-subnet-group",
-      securityGroups: ["sam-app-database-sg"],
+      securityGroups: ["sg::sam-app-vpc::sam-app-database-sg"],
       secret: "sam-app-cluster-secret",
       dbCluster: "sam-app-mysql-cluster",
       monitoringRole: "sam-app-monitor-us-east-1",

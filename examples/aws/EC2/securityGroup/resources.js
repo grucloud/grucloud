@@ -14,8 +14,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "security-group-cluster-test",
     properties: ({}) => ({
+      GroupName: "security-group-cluster-test",
       Description: "Managed By GruCloud",
     }),
     dependencies: () => ({
@@ -25,8 +25,8 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
-    name: "security-group-node-group-test",
     properties: ({}) => ({
+      GroupName: "security-group-node-group-test",
       Description: "Managed By GruCloud",
     }),
     dependencies: () => ({
@@ -54,7 +54,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "security-group-cluster-test",
+      securityGroup: "sg::vpc-test-sg::security-group-cluster-test",
     }),
   },
   {
@@ -78,8 +78,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "security-group-node-group-test",
-      securityGroupFrom: ["security-group-cluster-test"],
+      securityGroup: "sg::vpc-test-sg::security-group-node-group-test",
+      securityGroupFrom: ["sg::vpc-test-sg::security-group-cluster-test"],
     }),
   },
   {
@@ -103,7 +103,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      securityGroup: "security-group-cluster-test",
+      securityGroup: "sg::vpc-test-sg::security-group-cluster-test",
     }),
   },
 ];
