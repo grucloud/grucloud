@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/core",
-  "version": "5.13.0",
+  "version": "6.0.1",
   "description": "GruCloud core, Infrastructure as Code",
   "public": true,
   "main": "index.js",
