@@ -1674,6 +1674,7 @@ function CoreProvider({
                 diff: engine.spec.compare({
                   ...engine.spec,
                   live,
+                  lives: getLives(),
                   target: input,
                   config: getProviderConfig(),
                   targetResources: getTargetResources(),

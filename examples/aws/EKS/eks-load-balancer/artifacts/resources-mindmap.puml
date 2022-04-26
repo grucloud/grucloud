@@ -3,11 +3,11 @@ title Resources for project EKS Load Balancer
 skinparam monochrome true
 + Infra
 ++ aws
++++ ACM
+++++ Certificate (1)
 +++ AutoScaling
 ++++ AutoScalingGroup (1)
 ++++ AutoScalingAttachment (2)
-+++ ACM
-++++ Certificate (1)
 +++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)

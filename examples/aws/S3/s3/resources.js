@@ -1,6 +1,6 @@
 const createResources = ({ provider }) => {
   const bucketPrefix = "grucloud";
-  const bucketName = `${bucketPrefix}-test-basic`;
+  const bucketName = `${bucketPrefix}-test-basic.txt`;
   const bucketLogDestination = `${bucketPrefix}-log-destination`;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property

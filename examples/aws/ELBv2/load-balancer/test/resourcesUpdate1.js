@@ -15,7 +15,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       subnets: ["subnet-a", "subnet-b"],
-      securityGroups: ["sg-default-vpc"],
+      securityGroups: ["sg::vpc::default"],
     }),
   },
   {

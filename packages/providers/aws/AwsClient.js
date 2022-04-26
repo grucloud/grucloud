@@ -128,7 +128,13 @@ const AwsClient =
               ]),
               () => undefined,
               (error) => {
-                logger.error(`getById ${type} ${util.inspect(error)}`);
+                logger.error(
+                  `getById ${type} name: ${error.name}, message: ${
+                    error.message
+                  }, error: ${util.inspect(
+                    error
+                  )}, ignoreErrorMessages: ${ignoreErrorMessages}, ignoreErrorCodes: ${ignoreErrorCodes}`
+                );
                 throw error;
               },
             ])
@@ -674,6 +680,7 @@ exports.createAwsResource = ({
   model,
   findName,
   findId,
+  managedByOther,
   decorate,
   decorateList = ({ getById }) => getById,
   isInstanceUp,
@@ -694,6 +701,7 @@ exports.createAwsResource = ({
   getList,
   create,
   update,
+  pickIdDestroy,
   destroy,
 }) =>
   pipe([
@@ -716,8 +724,10 @@ exports.createAwsResource = ({
               findId,
               findDependencies,
               cannotBeDeleted,
+              managedByOther,
               findNamespace,
               pickId,
+              pickIdDestroy: pickIdDestroy || pickId,
               configDefault,
             }),
             when(
@@ -727,9 +737,6 @@ exports.createAwsResource = ({
                 untagResource: () => untagResource({ endpoint }),
               })
             ),
-            defaultsDeep({
-              pickId: pipe([pick(model.pickIds)]),
-            }),
             assign({
               getById: ({ pickId }) =>
                 client.getById({
@@ -783,9 +790,9 @@ exports.createAwsResource = ({
               destroy: switchCase([
                 () => destroy,
                 ({ getById }) => destroy({ endpoint, getById }),
-                ({ getById, pickId }) =>
+                ({ getById, pickIdDestroy }) =>
                   client.destroy({
-                    pickId,
+                    pickId: pickIdDestroy,
                     getById,
                     ignoreErrorCodes: model.ignoreErrorCodes,
                     ...model.destroy,

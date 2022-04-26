@@ -143,6 +143,9 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
             get("vpc.live.VpcId"),
             get("securityGroup"),
             get("securityGroup.live.VpcId"),
+            () => {
+              assert(false, "SecurityGroup getByName, dependency error");
+            },
           ]),
         ]),
       }),
@@ -237,7 +240,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         ),
       ])();
 
-  const update = ({ diff }) =>
+  const update = async ({ diff }) =>
     pipe([
       () => diff,
       fork({

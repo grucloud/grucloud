@@ -7,7 +7,7 @@ exports.createResources = () => [
   {
     type: "Object",
     group: "S3",
-    name: "grucloud-simple-file-test",
+    name: "grucloud-simple-file-test.txt",
     properties: ({}) => ({
       ContentType: "text/plain",
       ServerSideEncryption: "AES256",

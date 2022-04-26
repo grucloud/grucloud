@@ -169,16 +169,47 @@ const sortByFromPort = pipe([
 ]);
 
 const getIpPermissions =
-  ({ type, targetResources }) =>
-  ({ GroupName }) =>
+  ({ type, targetResources, lives, config }) =>
+  ({ GroupName, VpcId }) =>
     pipe([
       tap(() => {
         assert(type);
         assert(targetResources);
+        assert(lives);
         assert(GroupName);
+        assert(VpcId);
+        assert(config);
       }),
       () => targetResources,
       filter(eq(get("type"), type)),
+      filter(
+        eq(
+          ({ dependencies }) =>
+            pipe([
+              dependencies,
+              get("securityGroup.name"),
+              callProp("split", "::"),
+              ([sg, vpcName]) =>
+                pipe([
+                  () =>
+                    lives.getByName({
+                      name: vpcName,
+                      type: "Vpc",
+                      group: "EC2",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])(),
+              tap((vpcName) => {
+                assert(vpcName);
+              }),
+            ])(),
+          VpcId
+        )
+      ),
+      tap((params) => {
+        assert(true);
+      }),
       filter(
         eq(
           ({ dependencies }) =>
@@ -534,14 +565,22 @@ module.exports = pipe([
       compare: compareEC2({
         filterTarget: ({ lives, config, targetResources }) =>
           pipe([
+            tap((params) => {
+              assert(targetResources);
+              assert(lives);
+            }),
             assign({
               IpPermissions: getIpPermissions({
                 type: "SecurityGroupRuleIngress",
                 targetResources,
+                lives,
+                config,
               }),
               IpPermissionsEgress: getIpPermissions({
                 type: "SecurityGroupRuleEgress",
                 targetResources,
+                lives,
+                config,
               }),
             }),
           ]),
@@ -560,10 +599,13 @@ module.exports = pipe([
       filterLive: () => pick(["GroupName", "Description"]),
       inferName: ({ properties, dependenciesSpec: { vpc } }) =>
         pipe([
-          tap(() => {
-            assert(vpc);
-          }),
-          () => `sg::${vpc}::${properties.GroupName || "default"}`,
+          () => "sg::",
+          when(() => vpc, append(`${vpc}::`)),
+          switchCase([
+            () => properties.GroupName,
+            append(properties.GroupName),
+            append("default"),
+          ]),
         ])(),
       dependencies: {
         vpc: { type: "Vpc", group: "EC2" },

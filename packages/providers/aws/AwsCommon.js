@@ -51,7 +51,7 @@ const {
 const isAwsError = (code) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(code);
     }),
     eq(get("name"), code),
   ]);

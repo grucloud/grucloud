@@ -415,13 +415,13 @@
 <polygon fill="#707070" stroke="#707070" points="338.11,-500.73 345.39,-493.04 334.9,-494.51 338.11,-500.73"/>
 </g>
 <!-- DBSubnetGroup::::subnet&#45;group&#45;postgres&#45;stateless&#45;&gt;Subnet::::subnet&#45;private&#45;a -->
-<g id="edge43" class="edge">
+<g id="edge42" class="edge">
 <title>DBSubnetGroup::::subnet&#45;group&#45;postgres&#45;stateless&#45;&gt;Subnet::::subnet&#45;private&#45;a</title>
 <path fill="none" stroke="#707070" d="M592.25,-712C618.88,-712 646.24,-712 670.58,-712"/>
 <polygon fill="#707070" stroke="#707070" points="670.82,-715.5 680.82,-712 670.82,-708.5 670.82,-715.5"/>
 </g>
 <!-- DBSubnetGroup::::subnet&#45;group&#45;postgres&#45;stateless&#45;&gt;Subnet::::subnet&#45;private&#45;b -->
-<g id="edge42" class="edge">
+<g id="edge43" class="edge">
 <title>DBSubnetGroup::::subnet&#45;group&#45;postgres&#45;stateless&#45;&gt;Subnet::::subnet&#45;private&#45;b</title>
 <path fill="none" stroke="#707070" d="M574.04,-741.06C606.26,-749.6 640.89,-758.79 670.89,-766.75"/>
 <polygon fill="#707070" stroke="#707070" points="670.32,-770.22 680.88,-769.4 672.11,-763.45 670.32,-770.22"/>

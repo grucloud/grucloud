@@ -363,9 +363,6 @@ const SecurityGroupRuleBase = ({ config }) => {
         }),
       ])();
 
-  // const getByName = ({ IsEgress }) =>
-  //   getByNameCore({ getList: getList({ IsEgress }), findName });
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroupRules-property
   const getByName =
     ({ kind, IsEgress = false, config }) =>

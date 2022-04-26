@@ -479,13 +479,13 @@
 <text text-anchor="start" x="395" y="-980.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">com.amazonaws.us&#45;east&#45;1.states</text>
 </g>
 <!-- VpcEndpoint::::com.amazonaws.us&#45;east&#45;1.states&#45;&gt;Subnet::::test&#45;VPC&#45;test&#45;private&#45;subnet&#45;1&#45;us&#45;east&#45;1a -->
-<g id="edge46" class="edge">
+<g id="edge47" class="edge">
 <title>VpcEndpoint::::com.amazonaws.us&#45;east&#45;1.states&#45;&gt;Subnet::::test&#45;VPC&#45;test&#45;private&#45;subnet&#45;1&#45;us&#45;east&#45;1a</title>
 <path fill="none" stroke="#707070" d="M649.31,-1014.9C668.87,-1017.7 689.11,-1020.59 708.89,-1023.41"/>
 <polygon fill="#707070" stroke="#707070" points="708.48,-1026.89 718.88,-1024.84 709.47,-1019.96 708.48,-1026.89"/>
 </g>
 <!-- VpcEndpoint::::com.amazonaws.us&#45;east&#45;1.states&#45;&gt;Subnet::::test&#45;VPC&#45;test&#45;private&#45;subnet&#45;1&#45;us&#45;east&#45;1b -->
-<g id="edge47" class="edge">
+<g id="edge46" class="edge">
 <title>VpcEndpoint::::com.amazonaws.us&#45;east&#45;1.states&#45;&gt;Subnet::::test&#45;VPC&#45;test&#45;private&#45;subnet&#45;1&#45;us&#45;east&#45;1b</title>
 <path fill="none" stroke="#707070" d="M649.31,-977.1C668.87,-974.3 689.11,-971.41 708.89,-968.59"/>
 <polygon fill="#707070" stroke="#707070" points="709.47,-972.04 718.88,-967.16 708.48,-965.11 709.47,-972.04"/>

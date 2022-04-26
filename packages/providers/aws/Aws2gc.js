@@ -47,8 +47,15 @@ const {
 } = require("@grucloud/core/generatorUtils");
 const { configTpl } = require("./configTpl");
 
-const bucketFileNameFromLive = ({ live: { Name }, commandOptions }) =>
-  `s3/${Name}/`;
+const bucketFileNameFromLive = ({ live, commandOptions }) =>
+  pipe([
+    () => live,
+    get("name"),
+    tap((name) => {
+      assert(name);
+    }),
+    (name) => `s3/${name}/`,
+  ])();
 
 const bucketFileNameFullFromLive = ({ live, commandOptions, programOptions }) =>
   path.resolve(
@@ -59,7 +66,15 @@ const bucketFileNameFullFromLive = ({ live, commandOptions, programOptions }) =>
 const objectFileNameFromLive = ({
   live: { Bucket, Key, ContentType },
   commandOptions,
-}) => `s3/${Bucket}/${Key}.${mime.extension(ContentType)}`;
+}) =>
+  pipe([
+    tap((params) => {
+      assert(Bucket);
+      assert(Key);
+    }),
+    //() => `s3/${Bucket}/${Key}.${mime.extension(ContentType)}`,
+    () => `s3/${Bucket}/${Key}`,
+  ])();
 
 const objectFileNameFullFromLive = ({ live, commandOptions, programOptions }) =>
   path.resolve(
@@ -73,7 +88,15 @@ const downloadAsset = ({ url, assetPath }) =>
     tap((params) => {
       assert(true);
     }),
-    tap(pipe([path.dirname, (dir) => fs.mkdir(dir, { recursive: true })])),
+    tap(
+      pipe([
+        path.dirname,
+        tap((dir) => {
+          assert(dir);
+        }),
+        (dir) => fs.mkdir(dir, { recursive: true }),
+      ])
+    ),
     Fs.createWriteStream,
     (writer) =>
       tryCatch(
@@ -164,8 +187,8 @@ const createS3Buckets = ({ lives, commandOptions, programOptions }) =>
         }),
         () =>
           bucketFileNameFullFromLive({ live, commandOptions, programOptions }),
-        tap((params) => {
-          assert(true);
+        tap((bucketFileName) => {
+          assert(bucketFileName);
         }),
         (bucketFileName) => fs.mkdir(bucketFileName, { recursive: true }),
         tap((params) => {

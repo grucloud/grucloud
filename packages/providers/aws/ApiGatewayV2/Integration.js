@@ -235,7 +235,7 @@ exports.Integration = ({ spec, config }) => {
           tryCatch(lambda().removePermission, (error) =>
             pipe([
               tap(() => {
-                logger.error(`lambdaRemovePermission ${tos(error)}`);
+                logger.info(`lambdaRemovePermission ${tos(error)}`);
               }),
               () => error,
               throwIfNotAwsError("ResourceNotFoundException"),

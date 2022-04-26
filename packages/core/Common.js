@@ -338,6 +338,11 @@ exports.md5FileBase64 = pipe([
   (md5) => new Buffer.from(md5, "hex").toString("base64"),
 ]);
 
+exports.md5FileHex = pipe([
+  md5File,
+  (md5) => new Buffer.from(md5, "hex").toString("hex"),
+]);
+
 exports.buildTagsObject = ({ name, namespace, config, userTags = {} }) => {
   const {
     nameKey,

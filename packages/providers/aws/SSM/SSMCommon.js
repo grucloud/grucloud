@@ -5,9 +5,12 @@ const { pipe, tap, get } = require("rubico");
 exports.tagResource =
   ({ ResourceType }) =>
   ({ endpoint }) =>
-  ({ id }) =>
+  ({ id, live }) =>
     pipe([
-      (Tags) => ({ ResourceId: id, Tags, ResourceType }),
+      tap((params) => {
+        assert(live);
+      }),
+      (Tags) => ({ ResourceId: live.Name, Tags, ResourceType }),
       endpoint().addTagsToResource,
     ]);
 
@@ -15,8 +18,8 @@ exports.tagResource =
 exports.untagResource =
   ({ ResourceType }) =>
   ({ endpoint }) =>
-  ({ id }) =>
+  ({ id, live }) =>
     pipe([
-      (TagKeys) => ({ ResourceId: id, TagKeys, ResourceType }),
+      (TagKeys) => ({ ResourceId: live.Name, TagKeys, ResourceType }),
       endpoint().removeTagsFromResource,
     ]);

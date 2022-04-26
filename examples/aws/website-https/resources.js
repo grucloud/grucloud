@@ -11,7 +11,6 @@ exports.createResources = () => [
   {
     type: "Distribution",
     group: "CloudFront",
-    name: "distribution-cloudfront.aws.test.grucloud.org",
     properties: ({ getId }) => ({
       PriceClass: "PriceClass_100",
       Aliases: {
@@ -27,12 +26,7 @@ exports.createResources = () => [
       },
       DefaultRootObject: "index.html",
       DefaultCacheBehavior: {
-        TargetOriginId: `S3-${getId({
-          type: "Bucket",
-          group: "S3",
-          name: "cloudfront.aws.test.grucloud.org",
-          path: "name",
-        })}`,
+        TargetOriginId: `S3-cloudfront.aws.test.grucloud.org`,
         TrustedSigners: {
           Enabled: false,
           Quantity: 0,
@@ -83,12 +77,7 @@ exports.createResources = () => [
         Quantity: 1,
         Items: [
           {
-            Id: `S3-${getId({
-              type: "Bucket",
-              group: "S3",
-              name: "cloudfront.aws.test.grucloud.org",
-              path: "name",
-            })}`,
+            Id: `S3-cloudfront.aws.test.grucloud.org`,
             DomainName: `${getId({
               type: "Bucket",
               group: "S3",
@@ -156,7 +145,7 @@ exports.createResources = () => [
     group: "Route53",
     dependencies: () => ({
       hostedZone: "cloudfront.aws.test.grucloud.org.",
-      distribution: "distribution-cloudfront.aws.test.grucloud.org",
+      distribution: "S3-cloudfront.aws.test.grucloud.org",
     }),
   },
   {

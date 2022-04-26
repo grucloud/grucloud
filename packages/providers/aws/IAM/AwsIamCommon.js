@@ -34,6 +34,7 @@ exports.dependenciesPoliciesKind = [
   { type: "StateMachine", group: "StepFunctions" },
   { type: "LogGroup", group: "CloudWatchLogs" },
   { type: "Secret", group: "SecretsManager" },
+  { type: "Parameter", group: "SSM" },
   //{ type: "Function", group: "Lambda" },
   //{ type: "DBCluster", group: "RDS" },
 ];
@@ -79,6 +80,11 @@ exports.dependenciesPolicy = {
   secrets: {
     type: "Secret",
     group: "SecretsManager",
+    list: true,
+  },
+  ssmParameters: {
+    type: "Parameter",
+    group: "SSM",
     list: true,
   },
   //dbClusters: { type: "DBCluster", group: "RDS", list: true },

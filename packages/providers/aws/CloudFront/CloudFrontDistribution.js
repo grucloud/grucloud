@@ -22,6 +22,7 @@ const {
   callProp,
   last,
   includes,
+  first,
 } = require("rubico/x");
 
 const { AwsClient } = require("../AwsClient");
@@ -34,7 +35,6 @@ const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
   buildTags,
-  findNameInTagsOrId,
   findNamespaceInTags,
   getNewCallerReference,
 } = require("../AwsCommon");
@@ -49,7 +49,18 @@ const ignoreErrorCodes = ["NoSuchDistribution"];
 //TODO look in spec.type instead
 const RESOURCE_TYPE = "Distribution";
 const findId = get("live.ARN");
-const findName = findNameInTagsOrId({ findId });
+const findName = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  get("live.Origins.Items"),
+  first,
+  get("Id"),
+  tap((Id) => {
+    assert(Id);
+    logger.debug(`Distribution findName ${Id}`);
+  }),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.CloudFrontDistribution = ({ spec, config }) => {
@@ -63,6 +74,15 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
         () => live,
         get("ViewerCertificate.ACMCertificateArn"),
         (arn) => [arn],
+      ])(),
+    },
+    {
+      type: "Function",
+      group: "CloudFront",
+      ids: pipe([
+        () => live,
+        get("DefaultCacheBehavior.FunctionAssociations.Items"),
+        pluck("FunctionARN"),
       ])(),
     },
     {
@@ -274,7 +294,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
             MinimumProtocolVersion: "TLSv1.2_2019",
             Certificate: getField(certificate, "CertificateArn"),
             CertificateSource: "acm",
-            //CloudFrontDefaultCertificate: false,
+            CloudFrontDefaultCertificate: false,
           },
         }),
       }),

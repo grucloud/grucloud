@@ -31,7 +31,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       dbSubnetGroup: "subnet-group-postgres-stateless",
-      securityGroups: ["security-group-postgres"],
+      securityGroups: ["sg::vpc::security-group-postgres"],
     }),
   },
 ];

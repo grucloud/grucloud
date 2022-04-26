@@ -288,6 +288,7 @@ module.exports = pipe([
         dbCluster: { type: "DBCluster", group: "RDS", parent: true },
         efsAccessPoint: { type: "AccessPoint", group: "EFS", list: true },
         apiGatewayV2s: { type: "Api", group: "ApiGatewayV2", list: true },
+        ssmParameters: { type: "Parameter", group: "SSM", list: true },
       },
     },
     {

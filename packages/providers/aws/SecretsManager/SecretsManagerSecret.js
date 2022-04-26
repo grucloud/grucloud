@@ -18,7 +18,6 @@ const { tagResource, untagResource } = require("./SecretsManagerCommon");
 const model = {
   package: "secrets-manager",
   client: "SecretsManager",
-  pickIds: ["ARN"],
   ignoreErrorCodes: ["ResourceNotFoundException"],
   ignoreErrorMessages: [
     "You can't perform this operation on the secret because it was marked for deletion",

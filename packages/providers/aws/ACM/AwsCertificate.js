@@ -10,7 +10,6 @@ const { tagResource, untagResource } = require("./ACMCommon");
 const model = {
   package: "acm",
   client: "ACM",
-  pickIds: ["CertificateArn"],
   ignoreErrorCodes: ["ResourceNotFoundException"],
   getById: { method: "describeCertificate", getField: "Certificate" },
   getList: { method: "listCertificates", getParam: "CertificateSummaryList" },

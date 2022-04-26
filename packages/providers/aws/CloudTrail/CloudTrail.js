@@ -12,7 +12,6 @@ const SELECTORS = ["EventSelectors", "AdvancedEventSelectors"];
 const model = {
   package: "cloudtrail",
   client: "CloudTrail",
-  pickIds: ["Attributes.TopicArn"],
   ignoreErrorCodes: ["TrailNotFoundException"],
   getById: { method: "getTrail", getField: "Trail" },
   getList: { method: "listTrails", getParam: "Trails" },
