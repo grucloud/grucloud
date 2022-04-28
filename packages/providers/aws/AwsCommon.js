@@ -372,12 +372,14 @@ const findNamespaceEksCluster =
     pipe([
       tap(() => {
         assert(lives, "lives");
+        assert(live, "live");
       }),
-      () => findEksCluster({ config, key })({ live, lives }),
+      () => ({ live, lives }),
+      findEksCluster({ config, key }),
       tap((param) => {
         assert(true);
       }),
-      findNamespaceInTagsObject(config),
+      unless(isEmpty, findNamespaceInTagsObject(config)),
       tap((namespace) => {
         //  logger.debug(`findNamespace`, namespace);
       }),
@@ -389,17 +391,15 @@ exports.findNamespaceInTagsOrEksCluster =
     pipe([
       tap(() => {
         assert(lives, "lives");
+        assert(live);
       }),
       () => findNamespaceInTags(config)({ live }),
-      switchCase([
-        isEmpty,
-        () =>
-          findNamespaceEksCluster({ config, key })({
-            live,
-            lives,
-          }),
-        identity,
-      ]),
+      when(isEmpty, () =>
+        findNamespaceEksCluster({ config, key })({
+          live,
+          lives,
+        })
+      ),
     ])();
 
 exports.isOurMinionObject = ({ tags, config }) => {
@@ -609,7 +609,7 @@ exports.tagsRemoveFromDescription = pipe([
 
 const findNamespaceInTags =
   (config) =>
-  ({ live } = {}) =>
+  ({ live }) =>
     pipe([
       tap(() => {
         assert(live);
@@ -628,6 +628,7 @@ const findNamespaceInTagsObject =
     pipe([
       tap(() => {
         assert(config.namespaceKey);
+        assert(live);
       }),
       () => live,
       get("tags"),

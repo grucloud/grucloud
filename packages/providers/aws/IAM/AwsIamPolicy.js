@@ -114,6 +114,9 @@ exports.AwsIamPolicy = ({ spec, config }) => {
 
   const findNamespace = ({ live }) =>
     pipe([
+      tap((params) => {
+        assert(live);
+      }),
       () => live,
       get("namespace"),
       when(isEmpty, () => findNamespaceInTags(config)({ live })),
