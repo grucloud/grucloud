@@ -1,10 +1,25 @@
 const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
-const { pipe, tap, filter, switchCase, flatMap, not } = require("rubico");
-const { isFunction, when } = require("rubico/x");
-const { identity } = require("rxjs");
-const logger = require("../logger")({ prefix: "Infra" });
+const { pipe, tap, filter, switchCase, identity } = require("rubico");
+const { isFunction, unless, isEmpty, append } = require("rubico/x");
+
+const buildCreateResources = ({ createResources, createResourcesUpdate }) =>
+  pipe([
+    () => createResources,
+    switchCase([
+      Array.isArray,
+      identity,
+      isFunction,
+      (createResources) => [createResources],
+      () => {
+        throw Error(
+          "createResources should be a function or an array of function"
+        );
+      },
+    ]),
+    unless(() => isEmpty(createResourcesUpdate), append(createResourcesUpdate)),
+  ])();
 
 const createProviderMaker =
   ({
@@ -39,37 +54,12 @@ const createProviderMaker =
           configs,
           programOptions,
           stage,
+          createResources: buildCreateResources({
+            createResources,
+            createResourcesUpdate,
+          }),
           ...otherProps,
         }),
-      tap((provider) =>
-        pipe([
-          () => createResources,
-          switchCase([
-            Array.isArray,
-            identity,
-            isFunction,
-            (createResources) => [createResources],
-            () => {
-              throw Error(
-                "createResources should be a function or an array of function"
-              );
-            },
-          ]),
-          (cr) => [...cr, createResourcesUpdate],
-          // isEmpty does not work with function
-          filter((x) => x),
-          flatMap((cr) =>
-            pipe([
-              tap(() => {
-                assert(isFunction(cr), "createResources should be a function");
-              }),
-              () => cr({ provider }),
-            ])()
-          ),
-          filter(not(isEmpty)),
-          provider.targetResourcesBuildMap,
-        ])()
-      ),
     ])();
 
 exports.createProviderMaker = createProviderMaker;

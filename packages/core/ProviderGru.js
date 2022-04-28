@@ -291,10 +291,11 @@ exports.ProviderGru = ({
             tryCatch(
               (planPerProvider) =>
                 pipe([
-                  () =>
-                    getProvider({
-                      providerName: planPerProvider.providerName,
-                    }),
+                  () => ({
+                    providerName: planPerProvider.providerName,
+                  }),
+                  getProvider,
+                  // TODO do we need that here
                   (provider) => provider.start({ onStateChange }),
                 ])(),
               (error, { providerName }) => {

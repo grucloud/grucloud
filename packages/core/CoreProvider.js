@@ -175,8 +175,10 @@ function CoreProvider({
   generateCode = () => {},
   getListHof = getListHofDefault,
   filterClient = () => true,
+  createResources,
 }) {
   assert(makeConfig);
+  assert(createResources);
   let _lives;
   const setLives = (livesToSet) => {
     _lives = livesToSet;
@@ -1114,6 +1116,17 @@ function CoreProvider({
             nextState: "DONE",
           })
         ),
+        () => createResources,
+        flatMap((cr) =>
+          pipe([
+            tap(() => {
+              assert(isFunction(cr), "createResources should be a function");
+            }),
+            () => cr({ provider }),
+          ])()
+        ),
+        filter(not(isEmpty)),
+        targetResourcesBuildMap,
         tap(() => {
           logger.debug(`start done`);
         }),
