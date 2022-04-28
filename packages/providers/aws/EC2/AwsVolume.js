@@ -185,7 +185,15 @@ exports.AwsVolume = ({ spec, config }) => {
           providerName: config.providerName,
         }),
       find(eq(get("live.InstanceId"), findInstanceId(live))),
-      unless(isEmpty, ({ live }) => awsEC2.findNamespace({ live, lives })),
+      unless(
+        isEmpty,
+        pipe([
+          tap(({ live }) => {
+            assert(live);
+          }),
+          ({ live }) => awsEC2.findNamespace({ live, lives }),
+        ])
+      ),
       tap((namespace) => {
         logger.debug(`findNamespaceFromInstanceId ${namespace}`);
       }),
