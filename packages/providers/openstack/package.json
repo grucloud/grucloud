@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-openstack",
-  "version": "6.0.2",
+  "version": "6.0.4",
   "description": "The GruCloud OpenStack provider",
   "main": "OpenStackProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/openstack",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^6.0.2",
+    "@grucloud/core": "^6.0.4",
     "axios": "^0.26.0",
     "rubico": "^1.8.9"
   },
