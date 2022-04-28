@@ -5,7 +5,7 @@ const { defaultsDeep, when, isEmpty, unless, first } = require("rubico/x");
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./CloudTrailCommon");
-const { getField } = require("../../../core/ProviderCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const SELECTORS = ["EventSelectors", "AdvancedEventSelectors"];
 
