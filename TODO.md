@@ -46,11 +46,7 @@
 
 - https://stackshare.io/terraform/alternatives
 
-- PROMPT='%4~ %# '
-
 ## Web site
-
-## Cli
 
 ## Kubernetes
 
