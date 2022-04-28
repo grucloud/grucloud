@@ -1,6 +1,6 @@
 {
   "name": "s3-eventbridge",
-  "version": "6.0.4",
+  "version": "6.0.5",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^6.0.4",
-    "@grucloud/provider-aws": "^6.0.4",
+    "@grucloud/core": "^6.0.5",
+    "@grucloud/provider-aws": "^6.0.5",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
