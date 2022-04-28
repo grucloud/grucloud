@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { tryCatch, pipe, tap } = require("rubico");
 
-describe.only("SSMDocument", async function () {
+describe("SSMDocument", async function () {
   let config;
   let provider;
   let document;
