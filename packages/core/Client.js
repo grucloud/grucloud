@@ -130,7 +130,8 @@ const decorateLive =
         },
         get namespace() {
           logger.debug(`findNamespace ${client.spec.groupType}`);
-          return client.findNamespace({ live, lives, config });
+          //TODO
+          //return client.findNamespace({ live, lives, config });
         },
         displayResource() {
           return client.spec.displayResource({ lives, config })(live);
