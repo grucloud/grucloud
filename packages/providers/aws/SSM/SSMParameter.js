@@ -53,6 +53,7 @@ exports.SSMParameter = ({ spec, config }) =>
     getByName: ({ getById }) => pipe([({ name }) => ({ Name: name }), getById]),
     tagResource: tagResource({ ResourceType: "Parameter" }),
     untagResource: untagResource({ ResourceType: "Parameter" }),
+    //TODO kms key
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
         () => otherProps,

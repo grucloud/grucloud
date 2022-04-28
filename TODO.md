@@ -6,7 +6,7 @@
 
 - retry on EHOSTUNREACH
 - gc gencode lambda with java.
-- AWS::SSM::Document
+
 - AWS::Glue::Job
 - AWS::Route53::RecordSetGroup
 - AWS::Route53::HealthCheck

@@ -155,6 +155,7 @@ const AwsClient =
         decorate = () => identity,
         filterResource = () => true,
         extraParam = {},
+        enhanceParams = () => identity,
         getById,
       }) =>
       ({ lives, params = {} } = {}) =>
@@ -167,6 +168,7 @@ const AwsClient =
           }),
           () => params,
           defaultsDeep(extraParam),
+          defaultsDeep(enhanceParams()()),
           tap((params) => {
             logger.debug(`getList ${type}, params: ${JSON.stringify(params)}`);
           }),
@@ -189,7 +191,6 @@ const AwsClient =
           tap((params) => {
             assert(true);
           }),
-          //get(getParam, []),
           transformList,
           filter(filterResource),
           tap((params) => {
