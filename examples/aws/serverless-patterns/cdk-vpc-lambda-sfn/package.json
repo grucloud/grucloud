@@ -1,6 +1,6 @@
 {
   "name": "cdk-vpc-lambda-sfn",
-  "version": "6.0.5",
+  "version": "6.0.6",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^6.0.5",
-    "@grucloud/provider-aws": "^6.0.5",
+    "@grucloud/core": "^6.0.6",
+    "@grucloud/provider-aws": "^6.0.6",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
