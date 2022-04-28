@@ -115,7 +115,8 @@ const differenceObject =
                       ]),
                     ]),
                     switchCase([
-                      pipe([eq(exclude[key], target[key])]),
+                      // TODO rubico breaking change
+                      () => exclude[key] === target[key],
                       () => acc,
                       () => ({ ...acc, [key]: target[key] }),
                     ]),
@@ -554,7 +555,8 @@ const buildGetId =
       append(name),
       append("'"),
       unless(
-        eq(path, "id"),
+        // TODO rubico breaking change
+        () => path === "id",
         pipe([append(", path:'"), append(path), append("'")])
       ),
       unless(
