@@ -13,7 +13,7 @@ const {
   isEmpty,
   defaultsDeep,
   first,
-  identity,
+  when,
   find,
   prepend,
   unless,
@@ -185,7 +185,15 @@ exports.AwsVolume = ({ spec, config }) => {
           providerName: config.providerName,
         }),
       find(eq(get("live.InstanceId"), findInstanceId(live))),
-      unless(isEmpty, ({ live }) => awsEC2.findNamespace({ live, lives })),
+      unless(
+        isEmpty,
+        pipe([
+          tap(({ live }) => {
+            assert(live);
+          }),
+          ({ live }) => awsEC2.findNamespace({ live, lives }),
+        ])
+      ),
       tap((namespace) => {
         logger.debug(`findNamespaceFromInstanceId ${namespace}`);
       }),
@@ -194,12 +202,7 @@ exports.AwsVolume = ({ spec, config }) => {
   const findNamespace = ({ live, lives }) =>
     pipe([
       () => findNamespaceInTags(config)({ live }),
-      //when
-      switchCase([
-        isEmpty,
-        () => findNamespaceFromInstanceId({ live, lives }),
-        identity,
-      ]),
+      when(isEmpty, () => findNamespaceFromInstanceId({ live, lives })),
       tap((namespace) => {
         logger.debug(`findNamespace`, namespace);
       }),

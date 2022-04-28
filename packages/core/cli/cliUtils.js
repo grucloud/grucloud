@@ -266,9 +266,6 @@ exports.setupProviders =
           ...infraNew,
         }),
       }),
-      tap((xx) => {
-        //logger.debug("setupProviders");
-      }),
     ])();
 
 exports.saveToJson = ({

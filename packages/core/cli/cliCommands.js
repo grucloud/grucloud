@@ -734,7 +734,7 @@ const applyNeedsRetry = ({ infra }) =>
     ]),
   ]);
 
-const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+const planApply = ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     pipe([
       () => infra,

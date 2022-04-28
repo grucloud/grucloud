@@ -1,8 +1,7 @@
 const assert = require("assert");
 const { assign, map, pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
-const { isOurMinion } = require("../AwsCommon");
-const { compareAws } = require("../AwsCommon");
+const { isOurMinion, replaceAccount, compareAws } = require("../AwsCommon");
 
 const { SSMParameter } = require("./SSMParameter");
 const { SSMDocument } = require("./SSMDocument");
@@ -24,19 +23,31 @@ module.exports = pipe([
           }),
         ])(),
       omitProperties: [
+        "Owner",
+        "DocumentVersion",
         "CreatedDate",
         "Status",
         "StatusInformation",
         "ReviewStatus",
+        "SchemaVersion",
       ],
       dependencies: {
         role: { type: "Role", group: "IAM" },
         lambdaFunction: { type: "Function", group: "Lambda" },
       },
-      filterLive: () =>
+      filterLive: ({ providerConfig, lives }) =>
         pipe([
           tap((params) => {
             assert(true);
+          }),
+          assign({
+            Name: pipe([
+              get("Name"),
+              replaceAccount({
+                providerConfig,
+                lives,
+              }),
+            ]),
           }),
         ]),
     },

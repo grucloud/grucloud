@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get, pipe, filter, map, tap, switchCase } = require("rubico");
-const { isEmpty, first, identity, pluck } = require("rubico/x");
+const { get, pipe, tap } = require("rubico");
+const { isEmpty, first, unless, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "AwsNetworkInterface",
@@ -31,11 +31,15 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
           group: "EC2",
           id: GroupId,
         }),
-      switchCase([
+      unless(
         isEmpty,
-        identity,
-        ({ live }) => awsSecurityGroup.findNamespace({ live, lives }),
-      ]),
+        pipe([
+          tap(({ live }) => {
+            assert(live);
+          }),
+          ({ live }) => awsSecurityGroup.findNamespace({ live, lives }),
+        ])
+      ),
       tap((namespace) => {
         logger.debug(`findNamespace ${namespace}`);
       }),
