@@ -40,7 +40,6 @@ const {
   values,
 } = require("rubico/x");
 const fs = require("fs").promises;
-const util = require("util");
 const logger = require("./logger")({ prefix: "CoreProvider" });
 const { tos } = require("./tos");
 const { createSpec } = require("./SpecDefault");
@@ -178,7 +177,6 @@ function CoreProvider({
   createResources,
 }) {
   assert(makeConfig);
-  assert(createResources);
   let _lives;
   const setLives = (livesToSet) => {
     _lives = livesToSet;
@@ -1117,16 +1115,24 @@ function CoreProvider({
           })
         ),
         () => createResources,
-        flatMap((cr) =>
+        unless(
+          isEmpty,
           pipe([
-            tap(() => {
-              assert(isFunction(cr), "createResources should be a function");
-            }),
-            () => cr({ provider }),
-          ])()
+            flatMap((cr) =>
+              pipe([
+                tap(() => {
+                  assert(
+                    isFunction(cr),
+                    "createResources should be a function"
+                  );
+                }),
+                () => cr({ provider }),
+              ])()
+            ),
+            filter(not(isEmpty)),
+            targetResourcesBuildMap,
+          ])
         ),
-        filter(not(isEmpty)),
-        targetResourcesBuildMap,
         tap(() => {
           logger.debug(`start done`);
         }),

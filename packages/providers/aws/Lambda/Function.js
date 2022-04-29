@@ -386,6 +386,7 @@ exports.Function = ({ spec, config }) => {
         ({ FunctionArn }) => ({ Configuration: { FunctionArn } }),
       ]),
     shouldRetryOnExceptionMessages: [
+      "Lambda was unable to configure access to your environment variables because the KMS key is invalid for CreateGrant.",
       "The role defined for the function cannot be assumed by Lambda",
       "EFS file system",
     ],

@@ -65,4 +65,4 @@ List of resources for provider aws:
 * SQS: 
 [Queue](./resources/SQS/Queue.md)
 * SSM: 
-[Parameter](./resources/SSM/Parameter.md)
+[Document](./resources/SSM/Document.md), [Parameter](./resources/SSM/Parameter.md)
