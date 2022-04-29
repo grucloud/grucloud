@@ -1684,7 +1684,8 @@ function CoreProvider({
         }),
         assign({
           output: switchCase([
-            eq(action, "UPDATE"),
+            //TODO rubico
+            () => action === "UPDATE",
             ({ engine, input, resolvedDependencies }) =>
               engine.update({
                 payload: input,
@@ -1702,7 +1703,8 @@ function CoreProvider({
                 resolvedDependencies,
                 lives: getLives(),
               }),
-            eq(action, "CREATE"),
+            //TODO rubico
+            () => action === "CREATE",
             ({ engine, input, resolvedDependencies }) =>
               pipe([
                 () =>
@@ -1729,7 +1731,7 @@ function CoreProvider({
                   });
                 }),
               ])(),
-            eq(action, "WAIT_CREATION"),
+            () => action === "CREATE",
             ({ engine, input, resolvedDependencies }) =>
               pipe([
                 () => ({ lives: getLives() }),
