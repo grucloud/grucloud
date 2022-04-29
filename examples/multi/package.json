@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-multi",
-  "version": "6.0.8",
+  "version": "6.0.9",
   "private": true,
   "description": "Run multiple GruCloud examples",
   "main": "iac.js",
@@ -13,12 +13,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^6.0.8",
-    "@grucloud/provider-aws": "^6.0.8",
-    "@grucloud/provider-azure": "^6.0.8",
-    "@grucloud/provider-google": "^6.0.8",
-    "@grucloud/provider-k8s": "^6.0.8",
-    "@grucloud/provider-scaleway": "^6.0.8"
+    "@grucloud/core": "^6.0.9",
+    "@grucloud/provider-aws": "^6.0.9",
+    "@grucloud/provider-azure": "^6.0.9",
+    "@grucloud/provider-google": "^6.0.9",
+    "@grucloud/provider-k8s": "^6.0.9",
+    "@grucloud/provider-scaleway": "^6.0.9"
   },
   "devDependencies": {
     "mocha": "^9.0.3"
