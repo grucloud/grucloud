@@ -17,7 +17,6 @@ const {
   or,
   transform,
   fork,
-  gte,
 } = require("rubico");
 
 const {
@@ -364,7 +363,11 @@ exports.ResourceMaker = ({
       }),
       map.entries(([key, value]) => [
         key,
-        when(eq(key, depKey), () => value)(),
+        // TODO rubico eq
+        when(
+          () => key === depKey,
+          () => value
+        )(),
       ]),
       filter(not(isEmpty)),
       values,
