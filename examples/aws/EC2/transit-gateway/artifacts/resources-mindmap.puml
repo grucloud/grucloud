@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project transit-gateway
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ TransitGateway (1)
+++++ TransitGatewayRouteTable (1)
+++++ TransitGatewayVpcAttachment (1)
+@endmindmap

@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project systems-manager-automation-to-lambda
+skinparam monochrome true
++ Infra
+++ aws
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (2)
++++ Lambda
+++++ Function (1)
++++ SSM
+++++ Document (1)
+@endmindmap

@@ -19,16 +19,16 @@ exports.findDependenciesSubnet = ({ live }) => ({
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createTags-property
 exports.tagResource =
-  ({ ec2 }) =>
+  ({ endpoint }) =>
   ({ id }) =>
-    pipe([(Tags) => ({ Resources: [id], Tags }), ec2().createTags]);
+    pipe([(Tags) => ({ Resources: [id], Tags }), endpoint().createTags]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteTags-property
 exports.untagResource =
-  ({ ec2 }) =>
+  ({ endpoint }) =>
   ({ id }) =>
     pipe([
       map((Key) => ({ Key })),
       (Tags) => ({ Resources: [id], Tags }),
-      ec2().deleteTags,
+      endpoint().deleteTags,
     ]);

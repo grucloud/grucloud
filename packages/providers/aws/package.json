@@ -7,6 +7,7 @@
   "scripts": {
     "test": "mocha --exit './{,!(node_modules)/**}/*.test.js' ",
     "test-examples": "mocha --exit '../../../examples/aws/**/iac.test.js' ",
+    "test-ec2": "mocha --exit '../../../examples/aws/EC2/**/iac.test.js' ",
     "test-serverless": "mocha --exit '../../../examples/aws/serverless-patterns/**/iac.test.js' ",
     "test-modules": "mocha --exit '../../modules/aws/**/iac.test.js' ",
     "coverage": "nyc npm run test-all",

@@ -1378,7 +1378,14 @@ const graphTarget = ({ infra, config, commandOptions, programOptions }) =>
         assert(input.providerGru);
       }),
       ({ providerGru }) =>
-        providerGru.buildGraphTarget({ options: commandOptions }),
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => ({ onStateChange: identity }),
+          providerGru.startProvider,
+          () => providerGru.buildGraphTarget({ options: commandOptions }),
+        ])(),
       // TODO add title from config.projectName
       (result) => dotToSvg({ commandOptions, programOptions, result }),
     ]),
@@ -1456,7 +1463,11 @@ const graphTree = ({ infra, commandOptions = {}, programOptions }) =>
         //assert(config);
       }),
       ({ providerGru }) =>
-        providerGru.buildGraphTree({ options: commandOptions }),
+        pipe([
+          () => ({ onStateChange: identity }),
+          providerGru.startProvider,
+          () => providerGru.buildGraphTree({ options: commandOptions }),
+        ])(),
       tap((xxx) => {
         assert(true);
       }),
