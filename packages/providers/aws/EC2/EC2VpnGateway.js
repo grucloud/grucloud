@@ -54,6 +54,7 @@ exports.EC2VpnGateway = ({ spec, config }) =>
     pickCreated: ({ payload }) => pipe([get("VpnGateway")]),
     isInstanceUp: pipe([eq(get("State"), "available")]),
     isInstanceDown: pipe([eq(get("State"), "deleted")]),
+    cannotBeDeleted: eq(get("live.State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

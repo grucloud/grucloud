@@ -65,7 +65,10 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
       tap((params) => {
         assert(true);
       }),
-      assign({ PolicyDocument: pipe([get("PolicyDocument"), JSON.parse]) }),
+      when(
+        get("PolicyDocument"),
+        assign({ PolicyDocument: pipe([get("PolicyDocument"), JSON.parse]) })
+      ),
     ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcEndpoints-property

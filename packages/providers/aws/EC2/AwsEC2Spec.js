@@ -436,6 +436,7 @@ module.exports = pipe([
     {
       type: "Subnet",
       Client: AwsSubnet,
+      includeDefaultDependencies: true,
       omitProperties: [
         "VpcId",
         "AvailabilityZoneId",
@@ -478,8 +479,6 @@ module.exports = pipe([
         vpc: { type: "Vpc", group: "EC2" },
         internetGateway: { type: "InternetGateway", group: "EC2" },
       },
-      //TODO remove ?
-      ignoreResource: () => get("isDefault"),
     },
     {
       type: "RouteTable",
@@ -592,6 +591,7 @@ module.exports = pipe([
         ig: { type: "InternetGateway", group: "EC2" },
         natGateway: { type: "NatGateway", group: "EC2" },
         vpcEndpoint: { type: "VpcEndpoint", group: "EC2" },
+        transitGateway: { type: "TransitGateway", group: "EC2" },
       },
     },
     {
@@ -828,11 +828,11 @@ module.exports = pipe([
         // SecurityGroup ?
       },
       //TODO double check
-      ignoreResource: () =>
-        pipe([
-          get("live.ServiceName"),
-          callProp("startsWith", "com.amazonaws.vpce"),
-        ]),
+      // ignoreResource: () =>
+      //   pipe([
+      //     get("live.ServiceName"),
+      //     callProp("startsWith", "com.amazonaws.vpce"),
+      //   ]),
       Client: EC2VpcEndpoint,
       compare: compareEC2({
         filterTarget: () => pipe([pick(["PolicyDocument"])]),
@@ -882,23 +882,24 @@ module.exports = pipe([
       type: "TransitGatewayVpcAttachment",
       Client: EC2TransitGatewayVpcAttachment,
       includeDefaultDependencies: true,
+      ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
       omitProperties: [
         "TransitGatewayAttachmentId",
         "TransitGatewayId",
+        "VpcId",
+        "VpcOwnerId",
+        "SubnetIds",
         "CreationTime",
         "State",
-        "ResourceId",
-        "TransitGatewayOwnerId",
-        "ResourceOwnerId",
-        "Association",
       ],
-      propertiesDefault: { ResourceType: "vpc" },
+      propertiesDefault: {},
       dependencies: {
-        transitGatewayRouteTable: {
-          type: "TransitGatewayRouteTable",
+        transitGateway: {
+          type: "TransitGateway",
           group: "EC2",
         },
-        vpc: { type: "Vpc", group: "EC2" },
+        // vpc: { type: "Vpc", group: "EC2" },
+        subnets: { type: "Subnet", group: "EC2", list: true },
       },
     },
     {

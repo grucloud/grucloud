@@ -5,6 +5,24 @@ const {} = require("rubico/x");
 exports.createResources = () => [
   { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-us-east-1a",
+    isDefault: true,
+    dependencies: () => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-us-east-1b",
+    isDefault: true,
+    dependencies: () => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
     type: "TransitGateway",
     group: "EC2",
     name: "transit-gateway",
@@ -22,25 +40,19 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TransitGatewayRouteTable",
-    group: "EC2",
-    name: "tgw-rtb-transit-gateway-default",
-    readOnly: true,
-    properties: ({}) => ({
-      DefaultAssociationRouteTable: true,
-      DefaultPropagationRouteTable: true,
-    }),
-    dependencies: () => ({
-      transitGateway: "transit-gateway",
-    }),
-  },
-  {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
     name: "tgw-attachment",
+    properties: ({}) => ({
+      Options: {
+        DnsSupport: "enable",
+        Ipv6Support: "disable",
+        ApplianceModeSupport: "disable",
+      },
+    }),
     dependencies: () => ({
-      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
-      vpc: "vpc-default",
+      transitGateway: "transit-gateway",
+      subnets: ["subnet-default-us-east-1a", "subnet-default-us-east-1b"],
     }),
   },
 ];

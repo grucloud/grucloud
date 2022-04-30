@@ -72,6 +72,8 @@ exports.EC2Route = ({ spec, config }) => {
           callProp("startsWith", "vpce-"),
         ]),
         append("-vpce"),
+        () => live.TransitGatewayId,
+        append(`-tgw`),
         append(`-${live.DestinationCidrBlock}`),
       ]),
       tap((params) => {
@@ -136,6 +138,15 @@ exports.EC2Route = ({ spec, config }) => {
       type: "NatGateway",
       group: "EC2",
       ids: [live.NatGatewayId],
+    },
+    {
+      type: "TransitGateway",
+      group: "EC2",
+      ids: [
+        `arn:aws:ec2:${config.region}:${config.accountId()}:transit-gateway/${
+          live.TransitGatewayId
+        }`,
+      ],
     },
   ];
 

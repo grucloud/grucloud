@@ -55,6 +55,7 @@ exports.EC2TransitGateway = ({ spec, config }) =>
     pickCreated: ({ payload }) => pipe([get("TransitGateway")]),
     isInstanceUp: pipe([eq(get("State"), "available")]),
     isInstanceDown: pipe([eq(get("State"), "deleted")]),
+    cannotBeDeleted: eq(get("live.State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

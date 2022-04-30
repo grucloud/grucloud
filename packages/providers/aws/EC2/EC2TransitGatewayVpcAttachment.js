@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
+const { pipe, tap, get, pick, eq, map } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -13,12 +13,12 @@ const createModel = ({ config }) => ({
   client: "EC2",
   ignoreErrorCodes: ["InvalidTransitGatewayAttachmentID.NotFound"],
   getById: {
-    method: "describeTransitGatewayAttachments",
-    getField: "TransitGatewayAttachments",
+    method: "describeTransitGatewayVpcAttachments",
+    getField: "TransitGatewayVpcAttachments",
   },
   getList: {
-    method: "describeTransitGatewayAttachments",
-    getParam: "TransitGatewayAttachments",
+    method: "describeTransitGatewayVpcAttachments",
+    getParam: "TransitGatewayVpcAttachments",
   },
   create: { method: "createTransitGatewayVpcAttachment" },
   destroy: { method: "deleteTransitGatewayVpcAttachment" },
@@ -39,14 +39,23 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
     config,
     findDependencies: ({ live }) => [
       {
-        type: "TransitGatewayRouteTable",
+        type: "TransitGateway",
         group: "EC2",
-        ids: [get("Association.TransitGatewayRouteTableId")(live)],
+        ids: [
+          `arn:aws:ec2:${config.region}:${config.accountId()}:transit-gateway/${
+            live.TransitGatewayId
+          }`,
+        ],
       },
+      // {
+      //   type: "Vpc",
+      //   group: "EC2",
+      //   ids: [live.VpcId],
+      // },
       {
-        type: "Vpc",
+        type: "Subnet",
         group: "EC2",
-        ids: [live.ResourceId],
+        ids: live.SubnetIds,
       },
     ],
     findName: findNameInTagsOrId({ findId }),
@@ -76,6 +85,7 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
     pickCreated: ({ payload }) => pipe([get("TransitGatewayAttachment")]),
     isInstanceUp: pipe([eq(get("State"), "available")]),
     isInstanceDown: pipe([eq(get("State"), "deleted")]),
+    cannotBeDeleted: eq(get("live.State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
@@ -83,20 +93,20 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: { transitGatewayRouteTable, vpc },
+      dependencies: { transitGateway, subnets },
     }) =>
       pipe([
         tap((params) => {
-          assert(transitGatewayRouteTable);
-          assert(vpc);
+          assert(transitGateway);
+          assert(subnets);
         }),
         () => otherProps,
         defaultsDeep({
-          TansitGatewayRouteTableId: getField(
-            transitGatewayRouteTable,
-            "TansitGatewayRouteTableId"
-          ),
-          VpcId: getField(vpc, "VpcId"),
+          TransitGatewayId: getField(transitGateway, "TansitGatewayId"),
+          SubnetIds: pipe([
+            () => subnets,
+            map((subnet) => getField(subnet, "SubnetId")),
+          ])(),
           TagSpecifications: [
             {
               ResourceType: "transit-gateway-attachment",
