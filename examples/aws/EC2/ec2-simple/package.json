@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-ec2-simple",
-  "version": "6.0.9",
+  "version": "6.1.0",
   "description": "Simple EC2 Instance with GruCloud",
   "main": "index.js",
   "private": true,
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^6.0.9",
-    "@grucloud/provider-aws": "^6.0.9",
+    "@grucloud/core": "^6.1.0",
+    "@grucloud/provider-aws": "^6.1.0",
     "rubico": "^1.8.11"
   },
   "devDependencies": {
