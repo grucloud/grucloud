@@ -105,7 +105,7 @@ exports.AwsImage = ({ spec, config }) => {
     getList,
     configDefault,
     cannotBeDeleted: () => true,
-    tagResource: tagResource({ ec2 }),
-    untagResource: untagResource({ ec2 }),
+    tagResource: tagResource({ endpoint: ec2 }),
+    untagResource: untagResource({ endpoint: ec2 }),
   };
 };

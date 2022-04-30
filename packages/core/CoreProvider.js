@@ -1731,7 +1731,7 @@ function CoreProvider({
                   });
                 }),
               ])(),
-            () => action === "CREATE",
+            () => action === "WAIT_CREATION",
             ({ engine, input, resolvedDependencies }) =>
               pipe([
                 () => ({ lives: getLives() }),
@@ -1741,7 +1741,7 @@ function CoreProvider({
                 }),
               ])(),
             () => {
-              assert(false, "action is not handled");
+              assert(false, `action '${action}' is not handled`);
             },
           ]),
         }),

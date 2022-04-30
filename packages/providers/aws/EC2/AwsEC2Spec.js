@@ -63,13 +63,26 @@ const {
 } = require("./AwsSecurityGroupRule");
 const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
+const { EC2CustomerGateway } = require("./EC2CustomerGateway");
 const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
 
 const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { AwsNetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 const { AwsImage } = require("./AwsImage");
+
+const { EC2TransitGateway } = require("./EC2TransitGateway");
+const {
+  EC2TransitGatewayVpcAttachment,
+} = require("./EC2TransitGatewayVpcAttachment");
+
+const {
+  EC2TransitGatewayRouteTable,
+} = require("./EC2TransitGatewayRouteTable");
+
 const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
+const { EC2VpnGateway } = require("./EC2VpnGateway");
+const { EC2VpnConnection } = require("./EC2VpnConnection");
 
 const GROUP = "EC2";
 
@@ -256,6 +269,30 @@ const filterPermissions = pipe([
 
 module.exports = pipe([
   () => [
+    {
+      type: "CustomerGateway",
+      Client: EC2CustomerGateway,
+      omitProperties: ["CustomerGatewayId", "CertificateArn", "State"],
+      ignoreResource: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          get("live"),
+          eq(get("State"), "deleted"),
+        ]),
+      propertiesDefault: { Type: "ipsec.1" },
+      compare: compareEC2({ filterAll: () => pick([]) }),
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      dependencies: {
+        certificate: { type: "Certificate", group: "ACM" },
+      },
+    },
     {
       type: "KeyPair",
       Client: AwsClientKeyPair,
@@ -811,6 +848,90 @@ module.exports = pipe([
           ]),
           assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
         ]),
+    },
+    {
+      type: "TransitGateway",
+      Client: EC2TransitGateway,
+      omitProperties: [
+        "TransitGatewayId",
+        "TransitGatewayArn",
+        "State",
+        "OwnerId",
+        "CreationTime",
+        "Options.AssociationDefaultRouteTableId",
+        "Options.PropagationDefaultRouteTableId",
+      ],
+      propertiesDefault: {},
+    },
+
+    {
+      type: "TransitGatewayRouteTable",
+      Client: EC2TransitGatewayRouteTable,
+      omitProperties: [
+        "TransitGatewayRouteTableId",
+        "TransitGatewayId",
+        "CreationTime",
+        "State",
+      ],
+      propertiesDefault: {},
+      dependencies: {
+        transitGateway: { type: "TransitGateway", group: "EC2" },
+      },
+    },
+    {
+      type: "TransitGatewayVpcAttachment",
+      Client: EC2TransitGatewayVpcAttachment,
+      includeDefaultDependencies: true,
+      omitProperties: [
+        "TransitGatewayAttachmentId",
+        "TransitGatewayId",
+        "CreationTime",
+        "State",
+        "ResourceId",
+        "TransitGatewayOwnerId",
+        "ResourceOwnerId",
+        "Association",
+      ],
+      propertiesDefault: { ResourceType: "vpc" },
+      dependencies: {
+        transitGatewayRouteTable: {
+          type: "TransitGatewayRouteTable",
+          group: "EC2",
+        },
+        vpc: { type: "Vpc", group: "EC2" },
+      },
+    },
+    {
+      type: "VpnGateway",
+      Client: EC2VpnGateway,
+      omitProperties: ["VpnGatewayId", "State", "VpcAttachments"],
+      propertiesDefault: { Type: "ipsec.1" },
+      compare: compareEC2({ filterAll: () => pick([]) }),
+      ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
+    },
+    {
+      type: "VpnConnection",
+      Client: EC2VpnConnection,
+      ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
+      omitProperties: [
+        "CustomerGatewayId",
+        "VpnGatewayId",
+        "TransitGatewayId",
+        "CoreNetworkArn",
+        "State",
+        "VpnConnectionId",
+        "GatewayAssociationState",
+        "VgwTelemetry",
+        "Options.TunnelOptions",
+        "CustomerGatewayConfiguration",
+        "Routes",
+      ],
+      propertiesDefault: { Type: "ipsec.1" },
+      dependencies: {
+        customerGateway: { type: "CustomerGateway", group: "EC2" },
+        vpnGateway: { type: "VpnGateway", group: "EC2" },
+        transitGateway: { type: "TransitGateway", group: "EC2" },
+      },
     },
   ],
   map(defaultsDeep({ group: GROUP, compare: compareEC2({}), isOurMinion })),

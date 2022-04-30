@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project customer-gateway
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ CustomerGateway (1)
+++++ VpnGateway (1)
+++++ VpnConnection (1)
+@endmindmap

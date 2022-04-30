@@ -194,7 +194,7 @@ exports.AwsSubnet = ({ spec, config }) => {
     update,
     destroy,
     configDefault,
-    tagResource: tagResource({ ec2 }),
-    untagResource: untagResource({ ec2 }),
+    tagResource: tagResource({ endpoint: ec2 }),
+    untagResource: untagResource({ endpoint: ec2 }),
   };
 };

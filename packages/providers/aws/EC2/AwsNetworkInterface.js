@@ -85,7 +85,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
     findName,
     getList,
     destroy,
-    tagResource: tagResource({ ec2 }),
-    untagResource: untagResource({ ec2 }),
+    tagResource: tagResource({ endpoint: ec2 }),
+    untagResource: untagResource({ endpoint: ec2 }),
   };
 };
