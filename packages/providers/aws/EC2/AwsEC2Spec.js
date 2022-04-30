@@ -252,18 +252,6 @@ const filterPermissions = pipe([
       omit(["UserIdGroupPairs"]),
     ])
   ),
-  filter(
-    pipe([
-      assign({ IpRanges: pipe([get("IpRanges"), map(omit(["Description"]))]) }),
-      (rule) =>
-        !isDeepEqual(rule, {
-          FromPort: undefined,
-          IpProtocol: "-1",
-          IpRanges: [{ CidrIp: "0.0.0.0/0" }],
-          ToPort: undefined,
-        }),
-    ])
-  ),
   sortByFromPort,
 ]);
 
@@ -545,24 +533,18 @@ module.exports = pipe([
         getTargetTags: () => [],
         getLiveTags: () => [],
       })({
-        filterAll: () =>
-          pipe([
-            omit([
-              "GatewayId",
-              "NatGatewayId",
-              "VpcEndpointId",
-              "DestinationPrefixListId",
-              "Origin",
-              "State",
-              "name",
-              "RouteTableId",
-            ]),
-          ]),
+        filterAll: () => pipe([omit(["Origin", "State"])]),
       }),
       filterLive: () => pipe([pick(["DestinationCidrBlock"])]),
       inferName: ({
         properties,
-        dependenciesSpec: { routeTable, ig, natGateway, vpcEndpoint },
+        dependenciesSpec: {
+          routeTable,
+          ig,
+          natGateway,
+          vpcEndpoint,
+          transitGateway,
+        },
       }) =>
         pipe([
           tap(() => {
@@ -581,6 +563,8 @@ module.exports = pipe([
                 append("-nat-gateway"),
                 () => vpcEndpoint,
                 append("-vpce"),
+                () => transitGateway,
+                append("-tgw"),
                 append("-local"),
               ]),
             ])(),
@@ -628,6 +612,23 @@ module.exports = pipe([
               IpPermissionsEgress: pipe([
                 get("IpPermissionsEgress"),
                 filterPermissions,
+                filter(
+                  pipe([
+                    assign({
+                      IpRanges: pipe([
+                        get("IpRanges"),
+                        map(omit(["Description"])),
+                      ]),
+                    }),
+                    (rule) =>
+                      !isDeepEqual(rule, {
+                        FromPort: undefined,
+                        IpProtocol: "-1",
+                        IpRanges: [{ CidrIp: "0.0.0.0/0" }],
+                        ToPort: undefined,
+                      }),
+                  ])
+                ),
               ]),
             }),
           ]),
@@ -827,12 +828,6 @@ module.exports = pipe([
         // NetworkInterfaceIds ?
         // SecurityGroup ?
       },
-      //TODO double check
-      // ignoreResource: () =>
-      //   pipe([
-      //     get("live.ServiceName"),
-      //     callProp("startsWith", "com.amazonaws.vpce"),
-      //   ]),
       Client: EC2VpcEndpoint,
       compare: compareEC2({
         filterTarget: () => pipe([pick(["PolicyDocument"])]),
@@ -898,7 +893,7 @@ module.exports = pipe([
           type: "TransitGateway",
           group: "EC2",
         },
-        // vpc: { type: "Vpc", group: "EC2" },
+        vpc: { type: "Vpc", group: "EC2" },
         subnets: { type: "Subnet", group: "EC2", list: true },
       },
     },

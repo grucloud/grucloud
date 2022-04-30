@@ -183,6 +183,18 @@ exports.KmsKey = ({ spec, config }) => {
           ),
         ])
       ),
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#updateKeyDescription-property
+      tap.if(
+        () => get("liveDiff.updated.Description")(diff) != undefined,
+        pipe([
+          () => ({ KeyId: live.KeyId, Description: payload.Description }),
+          tap((params) => {
+            assert(true);
+          }),
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#disableKey-property
+          tap(kms().updateKeyDescription),
+        ])
+      ),
       tap(() => {
         logger.info(`key updated: ${name}`);
       }),

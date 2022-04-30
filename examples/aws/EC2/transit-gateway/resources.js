@@ -52,6 +52,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       transitGateway: "transit-gateway",
+      vpc: "vpc-default",
       subnets: ["subnet-default-us-east-1a", "subnet-default-us-east-1b"],
     }),
   },

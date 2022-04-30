@@ -47,11 +47,11 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
           }`,
         ],
       },
-      // {
-      //   type: "Vpc",
-      //   group: "EC2",
-      //   ids: [live.VpcId],
-      // },
+      {
+        type: "Vpc",
+        group: "EC2",
+        ids: [live.VpcId],
+      },
       {
         type: "Subnet",
         group: "EC2",
@@ -93,16 +93,18 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: { transitGateway, subnets },
+      dependencies: { transitGateway, vpc, subnets },
     }) =>
       pipe([
         tap((params) => {
           assert(transitGateway);
+          assert(vpc);
           assert(subnets);
         }),
         () => otherProps,
         defaultsDeep({
-          TransitGatewayId: getField(transitGateway, "TansitGatewayId"),
+          TransitGatewayId: getField(transitGateway, "TransitGatewayId"),
+          VpcId: getField(vpc, "VpcId"),
           SubnetIds: pipe([
             () => subnets,
             map((subnet) => getField(subnet, "SubnetId")),

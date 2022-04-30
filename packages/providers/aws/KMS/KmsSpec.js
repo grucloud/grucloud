@@ -44,7 +44,7 @@ module.exports = pipe([
             ]),
           ]),
       }),
-      filterLive: () => pick([""]),
+      filterLive: () => pick(["Description"]),
       ignoreResource: ({ lives }) => pipe([not(get("live.Enabled"))]),
     },
   ],

@@ -339,14 +339,14 @@ exports.EC2Route = ({ spec, config }) => {
     name,
     namespace,
     properties = {},
-    dependencies: { routeTable, natGateway, ig, vpcEndpoint },
+    dependencies: { routeTable, natGateway, ig, vpcEndpoint, transitGateway },
   }) =>
     pipe([
       tap((params) => {
         assert(routeTable, "Route is missing the dependency 'routeTable'");
         assert(
-          ig || natGateway || vpcEndpoint,
-          "Route needs the dependency 'ig', or 'natGateway' or 'vpcEndpoint'"
+          ig || natGateway || vpcEndpoint || transitGateway,
+          "Route needs the dependency 'ig', or 'natGateway' or 'vpcEndpoint', or 'transitGateway'"
         );
       }),
       () => properties,
@@ -376,6 +376,12 @@ exports.EC2Route = ({ spec, config }) => {
         () => vpcEndpoint,
         defaultsDeep({
           VpcEndpointId: getField(vpcEndpoint, "VpcEndpointId"),
+        })
+      ),
+      when(
+        () => transitGateway,
+        defaultsDeep({
+          TransitGatewayId: getField(transitGateway, "TransitGatewayId"),
         })
       ),
     ])();

@@ -2247,6 +2247,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       transitGateway: "terraform-transit-gateway",
+      vpc: "inspection-vpc",
       subnets: [
         "inspection-vpc-intra-subnet-us-east-1a",
         "inspection-vpc-intra-subnet-us-east-1b",
@@ -2267,6 +2268,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       transitGateway: "terraform-transit-gateway",
+      vpc: "spoke-vpc-1",
       subnets: [
         "spoke-vpc-1-intra-subnet-us-east-1a",
         "spoke-vpc-1-intra-subnet-us-east-1b",
@@ -2287,6 +2289,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       transitGateway: "terraform-transit-gateway",
+      vpc: "spoke-vpc-2",
       subnets: [
         "spoke-vpc-2-intra-subnet-us-east-1a",
         "spoke-vpc-2-intra-subnet-us-east-1b",
@@ -2350,5 +2353,10 @@ exports.createResources = () => [
       roles: ["test-ssm-ec2"],
     }),
   },
-  { type: "Key", group: "KMS", name: "kms-key-aws-hub-and-spoke-demo" },
+  {
+    type: "Key",
+    group: "KMS",
+    name: "kms-key-aws-hub-and-spoke-demo",
+    properties: () => ({ Description: "" }),
+  },
 ];

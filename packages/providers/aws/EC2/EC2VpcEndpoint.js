@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, assign, map } = require("rubico");
-const { defaultsDeep, pluck, when } = require("rubico/x");
+const { defaultsDeep, pluck, when, callProp } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
@@ -31,7 +31,8 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
     tap((params) => {
       assert(true);
     }),
-    () => false,
+    get("live.ServiceName"),
+    callProp("startsWith", "com.amazonaws.vpce"),
   ]);
 
   const findDependencies = ({ live, lives, config }) => [

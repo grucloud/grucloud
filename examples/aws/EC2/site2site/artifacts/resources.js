@@ -12,4 +12,31 @@ exports.createResources = () => [
       IpAddress: "1.1.1.1",
     }),
   },
+  {
+    type: "VpnGateway",
+    group: "EC2",
+    name: "vpw",
+    properties: ({}) => ({
+      AmazonSideAsn: 64512,
+    }),
+  },
+  {
+    type: "VpnConnection",
+    group: "EC2",
+    name: "vpn-connection",
+    properties: ({}) => ({
+      Category: "VPN",
+      Options: {
+        EnableAcceleration: false,
+        StaticRoutesOnly: false,
+        LocalIpv4NetworkCidr: "0.0.0.0/0",
+        RemoteIpv4NetworkCidr: "0.0.0.0/0",
+        TunnelInsideIpVersion: "ipv4",
+      },
+    }),
+    dependencies: () => ({
+      customerGateway: "cgw",
+      vpnGateway: "vpw",
+    }),
+  },
 ];
