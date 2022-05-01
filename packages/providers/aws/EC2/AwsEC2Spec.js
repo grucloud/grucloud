@@ -261,14 +261,7 @@ module.exports = pipe([
       type: "CustomerGateway",
       Client: EC2CustomerGateway,
       omitProperties: ["CustomerGatewayId", "CertificateArn", "State"],
-      ignoreResource: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          get("live"),
-          eq(get("State"), "deleted"),
-        ]),
+      ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
       propertiesDefault: { Type: "ipsec.1" },
       compare: compareEC2({ filterAll: () => pick([]) }),
       filterLive: () =>
@@ -463,6 +456,20 @@ module.exports = pipe([
             AvailabilityZone: buildAvailabilityZone,
           }),
         ]),
+      findDefault: ({ name, resources, dependencies }) =>
+        pipe([
+          tap(() => {
+            assert(name);
+            assert(resources);
+            assert(dependencies);
+            assert(dependencies.vpc);
+          }),
+          () => resources,
+          find(and([get("isDefault"), eq(get("name"), name)])),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
       dependencies: {
         vpc: { type: "Vpc", group: "EC2" },
         internetGateway: { type: "InternetGateway", group: "EC2" },
@@ -533,7 +540,24 @@ module.exports = pipe([
         getTargetTags: () => [],
         getLiveTags: () => [],
       })({
-        filterAll: () => pipe([omit(["Origin", "State"])]),
+        filterAll: () =>
+          pipe([omit(["Origin", "State", "DestinationPrefixListId"])]),
+        filterTarget:
+          () =>
+          ({ VpcEndpointId, ...others }) =>
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => others,
+              when(
+                () => VpcEndpointId,
+                defaultsDeep({ GatewayId: VpcEndpointId })
+              ),
+              tap((params) => {
+                assert(true);
+              }),
+            ])(),
       }),
       filterLive: () => pipe([pick(["DestinationCidrBlock"])]),
       inferName: ({

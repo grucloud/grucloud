@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map } = require("rubico");
+const { pipe, tap, get, pick, eq, map, filter, not } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -7,6 +7,8 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
+
+const isInstanceDown = pipe([eq(get("State"), "deleted")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -19,6 +21,7 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeTransitGatewayVpcAttachments",
     getParam: "TransitGatewayVpcAttachments",
+    transformList: pipe([filter(not(isInstanceDown))]),
   },
   create: { method: "createTransitGatewayVpcAttachment" },
   destroy: { method: "deleteTransitGatewayVpcAttachment" },
@@ -82,9 +85,9 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
         }),
       ]),
 
-    pickCreated: ({ payload }) => pipe([get("TransitGatewayAttachment")]),
+    pickCreated: ({ payload }) => pipe([get("TransitGatewayVpcAttachment")]),
     isInstanceUp: pipe([eq(get("State"), "available")]),
-    isInstanceDown: pipe([eq(get("State"), "deleted")]),
+    isInstanceDown,
     cannotBeDeleted: eq(get("live.State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,

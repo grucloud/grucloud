@@ -62,6 +62,7 @@ exports.createResources = () => [
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
 - [vpc endpoint](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/vpc-endpoint)
+- [transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/transit-gateway)
 
 ## Properties
 
@@ -73,3 +74,4 @@ exports.createResources = () => [
 - [Internet Gateway](./InternetGateway.md)
 - [Nat Gateway](./NatGateway.md)
 - [Vpc Endpoint](./VpcEndpoint.md)
+- [Transit Gateway](./TransitGateway.md)

@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe.only("EC2TransitGatewayVpcAttachment", async function () {
+describe("EC2TransitGatewayVpcAttachment", async function () {
   let config;
   let provider;
   let transitGatewayAttachment;

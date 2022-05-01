@@ -146,7 +146,14 @@ exports.createResources = () => [
       Description: "Allow logs",
     }),
   },
-  { type: "Key", group: "KMS", name: "secret-key-test" },
+  {
+    type: "Key",
+    group: "KMS",
+    name: "secret-key-test",
+    properties: ({}) => ({
+      Description: "",
+    }),
+  },
   {
     type: "DBSubnetGroup",
     group: "RDS",

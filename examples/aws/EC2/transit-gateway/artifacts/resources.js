@@ -3,21 +3,23 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
-    type: "TransitGateway",
+    type: "Subnet",
     group: "EC2",
-    name: "terraform-transit-gateway",
-    properties: ({}) => ({
-      Description: "Transit Gateway",
-      Options: {
-        AmazonSideAsn: 64512,
-        AutoAcceptSharedAttachments: "disable",
-        DefaultRouteTableAssociation: "disable",
-        DefaultRouteTablePropagation: "disable",
-        VpnEcmpSupport: "enable",
-        DnsSupport: "enable",
-        MulticastSupport: "disable",
-      },
+    name: "subnet-default-us-east-1a",
+    isDefault: true,
+    dependencies: () => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-us-east-1b",
+    isDefault: true,
+    dependencies: () => ({
+      vpc: "vpc-default",
     }),
   },
   {
@@ -35,6 +37,23 @@ exports.createResources = () => [
         DnsSupport: "enable",
         MulticastSupport: "disable",
       },
+    }),
+  },
+  {
+    type: "TransitGatewayVpcAttachment",
+    group: "EC2",
+    name: "tgw-attachment",
+    properties: ({}) => ({
+      Options: {
+        DnsSupport: "enable",
+        Ipv6Support: "disable",
+        ApplianceModeSupport: "disable",
+      },
+    }),
+    dependencies: () => ({
+      transitGateway: "transit-gateway",
+      vpc: "vpc-default",
+      subnets: ["subnet-default-us-east-1a", "subnet-default-us-east-1b"],
     }),
   },
 ];

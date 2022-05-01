@@ -40,6 +40,7 @@ exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
     spec,
     config,
     managedByOther,
+    cannotBeDeleted: managedByOther,
     findDependencies: ({ live }) => [
       {
         type: "TransitGateway",
