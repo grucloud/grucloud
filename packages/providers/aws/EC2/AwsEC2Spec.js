@@ -26,6 +26,7 @@ const {
   when,
   isDeepEqual,
   callProp,
+  prepend,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
@@ -33,6 +34,7 @@ const {
   isOurMinion,
   DecodeUserData,
   assignPolicyDocumentAccountAndRegion,
+  replaceRegion,
 } = require("../AwsCommon");
 
 const {
@@ -47,8 +49,12 @@ const {
 const { EC2LaunchTemplate } = require("./EC2LaunchTemplate");
 
 const { AwsClientKeyPair } = require("./AwsKeyPair");
-const { AwsVpc } = require("./AwsVpc");
-const { AwsInternetGateway } = require("./AwsInternetGateway");
+const { EC2Vpc } = require("./EC2Vpc");
+const { EC2InternetGateway } = require("./EC2InternetGateway");
+const {
+  EC2InternetGatewayAttachment,
+} = require("./EC2InternetGatewayAttachment");
+
 const { AwsNatGateway } = require("./AwsNatGateway");
 const { EC2RouteTable } = require("./EC2RouteTable");
 const { EC2RouteTableAssociation } = require("./EC2RouteTableAssociation");
@@ -79,6 +85,10 @@ const {
 const {
   EC2TransitGatewayRouteTable,
 } = require("./EC2TransitGatewayRouteTable");
+
+const {
+  EC2TransitGatewayRouteTableAssociation,
+} = require("./EC2TransitGatewayRouteTableAssociation");
 
 const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
 const { EC2VpnGateway } = require("./EC2VpnGateway");
@@ -367,7 +377,7 @@ module.exports = pipe([
       type: "Vpc",
       //TODO only for delete
       //dependsOnDelete: ["IAM::User", "IAM::Group"],
-      Client: AwsVpc,
+      Client: EC2Vpc,
       omitProperties: [
         "DhcpOptionsId",
         "State",
@@ -383,13 +393,23 @@ module.exports = pipe([
     },
     {
       type: "InternetGateway",
-      Client: AwsInternetGateway,
-      compare: compareEC2({
-        filterLive: () =>
-          pipe([omit(["Attachments", "InternetGatewayId", "OwnerId"])]),
-      }),
-      filterLive: () => pick([]),
-      dependencies: { vpc: { type: "Vpc", group: "EC2" } },
+      Client: EC2InternetGateway,
+      omitProperties: ["Attachments", "InternetGatewayId", "OwnerId"],
+    },
+    {
+      type: "InternetGatewayAttachment",
+      Client: EC2InternetGatewayAttachment,
+      omitProperties: ["VpcId", "InternetGatewayId"],
+      inferName: ({ dependenciesSpec: { vpc, internetGateway } }) =>
+        `ig-attach::${internetGateway}::${vpc}`,
+      dependencies: {
+        vpc: { type: "Vpc", group: "EC2", parent: true },
+        internetGateway: {
+          type: "InternetGateway",
+          group: "EC2",
+          parent: true,
+        },
+      },
     },
     {
       type: "NatGateway",
@@ -561,7 +581,7 @@ module.exports = pipe([
       }),
       filterLive: () => pipe([pick(["DestinationCidrBlock"])]),
       inferName: ({
-        properties,
+        properties: { DestinationCidrBlock },
         dependenciesSpec: {
           routeTable,
           ig,
@@ -574,24 +594,32 @@ module.exports = pipe([
           tap(() => {
             assert(routeTable);
           }),
-          () =>
+          () => routeTable,
+          switchCase([
+            () => ig,
+            append("-igw"),
+            () => natGateway,
+            append("-nat-gateway"),
+            () => vpcEndpoint,
             pipe([
-              tap(() => {
-                assert(routeTable);
+              append(`-${vpcEndpoint}`),
+              when(
+                () => DestinationCidrBlock,
+                append(`-${DestinationCidrBlock}`)
+              ),
+              tap((params) => {
+                assert(true);
               }),
-              () => routeTable,
-              switchCase([
-                () => ig,
-                append("-igw"),
-                () => natGateway,
-                append("-nat-gateway"),
-                () => vpcEndpoint,
-                append("-vpce"),
-                () => transitGateway,
-                append("-tgw"),
-                append("-local"),
-              ]),
-            ])(),
+            ]),
+            () => transitGateway,
+            pipe([
+              tap((params) => {
+                assert(DestinationCidrBlock);
+              }),
+              append(`-tgw-${DestinationCidrBlock}`),
+            ]),
+            append("-local"),
+          ]),
         ])(),
       includeDefaultDependencies: true,
       dependencies: {
@@ -851,7 +879,31 @@ module.exports = pipe([
         routeTables: { type: "RouteTable", group: "EC2", list: true },
         // NetworkInterfaceIds ?
         // SecurityGroup ?
+        firewall: {
+          type: "Firewall",
+          group: "NetworkFirewall",
+          ignoreOnDestroy: true,
+        },
       },
+      // inferName: ({ properties, dependenciesSpec: { firewall, subnets } }) =>
+      //   pipe([
+      //     () => firewall,
+      //     tap((params) => {
+      //       assert(true);
+      //     }),
+      //     switchCase([
+      //       isEmpty,
+      //       pipe([() => properties.ServiceName]),
+      //       pipe([
+      //         tap((params) => {
+      //           assert.equal(size(subnets), 1);
+      //         }),
+      //         prepend("vpce::"),
+      //         append("::"),
+      //         append(pipe([() => subnets, first])()),
+      //       ]),
+      //     ]),
+      //   ])(),
       Client: EC2VpcEndpoint,
       compare: compareEC2({
         filterTarget: () => pipe([pick(["PolicyDocument"])]),
@@ -864,9 +916,28 @@ module.exports = pipe([
             "PrivateDnsEnabled",
             "RequesterManaged",
             "VpcEndpointType",
+            "ServiceName",
           ]),
+          assign({
+            ServiceName: pipe([
+              get("ServiceName"),
+              tap((params) => {
+                assert(true);
+              }),
+              replaceRegion(providerConfig),
+            ]),
+          }),
           assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
         ]),
+      addCode: ({ resource, lives }) =>
+        pipe([
+          () => resource,
+          get("dependencies"),
+          find(eq(get("type"), "Firewall")),
+          get("ids"),
+          first,
+          unless(isEmpty, () => `\n`),
+        ])(),
     },
     {
       type: "TransitGateway",
@@ -882,7 +953,6 @@ module.exports = pipe([
       ],
       propertiesDefault: {},
     },
-
     {
       type: "TransitGatewayRouteTable",
       Client: EC2TransitGatewayRouteTable,
@@ -919,6 +989,49 @@ module.exports = pipe([
         },
         vpc: { type: "Vpc", group: "EC2" },
         subnets: { type: "Subnet", group: "EC2", list: true },
+        transitGatewayRouteTables: {
+          type: "TransitGatewayRouteTable",
+          group: "EC2",
+          list: true,
+        },
+      },
+    },
+    {
+      type: "TransitGatewayRouteTableAssociation",
+      Client: EC2TransitGatewayRouteTableAssociation,
+      includeDefaultDependencies: true,
+      omitProperties: [
+        "TransitGatewayAttachmentId",
+        "TransitGatewayRouteTableId",
+      ],
+      inferName: ({
+        dependenciesSpec: {
+          transitGatewayVpcAttachment,
+          transitGatewayRouteTable,
+        },
+      }) =>
+        pipe([
+          tap(() => {
+            assert(transitGatewayVpcAttachment);
+            assert(transitGatewayRouteTable);
+          }),
+          () => `${transitGatewayVpcAttachment}::${transitGatewayRouteTable}`,
+        ])(),
+      compare: compareAws({
+        filterTarget: () => pipe([pick([])]),
+        filterLive: () => pipe([pick([])]),
+      }),
+      dependencies: {
+        transitGatewayVpcAttachment: {
+          type: "TransitGatewayVpcAttachment",
+          group: "EC2",
+          parent: true,
+        },
+        transitGatewayRouteTable: {
+          type: "TransitGatewayRouteTable",
+          group: "EC2",
+          parent: true,
+        },
       },
     },
     {

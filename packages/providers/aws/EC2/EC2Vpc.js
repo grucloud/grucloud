@@ -14,7 +14,7 @@ const {
   omit,
 } = require("rubico");
 const { isEmpty, defaultsDeep, size } = require("rubico/x");
-const logger = require("@grucloud/core/logger")({ prefix: "AwsVpc" });
+const logger = require("@grucloud/core/logger")({ prefix: "Vpc" });
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
@@ -27,7 +27,7 @@ const {
 const { AwsClient } = require("../AwsClient");
 const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
-exports.AwsVpc = ({ spec, config }) => {
+exports.EC2Vpc = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 

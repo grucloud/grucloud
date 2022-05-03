@@ -24,9 +24,12 @@ const createModel = ({ config }) => ({
 });
 
 const findId = pipe([
-  get("live.TransitGatewayArn"),
-  tap((TransitGatewayArn) => {
-    assert(TransitGatewayArn);
+  tap((params) => {
+    assert(true);
+  }),
+  get("live.TransitGatewayId"),
+  tap((TransitGatewayId) => {
+    assert(TransitGatewayId);
   }),
 ]);
 

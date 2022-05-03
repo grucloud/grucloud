@@ -413,6 +413,10 @@ exports.createResources = () => [
 - [SNS Topic](../SNS/Topic.md)
 - [Lambda Function](../Lambda/Function.md)
 
+## Used By
+
+- [Network Firewall Logging Configuration](../NetworkFirewall/LoggingConfiguration.md)
+
 ## AWS CLI
 
 List the S3 buckets for the current account:

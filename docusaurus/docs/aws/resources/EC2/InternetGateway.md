@@ -46,50 +46,56 @@ List only the internet gateway with the _InternetGateway_ filter:
 gc l -t InternetGateway
 ```
 
-```sh
+```txt
 Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
-  ✓ Listing 2/2
-┌───────────────────────────────────────────────────────────────────────────────────────┐
-│ 2 InternetGateway from aws                                                            │
-├───────────────────────┬────────────────────────────────────────────────────────┬──────┤
-│ Name                  │ Data                                                   │ Our  │
-├───────────────────────┼────────────────────────────────────────────────────────┼──────┤
-│ igw-041e0d42bb3b4149c │ Attachments:                                           │ NO   │
-│                       │   - State: available                                   │      │
-│                       │     VpcId: vpc-bbbafcd3                                │      │
-│                       │ InternetGatewayId: igw-041e0d42bb3b4149c               │      │
-│                       │ OwnerId: 840541460064                                  │      │
-│                       │ Tags: []                                               │      │
-│                       │                                                        │      │
-├───────────────────────┼────────────────────────────────────────────────────────┼──────┤
-│ igw-0d51a4e8ebf39dd88 │ Attachments: []                                        │ NO   │
-│                       │ InternetGatewayId: igw-0d51a4e8ebf39dd88               │      │
-│                       │ OwnerId: 840541460064                                  │      │
-│                       │ Tags: []                                               │      │
-│                       │                                                        │      │
-└───────────────────────┴────────────────────────────────────────────────────────┴──────┘
+  ✓ Listing 1/1
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│ 2 EC2::InternetGateway from aws                                                    │
+├────────────────────────────────────────────────────────────────────────────────────┤
+│ name: default                                                                      │
+│ managedByUs: NO                                                                    │
+│ live:                                                                              │
+│   Attachments:                                                                     │
+│     - State: available                                                             │
+│       VpcId: vpc-faff3987                                                          │
+│   InternetGatewayId: igw-0b24ea870a58035dc                                         │
+│   OwnerId: 840541460064                                                            │
+│   Tags:                                                                            │
+│     - Key: Name                                                                    │
+│       Value: default                                                               │
+│                                                                                    │
+├────────────────────────────────────────────────────────────────────────────────────┤
+│ name: inspection-vpc                                                               │
+│ managedByUs: Yes                                                                   │
+│ live:                                                                              │
+│   Attachments:                                                                     │
+│     - State: available                                                             │
+│       VpcId: vpc-021c0573712bc7d11                                                 │
+│   InternetGatewayId: igw-060ff7dec3ace6893                                         │
+│   OwnerId: 840541460064                                                            │
+│   Tags:                                                                            │
+│     - Key: Environment                                                             │
+│       Value: development                                                           │
+│     - Key: Name                                                                    │
+│       Value: inspection-vpc                                                        │
+│     - Key: Owner                                                                   │
+│       Value: user                                                                  │
+│     - Key: Provisioner                                                             │
+│       Value: terraform                                                             │
+│                                                                                    │
+└────────────────────────────────────────────────────────────────────────────────────┘
 
 
-dot file written to: list.dot
-output saved to: list.svg
 List Summary:
 Provider: aws
-┌──────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                  │
-├────────────────────┬─────────────────────────────────────────────────────────────────┤
-│ InternetGateway    │ igw-041e0d42bb3b4149c                                           │
-│                    │ igw-0d51a4e8ebf39dd88                                           │
-└────────────────────┴─────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                               │
+├──────────────────────┬────────────────────────────────────────────────────────────┤
+│ EC2::InternetGateway │ default                                                    │
+│                      │ inspection-vpc                                             │
+└──────────────────────┴────────────────────────────────────────────────────────────┘
 2 resources, 1 type, 1 provider
-Command "gc l -t InternetGateway" executed in 4s
-```
-
-### AWS CLI
-
-List the internet Gateways
-
-```
-aws ec2 describe-internet-gateways
+Command "gc l -t EC2::InternetGateway" executed in 5s, 171 MB
 ```

@@ -4,7 +4,9 @@
 
 ## Aws
 
-- retry on EHOSTUNREACH
+- VpcEndpoint cannotBeDeleted for firewall VPCE
+- route : find tgw name
+
 - gc gencode lambda with java.
 
 - AWS::Glue::Job

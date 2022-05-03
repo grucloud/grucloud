@@ -45,11 +45,7 @@ exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
       {
         type: "TransitGateway",
         group: "EC2",
-        ids: [
-          `arn:aws:ec2:${config.region}:${config.accountId()}:transit-gateway/${
-            live.TransitGatewayId
-          }`,
-        ],
+        ids: [live.TransitGatewayId],
       },
     ],
     findName: pipe([

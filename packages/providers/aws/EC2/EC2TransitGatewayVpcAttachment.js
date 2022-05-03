@@ -44,11 +44,7 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
       {
         type: "TransitGateway",
         group: "EC2",
-        ids: [
-          `arn:aws:ec2:${config.region}:${config.accountId()}:transit-gateway/${
-            live.TransitGatewayId
-          }`,
-        ],
+        ids: [live.TransitGatewayId],
       },
       {
         type: "Vpc",

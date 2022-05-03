@@ -5,6 +5,10 @@ title: Vpc Endpoint
 
 Provides a [Vpc Endpoint](https://console.aws.amazon.com/vpc/home?#Endpoints:)
 
+### Sample
+
+#### Gateway Endpoint
+
 ```js
 exports.createResources = () => [
  {
@@ -34,17 +38,55 @@ exports.createResources = () => [
 ];
 ```
 
+#### Interface Endpoint
+
+```js
+exports.createResources = () => [
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: "com.amazonaws.us-east-1.ec2",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: `*`,
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+    }),
+    dependencies: () => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        "spoke-vpc-2-private-subnet-a",
+        "spoke-vpc-2-private-subnet-b",
+        "spoke-vpc-2-private-subnet-c",
+      ],
+    }),
+  },
+];
+```
+
 ### Examples
 
-- [VPC Module](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/vpc-endpoint)
+- [vpc endpoint simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/vpc-endpoint)
+
+- [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/hub-and-spoke-with-inspection-vpc)
 
 ### Properties
 
-- [CreateNatGatewayCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/createvpcendpointcommandinput.html)
+- [CreateVpcEndpointCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/createvpcendpointcommandinput.html)
 
 ### Dependencies
 
 - [Vpc](./Vpc.md)
+- [Subnet](./Subnet.md)
 
 ### Used By
 

@@ -11,6 +11,7 @@ const {
   pick,
   assign,
   flatMap,
+  and,
 } = require("rubico");
 const {
   isEmpty,
@@ -20,6 +21,7 @@ const {
   append,
   callProp,
   when,
+  prepend,
 } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
@@ -52,7 +54,7 @@ exports.EC2Route = ({ spec, config }) => {
           id: live.RouteTableId,
         }),
       tap((routeTable) => {
-        //assert(routeTable);
+        assert(true);
       }),
       get("name", "no-route-table-id"),
       switchCase([
@@ -71,9 +73,25 @@ exports.EC2Route = ({ spec, config }) => {
           get("GatewayId", ""),
           callProp("startsWith", "vpce-"),
         ]),
-        append("-vpce"),
+        (rt) =>
+          pipe([
+            () =>
+              lives.getById({
+                type: "VpcEndpoint",
+                group: "EC2",
+                providerName: config.providerName,
+                id: live.GatewayId,
+              }),
+            get("name"),
+            prepend(`${rt}-`),
+            when(
+              () => live.DestinationCidrBlock,
+              append(`-${live.DestinationCidrBlock}`)
+            ),
+          ])(),
         () => live.TransitGatewayId,
-        append(`-tgw`),
+        //TODO  find tgw name
+        append(`-tgw-${live.DestinationCidrBlock}`),
         append(`-${live.DestinationCidrBlock}`),
       ]),
       tap((params) => {
@@ -142,15 +160,16 @@ exports.EC2Route = ({ spec, config }) => {
     {
       type: "TransitGateway",
       group: "EC2",
-      ids: [
-        `arn:aws:ec2:${config.region}:${config.accountId()}:transit-gateway/${
-          live.TransitGatewayId
-        }`,
-      ],
+      ids: [live.TransitGatewayId],
     },
   ];
 
-  const findRoute = ({ GatewayId, NatGatewayId }) =>
+  const findRoute = ({
+    GatewayId,
+    NatGatewayId,
+    TransitGatewayId,
+    VpcEndpointId,
+  }) =>
     pipe([
       get("Routes"),
       tap((Routes) => {
@@ -158,8 +177,9 @@ exports.EC2Route = ({ spec, config }) => {
         logger.debug(
           `findRoute #Routes ${size(
             Routes
-          )}, GatewayId ${GatewayId}, NatGatewayId ${NatGatewayId}`
+          )}, GatewayId ${GatewayId}, NatGatewayId ${NatGatewayId}, TransitGatewayId ${TransitGatewayId}, VpcEndpointId: ${VpcEndpointId}`
         );
+        logger.debug(JSON.stringify(Routes));
       }),
       find(
         pipe([
@@ -168,6 +188,10 @@ exports.EC2Route = ({ spec, config }) => {
             eq(get("GatewayId"), GatewayId),
             () => NatGatewayId,
             eq(get("NatGatewayId"), NatGatewayId),
+            () => TransitGatewayId,
+            eq(get("NatGatewayId"), NatGatewayId),
+            () => VpcEndpointId,
+            eq(get("GatewayId"), VpcEndpointId),
             () => {
               assert(false, "missing route destination");
             },
@@ -277,11 +301,24 @@ exports.EC2Route = ({ spec, config }) => {
     ])();
 
   const create = pipe([
+    tap((params) => {
+      assert(true);
+    }),
     switchCase([
-      get("payload.VpcEndpointId"),
+      and([
+        get("payload.VpcEndpointId"),
+        eq(
+          get("resolvedDependencies.vpcEndpoint.live.VpcEndpointType"),
+          "Gateway"
+        ),
+      ]),
       createRouteVpcEndpoint,
       client.create({
         method: "createRoute",
+        shouldRetryOnExceptionCodes: ["InvalidTransitGatewayID.NotFound"],
+        shouldRetryOnExceptionMessages: [
+          "VPC Endpoints of this type cannot be used as route targets",
+        ],
         getById,
         pickCreated:
           ({ payload }) =>
@@ -307,7 +344,35 @@ exports.EC2Route = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteRoute-property
   const destroy = switchCase([
-    pipe([get("live.GatewayId", ""), callProp("startsWith", "vpce-")]),
+    ({ live, lives }) =>
+      pipe([
+        tap((params) => {
+          assert(lives);
+        }),
+        and([
+          pipe([
+            () => live,
+            get("GatewayId", ""),
+            callProp("startsWith", "vpce"),
+          ]),
+          pipe([
+            () =>
+              lives.getById({
+                id: live.GatewayId,
+                type: "VpcEndpoint",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            tap((params) => {
+              assert(true);
+            }),
+            eq(get("live.VpcEndpointType"), "Gateway"),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+        ]),
+      ])(),
     ({ live: { GatewayId, RouteTableId } }) =>
       pipe([
         tap(() => {
@@ -317,6 +382,9 @@ exports.EC2Route = ({ spec, config }) => {
         () => ({
           VpcEndpointId: GatewayId,
           RemoveRouteTableIds: [RouteTableId],
+        }),
+        tap(({ VpcEndpointId }) => {
+          assert(VpcEndpointId);
         }),
         ec2().modifyVpcEndpoint,
       ])(),

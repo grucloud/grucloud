@@ -69,7 +69,10 @@ const throwIfNotAwsError = (code) =>
 exports.throwIfNotAwsError = throwIfNotAwsError;
 
 exports.replaceRegion = (providerConfig) =>
-  callProp("replace", providerConfig.region, "${config.region}");
+  pipe([
+    callProp("replace", providerConfig.region, "${config.region}"),
+    (resource) => () => "`" + resource + "`",
+  ]);
 
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
@@ -125,7 +128,7 @@ const compareAwsTags = ({ getTargetTags, getLiveTags, tagsKey, key }) =>
       assert(true);
     }),
     assign({
-      diffTags: ({ targetTags, liveTags }) =>
+      diffTags: ({ targetTags = [], liveTags = [] }) =>
         Diff.diffJson(liveTags, targetTags),
       targetKeys: pipe([get("targetTags"), extractKeys({ key })]),
       liveKeys: pipe([get("liveTags"), extractKeys({ key })]),
@@ -225,7 +228,13 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
             or([
               pipe([
                 //TODO common with Retry.js
-                () => ["ECONNRESET", "ENETDOWN", "EPROTO", "ENOTFOUND"],
+                () => [
+                  "ECONNRESET",
+                  "ENETDOWN",
+                  "EPROTO",
+                  "ENOTFOUND",
+                  "EHOSTUNREACH",
+                ],
                 includes(error.code),
               ]),
               pipe([
@@ -236,6 +245,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
                   "OperationAborted",
                   "TimeoutError",
                   "ServiceUnavailable",
+                  "RequestLimitExceeded",
                   "SyntaxError", // SDK v3 JSON.parse exception
                 ],
                 includes(error.name),

@@ -118,7 +118,13 @@ exports.retryCall = retryCall;
 
 //TODO common error with Aws
 const shouldRetryOnExceptionDefault = ({ error }) =>
-  ["ECONNABORTED", "ECONNRESET", "ENOTFOUND", "ENETDOWN"].includes(error.code);
+  [
+    "ECONNABORTED",
+    "ECONNRESET",
+    "ENOTFOUND",
+    "ENETDOWN",
+    "EHOSTUNREACH",
+  ].includes(error.code);
 
 exports.retryCallOnError = ({
   name,

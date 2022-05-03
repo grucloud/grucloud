@@ -24,6 +24,7 @@ const GROUPS = [
   "IAM",
   "KMS",
   "Lambda",
+  "NetworkFirewall",
   "RDS",
   "Route53",
   "Route53Domain",

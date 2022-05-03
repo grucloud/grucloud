@@ -70,8 +70,13 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+  },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
       vpc: "Vpc",
+      internetGateway: "InternetGateway",
     }),
   },
   {

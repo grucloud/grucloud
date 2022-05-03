@@ -21,7 +21,7 @@ exports.createResources = () => [
       Device: "/dev/sdf",
       DeleteOnTermination: false,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       volume: "volume",
       instance: "web-server-ec2-vpc",
     }),
@@ -34,12 +34,13 @@ exports.createResources = () => [
       CidrBlock: "10.1.0.0/16",
     }),
   },
+  { type: "InternetGateway", group: "EC2", name: "ig" },
   {
-    type: "InternetGateway",
+    type: "InternetGatewayAttachment",
     group: "EC2",
-    name: "ig",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-ec2-example",
+      internetGateway: "ig",
     }),
   },
   {
@@ -50,7 +51,7 @@ exports.createResources = () => [
       CidrBlock: "10.1.0.0/24",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-ec2-example",
     }),
   },
@@ -58,14 +59,14 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "route-table",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-ec2-example",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table",
       subnet: "subnet",
     }),
@@ -76,7 +77,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table",
       ig: "ig",
     }),
@@ -88,7 +89,7 @@ exports.createResources = () => [
       GroupName: "security-group",
       Description: "Managed By GruCloud",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-ec2-example",
     }),
   },
@@ -112,7 +113,7 @@ exports.createResources = () => [
         ToPort: -1,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpc-ec2-example::security-group",
     }),
   },
@@ -136,7 +137,7 @@ exports.createResources = () => [
         ToPort: 22,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpc-ec2-example::security-group",
     }),
   },
@@ -154,7 +155,7 @@ exports.createResources = () => [
         AvailabilityZone: `${config.region}a`,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnet: "subnet",
       keyPair: "kp-ec2-vpc",
       eip: "myip",

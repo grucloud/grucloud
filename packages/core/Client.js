@@ -261,7 +261,7 @@ const createClient = ({
   pipe([
     tap((params) => {
       assert(getListHof);
-      assert(spec.Client);
+      assert(spec.Client, `missing Client for ${spec.groupType}`);
       assert(lives);
     }),
     () => spec.Client({ providerName, spec, config, lives }),

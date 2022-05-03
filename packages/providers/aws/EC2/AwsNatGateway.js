@@ -147,7 +147,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties,
+    properties: { Tags, ...otherProps },
     dependencies: { eip, subnet },
   }) =>
     pipe([
@@ -155,14 +155,14 @@ exports.AwsNatGateway = ({ spec, config }) => {
         assert(eip, "NatGateway is missing the dependency 'eip'");
         assert(subnet, "NatGateway is missing the dependency 'subnet'");
       }),
-      () => properties,
+      () => otherProps,
       defaultsDeep({
         AllocationId: getField(eip, "AllocationId"),
         SubnetId: getField(subnet, "SubnetId"),
         TagSpecifications: [
           {
             ResourceType: "natgateway",
-            Tags: buildTags({ config, namespace, name }),
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
           },
         ],
       }),

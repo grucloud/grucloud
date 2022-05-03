@@ -4,55 +4,110 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "/aws/ecs/containerinsights/service-cluster/performance",
+    properties: ({}) => ({
+      retentionInDays: 1,
+    }),
+  },
+  {
     type: "Vpc",
     group: "EC2",
-    name: "project-vpc-endpoint-vpc",
+    name: "project-vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
+    }),
+  },
+  { type: "InternetGateway", group: "EC2", name: "project-igw" },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+      internetGateway: "project-igw",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "project-vpc-endpoint-subnet-private1-us-east-1a",
+    name: ({ config }) => `project-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       CidrBlock: "10.0.128.0/20",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
-      vpc: "project-vpc-endpoint-vpc",
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `project-subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      CidrBlock: "10.0.0.0/20",
+      AvailabilityZone: `${config.region}a`,
+    }),
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "project-vpc-endpoint-rtb-private1-us-east-1a",
-    dependencies: () => ({
-      vpc: "project-vpc-endpoint-vpc",
+    name: ({ config }) => `project-rtb-private1-${config.region}a`,
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "project-rtb-public",
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
-      routeTable: "project-vpc-endpoint-rtb-private1-us-east-1a",
-      subnet: "project-vpc-endpoint-subnet-private1-us-east-1a",
+    dependencies: ({ config }) => ({
+      routeTable: `project-rtb-private1-${config.region}a`,
+      subnet: `project-subnet-private1-${config.region}a`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "project-rtb-public",
+      subnet: `project-subnet-public1-${config.region}a`,
     }),
   },
   {
     type: "Route",
     group: "EC2",
-    dependencies: () => ({
-      routeTable: "project-vpc-endpoint-rtb-private1-us-east-1a",
-      vpcEndpoint: "project-vpc-endpoint-vpce-s3",
+    dependencies: ({ config }) => ({
+      routeTable: `project-rtb-private1-${config.region}a`,
+      vpcEndpoint: "project-vpce-s3",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "project-rtb-public",
+      ig: "project-igw",
     }),
   },
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: "project-vpc-endpoint-vpce-s3",
-    properties: ({}) => ({
-      ServiceName: "com.amazonaws.us-east-1.s3",
+    name: "project-vpce-s3",
+    properties: ({ config }) => ({
       PolicyDocument: {
         Version: "2008-10-17",
         Statement: [
@@ -60,16 +115,18 @@ exports.createResources = () => [
             Effect: "Allow",
             Principal: "*",
             Action: "*",
-            Resource: "*",
+            Resource: `*`,
           },
         ],
       },
       PrivateDnsEnabled: false,
       RequesterManaged: false,
       VpcEndpointType: "Gateway",
+      ServiceName: `com.amazonaws.${config.region}.s3`,
     }),
-    dependencies: () => ({
-      vpc: "project-vpc-endpoint-vpc",
+    dependencies: ({ config }) => ({
+      vpc: "project-vpc",
+      routeTables: [`project-rtb-private1-${config.region}a`],
     }),
   },
 ];

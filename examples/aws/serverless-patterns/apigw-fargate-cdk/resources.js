@@ -94,8 +94,13 @@ exports.createResources = () => [
     type: "InternetGateway",
     group: "EC2",
     name: "CdkStack/MyVpc",
-    dependencies: () => ({
+  },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
+      internetGateway: "CdkStack/MyVpc",
     }),
   },
   {

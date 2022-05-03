@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, tap, pipe, assign, eq, get, filter, not } = require("rubico");
+const { map, tap, pipe, assign, eq, get, filter, not, and } = require("rubico");
 const {
   defaultsDeep,
   find,
@@ -70,7 +70,7 @@ const SpecDefault = ({ providerName }) => ({
       }),
       () => resources,
       //TODO check for multiple default and assert
-      find(eq(get("name"), name)),
+      find(and([eq(get("name"), name), get("live")])),
       tap.if(isEmpty, () => {
         logger.info(
           `findResource: Cannot find resource '${name}', ${JSON.stringify(

@@ -1,6 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, map } = require("rubico");
-const { defaultsDeep, pluck, when, callProp } = require("rubico/x");
+const { pipe, tap, get, assign, map, eq, switchCase, fork } = require("rubico");
+const {
+  defaultsDeep,
+  pluck,
+  when,
+  callProp,
+  find,
+  isEmpty,
+  first,
+  size,
+} = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
@@ -20,17 +29,69 @@ const pickId = pipe([
   }),
   ({ VpcEndpointId }) => ({ VpcEndpointIds: [VpcEndpointId] }),
 ]);
-const findName = findNameInTagsOrId({ findId: get("live.ServiceName") });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2VpcEndpoint = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
+  const findName = ({ live, lives }) =>
+    pipe([
+      () => live,
+      get("Tags"),
+      find(eq(get("Key"), "Firewall")),
+      switchCase([
+        isEmpty,
+        pipe([
+          () => ({ live, lives }),
+          tap((params) => {
+            assert(true);
+          }),
+          findNameInTagsOrId({ findId: get("live.ServiceName") }),
+        ]),
+        pipe([
+          get("Value"),
+          (id) =>
+            pipe([
+              fork({
+                firewall: pipe([
+                  () =>
+                    lives.getById({
+                      id,
+                      type: "Firewall",
+                      group: "NetworkFirewall",
+                      providerName: config.providerName,
+                    }),
+                  get("name"),
+                ]),
+                subnet: pipe([
+                  () => live,
+                  get("SubnetIds"),
+                  tap((SubnetIds) => {
+                    assert.equal(size(SubnetIds), 1);
+                  }),
+                  first,
+                  (id) =>
+                    lives.getById({
+                      id,
+                      type: "Subnet",
+                      group: "EC2",
+                      providerName: config.providerName,
+                    }),
+                  get("name"),
+                ]),
+              }),
+              tap(({ firewall, subnet }) => {
+                assert(firewall);
+                assert(subnet);
+              }),
+              ({ firewall, subnet }) => `vpce::${firewall}::${subnet}`,
+            ])(),
+        ]),
+      ]),
+    ])();
+
   const managedByOther = pipe([
-    tap((params) => {
-      assert(true);
-    }),
     get("live.ServiceName"),
     callProp("startsWith", "com.amazonaws.vpce"),
   ]);
@@ -50,14 +111,19 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
     {
       type: "SecurityGroup",
       group: "EC2",
-      ids: pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => live,
-        get("Groups"),
-        pluck("GroupId"),
-      ])(),
+      ids: pipe([() => live, get("Groups"), pluck("GroupId")])(),
+    },
+    {
+      type: "Firewall",
+      group: "NetworkFirewall",
+      ids: [
+        pipe([
+          () => live,
+          get("Tags"),
+          find(eq(get("Key"), "Firewall")),
+          get("Value"),
+        ])(),
+      ],
     },
   ];
 
@@ -87,7 +153,13 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
     decorate,
     ignoreErrorCodes,
   });
-  const getByName = getByNameCore({ getList, findName });
+
+  const getByName = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    getByNameCore({ getList, findName }),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpcEndpoint-property
   const create = client.create({

@@ -22,8 +22,13 @@ exports.createResources = () => [
     type: "InternetGateway",
     group: "EC2",
     name: "VpcIGWD7BA715C",
-    dependencies: () => ({
-      vpc: "Vpc8378EB38",
+  },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "vpc-Vpc8378EB38",
+      internetGateway: "ig-VpcIGWD7BA715C",
     }),
   },
   {
@@ -326,7 +331,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: "com.amazonaws.us-east-1.events",
     properties: ({ getId }) => ({
       PolicyDocument: {
         Version: "2012-10-17",
@@ -357,6 +361,7 @@ exports.createResources = () => [
       PrivateDnsEnabled: true,
       RequesterManaged: false,
       VpcEndpointType: "Interface",
+      ServiceName: "com.amazonaws.us-east-1.events",
     }),
     dependencies: () => ({
       vpc: "Vpc8378EB38",

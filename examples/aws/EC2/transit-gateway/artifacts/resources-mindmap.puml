@@ -5,7 +5,9 @@ skinparam monochrome true
 ++ aws
 +++ EC2
 ++++ Vpc (1)
+++++ Subnet (2)
+++++ RouteTable (1)
+++++ Route (1)
 ++++ TransitGateway (1)
-++++ TransitGatewayRouteTable (1)
 ++++ TransitGatewayVpcAttachment (1)
 @endmindmap

@@ -15,8 +15,13 @@ exports.createResources = () => [
     type: "InternetGateway",
     group: "EC2",
     name: "pg-igw",
-    dependencies: () => ({
+  },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
       vpc: "pg-vpc",
+      internetGateway: "pg-igw",
     }),
   },
   {

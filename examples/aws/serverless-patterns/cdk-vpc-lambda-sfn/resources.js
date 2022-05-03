@@ -40,8 +40,13 @@ exports.createResources = () => [
     type: "InternetGateway",
     group: "EC2",
     name: "vpcStack/test-VPC",
-    dependencies: () => ({
+  },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
+      internetGateway: "vpcStack/test-VPC",
     }),
   },
   {
@@ -330,7 +335,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: "com.amazonaws.us-east-1.states",
     properties: ({}) => ({
       PolicyDocument: {
         Statement: [
@@ -345,6 +349,7 @@ exports.createResources = () => [
       PrivateDnsEnabled: true,
       RequesterManaged: false,
       VpcEndpointType: "Interface",
+      ServiceName: "com.amazonaws.us-east-1.states",
     }),
     dependencies: () => ({
       vpc: "vpcStack/test-VPC",
