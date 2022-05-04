@@ -25,48 +25,42 @@
 <!-- EventBus::::sam&#45;app&#45;EventBus -->
 <g id="node1" class="node">
 <title>EventBus::::sam&#45;app&#45;EventBus</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="968,-167 715,-167 715,-109 968,-109 968,-167"/>
-<text text-anchor="start" x="727.5" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::EventBus</text>
-<text text-anchor="start" x="727.5" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;EventBus</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="968,-281 715,-281 715,-223 968,-223 968,-281"/>
+<text text-anchor="start" x="727.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::EventBus</text>
+<text text-anchor="start" x="727.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;EventBus</text>
 </g>
 <!-- Rule::::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV -->
 <g id="node2" class="node">
 <title>Rule::::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="679,-205 351,-205 351,-147 679,-147 679,-205"/>
-<text text-anchor="start" x="363" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::Rule</text>
-<text text-anchor="start" x="363" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLD...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="679,-281 351,-281 351,-223 679,-223 679,-281"/>
+<text text-anchor="start" x="363" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::Rule</text>
+<text text-anchor="start" x="363" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLD...</text>
 </g>
 <!-- Rule::::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV&#45;&gt;EventBus::::sam&#45;app&#45;EventBus -->
 <g id="edge1" class="edge">
 <title>Rule::::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV&#45;&gt;EventBus::::sam&#45;app&#45;EventBus</title>
-<path fill="none" stroke="#707070" d="M679.2,-156.89C687.82,-155.88 696.44,-154.87 704.96,-153.87"/>
-<polygon fill="#707070" stroke="#707070" points="705.38,-157.35 714.9,-152.71 704.56,-150.39 705.38,-157.35"/>
+<path fill="none" stroke="#707070" d="M679.2,-252C687.73,-252 696.25,-252 704.68,-252"/>
+<polygon fill="#707070" stroke="#707070" points="704.9,-255.5 714.9,-252 704.9,-248.5 704.9,-255.5"/>
 </g>
 <!-- Target::::target::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV::CloudWatchLogTarget -->
 <g id="node3" class="node">
 <title>Target::::target::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV::CloudWatchLogTarget</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="315,-243 24,-243 24,-185 315,-185 315,-243"/>
-<text text-anchor="start" x="36.5" y="-223.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::Target</text>
-<text text-anchor="start" x="36.5" y="-198.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">target::sam&#45;app&#45;EventBusLogRule&#45;...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="315,-281 24,-281 24,-223 315,-223 315,-281"/>
+<text text-anchor="start" x="36.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchEvents::Target</text>
+<text text-anchor="start" x="36.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">target::sam&#45;app&#45;EventBusLogRule&#45;...</text>
 </g>
 <!-- Target::::target::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV::CloudWatchLogTarget&#45;&gt;Rule::::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV -->
 <g id="edge2" class="edge">
 <title>Target::::target::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV::CloudWatchLogTarget&#45;&gt;Rule::::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV</title>
-<path fill="none" stroke="#707070" d="M315.18,-197.99C323.68,-197.05 332.27,-196.1 340.87,-195.15"/>
-<polygon fill="#707070" stroke="#707070" points="341.4,-198.62 350.95,-194.04 340.63,-191.66 341.4,-198.62"/>
+<path fill="none" stroke="#707070" d="M315.18,-252C323.68,-252 332.27,-252 340.87,-252"/>
+<polygon fill="#707070" stroke="#707070" points="340.95,-255.5 350.95,-252 340.95,-248.5 340.95,-255.5"/>
 </g>
 <!-- LogGroup::::/aws/events/sam&#45;app -->
 <g id="node4" class="node">
 <title>LogGroup::::/aws/events/sam&#45;app</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="636.5,-281 393.5,-281 393.5,-223 636.5,-223 636.5,-281"/>
-<text text-anchor="start" x="406" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
-<text text-anchor="start" x="406" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">/aws/events/sam&#45;app</text>
-</g>
-<!-- Target::::target::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV::CloudWatchLogTarget&#45;&gt;LogGroup::::/aws/events/sam&#45;app -->
-<g id="edge3" class="edge">
-<title>Target::::target::sam&#45;app&#45;EventBusLogRule&#45;O6HEQDLDXZKV::CloudWatchLogTarget&#45;&gt;LogGroup::::/aws/events/sam&#45;app</title>
-<path fill="none" stroke="#707070" d="M315.18,-230.01C337.76,-232.5 360.98,-235.07 383.22,-237.53"/>
-<polygon fill="#707070" stroke="#707070" points="383.04,-241.03 393.37,-238.65 383.81,-234.08 383.04,-241.03"/>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="291,-205 48,-205 48,-147 291,-147 291,-205"/>
+<text text-anchor="start" x="60.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
+<text text-anchor="start" x="60.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">/aws/events/sam&#45;app</text>
 </g>
 <!-- Role::::sam&#45;app&#45;WorkflowExecutionRole&#45;WM87YTOPGZ2D -->
 <g id="node5" class="node">
@@ -74,12 +68,6 @@
 <polygon fill="#e5e5e5" stroke="#dddddd" points="670,-129 360,-129 360,-71 670,-71 670,-129"/>
 <text text-anchor="start" x="372" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="372" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;WorkflowExecutionRole&#45;WM...</text>
-</g>
-<!-- Role::::sam&#45;app&#45;WorkflowExecutionRole&#45;WM87YTOPGZ2D&#45;&gt;EventBus::::sam&#45;app&#45;EventBus -->
-<g id="edge4" class="edge">
-<title>Role::::sam&#45;app&#45;WorkflowExecutionRole&#45;WM87YTOPGZ2D&#45;&gt;EventBus::::sam&#45;app&#45;EventBus</title>
-<path fill="none" stroke="#707070" d="M670.17,-118.05C681.68,-119.4 693.25,-120.76 704.63,-122.09"/>
-<polygon fill="#707070" stroke="#707070" points="704.25,-125.57 714.59,-123.25 705.06,-118.62 704.25,-125.57"/>
 </g>
 <!-- StateMachine::::MyStateMachine&#45;nfd2eDd0064T -->
 <g id="node6" class="node">
@@ -89,7 +77,7 @@
 <text text-anchor="start" x="53.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">MyStateMachine&#45;nfd2eDd0064T</text>
 </g>
 <!-- StateMachine::::MyStateMachine&#45;nfd2eDd0064T&#45;&gt;Role::::sam&#45;app&#45;WorkflowExecutionRole&#45;WM87YTOPGZ2D -->
-<g id="edge5" class="edge">
+<g id="edge3" class="edge">
 <title>StateMachine::::MyStateMachine&#45;nfd2eDd0064T&#45;&gt;Role::::sam&#45;app&#45;WorkflowExecutionRole&#45;WM87YTOPGZ2D</title>
 <path fill="none" stroke="#707070" d="M298.41,-100C315.15,-100 332.49,-100 349.72,-100"/>
 <polygon fill="#707070" stroke="#707070" points="349.86,-103.5 359.86,-100 349.86,-96.5 349.86,-103.5"/>

@@ -23,7 +23,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       bucket: "grucloud-simple-bucket",
     }),
   },

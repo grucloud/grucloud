@@ -12,6 +12,7 @@ const {
   omit,
   fork,
   switchCase,
+  assign,
 } = require("rubico");
 const {
   find,
@@ -125,6 +126,19 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeSecurityGroups",
     getParam: "SecurityGroups",
+    decorate: () =>
+      pipe([
+        assign({
+          IpPermissions: pipe([
+            get("IpPermissions"),
+            callProp(
+              "sort",
+              ({ FromPort: FromPortA = -1 }, { FromPort: FromPortB = -1 }) =>
+                FromPortA > FromPortB ? 1 : -1
+            ),
+          ]),
+        }),
+      ]),
   });
 
   const extractGroupName = pipe([callProp("split", "::"), last]);
@@ -301,6 +315,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       defaultsDeep(otherProps),
       defaultsDeep({
         GroupName: name,
+        //TODO no need for conditional ?
         ...(vpc && { VpcId: getField(vpc, "VpcId") }),
         TagSpecifications: [
           {

@@ -9,7 +9,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "sg::vpc-default::default",
     isDefault: true,
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-default",
     }),
   },
@@ -33,7 +33,7 @@ exports.createResources = () => [
         ToPort: 22,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpc-default::default",
     }),
   },
@@ -57,7 +57,7 @@ exports.createResources = () => [
         ToPort: 65535,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpc-default::default",
     }),
   },

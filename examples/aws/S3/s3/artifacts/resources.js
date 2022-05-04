@@ -151,7 +151,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       bucket: "grucloud-test-basic.txt",
     }),
   },

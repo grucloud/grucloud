@@ -17,19 +17,20 @@ exports.createResources = () => [
       CidrBlock: "192.168.0.0/16",
     }),
   },
+  { type: "InternetGateway", group: "EC2", name: "internet-gateway" },
   {
-    type: "InternetGateway",
+    type: "InternetGatewayAttachment",
     group: "EC2",
-    name: "internet-gateway",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
+      internetGateway: "internet-gateway",
     }),
   },
   {
     type: "NatGateway",
     group: "EC2",
     name: "nat-gateway",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnet: "subnet-public-a",
       eip: "iep",
     }),
@@ -42,7 +43,7 @@ exports.createResources = () => [
       CidrBlock: "192.168.96.0/19",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -54,7 +55,7 @@ exports.createResources = () => [
       CidrBlock: "192.168.128.0/19",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -66,7 +67,7 @@ exports.createResources = () => [
       CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -78,7 +79,7 @@ exports.createResources = () => [
       CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -86,7 +87,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "route-table-private-a",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -94,7 +95,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "route-table-private-b",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -102,14 +103,14 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "route-table-public",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-private-a",
       subnet: "subnet-private-a",
     }),
@@ -117,7 +118,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-private-b",
       subnet: "subnet-private-b",
     }),
@@ -125,7 +126,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-public",
       subnet: "subnet-public-a",
     }),
@@ -133,7 +134,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-public",
       subnet: "subnet-public-b",
     }),
@@ -144,7 +145,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-private-a",
       natGateway: "nat-gateway",
     }),
@@ -155,7 +156,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-private-b",
       natGateway: "nat-gateway",
     }),
@@ -166,7 +167,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-public",
       ig: "internet-gateway",
     }),
@@ -178,7 +179,7 @@ exports.createResources = () => [
       GroupName: "security-group-postgres",
       Description: "Managed By GruCloud",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -189,7 +190,7 @@ exports.createResources = () => [
       GroupName: "security-group-public",
       Description: "Managed By GruCloud",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -213,7 +214,7 @@ exports.createResources = () => [
         ToPort: 5432,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpc::security-group-postgres",
       securityGroupFrom: ["sg::vpc::security-group-public"],
     }),
@@ -238,7 +239,7 @@ exports.createResources = () => [
         ToPort: 22,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpc::security-group-public",
     }),
   },
@@ -250,12 +251,14 @@ exports.createResources = () => [
     name: "bastion",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      ImageId: "ami-02e136e904f3da870",
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      },
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnet: "subnet-public-a",
       keyPair: "kp-postgres-stateless",
       eip: "eip-bastion",
@@ -269,7 +272,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DBSubnetGroupDescription: "db subnet group",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["subnet-private-a", "subnet-private-b"],
     }),
   },
@@ -306,7 +309,7 @@ exports.createResources = () => [
       MasterUserPassword:
         process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       dbSubnetGroup: "subnet-group-postgres-stateless",
       securityGroups: ["sg::vpc::security-group-postgres"],
     }),

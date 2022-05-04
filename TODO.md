@@ -4,7 +4,35 @@
 
 ## Aws
 
-- retry on EHOSTUNREACH
+- aws_route53_resolver_endpoint
+- aws_route53_resolver_rule
+- aws_route53_resolver_rule_association
+- aws_route53_vpc_association_authorization
+- aws_route53_zone_association
+
+- aws_ram_resource_share
+- aws_ram_principal_association
+- aws_ram_resource_association
+
+- aws_egress_only_internet_gateway
+- aws_vpc_dhcp_options
+- aws_vpc_dhcp_options_association
+- aws_ec2_transit_gateway_route_table_propagation
+- aws_flow_log
+- aws_vpc_ipam
+- aws_vpc_ipam_scope
+- aws_vpc_ipam_pool
+
+- aws_eip_association
+
+- aws_route53_record alias aws_vpc_endpoint
+
+- https://github.com/aws-samples/aws-network-hub-for-terraform
+- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
+- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html
+
+- route : find tgw name
+
 - gc gencode lambda with java.
 
 - AWS::Glue::Job

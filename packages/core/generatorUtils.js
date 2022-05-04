@@ -51,6 +51,7 @@ const {
   unless,
   when,
   append,
+  prepend,
 } = require("rubico/x");
 const Diff = require("diff");
 const { resourcesTpl } = require("./resourcesTpl");
@@ -139,7 +140,7 @@ const findDependencyNames = ({
     tap((params) => {
       assert(true);
     }),
-    map(({ name }) => `'${name}'`),
+    map(({ name }) => `${name}`),
     tap((params) => {
       assert(true);
     }),
@@ -339,12 +340,34 @@ const envTpl = ({ resource, environmentVariables = [] }) =>
     callProp("join", ""),
   ])();
 
-const dependencyValue = ({ key, list, resource }) =>
+const replaceRegion = ({ providerConfig }) =>
+  switchCase([
+    pipe([
+      tap((resource) => {
+        assert(isString(resource));
+        assert(resource.length > 1);
+      }),
+      includes(providerConfig.region),
+    ]),
+    pipe([
+      callProp("replace", providerConfig.region, "${config.region}"),
+      (resource) => "`" + resource + "`",
+    ]),
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      (resource) => "'" + resource + "'",
+    ]),
+  ]);
+
+const dependencyValue = ({ key, list, resource, providerConfig }) =>
   pipe([
     tap((dependencyVarNames) => {
       if (!Array.isArray(dependencyVarNames)) {
         assert(Array.isArray(dependencyVarNames));
       }
+      assert(providerConfig);
       if (!list) {
         if (size(dependencyVarNames) > 1) {
           assert(key);
@@ -354,11 +377,13 @@ const dependencyValue = ({ key, list, resource }) =>
       }
     }),
     callProp("sort"),
+    map(replaceRegion({ providerConfig })),
     when(() => list, pipe([(values) => `[${values}]`])),
   ]);
 
 const buildDependencies = ({
   providerName,
+  providerConfig,
   resource,
   lives,
   dependencies = {},
@@ -372,6 +397,7 @@ const buildDependencies = ({
         assert(lives);
         //console.log(`${resource.name} : ${JSON.stringify(dependencies)}`);
         assert(dependencies);
+        assert(providerConfig);
       }),
       () => dependencies,
       map.entries(([key, dependency]) => [
@@ -407,16 +433,19 @@ const buildDependencies = ({
       map.entries(([key, { list, dependencyVarNames }]) => [
         key,
         !isEmpty(dependencyVarNames) &&
-          `${key}: ${dependencyValue({ key, list, resource })(
+          `${key}: ${dependencyValue({ key, list, resource, providerConfig })(
             dependencyVarNames
           )}`,
       ]),
       values,
-      filter(identity),
+      filter((x) => x),
+      tap((params) => {
+        assert(true);
+      }),
       switchCase([
         isEmpty,
         () => "",
-        (values) => `dependencies: () =>({ 
+        (values) => `dependencies: ({ config }) =>({ 
        ${values.join(",\n")}
      }),`,
       ]),
@@ -434,15 +463,32 @@ const buildPrefix = switchCase([
   () => "",
 ]);
 
-const buildName = ({ inferName, resourceName, resource }) =>
-  switchCase([
-    and([() => inferName, () => !resource.managedByOther]),
-    () => "",
-    () => `name: "${resourceName}",`,
+const buildName = ({ inferName, resourceName, resource, providerConfig }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    switchCase([
+      and([() => inferName, () => !resource.managedByOther]),
+      () => "",
+      pipe([
+        () => resourceName,
+        switchCase([
+          pipe([includes(providerConfig.region)]),
+          pipe([
+            replaceRegion({ providerConfig }),
+            prepend("name: ({config}) => "),
+            append(","),
+          ]),
+          () => `name: "${resourceName}",`,
+        ]),
+      ]),
+    ]),
   ])();
 
 const codeTpl = ({
   providerName,
+  providerConfig,
   group,
   type,
   resourceVarName,
@@ -458,6 +504,7 @@ const codeTpl = ({
   pipe([
     tap((params) => {
       assert(resource);
+      assert(providerConfig);
     }),
     () => "{",
     append("type:'"),
@@ -466,7 +513,7 @@ const codeTpl = ({
     append("group:'"),
     append(group),
     append("',"),
-    append(buildName({ inferName, resourceName, resource })),
+    append(buildName({ inferName, resourceName, resource, providerConfig })),
     append(buildPrefix(resource)),
     switchCase([
       () => additionalCode,
@@ -479,16 +526,17 @@ const codeTpl = ({
             hasNoProperty: hasNoProperty({ resource }),
           })
         ),
-        append(
-          buildDependencies({
-            providerName,
-            resource,
-            lives,
-            dependencies,
-          })
-        ),
       ]),
     ]),
+    append(
+      buildDependencies({
+        providerName,
+        providerConfig,
+        resource,
+        lives,
+        dependencies,
+      })
+    ),
     append("},"),
     tap((params) => {
       assert(true);
@@ -1238,6 +1286,7 @@ const writeResource =
             }),
             code: codeTpl({
               providerName,
+              providerConfig,
               group,
               type: typeTarget || type,
               resource,

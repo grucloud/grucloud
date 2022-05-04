@@ -34,7 +34,7 @@ exports.createResources = () => [
     type: "InstanceProfile",
     group: "IAM",
     name: "ecsInstanceRole",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       roles: ["ecsInstanceRole"],
     }),
   },

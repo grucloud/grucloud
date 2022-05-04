@@ -11,12 +11,13 @@ exports.createResources = () => [
       CidrBlock: "192.168.0.0/16",
     }),
   },
+  { type: "InternetGateway", group: "EC2", name: "internet-gateway" },
   {
-    type: "InternetGateway",
+    type: "InternetGatewayAttachment",
     group: "EC2",
-    name: "internet-gateway",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
+      internetGateway: "internet-gateway",
     }),
   },
 ];

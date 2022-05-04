@@ -5,6 +5,44 @@ const {} = require("rubico/x");
 exports.createResources = () => [
   { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-a",
+    isDefault: true,
+    dependencies: () => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-b",
+    isDefault: true,
+    dependencies: () => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "rt-default-vpc-default",
+    isDefault: true,
+    dependencies: () => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: () => ({
+      routeTable: "rt-default-vpc-default",
+      transitGateway: "transit-gateway",
+    }),
+  },
+  {
     type: "TransitGateway",
     group: "EC2",
     name: "transit-gateway",
@@ -38,9 +76,25 @@ exports.createResources = () => [
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
     name: "tgw-attachment",
+    properties: ({}) => ({
+      Options: {
+        DnsSupport: "enable",
+        Ipv6Support: "disable",
+        ApplianceModeSupport: "disable",
+      },
+    }),
     dependencies: () => ({
-      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGateway: "transit-gateway",
       vpc: "vpc-default",
+      subnets: ["subnet-default-a", "subnet-default-b"],
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: () => ({
+      transitGatewayVpcAttachment: "tgw-attachment",
+      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
     }),
   },
 ];

@@ -12,7 +12,7 @@ exports.createResources = () => [
       GroupName: "my-security-group",
       Description: "my security group",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-default",
     }),
   },
@@ -31,7 +31,7 @@ exports.createResources = () => [
         ToPort: 22,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpc-default::my-security-group",
     }),
   },
@@ -41,12 +41,14 @@ exports.createResources = () => [
     name: "my-ec2",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      ImageId: "ami-02e136e904f3da870",
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      },
       Placement: {
         AvailabilityZone: `${config.region}d`,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       keyPair: "kp-ec2",
       securityGroups: ["sg::vpc-default::my-security-group"],
     }),

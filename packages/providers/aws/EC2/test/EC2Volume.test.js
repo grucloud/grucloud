@@ -37,13 +37,13 @@ describe("EC2 Volume", async function () {
       }),
     ])
   );
-  it(
-    "getByName with invalid id",
-    pipe([
-      () =>
-        volume.getByName({
-          name: "vol-035a2aa7c23edd8e0",
-        }),
-    ])
-  );
+  // it(
+  //   "getByName with invalid id",
+  //   pipe([
+  //     () =>
+  //       volume.getByName({
+  //         name: "vol-035a2aa7c23edd8e0",
+  //       }),
+  //   ])
+  // );
 });

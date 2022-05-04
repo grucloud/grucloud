@@ -3,6 +3,5 @@ title Resources for project eventbridge-cloudwatch
 skinparam monochrome true
 + Infra
 ++ aws
-+++ SSM
-++++ Document (1)
+
 @endmindmap

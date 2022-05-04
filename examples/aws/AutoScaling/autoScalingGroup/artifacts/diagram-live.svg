@@ -43,7 +43,7 @@
 <polygon fill="#707070" stroke="#707070" points="335.07,-302.82 345.63,-302.07 336.9,-296.07 335.07,-302.82"/>
 </g>
 <!-- Subnet::::PubSubnetAz1 -->
-<g id="node4" class="node">
+<g id="node6" class="node">
 <title>Subnet::::PubSubnetAz1</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="508,-205 376,-205 376,-147 508,-147 508,-205"/>
 <text text-anchor="start" x="388" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
@@ -56,7 +56,7 @@
 <polygon fill="#707070" stroke="#707070" points="367.15,-199.71 375.89,-193.71 365.32,-192.95 367.15,-199.71"/>
 </g>
 <!-- Subnet::::PubSubnetAz2 -->
-<g id="node5" class="node">
+<g id="node7" class="node">
 <title>Subnet::::PubSubnetAz2</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="508,-281 376,-281 376,-223 508,-223 508,-281"/>
 <text text-anchor="start" x="388" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
@@ -82,7 +82,7 @@
 <polygon fill="#707070" stroke="#707070" points="603.68,-331.5 613.68,-328 603.68,-324.5 603.68,-331.5"/>
 </g>
 <!-- InstanceProfile::::role&#45;ecs -->
-<g id="node7" class="node">
+<g id="node9" class="node">
 <title>InstanceProfile::::role&#45;ecs</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="766,-281 587,-281 587,-223 766,-223 766,-281"/>
 <text text-anchor="start" x="599.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::InstanceProfile</text>
@@ -94,12 +94,38 @@
 <path fill="none" stroke="#707070" d="M531.89,-298.94C546.62,-294.13 561.96,-289.11 576.9,-284.23"/>
 <polygon fill="#707070" stroke="#707070" points="578.24,-287.48 586.66,-281.04 576.06,-280.82 578.24,-287.48"/>
 </g>
+<!-- SecurityGroup::::sg::Vpc::EcsSecurityGroup -->
+<g id="node4" class="node">
+<title>SecurityGroup::::sg::Vpc::EcsSecurityGroup</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="551,-129 333,-129 333,-71 551,-71 551,-129"/>
+<text text-anchor="start" x="345" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
+<text text-anchor="start" x="345" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::Vpc::EcsSecurityGroup</text>
+</g>
 <!-- Vpc::::Vpc -->
-<g id="node6" class="node">
+<g id="node8" class="node">
 <title>Vpc::::Vpc</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="724,-205 629,-205 629,-147 724,-147 724,-205"/>
 <text text-anchor="start" x="641.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
 <text text-anchor="start" x="641.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Vpc</text>
+</g>
+<!-- SecurityGroup::::sg::Vpc::EcsSecurityGroup&#45;&gt;Vpc::::Vpc -->
+<g id="edge6" class="edge">
+<title>SecurityGroup::::sg::Vpc::EcsSecurityGroup&#45;&gt;Vpc::::Vpc</title>
+<path fill="none" stroke="#707070" d="M531.89,-129.06C561.22,-138.64 593.01,-149.04 619.21,-157.6"/>
+<polygon fill="#707070" stroke="#707070" points="618.37,-161.01 628.96,-160.79 620.54,-154.35 618.37,-161.01"/>
+</g>
+<!-- SecurityGroupRuleIngress::::sg::Vpc::EcsSecurityGroup&#45;rule&#45;ingress&#45;tcp&#45;80 -->
+<g id="node5" class="node">
+<title>SecurityGroupRuleIngress::::sg::Vpc::EcsSecurityGroup&#45;rule&#45;ingress&#45;tcp&#45;80</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="297,-129 24,-129 24,-71 297,-71 297,-129"/>
+<text text-anchor="start" x="36.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
+<text text-anchor="start" x="36.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::Vpc::EcsSecurityGroup&#45;rule&#45;i...</text>
+</g>
+<!-- SecurityGroupRuleIngress::::sg::Vpc::EcsSecurityGroup&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::::sg::Vpc::EcsSecurityGroup -->
+<g id="edge7" class="edge">
+<title>SecurityGroupRuleIngress::::sg::Vpc::EcsSecurityGroup&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::::sg::Vpc::EcsSecurityGroup</title>
+<path fill="none" stroke="#707070" d="M297.16,-100C305.66,-100 314.18,-100 322.6,-100"/>
+<polygon fill="#707070" stroke="#707070" points="322.81,-103.5 332.81,-100 322.81,-96.5 322.81,-103.5"/>
 </g>
 <!-- Subnet::::PubSubnetAz1&#45;&gt;Vpc::::Vpc -->
 <g id="edge8" class="edge">
@@ -114,7 +140,7 @@
 <polygon fill="#707070" stroke="#707070" points="620.47,-197.67 628.89,-191.24 618.3,-191.02 620.47,-197.67"/>
 </g>
 <!-- Role::::role&#45;ecs -->
-<g id="node8" class="node">
+<g id="node10" class="node">
 <title>Role::::role&#45;ecs</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="901,-281 802,-281 802,-223 901,-223 901,-281"/>
 <text text-anchor="start" x="814.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
@@ -125,32 +151,6 @@
 <title>InstanceProfile::::role&#45;ecs&#45;&gt;Role::::role&#45;ecs</title>
 <path fill="none" stroke="#707070" d="M766.03,-252C774.68,-252 783.3,-252 791.55,-252"/>
 <polygon fill="#707070" stroke="#707070" points="791.78,-255.5 801.78,-252 791.78,-248.5 791.78,-255.5"/>
-</g>
-<!-- SecurityGroup::::sg::Vpc::EcsSecurityGroup -->
-<g id="node9" class="node">
-<title>SecurityGroup::::sg::Vpc::EcsSecurityGroup</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="551,-129 333,-129 333,-71 551,-71 551,-129"/>
-<text text-anchor="start" x="345" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
-<text text-anchor="start" x="345" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::Vpc::EcsSecurityGroup</text>
-</g>
-<!-- SecurityGroup::::sg::Vpc::EcsSecurityGroup&#45;&gt;Vpc::::Vpc -->
-<g id="edge6" class="edge">
-<title>SecurityGroup::::sg::Vpc::EcsSecurityGroup&#45;&gt;Vpc::::Vpc</title>
-<path fill="none" stroke="#707070" d="M531.89,-129.06C561.22,-138.64 593.01,-149.04 619.21,-157.6"/>
-<polygon fill="#707070" stroke="#707070" points="618.37,-161.01 628.96,-160.79 620.54,-154.35 618.37,-161.01"/>
-</g>
-<!-- SecurityGroupRuleIngress::::sg::Vpc::EcsSecurityGroup&#45;rule&#45;ingress&#45;tcp&#45;80 -->
-<g id="node10" class="node">
-<title>SecurityGroupRuleIngress::::sg::Vpc::EcsSecurityGroup&#45;rule&#45;ingress&#45;tcp&#45;80</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="297,-129 24,-129 24,-71 297,-71 297,-129"/>
-<text text-anchor="start" x="36.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
-<text text-anchor="start" x="36.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::Vpc::EcsSecurityGroup&#45;rule&#45;i...</text>
-</g>
-<!-- SecurityGroupRuleIngress::::sg::Vpc::EcsSecurityGroup&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::::sg::Vpc::EcsSecurityGroup -->
-<g id="edge7" class="edge">
-<title>SecurityGroupRuleIngress::::sg::Vpc::EcsSecurityGroup&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::::sg::Vpc::EcsSecurityGroup</title>
-<path fill="none" stroke="#707070" d="M297.16,-100C305.66,-100 314.18,-100 322.6,-100"/>
-<polygon fill="#707070" stroke="#707070" points="322.81,-103.5 332.81,-100 322.81,-96.5 322.81,-103.5"/>
 </g>
 </g>
 </svg>

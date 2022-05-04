@@ -146,7 +146,6 @@ module.exports = pipe([
                                   ["awslogs-region"]: pipe([
                                     get("awslogs-region"),
                                     replaceRegion(providerConfig),
-                                    (resource) => () => "`" + resource + "`",
                                   ]),
                                 })
                               ),

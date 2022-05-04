@@ -9,12 +9,14 @@ exports.createResources = () => [
     name: "web-iam",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      ImageId: "ami-02e136e904f3da870",
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      },
       Placement: {
         AvailabilityZone: `${config.region}d`,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       iamInstanceProfile: "my-profile",
     }),
   },
@@ -25,7 +27,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Path: "/",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       iamGroups: ["Admin"],
       policies: ["myPolicy-to-user"],
     }),
@@ -37,7 +39,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Path: "/",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["myPolicy-to-group"],
     }),
   },
@@ -46,7 +48,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "role-allow-assume-role",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -54,7 +55,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: "ec2.amazonaws.com",
+              Service: `ec2.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -67,7 +68,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["myPolicy-to-role"],
     }),
   },
@@ -82,7 +83,7 @@ exports.createResources = () => [
           {
             Action: ["s3:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
         ],
       },
@@ -101,7 +102,7 @@ exports.createResources = () => [
           {
             Action: ["s3:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
         ],
       },
@@ -120,7 +121,7 @@ exports.createResources = () => [
           {
             Action: ["s3:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
         ],
       },
@@ -132,7 +133,7 @@ exports.createResources = () => [
     type: "InstanceProfile",
     group: "IAM",
     name: "my-profile",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       roles: ["role-allow-assume-role"],
     }),
   },

@@ -102,7 +102,7 @@ exports.createResources = () => [
         stageName: "dev",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       roles: ["ApiGatewayEventBridgeRole"],
     }),
   },
@@ -110,7 +110,7 @@ exports.createResources = () => [
     type: "Stage",
     group: "APIGateway",
     name: "dev",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       restApi: "rest-api-eb-fOaf",
     }),
   },
@@ -130,7 +130,7 @@ exports.createResources = () => [
       },
       State: "ENABLED",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "MyIntegrationCustomBus",
     }),
   },
@@ -140,7 +140,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Id: "terraform-20220414090055513200000002",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       rule: "catch_all",
       logGroup:
         "/aws/events/MyIntegrationCustomBus/MyIntegrationCustomBus-catch_all",
@@ -173,7 +173,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["EBPutEvents"],
     }),
   },
@@ -198,7 +198,7 @@ exports.createResources = () => [
       },
       Path: "/",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "MyIntegrationCustomBus",
     }),
   },

@@ -21,7 +21,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       type: "NONE",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "TriggeredByLambda",
     }),
   },
@@ -36,7 +36,7 @@ exports.createResources = () => [
       responseMappingTemplate: "$util.toJson($context.result)",
       kind: "UNIT",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "TriggeredByLambda",
       dataSource: "NONE",
     }),
@@ -105,7 +105,7 @@ exports.createResources = () => [
         Runtime: "nodejs14.x",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "CdkLambdaCallAppSyncStack-triggerServiceRole07E9AB-5S1U4A7Y9DDX",
       graphqlApi: "TriggeredByLambda",
     }),

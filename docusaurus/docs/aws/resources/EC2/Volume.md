@@ -5,7 +5,7 @@ title: EBS Volume
 
 Manages a [EBS Volume](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volumes.html)
 
-This examples will create a volume.
+This example will create a volume.
 
 ```js
 exports.createResources = () => [

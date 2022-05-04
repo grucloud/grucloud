@@ -11,7 +11,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       AutoDeploy: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
     }),
   },
@@ -31,7 +31,7 @@ exports.createResources = () => [
       RequestTemplates: {},
       TimeoutInMillis: 10000,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
       eventBus: "MyEventBus",
       role: "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-1LXDAK3DKUOQS",
@@ -43,7 +43,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       RouteKey: "POST /",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
       integration: "integration::MyHttpApi::MyEventBus",
     }),
@@ -56,7 +56,7 @@ exports.createResources = () => [
         "Automatic deployment triggered by changes to the Api configuration",
       AutoDeployed: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
       stage: "$default",
     }),
@@ -73,7 +73,7 @@ exports.createResources = () => [
       },
       State: "ENABLED",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "MyEventBus",
     }),
   },
@@ -83,7 +83,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Id: "Target0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       rule: "ApiEventbridgeStack-EventLoggerRuleC0DD3E40-G6CDILDRSIPL",
       logGroup: "/aws/events/MyEventBus",
     }),
@@ -133,7 +133,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "MyEventBus",
     }),
   },

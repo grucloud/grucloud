@@ -48,8 +48,13 @@ exports.createResources = () => [
     type: "InternetGateway",
     group: "EC2",
     name: "ECSServiceStack/SkeletonVpc",
-    dependencies: () => ({
+  },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
+      internetGateway: "ECSServiceStack/SkeletonVpc",
     }),
   },
   {

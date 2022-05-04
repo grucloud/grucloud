@@ -104,7 +104,7 @@ const AwsClient =
               tap((params) => {
                 logger.info(`getById ${type}`);
               }),
-              endpoint()[method],
+              (params) => endpoint()[method](params),
               tap((params) => {
                 assert(true);
               }),
@@ -571,7 +571,7 @@ const AwsClient =
           }),
           tryCatch(
             pipe([
-              tap(() => preDestroy({ name, live, lives })),
+              tap(() => preDestroy({ name, live, lives, endpoint })),
               () => live,
               tap((params) => {
                 assert(true);
@@ -738,15 +738,18 @@ exports.createAwsResource = ({
                 untagResource: () => untagResource({ endpoint }),
               })
             ),
-            assign({
-              getById: ({ pickId }) =>
-                client.getById({
-                  pickId,
-                  ...model.getById,
-                  ignoreErrorCodes: model.ignoreErrorCodes,
-                  decorate,
-                }),
-            }),
+            when(
+              () => model.getById,
+              assign({
+                getById: ({ pickId }) =>
+                  client.getById({
+                    pickId,
+                    decorate,
+                    ...model.getById,
+                    ignoreErrorCodes: model.ignoreErrorCodes,
+                  }),
+              })
+            ),
             assign({
               getList: switchCase([
                 () => getList,
@@ -757,8 +760,8 @@ exports.createAwsResource = ({
                 ({ getById }) =>
                   client.getList({
                     getById,
-                    ...model.getList,
                     decorate: decorateList,
+                    ...model.getList,
                   }),
               ]),
               create: switchCase([
@@ -772,8 +775,8 @@ exports.createAwsResource = ({
                     filterPayload: createFilterPayload,
                     shouldRetryOnExceptionCodes:
                       createShouldRetryOnExceptionCodes,
-                    ...model.create,
                     isInstanceUp,
+                    ...model.create,
                   }),
               ]),
               update: switchCase([
@@ -784,8 +787,8 @@ exports.createAwsResource = ({
                     pickId,
                     getById,
                     filterParams: updateFilterParams,
-                    ...model.update,
                     isInstanceUp,
+                    ...model.update,
                   }),
               ]),
               destroy: switchCase([
@@ -796,14 +799,14 @@ exports.createAwsResource = ({
                     pickId: pickIdDestroy,
                     getById,
                     ignoreErrorCodes: model.ignoreErrorCodes,
-                    ...model.destroy,
                     isInstanceDown,
+                    ...model.destroy,
                   }),
               ]),
             }),
             assign({
               getByName: ({ getList, findName, getById }) =>
-                getByName({ getList, findName, getById }),
+                getByName({ getList, findName, getById, endpoint }),
             }),
             defaultsDeep({
               cannotBeDeleted,

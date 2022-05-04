@@ -13,16 +13,16 @@ describe("EC2Route", async function () {
     await provider.start();
   });
 
-  it(
-    "delete with invalid id",
-    pipe([
-      () =>
-        route.destroy({
-          live: {
-            RouteTableId: "rtb-0cd9b61a02eb4ba04",
-            DestinationCidrBlock: "10.0.0.0/16",
-          },
-        }),
-    ])
-  );
+  // it(
+  //   "delete with invalid id",
+  //   pipe([
+  //     () =>
+  //       route.destroy({
+  //         live: {
+  //           RouteTableId: "rtb-0cd9b61a02eb4ba04",
+  //           DestinationCidrBlock: "10.0.0.0/16",
+  //         },
+  //       }),
+  //   ])
+  // );
 });

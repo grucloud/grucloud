@@ -18,7 +18,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Id: "terraform-20220421132955317100000002",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       rule: "stf_trigger_rule",
       role: "aws-events-invoke-StepFunction",
       sfnStateMachine: "aws-step-function-workflow",
@@ -68,7 +68,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       stateMachines: ["aws-step-function-workflow"],
     }),
   },
@@ -152,7 +152,7 @@ exports.createResources = () => [
         Runtime: "python3.7",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "aws-lambda-role-example",
     }),
   },
@@ -211,7 +211,7 @@ exports.createResources = () => [
       },
       tags: [],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "aws-stf-role",
       lambdaFunctions: ["aws_lambda_example"],
     }),

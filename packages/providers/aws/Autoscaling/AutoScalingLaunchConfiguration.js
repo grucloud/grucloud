@@ -5,6 +5,12 @@ const { defaultsDeep, isEmpty, callProp } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const {
+  createEC2,
+  imageDescriptionFromId,
+  fetchImageIdFromDescription,
+} = require("../EC2/EC2Common");
+
+const {
   createAutoScaling,
   tagResource,
   untagResource,
@@ -26,6 +32,8 @@ const pickId = pipe([
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
   const autoScaling = createAutoScaling(config);
+  const ec2 = createEC2(config);
+
   const client = AwsClient({ spec, config })(autoScaling);
   const findDependencies = ({ live, lives }) => [
     {
@@ -72,15 +80,13 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
         ])(),
       ],
     },
-    //TODO
-    // {
-    //   type: "Image",
-    //   group: "EC2",
-    //   ids: [live.ImageId],
-    // },
   ];
-
-  const findNamespace = pipe([() => ""]);
+  const decorate = ({}) =>
+    pipe([
+      assign({
+        Image: imageDescriptionFromId({ ec2 }),
+      }),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeLaunchConfigurations-property
   const getById = client.getById({
@@ -90,11 +96,13 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
     method: "describeLaunchConfigurations",
     getField: "LaunchConfigurations",
     ignoreErrorMessages,
+    decorate,
   });
 
   const getList = client.getList({
     method: "describeLaunchConfigurations",
     getParam: "LaunchConfigurations",
+    decorate,
   });
 
   const getByName = pipe([
@@ -124,35 +132,39 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { Tags, Image, ...otherProps },
     dependencies: { instanceProfile, securityGroups = [], keyPair },
   }) =>
     pipe([
-      () => otherProps,
-      defaultsDeep({
-        LaunchConfigurationName: name,
-        ...(instanceProfile && {
-          IamInstanceProfile: getField(instanceProfile, "InstanceProfileName"),
-        }),
-        ...(keyPair && { KeyName: keyPair.resource.name }),
-        SecurityGroups: pipe([
-          () => securityGroups,
-          map((securityGroup) => getField(securityGroup, "GroupId")),
+      () => Image,
+      fetchImageIdFromDescription({ ec2 }),
+      (ImageId) =>
+        pipe([
+          () => otherProps,
+          defaultsDeep({
+            ImageId,
+            ...(instanceProfile && {
+              IamInstanceProfile: getField(
+                instanceProfile,
+                "InstanceProfileName"
+              ),
+            }),
+            ...(keyPair && { KeyName: keyPair.resource.name }),
+            SecurityGroups: pipe([
+              () => securityGroups,
+              map((securityGroup) => getField(securityGroup, "GroupId")),
+            ])(),
+          }),
+          assign({
+            UserData: ({ UserData }) =>
+              Buffer.from(UserData, "utf-8").toString("base64"),
+          }),
         ])(),
-      }),
-      assign({
-        UserData: ({ UserData }) =>
-          Buffer.from(UserData, "utf-8").toString("base64"),
-      }),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   return {
     spec,
     findId,
-    findNamespace,
     findDependencies,
     getByName,
     getById,

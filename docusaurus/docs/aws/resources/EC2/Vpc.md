@@ -80,4 +80,4 @@ const vpc = provider.EC2.makeVpc({
 
 - [Subnet](./Subnet.md)
 - [Security Group](./SecurityGroup.md)
-- [Internet Gateway ](./InternetGateway.md)
+- [Internet Gateway Attachment](./InternetGatewayAttachment.md)

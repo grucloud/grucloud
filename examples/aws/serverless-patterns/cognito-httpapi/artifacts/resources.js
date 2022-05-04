@@ -22,7 +22,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       AutoDeploy: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
     }),
   },
@@ -37,7 +37,7 @@ exports.createResources = () => [
         Audience: ["1mo18647lsr5iee4ghabm54v7e"],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       userPool: "UserPool-3Fx2HozhHSsp",
     }),
@@ -51,7 +51,7 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "2.0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       lambdaFunction: "sam-app-AppFunction-gKUxwsmxX2fK",
     }),
@@ -65,7 +65,7 @@ exports.createResources = () => [
       RequestParameters: {},
       RouteKey: "GET /",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       integration: "integration::sam-app::sam-app-AppFunction-gKUxwsmxX2fK",
       authorizer: "OAuth2Authorizer",
@@ -79,7 +79,7 @@ exports.createResources = () => [
         "Automatic deployment triggered by changes to the Api configuration",
       AutoDeployed: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       stage: "$default",
     }),
@@ -113,7 +113,7 @@ exports.createResources = () => [
       LogoutURLs: ["https://myapp.com"],
       SupportedIdentityProviders: ["COGNITO"],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       userPool: "UserPool-3Fx2HozhHSsp",
     }),
   },
@@ -121,7 +121,7 @@ exports.createResources = () => [
     type: "UserPoolDomain",
     group: "CognitoIdentityServiceProvider",
     name: "myauth840541460064",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       userPool: "UserPool-3Fx2HozhHSsp",
     }),
   },
@@ -193,7 +193,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-AppFunctionRole-BXPIJ03LGY2Y",
       apiGatewayV2s: ["sam-app"],
     }),

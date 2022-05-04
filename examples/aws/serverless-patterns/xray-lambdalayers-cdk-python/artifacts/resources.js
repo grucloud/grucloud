@@ -128,7 +128,7 @@ exports.createResources = () => [
         Timeout: 300,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "LambdaLayerXRayStackStack-BucketNotificationsHandl-LMJ0SRM09GES",
     }),
   },
@@ -170,7 +170,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       layers: ["xraylayerF67027DB"],
       role: "LambdaLayerXRayStackStack-Lambdarole1548FC71-15YPKGUKW0B06",
     }),
@@ -191,7 +191,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       lambdaFunction: "xray-handler",
     }),
   },

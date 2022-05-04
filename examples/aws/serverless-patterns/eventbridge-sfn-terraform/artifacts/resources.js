@@ -21,7 +21,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Id: "terraform-20220331194525125100000008",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       rule: "terraform-20220331194511828000000002",
       role: "terraform-20220331194511828200000005",
       sfnStateMachine: "eventbridge-state-machine-demo-840541460064",
@@ -50,7 +50,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["terraform-20220331194511828000000003"],
     }),
   },
@@ -72,7 +72,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["terraform-20220331194525123300000007"],
     }),
   },
@@ -124,7 +124,7 @@ exports.createResources = () => [
       },
       Path: "/",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       stateMachines: ["eventbridge-state-machine-demo-840541460064"],
     }),
   },
@@ -183,7 +183,7 @@ exports.createResources = () => [
       },
       tags: [],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "terraform-20220331194511828100000004",
       logGroups: [
         "/aws/vendedlogs/states/StateMachine-terraform-20220331194511828000000001",

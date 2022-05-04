@@ -10,10 +10,10 @@ const {
   pick,
   not,
 } = require("rubico");
-const { find, defaultsDeep, first, pluck, isEmpty } = require("rubico/x");
+const { find, defaultsDeep, first, pluck, isEmpty, when } = require("rubico/x");
 const assert = require("assert");
 
-const logger = require("@grucloud/core/logger")({ prefix: "AwsIgw" });
+const logger = require("@grucloud/core/logger")({ prefix: "InternetGateway" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -44,7 +44,7 @@ const isDefault =
 
 exports.isDefault = isDefault;
 
-exports.AwsInternetGateway = ({ spec, config }) => {
+exports.EC2InternetGateway = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
@@ -95,23 +95,29 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     method: "createInternetGateway",
     pickCreated: () => get("InternetGateway"),
     getById,
+    //TODO
     postCreate:
       ({ resolvedDependencies: { vpc } }) =>
       ({ InternetGatewayId }) =>
-        pipe([
-          () => ({
-            InternetGatewayId,
-            VpcId: vpc.live.VpcId,
-          }),
-          ec2().attachInternetGateway,
-          () =>
-            retryCall({
-              name: `attachInternetGateway ${InternetGatewayId}`,
-              fn: pipe([() => ({ InternetGatewayId }), getById, isAttached]),
-              isExpectedResult: not(isEmpty),
-              config: { retryCount: 20, retryDelay: 5e3 },
+        when(
+          () => vpc,
+          pipe([
+            () => vpc,
+            get("live.VpcId"),
+            (VpcId) => ({
+              InternetGatewayId,
+              VpcId,
             }),
-        ])(),
+            ec2().attachInternetGateway,
+            () =>
+              retryCall({
+                name: `attachInternetGateway ${InternetGatewayId}`,
+                fn: pipe([() => ({ InternetGatewayId }), getById, isAttached]),
+                isExpectedResult: not(isEmpty),
+                config: { retryCount: 20, retryDelay: 5e3 },
+              }),
+          ])
+        )(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#detachInternetGateway-property

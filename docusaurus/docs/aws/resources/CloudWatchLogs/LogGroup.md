@@ -20,6 +20,11 @@ exports.createResources = () => [
 ## Full Examples
 
 - [simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatchLogs/logs)
+- [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/hub-and-spoke-with-inspection-vpc)
+
+## Used By
+
+- [Network Firewall Logging Configuration](../NetworkFirewall/LoggingConfiguration.md)
 
 ## List
 

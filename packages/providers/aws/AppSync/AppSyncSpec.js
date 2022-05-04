@@ -151,7 +151,6 @@ module.exports = pipe([
                             signingRegion: pipe([
                               get("signingRegion"),
                               replaceRegion(providerConfig),
-                              (resource) => () => "`" + resource + "`",
                             ]),
                           }),
                         ]),
@@ -160,7 +159,6 @@ module.exports = pipe([
                     endpoint: pipe([
                       get("endpoint"),
                       replaceRegion(providerConfig),
-                      (resource) => () => "`" + resource + "`",
                     ]),
                   })
                 ),

@@ -8,7 +8,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "lambda-role",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -16,14 +15,14 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: "lambda.amazonaws.com",
+              Service: `lambda.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["lambda-policy"],
     }),
   },
@@ -38,12 +37,12 @@ exports.createResources = () => [
           {
             Action: ["logs:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
           {
             Action: ["sqs:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
         ],
       },
@@ -61,7 +60,7 @@ exports.createResources = () => [
         Runtime: "nodejs14.x",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "lambda-role",
     }),
   },
@@ -73,7 +72,7 @@ exports.createResources = () => [
       BatchSize: 10,
       MaximumBatchingWindowInSeconds: 0,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       lambdaFunction: "lambda-hello-world",
       sqsQueue: "my-queue-lambda",
     }),

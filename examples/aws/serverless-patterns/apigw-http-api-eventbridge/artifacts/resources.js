@@ -23,7 +23,7 @@ exports.createResources = () => [
         "httpapi:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "API Gateway HTTP API to EventBridge",
     }),
   },
@@ -41,7 +41,7 @@ exports.createResources = () => [
         Source: "WebApp",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "API Gateway HTTP API to EventBridge",
       role: "sam-app-MyHttpApiRole-KV1DOMSBSRDO",
     }),
@@ -53,7 +53,7 @@ exports.createResources = () => [
       RequestParameters: {},
       RouteKey: "POST /",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "API Gateway HTTP API to EventBridge",
       integration:
         "integration::API Gateway HTTP API to EventBridge::NO-INTEGRATION",
@@ -67,7 +67,7 @@ exports.createResources = () => [
         "Automatic deployment triggered by changes to the Api configuration",
       AutoDeployed: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "API Gateway HTTP API to EventBridge",
       stage: "$default",
     }),
@@ -89,7 +89,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Id: "MyTriggeredLambdaEventBridgeTriggerLambdaTarget",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       rule: "sam-app-MyTriggeredLambdaEventBridgeTrigger-1CZB0M0XR00UH",
       lambdaFunction: "sam-app-MyTriggeredLambda-QtqMTZc89naA",
     }),
@@ -177,7 +177,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-MyTriggeredLambdaRole-PFCAXLPPKQG8",
     }),
   },

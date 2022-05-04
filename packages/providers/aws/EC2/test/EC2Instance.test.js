@@ -34,13 +34,13 @@ describe("EC2 Instance", async function () {
         }),
     ])
   );
-  it(
-    "getByName with invalid id",
-    pipe([
-      () =>
-        instance.getByName({
-          name: "i-0e85b55470b03b863",
-        }),
-    ])
-  );
+  // it(
+  //   "getByName with invalid id",
+  //   pipe([
+  //     () =>
+  //       instance.getByName({
+  //         name: "i-0e85b55470b03b863",
+  //       }),
+  //   ])
+  // );
 });

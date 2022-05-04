@@ -102,8 +102,6 @@ exports.CloudWatchEventApiDestination = ({ spec, config }) =>
           assert(true);
         }),
       ])(),
-    //tagResource: tagResource,
-    //untagResource: untagResource,
     configDefault: ({
       name,
       namespace,

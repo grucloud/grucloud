@@ -45,8 +45,11 @@ exports.AwsVolume = ({ spec, config }) => {
     }),
     ({ live, lives }) =>
       pipe([
+        tap(() => {
+          assert(lives);
+        }),
         () => live,
-        get("Attachments"),
+        get("Attachments", []),
         any(({ Device, InstanceId }) =>
           pipe([
             () =>

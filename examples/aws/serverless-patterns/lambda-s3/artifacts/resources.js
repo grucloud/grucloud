@@ -84,7 +84,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-PutObjectFunctionRole-TFR4FTCB12K2",
       s3Bucket: "gc-destination-example",
     }),

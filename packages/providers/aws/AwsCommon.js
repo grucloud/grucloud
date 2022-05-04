@@ -18,6 +18,7 @@ const {
   filter,
 } = require("rubico");
 const {
+  defaultsDeep,
   callProp,
   first,
   last,
@@ -69,7 +70,10 @@ const throwIfNotAwsError = (code) =>
 exports.throwIfNotAwsError = throwIfNotAwsError;
 
 exports.replaceRegion = (providerConfig) =>
-  callProp("replace", providerConfig.region, "${config.region}");
+  pipe([
+    callProp("replace", providerConfig.region, "${config.region}"),
+    (resource) => () => "`" + resource + "`",
+  ]);
 
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
@@ -125,7 +129,7 @@ const compareAwsTags = ({ getTargetTags, getLiveTags, tagsKey, key }) =>
       assert(true);
     }),
     assign({
-      diffTags: ({ targetTags, liveTags }) =>
+      diffTags: ({ targetTags = [], liveTags = [] }) =>
         Diff.diffJson(liveTags, targetTags),
       targetKeys: pipe([get("targetTags"), extractKeys({ key })]),
       liveKeys: pipe([get("liveTags"), extractKeys({ key })]),
@@ -225,7 +229,13 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
             or([
               pipe([
                 //TODO common with Retry.js
-                () => ["ECONNRESET", "ENETDOWN", "EPROTO", "ENOTFOUND"],
+                () => [
+                  "ECONNRESET",
+                  "ENETDOWN",
+                  "EPROTO",
+                  "ENOTFOUND",
+                  "EHOSTUNREACH",
+                ],
                 includes(error.code),
               ]),
               pipe([
@@ -236,6 +246,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
                   "OperationAborted",
                   "TimeoutError",
                   "ServiceUnavailable",
+                  "RequestLimitExceeded",
                   "SyntaxError", // SDK v3 JSON.parse exception
                 ],
                 includes(error.name),
@@ -251,13 +262,45 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
   },
 });
 
+const createEndpointOption = ({ region } = {}) =>
+  pipe([
+    () => ({}),
+    when(
+      () => region,
+      defaultsDeep({
+        region,
+      })
+    ),
+    when(
+      () => process.env.AWS_REGION,
+      defaultsDeep({
+        region: process.env.AWS_REGION,
+      })
+    ),
+    when(
+      () => process.env.AWSAccessKeyId,
+      defaultsDeep({
+        credentials: {
+          accessKeyId: process.env.AWSAccessKeyId,
+          secretAccessKey: process.env.AWSSecretKey,
+        },
+      })
+    ),
+  ]);
+
+exports.createEndpointOption = createEndpointOption;
+
 const createEndpointProxy = (client) => (config) =>
   pipe([
     tap((params) => {
       assert(client);
       assert(config.region);
     }),
-    () => new client({ region: config.region }),
+    createEndpointOption(),
+    tap((params) => {
+      assert(true);
+    }),
+    (options) => new client(options),
     (endpoint) =>
       new Proxy({}, proxyHandler({ endpointName: client.name, endpoint })),
   ]);

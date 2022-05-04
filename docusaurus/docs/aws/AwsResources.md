@@ -31,7 +31,7 @@ List of resources for provider aws:
 * DynamoDB: 
 [Table](./resources/DynamoDB/Table.md)
 * EC2: 
-[KeyPair](./resources/EC2/KeyPair.md), [Image](./resources/EC2/Image.md), [Volume](./resources/EC2/Volume.md), [VolumeAttachment](./resources/EC2/VolumeAttachment.md), [Vpc](./resources/EC2/Vpc.md), [InternetGateway](./resources/EC2/InternetGateway.md), [NatGateway](./resources/EC2/NatGateway.md), [Subnet](./resources/EC2/Subnet.md), [RouteTable](./resources/EC2/RouteTable.md), [RouteTableAssociation](./resources/EC2/RouteTableAssociation.md), [Route](./resources/EC2/Route.md), [SecurityGroup](./resources/EC2/SecurityGroup.md), [SecurityGroupRuleIngress](./resources/EC2/SecurityGroupRuleIngress.md), [SecurityGroupRuleEgress](./resources/EC2/SecurityGroupRuleEgress.md), [ElasticIpAddress](./resources/EC2/ElasticIpAddress.md), [Instance](./resources/EC2/Instance.md), [LaunchTemplate](./resources/EC2/LaunchTemplate.md), [NetworkAcl](./resources/EC2/NetworkAcl.md), [ManagedPrefixList](./resources/EC2/ManagedPrefixList.md), [VpcEndpoint](./resources/EC2/VpcEndpoint.md)
+[CustomerGateway](./resources/EC2/CustomerGateway.md), [KeyPair](./resources/EC2/KeyPair.md), [Image](./resources/EC2/Image.md), [Volume](./resources/EC2/Volume.md), [VolumeAttachment](./resources/EC2/VolumeAttachment.md), [Vpc](./resources/EC2/Vpc.md), [InternetGateway](./resources/EC2/InternetGateway.md), [InternetGatewayAttachment](./resources/EC2/InternetGatewayAttachment.md), [NatGateway](./resources/EC2/NatGateway.md), [Subnet](./resources/EC2/Subnet.md), [RouteTable](./resources/EC2/RouteTable.md), [RouteTableAssociation](./resources/EC2/RouteTableAssociation.md), [Route](./resources/EC2/Route.md), [SecurityGroup](./resources/EC2/SecurityGroup.md), [SecurityGroupRuleIngress](./resources/EC2/SecurityGroupRuleIngress.md), [SecurityGroupRuleEgress](./resources/EC2/SecurityGroupRuleEgress.md), [ElasticIpAddress](./resources/EC2/ElasticIpAddress.md), [Instance](./resources/EC2/Instance.md), [LaunchTemplate](./resources/EC2/LaunchTemplate.md), [NetworkAcl](./resources/EC2/NetworkAcl.md), [ManagedPrefixList](./resources/EC2/ManagedPrefixList.md), [VpcEndpoint](./resources/EC2/VpcEndpoint.md), [TransitGateway](./resources/EC2/TransitGateway.md), [TransitGatewayRouteTable](./resources/EC2/TransitGatewayRouteTable.md), [TransitGatewayVpcAttachment](./resources/EC2/TransitGatewayVpcAttachment.md), [TransitGatewayRouteTableAssociation](./resources/EC2/TransitGatewayRouteTableAssociation.md), [VpnGateway](./resources/EC2/VpnGateway.md), [VpnConnection](./resources/EC2/VpnConnection.md)
 * ECR: 
 [Repository](./resources/ECR/Repository.md), [Registry](./resources/ECR/Registry.md)
 * ECS: 
@@ -48,6 +48,8 @@ List of resources for provider aws:
 [Key](./resources/KMS/Key.md)
 * Lambda: 
 [Layer](./resources/Lambda/Layer.md), [Function](./resources/Lambda/Function.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md)
+* NetworkFirewall: 
+[Firewall](./resources/NetworkFirewall/Firewall.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md)
 * RDS: 
 [DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [DBCluster](./resources/RDS/DBCluster.md), [DBInstance](./resources/RDS/DBInstance.md)
 * Route53: 

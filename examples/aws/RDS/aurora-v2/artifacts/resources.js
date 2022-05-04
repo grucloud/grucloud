@@ -11,84 +11,85 @@ exports.createResources = () => [
       CidrBlock: "10.0.0.0/16",
     }),
   },
+  { type: "InternetGateway", group: "EC2", name: "pg-igw" },
   {
-    type: "InternetGateway",
+    type: "InternetGatewayAttachment",
     group: "EC2",
-    name: "pg-igw",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "pg-vpc",
+      internetGateway: "pg-igw",
     }),
   },
   {
     type: "NatGateway",
     group: "EC2",
-    name: "pg-nat-public1-us-east-1a",
-    dependencies: () => ({
-      subnet: "pg-subnet-public1-us-east-1a",
-      eip: "pg-eip-us-east-1a",
+    name: ({ config }) => `pg-nat-public1-${config.region}a`,
+    dependencies: ({ config }) => ({
+      subnet: `pg-subnet-public1-${config.region}a`,
+      eip: `pg-eip-${config.region}a`,
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "pg-subnet-private1-us-east-1a",
+    name: ({ config }) => `pg-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       CidrBlock: "10.0.128.0/20",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "pg-vpc",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "pg-subnet-private2-us-east-1b",
+    name: ({ config }) => `pg-subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
       CidrBlock: "10.0.144.0/20",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "pg-vpc",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "pg-subnet-public1-us-east-1a",
+    name: ({ config }) => `pg-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/20",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "pg-vpc",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "pg-subnet-public2-us-east-1b",
+    name: ({ config }) => `pg-subnet-public2-${config.region}b`,
     properties: ({ config }) => ({
       CidrBlock: "10.0.16.0/20",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "pg-vpc",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "pg-rtb-private1-us-east-1a",
-    dependencies: () => ({
+    name: ({ config }) => `pg-rtb-private1-${config.region}a`,
+    dependencies: ({}) => ({
       vpc: "pg-vpc",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "pg-rtb-private2-us-east-1b",
-    dependencies: () => ({
+    name: ({ config }) => `pg-rtb-private2-${config.region}b`,
+    dependencies: ({}) => ({
       vpc: "pg-vpc",
     }),
   },
@@ -96,40 +97,40 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "pg-rtb-public",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "pg-vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
-      routeTable: "pg-rtb-private1-us-east-1a",
-      subnet: "pg-subnet-private1-us-east-1a",
+    dependencies: ({ config }) => ({
+      routeTable: `pg-rtb-private1-${config.region}a`,
+      subnet: `pg-subnet-private1-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
-      routeTable: "pg-rtb-private2-us-east-1b",
-      subnet: "pg-subnet-private2-us-east-1b",
+    dependencies: ({ config }) => ({
+      routeTable: `pg-rtb-private2-${config.region}b`,
+      subnet: `pg-subnet-private2-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       routeTable: "pg-rtb-public",
-      subnet: "pg-subnet-public1-us-east-1a",
+      subnet: `pg-subnet-public1-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       routeTable: "pg-rtb-public",
-      subnet: "pg-subnet-public2-us-east-1b",
+      subnet: `pg-subnet-public2-${config.region}b`,
     }),
   },
   {
@@ -138,9 +139,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
-      routeTable: "pg-rtb-private1-us-east-1a",
-      natGateway: "pg-nat-public1-us-east-1a",
+    dependencies: ({ config }) => ({
+      routeTable: `pg-rtb-private1-${config.region}a`,
+      natGateway: `pg-nat-public1-${config.region}a`,
     }),
   },
   {
@@ -149,9 +150,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
-      routeTable: "pg-rtb-private2-us-east-1b",
-      natGateway: "pg-nat-public1-us-east-1a",
+    dependencies: ({ config }) => ({
+      routeTable: `pg-rtb-private2-${config.region}b`,
+      natGateway: `pg-nat-public1-${config.region}a`,
     }),
   },
   {
@@ -160,7 +161,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "pg-rtb-public",
       ig: "pg-igw",
     }),
@@ -172,7 +173,7 @@ exports.createResources = () => [
       GroupName: "pg",
       Description: "Created by RDS management console",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "pg-vpc",
     }),
   },
@@ -191,11 +192,15 @@ exports.createResources = () => [
         ToPort: 5432,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::pg-vpc::pg",
     }),
   },
-  { type: "ElasticIpAddress", group: "EC2", name: "pg-eip-us-east-1a" },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: ({ config }) => `pg-eip-${config.region}a`,
+  },
   {
     type: "Role",
     group: "IAM",
@@ -230,12 +235,12 @@ exports.createResources = () => [
     properties: ({}) => ({
       DBSubnetGroupDescription: "Created from the RDS Management Console",
     }),
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       subnets: [
-        "pg-subnet-private1-us-east-1a",
-        "pg-subnet-private2-us-east-1b",
-        "pg-subnet-public1-us-east-1a",
-        "pg-subnet-public2-us-east-1b",
+        `pg-subnet-private1-${config.region}a`,
+        `pg-subnet-private2-${config.region}b`,
+        `pg-subnet-public1-${config.region}a`,
+        `pg-subnet-public2-${config.region}b`,
       ],
     }),
   },
@@ -262,7 +267,7 @@ exports.createResources = () => [
       },
       MasterUserPassword: process.env.DATABASE_1_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       dbSubnetGroup: "default-vpc-07c0392e5e3359f2e",
       securityGroups: ["sg::pg-vpc::pg"],
     }),
@@ -289,7 +294,7 @@ exports.createResources = () => [
       MasterUserPassword:
         process.env.DATABASE_1_INSTANCE_1_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       dbSubnetGroup: "default-vpc-07c0392e5e3359f2e",
       securityGroups: ["sg::pg-vpc::pg"],
       dbCluster: "database-1",

@@ -12,7 +12,7 @@ exports.createResources = () => [
       InvocationEndpoint: "https://grucloud.com",
       InvocationRateLimitPerSecond: 300,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       connection: "MyConnection-dvMVGg2stExz",
     }),
   },

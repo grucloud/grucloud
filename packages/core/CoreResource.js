@@ -123,7 +123,7 @@ exports.ResourceMaker = ({
             getId,
             generatePassword: generator.generate,
           }),
-          dependenciesSpec: dependencies(),
+          dependenciesSpec: dependencies({ config }),
           dependencies: getDependencies(),
         }),
         tap((params) => {
@@ -131,7 +131,7 @@ exports.ResourceMaker = ({
         }),
         spec.inferName,
         tap((name) => {
-          assert(name, "empty inferName");
+          assert(name, `empty inferName for ${spec.groupType}`);
           assert(isString(name));
         }),
       ]),
@@ -162,10 +162,12 @@ exports.ResourceMaker = ({
   const getDependencies = pipe([
     () => dependencies,
     unless(isFunction, (dependencies) => () => ({ ...dependencies })),
-    (dep) => () => dep({ resources: provider.resources() }),
+    (dep) => () => dep({ config, resources: provider.resources() }),
     (dep) => () => spec.transformDependencies({ provider })(dep()),
     (dep) => () =>
-      mapDependenciesNameToResource(dep({ resources: provider.resources() })),
+      mapDependenciesNameToResource(
+        dep({ config, resources: provider.resources() })
+      ),
   ]);
 
   const getClient = () => provider.getClient(spec);
@@ -283,6 +285,7 @@ exports.ResourceMaker = ({
         //   )}, live: ${tos(live)}`
         // );
         assert(targetResources);
+        assert(spec.compare, `no compare for ${spec.groupType}`);
       }),
       () =>
         spec.compare({

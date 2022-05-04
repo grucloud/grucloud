@@ -83,7 +83,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "sam-app-DynamoTable-1TM3ILOZ1A36J",
     }),
   },
@@ -105,7 +105,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
       dynamoDbTable: "sam-app-DynamoTable-1TM3ILOZ1A36J",
     }),

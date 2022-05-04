@@ -42,21 +42,8 @@
 <path fill="none" stroke="#707070" d="M256.52,-176C293.23,-176 334.55,-176 368.77,-176"/>
 <polygon fill="#707070" stroke="#707070" points="369.14,-179.5 379.14,-176 369.14,-172.5 369.14,-179.5"/>
 </g>
-<!-- InstanceProfile::::role&#45;ecs -->
-<g id="node4" class="node">
-<title>InstanceProfile::::role&#45;ecs</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="531.5,-281 352.5,-281 352.5,-223 531.5,-223 531.5,-281"/>
-<text text-anchor="start" x="365" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::InstanceProfile</text>
-<text text-anchor="start" x="365" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">role&#45;ecs</text>
-</g>
-<!-- LaunchTemplate::::lt&#45;ec2&#45;micro&#45;&gt;InstanceProfile::::role&#45;ecs -->
-<g id="edge3" class="edge">
-<title>LaunchTemplate::::lt&#45;ec2&#45;micro&#45;&gt;InstanceProfile::::role&#45;ecs</title>
-<path fill="none" stroke="#707070" d="M256.52,-201.84C284.26,-209.38 314.64,-217.64 342.59,-225.24"/>
-<polygon fill="#707070" stroke="#707070" points="341.8,-228.65 352.37,-227.9 343.64,-221.9 341.8,-228.65"/>
-</g>
 <!-- SecurityGroup::::sg::Vpc::EcsSecurityGroup -->
-<g id="node6" class="node">
+<g id="node3" class="node">
 <title>SecurityGroup::::sg::Vpc::EcsSecurityGroup</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="551,-129 333,-129 333,-71 551,-71 551,-129"/>
 <text text-anchor="start" x="345" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
@@ -68,25 +55,25 @@
 <path fill="none" stroke="#707070" d="M256.52,-150.16C278.39,-144.21 301.91,-137.82 324.58,-131.66"/>
 <polygon fill="#707070" stroke="#707070" points="325.51,-135.03 334.24,-129.03 323.67,-128.28 325.51,-135.03"/>
 </g>
+<!-- InstanceProfile::::role&#45;ecs -->
+<g id="node6" class="node">
+<title>InstanceProfile::::role&#45;ecs</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="531.5,-281 352.5,-281 352.5,-223 531.5,-223 531.5,-281"/>
+<text text-anchor="start" x="365" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::InstanceProfile</text>
+<text text-anchor="start" x="365" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">role&#45;ecs</text>
+</g>
+<!-- LaunchTemplate::::lt&#45;ec2&#45;micro&#45;&gt;InstanceProfile::::role&#45;ecs -->
+<g id="edge3" class="edge">
+<title>LaunchTemplate::::lt&#45;ec2&#45;micro&#45;&gt;InstanceProfile::::role&#45;ecs</title>
+<path fill="none" stroke="#707070" d="M256.52,-201.84C284.26,-209.38 314.64,-217.64 342.59,-225.24"/>
+<polygon fill="#707070" stroke="#707070" points="341.8,-228.65 352.37,-227.9 343.64,-221.9 341.8,-228.65"/>
+</g>
 <!-- Vpc::::Vpc -->
-<g id="node3" class="node">
+<g id="node5" class="node">
 <title>Vpc::::Vpc</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="684,-129 589,-129 589,-71 684,-71 684,-129"/>
 <text text-anchor="start" x="601.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
 <text text-anchor="start" x="601.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Vpc</text>
-</g>
-<!-- Role::::role&#45;ecs -->
-<g id="node5" class="node">
-<title>Role::::role&#45;ecs</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="686,-281 587,-281 587,-223 686,-223 686,-281"/>
-<text text-anchor="start" x="599.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
-<text text-anchor="start" x="599.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">role&#45;ecs</text>
-</g>
-<!-- InstanceProfile::::role&#45;ecs&#45;&gt;Role::::role&#45;ecs -->
-<g id="edge6" class="edge">
-<title>InstanceProfile::::role&#45;ecs&#45;&gt;Role::::role&#45;ecs</title>
-<path fill="none" stroke="#707070" d="M531.64,-252C546.97,-252 562.55,-252 576.83,-252"/>
-<polygon fill="#707070" stroke="#707070" points="576.97,-255.5 586.97,-252 576.97,-248.5 576.97,-255.5"/>
 </g>
 <!-- SecurityGroup::::sg::Vpc::EcsSecurityGroup&#45;&gt;Vpc::::Vpc -->
 <g id="edge4" class="edge">
@@ -95,7 +82,7 @@
 <polygon fill="#707070" stroke="#707070" points="578.75,-103.5 588.75,-100 578.75,-96.5 578.75,-103.5"/>
 </g>
 <!-- SecurityGroupRuleIngress::::sg::Vpc::EcsSecurityGroup&#45;rule&#45;ingress&#45;tcp&#45;80 -->
-<g id="node7" class="node">
+<g id="node4" class="node">
 <title>SecurityGroupRuleIngress::::sg::Vpc::EcsSecurityGroup&#45;rule&#45;ingress&#45;tcp&#45;80</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="297,-129 24,-129 24,-71 297,-71 297,-129"/>
 <text text-anchor="start" x="36.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
@@ -106,6 +93,19 @@
 <title>SecurityGroupRuleIngress::::sg::Vpc::EcsSecurityGroup&#45;rule&#45;ingress&#45;tcp&#45;80&#45;&gt;SecurityGroup::::sg::Vpc::EcsSecurityGroup</title>
 <path fill="none" stroke="#707070" d="M297.16,-100C305.66,-100 314.18,-100 322.6,-100"/>
 <polygon fill="#707070" stroke="#707070" points="322.81,-103.5 332.81,-100 322.81,-96.5 322.81,-103.5"/>
+</g>
+<!-- Role::::role&#45;ecs -->
+<g id="node7" class="node">
+<title>Role::::role&#45;ecs</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="686,-281 587,-281 587,-223 686,-223 686,-281"/>
+<text text-anchor="start" x="599.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
+<text text-anchor="start" x="599.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">role&#45;ecs</text>
+</g>
+<!-- InstanceProfile::::role&#45;ecs&#45;&gt;Role::::role&#45;ecs -->
+<g id="edge6" class="edge">
+<title>InstanceProfile::::role&#45;ecs&#45;&gt;Role::::role&#45;ecs</title>
+<path fill="none" stroke="#707070" d="M531.64,-252C546.97,-252 562.55,-252 576.83,-252"/>
+<polygon fill="#707070" stroke="#707070" points="576.97,-255.5 586.97,-252 576.97,-248.5 576.97,-255.5"/>
 </g>
 </g>
 </svg>

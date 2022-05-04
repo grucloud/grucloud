@@ -13,7 +13,7 @@ exports.createResources = () => [
       DesiredCapacity: 1,
       HealthCheckGracePeriod: 0,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["PubSubnetAz1", "PubSubnetAz2"],
       launchConfiguration:
         "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-HWVeTO3QcmK1",
@@ -22,20 +22,23 @@ exports.createResources = () => [
   {
     type: "LaunchConfiguration",
     group: "AutoScaling",
-    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-HWVeTO3QcmK1",
     properties: ({}) => ({
-      InstanceType: "t2.small",
-      ImageId: "ami-0a5e7c9183d1cea27",
+      LaunchConfigurationName:
+        "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-HWVeTO3QcmK1",
       UserData:
         'Content-Type: multipart/mixed; boundary="9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb"\nMIME-Version: 1.0\n\n--9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb\nContent-Type: text/text/x-shellscript; charset="utf-8"\nMime-Version: 1.0\n\n\n#!/bin/bash\necho ECS_CLUSTER=my-cluster >> /etc/ecs/ecs.config\necho \'ECS_CONTAINER_INSTANCE_TAGS={"my-tag":"my-value"}\' >> /etc/ecs/ecs.config\n--9d473c52461ae3bbe1e3ac2cf352ccaee391db0c1d2135a7967b4fe54feb--',
+      InstanceType: "t2.small",
+      BlockDeviceMappings: [],
       InstanceMonitoring: {
         Enabled: true,
       },
-      BlockDeviceMappings: [],
       EbsOptimized: false,
       AssociatePublicIpAddress: true,
+      Image: {
+        Description: "Amazon Linux AMI 2.0.20220209 x86_64 ECS HVM GP2",
+      },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       instanceProfile:
         "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-1V2DBJVUCN7IT",
       securityGroups: [
@@ -59,6 +62,15 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-ec2-example",
+    properties: ({}) => ({
+      CidrBlock: "10.1.0.0/16",
+    }),
+  },
+  { type: "InternetGateway", group: "EC2", name: "ig" },
+  {
     type: "InternetGateway",
     group: "EC2",
     name: "InternetGateway",
@@ -70,8 +82,21 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+  },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "vpc-ec2-example",
+      internetGateway: "ig",
+    }),
+  },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
       vpc: "Vpc",
+      internetGateway: "InternetGateway",
     }),
   },
   {
@@ -88,7 +113,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc",
     }),
   },
@@ -106,8 +131,28 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet",
+    properties: ({ config }) => ({
+      CidrBlock: "10.1.0.0/24",
+      AvailabilityZone: `${config.region}a`,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-ec2-example",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "route-table",
+    dependencies: ({}) => ({
+      vpc: "vpc-ec2-example",
     }),
   },
   {
@@ -122,14 +167,22 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
+      routeTable: "route-table",
+      subnet: "subnet",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
       routeTable: "RouteViaIgw",
       subnet: "PubSubnetAz1",
     }),
@@ -137,7 +190,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "RouteViaIgw",
       subnet: "PubSubnetAz2",
     }),
@@ -148,9 +201,31 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
+      routeTable: "route-table",
+      ig: "ig",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
       routeTable: "RouteViaIgw",
       ig: "InternetGateway",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "security-group",
+      Description: "Managed By GruCloud",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-ec2-example",
     }),
   },
   {
@@ -167,8 +242,56 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpPermission: {
+        FromPort: -1,
+        IpProtocol: "icmp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        ToPort: -1,
+      },
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-ec2-example::security-group",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpPermission: {
+        FromPort: 22,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        ToPort: 22,
+      },
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-ec2-example::security-group",
     }),
   },
   {
@@ -186,7 +309,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::Vpc::amazon-ecs-cli-setup-my-cluster-EcsSecurityGroup-1M3ZGBGN81ILF",
     }),
@@ -240,7 +363,7 @@ exports.createResources = () => [
     type: "InstanceProfile",
     group: "IAM",
     name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceProfile-1V2DBJVUCN7IT",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       roles: ["amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-TERDPQNAO5Q2"],
     }),
   },

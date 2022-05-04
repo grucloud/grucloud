@@ -1,0 +1,37 @@
+@startmindmap
+title Resources for project hub-and-spoke-with-inspection-vpc
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (2)
++++ EC2
+++++ KeyPair (1)
+++++ Vpc (3)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ NatGateway (1)
+++++ Subnet (27)
+++++ RouteTable (9)
+++++ RouteTableAssociation (27)
+++++ Route (13)
+++++ SecurityGroup (7)
+++++ SecurityGroupRuleIngress (17)
+++++ ElasticIpAddress (1)
+++++ Instance (2)
+++++ VpcEndpoint (5)
+++++ TransitGateway (1)
+++++ TransitGatewayRouteTable (2)
+++++ TransitGatewayVpcAttachment (3)
+++++ TransitGatewayRouteTableAssociation (3)
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
++++ KMS
+++++ Key (1)
++++ NetworkFirewall
+++++ Firewall (1)
+++++ Policy (1)
+++++ RuleGroup (3)
+++++ LoggingConfiguration (1)
+@endmindmap
