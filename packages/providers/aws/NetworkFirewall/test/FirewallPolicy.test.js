@@ -10,7 +10,7 @@ describe("NetworkFirewall Policy", async function () {
   before(async function () {
     provider = AwsProvider({ config });
     firewallPolicy = provider.getClient({
-      groupType: "NetworkFirewall::FirewallPolicy",
+      groupType: "NetworkFirewall::Policy",
     });
     await provider.start();
   });
@@ -29,7 +29,7 @@ describe("NetworkFirewall Policy", async function () {
       () =>
         firewallPolicy.destroy({
           live: {
-            FirewallArn:
+            FirewallPolicyArn:
               "arn:aws:network-firewall:us-east-1:840541460064:firewall-policy/blabla",
           },
         }),
@@ -40,7 +40,7 @@ describe("NetworkFirewall Policy", async function () {
     pipe([
       () =>
         firewallPolicy.getById({
-          FirewallArn:
+          FirewallPolicyArn:
             "arn:aws:network-firewall:us-east-1:840541460064:firewall-policy/blabla",
         }),
     ])

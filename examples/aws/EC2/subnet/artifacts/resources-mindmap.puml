@@ -6,11 +6,11 @@ skinparam monochrome true
 +++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
 ++++ NatGateway (1)
 ++++ Subnet (4)
-++++ RouteTable (4)
+++++ RouteTable (3)
 ++++ RouteTableAssociation (4)
-++++ Route (6)
+++++ Route (3)
 ++++ ElasticIpAddress (1)
-++++ VpcEndpoint (1)
 @endmindmap

@@ -11,7 +11,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       AutoDeploy: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "serverlessland-pvt-endpoint",
     }),
   },
@@ -25,7 +25,7 @@ exports.createResources = () => [
       PayloadFormatVersion: "1.0",
       RequestTemplates: {},
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "serverlessland-pvt-endpoint",
       listener: "listener::sam-a-LoadB-EC9ZTKNG2RSH::HTTP::80",
       vpcLink: "APIGWVpcLinkToPrivateHTTPEndpoint",
@@ -37,7 +37,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       RouteKey: "ANY /{proxy+}",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "serverlessland-pvt-endpoint",
       integration:
         "integration::serverlessland-pvt-endpoint::listener::sam-a-LoadB-EC9ZTKNG2RSH::HTTP::80",
@@ -51,7 +51,7 @@ exports.createResources = () => [
         "Automatic deployment triggered by changes to the Api configuration",
       AutoDeployed: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "serverlessland-pvt-endpoint",
       stage: "$default",
     }),
@@ -60,10 +60,10 @@ exports.createResources = () => [
     type: "VpcLink",
     group: "ApiGatewayV2",
     name: "APIGWVpcLinkToPrivateHTTPEndpoint",
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       subnets: [
-        "vpclink-ex-subnet-private1-us-east-1a",
-        "vpclink-ex-subnet-private2-us-east-1b",
+        `vpclink-ex-subnet-private1-${config.region}a`,
+        `vpclink-ex-subnet-private2-${config.region}b`,
       ],
     }),
   },
@@ -78,57 +78,57 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpclink-ex-subnet-private1-us-east-1a",
+    name: ({ config }) => `vpclink-ex-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       CidrBlock: "10.0.128.0/20",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpclink-ex-vpc",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpclink-ex-subnet-private2-us-east-1b",
+    name: ({ config }) => `vpclink-ex-subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
       CidrBlock: "10.0.144.0/20",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpclink-ex-vpc",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpclink-ex-rtb-private1-us-east-1a",
-    dependencies: () => ({
+    name: ({ config }) => `vpclink-ex-rtb-private1-${config.region}a`,
+    dependencies: ({}) => ({
       vpc: "vpclink-ex-vpc",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpclink-ex-rtb-private2-us-east-1b",
-    dependencies: () => ({
+    name: ({ config }) => `vpclink-ex-rtb-private2-${config.region}b`,
+    dependencies: ({}) => ({
       vpc: "vpclink-ex-vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
-      routeTable: "vpclink-ex-rtb-private1-us-east-1a",
-      subnet: "vpclink-ex-subnet-private1-us-east-1a",
+    dependencies: ({ config }) => ({
+      routeTable: `vpclink-ex-rtb-private1-${config.region}a`,
+      subnet: `vpclink-ex-subnet-private1-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
-      routeTable: "vpclink-ex-rtb-private2-us-east-1b",
-      subnet: "vpclink-ex-subnet-private2-us-east-1b",
+    dependencies: ({ config }) => ({
+      routeTable: `vpclink-ex-rtb-private2-${config.region}b`,
+      subnet: `vpclink-ex-subnet-private2-${config.region}b`,
     }),
   },
   {
@@ -138,7 +138,7 @@ exports.createResources = () => [
       GroupName: "sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ",
       Description: "ECS Security Group",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpclink-ex-vpc",
     }),
   },
@@ -149,7 +149,7 @@ exports.createResources = () => [
       GroupName: "sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
       Description: "LoadBalancer Security Group",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpclink-ex-vpc",
     }),
   },
@@ -163,7 +163,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::vpclink-ex-vpc::sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ",
       securityGroupFrom: [
@@ -187,7 +187,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
     }),
   },
@@ -201,7 +201,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
       securityGroupFrom: [
         "sg::vpclink-ex-vpc::sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ",
@@ -276,7 +276,7 @@ exports.createResources = () => [
       ],
       requiresCompatibilities: ["FARGATE"],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       taskRole: "sam-app-ECSTaskRole-1PCVBVKCZRWS2",
       executionRole: "sam-app-ECSTaskExecutionRole-PMX4OZKH4A2P",
     }),
@@ -322,12 +322,12 @@ exports.createResources = () => [
       schedulingStrategy: "REPLICA",
       serviceName: "sam-app-ECSService-dVx4w3SfxVcU",
     }),
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       cluster: "sam-app-ECSFargateCluster-iqHkBgW4h6Go",
       taskDefinition: "sam-app-ECSServiceTaskDefinition-7P836RFsrg3O",
       subnets: [
-        "vpclink-ex-subnet-private1-us-east-1a",
-        "vpclink-ex-subnet-private2-us-east-1b",
+        `vpclink-ex-subnet-private1-${config.region}a`,
+        `vpclink-ex-subnet-private2-${config.region}b`,
       ],
       securityGroups: [
         "sg::vpclink-ex-vpc::sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ",
@@ -344,10 +344,10 @@ exports.createResources = () => [
       Type: "application",
       IpAddressType: "ipv4",
     }),
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       subnets: [
-        "vpclink-ex-subnet-private1-us-east-1a",
-        "vpclink-ex-subnet-private2-us-east-1b",
+        `vpclink-ex-subnet-private1-${config.region}a`,
+        `vpclink-ex-subnet-private2-${config.region}b`,
       ],
       securityGroups: [
         "sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ4",
@@ -364,7 +364,7 @@ exports.createResources = () => [
       HealthCheckProtocol: "HTTP",
       TargetType: "ip",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpclink-ex-vpc",
     }),
   },
@@ -375,7 +375,7 @@ exports.createResources = () => [
       Port: 80,
       Protocol: "HTTP",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       loadBalancer: "sam-a-LoadB-EC9ZTKNG2RSH",
       targetGroup: "sam-a-LoadB-29TIQLVPQQY9",
     }),

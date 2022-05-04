@@ -1297,7 +1297,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: "inspection-vpc-intra-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
     }),
   },
   {
@@ -1352,7 +1352,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: "inspection-vpc-public-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
     }),
   },
   {
@@ -1363,7 +1363,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: "inspection-vpc-public-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
     }),
   },
   {
@@ -1854,7 +1854,9 @@ exports.createResources = () => [
     name: "spoke-vpc-1-instance-1",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      ImageId: "ami-0ff419be951a83432",
+      Image: {
+        Description: "Amazon Linux AMI 2018.03.0.20220419.0 x86_64 HVM gp2",
+      },
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
@@ -1872,7 +1874,9 @@ exports.createResources = () => [
     name: "spoke-vpc-2-instance-1",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      ImageId: "ami-0ff419be951a83432",
+      Image: {
+        Description: "Amazon Linux AMI 2018.03.0.20220419.0 x86_64 HVM gp2",
+      },
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
@@ -1963,11 +1967,11 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
     }),
     dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-2",
+      vpc: "spoke-vpc-1",
       subnets: [
-        `spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2-private-subnet-${config.region}c`,
+        `spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1-private-subnet-${config.region}c`,
       ],
     }),
   },
@@ -1992,11 +1996,11 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
     }),
     dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-1",
+      vpc: "spoke-vpc-2",
       subnets: [
-        `spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1-private-subnet-${config.region}c`,
+        `spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2-private-subnet-${config.region}c`,
       ],
     }),
   },
@@ -2120,11 +2124,11 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     name: ({ config }) =>
-      `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
+      `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
     readOnly: true,
     dependencies: ({ config }) => ({
       vpc: "inspection-vpc",
-      subnets: [`inspection-vpc-private-subnet-${config.region}b`],
+      subnets: [`inspection-vpc-private-subnet-${config.region}a`],
       firewall: "NetworkFirewall",
     }),
   },

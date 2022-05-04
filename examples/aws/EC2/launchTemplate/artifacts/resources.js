@@ -20,7 +20,7 @@ exports.createResources = () => [
       GroupName: "EcsSecurityGroup",
       Description: "Managed By GruCloud",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc",
     }),
   },
@@ -39,7 +39,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::Vpc::EcsSecurityGroup",
     }),
   },
@@ -49,11 +49,13 @@ exports.createResources = () => [
     name: "lt-ec2-micro",
     properties: ({}) => ({
       LaunchTemplateData: {
-        ImageId: "ami-02e136e904f3da870",
         InstanceType: "t2.micro",
+        Image: {
+          Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+        },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
       securityGroups: ["sg::Vpc::EcsSecurityGroup"],
@@ -90,7 +92,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       roles: ["role-ecs"],
     }),
   },

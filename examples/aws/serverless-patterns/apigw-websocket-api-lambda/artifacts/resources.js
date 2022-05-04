@@ -25,7 +25,7 @@ exports.createResources = () => [
       },
       Description: "Prod Stage",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
     }),
   },
@@ -42,7 +42,7 @@ exports.createResources = () => [
       RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       lambdaFunction: "sam-app-onconnect-function",
     }),
@@ -60,7 +60,7 @@ exports.createResources = () => [
       RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       lambdaFunction: "sam-app-ondisconnect-function",
     }),
@@ -78,7 +78,7 @@ exports.createResources = () => [
       RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       lambdaFunction: "sam-app-post-function",
     }),
@@ -90,7 +90,7 @@ exports.createResources = () => [
       OperationName: "OnConnectRoute",
       RouteKey: "$connect",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       integration: "integration::sam-app::sam-app-onconnect-function",
     }),
@@ -102,7 +102,7 @@ exports.createResources = () => [
       OperationName: "OnDisconnectRoute",
       RouteKey: "$disconnect",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       integration: "integration::sam-app::sam-app-ondisconnect-function",
     }),
@@ -114,7 +114,7 @@ exports.createResources = () => [
       OperationName: "PostRoute",
       RouteKey: "post",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       integration: "integration::sam-app::sam-app-post-function",
     }),
@@ -122,7 +122,7 @@ exports.createResources = () => [
   {
     type: "Deployment",
     group: "ApiGatewayV2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       stage: "prod",
     }),
@@ -217,7 +217,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "sam-app-websocket_connections",
     }),
   },
@@ -288,7 +288,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "sam-app-websocket_connections",
     }),
   },
@@ -375,7 +375,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "sam-app-websocket_connections",
     }),
   },
@@ -399,7 +399,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-OnConnectLambdaFunctionRole-BWZIV6IR9OMV",
       dynamoDbTable: "sam-app-websocket_connections",
     }),
@@ -424,7 +424,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-OnDisconnectLambdaFunctionRole-1K1VHGSO99JHS",
       dynamoDbTable: "sam-app-websocket_connections",
     }),
@@ -449,7 +449,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-PostLambdaFunctionRole-1DAT8LSZH0D2Y",
       dynamoDbTable: "sam-app-websocket_connections",
     }),

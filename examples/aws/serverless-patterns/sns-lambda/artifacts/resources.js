@@ -48,7 +48,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-TopicConsumerFunction1Role-1CWCD3G6QCTG6",
     }),
   },
@@ -84,7 +84,7 @@ exports.createResources = () => [
       PendingConfirmation: "false",
       ConfirmationWasAuthenticated: "true",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       snsTopic: "sam-app-MySnsTopic-1Q2VS8SMOPR20",
       lambdaFunction: "sam-app-TopicConsumerFunction1-OL7tADpZDByC",
     }),

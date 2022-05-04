@@ -12,7 +12,7 @@ exports.createResources = () => [
       CidrBlock: "172.31.96.0/20",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-default",
     }),
   },

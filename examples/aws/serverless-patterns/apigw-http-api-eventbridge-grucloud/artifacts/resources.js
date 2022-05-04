@@ -11,7 +11,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       AutoDeploy: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
     }),
   },
@@ -31,7 +31,7 @@ exports.createResources = () => [
       RequestTemplates: {},
       TimeoutInMillis: 10000,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
       eventBus: "MyEventBus",
       role: "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-V1AK3L262GGK",
@@ -43,7 +43,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       RouteKey: "POST /",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
       integration: "integration::MyHttpApi::MyEventBus",
     }),
@@ -56,7 +56,7 @@ exports.createResources = () => [
         "Automatic deployment triggered by changes to the Api configuration",
       AutoDeployed: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
       stage: "$default",
     }),
@@ -73,7 +73,7 @@ exports.createResources = () => [
       },
       State: "ENABLED",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "MyEventBus",
     }),
   },
@@ -169,7 +169,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "MyEventBus",
     }),
   },
@@ -184,7 +184,7 @@ exports.createResources = () => [
         Timeout: 120,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-4YDZM1JYBBAN",
     }),
   },

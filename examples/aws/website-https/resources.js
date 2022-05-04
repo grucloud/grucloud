@@ -26,16 +26,17 @@ exports.createResources = () => [
       },
       DefaultRootObject: "index.html",
       DefaultCacheBehavior: {
-        TargetOriginId: `S3-cloudfront.aws.test.grucloud.org`,
+        TargetOriginId: `S3-${getId({
+          type: "Bucket",
+          group: "S3",
+          name: "cloudfront.aws.test.grucloud.org",
+          path: "name",
+        })}`,
         TrustedSigners: {
           Enabled: false,
-          Quantity: 0,
-          Items: [],
         },
         TrustedKeyGroups: {
           Enabled: false,
-          Quantity: 0,
-          Items: [],
         },
         ViewerProtocolPolicy: "redirect-to-https",
         AllowedMethods: {
@@ -48,14 +49,6 @@ exports.createResources = () => [
         },
         SmoothStreaming: false,
         Compress: false,
-        LambdaFunctionAssociations: {
-          Quantity: 0,
-          Items: [],
-        },
-        FunctionAssociations: {
-          Quantity: 0,
-          Items: [],
-        },
         FieldLevelEncryptionId: "",
         ForwardedValues: {
           QueryString: false,
@@ -77,7 +70,7 @@ exports.createResources = () => [
         Quantity: 1,
         Items: [
           {
-            Id: `S3-cloudfront.aws.test.grucloud.org`,
+            Id: "S3-cloudfront.aws.test.grucloud.org",
             DomainName: `${getId({
               type: "Bucket",
               group: "S3",
@@ -102,8 +95,6 @@ exports.createResources = () => [
       Restrictions: {
         GeoRestriction: {
           RestrictionType: "none",
-          Quantity: 0,
-          Items: [],
         },
       },
       Comment: `${getId({
@@ -118,8 +109,14 @@ exports.createResources = () => [
         Bucket: "",
         Prefix: "",
       },
+      ViewerCertificate: {
+        CloudFrontDefaultCertificate: false,
+        SSLSupportMethod: "sni-only",
+        MinimumProtocolVersion: "TLSv1.2_2019",
+        CertificateSource: "acm",
+      },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       buckets: ["cloudfront.aws.test.grucloud.org"],
       certificate: "cloudfront.aws.test.grucloud.org",
     }),
@@ -128,14 +125,14 @@ exports.createResources = () => [
     type: "HostedZone",
     group: "Route53",
     name: "cloudfront.aws.test.grucloud.org.",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       domain: "grucloud.org",
     }),
   },
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "cloudfront.aws.test.grucloud.org.",
       certificate: "cloudfront.aws.test.grucloud.org",
     }),
@@ -143,7 +140,7 @@ exports.createResources = () => [
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "cloudfront.aws.test.grucloud.org.",
       distribution: "S3-cloudfront.aws.test.grucloud.org",
     }),
@@ -161,13 +158,73 @@ exports.createResources = () => [
     properties: ({}) => ({
       ACL: "public-read",
       WebsiteConfiguration: {
-        IndexDocument: {
-          Suffix: "index.html",
-        },
         ErrorDocument: {
           Key: "error.html",
         },
+        IndexDocument: {
+          Suffix: "index.html",
+        },
       },
+    }),
+  },
+  {
+    type: "Object",
+    group: "S3",
+    name: "build/bundle.css",
+    properties: ({}) => ({
+      ContentType: "text/css",
+      source: "s3/cloudfront.aws.test.grucloud.org/build/bundle.css",
+    }),
+    dependencies: ({}) => ({
+      bucket: "cloudfront.aws.test.grucloud.org",
+    }),
+  },
+  {
+    type: "Object",
+    group: "S3",
+    name: "build/bundle.js",
+    properties: ({}) => ({
+      ContentType: "application/javascript",
+      source: "s3/cloudfront.aws.test.grucloud.org/build/bundle.js",
+    }),
+    dependencies: ({}) => ({
+      bucket: "cloudfront.aws.test.grucloud.org",
+    }),
+  },
+  {
+    type: "Object",
+    group: "S3",
+    name: "favicon.png",
+    properties: ({}) => ({
+      ContentType: "image/png",
+      source: "s3/cloudfront.aws.test.grucloud.org/favicon.png",
+    }),
+    dependencies: ({}) => ({
+      bucket: "cloudfront.aws.test.grucloud.org",
+    }),
+  },
+  {
+    type: "Object",
+    group: "S3",
+    name: "global.css",
+    properties: ({}) => ({
+      ContentType: "text/css",
+      source: "s3/cloudfront.aws.test.grucloud.org/global.css",
+    }),
+    dependencies: ({}) => ({
+      bucket: "cloudfront.aws.test.grucloud.org",
+    }),
+  },
+  {
+    type: "Object",
+    group: "S3",
+    name: "index.html",
+    properties: ({}) => ({
+      ContentType: "text/html",
+      source: "s3/cloudfront.aws.test.grucloud.org/index.html",
+    }),
+    dependencies: ({}) => ({
+      bucket: "cloudfront.aws.test.grucloud.org",
     }),
   },
 ];

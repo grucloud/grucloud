@@ -34,7 +34,7 @@ exports.createResources = () => [
         TunnelInsideIpVersion: "ipv4",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       customerGateway: "cgw",
       vpnGateway: "vpw",
     }),

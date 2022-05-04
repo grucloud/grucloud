@@ -39,7 +39,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       snsTopic: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
     }),
   },
@@ -76,7 +76,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",
     }),
   },

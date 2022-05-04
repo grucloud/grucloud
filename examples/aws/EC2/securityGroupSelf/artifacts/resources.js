@@ -19,7 +19,7 @@ exports.createResources = () => [
       GroupName: "ClusterSharedNode",
       Description: "Communication between all nodes in the cluster",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -31,7 +31,7 @@ exports.createResources = () => [
         IpProtocol: "-1",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::VPC::ClusterSharedNode",
       securityGroupFrom: ["sg::VPC::ClusterSharedNode"],
     }),

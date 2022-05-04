@@ -52,7 +52,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       ssmParameters: ["ExampleParameterName"],
     }),
   },
@@ -75,7 +75,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-LambdaFunctionRole-1C9B4X0VUWW95",
       ssmParameters: ["ExampleParameterName"],
     }),

@@ -20,7 +20,7 @@ exports.createResources = () => [
       MaxSize: 1,
       DesiredCapacity: 1,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["subnet-a", "subnet-b"],
       launchTemplate: "my-template",
     }),
@@ -28,7 +28,7 @@ exports.createResources = () => [
   {
     type: "AutoScalingAttachment",
     group: "AutoScaling",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       autoScalingGroup: "ag",
       targetGroup: "target-group-rest",
     }),
@@ -36,7 +36,7 @@ exports.createResources = () => [
   {
     type: "AutoScalingAttachment",
     group: "AutoScaling",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       autoScalingGroup: "ag",
       targetGroup: "target-group-web",
     }),
@@ -49,11 +49,7 @@ exports.createResources = () => [
       CidrBlock: "192.168.0.0/16",
     }),
   },
-  {
-    type: "InternetGateway",
-    group: "EC2",
-    name: "internet-gateway",
-  },
+  { type: "InternetGateway", group: "EC2", name: "internet-gateway" },
   {
     type: "InternetGatewayAttachment",
     group: "EC2",
@@ -70,7 +66,7 @@ exports.createResources = () => [
       CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -82,7 +78,7 @@ exports.createResources = () => [
       CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -91,14 +87,14 @@ exports.createResources = () => [
     group: "EC2",
     name: "rt-default-vpc",
     isDefault: true,
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "rt-default-vpc",
       subnet: "subnet-a",
     }),
@@ -106,7 +102,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "rt-default-vpc",
       subnet: "subnet-b",
     }),
@@ -117,7 +113,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "rt-default-vpc",
       ig: "internet-gateway",
     }),
@@ -125,8 +121,9 @@ exports.createResources = () => [
   {
     type: "SecurityGroup",
     group: "EC2",
+    name: "sg::vpc::default",
     isDefault: true,
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -136,8 +133,10 @@ exports.createResources = () => [
     name: "my-template",
     properties: ({}) => ({
       LaunchTemplateData: {
-        ImageId: "ami-02e136e904f3da870",
         InstanceType: "t2.micro",
+        Image: {
+          Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+        },
       },
     }),
   },
@@ -156,7 +155,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["subnet-a", "subnet-b"],
       securityGroups: ["sg::vpc::default"],
     }),
@@ -176,7 +175,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -189,7 +188,7 @@ exports.createResources = () => [
       Port: 30010,
       HealthCheckProtocol: "HTTP",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -206,7 +205,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       loadBalancer: "load-balancer",
       targetGroup: "target-group-web",
     }),
@@ -218,7 +217,7 @@ exports.createResources = () => [
       Port: 443,
       Protocol: "HTTPS",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       loadBalancer: "load-balancer",
       targetGroup: "target-group-rest",
       certificate: "grucloud.org",
@@ -256,7 +255,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       listener: "listener::load-balancer::HTTP::80",
     }),
   },
@@ -272,7 +271,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       listener: "listener::load-balancer::HTTPS::443",
       targetGroup: "target-group-rest",
     }),
@@ -289,7 +288,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       listener: "listener::load-balancer::HTTPS::443",
       targetGroup: "target-group-web",
     }),
@@ -298,14 +297,14 @@ exports.createResources = () => [
     type: "HostedZone",
     group: "Route53",
     name: "grucloud.org.",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       domain: "grucloud.org",
     }),
   },
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       loadBalancer: "load-balancer",
     }),

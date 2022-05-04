@@ -9,14 +9,13 @@ exports.createResources = () => [
     name: "role-ec2-read-only",
     properties: ({}) => ({
       Description: "Allows EC2 instances to call AWS services on your behalf.",
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "ec2.amazonaws.com",
+              Service: `ec2.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -40,7 +39,7 @@ exports.createResources = () => [
     type: "InstanceProfile",
     group: "IAM",
     name: "role-ec2-read-only",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       roles: ["role-ec2-read-only"],
     }),
   },

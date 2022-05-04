@@ -20,7 +20,7 @@ exports.createResources = () => [
       Device: "/dev/sdf",
       DeleteOnTermination: false,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       volume: "volume-test-volume",
       instance: "server-4-test-volume",
     }),
@@ -31,7 +31,9 @@ exports.createResources = () => [
     name: "server-4-test-volume",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      ImageId: "ami-02e136e904f3da870",
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      },
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },

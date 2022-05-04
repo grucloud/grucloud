@@ -38,7 +38,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       queue: "sam-app-MyQueue-AqSTiBlPUT32",
     }),
   },
@@ -70,7 +70,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-MyStateMachineExecutionRole-QOU5CX1BS6DH",
       sqsQueues: ["sam-app-MyQueue-AqSTiBlPUT32"],
     }),

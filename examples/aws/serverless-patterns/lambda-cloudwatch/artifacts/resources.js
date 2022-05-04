@@ -62,7 +62,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-PutMetricFunctionRole-1KQOW6MUXF48I",
     }),
   },

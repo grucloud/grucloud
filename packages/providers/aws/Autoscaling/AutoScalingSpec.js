@@ -100,7 +100,6 @@ module.exports = pipe([
             assign({ Tags: pipe([get("Tags"), filterTags]) }),
           ]),
       }),
-
       filterLive: () =>
         pick([
           "MinSize",
@@ -152,8 +151,13 @@ module.exports = pipe([
         "KernelId",
         "RamdiskId",
         "CreatedTime",
+        "ImageId",
+        "SecurityGroups",
+        "IamInstanceProfile",
       ],
-      compare: compareAutoScaling({}),
+      compare: compareAutoScaling({
+        filterLive: () => pipe([omit(["Image"])]),
+      }),
       // propertiesDefault: {
       //   EbsOptimized: false,
       //   BlockDeviceMappings: [],
@@ -161,22 +165,9 @@ module.exports = pipe([
       //     Enabled: true,
       //   },
       // },
+      inferName: get("properties.LaunchConfigurationName"),
       filterLive: () =>
-        pipe([
-          pick([
-            "InstanceType",
-            "ImageId",
-            "UserData",
-            "InstanceMonitoring",
-            "KernelId",
-            "RamdiskId",
-            "BlockDeviceMappings",
-            "EbsOptimized",
-            "AssociatePublicIpAddress",
-          ]),
-          omitIfEmpty(["KernelId", "RamdiskId"]),
-          DecodeUserData,
-        ]),
+        pipe([omitIfEmpty(["KernelId", "RamdiskId"]), DecodeUserData]),
       dependencies: {
         instanceProfile: { type: "InstanceProfile", group: "IAM" },
         keyPair: { type: "KeyPair", group: "EC2" },

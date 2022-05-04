@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Account",
     group: "APIGateway",
     name: "default",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       cloudwatchRole: "roleApiGatewayCloudWatch",
     }),
   },
@@ -427,7 +427,7 @@ exports.createResources = () => [
         mykey: "myvalue3",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       restApi: "PetStore",
     }),
   },
@@ -438,7 +438,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       description: "prod",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       restApi: "PetStore",
     }),
   },

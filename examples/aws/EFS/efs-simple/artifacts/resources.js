@@ -19,7 +19,7 @@ exports.createResources = () => [
       CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "EfsLambdaVpc",
     }),
   },
@@ -31,7 +31,7 @@ exports.createResources = () => [
       CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "EfsLambdaVpc",
     }),
   },
@@ -42,7 +42,7 @@ exports.createResources = () => [
       GroupName: "sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
       Description: "EFS + Lambda on SAM Security Group",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "EfsLambdaVpc",
     }),
   },
@@ -61,7 +61,7 @@ exports.createResources = () => [
         ToPort: 65535,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
     }),
@@ -81,7 +81,7 @@ exports.createResources = () => [
         ToPort: 65535,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
     }),
@@ -115,7 +115,7 @@ exports.createResources = () => [
         Path: "/lambda",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       fileSystem: "fs-0c95a09faadb73087",
     }),
   },
@@ -125,7 +125,7 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       AvailabilityZoneName: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       fileSystem: "fs-0c95a09faadb73087",
       subnet: "EfsLambdaSubnetA",
       securityGroups: [
@@ -139,7 +139,7 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       AvailabilityZoneName: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       fileSystem: "fs-0c95a09faadb73087",
       subnet: "EfsLambdaSubnetB",
       securityGroups: [
@@ -213,7 +213,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       efsFileSystems: ["fs-0c95a09faadb73087"],
       efsAccessPoints: ["fsap-0ef29121aa02af8f7"],
     }),
@@ -242,7 +242,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-HelloEfsFunctionRole-15LXBM09R2ILE",
       subnets: ["EfsLambdaSubnetA", "EfsLambdaSubnetB"],
       securityGroups: [

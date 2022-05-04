@@ -31,7 +31,7 @@ exports.createResources = () => [
         endpoint: `https://sqs.${config.region}.amazonaws.com`,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "ToSqSApi",
       serviceRole: "CdkAppSyncSqSStack-ApisqsServiceRole50810242-HDLGB9CWGUOH",
     }),
@@ -48,7 +48,7 @@ exports.createResources = () => [
         '\n#if($ctx.result.statusCode == 200)\n    ##if response is 200\n    ## Because the response is of type XML, we are going to convert\n    ## the result body as a map and only get the User object.\n    $utils.toJson($utils.xml.toMap($ctx.result.body).SendMessageResponse.SendMessageResult)\n#else\n    ##if response is not 200, append the response to error block.\n    $utils.appendError($ctx.result.body, "$ctx.result.statusCode")\n    null\n#end\n',
       kind: "UNIT",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "ToSqSApi",
       dataSource: "sqs",
     }),
@@ -92,7 +92,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       queue: "CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6",
     }),
   },

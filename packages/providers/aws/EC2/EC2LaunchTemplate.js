@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, or, omit, pick, eq } = require("rubico");
+const { pipe, tap, get, omit, pick, assign } = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
@@ -7,6 +7,7 @@ const {
   unless,
   prepend,
   includes,
+  when,
 } = require("rubico/x");
 
 const {
@@ -15,7 +16,12 @@ const {
   findNamespaceInTagsOrEksCluster,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2, tagResource, untagResource } = require("./EC2Common");
+const {
+  createEC2,
+  tagResource,
+  untagResource,
+  imageDescriptionFromId,
+} = require("./EC2Common");
 
 const EC2Instance = require("./EC2Instance");
 
@@ -106,22 +112,34 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     key: "eks:cluster-name",
   });
 
-  const decorate = () => (launchTemplate) =>
-    pipe([
-      () => launchTemplate,
-      tap(({ LaunchTemplateId }) => {
-        assert(LaunchTemplateId);
-      }),
-      ({ LaunchTemplateId }) => ({
-        LaunchTemplateId,
-        Versions: ["$Latest"],
-      }),
-      ec2().describeLaunchTemplateVersions,
-      get("LaunchTemplateVersions"),
-      first,
-      omit(["LaunchTemplateData.TagSpecifications"]),
-      defaultsDeep(launchTemplate),
-    ])();
+  const decorate =
+    ({ endpoint }) =>
+    (launchTemplate) =>
+      pipe([
+        () => launchTemplate,
+        tap(({ LaunchTemplateId }) => {
+          assert(LaunchTemplateId);
+          assert(endpoint);
+        }),
+        ({ LaunchTemplateId }) => ({
+          LaunchTemplateId,
+          Versions: ["$Latest"],
+        }),
+        ec2().describeLaunchTemplateVersions,
+        get("LaunchTemplateVersions"),
+        first,
+        assign({
+          LaunchTemplateData: pipe([
+            get("LaunchTemplateData"),
+            when(
+              get("ImageId"),
+              assign({ Image: imageDescriptionFromId({ ec2 }) })
+            ),
+            omit(["TagSpecifications"]),
+          ]),
+        }),
+        defaultsDeep(launchTemplate),
+      ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeLaunchTemplates-property
   const getList = client.getList({
@@ -173,7 +191,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     config,
   });
 
-  const configDefault = ({
+  const configDefault = async ({
     name,
     namespace,
     properties: { Tags, ...otherProps },
@@ -191,16 +209,18 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
         ],
       }),
       defaultsDeep({
-        LaunchTemplateData: EC2Instance.configDefault({
+        LaunchTemplateData: await EC2Instance.configDefault({
           config,
           includeTags: false,
+          ec2,
         })({
           name,
           namespace,
-          properties: {},
+          properties: otherProps.LaunchTemplateData,
           dependencies,
         }),
       }),
+      omit(["LaunchTemplateData.Image"]),
       tap((params) => {
         assert(true);
       }),

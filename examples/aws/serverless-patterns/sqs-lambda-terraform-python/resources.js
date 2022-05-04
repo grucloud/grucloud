@@ -30,7 +30,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["sqs-lambda-demo-lambdapolicy"],
     }),
   },
@@ -38,7 +38,7 @@ exports.createResources = () => [
     type: "Policy",
     group: "IAM",
     name: "sqs-lambda-demo-lambdapolicy",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       PolicyDocument: {
         Statement: [
           {
@@ -48,11 +48,9 @@ exports.createResources = () => [
               "sqs:GetQueueAttributes",
             ],
             Effect: "Allow",
-            Resource: `${getId({
-              type: "Queue",
-              group: "SQS",
-              name: "sqs-lambda-demo",
-            })}`,
+            Resource: `arn:aws:sqs:${
+              config.region
+            }:${config.accountId()}:sqs-lambda-demo`,
           },
           {
             Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
@@ -69,7 +67,7 @@ exports.createResources = () => [
       Path: "/",
       Description: "Policy for sqs to lambda demo",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       queue: "sqs-lambda-demo",
       logGroups: ["/aws/lambda/sqs-lambda-demo"],
     }),
@@ -89,7 +87,7 @@ exports.createResources = () => [
         Runtime: "python3.9",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sqs_lambda_demo_functionrole",
     }),
   },
@@ -101,7 +99,7 @@ exports.createResources = () => [
       BatchSize: 10,
       MaximumBatchingWindowInSeconds: 0,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       lambdaFunction: "sqs-lambda-demo",
       sqsQueue: "sqs-lambda-demo",
     }),

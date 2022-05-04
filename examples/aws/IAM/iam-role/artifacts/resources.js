@@ -39,7 +39,7 @@ exports.createResources = () => [
     type: "InstanceProfile",
     group: "IAM",
     name: "role-ec2-read-only",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       roles: ["role-ec2-read-only"],
     }),
   },

@@ -15,7 +15,7 @@ exports.createResources = () => [
       IsOrganizationTrail: false,
       TagsList: [],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       bucket: "grucloud-s3-event-bridge-logs",
     }),
   },

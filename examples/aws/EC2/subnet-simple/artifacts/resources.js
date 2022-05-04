@@ -25,7 +25,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpb-subnet",
     }),
   },

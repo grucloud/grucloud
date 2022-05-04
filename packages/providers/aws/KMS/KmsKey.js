@@ -237,10 +237,7 @@ exports.KmsKey = ({ spec, config }) => {
 
   const isDefault = or([
     pipe([get("live.Alias", ""), callProp("startsWith", "alias/aws/")]),
-    eq(
-      get("live.Description"),
-      "Default master key that protects my EBS volumes when no other key is defined"
-    ),
+    get("live.Description", callProp("startsWith", "Default ")),
   ]);
 
   const cannotBeDeleted = or([

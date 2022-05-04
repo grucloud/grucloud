@@ -261,11 +261,7 @@ module.exports = pipe([
                     lives,
                     providerName,
                   }),
-                  switchCase([
-                    isEmpty,
-                    () => undefined,
-                    ({ name }) => `'${name}'`,
-                  ]),
+                  switchCase([isEmpty, () => undefined, ({ name }) => name]),
                 ])()
               ),
               filter(not(isEmpty)),

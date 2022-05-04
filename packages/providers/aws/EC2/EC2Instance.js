@@ -50,6 +50,8 @@ const {
   tagResource,
   untagResource,
   findDependenciesVpc,
+  fetchImageIdFromDescription,
+  imageDescriptionFromId,
 } = require("./EC2Common");
 
 const ignoreErrorCodes = ["InvalidInstanceID.NotFound"];
@@ -59,64 +61,60 @@ const StateTerminated = "terminated";
 const StateStopped = "stopped";
 
 const configDefault =
-  ({ config, includeTags = true }) =>
+  ({ config, includeTags = true, ec2 }) =>
   ({
     name,
     namespace,
-    properties: { UserData, ...otherProperties },
-    dependencies: {
-      keyPair,
-      subnet,
-      securityGroups,
-      iamInstanceProfile,
-      image,
-    },
+    properties: { Image, UserData, ...otherProperties },
+    dependencies: { keyPair, subnet, securityGroups, iamInstanceProfile },
   }) =>
     pipe([
       tap((params) => {
-        assert(true);
+        assert(ec2);
       }),
-      () => otherProperties,
-      defaultsDeep({
-        ...(UserData && {
-          UserData: Buffer.from(UserData, "utf-8").toString("base64"),
-        }),
-        ...(image && { ImageId: getField(image, "ImageId") }),
-        ...(iamInstanceProfile && {
-          IamInstanceProfile: {
-            Arn: getField(iamInstanceProfile, "Arn"),
-          },
-        }),
-        ...(includeTags && {
-          TagSpecifications: [
-            {
-              ResourceType: "instance",
-              Tags: buildTags({ config, namespace, name }),
-            },
-          ],
-        }),
-        ...(keyPair && { KeyName: keyPair.resource.name }),
-      }),
-      // Subnet
-      when(
-        () => subnet,
-        assign({
-          SubnetId: () => getField(subnet, "SubnetId"),
-        })
-      ),
-      // Security Groups
-      when(
-        () => securityGroups,
-        assign({
-          SecurityGroupIds: pipe([
+      () => Image,
+      fetchImageIdFromDescription({ ec2 }),
+      (ImageId) =>
+        pipe([
+          () => otherProperties,
+          defaultsDeep({
+            ImageId,
+            ...(UserData && {
+              UserData: Buffer.from(UserData, "utf-8").toString("base64"),
+            }),
+            ...(iamInstanceProfile && {
+              IamInstanceProfile: {
+                Arn: getField(iamInstanceProfile, "Arn"),
+              },
+            }),
+            ...(includeTags && {
+              TagSpecifications: [
+                {
+                  ResourceType: "instance",
+                  Tags: buildTags({ config, namespace, name }),
+                },
+              ],
+            }),
+            ...(keyPair && { KeyName: keyPair.resource.name }),
+          }),
+          // Subnet
+          when(
+            () => subnet,
+            assign({
+              SubnetId: () => getField(subnet, "SubnetId"),
+            })
+          ),
+          // Security Groups
+          when(
             () => securityGroups,
-            map((sg) => getField(sg, "GroupId")),
-          ]),
-        })
-      ),
-      tap((params) => {
-        assert(true);
-      }),
+            assign({
+              SecurityGroupIds: pipe([
+                () => securityGroups,
+                map((sg) => getField(sg, "GroupId")),
+              ]),
+            })
+          ),
+        ])(),
     ])();
 
 exports.configDefault = configDefault;
@@ -263,31 +261,33 @@ exports.EC2Instance = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
-  const decorate = pipe([
-    assign({
-      UserData: pipe([
-        ({ InstanceId }) =>
-          ec2().describeInstanceAttribute({
+  const decorate = ({ endpoint }) =>
+    pipe([
+      tap((params) => {
+        assert(endpoint);
+      }),
+      assign({
+        Image: imageDescriptionFromId({ ec2 }),
+        UserData: pipe([
+          ({ InstanceId }) => ({
             Attribute: "userData",
             InstanceId,
           }),
-        get("UserData.Value"),
-      ]),
-    }),
-  ]);
+          ec2().describeInstanceAttribute,
+          get("UserData.Value"),
+        ]),
+      }),
+    ]);
 
   const getList = client.getList({
     method: "describeInstances",
     getParam: "Reservations",
     transformList: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       pluck("Instances"),
       flatten,
       filter(not(isInstanceTerminated)),
     ]),
-    decorate: () => decorate,
+    decorate,
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -476,7 +476,7 @@ exports.EC2Instance = ({ spec, config }) => {
     update,
     destroy,
     getList,
-    configDefault: configDefault({ config }),
+    configDefault: configDefault({ config, ec2 }),
     managedByOther,
     tagResource: tagResource({ endpoint: ec2 }),
     untagResource: untagResource({ endpoint: ec2 }),
@@ -565,7 +565,6 @@ exports.compareEC2Instance = pipe([
           "LaunchTime",
           "InstanceId",
           "AmiLaunchIndex",
-          //"Placement",
           "IamInstanceProfile.Id",
         ]),
         omitIfEmpty(["UserData"]),

@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Account",
     group: "APIGateway",
     name: "default",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       cloudwatchRole:
         "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-1HLKDWM5HWYRZ",
     }),
@@ -134,7 +134,7 @@ exports.createResources = () => [
         stageName: "prod",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       roles: ["ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX"],
     }),
   },
@@ -142,7 +142,7 @@ exports.createResources = () => [
     type: "Stage",
     group: "APIGateway",
     name: "prod",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       restApi: "ApiDynamoRestApi",
     }),
   },
@@ -243,7 +243,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "ApiDynamoStack-ApiDynamoTable66095DD3-1B90VIOP8H5XN",
     }),
   },

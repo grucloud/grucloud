@@ -25,316 +25,304 @@
 <!-- LogGroup::::/aws/rds/cluster/sam&#45;app&#45;mysql&#45;cluster/error -->
 <g id="node1" class="node">
 <title>LogGroup::::/aws/rds/cluster/sam&#45;app&#45;mysql&#45;cluster/error</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="304,-607 24,-607 24,-549 304,-549 304,-607"/>
-<text text-anchor="start" x="36" y="-587.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
-<text text-anchor="start" x="36" y="-562.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">/aws/rds/cluster/sam&#45;app&#45;mysql&#45;c...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="304,-603 24,-603 24,-545 304,-545 304,-603"/>
+<text text-anchor="start" x="36" y="-583.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
+<text text-anchor="start" x="36" y="-558.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">/aws/rds/cluster/sam&#45;app&#45;mysql&#45;c...</text>
 </g>
 <!-- LogGroup::::/aws/rds/proxy/rds&#45;proxy -->
 <g id="node2" class="node">
 <title>LogGroup::::/aws/rds/proxy/rds&#45;proxy</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="285.5,-531 42.5,-531 42.5,-473 285.5,-473 285.5,-531"/>
-<text text-anchor="start" x="55" y="-511.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
-<text text-anchor="start" x="55" y="-486.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">/aws/rds/proxy/rds&#45;proxy</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="285.5,-520 42.5,-520 42.5,-462 285.5,-462 285.5,-520"/>
+<text text-anchor="start" x="55" y="-500.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
+<text text-anchor="start" x="55" y="-475.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">/aws/rds/proxy/rds&#45;proxy</text>
 </g>
 <!-- LogGroup::::RDSOSMetrics -->
 <g id="node3" class="node">
 <title>LogGroup::::RDSOSMetrics</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="285.5,-455 42.5,-455 42.5,-397 285.5,-397 285.5,-455"/>
-<text text-anchor="start" x="55" y="-435.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
-<text text-anchor="start" x="55" y="-410.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">RDSOSMetrics</text>
-</g>
-<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1 -->
-<g id="node4" class="node">
-<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1224,-459 1063,-459 1063,-401 1224,-401 1224,-459"/>
-<text text-anchor="start" x="1075.5" y="-439.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="1075.5" y="-414.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;prv&#45;sub&#45;1</text>
-</g>
-<!-- Vpc::::sam&#45;app&#45;vpc -->
-<g id="node7" class="node">
-<title>Vpc::::sam&#45;app&#45;vpc</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1412,-383 1294,-383 1294,-325 1412,-325 1412,-383"/>
-<text text-anchor="start" x="1306" y="-363.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
-<text text-anchor="start" x="1306" y="-338.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;vpc</text>
-</g>
-<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1&#45;&gt;Vpc::::sam&#45;app&#45;vpc -->
-<g id="edge10" class="edge">
-<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1&#45;&gt;Vpc::::sam&#45;app&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M1224.09,-404.04C1235.51,-400.11 1247.08,-396.03 1258,-392 1266.55,-388.84 1275.49,-385.41 1284.3,-381.94"/>
-<polygon fill="#707070" stroke="#707070" points="1285.79,-385.11 1293.8,-378.17 1283.21,-378.61 1285.79,-385.11"/>
-</g>
-<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2 -->
-<g id="node5" class="node">
-<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1224,-535 1063,-535 1063,-477 1224,-477 1224,-535"/>
-<text text-anchor="start" x="1075.5" y="-515.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="1075.5" y="-490.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;prv&#45;sub&#45;2</text>
-</g>
-<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2&#45;&gt;Vpc::::sam&#45;app&#45;vpc -->
-<g id="edge11" class="edge">
-<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2&#45;&gt;Vpc::::sam&#45;app&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M1224.15,-485.7C1236.03,-480.9 1247.73,-475.06 1258,-468 1287.12,-447.98 1312.12,-416.5 1329,-391.68"/>
-<polygon fill="#707070" stroke="#707070" points="1332.01,-393.48 1334.63,-383.21 1326.18,-389.61 1332.01,-393.48"/>
-</g>
-<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3 -->
-<g id="node6" class="node">
-<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1224,-383 1063,-383 1063,-325 1224,-325 1224,-383"/>
-<text text-anchor="start" x="1075.5" y="-363.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="1075.5" y="-338.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;prv&#45;sub&#45;3</text>
-</g>
-<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3&#45;&gt;Vpc::::sam&#45;app&#45;vpc -->
-<g id="edge12" class="edge">
-<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3&#45;&gt;Vpc::::sam&#45;app&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M1224.13,-354C1243.8,-354 1264.69,-354 1283.76,-354"/>
-<polygon fill="#707070" stroke="#707070" points="1283.85,-357.5 1293.85,-354 1283.85,-350.5 1283.85,-357.5"/>
-</g>
-<!-- Role::::sam&#45;app&#45;dbProxyRole&#45;1BMIN3H39UUK3 -->
-<g id="node8" class="node">
-<title>Role::::sam&#45;app&#45;dbProxyRole&#45;1BMIN3H39UUK3</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="993,-547 669,-547 669,-489 993,-489 993,-547"/>
-<text text-anchor="start" x="681" y="-527.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
-<text text-anchor="start" x="681" y="-502.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;dbProxyRole&#45;1BMIN3H39UUK...</text>
-</g>
-<!-- Role::::sam&#45;app&#45;monitor&#45;us&#45;east&#45;1 -->
-<g id="node9" class="node">
-<title>Role::::sam&#45;app&#45;monitor&#45;us&#45;east&#45;1</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="596.5,-607 376.5,-607 376.5,-549 596.5,-549 596.5,-607"/>
-<text text-anchor="start" x="388.5" y="-587.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
-<text text-anchor="start" x="388.5" y="-562.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;monitor&#45;us&#45;east&#45;1</text>
-</g>
-<!-- DBCluster::::sam&#45;app&#45;mysql&#45;cluster -->
-<g id="node10" class="node">
-<title>DBCluster::::sam&#45;app&#45;mysql&#45;cluster</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="581,-423 392,-423 392,-365 581,-365 581,-423"/>
-<text text-anchor="start" x="404.5" y="-403.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RDS::DBCluster</text>
-<text text-anchor="start" x="404.5" y="-378.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;mysql&#45;cluster</text>
-</g>
-<!-- DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group -->
-<g id="node13" class="node">
-<title>DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="936.5,-395 725.5,-395 725.5,-337 936.5,-337 936.5,-395"/>
-<text text-anchor="start" x="738" y="-375.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RDS::DBSubnetGroup</text>
-<text text-anchor="start" x="738" y="-350.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;db&#45;subnet&#45;group</text>
-</g>
-<!-- DBCluster::::sam&#45;app&#45;mysql&#45;cluster&#45;&gt;DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group -->
-<g id="edge14" class="edge">
-<title>DBCluster::::sam&#45;app&#45;mysql&#45;cluster&#45;&gt;DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group</title>
-<path fill="none" stroke="#707070" d="M581.09,-386.35C622.53,-382.96 671.66,-378.94 715.28,-375.38"/>
-<polygon fill="#707070" stroke="#707070" points="715.68,-378.86 725.36,-374.55 715.11,-371.88 715.68,-378.86"/>
-</g>
-<!-- Secret::::sam&#45;app&#45;cluster&#45;secret -->
-<g id="node14" class="node">
-<title>Secret::::sam&#45;app&#45;cluster&#45;secret</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="935,-471 727,-471 727,-413 935,-413 935,-471"/>
-<text text-anchor="start" x="739" y="-451.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SecretsManager::Secret</text>
-<text text-anchor="start" x="739" y="-426.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;cluster&#45;secret</text>
-</g>
-<!-- DBCluster::::sam&#45;app&#45;mysql&#45;cluster&#45;&gt;Secret::::sam&#45;app&#45;cluster&#45;secret -->
-<g id="edge13" class="edge">
-<title>DBCluster::::sam&#45;app&#45;mysql&#45;cluster&#45;&gt;Secret::::sam&#45;app&#45;cluster&#45;secret</title>
-<path fill="none" stroke="#707070" d="M581.09,-407.12C622.98,-412.99 672.75,-419.96 716.73,-426.12"/>
-<polygon fill="#707070" stroke="#707070" points="716.5,-429.63 726.89,-427.55 717.47,-422.7 716.5,-429.63"/>
-</g>
-<!-- SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg -->
-<g id="node16" class="node">
-<title>SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="977.5,-301 684.5,-301 684.5,-243 977.5,-243 977.5,-301"/>
-<text text-anchor="start" x="697" y="-281.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
-<text text-anchor="start" x="697" y="-256.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::sam&#45;app&#45;databas...</text>
-</g>
-<!-- DBCluster::::sam&#45;app&#45;mysql&#45;cluster&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg -->
-<g id="edge15" class="edge">
-<title>DBCluster::::sam&#45;app&#45;mysql&#45;cluster&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg</title>
-<path fill="none" stroke="#707070" d="M566.93,-364.84C598.64,-353.27 635.51,-339.91 669,-328 690.62,-320.31 713.91,-312.14 735.87,-304.49"/>
-<polygon fill="#707070" stroke="#707070" points="737.23,-307.72 745.53,-301.13 734.93,-301.11 737.23,-307.72"/>
-</g>
-<!-- DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1 -->
-<g id="node11" class="node">
-<title>DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="259.5,-379 68.5,-379 68.5,-321 259.5,-321 259.5,-379"/>
-<text text-anchor="start" x="81" y="-359.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RDS::DBInstance</text>
-<text text-anchor="start" x="81" y="-334.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;mysql&#45;node&#45;1</text>
-</g>
-<!-- DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;Role::::sam&#45;app&#45;monitor&#45;us&#45;east&#45;1 -->
-<g id="edge20" class="edge">
-<title>DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;Role::::sam&#45;app&#45;monitor&#45;us&#45;east&#45;1</title>
-<path fill="none" stroke="#707070" d="M259.59,-361.21C276.15,-366.98 291.92,-375.5 304,-388 352.24,-437.93 291.47,-490.35 340,-540 347.75,-547.93 356.94,-554.28 366.88,-559.35"/>
-<polygon fill="#707070" stroke="#707070" points="365.64,-562.63 376.19,-563.65 368.58,-556.28 365.64,-562.63"/>
-</g>
-<!-- DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;DBCluster::::sam&#45;app&#45;mysql&#45;cluster -->
-<g id="edge17" class="edge">
-<title>DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;DBCluster::::sam&#45;app&#45;mysql&#45;cluster</title>
-<path fill="none" stroke="#707070" d="M259.86,-363.02C298.24,-368.29 342.65,-374.39 381.87,-379.77"/>
-<polygon fill="#707070" stroke="#707070" points="381.61,-383.27 391.99,-381.16 382.56,-376.33 381.61,-383.27"/>
-</g>
-<!-- DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group -->
-<g id="edge18" class="edge">
-<title>DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group</title>
-<path fill="none" stroke="#707070" d="M259.59,-350.16C354.14,-350.57 503.66,-351.89 633,-356 659.63,-356.85 688.28,-358.1 715.24,-359.44"/>
-<polygon fill="#707070" stroke="#707070" points="715.33,-362.95 725.49,-359.96 715.68,-355.96 715.33,-362.95"/>
-</g>
-<!-- DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;Secret::::sam&#45;app&#45;cluster&#45;secret -->
-<g id="edge16" class="edge">
-<title>DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;Secret::::sam&#45;app&#45;cluster&#45;secret</title>
-<path fill="none" stroke="#707070" d="M259.62,-367.35C275.17,-372.54 290.57,-379.28 304,-388 325.19,-401.76 317.28,-420.95 340,-432 403.86,-463.07 592.79,-457.87 716.52,-450.49"/>
-<polygon fill="#707070" stroke="#707070" points="717.03,-453.97 726.8,-449.87 716.6,-446.98 717.03,-453.97"/>
-</g>
-<!-- DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg -->
-<g id="edge19" class="edge">
-<title>DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg</title>
-<path fill="none" stroke="#707070" d="M259.57,-347.21C354.41,-343.46 504.45,-334.92 633,-316 655.9,-312.63 680.11,-308.07 703.41,-303.15"/>
-<polygon fill="#707070" stroke="#707070" points="704.29,-306.55 713.34,-301.03 702.83,-299.7 704.29,-306.55"/>
-</g>
-<!-- DBProxy::::rds&#45;proxy -->
-<g id="node12" class="node">
-<title>DBProxy::::rds&#45;proxy</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="554,-531 419,-531 419,-473 554,-473 554,-531"/>
-<text text-anchor="start" x="431.5" y="-511.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RDS::DBProxy</text>
-<text text-anchor="start" x="431.5" y="-486.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rds&#45;proxy</text>
-</g>
-<!-- DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1 -->
-<g id="edge24" class="edge">
-<title>DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1</title>
-<path fill="none" stroke="#707070" d="M554.31,-512.77C579.89,-518.58 608.73,-527.26 633,-540 651.7,-549.81 649.21,-563.65 669,-571 702.75,-583.53 963.64,-591.84 993,-571 1032.54,-542.93 994.48,-502.06 1029,-468 1036.15,-460.94 1044.66,-455.19 1053.75,-450.51"/>
-<polygon fill="#707070" stroke="#707070" points="1055.43,-453.59 1063,-446.17 1052.46,-447.25 1055.43,-453.59"/>
-</g>
-<!-- DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2 -->
-<g id="edge22" class="edge">
-<title>DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2</title>
-<path fill="none" stroke="#707070" d="M554.29,-509.39C580.58,-514.76 609.93,-524.02 633,-540 655.81,-555.8 644.37,-578.24 669,-591 796.86,-657.25 853.78,-627.81 993,-591 1030.15,-581.18 1067.72,-559.75 1095.91,-540.87"/>
-<polygon fill="#707070" stroke="#707070" points="1098.07,-543.64 1104.35,-535.11 1094.12,-537.86 1098.07,-543.64"/>
-</g>
-<!-- DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3 -->
-<g id="edge23" class="edge">
-<title>DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3</title>
-<path fill="none" stroke="#707070" d="M554.1,-516.97C579.11,-523.22 607.62,-531.11 633,-540 649.53,-545.79 651.87,-552.37 669,-556 704.22,-563.47 964.95,-578.56 993,-556 1051.15,-509.23 979.13,-447.51 1029,-392 1035.95,-384.27 1044.51,-378.11 1053.79,-373.2"/>
-<polygon fill="#707070" stroke="#707070" points="1055.37,-376.33 1062.89,-368.87 1052.36,-370.01 1055.37,-376.33"/>
-</g>
-<!-- DBProxy::::rds&#45;proxy&#45;&gt;Role::::sam&#45;app&#45;dbProxyRole&#45;1BMIN3H39UUK3 -->
-<g id="edge26" class="edge">
-<title>DBProxy::::rds&#45;proxy&#45;&gt;Role::::sam&#45;app&#45;dbProxyRole&#45;1BMIN3H39UUK3</title>
-<path fill="none" stroke="#707070" d="M554.35,-505.12C584.42,-506.53 621.44,-508.26 658.48,-509.99"/>
-<polygon fill="#707070" stroke="#707070" points="658.77,-513.5 668.92,-510.48 659.09,-506.51 658.77,-513.5"/>
-</g>
-<!-- DBProxy::::rds&#45;proxy&#45;&gt;Secret::::sam&#45;app&#45;cluster&#45;secret -->
-<g id="edge21" class="edge">
-<title>DBProxy::::rds&#45;proxy&#45;&gt;Secret::::sam&#45;app&#45;cluster&#45;secret</title>
-<path fill="none" stroke="#707070" d="M554.35,-490.29C600.53,-482.2 663.1,-471.24 716.95,-461.8"/>
-<polygon fill="#707070" stroke="#707070" points="717.65,-465.23 726.9,-460.06 716.44,-458.34 717.65,-465.23"/>
-</g>
-<!-- DBProxy::::rds&#45;proxy&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg -->
-<g id="edge25" class="edge">
-<title>DBProxy::::rds&#45;proxy&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg</title>
-<path fill="none" stroke="#707070" d="M554.37,-482.58C581.93,-471.62 612.21,-455.34 633,-432 665.54,-395.48 634.44,-362.61 669,-328 677.58,-319.41 687.54,-312.14 698.22,-305.98"/>
-<polygon fill="#707070" stroke="#707070" points="700.2,-308.88 707.35,-301.06 696.88,-302.72 700.2,-308.88"/>
-</g>
-<!-- DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1 -->
-<g id="edge27" class="edge">
-<title>DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1</title>
-<path fill="none" stroke="#707070" d="M936.69,-387.58C974.35,-395.34 1016.46,-404.02 1052.73,-411.5"/>
-<polygon fill="#707070" stroke="#707070" points="1052.3,-414.98 1062.8,-413.57 1053.71,-408.13 1052.3,-414.98"/>
-</g>
-<!-- DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2 -->
-<g id="edge29" class="edge">
-<title>DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2</title>
-<path fill="none" stroke="#707070" d="M936.77,-377.52C956.79,-383.24 976.59,-391.65 993,-404 1019.08,-423.62 1003.85,-447.21 1029,-468 1036.37,-474.09 1044.76,-479.22 1053.56,-483.54"/>
-<polygon fill="#707070" stroke="#707070" points="1052.3,-486.81 1062.86,-487.75 1055.19,-480.43 1052.3,-486.81"/>
-</g>
-<!-- DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3 -->
-<g id="edge28" class="edge">
-<title>DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3</title>
-<path fill="none" stroke="#707070" d="M936.69,-361.95C974.35,-360.5 1016.46,-358.87 1052.73,-357.47"/>
-<polygon fill="#707070" stroke="#707070" points="1052.94,-360.96 1062.8,-357.08 1052.67,-353.97 1052.94,-360.96"/>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="285.5,-430 42.5,-430 42.5,-372 285.5,-372 285.5,-430"/>
+<text text-anchor="start" x="55" y="-410.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
+<text text-anchor="start" x="55" y="-385.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">RDSOSMetrics</text>
 </g>
 <!-- SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg -->
-<g id="node15" class="node">
+<g id="node4" class="node">
 <title>SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1258,-253 1029,-253 1029,-195 1258,-195 1258,-253"/>
-<text text-anchor="start" x="1041.5" y="-233.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
-<text text-anchor="start" x="1041.5" y="-208.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::lambda&#45;sg</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1258,-511 1029,-511 1029,-453 1258,-453 1258,-511"/>
+<text text-anchor="start" x="1041.5" y="-491.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
+<text text-anchor="start" x="1041.5" y="-466.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::lambda&#45;sg</text>
+</g>
+<!-- Vpc::::sam&#45;app&#45;vpc -->
+<g id="node13" class="node">
+<title>Vpc::::sam&#45;app&#45;vpc</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1412,-354 1294,-354 1294,-296 1412,-296 1412,-354"/>
+<text text-anchor="start" x="1306" y="-334.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
+<text text-anchor="start" x="1306" y="-309.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;vpc</text>
 </g>
 <!-- SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;&gt;Vpc::::sam&#45;app&#45;vpc -->
 <g id="edge1" class="edge">
 <title>SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;&gt;Vpc::::sam&#45;app&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M1212.22,-253.01C1227.64,-260.48 1243.69,-268.99 1258,-278 1276.77,-289.82 1296.07,-304.84 1312.25,-318.39"/>
-<polygon fill="#707070" stroke="#707070" points="1310.05,-321.11 1319.93,-324.91 1314.57,-315.77 1310.05,-321.11"/>
+<path fill="none" stroke="#707070" d="M1183.04,-452.84C1217.69,-426.62 1268.66,-388.06 1305.55,-360.15"/>
+<polygon fill="#707070" stroke="#707070" points="1307.8,-362.83 1313.66,-354.01 1303.58,-357.25 1307.8,-362.83"/>
 </g>
-<!-- SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;&gt;Vpc::::sam&#45;app&#45;vpc -->
-<g id="edge2" class="edge">
-<title>SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;&gt;Vpc::::sam&#45;app&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M977.69,-276.91C1060.8,-282.22 1166.36,-293.23 1258,-316 1266.72,-318.17 1275.7,-320.98 1284.49,-324.1"/>
-<polygon fill="#707070" stroke="#707070" points="1283.33,-327.4 1293.93,-327.58 1285.76,-320.83 1283.33,-327.4"/>
+<!-- SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg -->
+<g id="node5" class="node">
+<title>SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="977.5,-417 684.5,-417 684.5,-359 977.5,-359 977.5,-417"/>
+<text text-anchor="start" x="697" y="-397.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
+<text text-anchor="start" x="697" y="-372.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::sam&#45;app&#45;databas...</text>
 </g>
 <!-- SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg -->
 <g id="edge4" class="edge">
 <title>SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg</title>
-<path fill="none" stroke="#707070" d="M977.7,-249.48C991.39,-247.36 1005.18,-245.23 1018.63,-243.15"/>
-<polygon fill="#707070" stroke="#707070" points="1019.5,-246.56 1028.85,-241.57 1018.43,-239.64 1019.5,-246.56"/>
+<path fill="none" stroke="#707070" d="M928.12,-417.1C962.55,-427.52 1001.54,-439.33 1036.75,-449.98"/>
+<polygon fill="#707070" stroke="#707070" points="1035.98,-453.41 1046.57,-452.96 1038.01,-446.71 1035.98,-453.41"/>
 </g>
 <!-- SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg -->
 <g id="edge3" class="edge">
 <title>SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg</title>
-<path fill="none" stroke="#707070" d="M772.5,-301.38C772.5,-311.17 792,-319 831,-319 857.81,-319 875.41,-315.3 883.79,-309.8"/>
-<polygon fill="#707070" stroke="#707070" points="886.79,-311.62 889.5,-301.38 880.99,-307.69 886.79,-311.62"/>
+<path fill="none" stroke="#707070" d="M772.5,-417.38C772.5,-427.17 792,-435 831,-435 857.81,-435 875.41,-431.3 883.79,-425.8"/>
+<polygon fill="#707070" stroke="#707070" points="886.79,-427.62 889.5,-417.38 880.99,-423.69 886.79,-427.62"/>
+</g>
+<!-- SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;&gt;Vpc::::sam&#45;app&#45;vpc -->
+<g id="edge2" class="edge">
+<title>SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;&gt;Vpc::::sam&#45;app&#45;vpc</title>
+<path fill="none" stroke="#707070" d="M977.57,-391.09C1060.65,-389.98 1166.21,-383.66 1258,-363 1266.61,-361.06 1275.45,-358.43 1284.11,-355.44"/>
+<polygon fill="#707070" stroke="#707070" points="1285.56,-358.63 1293.77,-351.94 1283.18,-352.05 1285.56,-358.63"/>
 </g>
 <!-- SecurityGroupRuleEgress::::sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;egress&#45;tcp&#45;0&#45;65535 -->
-<g id="node17" class="node">
+<g id="node6" class="node">
 <title>SecurityGroupRuleEgress::::sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;egress&#45;tcp&#45;0&#45;65535</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="971,-205 691,-205 691,-147 971,-147 971,-205"/>
-<text text-anchor="start" x="703" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleEgress</text>
-<text text-anchor="start" x="703" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="971,-511 691,-511 691,-453 971,-453 971,-511"/>
+<text text-anchor="start" x="703" y="-491.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleEgress</text>
+<text text-anchor="start" x="703" y="-466.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;...</text>
 </g>
 <!-- SecurityGroupRuleEgress::::sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;egress&#45;tcp&#45;0&#45;65535&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg -->
 <g id="edge5" class="edge">
 <title>SecurityGroupRuleEgress::::sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;egress&#45;tcp&#45;0&#45;65535&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg</title>
-<path fill="none" stroke="#707070" d="M971.36,-197.54C987.09,-199.98 1003.05,-202.44 1018.57,-204.84"/>
-<polygon fill="#707070" stroke="#707070" points="1018.29,-208.34 1028.7,-206.41 1019.36,-201.42 1018.29,-208.34"/>
+<path fill="none" stroke="#707070" d="M971.36,-482C987.09,-482 1003.05,-482 1018.57,-482"/>
+<polygon fill="#707070" stroke="#707070" points="1018.7,-485.5 1028.7,-482 1018.7,-478.5 1018.7,-485.5"/>
 </g>
 <!-- SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;ingress&#45;tcp&#45;0&#45;65535 -->
-<g id="node18" class="node">
+<g id="node7" class="node">
 <title>SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;ingress&#45;tcp&#45;0&#45;65535</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="971,-129 691,-129 691,-71 971,-71 971,-129"/>
-<text text-anchor="start" x="703" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
-<text text-anchor="start" x="703" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="971,-607 691,-607 691,-549 971,-549 971,-607"/>
+<text text-anchor="start" x="703" y="-587.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
+<text text-anchor="start" x="703" y="-562.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;...</text>
 </g>
 <!-- SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;ingress&#45;tcp&#45;0&#45;65535&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg -->
 <g id="edge6" class="edge">
 <title>SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::lambda&#45;sg&#45;rule&#45;ingress&#45;tcp&#45;0&#45;65535&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg</title>
-<path fill="none" stroke="#707070" d="M967.73,-129.01C976.37,-131.78 984.86,-134.78 993,-138 1027.17,-151.52 1062.93,-171.84 1090.91,-189.34"/>
-<polygon fill="#707070" stroke="#707070" points="1089.39,-192.52 1099.71,-194.91 1093.13,-186.6 1089.39,-192.52"/>
+<path fill="none" stroke="#707070" d="M945.36,-548.94C961.41,-544.47 977.66,-539.76 993,-535 1013.09,-528.77 1034.51,-521.53 1054.67,-514.45"/>
+<polygon fill="#707070" stroke="#707070" points="1055.88,-517.74 1064.14,-511.1 1053.55,-511.14 1055.88,-517.74"/>
 </g>
 <!-- SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;rule&#45;ingress&#45;all -->
-<g id="node19" class="node">
+<g id="node8" class="node">
 <title>SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;rule&#45;ingress&#45;all</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="633,-307 340,-307 340,-249 633,-249 633,-307"/>
-<text text-anchor="start" x="352.5" y="-287.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
-<text text-anchor="start" x="352.5" y="-262.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::sam&#45;app&#45;databas...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="633,-473 340,-473 340,-415 633,-415 633,-473"/>
+<text text-anchor="start" x="352.5" y="-453.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
+<text text-anchor="start" x="352.5" y="-428.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::sam&#45;app&#45;databas...</text>
 </g>
 <!-- SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;rule&#45;ingress&#45;all&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg -->
 <g id="edge7" class="edge">
 <title>SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;rule&#45;ingress&#45;all&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg</title>
-<path fill="none" stroke="#707070" d="M633.25,-275.45C646.74,-275.21 660.45,-274.97 674.03,-274.73"/>
-<polygon fill="#707070" stroke="#707070" points="674.45,-278.23 684.38,-274.55 674.32,-271.23 674.45,-278.23"/>
+<path fill="none" stroke="#707070" d="M633.25,-420.17C646.87,-417.94 660.72,-415.68 674.43,-413.44"/>
+<polygon fill="#707070" stroke="#707070" points="675.08,-416.88 684.38,-411.81 673.95,-409.97 675.08,-416.88"/>
 </g>
 <!-- SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;rule&#45;ingress&#45;tcp&#45;3306 -->
-<g id="node20" class="node">
+<g id="node9" class="node">
 <title>SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;rule&#45;ingress&#45;tcp&#45;3306</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="633,-231 340,-231 340,-173 633,-173 633,-231"/>
-<text text-anchor="start" x="352.5" y="-211.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
-<text text-anchor="start" x="352.5" y="-186.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::sam&#45;app&#45;databas...</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="633,-569 340,-569 340,-511 633,-511 633,-569"/>
+<text text-anchor="start" x="352.5" y="-549.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
+<text text-anchor="start" x="352.5" y="-524.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::sam&#45;app&#45;vpc::sam&#45;app&#45;databas...</text>
 </g>
 <!-- SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;rule&#45;ingress&#45;tcp&#45;3306&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg -->
 <g id="edge9" class="edge">
 <title>SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;rule&#45;ingress&#45;tcp&#45;3306&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::lambda&#45;sg</title>
-<path fill="none" stroke="#707070" d="M633.09,-212.2C645.24,-212.88 657.33,-213.49 669,-214 787.49,-219.17 922.78,-221.68 1018.32,-222.9"/>
-<polygon fill="#707070" stroke="#707070" points="1018.56,-226.4 1028.6,-223.03 1018.65,-219.4 1018.56,-226.4"/>
+<path fill="none" stroke="#707070" d="M633.03,-537.62C757.29,-534.97 926.18,-529.7 993,-520 1005.13,-518.24 1017.7,-515.89 1030.17,-513.23"/>
+<polygon fill="#707070" stroke="#707070" points="1031.12,-516.6 1040.13,-511.03 1029.61,-509.77 1031.12,-516.6"/>
 </g>
 <!-- SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;rule&#45;ingress&#45;tcp&#45;3306&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg -->
 <g id="edge8" class="edge">
 <title>SecurityGroupRuleIngress::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg&#45;rule&#45;ingress&#45;tcp&#45;3306&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg</title>
-<path fill="none" stroke="#707070" d="M629.78,-231.08C645.68,-234.33 661.93,-237.65 677.95,-240.92"/>
-<polygon fill="#707070" stroke="#707070" points="677.39,-244.38 687.89,-242.96 678.8,-237.52 677.39,-244.38"/>
+<path fill="none" stroke="#707070" d="M609.67,-510.99C617.89,-506.92 625.77,-502.28 633,-497 656,-480.21 646.41,-461.33 669,-444 680.54,-435.14 693.59,-427.63 707.13,-421.26"/>
+<polygon fill="#707070" stroke="#707070" points="708.88,-424.31 716.58,-417.03 706.02,-417.92 708.88,-424.31"/>
+</g>
+<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1 -->
+<g id="node10" class="node">
+<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1224,-202 1063,-202 1063,-144 1224,-144 1224,-202"/>
+<text text-anchor="start" x="1075.5" y="-182.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="1075.5" y="-157.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;prv&#45;sub&#45;1</text>
+</g>
+<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1&#45;&gt;Vpc::::sam&#45;app&#45;vpc -->
+<g id="edge10" class="edge">
+<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1&#45;&gt;Vpc::::sam&#45;app&#45;vpc</title>
+<path fill="none" stroke="#707070" d="M1224.15,-193.3C1236.03,-198.1 1247.73,-203.94 1258,-211 1287.12,-231.02 1312.12,-262.5 1329,-287.32"/>
+<polygon fill="#707070" stroke="#707070" points="1326.18,-289.39 1334.63,-295.79 1332.01,-285.52 1326.18,-289.39"/>
+</g>
+<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2 -->
+<g id="node11" class="node">
+<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1224,-278 1063,-278 1063,-220 1224,-220 1224,-278"/>
+<text text-anchor="start" x="1075.5" y="-258.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="1075.5" y="-233.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;prv&#45;sub&#45;2</text>
+</g>
+<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2&#45;&gt;Vpc::::sam&#45;app&#45;vpc -->
+<g id="edge11" class="edge">
+<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2&#45;&gt;Vpc::::sam&#45;app&#45;vpc</title>
+<path fill="none" stroke="#707070" d="M1224.09,-274.96C1235.51,-278.89 1247.08,-282.97 1258,-287 1266.55,-290.16 1275.49,-293.59 1284.3,-297.06"/>
+<polygon fill="#707070" stroke="#707070" points="1283.21,-300.39 1293.8,-300.83 1285.79,-293.89 1283.21,-300.39"/>
+</g>
+<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3 -->
+<g id="node12" class="node">
+<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1224,-354 1063,-354 1063,-296 1224,-296 1224,-354"/>
+<text text-anchor="start" x="1075.5" y="-334.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="1075.5" y="-309.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;prv&#45;sub&#45;3</text>
+</g>
+<!-- Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3&#45;&gt;Vpc::::sam&#45;app&#45;vpc -->
+<g id="edge12" class="edge">
+<title>Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3&#45;&gt;Vpc::::sam&#45;app&#45;vpc</title>
+<path fill="none" stroke="#707070" d="M1224.13,-325C1243.8,-325 1264.69,-325 1283.76,-325"/>
+<polygon fill="#707070" stroke="#707070" points="1283.85,-328.5 1293.85,-325 1283.85,-321.5 1283.85,-328.5"/>
+</g>
+<!-- Role::::sam&#45;app&#45;dbProxyRole&#45;1BMIN3H39UUK3 -->
+<g id="node14" class="node">
+<title>Role::::sam&#45;app&#45;dbProxyRole&#45;1BMIN3H39UUK3</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="993,-225 669,-225 669,-167 993,-167 993,-225"/>
+<text text-anchor="start" x="681" y="-205.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
+<text text-anchor="start" x="681" y="-180.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;dbProxyRole&#45;1BMIN3H39UUK...</text>
+</g>
+<!-- Role::::sam&#45;app&#45;monitor&#45;us&#45;east&#45;1 -->
+<g id="node15" class="node">
+<title>Role::::sam&#45;app&#45;monitor&#45;us&#45;east&#45;1</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="596.5,-397 376.5,-397 376.5,-339 596.5,-339 596.5,-397"/>
+<text text-anchor="start" x="388.5" y="-377.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
+<text text-anchor="start" x="388.5" y="-352.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;monitor&#45;us&#45;east&#45;1</text>
+</g>
+<!-- DBCluster::::sam&#45;app&#45;mysql&#45;cluster -->
+<g id="node16" class="node">
+<title>DBCluster::::sam&#45;app&#45;mysql&#45;cluster</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="581,-321 392,-321 392,-263 581,-263 581,-321"/>
+<text text-anchor="start" x="404.5" y="-301.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RDS::DBCluster</text>
+<text text-anchor="start" x="404.5" y="-276.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;mysql&#45;cluster</text>
+</g>
+<!-- DBCluster::::sam&#45;app&#45;mysql&#45;cluster&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg -->
+<g id="edge14" class="edge">
+<title>DBCluster::::sam&#45;app&#45;mysql&#45;cluster&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg</title>
+<path fill="none" stroke="#707070" d="M581.38,-312.8C598.8,-317.7 616.64,-323.44 633,-330 649.99,-336.81 651.93,-343.39 669,-350 674.19,-352.01 679.51,-353.93 684.93,-355.77"/>
+<polygon fill="#707070" stroke="#707070" points="684.16,-359.2 694.75,-358.99 686.34,-352.55 684.16,-359.2"/>
+</g>
+<!-- DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group -->
+<g id="node19" class="node">
+<title>DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="936.5,-341 725.5,-341 725.5,-283 936.5,-283 936.5,-341"/>
+<text text-anchor="start" x="738" y="-321.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RDS::DBSubnetGroup</text>
+<text text-anchor="start" x="738" y="-296.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;db&#45;subnet&#45;group</text>
+</g>
+<!-- DBCluster::::sam&#45;app&#45;mysql&#45;cluster&#45;&gt;DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group -->
+<g id="edge13" class="edge">
+<title>DBCluster::::sam&#45;app&#45;mysql&#45;cluster&#45;&gt;DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group</title>
+<path fill="none" stroke="#707070" d="M581.09,-297.47C622.53,-299.88 671.66,-302.75 715.28,-305.3"/>
+<polygon fill="#707070" stroke="#707070" points="715.18,-308.8 725.36,-305.89 715.58,-301.81 715.18,-308.8"/>
+</g>
+<!-- DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1 -->
+<g id="node17" class="node">
+<title>DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="259.5,-325 68.5,-325 68.5,-267 259.5,-267 259.5,-325"/>
+<text text-anchor="start" x="81" y="-305.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RDS::DBInstance</text>
+<text text-anchor="start" x="81" y="-280.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;mysql&#45;node&#45;1</text>
+</g>
+<!-- DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg -->
+<g id="edge17" class="edge">
+<title>DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg</title>
+<path fill="none" stroke="#707070" d="M253.45,-325.1C272.21,-334.7 290.42,-347.12 304,-363 339.92,-404.99 295.63,-449.07 340,-482 366.14,-501.4 603.09,-494.86 633,-482 654.37,-472.81 649.46,-456.62 669,-444 682.69,-435.16 697.94,-427.53 713.45,-421"/>
+<polygon fill="#707070" stroke="#707070" points="715.17,-424.07 723.12,-417.07 712.54,-417.59 715.17,-424.07"/>
+</g>
+<!-- DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;Role::::sam&#45;app&#45;monitor&#45;us&#45;east&#45;1 -->
+<g id="edge18" class="edge">
+<title>DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;Role::::sam&#45;app&#45;monitor&#45;us&#45;east&#45;1</title>
+<path fill="none" stroke="#707070" d="M259.86,-317.31C293.27,-324.81 331.25,-333.35 366.4,-341.24"/>
+<polygon fill="#707070" stroke="#707070" points="365.71,-344.68 376.23,-343.45 367.24,-337.85 365.71,-344.68"/>
+</g>
+<!-- DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;DBCluster::::sam&#45;app&#45;mysql&#45;cluster -->
+<g id="edge15" class="edge">
+<title>DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;DBCluster::::sam&#45;app&#45;mysql&#45;cluster</title>
+<path fill="none" stroke="#707070" d="M259.86,-294.82C298.24,-294.34 342.65,-293.78 381.87,-293.29"/>
+<polygon fill="#707070" stroke="#707070" points="382.03,-296.79 391.99,-293.17 381.95,-289.79 382.03,-296.79"/>
+</g>
+<!-- DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group -->
+<g id="edge16" class="edge">
+<title>DBInstance::::sam&#45;app&#45;mysql&#45;node&#45;1&#45;&gt;DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group</title>
+<path fill="none" stroke="#707070" d="M259.63,-268.99C285.47,-262.8 313.63,-257.12 340,-254 469.32,-238.7 505.31,-228.46 633,-254 650,-257.4 652.59,-263.42 669,-269 683.97,-274.09 699.89,-278.97 715.66,-283.49"/>
+<polygon fill="#707070" stroke="#707070" points="714.88,-286.91 725.46,-286.26 716.79,-280.17 714.88,-286.91"/>
+</g>
+<!-- DBProxy::::rds&#45;proxy -->
+<g id="node18" class="node">
+<title>DBProxy::::rds&#45;proxy</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="554,-225 419,-225 419,-167 554,-167 554,-225"/>
+<text text-anchor="start" x="431.5" y="-205.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RDS::DBProxy</text>
+<text text-anchor="start" x="431.5" y="-180.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rds&#45;proxy</text>
+</g>
+<!-- DBProxy::::rds&#45;proxy&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg -->
+<g id="edge23" class="edge">
+<title>DBProxy::::rds&#45;proxy&#45;&gt;SecurityGroup::::sg::sam&#45;app&#45;vpc::sam&#45;app&#45;database&#45;sg</title>
+<path fill="none" stroke="#707070" d="M554.33,-209.99C581.72,-218.67 611.88,-232.44 633,-254 664.89,-286.55 634.8,-319.89 669,-350 671.22,-351.96 673.53,-353.82 675.9,-355.59"/>
+<polygon fill="#707070" stroke="#707070" points="674.01,-358.53 684.25,-361.26 677.95,-352.74 674.01,-358.53"/>
+</g>
+<!-- DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1 -->
+<g id="edge22" class="edge">
+<title>DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1</title>
+<path fill="none" stroke="#707070" d="M554.21,-178.59C588.29,-170.58 630.57,-161.98 669,-158 812.23,-143.17 849.18,-150.8 993,-158 1012.3,-158.97 1032.95,-160.63 1052.55,-162.5"/>
+<polygon fill="#707070" stroke="#707070" points="1052.4,-166.01 1062.7,-163.5 1053.09,-159.04 1052.4,-166.01"/>
+</g>
+<!-- DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2 -->
+<g id="edge20" class="edge">
+<title>DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2</title>
+<path fill="none" stroke="#707070" d="M554.27,-212.89C588.36,-220.78 630.64,-229.41 669,-234 801.77,-249.88 956.87,-251.64 1052.39,-250.81"/>
+<polygon fill="#707070" stroke="#707070" points="1052.63,-254.31 1062.59,-250.71 1052.56,-247.31 1052.63,-254.31"/>
+</g>
+<!-- DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3 -->
+<g id="edge21" class="edge">
+<title>DBProxy::::rds&#45;proxy&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3</title>
+<path fill="none" stroke="#707070" d="M554.14,-212.05C579.03,-218.39 607.44,-226.07 633,-234 649.25,-239.04 652.38,-243.37 669,-247 810.18,-277.81 851.82,-243.19 993,-274 1009.62,-277.63 1012.93,-281.41 1029,-287 1036.83,-289.72 1044.97,-292.52 1053.15,-295.3"/>
+<polygon fill="#707070" stroke="#707070" points="1052.14,-298.66 1062.74,-298.56 1054.39,-292.03 1052.14,-298.66"/>
+</g>
+<!-- DBProxy::::rds&#45;proxy&#45;&gt;Role::::sam&#45;app&#45;dbProxyRole&#45;1BMIN3H39UUK3 -->
+<g id="edge24" class="edge">
+<title>DBProxy::::rds&#45;proxy&#45;&gt;Role::::sam&#45;app&#45;dbProxyRole&#45;1BMIN3H39UUK3</title>
+<path fill="none" stroke="#707070" d="M554.35,-196C584.42,-196 621.44,-196 658.48,-196"/>
+<polygon fill="#707070" stroke="#707070" points="658.92,-199.5 668.92,-196 658.92,-192.5 658.92,-199.5"/>
+</g>
+<!-- Secret::::sam&#45;app&#45;cluster&#45;secret -->
+<g id="node20" class="node">
+<title>Secret::::sam&#45;app&#45;cluster&#45;secret</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="935,-129 727,-129 727,-71 935,-71 935,-129"/>
+<text text-anchor="start" x="739" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SecretsManager::Secret</text>
+<text text-anchor="start" x="739" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;cluster&#45;secret</text>
+</g>
+<!-- DBProxy::::rds&#45;proxy&#45;&gt;Secret::::sam&#45;app&#45;cluster&#45;secret -->
+<g id="edge19" class="edge">
+<title>DBProxy::::rds&#45;proxy&#45;&gt;Secret::::sam&#45;app&#45;cluster&#45;secret</title>
+<path fill="none" stroke="#707070" d="M554.2,-176.12C588.46,-166.01 630.9,-153.65 669,-143 684.46,-138.68 700.78,-134.21 716.86,-129.86"/>
+<polygon fill="#707070" stroke="#707070" points="718.09,-133.16 726.84,-127.17 716.27,-126.4 718.09,-133.16"/>
+</g>
+<!-- DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1 -->
+<g id="edge25" class="edge">
+<title>DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;1</title>
+<path fill="none" stroke="#707070" d="M896.35,-282.94C926.17,-268.94 961.82,-251.43 993,-234 1009.57,-224.73 1011.87,-219.19 1029,-211 1036.76,-207.29 1044.99,-203.78 1053.32,-200.52"/>
+<polygon fill="#707070" stroke="#707070" points="1054.65,-203.76 1062.75,-196.93 1052.16,-197.21 1054.65,-203.76"/>
+</g>
+<!-- DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2 -->
+<g id="edge27" class="edge">
+<title>DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;2</title>
+<path fill="none" stroke="#707070" d="M936.69,-290.76C974.35,-283.12 1016.46,-274.57 1052.73,-267.21"/>
+<polygon fill="#707070" stroke="#707070" points="1053.69,-270.59 1062.8,-265.17 1052.3,-263.73 1053.69,-270.59"/>
+</g>
+<!-- DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3 -->
+<g id="edge26" class="edge">
+<title>DBSubnetGroup::::sam&#45;app&#45;db&#45;subnet&#45;group&#45;&gt;Subnet::::sam&#45;app&#45;prv&#45;sub&#45;3</title>
+<path fill="none" stroke="#707070" d="M936.69,-316.38C974.35,-317.96 1016.46,-319.72 1052.73,-321.24"/>
+<polygon fill="#707070" stroke="#707070" points="1052.66,-324.74 1062.8,-321.66 1052.95,-317.75 1052.66,-324.74"/>
 </g>
 </g>
 </svg>

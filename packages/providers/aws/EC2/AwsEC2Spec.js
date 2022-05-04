@@ -566,17 +566,11 @@ module.exports = pipe([
           () =>
           ({ VpcEndpointId, ...others }) =>
             pipe([
-              tap((params) => {
-                assert(true);
-              }),
               () => others,
               when(
                 () => VpcEndpointId,
                 defaultsDeep({ GatewayId: VpcEndpointId })
               ),
-              tap((params) => {
-                assert(true);
-              }),
             ])(),
       }),
       filterLive: () => pipe([pick(["DestinationCidrBlock"])]),
@@ -791,7 +785,7 @@ module.exports = pipe([
       isOurMinion: isOurMinionEC2Instance,
       filterLive: () =>
         pipe([
-          pick(["InstanceType", "ImageId", "UserData", "Placement"]),
+          pick(["InstanceType", "Image", "UserData", "Placement"]),
           assign({
             Placement: pipe([
               get("Placement"),
@@ -844,6 +838,7 @@ module.exports = pipe([
               omit([
                 "NetworkInterfaces",
                 "SecurityGroupIds",
+                "ImageId",
                 "IamInstanceProfile",
                 "KeyName",
               ]),
@@ -885,25 +880,6 @@ module.exports = pipe([
           ignoreOnDestroy: true,
         },
       },
-      // inferName: ({ properties, dependenciesSpec: { firewall, subnets } }) =>
-      //   pipe([
-      //     () => firewall,
-      //     tap((params) => {
-      //       assert(true);
-      //     }),
-      //     switchCase([
-      //       isEmpty,
-      //       pipe([() => properties.ServiceName]),
-      //       pipe([
-      //         tap((params) => {
-      //           assert.equal(size(subnets), 1);
-      //         }),
-      //         prepend("vpce::"),
-      //         append("::"),
-      //         append(pipe([() => subnets, first])()),
-      //       ]),
-      //     ]),
-      //   ])(),
       Client: EC2VpcEndpoint,
       compare: compareEC2({
         filterTarget: () => pipe([pick(["PolicyDocument"])]),

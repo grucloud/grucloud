@@ -17,7 +17,7 @@ exports.createResources = () => [
       apiKeys: [{}],
       schemaFile: "AppSyncEventBridgeAPI.graphql",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       cloudWatchLogsRole:
         "AppsyncEventbridgeStack-ApiApiLogsRole90293F72-7E0RPUK5AGTI",
     }),
@@ -39,7 +39,7 @@ exports.createResources = () => [
         endpoint: `https://events.${config.region}.amazonaws.com/`,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "AppSyncEventBridgeAPI",
       serviceRole:
         "AppsyncEventbridgeStack-ApieventsServiceRole531FB6-1OV5AQSZ4CWBK",
@@ -57,7 +57,7 @@ exports.createResources = () => [
         "## Raise a GraphQL field error in case of a datasource invocation error\n#if($ctx.error)\n  $util.error($ctx.error.message, $ctx.error.type)\n#end\n## if the response status code is not 200, then return an error. Else return the body **\n#if($ctx.result.statusCode == 200)\n    ## If response is 200, return the body.\n\t$ctx.result.body\n#else\n    ## If response is not 200, append the response to error block.\n    $utils.appendError($ctx.result.body, $ctx.result.statusCode)\n#end\n",
       kind: "UNIT",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "AppSyncEventBridgeAPI",
       dataSource: "events",
     }),
@@ -126,7 +126,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "AppSyncEventBus",
     }),
   },

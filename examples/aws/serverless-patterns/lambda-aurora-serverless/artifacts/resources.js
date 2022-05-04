@@ -97,7 +97,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-LambdaFunctionRole-11TTATG2VDRQ2",
       secret: "DBSecret",
       dbCluster: "aurora-test-cluster",
@@ -130,7 +130,7 @@ exports.createResources = () => [
       },
       MasterUserPassword: process.env.AURORA_TEST_CLUSTER_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       secret: "DBSecret",
     }),
   },

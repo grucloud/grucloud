@@ -28,7 +28,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["policy-allow-ec2"],
     }),
   },

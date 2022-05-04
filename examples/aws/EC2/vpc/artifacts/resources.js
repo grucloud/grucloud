@@ -11,19 +11,20 @@ exports.createResources = () => [
       CidrBlock: "192.168.0.0/16",
     }),
   },
+  { type: "InternetGateway", group: "EC2", name: "internet-gateway" },
   {
-    type: "InternetGateway",
+    type: "InternetGatewayAttachment",
     group: "EC2",
-    name: "internet-gateway",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
+      internetGateway: "internet-gateway",
     }),
   },
   {
     type: "NatGateway",
     group: "EC2",
     name: "nat-gateway",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnet: "subnet-public-a",
       eip: "eip",
     }),
@@ -36,7 +37,7 @@ exports.createResources = () => [
       CidrBlock: "192.168.96.0/19",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -48,7 +49,7 @@ exports.createResources = () => [
       CidrBlock: "192.168.128.0/19",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -61,7 +62,7 @@ exports.createResources = () => [
       AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -74,7 +75,7 @@ exports.createResources = () => [
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -82,7 +83,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "route-table-private-a",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -90,7 +91,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "route-table-private-b",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -99,14 +100,14 @@ exports.createResources = () => [
     group: "EC2",
     name: "rt-default-vpc",
     isDefault: true,
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-private-a",
       subnet: "subnet-private-a",
     }),
@@ -114,7 +115,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-private-b",
       subnet: "subnet-private-b",
     }),
@@ -122,7 +123,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "rt-default-vpc",
       subnet: "subnet-public-a",
     }),
@@ -130,7 +131,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "rt-default-vpc",
       subnet: "subnet-public-b",
     }),
@@ -141,7 +142,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-private-a",
       natGateway: "nat-gateway",
     }),
@@ -152,7 +153,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-private-b",
       natGateway: "nat-gateway",
     }),
@@ -163,7 +164,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "rt-default-vpc",
       ig: "internet-gateway",
     }),

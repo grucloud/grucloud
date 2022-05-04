@@ -25,7 +25,7 @@ exports.createResources = () => [
       CidrBlock: "10.0.0.0/17",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
   },
@@ -37,7 +37,7 @@ exports.createResources = () => [
       CidrBlock: "10.0.128.0/17",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
   },
@@ -45,7 +45,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "VpcauroraisolatedSubnet1RouteTableA8F6E99C",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
   },
@@ -53,14 +53,14 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "VpcauroraisolatedSubnet2RouteTableBF363B67",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "VpcauroraisolatedSubnet1RouteTableA8F6E99C",
       subnet: "VpcauroraisolatedSubnet1Subnet5370B90B",
     }),
@@ -68,7 +68,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "VpcauroraisolatedSubnet2RouteTableBF363B67",
       subnet: "VpcauroraisolatedSubnet2SubnetCB56E2A8",
     }),
@@ -80,7 +80,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DBSubnetGroupDescription: "Subnet group to access aurora",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: [
         "VpcauroraisolatedSubnet1Subnet5370B90B",
         "VpcauroraisolatedSubnet2SubnetCB56E2A8",
@@ -114,7 +114,7 @@ exports.createResources = () => [
       },
       MasterUserPassword: process.env.AURORA_SERVERLESS_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       dbSubnetGroup: "aurora-serverless-subnet-group",
       secret: "demordsservice-demostage-credentials",
     }),

@@ -36,70 +36,71 @@ exports.createResources = () => [
       DnsHostnames: true,
     }),
   },
+  { type: "InternetGateway", group: "EC2", name: "vpcStack/test-VPC" },
   {
-    type: "InternetGateway",
+    type: "InternetGatewayAttachment",
     group: "EC2",
-    name: "vpcStack/test-VPC",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
+      internetGateway: "vpcStack/test-VPC",
     }),
   },
   {
     type: "NatGateway",
     group: "EC2",
-    name: "test-VPC-test-public-subnet-1-us-east-1a",
-    dependencies: () => ({
-      subnet: "test-VPC-test-public-subnet-1-us-east-1a",
-      eip: "test-VPC-test-public-subnet-1-us-east-1a",
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}a`,
+    dependencies: ({ config }) => ({
+      subnet: `test-VPC-test-public-subnet-1-${config.region}a`,
+      eip: `test-VPC-test-public-subnet-1-${config.region}a`,
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "test-VPC-test-private-subnet-1-us-east-1a",
+    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}a`,
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "test-VPC-test-private-subnet-1-us-east-1b",
+    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}b`,
     properties: ({ config }) => ({
       CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "test-VPC-test-public-subnet-1-us-east-1a",
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}a`,
     properties: ({ config }) => ({
       CidrBlock: "10.0.2.0/24",
       AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "test-VPC-test-public-subnet-1-us-east-1b",
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}b`,
     properties: ({ config }) => ({
       CidrBlock: "10.0.3.0/24",
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
@@ -111,7 +112,7 @@ exports.createResources = () => [
       CidrBlock: "10.0.4.0/24",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
@@ -123,39 +124,39 @@ exports.createResources = () => [
       CidrBlock: "10.0.5.0/24",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "test-VPC-test-private-subnet-1-us-east-1a",
-    dependencies: () => ({
+    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}a`,
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "test-VPC-test-private-subnet-1-us-east-1b",
-    dependencies: () => ({
+    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}b`,
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "test-VPC-test-public-subnet-1-us-east-1a",
-    dependencies: () => ({
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}a`,
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "test-VPC-test-public-subnet-1-us-east-1b",
-    dependencies: () => ({
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}b`,
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
@@ -163,7 +164,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet1",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
@@ -171,46 +172,46 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
-      routeTable: "test-VPC-test-private-subnet-1-us-east-1a",
-      subnet: "test-VPC-test-private-subnet-1-us-east-1a",
+    dependencies: ({ config }) => ({
+      routeTable: `test-VPC-test-private-subnet-1-${config.region}a`,
+      subnet: `test-VPC-test-private-subnet-1-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
-      routeTable: "test-VPC-test-private-subnet-1-us-east-1b",
-      subnet: "test-VPC-test-private-subnet-1-us-east-1b",
+    dependencies: ({ config }) => ({
+      routeTable: `test-VPC-test-private-subnet-1-${config.region}b`,
+      subnet: `test-VPC-test-private-subnet-1-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
-      routeTable: "test-VPC-test-public-subnet-1-us-east-1a",
-      subnet: "test-VPC-test-public-subnet-1-us-east-1a",
+    dependencies: ({ config }) => ({
+      routeTable: `test-VPC-test-public-subnet-1-${config.region}a`,
+      subnet: `test-VPC-test-public-subnet-1-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
-      routeTable: "test-VPC-test-public-subnet-1-us-east-1b",
-      subnet: "test-VPC-test-public-subnet-1-us-east-1b",
+    dependencies: ({ config }) => ({
+      routeTable: `test-VPC-test-public-subnet-1-${config.region}b`,
+      subnet: `test-VPC-test-public-subnet-1-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "vpcStack/test-VPC/test-isolated-subnet-1Subnet1",
       subnet: "vpcStack/test-VPC/test-isolated-subnet-1Subnet1",
     }),
@@ -218,7 +219,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "vpcStack/test-VPC/test-isolated-subnet-1Subnet2",
       subnet: "vpcStack/test-VPC/test-isolated-subnet-1Subnet2",
     }),
@@ -229,9 +230,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
-      routeTable: "test-VPC-test-private-subnet-1-us-east-1a",
-      natGateway: "test-VPC-test-public-subnet-1-us-east-1a",
+    dependencies: ({ config }) => ({
+      routeTable: `test-VPC-test-private-subnet-1-${config.region}a`,
+      natGateway: `test-VPC-test-public-subnet-1-${config.region}a`,
     }),
   },
   {
@@ -240,9 +241,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
-      routeTable: "test-VPC-test-private-subnet-1-us-east-1b",
-      natGateway: "test-VPC-test-public-subnet-1-us-east-1a",
+    dependencies: ({ config }) => ({
+      routeTable: `test-VPC-test-private-subnet-1-${config.region}b`,
+      natGateway: `test-VPC-test-public-subnet-1-${config.region}a`,
     }),
   },
   {
@@ -251,8 +252,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
-      routeTable: "test-VPC-test-public-subnet-1-us-east-1a",
+    dependencies: ({ config }) => ({
+      routeTable: `test-VPC-test-public-subnet-1-${config.region}a`,
       ig: "vpcStack/test-VPC",
     }),
   },
@@ -262,8 +263,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
-      routeTable: "test-VPC-test-public-subnet-1-us-east-1b",
+    dependencies: ({ config }) => ({
+      routeTable: `test-VPC-test-public-subnet-1-${config.region}b`,
       ig: "vpcStack/test-VPC",
     }),
   },
@@ -274,7 +275,7 @@ exports.createResources = () => [
       GroupName: "test-vpcSG",
       Description: "Security Group for all AWS Services within VPC",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
   },
@@ -298,7 +299,7 @@ exports.createResources = () => [
         ToPort: 443,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpcStack/test-VPC::test-vpcSG",
     }),
   },
@@ -318,20 +319,20 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpcStack/test-VPC::test-vpcSG",
     }),
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "test-VPC-test-public-subnet-1-us-east-1a",
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}a`,
   },
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: "com.amazonaws.us-east-1.states",
-    properties: ({}) => ({
+    name: ({ config }) => `com.amazonaws.${config.region}.states`,
+    properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
           {
@@ -345,12 +346,13 @@ exports.createResources = () => [
       PrivateDnsEnabled: true,
       RequesterManaged: false,
       VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.states`,
     }),
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       vpc: "vpcStack/test-VPC",
       subnets: [
-        "test-VPC-test-private-subnet-1-us-east-1a",
-        "test-VPC-test-private-subnet-1-us-east-1b",
+        `test-VPC-test-private-subnet-1-${config.region}a`,
+        `test-VPC-test-private-subnet-1-${config.region}b`,
       ],
     }),
   },
@@ -518,7 +520,7 @@ exports.createResources = () => [
         Runtime: "nodejs14.x",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-130PK942BIJRK",
     }),
   },
@@ -534,11 +536,11 @@ exports.createResources = () => [
         Runtime: "nodejs14.x",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       role: "lambdaStack-testLambdaServiceRole955E2289-1GZAHWTU2CITG",
       subnets: [
-        "test-VPC-test-private-subnet-1-us-east-1a",
-        "test-VPC-test-private-subnet-1-us-east-1b",
+        `test-VPC-test-private-subnet-1-${config.region}a`,
+        `test-VPC-test-private-subnet-1-${config.region}b`,
       ],
       securityGroups: ["sg::vpcStack/test-VPC::test-vpcSG"],
     }),
@@ -593,7 +595,7 @@ exports.createResources = () => [
       },
       tags: [],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sfnStack-testtestMachineFlowRoleE75B9154-Y7HS9EGY2IQE",
       logGroups: ["testlambdatest-"],
       lambdaFunctions: ["test-lambdaFunction"],

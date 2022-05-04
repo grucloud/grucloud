@@ -2,7 +2,7 @@
   "watch-files": ["**/*.js"],
   "extension": ["js"],
   "exclude": "node_modules",
-  "reporter": "spec",
+  "reporter": "mochawesome",
   "timeout": 1200e3,
   "ui": "bdd",
   "bail": false,

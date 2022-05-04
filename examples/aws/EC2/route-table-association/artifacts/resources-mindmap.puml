@@ -6,6 +6,7 @@ skinparam monochrome true
 +++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
 ++++ Subnet (2)
 ++++ RouteTable (1)
 ++++ RouteTableAssociation (2)

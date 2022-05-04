@@ -9,6 +9,7 @@ skinparam monochrome true
 ++++ KeyPair (1)
 ++++ Vpc (3)
 ++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
 ++++ NatGateway (1)
 ++++ Subnet (27)
 ++++ RouteTable (9)

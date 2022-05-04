@@ -8,7 +8,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "role-4-policies",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -16,7 +15,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: "ec2.amazonaws.com",
+              Service: `ec2.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -29,7 +28,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["policy-allow-ec2"],
     }),
   },
@@ -44,12 +43,12 @@ exports.createResources = () => [
           {
             Action: ["s3:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
           {
             Action: ["sqs:*"],
             Effect: "Allow",
-            Resource: "*",
+            Resource: `*`,
           },
         ],
       },

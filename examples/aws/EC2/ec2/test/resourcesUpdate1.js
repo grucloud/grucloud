@@ -9,7 +9,9 @@ exports.createResources = () => [
     name: "web-server-ec2-example",
     properties: ({ config }) => ({
       InstanceType: "t3.micro",
-      ImageId: "ami-02e136e904f3da870",
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      },
       Placement: {
         AvailabilityZone: `${config.region}d`,
       },

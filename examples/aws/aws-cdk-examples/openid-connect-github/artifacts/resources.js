@@ -20,7 +20,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "exampleGitHubDeployRole",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       openIdConnectProvider: "oidp::token.actions.githubusercontent.com",
     }),
   },

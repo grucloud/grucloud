@@ -103,7 +103,7 @@ exports.createResources = () => [
         Runtime: "python3.8",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       layers: ["mysql-connector-python"],
       role: "terraform-20220413213345705300000001",
     }),
@@ -118,7 +118,7 @@ exports.createResources = () => [
         Runtime: "python3.8",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "terraform-20220413213345705300000001",
     }),
   },

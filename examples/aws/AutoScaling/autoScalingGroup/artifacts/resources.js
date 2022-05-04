@@ -18,7 +18,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["PubSubnetAz1", "PubSubnetAz2"],
       launchTemplate: "lt-ec2-micro",
     }),
@@ -41,7 +41,7 @@ exports.createResources = () => [
       CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc",
     }),
   },
@@ -53,7 +53,7 @@ exports.createResources = () => [
       CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc",
     }),
   },
@@ -64,7 +64,7 @@ exports.createResources = () => [
       GroupName: "EcsSecurityGroup",
       Description: "Managed By GruCloud",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc",
     }),
   },
@@ -83,7 +83,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::Vpc::EcsSecurityGroup",
     }),
   },
@@ -93,8 +93,10 @@ exports.createResources = () => [
     name: "lt-ec2-micro",
     properties: ({}) => ({
       LaunchTemplateData: {
-        ImageId: "ami-02e136e904f3da870",
         InstanceType: "t2.micro",
+        Image: {
+          Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+        },
       },
       Tags: [
         {
@@ -103,7 +105,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
     }),
@@ -131,7 +133,7 @@ exports.createResources = () => [
     type: "InstanceProfile",
     group: "IAM",
     name: "role-ecs",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       roles: ["role-ecs"],
     }),
   },

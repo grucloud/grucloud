@@ -25,7 +25,7 @@ const { STS } = require("@aws-sdk/client-sts");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
-const { assignTagsSort } = require("./AwsCommon");
+const { assignTagsSort, createEndpointOption } = require("./AwsCommon");
 const { mergeConfig } = require("@grucloud/core/ProviderCommon");
 const {
   createProjectAws,
@@ -61,14 +61,20 @@ const validateConfig = ({ region, zone, zones }) => {
 };
 
 //TODO wrap for retry
-const fetchAccountId = pipe([
-  tap(() => {
-    logger.debug(`fetchAccountId`);
-  }),
-  () => new STS({ region: "us-east-1" }),
-  (sts) => sts.getCallerIdentity({}),
-  get("Account"),
-]);
+const fetchAccountId = tryCatch(
+  pipe([
+    tap(() => {
+      logger.debug(`fetchAccountId`);
+    }),
+    createEndpointOption({ region: "us-east-1" }),
+    (options) => new STS(options),
+    (sts) => sts.getCallerIdentity({}),
+    get("Account"),
+  ]),
+  (error) => {
+    throw error;
+  }
+);
 
 exports.AwsProvider = ({
   name = "aws",

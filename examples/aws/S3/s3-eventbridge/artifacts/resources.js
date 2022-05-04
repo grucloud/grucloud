@@ -15,7 +15,7 @@ exports.createResources = () => [
       IsOrganizationTrail: false,
       TagsList: [],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       bucket: "grucloud-s3-event-bridge-logs",
     }),
   },
@@ -46,7 +46,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Id: "S3NewImageEvent",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       rule: "sam-app-S3NewImageEvent-W0968CSQOUFJ",
       sqsQueue: "sam-app-NewImageEventQueue-DGEXqRa9ZM4Z",
     }),

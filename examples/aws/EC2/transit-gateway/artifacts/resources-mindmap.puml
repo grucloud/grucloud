@@ -9,5 +9,7 @@ skinparam monochrome true
 ++++ RouteTable (1)
 ++++ Route (1)
 ++++ TransitGateway (1)
+++++ TransitGatewayRouteTable (1)
 ++++ TransitGatewayVpcAttachment (1)
+++++ TransitGatewayRouteTableAssociation (1)
 @endmindmap
