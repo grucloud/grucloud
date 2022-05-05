@@ -17,8 +17,6 @@
 - aws_ram_resource_association
 
 - aws_egress_only_internet_gateway
-- aws_vpc_dhcp_options
-- aws_vpc_dhcp_options_association
 - aws_ec2_transit_gateway_route_table_propagation
 - aws_flow_log
 - aws_vpc_ipam

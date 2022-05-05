@@ -56,6 +56,8 @@ const {
 } = require("./EC2InternetGatewayAttachment");
 
 const { AwsNatGateway } = require("./AwsNatGateway");
+const { EC2DhcpOptions } = require("./EC2DhcpOptions");
+const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
 const { EC2RouteTable } = require("./EC2RouteTable");
 const { EC2RouteTableAssociation } = require("./EC2RouteTableAssociation");
 const { EC2Route } = require("./EC2Route");
@@ -284,6 +286,20 @@ module.exports = pipe([
         ]),
       dependencies: {
         certificate: { type: "Certificate", group: "ACM" },
+      },
+    },
+    {
+      type: "DhcpOptions",
+      Client: EC2DhcpOptions,
+      omitProperties: ["DhcpOptionsId", "OwnerId"],
+    },
+    {
+      type: "DhcpOptionsAssociation",
+      Client: EC2DhcpOptionsAssociation,
+      omitProperties: ["DhcpOptionsId", "VpcId"],
+      dependencies: {
+        vpc: { type: "Vpc", group: "EC2", parent: true },
+        dhcpOptions: { type: "DhcpOptions", group: "EC2", parent: true },
       },
     },
     {

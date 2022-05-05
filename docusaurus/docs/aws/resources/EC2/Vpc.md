@@ -81,3 +81,52 @@ const vpc = provider.EC2.makeVpc({
 - [Subnet](./Subnet.md)
 - [Security Group](./SecurityGroup.md)
 - [Internet Gateway Attachment](./InternetGatewayAttachment.md)
+- [Dhcp Options Association](./DhcpOptionsAssociation.md)
+
+## List
+
+List the vpcs with the _Vpc_ filter:
+
+```sh
+gc list -t Vpc
+```
+
+```txt
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 3/3
+┌────────────────────────────────────────────────────────────────────────┐
+│ 1 EC2::Vpc from aws                                                    │
+├────────────────────────────────────────────────────────────────────────┤
+│ name: vpc-default                                                      │
+│ managedByUs: NO                                                        │
+│ live:                                                                  │
+│   CidrBlock: 172.31.0.0/16                                             │
+│   DhcpOptionsId: dopt-036a6462c18e0cce0                                │
+│   State: available                                                     │
+│   VpcId: vpc-0860f958ca006c083                                         │
+│   OwnerId: 548529576214                                                │
+│   InstanceTenancy: default                                             │
+│   CidrBlockAssociationSet:                                             │
+│     - AssociationId: vpc-cidr-assoc-0ee57c3c5e6485f3c                  │
+│       CidrBlock: 172.31.0.0/16                                         │
+│       CidrBlockState:                                                  │
+│         State: associated                                              │
+│   IsDefault: true                                                      │
+│   DnsSupport: true                                                     │
+│   DnsHostnames: true                                                   │
+│                                                                        │
+└────────────────────────────────────────────────────────────────────────┘
+
+
+List Summary:
+Provider: aws
+┌───────────────────────────────────────────────────────────────────────┐
+│ aws                                                                   │
+├──────────┬────────────────────────────────────────────────────────────┤
+│ EC2::Vpc │ vpc-default                                                │
+└──────────┴────────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t Vpc" executed in 4s, 173 MB
+```
