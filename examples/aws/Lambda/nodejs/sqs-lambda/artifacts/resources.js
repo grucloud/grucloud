@@ -22,7 +22,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["lambda-policy"],
     }),
   },
@@ -60,7 +60,7 @@ exports.createResources = () => [
         Runtime: "nodejs14.x",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "lambda-role",
     }),
   },
@@ -72,7 +72,7 @@ exports.createResources = () => [
       BatchSize: 10,
       MaximumBatchingWindowInSeconds: 0,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       lambdaFunction: "lambda-hello-world",
       sqsQueue: "my-queue-lambda",
     }),

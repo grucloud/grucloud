@@ -143,6 +143,14 @@ exports.createResources = () => [
   },
   { type: "ElasticIpAddress", group: "EC2", name: "myip" },
   {
+    type: "ElasticIpAddressAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      eip: "myip",
+      instance: "web-server-ec2-vpc",
+    }),
+  },
+  {
     type: "Instance",
     group: "EC2",
     name: "web-server-ec2-vpc",
@@ -160,7 +168,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       subnet: "subnet",
       keyPair: "kp-ec2-vpc",
-      eip: "myip",
       securityGroups: ["sg::vpc-ec2-example::security-group"],
     }),
   },

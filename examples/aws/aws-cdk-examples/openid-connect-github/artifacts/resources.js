@@ -6,6 +6,14 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
+    name: "/aws/ecs/containerinsights/service-cluster/performance",
+    properties: ({}) => ({
+      retentionInDays: 1,
+    }),
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
     name: "/aws/lambda/GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-Wc2cf40Nu4bv",
   },
   {

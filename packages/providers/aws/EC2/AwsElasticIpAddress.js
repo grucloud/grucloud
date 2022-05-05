@@ -21,11 +21,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
     {
       type: "NetworkInterface",
       group: "EC2",
-      ids: pipe([
-        () => live,
-        get("NetworkInterfaceId"),
-        (NetworkInterfaceId) => [NetworkInterfaceId],
-      ])(),
+      ids: [pipe([() => live, get("NetworkInterfaceId")])()],
     },
   ];
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property

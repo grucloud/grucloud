@@ -1,7 +1,6 @@
 ---
 id: Document
-title: id: Document
-
+title: Document
 ---
 
 Manage a [System Manager Document](https://console.aws.amazon.com/systems-manager/automation/execute).

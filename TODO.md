@@ -4,6 +4,8 @@
 
 ## Aws
 
+- remove hard coded region from generate code
+
 - aws_route53_resolver_endpoint
 - aws_route53_resolver_rule
 - aws_route53_resolver_rule_association
@@ -22,8 +24,6 @@
 - aws_vpc_ipam
 - aws_vpc_ipam_scope
 - aws_vpc_ipam_pool
-
-- aws_eip_association
 
 - aws_route53_record alias aws_vpc_endpoint
 

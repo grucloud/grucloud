@@ -159,8 +159,10 @@ module.exports = pipe([
               ),
               map(
                 assign({
+                  //TODO replace region and account for image
                   environment: pipe([
                     get("environment"),
+                    //TODO replace region
                     map(
                       assign({
                         value: ({ value }) =>

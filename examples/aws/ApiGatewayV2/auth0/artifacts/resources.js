@@ -15,7 +15,7 @@ exports.createResources = () => [
     type: "DomainName",
     group: "ApiGatewayV2",
     name: "grucloud.org",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       certificate: "grucloud.org",
     }),
   },
@@ -30,7 +30,7 @@ exports.createResources = () => [
           '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "my-api",
       logGroup: "lg-http-test",
     }),
@@ -47,7 +47,7 @@ exports.createResources = () => [
         Issuer: "https://dev-zojrhsju.us.auth0.com/",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "my-api",
     }),
   },
@@ -57,7 +57,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       ApiMappingKey: "",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "my-api",
       domainName: "grucloud.org",
       stage: "my-api-stage-dev",
@@ -72,7 +72,7 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "2.0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "my-api",
       lambdaFunction: "my-function",
     }),
@@ -84,7 +84,7 @@ exports.createResources = () => [
       AuthorizationType: "JWT",
       RouteKey: "ANY /my-function",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "my-api",
       integration: "integration::my-api::my-function",
       authorizer: "authorizer-auth0",
@@ -93,7 +93,7 @@ exports.createResources = () => [
   {
     type: "Deployment",
     group: "ApiGatewayV2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "my-api",
       stage: "my-api-stage-dev",
     }),
@@ -118,7 +118,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["lambda-policy"],
     }),
   },
@@ -177,7 +177,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "lambda-role",
       apiGatewayV2s: ["my-api"],
     }),
@@ -186,14 +186,14 @@ exports.createResources = () => [
     type: "HostedZone",
     group: "Route53",
     name: "grucloud.org.",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       domain: "grucloud.org",
     }),
   },
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       certificate: "grucloud.org",
     }),
@@ -201,7 +201,7 @@ exports.createResources = () => [
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       apiGatewayV2DomainName: "grucloud.org",
     }),

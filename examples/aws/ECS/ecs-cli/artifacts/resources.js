@@ -62,15 +62,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Vpc",
-    group: "EC2",
-    name: "vpc-ec2-example",
-    properties: ({}) => ({
-      CidrBlock: "10.1.0.0/16",
-    }),
-  },
-  { type: "InternetGateway", group: "EC2", name: "ig" },
-  {
     type: "InternetGateway",
     group: "EC2",
     name: "InternetGateway",
@@ -81,14 +72,6 @@ exports.createResources = () => [
           Value: "my-value",
         },
       ],
-    }),
-  },
-  {
-    type: "InternetGatewayAttachment",
-    group: "EC2",
-    dependencies: ({}) => ({
-      vpc: "vpc-ec2-example",
-      internetGateway: "ig",
     }),
   },
   {
@@ -136,26 +119,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet",
-    properties: ({ config }) => ({
-      CidrBlock: "10.1.0.0/24",
-      AvailabilityZone: `${config.region}a`,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-ec2-example",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "route-table",
-    dependencies: ({}) => ({
-      vpc: "vpc-ec2-example",
-    }),
-  },
-  {
     type: "RouteTable",
     group: "EC2",
     name: "RouteViaIgw",
@@ -169,14 +132,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "route-table",
-      subnet: "subnet",
     }),
   },
   {
@@ -202,30 +157,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "route-table",
-      ig: "ig",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
       routeTable: "RouteViaIgw",
       ig: "InternetGateway",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "security-group",
-      Description: "Managed By GruCloud",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-ec2-example",
     }),
   },
   {
@@ -244,54 +177,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpPermission: {
-        FromPort: -1,
-        IpProtocol: "icmp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: -1,
-      },
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-ec2-example::security-group",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpPermission: {
-        FromPort: 22,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: 22,
-      },
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-ec2-example::security-group",
     }),
   },
   {
