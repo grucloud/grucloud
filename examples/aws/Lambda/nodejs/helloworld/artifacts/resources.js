@@ -22,7 +22,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       policies: ["lambda-policy"],
     }),
   },
@@ -68,7 +68,7 @@ exports.createResources = () => [
         mykey: "value",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       layers: ["lambda-layer"],
       role: "lambda-role",
     }),

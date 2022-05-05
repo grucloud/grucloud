@@ -192,6 +192,7 @@ module.exports = pipe([
       compare: compareAppSync({
         filterLive: () =>
           pipe([
+            // TODO replace region
             omitIfEmpty([
               "description",
               "requestMappingTemplate",

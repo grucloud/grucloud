@@ -6,6 +6,14 @@ exports.createResources = () => [
   { type: "KeyPair", group: "EC2", name: "kp-ec2-example" },
   { type: "ElasticIpAddress", group: "EC2", name: "eip" },
   {
+    type: "ElasticIpAddressAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      eip: "eip",
+      instance: "web-server-ec2-example",
+    }),
+  },
+  {
     type: "Instance",
     group: "EC2",
     name: "web-server-ec2-example",

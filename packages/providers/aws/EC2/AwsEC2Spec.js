@@ -68,6 +68,9 @@ const {
   inferNameSecurityGroupRule,
 } = require("./AwsSecurityGroupRule");
 const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
+const {
+  EC2ElasticIpAddressAssociation,
+} = require("./EC2ElasticIpAddressAssociation");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
 const { EC2CustomerGateway } = require("./EC2CustomerGateway");
 const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
@@ -140,7 +143,6 @@ const ec2InstanceDependencies = {
     group: "EC2",
   },
   keyPair: { type: "KeyPair", group: "EC2" },
-  eip: { type: "ElasticIpAddress", group: "EC2" },
   iamInstanceProfile: { type: "InstanceProfile", group: "IAM" },
   securityGroups: {
     type: "SecurityGroup",
@@ -771,6 +773,23 @@ module.exports = pipe([
         "NetworkBorderGroup",
       ],
       filterLive: () => pick([]),
+    },
+    {
+      type: "ElasticIpAddressAssociation",
+      Client: EC2ElasticIpAddressAssociation,
+      dependencies: {
+        eip: { type: "ElasticIpAddress", group: "EC2", parent: true },
+        instance: { type: "Instance", group: "EC2", parent: true },
+      },
+      omitProperties: ["InstanceId", "AllocationId", "AssociationId"],
+      inferName: ({ properties, dependenciesSpec: { eip, instance } }) =>
+        pipe([
+          tap(() => {
+            assert(eip);
+            assert(instance);
+          }),
+          () => `eip-attach::${eip}::${instance}`,
+        ])(),
     },
     {
       type: "Instance",

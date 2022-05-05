@@ -299,22 +299,6 @@ exports.EC2Instance = ({ spec, config }) => {
   const isUpById = pipe([getById, isInstanceUp]);
   const isDownById = pipe([getById, isInstanceDown]);
 
-  const associateAddress = ({ InstanceId, eip }) =>
-    pipe([
-      tap(() => {
-        logger.debug(`associateAddress InstanceId: ${InstanceId}`);
-        assert(eip.live.AllocationId);
-      }),
-      () =>
-        ec2().associateAddress({
-          AllocationId: eip.live.AllocationId,
-          InstanceId,
-        }),
-      tap(() => {
-        logger.debug(`eip address associated, InstanceId: ${InstanceId}`);
-      }),
-    ])();
-
   const updateInstanceType = ({ InstanceId, updated }) =>
     pipe([
       () => updated,
@@ -394,7 +378,6 @@ exports.EC2Instance = ({ spec, config }) => {
           );
         },
       ]),
-
       tap(() => {
         logger.info(`ec2 updated ${name}`);
       }),
@@ -414,51 +397,10 @@ exports.EC2Instance = ({ spec, config }) => {
         first,
       ]),
     getById,
-    postCreate:
-      ({ resolvedDependencies: { volumes, eip } }) =>
-      ({ InstanceId }) =>
-        //TODO fork
-        pipe([
-          tap(() => {
-            assert(InstanceId);
-          }),
-          tap.if(
-            () => eip,
-            () => associateAddress({ InstanceId, eip })
-          ),
-        ])(),
     config,
   });
 
-  const disassociateAddress = ({ InstanceId }) =>
-    pipe([
-      tap(() => {
-        assert(InstanceId);
-      }),
-      () => ({
-        Filters: [
-          {
-            Name: "instance-id",
-            Values: [InstanceId],
-          },
-        ],
-      }),
-      ec2().describeAddresses,
-      get("Addresses"),
-      tap((Addresses) => {
-        logger.debug(`disassociateAddress ${tos({ Addresses })}`);
-      }),
-      first,
-      //TODO multiple addresses ?
-      tap.if(not(isEmpty), ({ AssociationId }) =>
-        ec2().disassociateAddress({
-          AssociationId,
-        })
-      ),
-    ]);
-
   const destroy = client.destroy({
-    preDestroy: pipe([get("live"), fork({ address: disassociateAddress })]),
     pickId: ({ InstanceId }) => ({ InstanceIds: [InstanceId] }),
     method: "terminateInstances",
     getById,
@@ -503,6 +445,7 @@ exports.isOurMinionEC2Instance = (item) =>
     }),
   ])();
 
+//TODO use compareEC2
 exports.compareEC2Instance = pipe([
   tap((xxx) => {
     assert(true);
