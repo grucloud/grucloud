@@ -150,7 +150,7 @@ module.exports = pipe([
                           assign({
                             signingRegion: pipe([
                               get("signingRegion"),
-                              replaceRegion(providerConfig),
+                              replaceRegion({ providerConfig }),
                             ]),
                           }),
                         ]),
@@ -158,7 +158,7 @@ module.exports = pipe([
                     ]),
                     endpoint: pipe([
                       get("endpoint"),
-                      replaceRegion(providerConfig),
+                      replaceRegion({ providerConfig }),
                     ]),
                   })
                 ),

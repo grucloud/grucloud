@@ -69,8 +69,11 @@ const throwIfNotAwsError = (code) =>
 
 exports.throwIfNotAwsError = throwIfNotAwsError;
 
-exports.replaceRegion = (providerConfig) =>
+exports.replaceRegion = ({ providerConfig }) =>
   pipe([
+    tap((params) => {
+      assert(providerConfig.region);
+    }),
     callProp("replace", providerConfig.region, "${config.region}"),
     (resource) => () => "`" + resource + "`",
   ]);

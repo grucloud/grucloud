@@ -57,6 +57,8 @@ const {
 
 const { AwsNatGateway } = require("./AwsNatGateway");
 const { EC2DhcpOptions } = require("./EC2DhcpOptions");
+const { EC2Ipam } = require("./EC2Ipam");
+
 const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
 const { EC2RouteTable } = require("./EC2RouteTable");
 const { EC2RouteTableAssociation } = require("./EC2RouteTableAssociation");
@@ -303,17 +305,35 @@ module.exports = pipe([
       },
     },
     {
+      type: "Ipam",
+      Client: EC2Ipam,
+      omitProperties: [
+        "IpamArn",
+        "IpamId",
+        "PublicDefaultScopeId",
+        "PrivateDefaultScopeId",
+        "ScopeCount",
+        "OwnerId",
+        "State",
+      ],
+      filterLive: ({ providerConfig }) =>
+        pipe([
+          assign({
+            IpamRegion: pipe([
+              get("IpamRegion"),
+              replaceRegion({ providerConfig }),
+            ]),
+          }),
+        ]),
+    },
+    {
       type: "KeyPair",
       Client: AwsClientKeyPair,
       propertiesDefault: { KeyType: "rsa" },
       omitProperties: ["KeyPairId", "KeyFingerprint"],
       filterLive: () => pick([]),
     },
-    {
-      type: "Image",
-      Client: AwsImage,
-      ignoreResource: () => () => true,
-    },
+
     {
       type: "Volume",
       Client: AwsVolume,
@@ -935,7 +955,7 @@ module.exports = pipe([
               tap((params) => {
                 assert(true);
               }),
-              replaceRegion(providerConfig),
+              replaceRegion({ providerConfig }),
             ]),
           }),
           assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),

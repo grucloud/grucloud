@@ -145,7 +145,7 @@ module.exports = pipe([
                                 assign({
                                   ["awslogs-region"]: pipe([
                                     get("awslogs-region"),
-                                    replaceRegion(providerConfig),
+                                    replaceRegion({ providerConfig }),
                                   ]),
                                 })
                               ),
