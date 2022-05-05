@@ -19,9 +19,6 @@
 - aws_egress_only_internet_gateway
 - aws_ec2_transit_gateway_route_table_propagation
 - aws_flow_log
-- aws_vpc_ipam
-- aws_vpc_ipam_scope
-- aws_vpc_ipam_pool
 
 - aws_route53_record alias aws_vpc_endpoint
 

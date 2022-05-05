@@ -17,4 +17,51 @@ exports.createResources = () => [
       ],
     }),
   },
+  {
+    type: "IpamScope",
+    group: "EC2",
+    name: "ipam-scope-04dd070caa9d40f75",
+    readOnly: true,
+    properties: ({ config }) => ({
+      IpamRegion: `${config.region}`,
+      IpamScopeType: "private",
+      IsDefault: true,
+    }),
+    dependencies: ({}) => ({
+      ipam: "ipam",
+    }),
+  },
+  {
+    type: "IpamScope",
+    group: "EC2",
+    name: "my-ipam-scope",
+    properties: ({ config }) => ({
+      IpamRegion: `${config.region}`,
+      IpamScopeType: "private",
+      IsDefault: false,
+      Description: "",
+    }),
+    dependencies: ({}) => ({
+      ipam: "ipam",
+    }),
+  },
+  {
+    type: "IpamPool",
+    group: "EC2",
+    name: "my-pool",
+    properties: ({ config }) => ({
+      IpamScopeType: "private",
+      IpamRegion: `${config.region}`,
+      Locale: "None",
+      Description: "",
+      AutoImport: false,
+      AddressFamily: "ipv4",
+      AllocationMinNetmaskLength: 12,
+      AllocationMaxNetmaskLength: 32,
+      AllocationDefaultNetmaskLength: 22,
+    }),
+    dependencies: ({}) => ({
+      ipamScope: "ipam-scope-04dd070caa9d40f75",
+    }),
+  },
 ];

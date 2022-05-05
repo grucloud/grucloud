@@ -1,25 +1,26 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, find } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
-  ignoreErrorCodes: ["InvalidIpamId.NotFound"],
+  ignoreErrorCodes: ["InvalidIpamScopeId.NotFound"],
   getById: {
     pickId: pipe([
-      tap(({ IpamId }) => {
-        assert(IpamId);
+      tap(({ IpamScopeId }) => {
+        assert(IpamScopeId);
       }),
-      ({ IpamId }) => ({ IpamIds: [IpamId] }),
+      ({ IpamScopeId }) => ({ IpamScopeIds: [IpamScopeId] }),
     ]),
-    method: "describeIpams",
-    getField: "Ipams",
+    method: "describeIpamScopes",
+    getField: "IpamScopes",
     decorate: ({ endpoint }) =>
       pipe([
         tap((params) => {
@@ -28,8 +29,8 @@ const createModel = ({ config }) => ({
       ]),
   },
   getList: {
-    method: "describeIpams",
-    getParam: "Ipams",
+    method: "describeIpamScopes",
+    getParam: "IpamScopes",
     decorate: ({ endpoint, getById }) =>
       pipe([
         tap((params) => {
@@ -38,43 +39,70 @@ const createModel = ({ config }) => ({
       ]),
   },
   create: {
-    method: "createIpam",
+    method: "createIpamScope",
     pickCreated: ({ payload }) =>
       pipe([
         tap((params) => {
           assert(true);
         }),
-        get("Ipam"),
+        get("IpamScope"),
       ]),
     isInstanceUp: eq(get("State"), "create-complete"),
   },
   destroy: {
-    method: "deleteIpam",
+    method: "deleteIpamScope",
     pickId: pipe([
-      tap(({ IpamId }) => {
-        assert(IpamId);
+      tap(({ IpamScopeId }) => {
+        assert(IpamScopeId);
       }),
-      pick(["IpamId"]),
-      defaultsDeep({ Cascade: true }),
+      pick(["IpamScopeId"]),
     ]),
   },
 });
 
 const findId = pipe([
-  get("live.IpamId"),
-  tap((IpamId) => {
-    assert(IpamId);
+  get("live.IpamScopeId"),
+  tap((IpamScopeId) => {
+    assert(IpamScopeId);
   }),
 ]);
 
+const managedByOther = get("live.IsDefault");
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2Ipam = ({ spec, config }) =>
+exports.EC2IpamScope = ({ spec, config }) =>
   createAwsResource({
     model: createModel({ config }),
     spec,
     config,
-    findName: findNameInTagsOrId({ findId }),
+    findName: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      //TODO default name
+      findNameInTagsOrId({ findId }),
+    ]),
     findId,
+    cannotBeDeleted: managedByOther,
+    managedByOther,
+    findDependencies: ({ live, lives }) => [
+      {
+        type: "Ipam",
+        group: "EC2",
+        ids: [
+          pipe([
+            () =>
+              lives.getByType({
+                type: "Ipam",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            find(eq(get("live.IpamArn"), live.IpamArn)),
+            get("id"),
+          ])(),
+        ],
+      },
+    ],
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
@@ -82,14 +110,15 @@ exports.EC2Ipam = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: {},
+      dependencies: { ipam },
     }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
+          IpamId: getField(ipam, "IpamId"),
           TagSpecifications: [
             {
-              ResourceType: "ipam",
+              ResourceType: "ipam-scope",
               Tags: buildTags({ config, namespace, name, UserTags: Tags }),
             },
           ],

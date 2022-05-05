@@ -34,7 +34,7 @@ exports.createResources = () => [
 
 ### Used By
 
-- [Vpc](./Vpc.md)
+- [Ipam Scope](./IpamScope.md)
 
 ## Listing
 

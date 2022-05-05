@@ -5,4 +5,5 @@ skinparam monochrome true
 ++ aws
 +++ EC2
 ++++ Ipam (1)
+++++ IpamScope (1)
 @endmindmap

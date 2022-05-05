@@ -26,7 +26,6 @@ const {
   when,
   isDeepEqual,
   callProp,
-  prepend,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
@@ -58,6 +57,8 @@ const {
 const { AwsNatGateway } = require("./AwsNatGateway");
 const { EC2DhcpOptions } = require("./EC2DhcpOptions");
 const { EC2Ipam } = require("./EC2Ipam");
+const { EC2IpamScope } = require("./EC2IpamScope");
+const { EC2IpamPool } = require("./EC2IpamPool");
 
 const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
 const { EC2RouteTable } = require("./EC2RouteTable");
@@ -271,6 +272,11 @@ const filterPermissions = pipe([
   sortByFromPort,
 ]);
 
+const assingIpamRegion = ({ providerConfig }) =>
+  assign({
+    IpamRegion: pipe([get("IpamRegion"), replaceRegion({ providerConfig })]),
+  });
+
 module.exports = pipe([
   () => [
     {
@@ -317,14 +323,49 @@ module.exports = pipe([
         "State",
       ],
       filterLive: ({ providerConfig }) =>
+        pipe([assingIpamRegion({ providerConfig })]),
+    },
+    {
+      type: "IpamScope",
+      Client: EC2IpamScope,
+      omitProperties: [
+        "OwnerId",
+        "IpamId",
+        "IpamScopeId",
+        "IpamScopeArn",
+        "IpamArn",
+        "State",
+        "PoolCount",
+      ],
+      filterLive: ({ providerConfig }) =>
         pipe([
-          assign({
-            IpamRegion: pipe([
-              get("IpamRegion"),
-              replaceRegion({ providerConfig }),
-            ]),
+          tap((params) => {
+            assert(true);
           }),
+          assingIpamRegion({ providerConfig }),
         ]),
+      dependencies: {
+        ipam: { type: "Ipam", group: "EC2", parent: true },
+      },
+    },
+    {
+      type: "IpamPool",
+      Client: EC2IpamPool,
+      includeDefaultDependencies: true,
+      omitProperties: [
+        "IpamArn",
+        "IpamPoolArn",
+        "IpamPoolId",
+        "IpamScopeArn",
+        "PoolDepth",
+        "OwnerId",
+        "State",
+      ],
+      filterLive: ({ providerConfig }) =>
+        pipe([assingIpamRegion({ providerConfig })]),
+      dependencies: {
+        ipamScope: { type: "IpamScope", group: "EC2", parent: true },
+      },
     },
     {
       type: "KeyPair",

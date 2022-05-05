@@ -17,4 +17,18 @@ exports.createResources = () => [
       ],
     }),
   },
+  {
+    type: "IpamScope",
+    group: "EC2",
+    name: "my-ipam-scope",
+    properties: ({ config }) => ({
+      IpamRegion: `${config.region}`,
+      IpamScopeType: "private",
+      IsDefault: false,
+      Description: "",
+    }),
+    dependencies: ({}) => ({
+      ipam: "ipam",
+    }),
+  },
 ];
