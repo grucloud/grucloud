@@ -1,5 +1,5 @@
-const { pipe, tap, flatMap, filter, eq, get } = require("rubico");
-const { find, includes, append } = require("rubico/x");
+const { pipe, tap, flatMap, filter, eq, get, map } = require("rubico");
+const { find, includes, append, callProp } = require("rubico/x");
 
 const assert = require("assert");
 const AwsServicesAvailability = require("./AwsServicesAvailability.json");
@@ -67,7 +67,11 @@ exports.fnSpecs = (config) =>
         }),
         () => GROUPS,
         filter((group) =>
-          pipe([() => servicesPerRegion, includes(group.toLowerCase())])()
+          pipe([
+            () => servicesPerRegion,
+            map(callProp("replaceAll", "-", "")),
+            includes(group.toLowerCase()),
+          ])()
         ),
         append(GROUPS_GLOBAL),
         flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
