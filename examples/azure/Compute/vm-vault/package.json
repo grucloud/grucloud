@@ -1,6 +1,6 @@
 {
   "name": "vm-vault",
-  "version": "6.2.0",
+  "version": "6.2.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^6.2.0",
-    "@grucloud/provider-azure": "^6.2.0",
+    "@grucloud/core": "^6.2.1",
+    "@grucloud/provider-azure": "^6.2.1",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
