@@ -19,13 +19,13 @@ const {
   isDeepEqual,
   append,
   find,
+  isEmpty,
 } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
-const isEmpty = require("rubico/x/isEmpty");
 
 const createModel = ({ config }) => ({
   package: "ec2",

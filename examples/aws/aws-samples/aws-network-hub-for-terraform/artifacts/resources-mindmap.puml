@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project aws-network-hub-for-terraform
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (2)
+++++ Policy (1)
++++ Route53
+++++ HostedZone (12)
+@endmindmap

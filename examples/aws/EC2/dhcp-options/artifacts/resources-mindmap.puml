@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project dhcp-options
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ DhcpOptions (1)
+++++ DhcpOptionsAssociation (1)
+++++ Vpc (1)
+@endmindmap

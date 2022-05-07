@@ -73,7 +73,10 @@ exports.FirewallPolicy = ({ spec, config }) =>
         ids: pipe([
           () => live,
           get("FirewallPolicy"),
-          ({ StatefulRuleGroupReferences, StatelessRuleGroupReferences }) => [
+          ({
+            StatefulRuleGroupReferences = [],
+            StatelessRuleGroupReferences = [],
+          }) => [
             ...StatefulRuleGroupReferences,
             ...StatelessRuleGroupReferences,
           ],

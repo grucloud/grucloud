@@ -1394,12 +1394,16 @@ function CoreProvider({
                   direction,
                 })
               ),
-              map((resource) => ({
-                resource: omit(["live"])(resource),
-                action: "DESTROY",
-                live: client.spec.displayResource()(resource.live),
-                providerName: resource.providerName,
-              })),
+              map(
+                pipe([
+                  (resource) => ({
+                    resource: omit(["live"])(resource),
+                    action: "DESTROY",
+                    live: client.spec.displayResource()(resource.live),
+                    providerName: resource.providerName,
+                  }),
+                ])
+              ),
             ])(),
         ])()
       ),
@@ -1878,22 +1882,22 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
-      () =>
-        Planner({
-          plans: plans,
-          dependsOnType: getSpecs(),
-          dependsOnInstance: mapToGraph(getMapNameToResource()),
-          executor: ({ item }) =>
-            destroyById({
-              resource: item.resource,
-              live: item.live,
-            }),
-          down: true,
-          onStateChange: onStateChangeResource({
-            operation: TitleDestroying,
-            onStateChange,
+      () => ({
+        plans,
+        dependsOnType: getSpecs(),
+        dependsOnInstance: mapToGraph(getMapNameToResource()),
+        executor: ({ item }) =>
+          destroyById({
+            resource: item.resource,
+            live: item.live,
           }),
+        down: true,
+        onStateChange: onStateChangeResource({
+          operation: TitleDestroying,
+          onStateChange,
         }),
+      }),
+      Planner,
       callProp("run"),
       tap(({ error }) =>
         onStateChange({

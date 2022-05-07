@@ -1,6 +1,8 @@
-const { pipe, tap, flatMap } = require("rubico");
-const assert = require("assert");
+const { pipe, tap, flatMap, filter, eq, get, map } = require("rubico");
+const { find, includes, append, callProp } = require("rubico/x");
 
+const assert = require("assert");
+const AwsServicesAvailability = require("./AwsServicesAvailability.json");
 const GROUPS = [
   "ACM",
   "ApiGateway",
@@ -27,7 +29,6 @@ const GROUPS = [
   "NetworkFirewall",
   "RDS",
   "Route53",
-  "Route53Domain",
   "S3",
   "SecretsManager",
   "StepFunctions",
@@ -36,11 +37,43 @@ const GROUPS = [
   "SSM",
 ];
 
+const GROUPS_GLOBAL = ["Route53Domain"];
+
+const findServicesPerRegion = ({ region }) =>
+  pipe([
+    tap(() => {
+      assert(region);
+    }),
+    () => AwsServicesAvailability,
+    find(eq(get("region"), region)),
+    get("services"),
+    tap((services) => {
+      assert(services, `no service for region '${region}'`);
+    }),
+  ])();
+
 exports.fnSpecs = (config) =>
   pipe([
     tap(() => {
       assert(config);
+      assert(config.region);
     }),
-    () => GROUPS,
-    flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
+    () => config,
+    findServicesPerRegion,
+    (servicesPerRegion) =>
+      pipe([
+        tap((params) => {
+          assert(servicesPerRegion);
+        }),
+        () => GROUPS,
+        filter((group) =>
+          pipe([
+            () => servicesPerRegion,
+            map(callProp("replaceAll", "-", "")),
+            includes(group.toLowerCase()),
+          ])()
+        ),
+        append(GROUPS_GLOBAL),
+        flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
+      ])(),
   ])();

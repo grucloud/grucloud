@@ -26,7 +26,6 @@ const {
   when,
   isDeepEqual,
   callProp,
-  prepend,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
@@ -57,6 +56,11 @@ const {
 
 const { AwsNatGateway } = require("./AwsNatGateway");
 const { EC2DhcpOptions } = require("./EC2DhcpOptions");
+const { EC2Ipam } = require("./EC2Ipam");
+const { EC2IpamScope } = require("./EC2IpamScope");
+const { EC2IpamPool } = require("./EC2IpamPool");
+const { EC2IpamPoolCidr } = require("./EC2IpamPoolCidr");
+
 const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
 const { EC2RouteTable } = require("./EC2RouteTable");
 const { EC2RouteTableAssociation } = require("./EC2RouteTableAssociation");
@@ -269,6 +273,13 @@ const filterPermissions = pipe([
   sortByFromPort,
 ]);
 
+const assingIpamRegion = ({ providerConfig }) =>
+  assign({
+    IpamRegion: pipe([get("IpamRegion"), replaceRegion({ providerConfig })]),
+  });
+
+const omitLocaleNone = when(eq(get("Locale"), "None"), omit(["Locale"]));
+
 module.exports = pipe([
   () => [
     {
@@ -303,17 +314,85 @@ module.exports = pipe([
       },
     },
     {
+      type: "Ipam",
+      Client: EC2Ipam,
+      omitProperties: [
+        "IpamArn",
+        "IpamId",
+        "PublicDefaultScopeId",
+        "PrivateDefaultScopeId",
+        "ScopeCount",
+        "OwnerId",
+        "State",
+      ],
+      filterLive: ({ providerConfig }) =>
+        pipe([assingIpamRegion({ providerConfig })]),
+    },
+    {
+      type: "IpamScope",
+      Client: EC2IpamScope,
+      omitProperties: [
+        "OwnerId",
+        "IpamId",
+        "IpamScopeId",
+        "IpamScopeArn",
+        "IpamArn",
+        "State",
+        "PoolCount",
+      ],
+      filterLive: ({ providerConfig }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          assingIpamRegion({ providerConfig }),
+        ]),
+      dependencies: {
+        ipam: { type: "Ipam", group: "EC2" },
+      },
+    },
+    {
+      type: "IpamPool",
+      Client: EC2IpamPool,
+      includeDefaultDependencies: true,
+      omitProperties: [
+        "SourceIpamPoolId",
+        "IpamArn",
+        "IpamPoolArn",
+        "IpamPoolId",
+        "IpamScopeId",
+        "IpamScopeArn",
+        "PoolDepth",
+        "OwnerId",
+        "State",
+      ],
+      compare: compareEC2({
+        filterLive: () => pipe([omitLocaleNone]),
+      }),
+      filterLive: ({ providerConfig }) =>
+        pipe([assingIpamRegion({ providerConfig }), omitLocaleNone]),
+      dependencies: {
+        ipamPoolSource: { type: "IpamPool", group: "EC2" },
+        ipamScope: { type: "IpamScope", group: "EC2" },
+      },
+    },
+    {
+      type: "IpamPoolCidr",
+      Client: EC2IpamPoolCidr,
+      omitProperties: ["IpamPoolId", "State", "FailureReason"],
+      inferName: pipe([get("properties.Cidr")]),
+      dependencies: {
+        ipamPool: { type: "IpamPool", group: "EC2", parent: true },
+      },
+    },
+    {
       type: "KeyPair",
       Client: AwsClientKeyPair,
       propertiesDefault: { KeyType: "rsa" },
       omitProperties: ["KeyPairId", "KeyFingerprint"],
       filterLive: () => pick([]),
     },
-    {
-      type: "Image",
-      Client: AwsImage,
-      ignoreResource: () => () => true,
-    },
+
     {
       type: "Volume",
       Client: AwsVolume,
@@ -591,9 +670,10 @@ module.exports = pipe([
               ),
             ])(),
       }),
-      filterLive: () => pipe([pick(["DestinationCidrBlock"])]),
+      filterLive: () =>
+        pipe([pick(["DestinationCidrBlock", "DestinationIpv6CidrBlock"])]),
       inferName: ({
-        properties: { DestinationCidrBlock },
+        properties: { DestinationCidrBlock, DestinationIpv6CidrBlock },
         dependenciesSpec: {
           routeTable,
           ig,
@@ -615,9 +695,14 @@ module.exports = pipe([
             () => vpcEndpoint,
             pipe([
               append(`-${vpcEndpoint}`),
+              //TODO switch case ?
               when(
                 () => DestinationCidrBlock,
                 append(`-${DestinationCidrBlock}`)
+              ),
+              when(
+                () => DestinationIpv6CidrBlock,
+                append(`-${DestinationIpv6CidrBlock}`)
               ),
               tap((params) => {
                 assert(true);
@@ -626,9 +711,20 @@ module.exports = pipe([
             () => transitGateway,
             pipe([
               tap((params) => {
-                assert(DestinationCidrBlock);
+                assert(
+                  DestinationCidrBlock || DestinationIpv6CidrBlock,
+                  `no DestinationCidrBlock or DestinationIpv6CidrBlock`
+                );
               }),
-              append(`-tgw-${DestinationCidrBlock}`),
+              append(`-tgw-`),
+              when(
+                () => DestinationCidrBlock,
+                append(`-${DestinationCidrBlock}`)
+              ),
+              when(
+                () => DestinationIpv6CidrBlock,
+                append(`-${DestinationIpv6CidrBlock}`)
+              ),
             ]),
             append("-local"),
           ]),
@@ -912,6 +1008,7 @@ module.exports = pipe([
         firewall: {
           type: "Firewall",
           group: "NetworkFirewall",
+          parent: true,
           ignoreOnDestroy: true,
         },
       },
@@ -935,7 +1032,7 @@ module.exports = pipe([
               tap((params) => {
                 assert(true);
               }),
-              replaceRegion(providerConfig),
+              replaceRegion({ providerConfig }),
             ]),
           }),
           assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),

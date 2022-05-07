@@ -16,6 +16,7 @@ const {
   and,
   not,
   pick,
+  omit,
 } = require("rubico");
 
 const {
@@ -199,17 +200,44 @@ const findDependsOnType = ({
     }),
   ])();
 
-const dependsOnInstanceReverse = (dependsOnInstance) =>
+const dependsOnInstanceReverse = ({ plans }) =>
   pipe([
-    () => dependsOnInstance,
-    map(({ uri, type, group, providerName }) => ({
+    () => plans,
+    pluck("resource"),
+    map(({ uri, id, groupType, type, group, providerName }) => ({
       uri,
       providerName,
       group,
       type,
       dependsOn: pipe([
-        () => dependsOnInstance,
-        filter(pipe([get("dependsOn"), find(eq(get("uri"), uri))])),
+        () => plans,
+        pluck("resource"),
+        filter(
+          pipe([
+            get("dependencies"),
+            flatMap(({ providerName, groupType, ids }) =>
+              pipe([
+                () => ids,
+                map((id) => `${providerName}::${groupType}::${id}`),
+              ])()
+            ),
+            find(eq(identity, `${providerName}::${groupType}::${id}`)),
+          ])
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+        map(
+          pick([
+            "uri",
+            "name",
+            "id",
+            "group",
+            "type",
+            "groupType",
+            "providerName",
+          ])
+        ),
       ])(),
     })),
   ])();
@@ -257,18 +285,20 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
           name,
           uri,
           dependsOn: uniq([
-            ...findDependsOnType({
-              group,
-              providerName,
-              type,
-              plans,
-              dependsOnType: dependsOnTypeReverse(dependsOnType),
-            }),
-            // ...findDependsOnInstance({
-            //   uri,
+            // ...findDependsOnType({
+            //   group,
+            //   providerName,
+            //   type,
             //   plans,
-            //   dependsOnInstance: dependsOnInstanceReverse(dependsOnInstance),
+            //   dependsOnType: dependsOnTypeReverse(dependsOnType),
             // }),
+            ...findDependsOnInstance({
+              uri,
+              plans,
+              dependsOnInstance: dependsOnInstanceReverse({
+                plans,
+              }),
+            }),
           ]),
         })),
         tap((graph) => {

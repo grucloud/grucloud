@@ -13,7 +13,6 @@ const {
   any,
   or,
   assign,
-  pick,
 } = require("rubico");
 const {
   flatten,
@@ -617,7 +616,7 @@ const AwsClient =
                         error.live = live;
                         throw error;
                       }),
-                      isInstanceDown,
+                      or([isEmpty, isInstanceDown]),
                     ]),
                     config,
                   })
@@ -707,9 +706,7 @@ exports.createAwsResource = ({
 }) =>
   pipe([
     tap((params) => {
-      if (!config) {
-        assert(config);
-      }
+      assert(config);
     }),
     () => createEndpoint(model.package, model.client)(config),
     (endpoint) =>

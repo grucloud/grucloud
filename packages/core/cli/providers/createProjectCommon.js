@@ -65,22 +65,13 @@ exports.execCommandShell =
                 switchCase([
                   () => code === 0,
                   pipe([
-                    tap((params) => {
-                      assert(true);
-                    }),
                     () => stdout,
                     pipe([
                       tryCatch(JSON.parse, (error, output) => output),
                       resolve,
                     ]),
                   ]),
-                  pipe([
-                    () => stderr,
-                    tap((params) => {
-                      assert(true);
-                    }),
-                    reject,
-                  ]),
+                  pipe([() => stderr, reject]),
                 ]),
               ])()
           );

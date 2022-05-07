@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project ipam
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Ipam (1)
+++++ IpamScope (1)
+++++ IpamPool (2)
+++++ IpamPoolCidr (2)
+++++ Vpc (1)
+@endmindmap

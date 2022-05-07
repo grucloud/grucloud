@@ -430,7 +430,7 @@ exports.ProviderGru = ({
       listLives({ onStateChange, options, readWrite: true }),
       () =>
         pipe([
-          //TOSO start twice ?
+          //TODO start twice ?
           () => ({ onStateChange }),
           startProvider,
           map(({ provider, isProviderUp }) =>
@@ -487,7 +487,7 @@ exports.ProviderGru = ({
                 assign({
                   resultDestroy: () =>
                     provider.planDestroy({
-                      plans: plans,
+                      plans,
                       onStateChange,
                       options,
                     }),

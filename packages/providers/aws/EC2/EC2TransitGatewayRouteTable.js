@@ -10,6 +10,13 @@ const { tagResource, untagResource } = require("./EC2Common");
 
 const managedByOther = get("live.DefaultAssociationRouteTable");
 
+const findId = pipe([
+  get("live.TransitGatewayRouteTableId"),
+  tap((TransitGatewayRouteTableId) => {
+    assert(TransitGatewayRouteTableId);
+  }),
+]);
+
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
@@ -21,17 +28,31 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeTransitGatewayRouteTables",
     getParam: "TransitGatewayRouteTables",
+    decorate: ({ endpoint, getById }) =>
+      pipe([
+        tap((params) => {
+          assert(getById);
+          assert(endpoint);
+        }),
+      ]),
   },
-  create: { method: "createTransitGatewayRouteTable" },
-  destroy: { method: "deleteTransitGatewayRouteTable" },
+  create: {
+    method: "createTransitGatewayRouteTable",
+    isInstanceUp: pipe([eq(get("State"), "available")]),
+    pickCreated: ({ payload }) => pipe([get("TransitGatewayRouteTable")]),
+  },
+  destroy: {
+    method: "deleteTransitGatewayRouteTable",
+    pickId: pipe([
+      tap(({ TransitGatewayRouteTableId }) => {
+        assert(TransitGatewayRouteTableId);
+      }),
+      pick(["TransitGatewayRouteTableId"]),
+    ]),
+    shouldRetryOnExceptionMessages: ["has associated attachments"],
+    isInstanceDown: pipe([eq(get("State"), "deleted")]),
+  },
 });
-
-const findId = pipe([
-  get("live.TransitGatewayRouteTableId"),
-  tap((TransitGatewayRouteTableId) => {
-    assert(TransitGatewayRouteTableId);
-  }),
-]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
@@ -49,9 +70,6 @@ exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
       },
     ],
     findName: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       switchCase([
         get("live.DefaultAssociationRouteTable"),
         ({ live, lives }) =>
@@ -63,22 +81,13 @@ exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
                 group: "EC2",
                 providerName: config.providerName,
               }),
-            tap((params) => {
-              assert(true);
-            }),
             find(eq(get("live.TransitGatewayId"), live.TransitGatewayId)),
-            tap((params) => {
-              assert(true);
-            }),
             get("name"),
             append("-default"),
             prepend("tgw-rtb-"),
           ])(),
         findNameInTagsOrId({ findId }),
       ]),
-      tap((params) => {
-        assert(true);
-      }),
     ]),
     pickId: pipe([
       tap(({ TransitGatewayRouteTableId }) => {
@@ -88,24 +97,7 @@ exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
         TransitGatewayRouteTableIds: [TransitGatewayRouteTableId],
       }),
     ]),
-    pickIdDestroy: pipe([
-      tap(({ TransitGatewayRouteTableId }) => {
-        assert(TransitGatewayRouteTableId);
-      }),
-      pick(["TransitGatewayRouteTableId"]),
-    ]),
     findId,
-    decorateList: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
-
-    pickCreated: ({ payload }) => pipe([get("TransitGatewayRouteTable")]),
-    isInstanceUp: pipe([eq(get("State"), "available")]),
-    isInstanceDown: pipe([eq(get("State"), "deleted")]),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
