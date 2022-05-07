@@ -78,7 +78,7 @@ const writeDirectory =
           filter: (sourceFile, destination) =>
             pipe([
               () => sourceFile,
-              not(includes("node_modules")),
+              not(includes(`${projectName}/node_modules`)),
               tap((params) => {
                 logger.debug(`copy ${sourceFile}`);
               }),
