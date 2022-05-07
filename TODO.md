@@ -4,6 +4,11 @@
 
 ## Aws
 
+- add EgressOnlyInternetGateway: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createEgressOnlyInternetGateway-property
+
+- add route dependency to EgressOnlyInternetGatewayId
+- substitute zone, not ${region}/b
+
 - remove hard coded region from generate code
 
 - aws_route53_resolver_endpoint

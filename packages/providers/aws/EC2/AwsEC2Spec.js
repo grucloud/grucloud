@@ -670,9 +670,10 @@ module.exports = pipe([
               ),
             ])(),
       }),
-      filterLive: () => pipe([pick(["DestinationCidrBlock"])]),
+      filterLive: () =>
+        pipe([pick(["DestinationCidrBlock", "DestinationIpv6CidrBlock"])]),
       inferName: ({
-        properties: { DestinationCidrBlock },
+        properties: { DestinationCidrBlock, DestinationIpv6CidrBlock },
         dependenciesSpec: {
           routeTable,
           ig,
@@ -694,9 +695,14 @@ module.exports = pipe([
             () => vpcEndpoint,
             pipe([
               append(`-${vpcEndpoint}`),
+              //TODO switch case ?
               when(
                 () => DestinationCidrBlock,
                 append(`-${DestinationCidrBlock}`)
+              ),
+              when(
+                () => DestinationIpv6CidrBlock,
+                append(`-${DestinationIpv6CidrBlock}`)
               ),
               tap((params) => {
                 assert(true);
@@ -705,9 +711,20 @@ module.exports = pipe([
             () => transitGateway,
             pipe([
               tap((params) => {
-                assert(DestinationCidrBlock);
+                assert(
+                  DestinationCidrBlock || DestinationIpv6CidrBlock,
+                  `no DestinationCidrBlock or DestinationIpv6CidrBlock`
+                );
               }),
-              append(`-tgw-${DestinationCidrBlock}`),
+              append(`-tgw-`),
+              when(
+                () => DestinationCidrBlock,
+                append(`-${DestinationCidrBlock}`)
+              ),
+              when(
+                () => DestinationIpv6CidrBlock,
+                append(`-${DestinationIpv6CidrBlock}`)
+              ),
             ]),
             append("-local"),
           ]),
@@ -991,6 +1008,7 @@ module.exports = pipe([
         firewall: {
           type: "Firewall",
           group: "NetworkFirewall",
+          parent: true,
           ignoreOnDestroy: true,
         },
       },
