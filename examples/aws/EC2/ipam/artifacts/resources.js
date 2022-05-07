@@ -31,4 +31,68 @@ exports.createResources = () => [
       ipam: "ipam",
     }),
   },
+  {
+    type: "IpamPool",
+    group: "EC2",
+    name: "pool-regional",
+    properties: ({ config }) => ({
+      IpamScopeType: "private",
+      IpamRegion: `${config.region}`,
+      Locale: "us-east-1",
+      Description: "",
+      AutoImport: false,
+      AddressFamily: "ipv4",
+      AllocationMinNetmaskLength: 0,
+      AllocationMaxNetmaskLength: 32,
+    }),
+    dependencies: ({}) => ({
+      ipamPoolSource: "pool-top-level",
+      ipamScope: "my-ipam-scope",
+    }),
+  },
+  {
+    type: "IpamPool",
+    group: "EC2",
+    name: "pool-top-level",
+    properties: ({ config }) => ({
+      IpamScopeType: "private",
+      IpamRegion: `${config.region}`,
+      Description: "",
+      AutoImport: false,
+      AddressFamily: "ipv4",
+      AllocationMinNetmaskLength: 0,
+      AllocationMaxNetmaskLength: 32,
+    }),
+    dependencies: ({}) => ({
+      ipamScope: "my-ipam-scope",
+    }),
+  },
+  {
+    type: "IpamPoolCidr",
+    group: "EC2",
+    properties: ({}) => ({
+      Cidr: "10.0.0.0/16",
+    }),
+    dependencies: ({}) => ({
+      ipamPool: "pool-top-level",
+    }),
+  },
+  {
+    type: "IpamPoolCidr",
+    group: "EC2",
+    properties: ({}) => ({
+      Cidr: "10.0.0.0/24",
+    }),
+    dependencies: ({}) => ({
+      ipamPool: "pool-regional",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-in-pool",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/28",
+    }),
+  },
 ];

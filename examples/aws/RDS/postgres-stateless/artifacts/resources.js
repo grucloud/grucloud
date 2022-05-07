@@ -246,6 +246,14 @@ exports.createResources = () => [
   { type: "ElasticIpAddress", group: "EC2", name: "eip-bastion" },
   { type: "ElasticIpAddress", group: "EC2", name: "iep" },
   {
+    type: "ElasticIpAddressAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      eip: "eip-bastion",
+      instance: "bastion",
+    }),
+  },
+  {
     type: "Instance",
     group: "EC2",
     name: "bastion",
@@ -261,7 +269,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       subnet: "subnet-public-a",
       keyPair: "kp-postgres-stateless",
-      eip: "eip-bastion",
       securityGroups: ["sg::vpc::security-group-public"],
     }),
   },

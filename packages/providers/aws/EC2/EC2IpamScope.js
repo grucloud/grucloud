@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
-const { defaultsDeep, find } = require("rubico/x");
+const { pipe, tap, get, pick, eq, switchCase } = require("rubico");
+const { defaultsDeep, find, append, prepend } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
@@ -79,8 +79,27 @@ exports.EC2IpamScope = ({ spec, config }) =>
       tap((params) => {
         assert(true);
       }),
-      //TODO default name
-      findNameInTagsOrId({ findId }),
+      switchCase([
+        get("live.IsDefault"),
+        ({ live, lives }) =>
+          pipe([
+            () =>
+              lives.getByType({
+                id: live.IpamId,
+                type: "Ipam",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            find(eq(get("live.IpamArn"), live.IpamArn)),
+            get("name"),
+            tap((name) => {
+              assert(name);
+            }),
+            prepend(`ipam-scope::default::`),
+            append(live.IpamScopeType),
+          ])(),
+        findNameInTagsOrId({ findId }),
+      ]),
     ]),
     findId,
     cannotBeDeleted: managedByOther,

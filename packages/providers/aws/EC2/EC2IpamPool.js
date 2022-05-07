@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
-const { defaultsDeep, find } = require("rubico/x");
+const { pipe, tap, get, pick, eq, omit, assign } = require("rubico");
+const { defaultsDeep, find, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
@@ -14,9 +14,6 @@ const createModel = ({ config }) => ({
   ignoreErrorCodes: ["InvalidIpamPoolId.NotFound"],
   getById: {
     pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       tap(({ IpamPoolId }) => {
         assert(IpamPoolId);
       }),
@@ -44,6 +41,24 @@ const createModel = ({ config }) => ({
   create: {
     method: "createIpamPool",
     pickCreated: ({ payload }) => pipe([get("IpamPool")]),
+    isInstanceUp: eq(get("State"), "create-complete"),
+  },
+  //TODO
+  update: {
+    method: "modifyIpamPool",
+    pickId: pipe([pick(["IpamPoolId"])]),
+    filterParams: ({ pickId, payload, live }) =>
+      pipe([
+        () => payload,
+        tap((params) => {
+          assert(pickId);
+        }),
+        omit(["TagSpecifications"]),
+        defaultsDeep(pickId(live)),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
     isInstanceUp: eq(get("State"), "create-complete"),
   },
   destroy: {
@@ -82,6 +97,11 @@ exports.EC2IpamPool = ({ spec, config }) =>
           ])(),
         ],
       },
+      {
+        type: "IpamPool",
+        group: "EC2",
+        ids: [pipe([() => live.SourceIpamPoolId])()],
+      },
     ],
     getByName: getByNameCore,
     tagResource: tagResource,
@@ -90,7 +110,7 @@ exports.EC2IpamPool = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: { ipamScope },
+      dependencies: { ipamScope, ipamPoolSource },
     }) =>
       pipe([
         () => otherProps,
@@ -103,5 +123,11 @@ exports.EC2IpamPool = ({ spec, config }) =>
             },
           ],
         }),
+        when(
+          () => ipamPoolSource,
+          defaultsDeep({
+            SourceIpamPoolId: getField(ipamPoolSource, "IpamPoolId"),
+          })
+        ),
       ])(),
   });

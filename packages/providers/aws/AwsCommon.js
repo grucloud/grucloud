@@ -226,7 +226,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
               //   `shouldRetryOnException: ${name}, error: ${util.inspect(error)}`
               // );
               logger.info(
-                `shouldRetryOnException: name: ${error.name}, code: ${error.code}`
+                `shouldRetryOnException: name: ${error.name}, code: ${error.code}, message: ${error.message}`
               );
             }),
             or([

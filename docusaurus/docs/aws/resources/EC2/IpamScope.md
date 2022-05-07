@@ -3,7 +3,7 @@ id: IpamScope
 title: IPAM Scope
 ---
 
-Provides a [VPC IP Address Manager Scope](https://console.aws.amazon.com/ipam/home#:)
+Provides a [VPC IP Address Manager Scope](https://console.aws.amazon.com/ipam/home?#Scopes)
 
 ```js
 exports.createResources = () => [

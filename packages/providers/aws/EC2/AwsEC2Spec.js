@@ -59,6 +59,7 @@ const { EC2DhcpOptions } = require("./EC2DhcpOptions");
 const { EC2Ipam } = require("./EC2Ipam");
 const { EC2IpamScope } = require("./EC2IpamScope");
 const { EC2IpamPool } = require("./EC2IpamPool");
+const { EC2IpamPoolCidr } = require("./EC2IpamPoolCidr");
 
 const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
 const { EC2RouteTable } = require("./EC2RouteTable");
@@ -277,6 +278,8 @@ const assingIpamRegion = ({ providerConfig }) =>
     IpamRegion: pipe([get("IpamRegion"), replaceRegion({ providerConfig })]),
   });
 
+const omitLocaleNone = when(eq(get("Locale"), "None"), omit(["Locale"]));
+
 module.exports = pipe([
   () => [
     {
@@ -345,7 +348,7 @@ module.exports = pipe([
           assingIpamRegion({ providerConfig }),
         ]),
       dependencies: {
-        ipam: { type: "Ipam", group: "EC2", parent: true },
+        ipam: { type: "Ipam", group: "EC2" },
       },
     },
     {
@@ -353,18 +356,33 @@ module.exports = pipe([
       Client: EC2IpamPool,
       includeDefaultDependencies: true,
       omitProperties: [
+        "SourceIpamPoolId",
         "IpamArn",
         "IpamPoolArn",
         "IpamPoolId",
+        "IpamScopeId",
         "IpamScopeArn",
         "PoolDepth",
         "OwnerId",
         "State",
       ],
+      compare: compareEC2({
+        filterLive: () => pipe([omitLocaleNone]),
+      }),
       filterLive: ({ providerConfig }) =>
-        pipe([assingIpamRegion({ providerConfig })]),
+        pipe([assingIpamRegion({ providerConfig }), omitLocaleNone]),
       dependencies: {
-        ipamScope: { type: "IpamScope", group: "EC2", parent: true },
+        ipamPoolSource: { type: "IpamPool", group: "EC2" },
+        ipamScope: { type: "IpamScope", group: "EC2" },
+      },
+    },
+    {
+      type: "IpamPoolCidr",
+      Client: EC2IpamPoolCidr,
+      omitProperties: ["IpamPoolId", "State", "FailureReason"],
+      inferName: pipe([get("properties.Cidr")]),
+      dependencies: {
+        ipamPool: { type: "IpamPool", group: "EC2", parent: true },
       },
     },
     {

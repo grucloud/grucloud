@@ -20,20 +20,6 @@ exports.createResources = () => [
   {
     type: "IpamScope",
     group: "EC2",
-    name: "ipam-scope-04dd070caa9d40f75",
-    readOnly: true,
-    properties: ({ config }) => ({
-      IpamRegion: `${config.region}`,
-      IpamScopeType: "private",
-      IsDefault: true,
-    }),
-    dependencies: ({}) => ({
-      ipam: "ipam",
-    }),
-  },
-  {
-    type: "IpamScope",
-    group: "EC2",
     name: "my-ipam-scope",
     properties: ({ config }) => ({
       IpamRegion: `${config.region}`,
@@ -48,20 +34,65 @@ exports.createResources = () => [
   {
     type: "IpamPool",
     group: "EC2",
-    name: "my-pool",
+    name: "pool-regional",
     properties: ({ config }) => ({
       IpamScopeType: "private",
       IpamRegion: `${config.region}`,
-      Locale: "None",
+      Locale: "us-east-1",
       Description: "",
       AutoImport: false,
       AddressFamily: "ipv4",
-      AllocationMinNetmaskLength: 12,
+      AllocationMinNetmaskLength: 0,
       AllocationMaxNetmaskLength: 32,
-      AllocationDefaultNetmaskLength: 22,
     }),
     dependencies: ({}) => ({
-      ipamScope: "ipam-scope-04dd070caa9d40f75",
+      ipamPoolSource: "pool-top-level",
+      ipamScope: "my-ipam-scope",
+    }),
+  },
+  {
+    type: "IpamPool",
+    group: "EC2",
+    name: "pool-top-level",
+    properties: ({ config }) => ({
+      IpamScopeType: "private",
+      IpamRegion: `${config.region}`,
+      Description: "",
+      AutoImport: false,
+      AddressFamily: "ipv4",
+      AllocationMinNetmaskLength: 0,
+      AllocationMaxNetmaskLength: 32,
+    }),
+    dependencies: ({}) => ({
+      ipamScope: "my-ipam-scope",
+    }),
+  },
+  {
+    type: "IpamPoolCidr",
+    group: "EC2",
+    properties: ({}) => ({
+      Cidr: "10.0.0.0/16",
+    }),
+    dependencies: ({}) => ({
+      ipamPool: "pool-top-level",
+    }),
+  },
+  {
+    type: "IpamPoolCidr",
+    group: "EC2",
+    properties: ({}) => ({
+      Cidr: "10.0.0.0/24",
+    }),
+    dependencies: ({}) => ({
+      ipamPool: "pool-regional",
+    }),
+  },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-in-pool",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/28",
     }),
   },
 ];
