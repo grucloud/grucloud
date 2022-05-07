@@ -267,7 +267,10 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
 
 const createEndpointOption = ({ region } = {}) =>
   pipe([
-    () => ({}),
+    tap((params) => {
+      assert(true);
+    }),
+    (region) => ({ region }),
     when(
       () => region,
       defaultsDeep({
@@ -293,13 +296,14 @@ const createEndpointOption = ({ region } = {}) =>
 
 exports.createEndpointOption = createEndpointOption;
 
-const createEndpointProxy = (client) => (config) =>
+const createEndpointProxy = (regionForce) => (client) => (config) =>
   pipe([
     tap((params) => {
       assert(client);
       assert(config.region);
     }),
-    createEndpointOption(),
+    () => regionForce,
+    createEndpointOption(config),
     tap((params) => {
       assert(true);
     }),
@@ -308,9 +312,7 @@ const createEndpointProxy = (client) => (config) =>
       new Proxy({}, proxyHandler({ endpointName: client.name, endpoint })),
   ]);
 
-exports.createEndpointProxy = createEndpointProxy;
-
-const createEndpoint = (packageName, entryPoint) =>
+const createEndpoint = (packageName, entryPoint, regionForce) =>
   pipe([
     tap((params) => {
       assert(true);
@@ -324,7 +326,7 @@ const createEndpoint = (packageName, entryPoint) =>
     tap((endpoint) => {
       assert(endpoint, `no endpoint ${packageName}:${entryPoint}`);
     }),
-    createEndpointProxy,
+    createEndpointProxy(regionForce),
   ])();
 
 exports.createEndpoint = createEndpoint;

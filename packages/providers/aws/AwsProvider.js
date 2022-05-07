@@ -9,6 +9,7 @@ const {
   not,
   map,
   fork,
+  switchCase,
 } = require("rubico");
 const {
   first,
@@ -17,11 +18,17 @@ const {
   size,
   defaultsDeep,
   when,
+  callProp,
+  includes,
 } = require("rubico/x");
+const shell = require("shelljs");
 
 const path = require("path");
 
 const { STS } = require("@aws-sdk/client-sts");
+const {
+  execCommandShell,
+} = require("@grucloud/core/cli/providers/createProjectCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
@@ -86,36 +93,59 @@ exports.AwsProvider = ({
 }) => {
   assert(config ? isFunction(config) : true, "config must be a function");
 
-  const { AWSAccessKeyId, AWSSecretKey } = process.env;
-
-  // AWS.config.update({
-  //   ...(AWSAccessKeyId && {
-  //     accessKeyId: AWSAccessKeyId,
-  //   }),
-  //   ...(AWSSecretKey && {
-  //     secretAccessKey: AWSSecretKey,
-  //   }),
-  // });
-
   let accountId;
   let zone;
   let zones;
 
+  const getRegionFromCredentialFiles = pipe([
+    () => `aws configure get region`,
+    (command) => shell.exec(command, { silent: true }),
+    ({ stdout, stderr, code }) =>
+      switchCase([
+        () => code === 0,
+        pipe([() => stdout]),
+        pipe([
+          tap((params) => {
+            throw Error(stderr);
+          }),
+        ]),
+      ])(),
+    // TODO cut and paste with createProjetAws.js
+    callProp("split", "\n"),
+    first,
+    when(includes("undefined"), () => undefined),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
   const getRegion = (config) =>
     pipe([
-      () => ({}),
-      when(
-        () => process.env.AWS_REGION,
-        defaultsDeep({ region: process.env.AWS_REGION })
-      ),
-      defaultsDeep(config),
-      get("region", "us-east-1"),
-      tap((region) => {
-        assert(region);
-        logger.info(`using region '${region}'`);
+      tap((params) => {
+        assert(config);
+      }),
+      getRegionFromCredentialFiles,
+      (regionFromCredentialFiles) =>
+        pipe([
+          () => ({}),
+          when(
+            () => process.env.AWS_REGION,
+            defaultsDeep({ region: process.env.AWS_REGION })
+          ),
+          defaultsDeep({ region: regionFromCredentialFiles }),
+          defaultsDeep(config),
+          get("region", "us-east-1"),
+          tap((region) => {
+            assert(region);
+            logger.info(`using region '${region}'`);
+          }),
+        ])(),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 
+  //let region;
   let region = getRegion(
     mergeConfig({
       config,
@@ -141,20 +171,22 @@ exports.AwsProvider = ({
   ]);
 
   const getZone = ({ zones, config }) => config.zone() || first(zones);
-
-  const start = async () => {
-    accountId = await fetchAccountId();
-    const merged = makeConfig();
-    zones = await getAvailabilityZonesName({ region });
-    assert(zones, `no zones for region ${region}`);
-    zone = getZone({ zones, config: merged });
-    assert(zone);
-    validateConfig({
-      region,
-      zone,
-      zones,
-    });
-  };
+  //TODO refactor
+  const start = pipe([
+    tap(async (params) => {
+      accountId = await fetchAccountId();
+      const merged = makeConfig();
+      zones = await getAvailabilityZonesName({ region });
+      assert(zones, `no zones for region ${region}`);
+      zone = getZone({ zones, config: merged });
+      assert(zone);
+      validateConfig({
+        region,
+        zone,
+        zones,
+      });
+    }),
+  ]);
 
   const info = () => ({
     accountId,

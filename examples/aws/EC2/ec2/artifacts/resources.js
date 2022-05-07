@@ -23,7 +23,7 @@ exports.createResources = () => [
         Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
       },
       Placement: {
-        AvailabilityZone: `${config.region}d`,
+        AvailabilityZone: `${config.region}a`,
       },
     }),
     dependencies: ({}) => ({
