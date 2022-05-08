@@ -21,6 +21,8 @@ const {
   callProp,
   includes,
 } = require("rubico/x");
+const { EOL } = require("os");
+
 const shell = require("shelljs");
 
 const path = require("path");
@@ -111,8 +113,7 @@ exports.AwsProvider = ({
         ]),
       ])(),
     // TODO cut and paste with createProjetAws.js
-    callProp("split", "\n"),
-    first,
+    callProp("replace", EOL, ""),
     when(includes("undefined"), () => undefined),
     tap((params) => {
       assert(true);

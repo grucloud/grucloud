@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { EOL } = require("os");
 const { pipe, get, tap, assign, eq, map, tryCatch } = require("rubico");
 const {
   append,
@@ -87,8 +88,7 @@ const promptRegion = pipe([
       pipe([
         () => "configure get region",
         awsExecCommand(),
-        callProp("split", "\n"),
-        first,
+        callProp("replace", EOL, ""),
         when(includes("undefined"), () => undefined),
       ]),
       () => undefined
