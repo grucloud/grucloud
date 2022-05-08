@@ -14,6 +14,7 @@ const {
   buildTags,
   findValueInTags,
   findNamespaceInTagsOrEksCluster,
+  DecodeUserData,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const {
@@ -136,6 +137,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
               assign({ Image: imageDescriptionFromId({ ec2 }) })
             ),
             omit(["TagSpecifications"]),
+            DecodeUserData,
           ]),
         }),
         defaultsDeep(launchTemplate),
@@ -198,7 +200,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     dependencies,
   }) =>
     pipe([
-      () => otherProps,
+      () => ({}),
       defaultsDeep({
         LaunchTemplateName: name,
         TagSpecifications: [
@@ -220,10 +222,8 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
           dependencies,
         }),
       }),
+      defaultsDeep(otherProps),
       omit(["LaunchTemplateData.Image"]),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   return {

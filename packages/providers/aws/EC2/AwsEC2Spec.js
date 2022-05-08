@@ -31,7 +31,6 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 const {
   compareAws,
   isOurMinion,
-  DecodeUserData,
   assignPolicyDocumentAccountAndRegion,
   replaceRegion,
 } = require("../AwsCommon");
@@ -925,7 +924,6 @@ module.exports = pipe([
               }),
             ]),
           }),
-          DecodeUserData,
         ]),
       dependencies: ec2InstanceDependencies,
     },
@@ -973,7 +971,6 @@ module.exports = pipe([
                 "IamInstanceProfile",
                 "KeyName",
               ]),
-              DecodeUserData,
             ]),
           }),
         ]),

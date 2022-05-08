@@ -50,6 +50,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       LaunchTemplateData: {
         InstanceType: "t2.micro",
+        UserData:
+          "#!/bin/sh\nyum update -y\namazon-linux-extras install docker\nservice docker start\nusermod -a -G docker ec2-user\nchkconfig docker on",
         Image: {
           Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
         },

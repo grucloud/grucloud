@@ -21,7 +21,7 @@ const {
   first,
   pluck,
   flatten,
-  size,
+  unless,
   find,
   includes,
   when,
@@ -77,11 +77,9 @@ const configDefault =
       (ImageId) =>
         pipe([
           () => otherProperties,
+          //TODO use when
           defaultsDeep({
             ImageId,
-            ...(UserData && {
-              UserData: Buffer.from(UserData, "utf-8").toString("base64"),
-            }),
             ...(iamInstanceProfile && {
               IamInstanceProfile: {
                 Arn: getField(iamInstanceProfile, "Arn"),
@@ -97,6 +95,13 @@ const configDefault =
             }),
             ...(keyPair && { KeyName: keyPair.resource.name }),
           }),
+          // UserData
+          when(
+            () => UserData,
+            assign({
+              UserData: () => Buffer.from(UserData, "utf-8").toString("base64"),
+            })
+          ),
           // Subnet
           when(
             () => subnet,
@@ -275,6 +280,9 @@ exports.EC2Instance = ({ spec, config }) => {
           }),
           ec2().describeInstanceAttribute,
           get("UserData.Value"),
+          unless(isEmpty, (UserData) =>
+            Buffer.from(UserData, "base64").toString()
+          ),
         ]),
       }),
     ]);
