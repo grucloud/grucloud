@@ -4,40 +4,42 @@ const { find, includes, append, callProp } = require("rubico/x");
 const assert = require("assert");
 const AwsServicesAvailability = require("./AwsServicesAvailability.json");
 const GROUPS = [
-  "ACM",
-  "ApiGateway",
-  "ApiGatewayV2",
-  "AppRunner",
-  "AppSync",
-  "AutoScaling",
-  "CloudFront",
-  "CloudFormation",
-  "CloudTrail",
-  "CloudWatchEvent",
-  "CloudWatchLogs",
-  "CognitoIdentityServiceProvider",
-  "DynamoDB",
-  "EC2",
-  "ECR",
-  "ECS",
-  "EFS",
-  "EKS",
-  "ELBv2",
-  "IAM",
-  "KMS",
-  "Lambda",
-  "NetworkFirewall",
-  "RDS",
-  "Route53",
-  "S3",
-  "SecretsManager",
-  "StepFunctions",
-  "SNS",
-  "SQS",
-  "SSM",
+  ["ACM", "acm"],
+  ["ApiGateway", "apigateway"],
+  ["ApiGatewayV2", "apigatewayv2"],
+  ["AppRunner", "apprunner"],
+  ["AppSync", "appsync"],
+  ["AutoScaling", "autoscaling"],
+  ["CloudFront", "cloudfront"],
+  ["CloudFormation", "cloudformation"],
+  ["CloudTrail", "cloudtrail"],
+  ["CloudWatchEvent", "cloudwatch"],
+  ["CognitoIdentityServiceProvider", "cognito-idp"],
+  ["DynamoDB", "dynamodb"],
+  ["EC2", "ec2"],
+  ["ECR", "ecr"],
+  ["ECS", "ecr"],
+  ["EFS", "efs"],
+  ["EKS", "eks"],
+  ["ELBv2", "elb"],
+  ["IAM", "iam"],
+  ["KMS", "kms"],
+  ["Lambda", "lambda"],
+  ["NetworkFirewall", "network-firewall"],
+  ["RDS", "rds"],
+  ["Route53", "route53"],
+  ["S3", "s3"],
+  ["SecretsManager", "secretsmanager"],
+  ["StepFunctions", "sns"],
+  ["SNS", "sns"],
+  ["SQS", "sqs"],
+  ["SSM", "ssm"],
 ];
 
-const GROUPS_GLOBAL = ["Route53Domain"];
+const GROUPS_GLOBAL = [
+  "Route53Domain", // always on us-east-1
+  "CloudWatchLogs", // missing from the list provider by AWS
+];
 
 const findServicesPerRegion = ({ region }) =>
   pipe([
@@ -66,13 +68,22 @@ exports.fnSpecs = (config) =>
           assert(servicesPerRegion);
         }),
         () => GROUPS,
-        filter((group) =>
+        filter(([group, client]) =>
           pipe([
+            tap((params) => {
+              assert(client);
+            }),
             () => servicesPerRegion,
-            map(callProp("replaceAll", "-", "")),
-            includes(group.toLowerCase()),
+            tap((params) => {
+              assert(true);
+            }),
+            includes(client),
           ])()
         ),
+        map(([group]) => group),
+        tap((params) => {
+          assert(true);
+        }),
         append(GROUPS_GLOBAL),
         flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
       ])(),
