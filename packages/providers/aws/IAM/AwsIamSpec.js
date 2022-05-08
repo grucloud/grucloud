@@ -121,6 +121,7 @@ module.exports = pipe([
               "LoginProfile",
               "Policies",
               "AccessKeys",
+              "PasswordLastUsed",
             ]),
           ]),
       }),

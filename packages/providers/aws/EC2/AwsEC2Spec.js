@@ -389,7 +389,7 @@ module.exports = pipe([
       type: "KeyPair",
       Client: AwsClientKeyPair,
       propertiesDefault: { KeyType: "rsa" },
-      omitProperties: ["KeyPairId", "KeyFingerprint"],
+      omitProperties: ["KeyPairId", "KeyFingerprint", "CreateTime"],
       filterLive: () => pick([]),
     },
 
