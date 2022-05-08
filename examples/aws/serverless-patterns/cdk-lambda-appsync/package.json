@@ -1,6 +1,6 @@
 {
   "name": "cdk-lambda-appsync",
-  "version": "6.2.1",
+  "version": "6.2.2",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^6.2.1",
-    "@grucloud/provider-aws": "^6.2.1",
+    "@grucloud/provider-aws": "^6.2.2",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
