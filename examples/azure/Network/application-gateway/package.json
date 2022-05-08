@@ -1,6 +1,6 @@
 {
   "name": "application-gateway",
-  "version": "6.2.4",
+  "version": "6.2.5",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^6.2.4",
-    "@grucloud/provider-azure": "^6.2.4",
+    "@grucloud/core": "^6.2.5",
+    "@grucloud/provider-azure": "^6.2.5",
     "rubico": "^1.8.3"
   },
   "devDependencies": {

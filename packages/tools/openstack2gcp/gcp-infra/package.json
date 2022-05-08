@@ -1,6 +1,6 @@
 {
   "name": "grucloud-test",
-  "version": "6.2.4",
+  "version": "6.2.5",
   "description": "",
   "main": "iac.js",
   "private": true,
@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/provider-google": "^6.2.4",
+    "@grucloud/provider-google": "^6.2.5",
     "rubico": "^1.7.0"
   }
 }
