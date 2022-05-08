@@ -22,6 +22,7 @@ describe("EC2 IpamPoolCidr", async function () {
         ipamPoolCidr.destroy({
           live: {
             IpamPoolId: "ipam-pool-xxxxxxxxxxxxxxxxx",
+            Cidr: "10.0.0.0/24",
           },
         }),
     ])
@@ -32,6 +33,7 @@ describe("EC2 IpamPoolCidr", async function () {
       () =>
         ipamPoolCidr.getById({
           IpamPoolId: "ipam-pool-xxxxxxxxxxxxxxxxx",
+          Cidr: "10.0.0.0/24",
         }),
     ])
   );

@@ -4,7 +4,7 @@ const { defaultsDeep, first, unless } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { retryCall } = require("@grucloud/core/Retry");
 
-const { findNameInTagsOrId } = require("../AwsCommon");
+const { findNameInTagsOrId, isAwsError } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -20,6 +20,7 @@ const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
   //TODO what is cidr does not exist
+
   ignoreErrorCodes: ["InvalidIpamPoolId.NotFound"],
   getById: {
     pickId,
@@ -89,6 +90,7 @@ exports.EC2IpamPoolCidr = ({ spec, config }) =>
                 ])
               ),
             ]),
+            isExpectedException: isAwsError("InvalidIpamPoolId.NotFound"),
             shouldRetryOnException: pipe([
               eq(get("error.name"), "IncorrectState"),
             ]),
