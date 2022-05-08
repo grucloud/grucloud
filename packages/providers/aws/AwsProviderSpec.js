@@ -81,10 +81,8 @@ exports.fnSpecs = (config) =>
           ])()
         ),
         map(([group]) => group),
-        tap((params) => {
-          assert(true);
-        }),
         append(GROUPS_GLOBAL),
+        callProp("sort", (a, b) => a.localeCompare(b)),
         flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
       ])(),
   ])();
