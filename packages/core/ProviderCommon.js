@@ -9,7 +9,6 @@ const {
   get,
   any,
   reduce,
-  fork,
   eq,
   not,
   and,
@@ -97,8 +96,19 @@ const isTypesMatch = ({ typeToMatch }) =>
   ]);
 exports.isTypesMatch = isTypesMatch;
 
-const isTypeMatch = ({ type, typeToMatch }) =>
-  new RegExp(`^${type}`, "i").test(typeToMatch);
+const isTypeMatch = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  or([
+    ({ type, typeToMatch }) => new RegExp(`^${type}`, "i").test(typeToMatch),
+    ({ type, groupTypeToMatch }) =>
+      new RegExp(`^${type}`, "i").test(groupTypeToMatch),
+  ]),
+  tap((params) => {
+    assert(true);
+  }),
+]);
 
 exports.isTypeMatch = isTypeMatch;
 
@@ -236,7 +246,10 @@ const filterByType =
               ]),
             ]),
             () => true,
-            isTypesMatch({ typeToMatch: spec.type }),
+            isTypesMatch({
+              typeToMatch: spec.type,
+              groupTypeToMatch: spec.groupType,
+            }),
           ]),
         ])()
       ),

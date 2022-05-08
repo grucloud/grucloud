@@ -63,7 +63,6 @@ const {
   nextStateOnError,
   hasResultError,
   PlanDirection,
-  isTypesMatch,
   isTypeMatch,
   isValidPlan,
   filterReadClient,
@@ -1349,7 +1348,13 @@ function CoreProvider({
         () => !isEmpty(types),
         pipe([
           () => types,
-          any((type) => isTypeMatch({ type, typeToMatch: client.spec.type })),
+          any((type) =>
+            isTypeMatch({
+              type,
+              typeToMatch: client.spec.type,
+              groupTypeToMatch: client.spec.groupType,
+            })
+          ),
           tap((params) => {
             assert(true);
           }),
