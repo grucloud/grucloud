@@ -9,7 +9,7 @@ const GROUPS = [
   ["ApiGatewayV2", "apigatewayv2"],
   ["AppRunner", "apprunner"],
   ["AppSync", "appsync"],
-  ["AutoScaling", "autoscaling"],
+  ["Autoscaling", "autoscaling"],
   ["CloudFront", "cloudfront"],
   ["CloudFormation", "cloudformation"],
   ["CloudTrail", "cloudtrail"],
