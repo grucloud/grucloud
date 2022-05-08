@@ -1,6 +1,6 @@
 {
   "name": "starhackit-eks-lbc",
-  "version": "6.2.2",
+  "version": "6.2.3",
   "private": true,
   "description": "deploying starhackit on AWS EKS with the Load Balancer Controller",
   "main": "index.js",
@@ -15,7 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^6.2.1",
-    "@grucloud/provider-aws": "^6.2.2",
+    "@grucloud/provider-aws": "^6.2.3",
     "@grucloud/provider-k8s": "^6.2.1",
     "rubico": "^1.6.27"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-eks-simple",
-  "version": "6.2.2",
+  "version": "6.2.3",
   "description": "Example for the AWS EKS",
   "main": "iac.js",
   "private": true,
@@ -22,7 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^6.2.1",
-    "@grucloud/provider-aws": "^6.2.2",
+    "@grucloud/provider-aws": "^6.2.3",
     "rubico": "^1.8.3"
   },
   "devDependencies": {

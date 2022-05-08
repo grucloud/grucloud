@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-aws",
-  "version": "6.2.2",
+  "version": "6.2.3",
   "description": "The GruCloud AWS provider",
   "main": "AwsProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/aws",
