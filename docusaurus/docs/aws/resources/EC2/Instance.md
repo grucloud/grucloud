@@ -38,6 +38,8 @@ exports.createResources = () => [
 - [attached an EBS volume](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/volume)
 - [example with IAM](https://github.com/grucloud/grucloud/blob/main/examples/aws/IAM/iam)
 - [full example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
+- [EC2 based launch template](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/launchTemplate)
+- [EC2 based launch template](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/launchTemplate-sg)
 
 ### Properties
 
@@ -49,6 +51,7 @@ exports.createResources = () => [
 - [Subnet](./Subnet.md)
 - [KeyPair](./KeyPair.md)
 - [Image](./Image.md)
+- [LaunchTemplate](./LaunchTemplate.md)
 - [IamInstanceProfile](../IAM/InstanceProfile.md)
 
 ### Used By

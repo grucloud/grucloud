@@ -14,6 +14,7 @@ const {
   any,
   switchCase,
   filter,
+  fork,
 } = require("rubico");
 const {
   first,
@@ -27,7 +28,11 @@ const {
   isDeepEqual,
   callProp,
 } = require("rubico/x");
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const {
+  omitIfEmpty,
+  replaceWithName,
+  differenceObject,
+} = require("@grucloud/core/Common");
 const {
   compareAws,
   isOurMinion,
@@ -143,9 +148,10 @@ const securityGroupRulePickProperties = pipe([
 ]);
 
 const ec2InstanceDependencies = {
-  subnet: {
+  subnets: {
     type: "Subnet",
     group: "EC2",
+    list: true,
   },
   keyPair: { type: "KeyPair", group: "EC2" },
   iamInstanceProfile: { type: "InstanceProfile", group: "IAM" },
@@ -278,6 +284,37 @@ const assingIpamRegion = ({ providerConfig }) =>
   });
 
 const omitLocaleNone = when(eq(get("Locale"), "None"), omit(["Locale"]));
+
+const getLaunchTemplateIdFromTags = pipe([
+  get("Tags"),
+  find(eq(get("Key"), "aws:ec2launchtemplate:id")),
+  get("Value"),
+]);
+
+const getLaunchTemplateByIdFromLives =
+  ({ lives }) =>
+  (LaunchTemplateId) =>
+    pipe([
+      () => LaunchTemplateId,
+      unless(
+        isEmpty,
+        pipe([
+          () => lives,
+          find(
+            and([
+              eq(get("groupType"), "EC2::LaunchTemplate"),
+              eq(get("id"), LaunchTemplateId),
+            ])
+          ),
+        ])
+      ),
+    ])();
+
+const getLaunchTemplateVersionFromTags = pipe([
+  get("Tags"),
+  find(eq(get("Key"), "aws:ec2launchtemplate:version")),
+  get("Value"),
+]);
 
 module.exports = pipe([
   () => [
@@ -905,27 +942,171 @@ module.exports = pipe([
     {
       type: "Instance",
       Client: EC2Instance,
+      includeDefaultDependencies: true,
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
       propertiesDefault: {
         MaxCount: 1,
         MinCount: 1,
         Placement: { GroupName: "", Tenancy: "default" },
+        Monitoring: {
+          State: "disabled",
+        },
+        EbsOptimized: false,
+        EnaSupport: true,
+        SourceDestCheck: true,
+        // The t2.micro instance type does not support specifying CpuOptions.
+        // CpuOptions: {
+        //   CoreCount: 1,
+        //   ThreadsPerCore: 1,
+        // },
+        CapacityReservationSpecification: {
+          CapacityReservationPreference: "open",
+        },
+        HibernationOptions: {
+          Configured: false,
+        },
+        MetadataOptions: {
+          HttpTokens: "optional",
+          HttpPutResponseHopLimit: 1,
+          HttpEndpoint: "enabled",
+          HttpProtocolIpv6: "disabled",
+          InstanceMetadataTags: "disabled",
+        },
+        EnclaveOptions: {
+          Enabled: false,
+        },
+        MaintenanceOptions: {
+          AutoRecovery: "default",
+        },
       },
       compare: compareEC2Instance,
       isOurMinion: isOurMinionEC2Instance,
-      filterLive: () =>
-        pipe([
-          pick(["InstanceType", "Image", "UserData", "Placement"]),
-          assign({
-            Placement: pipe([
-              get("Placement"),
+      omitProperties: [
+        "KeyName",
+        "PublicIpAddress",
+        "AmiLaunchIndex",
+        "ImageId",
+        "InstanceId",
+        "VpcId",
+        "LaunchTime",
+        "PrivateDnsName",
+        "PrivateIpAddress",
+        "ProductCodes",
+        "PublicDnsName",
+        "State",
+        "StateTransitionReason",
+        "SubnetId",
+        "Architecture",
+        "ClientToken",
+        "IamInstanceProfile",
+        "SecurityGroups",
+        "PlatformDetails",
+        "UsageOperation",
+        "UsageOperationUpdateTime",
+        "RootDeviceName",
+        "RootDeviceType",
+        "PrivateDnsNameOptions",
+        "MetadataOptions.State",
+        "BlockDeviceMappings",
+        "VirtualizationType",
+        "Hypervisor",
+        "CpuOptions",
+      ],
+      filterLive:
+        ({ lives }) =>
+        (live) =>
+          pipe([
+            () => live,
+            differenceObject(
+              pipe([
+                () => live,
+                getLaunchTemplateIdFromTags,
+                getLaunchTemplateByIdFromLives({ lives }),
+                get("live.LaunchTemplateData"),
+              ])()
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+            switchCase([
+              pipe([
+                getLaunchTemplateIdFromTags,
+                getLaunchTemplateByIdFromLives({ lives }),
+                get("live.LaunchTemplateData.SecurityGroupIds"),
+              ]),
+              omit(["NetworkInterfaces"]),
               assign({
-                AvailabilityZone: buildAvailabilityZone,
+                NetworkInterfaces: pipe([
+                  get("NetworkInterfaces"),
+                  map((networkInterface) =>
+                    pipe([
+                      () => networkInterface,
+                      when(
+                        get("Description"),
+                        assign({ Description: get("Description") })
+                      ),
+                      fork({
+                        DeviceIndex: get("Attachment.DeviceIndex"),
+                        Groups: pipe([
+                          get("Groups"),
+                          map(({ GroupId }) =>
+                            pipe([
+                              () => ({ Id: GroupId, lives }),
+                              replaceWithName({
+                                groupType: "EC2::SecurityGroup",
+                                path: "id",
+                              }),
+                            ])()
+                          ),
+                        ]),
+                        SubnetId: ({ SubnetId }) =>
+                          pipe([
+                            () => ({ Id: SubnetId, lives }),
+                            replaceWithName({
+                              groupType: "EC2::Subnet",
+                              path: "id",
+                            }),
+                          ])(),
+                      }),
+                    ])()
+                  ),
+                ]),
               }),
             ]),
-          }),
-        ]),
-      dependencies: ec2InstanceDependencies,
+            when(
+              getLaunchTemplateIdFromTags,
+              assign({
+                LaunchTemplate: pipe([
+                  fork({
+                    LaunchTemplateId: pipe([
+                      getLaunchTemplateIdFromTags,
+                      (Id) => ({ Id, lives }),
+                      replaceWithName({
+                        groupType: "EC2::LaunchTemplate",
+                        path: "id",
+                      }),
+                    ]),
+                    Version: getLaunchTemplateVersionFromTags,
+                  }),
+                ]),
+              })
+            ),
+            assign({
+              Placement: pipe([
+                get("Placement"),
+                assign({
+                  AvailabilityZone: buildAvailabilityZone,
+                }),
+              ]),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
+      dependencies: {
+        ...ec2InstanceDependencies,
+        launchTemplate: { type: "LaunchTemplate", group: "EC2" },
+      },
     },
     {
       type: "LaunchTemplate",
@@ -950,7 +1131,7 @@ module.exports = pipe([
       propertiesDefault: {
         LaunchTemplateData: { EbsOptimized: false },
       },
-      filterLive: () =>
+      filterLive: ({ lives }) =>
         pipe([
           pick(["LaunchTemplateData"]),
           assign({
@@ -965,12 +1146,45 @@ module.exports = pipe([
                 "TagSpecifications",
               ]),
               omit([
-                "NetworkInterfaces",
                 "SecurityGroupIds",
                 "ImageId",
                 "IamInstanceProfile",
                 "KeyName",
               ]),
+              when(
+                get("NetworkInterfaces"),
+                assign({
+                  NetworkInterfaces: pipe([
+                    get("NetworkInterfaces"),
+                    map(
+                      pipe([
+                        assign({
+                          Groups: pipe([
+                            get("Groups"),
+                            map((GroupId) =>
+                              pipe([
+                                () => ({ Id: GroupId, lives }),
+                                replaceWithName({
+                                  groupType: "EC2::SecurityGroup",
+                                  path: "id",
+                                }),
+                              ])()
+                            ),
+                          ]),
+                          SubnetId: ({ SubnetId }) =>
+                            pipe([
+                              () => ({ Id: SubnetId, lives }),
+                              replaceWithName({
+                                groupType: "EC2::Subnet",
+                                path: "id",
+                              }),
+                            ])(),
+                        }),
+                      ])
+                    ),
+                  ]),
+                })
+              ),
             ]),
           }),
         ]),

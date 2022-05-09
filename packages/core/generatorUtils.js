@@ -152,9 +152,22 @@ const envVarName = ({ name, suffix }) =>
 
 exports.envVarName = envVarName;
 
+const ignoredTags = [
+  "gc-",
+  "aws",
+  "alpha.eksctl.io",
+  "eksctl.cluster.k8s.io",
+  "eks",
+  "AmazonECSManaged",
+];
+
 const isNotOurTagKey = not(
   or([
-    callProp("startsWith", "gc-"),
+    (tag) =>
+      pipe([
+        () => ignoredTags,
+        any((ignoredTag) => tag.startsWith(ignoredTag)),
+      ])(),
     eq(identity, "Name"),
     eq(identity, "fingerprint"), // GCP
   ])

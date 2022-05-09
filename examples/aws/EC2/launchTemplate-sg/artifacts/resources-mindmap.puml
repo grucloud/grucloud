@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project ec2
+title Resources for project launchTemplate-sg
 skinparam monochrome true
 + Infra
 ++ aws
@@ -8,7 +8,10 @@ skinparam monochrome true
 ++++ Vpc (1)
 ++++ Subnet (1)
 ++++ SecurityGroup (1)
-++++ ElasticIpAddress (1)
-++++ ElasticIpAddressAssociation (1)
+++++ SecurityGroupRuleIngress (1)
 ++++ Instance (1)
+++++ LaunchTemplate (1)
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
 @endmindmap

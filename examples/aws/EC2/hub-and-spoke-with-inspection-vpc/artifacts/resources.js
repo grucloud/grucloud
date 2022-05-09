@@ -1862,7 +1862,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({ config }) => ({
-      subnet: `spoke-vpc-1-private-subnet-${config.region}a`,
+      subnets: [`spoke-vpc-1-private-subnet-${config.region}a`],
       keyPair: "humorous-duckling",
       iamInstanceProfile: "terraform-ssm-ec2",
       securityGroups: ["sg::spoke-vpc-1::public_instance_security_group"],

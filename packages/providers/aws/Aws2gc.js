@@ -27,15 +27,7 @@ const ignoreResourceWithTags = [
   /*"aws:cloudformation", "aws-cdk"*/
 ];
 
-const ignoredTags = [
-  "Name",
-  "gc-",
-  "aws",
-  "alpha.eksctl.io",
-  "eksctl.cluster.k8s.io",
-  "eks",
-  "AmazonECSManaged",
-];
+const ignoredTags = [];
 
 const { removeOurTags, omitIfEmpty } = require("@grucloud/core/Common");
 

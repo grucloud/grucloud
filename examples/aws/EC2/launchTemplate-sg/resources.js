@@ -16,7 +16,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-public",
+    name: "subnet-private",
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}e`,
@@ -58,28 +58,11 @@ exports.createResources = () => [
   {
     type: "Instance",
     group: "EC2",
-    name: "ec2-template-subnet",
+    name: "ec2-template-sg",
     properties: ({ config, getId }) => ({
       Placement: {
         AvailabilityZone: `${config.region}e`,
       },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::Vpc::EcsSecurityGroup",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "subnet-public",
-          })}`,
-        },
-      ],
       LaunchTemplate: {
         LaunchTemplateId: `${getId({
           type: "LaunchTemplate",
@@ -90,7 +73,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      subnets: ["subnet-public"],
+      subnets: ["subnet-private"],
       keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
       securityGroups: ["sg::Vpc::EcsSecurityGroup"],
@@ -101,25 +84,8 @@ exports.createResources = () => [
     type: "LaunchTemplate",
     group: "EC2",
     name: "lt-ec2-micro",
-    properties: ({ getId }) => ({
+    properties: ({}) => ({
       LaunchTemplateData: {
-        NetworkInterfaces: [
-          {
-            DeviceIndex: 0,
-            Groups: [
-              `${getId({
-                type: "SecurityGroup",
-                group: "EC2",
-                name: "sg::Vpc::EcsSecurityGroup",
-              })}`,
-            ],
-            SubnetId: `${getId({
-              type: "Subnet",
-              group: "EC2",
-              name: "subnet-public",
-            })}`,
-          },
-        ],
         InstanceType: "t2.micro",
         UserData:
           "#!/bin/sh\nyum update -y\namazon-linux-extras install docker\nservice docker start\nusermod -a -G docker ec2-user\nchkconfig docker on",
@@ -129,7 +95,6 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      subnets: ["subnet-public"],
       keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
       securityGroups: ["sg::Vpc::EcsSecurityGroup"],

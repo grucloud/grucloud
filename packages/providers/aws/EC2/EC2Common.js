@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { map, tap, pipe, get, pick } = require("rubico");
-const { pluck, unless, isEmpty, first } = require("rubico/x");
+const { map, tap, pipe, get, pick, assign } = require("rubico");
+const { pluck, unless, isEmpty, first, when } = require("rubico/x");
 const { createEndpoint } = require("../AwsCommon");
 
 exports.createEC2 = createEndpoint("ec2", "EC2");
@@ -62,6 +62,14 @@ exports.fetchImageIdFromDescription = ({ ec2 }) =>
       ])()
     ),
   ]);
+
+exports.assignUserDataToBase64 = when(
+  get("UserData"),
+  assign({
+    UserData: ({ UserData }) =>
+      Buffer.from(UserData, "utf-8").toString("base64"),
+  })
+);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createTags-property
 exports.tagResource =

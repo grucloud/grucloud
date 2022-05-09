@@ -154,19 +154,36 @@ exports.createResources = () => [
     type: "Instance",
     group: "EC2",
     name: "web-server-ec2-vpc",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       InstanceType: "t2.micro",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc-ec2-example::security-group",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "subnet",
+          })}`,
+        },
+      ],
       Image: {
         Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
       },
       UserData:
         "#!/bin/bash\necho \"Mounting /dev/xvdf\"\nwhile ! ls /dev/xvdf > /dev/null\ndo \n  sleep 1\ndone\nif [ `file -s /dev/xvdf | cut -d ' ' -f 2` = 'data' ]\nthen\n  echo \"Formatting /dev/xvdf\"\n  mkfs.xfs /dev/xvdf\nfi\nmkdir -p /data\nmount /dev/xvdf /data\necho /dev/xvdf /data defaults,nofail 0 2 >> /etc/fstab\n",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
     }),
     dependencies: ({}) => ({
-      subnet: "subnet",
+      subnets: ["subnet"],
       keyPair: "kp-ec2-vpc",
       securityGroups: ["sg::vpc-ec2-example::security-group"],
     }),

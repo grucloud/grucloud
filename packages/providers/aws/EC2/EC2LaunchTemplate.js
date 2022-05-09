@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, omit, pick, assign } = require("rubico");
+const { pipe, tap, get, omit, pick, assign, fork, map } = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
@@ -8,7 +8,11 @@ const {
   prepend,
   includes,
   when,
+  pluck,
+  flatten,
 } = require("rubico/x");
+
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const {
   buildTags,
@@ -22,9 +26,9 @@ const {
   tagResource,
   untagResource,
   imageDescriptionFromId,
+  fetchImageIdFromDescription,
+  assignUserDataToBase64,
 } = require("./EC2Common");
-
-const EC2Instance = require("./EC2Instance");
 
 const findId = get("live.LaunchTemplateId");
 const pickId = pick(["LaunchTemplateId"]);
@@ -65,6 +69,15 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives, config }) => [
     {
+      type: "Subnet",
+      group: "EC2",
+      ids: pipe([
+        () => live,
+        get("LaunchTemplateData.NetworkInterfaces"),
+        pluck("SubnetId"),
+      ])(),
+    },
+    {
       type: "KeyPair",
       group: "EC2",
       ids: [
@@ -85,7 +98,21 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     {
       type: "SecurityGroup",
       group: "EC2",
-      ids: pipe([() => live, get("LaunchTemplateData.SecurityGroupIds")])(),
+      ids: pipe([
+        () => live,
+        fork({
+          fromMain: get("LaunchTemplateData.SecurityGroupIds"),
+          fromInterfaces: pipe([
+            get("LaunchTemplateData.NetworkInterfaces"),
+            pluck("Groups"),
+            flatten,
+          ]),
+        }),
+        ({ fromMain = [], fromInterfaces = [] }) => [
+          ...fromMain,
+          ...fromInterfaces,
+        ],
+      ])(),
     },
     {
       type: "InstanceProfile",
@@ -169,6 +196,14 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createLaunchTemplate-property
   const create = client.create({
     method: "createLaunchTemplate",
+    filterPayload: pipe([
+      assign({
+        LaunchTemplateData: pipe([
+          get("LaunchTemplateData"),
+          assignUserDataToBase64,
+        ]),
+      }),
+    ]),
     config,
     //TODO
     // getById
@@ -193,6 +228,55 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     config,
   });
 
+  const configDefaultLaunchTemplateData =
+    ({ config, ec2 }) =>
+    ({
+      name,
+      namespace,
+      properties: { Image, ...otherProperties },
+      dependencies: { keyPair, subnets, securityGroups, iamInstanceProfile },
+    }) =>
+      pipe([
+        tap((params) => {
+          assert(ec2);
+        }),
+        () => Image,
+        fetchImageIdFromDescription({ ec2 }),
+        (ImageId) =>
+          pipe([
+            () => otherProperties,
+            defaultsDeep({
+              ImageId,
+            }),
+            //Instance Profile
+            when(
+              () => iamInstanceProfile,
+              assign({
+                IamInstanceProfile: () => ({
+                  Arn: getField(iamInstanceProfile, "Arn"),
+                }),
+              })
+            ),
+            // KeyPair
+            when(
+              () => keyPair,
+              assign({
+                KeyName: () => keyPair.resource.name,
+              })
+            ),
+            // Security Groups
+            when(
+              () => securityGroups && !subnets,
+              assign({
+                SecurityGroupIds: pipe([
+                  () => securityGroups,
+                  map((sg) => getField(sg, "GroupId")),
+                ]),
+              })
+            ),
+          ])(),
+      ])();
+
   const configDefault = async ({
     name,
     namespace,
@@ -211,9 +295,8 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
         ],
       }),
       defaultsDeep({
-        LaunchTemplateData: await EC2Instance.configDefault({
+        LaunchTemplateData: await configDefaultLaunchTemplateData({
           config,
-          includeTags: false,
           ec2,
         })({
           name,
@@ -224,6 +307,9 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
       }),
       defaultsDeep(otherProps),
       omit(["LaunchTemplateData.Image"]),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
   return {

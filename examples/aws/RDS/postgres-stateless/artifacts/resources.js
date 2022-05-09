@@ -267,7 +267,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      subnet: "subnet-public-a",
+      subnets: ["subnet-public-a"],
       keyPair: "kp-postgres-stateless",
       securityGroups: ["sg::vpc::security-group-public"],
     }),
