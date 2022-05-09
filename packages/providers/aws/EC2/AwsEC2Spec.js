@@ -18,6 +18,7 @@ const {
 } = require("rubico");
 const {
   first,
+  size,
   unless,
   isEmpty,
   find,
@@ -290,6 +291,52 @@ const getLaunchTemplateIdFromTags = pipe([
   find(eq(get("Key"), "aws:ec2launchtemplate:id")),
   get("Value"),
 ]);
+
+const getByIdfromLives =
+  ({ lives, groupType }) =>
+  (id) =>
+    pipe([
+      tap((params) => {
+        assert(id);
+      }),
+      () => lives,
+      find(and([eq(get("groupType"), groupType), eq(get("id"), id)])),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+const omitNetworkInterfacesForDefaultSubnetAndSecurityGroup = ({ lives }) =>
+  pipe([
+    get("NetworkInterfaces"),
+    and([
+      eq(size, 1),
+      pipe([
+        first,
+        and([
+          // default subnet ?
+          pipe([
+            get("SubnetId"),
+            getByIdfromLives({ lives, groupType: "EC2::Subnet" }),
+            get("isDefault"),
+          ]),
+          // only one default security group ?
+          pipe([
+            get("Groups"),
+            and([
+              eq(size, 1),
+              pipe([
+                first,
+                get("GroupId"),
+                getByIdfromLives({ lives, groupType: "EC2::SecurityGroup" }),
+                get("isDefault"),
+              ]),
+            ]),
+          ]),
+        ]),
+      ]),
+    ]),
+  ]);
 
 const getLaunchTemplateByIdFromLives =
   ({ lives }) =>
@@ -752,7 +799,7 @@ module.exports = pipe([
                   `no DestinationCidrBlock or DestinationIpv6CidrBlock`
                 );
               }),
-              append(`-tgw-`),
+              append(`-tgw`),
               when(
                 () => DestinationCidrBlock,
                 append(`-${DestinationCidrBlock}`)
@@ -1029,10 +1076,15 @@ module.exports = pipe([
               assert(true);
             }),
             switchCase([
-              pipe([
-                getLaunchTemplateIdFromTags,
-                getLaunchTemplateByIdFromLives({ lives }),
-                get("live.LaunchTemplateData.SecurityGroupIds"),
+              or([
+                pipe([
+                  getLaunchTemplateIdFromTags,
+                  getLaunchTemplateByIdFromLives({ lives }),
+                  get("live.LaunchTemplateData.SecurityGroupIds"),
+                ]),
+                omitNetworkInterfacesForDefaultSubnetAndSecurityGroup({
+                  lives,
+                }),
               ]),
               omit(["NetworkInterfaces"]),
               assign({
@@ -1220,6 +1272,7 @@ module.exports = pipe([
           type: "Firewall",
           group: "NetworkFirewall",
           parent: true,
+          //TODO remove
           ignoreOnDestroy: true,
         },
       },

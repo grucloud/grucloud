@@ -6,11 +6,20 @@ exports.createResources = () => [
   { type: "KeyPair", group: "EC2", name: "kp-ec2" },
   { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-a",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
-      GroupName: "my-security-group",
-      Description: "my security group",
+      GroupName: "launch-wizard-1",
+      Description: "launch-wizard created 2022-05-09T22:35:52.892Z",
     }),
     dependencies: ({}) => ({
       vpc: "vpc-default",
@@ -32,25 +41,44 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::my-security-group",
+      securityGroup: "sg::vpc-default::launch-wizard-1",
     }),
   },
   {
     type: "Instance",
     group: "EC2",
-    name: "my-ec2",
-    properties: ({ config }) => ({
+    name: "my-ec2-security-group",
+    properties: ({ config, getId }) => ({
       InstanceType: "t2.micro",
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
-      },
       Placement: {
-        AvailabilityZone: `${config.region}d`,
+        AvailabilityZone: `${config.region}a`,
+      },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc-default::launch-wizard-1",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "subnet-default-a",
+          })}`,
+        },
+      ],
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
       },
     }),
     dependencies: ({}) => ({
+      subnets: ["subnet-default-a"],
       keyPair: "kp-ec2",
-      securityGroups: ["sg::vpc-default::my-security-group"],
+      securityGroups: ["sg::vpc-default::launch-wizard-1"],
     }),
   },
 ];

@@ -172,12 +172,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
-  const getByName = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    getByNameCore({ getList, findName }),
-  ]);
+  const getByName = pipe([getByNameCore({ getList, findName })]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpcEndpoint-property
   const create = client.create({

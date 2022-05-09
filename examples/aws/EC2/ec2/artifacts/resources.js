@@ -36,28 +36,11 @@ exports.createResources = () => [
     type: "Instance",
     group: "EC2",
     name: "web-server-ec2-example",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       InstanceType: "t2.micro",
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::vpc-default::default",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "subnet-default-a",
-          })}`,
-        },
-      ],
       Image: {
         Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
       },
