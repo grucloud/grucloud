@@ -36,14 +36,14 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
     }),
   },
   {
     type: "AutoScalingAttachment",
     group: "AutoScaling",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       autoScalingGroup: "asg-ng-1",
       targetGroup: "target-group-rest",
     }),
@@ -51,7 +51,7 @@ exports.createResources = () => [
   {
     type: "AutoScalingAttachment",
     group: "AutoScaling",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       autoScalingGroup: "asg-ng-1",
       targetGroup: "target-group-web",
     }),
@@ -65,11 +65,7 @@ exports.createResources = () => [
       DnsHostnames: true,
     }),
   },
-  {
-    type: "InternetGateway",
-    group: "EC2",
-    name: "InternetGateway",
-  },
+  { type: "InternetGateway", group: "EC2", name: "InternetGateway" },
   {
     type: "InternetGatewayAttachment",
     group: "EC2",
@@ -82,7 +78,7 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "NATGateway",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnet: "SubnetPublicUSEAST1F",
       eip: "NATIP",
     }),
@@ -101,7 +97,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -119,7 +115,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -138,7 +134,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -157,7 +153,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -165,7 +161,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "PrivateRouteTableUSEAST1D",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -173,7 +169,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "PrivateRouteTableUSEAST1F",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -181,14 +177,14 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "PublicRouteTable",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PrivateRouteTableUSEAST1D",
       subnet: "SubnetPrivateUSEAST1D",
     }),
@@ -196,7 +192,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PrivateRouteTableUSEAST1F",
       subnet: "SubnetPrivateUSEAST1F",
     }),
@@ -204,7 +200,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PublicRouteTable",
       subnet: "SubnetPublicUSEAST1D",
     }),
@@ -212,7 +208,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PublicRouteTable",
       subnet: "SubnetPublicUSEAST1F",
     }),
@@ -223,7 +219,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PrivateRouteTableUSEAST1D",
       natGateway: "NATGateway",
     }),
@@ -234,7 +230,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PrivateRouteTableUSEAST1F",
       natGateway: "NATGateway",
     }),
@@ -245,7 +241,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PublicRouteTable",
       ig: "InternetGateway",
     }),
@@ -257,7 +253,7 @@ exports.createResources = () => [
       GroupName: "ClusterSharedNodeSecurityGroup",
       Description: "Communication between all nodes in the cluster",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -269,7 +265,7 @@ exports.createResources = () => [
       Description:
         "Communication between the control plane and worker nodegroups",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -293,6 +289,10 @@ exports.createResources = () => [
           ])
         ),
       ])(),
+    dependencies: ({}) => ({
+      vpc: "VPC",
+      eksCluster: "my-cluster",
+    }),
   },
   {
     type: "SecurityGroup",
@@ -301,7 +301,7 @@ exports.createResources = () => [
       GroupName: "load-balancer",
       Description: "Load Balancer",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -313,21 +313,8 @@ exports.createResources = () => [
         IpProtocol: "-1",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::VPC::ClusterSharedNodeSecurityGroup",
-      securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-      },
-    }),
-    dependencies: () => ({
-      securityGroup: "sg::VPC::eks-cluster-sg-my-cluster-1909614887",
       securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
@@ -346,7 +333,7 @@ exports.createResources = () => [
         ToPort: 443,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::VPC::load-balancer",
     }),
   },
@@ -365,7 +352,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::VPC::load-balancer",
     }),
   },
@@ -398,7 +385,7 @@ exports.createResources = () => [
     type: "Cluster",
     group: "EKS",
     name: "my-cluster",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: [
         "SubnetPrivateUSEAST1D",
         "SubnetPrivateUSEAST1F",
@@ -425,7 +412,7 @@ exports.createResources = () => [
         "alpha.eksctl.io/nodegroup-name": "ng-1",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       cluster: "my-cluster",
       subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
       role: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
@@ -441,7 +428,7 @@ exports.createResources = () => [
       Type: "application",
       IpAddressType: "ipv4",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
       securityGroups: ["sg::VPC::load-balancer"],
     }),
@@ -456,7 +443,7 @@ exports.createResources = () => [
       HealthCheckProtocol: "HTTP",
       HealthCheckPath: "/api/v1/version",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -469,7 +456,7 @@ exports.createResources = () => [
       Port: 30010,
       HealthCheckProtocol: "HTTP",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -480,7 +467,7 @@ exports.createResources = () => [
       Port: 80,
       Protocol: "HTTP",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       loadBalancer: "load-balancer",
       targetGroup: "target-group-web",
     }),
@@ -492,7 +479,7 @@ exports.createResources = () => [
       Port: 443,
       Protocol: "HTTPS",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       loadBalancer: "load-balancer",
       targetGroup: "target-group-web",
       certificate: "grucloud.org",
@@ -524,7 +511,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       listener: "listener::load-balancer::HTTP::80",
     }),
   },
@@ -540,7 +527,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       listener: "listener::load-balancer::HTTPS::443",
       targetGroup: "target-group-rest",
     }),
@@ -557,7 +544,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       listener: "listener::load-balancer::HTTPS::443",
       targetGroup: "target-group-web",
     }),
@@ -665,14 +652,14 @@ exports.createResources = () => [
     type: "HostedZone",
     group: "Route53",
     name: "grucloud.org.",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       domain: "grucloud.org",
     }),
   },
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       loadBalancer: "load-balancer",
     }),

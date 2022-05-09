@@ -296,14 +296,8 @@ const getByIdfromLives =
   ({ lives, groupType }) =>
   (id) =>
     pipe([
-      tap((params) => {
-        assert(id);
-      }),
       () => lives,
       find(and([eq(get("groupType"), groupType), eq(get("id"), id)])),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
 const omitNetworkInterfacesForDefaultSubnetAndSecurityGroup = ({ lives }) =>
@@ -337,25 +331,6 @@ const omitNetworkInterfacesForDefaultSubnetAndSecurityGroup = ({ lives }) =>
       ]),
     ]),
   ]);
-
-const getLaunchTemplateByIdFromLives =
-  ({ lives }) =>
-  (LaunchTemplateId) =>
-    pipe([
-      () => LaunchTemplateId,
-      unless(
-        isEmpty,
-        pipe([
-          () => lives,
-          find(
-            and([
-              eq(get("groupType"), "EC2::LaunchTemplate"),
-              eq(get("id"), LaunchTemplateId),
-            ])
-          ),
-        ])
-      ),
-    ])();
 
 const getLaunchTemplateVersionFromTags = pipe([
   get("Tags"),
@@ -1068,7 +1043,7 @@ module.exports = pipe([
               pipe([
                 () => live,
                 getLaunchTemplateIdFromTags,
-                getLaunchTemplateByIdFromLives({ lives }),
+                getByIdfromLives({ lives, groupType: "EC2::LaunchTemplate" }),
                 get("live.LaunchTemplateData"),
               ])()
             ),
@@ -1079,7 +1054,7 @@ module.exports = pipe([
               or([
                 pipe([
                   getLaunchTemplateIdFromTags,
-                  getLaunchTemplateByIdFromLives({ lives }),
+                  getByIdfromLives({ lives, groupType: "EC2::LaunchTemplate" }),
                   get("live.LaunchTemplateData.SecurityGroupIds"),
                 ]),
                 omitNetworkInterfacesForDefaultSubnetAndSecurityGroup({
