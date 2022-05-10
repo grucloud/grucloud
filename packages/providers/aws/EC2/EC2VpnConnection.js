@@ -8,14 +8,49 @@ const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
+const logger = require("@grucloud/core/logger")({ prefix: "VpnConnection" });
+
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
   ignoreErrorCodes: ["InvalidVpnConnectionID.NotFound"],
-  getById: { method: "describeVpnConnections", getField: "VpnConnections" },
-  getList: { method: "describeVpnConnections", getParam: "VpnConnections" },
-  create: { method: "createVpnConnection" },
-  destroy: { method: "deleteVpnConnection" },
+  getById: {
+    method: "describeVpnConnections",
+    getField: "VpnConnections",
+    pickId: pipe([
+      tap(({ VpnConnectionId }) => {
+        assert(VpnConnectionId);
+      }),
+      ({ VpnConnectionId }) => ({ VpnConnectionIds: [VpnConnectionId] }),
+    ]),
+  },
+  getList: {
+    method: "describeVpnConnections",
+    getParam: "VpnConnections",
+    decorate: ({ endpoint, getById }) =>
+      pipe([
+        tap((params) => {
+          assert(getById);
+          assert(endpoint);
+        }),
+      ]),
+  },
+  create: {
+    method: "createVpnConnection",
+    pickCreated: ({ payload }) => pipe([get("VpnConnection")]),
+    isInstanceUp: pipe([
+      tap(({ State }) => {
+        assert(State);
+        logger.debug(`createVpnConnection state: ${State}`);
+      }),
+      eq(get("State"), "available"),
+    ]),
+    configIsUp: { retryCount: 20 * 10, retryDelay: 5e3 },
+  },
+  destroy: {
+    method: "deleteVpnConnection",
+    isInstanceDown: pipe([eq(get("State"), "deleted")]),
+  },
 });
 
 const findId = pipe([get("live.VpnConnectionId")]);
@@ -46,16 +81,6 @@ exports.EC2VpnConnection = ({ spec, config }) =>
       }),
     ]),
     findId,
-    decorateList: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
-    pickCreated: ({ payload }) => pipe([get("VpnConnection")]),
-    isInstanceUp: pipe([eq(get("State"), "available")]),
-    isInstanceDown: pipe([eq(get("State"), "deleted")]),
     cannotBeDeleted: eq(get("live.State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,
