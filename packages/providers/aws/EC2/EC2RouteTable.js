@@ -85,6 +85,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
             tap((Route) => {
               assert(Route);
             }),
+            //TODO ipv6
             ({ DestinationCidrBlock }) => ({
               RouteTableId: live.RouteTableId,
               DestinationCidrBlock: DestinationCidrBlock,
@@ -109,6 +110,12 @@ exports.EC2RouteTable = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeRouteTables",
     getParam: "RouteTables",
+    decorate: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
   });
 
   const getByName = getByNameCore({ getList, findName });

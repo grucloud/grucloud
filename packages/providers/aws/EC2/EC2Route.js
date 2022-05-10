@@ -25,6 +25,7 @@ const {
 } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRoute" });
 
@@ -32,7 +33,8 @@ const { findNamespaceInTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 const { createEC2 } = require("./EC2Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
+
+const { appendCidrSuffix } = require("./EC2Common");
 
 const ignoreErrorCodes = ["InvalidRoute.NotFound"];
 
@@ -58,16 +60,20 @@ exports.EC2Route = ({ spec, config }) => {
       }),
       get("name", "no-route-table-id"),
       switchCase([
+        // Nat Gateway
         () => live.NatGatewayId,
         append("-nat-gateway"),
+        // Local route
         () => live.GatewayId === "local",
         append("-local"),
+        // Internet Gateway
         pipe([
           () => live,
           get("GatewayId", ""),
           callProp("startsWith", "igw-"),
         ]),
-        append("-igw"),
+        pipe([append("-igw")]),
+        // Vpc Endpoint
         pipe([
           () => live,
           get("GatewayId", ""),
@@ -84,16 +90,19 @@ exports.EC2Route = ({ spec, config }) => {
               }),
             get("name"),
             prepend(`${rt}-`),
-            when(
-              () => live.DestinationCidrBlock,
-              append(`-${live.DestinationCidrBlock}`)
-            ),
           ])(),
+        // Transit Gateway
         () => live.TransitGatewayId,
-        //TODO  find tgw name
-        append(`-tgw-${live.DestinationCidrBlock}`),
-        append(`-${live.DestinationCidrBlock}`),
+        pipe([append(`-tgw`)]),
+        // Egress Only Internet Gateway
+        () => live.EgressOnlyInternetGatewayId,
+        pipe([append(`-eogw`)]),
+        // Other
+        () => {
+          assert(false, "invalid route target");
+        },
       ]),
+      appendCidrSuffix(live),
       tap((params) => {
         assert(true);
       }),
@@ -162,6 +171,11 @@ exports.EC2Route = ({ spec, config }) => {
       group: "EC2",
       ids: [live.TransitGatewayId],
     },
+    {
+      type: "EgressOnlyInternetGateway",
+      group: "EC2",
+      ids: [live.EgressOnlyInternetGatewayId],
+    },
   ];
 
   const findRoute = ({
@@ -169,6 +183,7 @@ exports.EC2Route = ({ spec, config }) => {
     NatGatewayId,
     TransitGatewayId,
     VpcEndpointId,
+    EgressOnlyInternetGatewayId,
   }) =>
     pipe([
       get("Routes"),
@@ -177,7 +192,7 @@ exports.EC2Route = ({ spec, config }) => {
         logger.debug(
           `findRoute #Routes ${size(
             Routes
-          )}, GatewayId ${GatewayId}, NatGatewayId ${NatGatewayId}, TransitGatewayId ${TransitGatewayId}, VpcEndpointId: ${VpcEndpointId}`
+          )}, GatewayId ${GatewayId}, NatGatewayId ${NatGatewayId}, TransitGatewayId ${TransitGatewayId}, VpcEndpointId: ${VpcEndpointId}, EgressOnlyInternetGatewayId: ${EgressOnlyInternetGatewayId}`
         );
         logger.debug(JSON.stringify(Routes));
       }),
@@ -192,6 +207,9 @@ exports.EC2Route = ({ spec, config }) => {
             eq(get("NatGatewayId"), NatGatewayId),
             () => VpcEndpointId,
             eq(get("GatewayId"), VpcEndpointId),
+            () => EgressOnlyInternetGatewayId,
+            eq(get("EgressOnlyInternetGatewayId"), EgressOnlyInternetGatewayId),
+            //
             () => {
               assert(false, "missing route destination");
             },
@@ -407,27 +425,31 @@ exports.EC2Route = ({ spec, config }) => {
     name,
     namespace,
     properties = {},
-    dependencies: { routeTable, natGateway, ig, vpcEndpoint, transitGateway },
+    dependencies: {
+      routeTable,
+      natGateway,
+      ig,
+      vpcEndpoint,
+      transitGateway,
+      egressOnlyInternetGateway,
+    },
   }) =>
     pipe([
       tap((params) => {
         assert(routeTable, "Route is missing the dependency 'routeTable'");
         assert(
-          ig || natGateway || vpcEndpoint || transitGateway,
-          "Route needs the dependency 'ig', or 'natGateway' or 'vpcEndpoint', or 'transitGateway'"
+          ig ||
+            natGateway ||
+            vpcEndpoint ||
+            transitGateway ||
+            egressOnlyInternetGateway,
+          "Route needs the dependency 'ig', or 'natGateway' or 'vpcEndpoint', or 'transitGateway' or 'egressOnlyInternetGateway'"
         );
       }),
       () => properties,
       defaultsDeep({
         RouteTableId: getField(routeTable, "RouteTableId"),
       }),
-      switchCase([
-        () => vpcEndpoint,
-        defaultsDeep({}),
-        defaultsDeep({
-          DestinationCidrBlock: "0.0.0.0/0",
-        }),
-      ]),
       when(
         () => natGateway,
         defaultsDeep({
@@ -450,6 +472,15 @@ exports.EC2Route = ({ spec, config }) => {
         () => transitGateway,
         defaultsDeep({
           TransitGatewayId: getField(transitGateway, "TransitGatewayId"),
+        })
+      ),
+      when(
+        () => egressOnlyInternetGateway,
+        defaultsDeep({
+          EgressOnlyInternetGatewayId: getField(
+            egressOnlyInternetGateway,
+            "EgressOnlyInternetGatewayId"
+          ),
         })
       ),
     ])();

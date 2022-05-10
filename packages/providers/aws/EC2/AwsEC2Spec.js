@@ -50,6 +50,7 @@ const {
   isOurMinionEC2Instance,
   compareEC2Instance,
 } = require("./EC2Instance");
+const { appendCidrSuffix } = require("./EC2Common");
 const { EC2LaunchTemplate } = require("./EC2LaunchTemplate");
 
 const { AwsClientKeyPair } = require("./AwsKeyPair");
@@ -58,7 +59,9 @@ const { EC2InternetGateway } = require("./EC2InternetGateway");
 const {
   EC2InternetGatewayAttachment,
 } = require("./EC2InternetGatewayAttachment");
-
+const {
+  EC2EgressOnlyInternetGateway,
+} = require("./EC2EgressOnlyInternetGateway");
 const { AwsNatGateway } = require("./AwsNatGateway");
 const { EC2DhcpOptions } = require("./EC2DhcpOptions");
 const { EC2Ipam } = require("./EC2Ipam");
@@ -551,7 +554,13 @@ module.exports = pipe([
         "VpcId",
       ],
       propertiesDefault: { DnsSupport: true, DnsHostnames: false },
-      filterLive: () => pick(["CidrBlock", "DnsSupport", "DnsHostnames"]),
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          pick(["CidrBlock", "DnsSupport", "DnsHostnames"]),
+        ]),
     },
     {
       type: "InternetGateway",
@@ -571,6 +580,19 @@ module.exports = pipe([
           group: "EC2",
           parent: true,
         },
+      },
+    },
+    {
+      type: "EgressOnlyInternetGateway",
+      Client: EC2EgressOnlyInternetGateway,
+      omitProperties: [
+        "Attachments",
+        "EgressOnlyInternetGatewayId",
+        "OwnerId",
+        "VpcId",
+      ],
+      dependencies: {
+        vpc: { type: "Vpc", group: "EC2" },
       },
     },
     {
@@ -738,13 +760,14 @@ module.exports = pipe([
       filterLive: () =>
         pipe([pick(["DestinationCidrBlock", "DestinationIpv6CidrBlock"])]),
       inferName: ({
-        properties: { DestinationCidrBlock, DestinationIpv6CidrBlock },
+        properties,
         dependenciesSpec: {
           routeTable,
           ig,
           natGateway,
           vpcEndpoint,
           transitGateway,
+          egressOnlyInternetGateway,
         },
       }) =>
         pipe([
@@ -754,45 +777,18 @@ module.exports = pipe([
           () => routeTable,
           switchCase([
             () => ig,
-            append("-igw"),
+            pipe([append("-igw")]),
             () => natGateway,
-            append("-nat-gateway"),
+            pipe([append("-nat-gateway")]),
             () => vpcEndpoint,
-            pipe([
-              append(`-${vpcEndpoint}`),
-              //TODO switch case ?
-              when(
-                () => DestinationCidrBlock,
-                append(`-${DestinationCidrBlock}`)
-              ),
-              when(
-                () => DestinationIpv6CidrBlock,
-                append(`-${DestinationIpv6CidrBlock}`)
-              ),
-              tap((params) => {
-                assert(true);
-              }),
-            ]),
+            pipe([append(`-${vpcEndpoint}`)]),
             () => transitGateway,
-            pipe([
-              tap((params) => {
-                assert(
-                  DestinationCidrBlock || DestinationIpv6CidrBlock,
-                  `no DestinationCidrBlock or DestinationIpv6CidrBlock`
-                );
-              }),
-              append(`-tgw`),
-              when(
-                () => DestinationCidrBlock,
-                append(`-${DestinationCidrBlock}`)
-              ),
-              when(
-                () => DestinationIpv6CidrBlock,
-                append(`-${DestinationIpv6CidrBlock}`)
-              ),
-            ]),
-            append("-local"),
+            pipe([append(`-tgw`)]),
+            () => egressOnlyInternetGateway,
+            pipe([append(`-eogw`)]),
+            pipe([append("-local")]),
           ]),
+          appendCidrSuffix(properties),
         ])(),
       includeDefaultDependencies: true,
       dependencies: {
@@ -801,6 +797,10 @@ module.exports = pipe([
         natGateway: { type: "NatGateway", group: "EC2" },
         vpcEndpoint: { type: "VpcEndpoint", group: "EC2" },
         transitGateway: { type: "TransitGateway", group: "EC2" },
+        egressOnlyInternetGateway: {
+          type: "EgressOnlyInternetGateway",
+          group: "EC2",
+        },
       },
     },
     {

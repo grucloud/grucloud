@@ -1,6 +1,14 @@
 const assert = require("assert");
-const { map, tap, pipe, get, pick, assign } = require("rubico");
-const { pluck, unless, isEmpty, first, when } = require("rubico/x");
+const { map, tap, pipe, get, pick, assign, switchCase } = require("rubico");
+const {
+  pluck,
+  unless,
+  isEmpty,
+  first,
+  when,
+  append,
+  identity,
+} = require("rubico/x");
 const { createEndpoint } = require("../AwsCommon");
 
 exports.createEC2 = createEndpoint("ec2", "EC2");
@@ -70,6 +78,20 @@ exports.assignUserDataToBase64 = when(
       Buffer.from(UserData, "utf-8").toString("base64"),
   })
 );
+
+exports.appendCidrSuffix = ({
+  DestinationCidrBlock,
+  DestinationIpv6CidrBlock,
+}) =>
+  pipe([
+    switchCase([
+      () => DestinationCidrBlock,
+      append(`-${DestinationCidrBlock}`),
+      () => DestinationIpv6CidrBlock,
+      append(`-${DestinationIpv6CidrBlock}`),
+      identity, // Vpc Endpoint
+    ]),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createTags-property
 exports.tagResource =
