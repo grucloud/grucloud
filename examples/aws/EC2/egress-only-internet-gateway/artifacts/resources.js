@@ -10,6 +10,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
       DnsHostnames: true,
+      AmazonProvidedIpv6CidrBlock: true,
     }),
   },
   { type: "InternetGateway", group: "EC2", name: "eoigw-igw" },
@@ -19,6 +20,14 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       vpc: "eoigw-vpc",
       internetGateway: "eoigw-igw",
+    }),
+  },
+  {
+    type: "EgressOnlyInternetGateway",
+    group: "EC2",
+    name: "my-eigw",
+    dependencies: ({}) => ({
+      vpc: "eoigw-vpc",
     }),
   },
   {
@@ -75,6 +84,17 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       routeTable: "eoigw-rtb-public",
       subnet: `eoigw-subnet-public1-${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `eoigw-rtb-private1-${config.region}a`,
+      egressOnlyInternetGateway: "my-eigw",
     }),
   },
   {

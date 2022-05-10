@@ -554,12 +554,31 @@ module.exports = pipe([
         "VpcId",
       ],
       propertiesDefault: { DnsSupport: true, DnsHostnames: false },
+      compare: compareEC2({
+        filterTarget: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["AmazonProvidedIpv6CidrBlock"]),
+          ]),
+      }),
       filterLive: () =>
         pipe([
           tap((params) => {
             assert(true);
           }),
-          pick(["CidrBlock", "DnsSupport", "DnsHostnames"]),
+          when(
+            pipe([
+              get("Ipv6CidrBlockAssociationSet"),
+              first,
+              eq(get("Ipv6Pool"), "Amazon"),
+            ]),
+            assign({ AmazonProvidedIpv6CidrBlock: () => true })
+          ),
+          tap((params) => {
+            assert(true);
+          }),
         ]),
     },
     {

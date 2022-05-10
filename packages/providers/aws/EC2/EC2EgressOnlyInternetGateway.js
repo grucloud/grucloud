@@ -8,12 +8,7 @@ const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
-const findId = pipe([
-  get("live.EgressOnlyInternetGatewayId"),
-  tap((EgressOnlyInternetGatewayId) => {
-    assert(EgressOnlyInternetGatewayId);
-  }),
-]);
+const findId = pipe([get("live.EgressOnlyInternetGatewayId")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -21,21 +16,12 @@ const createModel = ({ config }) => ({
   ignoreErrorCodes: ["InvalidGatewayID.NotFound"],
   getById: {
     pickId: pipe([
-      tap(({ EgressOnlyInternetGatewayId }) => {
-        assert(EgressOnlyInternetGatewayId);
-      }),
       ({ EgressOnlyInternetGatewayId }) => ({
         EgressOnlyInternetGatewayIds: [EgressOnlyInternetGatewayId],
       }),
     ]),
     method: "describeEgressOnlyInternetGateways",
     getField: "EgressOnlyInternetGateways",
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(endpoint);
-        }),
-      ]),
   },
   getList: {
     method: "describeEgressOnlyInternetGateways",
@@ -49,13 +35,7 @@ const createModel = ({ config }) => ({
   },
   create: {
     method: "createEgressOnlyInternetGateway",
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("EgressOnlyInternetGateway"),
-      ]),
+    pickCreated: ({ payload }) => pipe([get("EgressOnlyInternetGateway")]),
     isInstanceUp: pipe([
       get("Attachments"),
       first,
@@ -74,12 +54,7 @@ exports.EC2EgressOnlyInternetGateway = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      findNameInTagsOrId({ findId }),
-    ]),
+    findName: pipe([findNameInTagsOrId({ findId })]),
     findId,
     findDependencies: ({ live, lives }) => [
       {
