@@ -209,7 +209,6 @@ exports.createResources = () => [
           },
         },
       },
-      tags: [],
     }),
     dependencies: ({}) => ({
       role: "aws-stf-role",

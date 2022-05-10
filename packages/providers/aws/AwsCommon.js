@@ -931,7 +931,7 @@ const replaceAccountAndRegion =
       switchCase([
         any(
           and([
-            ({ id }) => Id.includes(id),
+            ({ id }) => Id.startsWith(id),
             //TODO
             () =>
               !Id.startsWith("arn:aws:lambda") &&
@@ -940,8 +940,17 @@ const replaceAccountAndRegion =
               !Id.startsWith("arn:aws:sns"),
           ])
         ),
-        pipe([() => ({ Id, lives }), replaceWithName({ path: "id" })]),
         pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => ({ Id, lives }),
+          replaceWithName({ path: "id" }),
+        ]),
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
           () => Id,
           callProp(
             "replace",

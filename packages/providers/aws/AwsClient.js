@@ -318,7 +318,11 @@ const AwsClient =
       }) =>
         pipe([
           tap(() => {
-            logger.info(`create ${type}, ${name}`);
+            logger.info(
+              `create ${type}, ${name}, configIsUp: ${JSON.stringify(
+                configIsUp
+              )}`
+            );
             assert(method);
             assert(pickCreated);
           }),

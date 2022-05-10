@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -27,11 +27,9 @@ exports.createResources = () => [
               {
                 Action: ["sns:Publish"],
                 Resource: [
-                  `${getId({
-                    type: "Topic",
-                    group: "SNS",
-                    name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
-                  })}`,
+                  `arn:aws:sns:${
+                    config.region
+                  }:${config.accountId()}:sam-app-StateMachineSNSTopic-C6WGCI64MKY2`,
                 ],
                 Effect: "Allow",
               },
@@ -41,55 +39,15 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       snsTopic: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
-    }),
-  },
-  {
-    type: "StateMachine",
-    group: "StepFunctions",
-    name: "StateMachineExpressSynctoSNS-s4flfbpCO2tF",
-    properties: ({ getId }) => ({
-      definition: {
-        Comment: "An example of the Amazon States Language using AWS SNS",
-        StartAt: "SendSNSMessage",
-        States: {
-          SendSNSMessage: {
-            Type: "Task",
-            Resource: `arn:aws:states:::sns:publish`,
-            Parameters: {
-              Message: {
-                Input: "You just received a message from the state machine!",
-                "Message.$": "$.message",
-              },
-              TopicArn: `${getId({
-                type: "Topic",
-                group: "SNS",
-                name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
-              })}`,
-            },
-            End: true,
-          },
-        },
-      },
-      type: "EXPRESS",
-      tags: [
-        {
-          key: "stateMachine:createdBy",
-          value: "SAM",
-        },
-      ],
-    }),
-    dependencies: () => ({
-      role: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",
-      snsTopics: ["sam-app-StateMachineSNSTopic-C6WGCI64MKY2"],
     }),
   },
   {
     type: "Topic",
     group: "SNS",
     name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
-    properties: ({ config, getId }) => ({
+    properties: ({}) => ({
       Attributes: {
         DisplayName: "",
         DeliveryPolicy: {
@@ -107,6 +65,43 @@ exports.createResources = () => [
           },
         },
       },
+    }),
+  },
+  {
+    type: "StateMachine",
+    group: "StepFunctions",
+    name: "StateMachineExpressSynctoSNS-s4flfbpCO2tF",
+    properties: ({ config }) => ({
+      definition: {
+        Comment: "An example of the Amazon States Language using AWS SNS",
+        StartAt: "SendSNSMessage",
+        States: {
+          SendSNSMessage: {
+            Type: "Task",
+            Resource: `arn:aws:states:::sns:publish`,
+            Parameters: {
+              Message: {
+                Input: "You just received a message from the state machine!",
+                "Message.$": "$.message",
+              },
+              TopicArn: `arn:aws:sns:${
+                config.region
+              }:${config.accountId()}:sam-app-StateMachineSNSTopic-C6WGCI64MKY2`,
+            },
+            End: true,
+          },
+        },
+      },
+      type: "EXPRESS",
+      tags: [
+        {
+          key: "stateMachine:createdBy",
+          value: "SAM",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      role: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",
     }),
   },
 ];

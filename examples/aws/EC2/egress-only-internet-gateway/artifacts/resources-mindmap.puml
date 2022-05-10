@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project egress-only-internet-gateway
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ EgressOnlyInternetGateway (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
+++++ Route (3)
+@endmindmap

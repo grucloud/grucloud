@@ -4,9 +4,8 @@
 
 ## Aws
 
-- add EgressOnlyInternetGateway: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createEgressOnlyInternetGateway-property
+omit AWSLogs S3 Objects
 
-- add route dependency to EgressOnlyInternetGatewayId
 - substitute zone, not ${region}/b
 
 - remove hard coded region from generate code
@@ -21,17 +20,13 @@
 - aws_ram_principal_association
 - aws_ram_resource_association
 
-- aws_egress_only_internet_gateway
 - aws_ec2_transit_gateway_route_table_propagation
 - aws_flow_log
 
 - aws_route53_record alias aws_vpc_endpoint
 
-- https://github.com/aws-samples/aws-network-hub-for-terraform
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html
-
-- route : find tgw name
 
 - gc gencode lambda with java.
 

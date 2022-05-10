@@ -4,6 +4,76 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "/aws/network-firewall/alerts",
+    properties: ({}) => ({
+      retentionInDays: 7,
+      tags: {
+        Env: "dev",
+        Owner: "WWPS",
+        Product: "Network_Automation",
+        Project_ID: "12345",
+      },
+    }),
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "/aws/network-firewall/flows",
+    properties: ({}) => ({
+      retentionInDays: 7,
+      tags: {
+        Env: "dev",
+        Owner: "WWPS",
+        Product: "Network_Automation",
+        Project_ID: "12345",
+      },
+    }),
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "dns_vpc",
+    properties: ({}) => ({
+      retentionInDays: 7,
+      tags: {
+        Env: "dev",
+        Owner: "WWPS",
+        Product: "Network_Automation",
+        Project_ID: "12345",
+      },
+    }),
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "endpoint_vpc",
+    properties: ({}) => ({
+      retentionInDays: 7,
+      tags: {
+        Env: "dev",
+        Owner: "WWPS",
+        Product: "Network_Automation",
+        Project_ID: "12345",
+      },
+    }),
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "inspection_vpc",
+    properties: ({}) => ({
+      retentionInDays: 7,
+      tags: {
+        Env: "dev",
+        Owner: "WWPS",
+        Product: "Network_Automation",
+        Project_ID: "12345",
+      },
+    }),
+  },
+  {
     type: "DhcpOptions",
     group: "EC2",
     name: "dns_dhcp_options",
@@ -138,7 +208,7 @@ exports.createResources = () => [
   {
     type: "Ipam",
     group: "EC2",
-    name: "ipam-0074c82da509df8f1",
+    name: "ipam-0c338a74077d2a5ff",
     properties: ({ config }) => ({
       IpamRegion: `${config.region}`,
       OperatingRegions: [
@@ -169,7 +239,7 @@ exports.createResources = () => [
   {
     type: "IpamScope",
     group: "EC2",
-    name: "ipam-scope-0b94ac50cad4f2e34",
+    name: "ipam-scope-0b9d33499c30641ea",
     properties: ({ config }) => ({
       IpamRegion: `${config.region}`,
       IpamScopeType: "private",
@@ -195,13 +265,13 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      ipam: "ipam-0074c82da509df8f1",
+      ipam: "ipam-0c338a74077d2a5ff",
     }),
   },
   {
     type: "IpamPool",
     group: "EC2",
-    name: "ipam-pool-0e6c742775706e8ae",
+    name: "ipam-pool-0622eb581c7ddf5bf",
     properties: ({ config }) => ({
       IpamScopeType: "private",
       IpamRegion: `${config.region}`,
@@ -228,7 +298,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      ipamScope: "ipam-scope-0b94ac50cad4f2e34",
+      ipamScope: "ipam-scope-0b9d33499c30641ea",
     }),
   },
   {
@@ -238,7 +308,7 @@ exports.createResources = () => [
       Cidr: "10.0.0.0/10",
     }),
     dependencies: ({}) => ({
-      ipamPool: "ipam-pool-0e6c742775706e8ae",
+      ipamPool: "ipam-pool-0622eb581c7ddf5bf",
     }),
   },
   {
@@ -246,8 +316,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "dns_vpc",
     properties: ({}) => ({
-      CidrBlock: "10.0.4.0/22",
-      DnsHostnames: true,
+      CidrBlock: "10.0.8.0/22",
       Tags: [
         {
           Key: "Env",
@@ -266,6 +335,8 @@ exports.createResources = () => [
           Value: "12345",
         },
       ],
+      DnsHostnames: true,
+      AmazonProvidedIpv6CidrBlock: true,
     }),
   },
   {
@@ -273,8 +344,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "endpoint_vpc",
     properties: ({}) => ({
-      CidrBlock: "10.0.8.0/22",
-      DnsHostnames: true,
+      CidrBlock: "10.0.4.0/22",
       Tags: [
         {
           Key: "Env",
@@ -293,6 +363,8 @@ exports.createResources = () => [
           Value: "12345",
         },
       ],
+      DnsHostnames: true,
+      AmazonProvidedIpv6CidrBlock: true,
     }),
   },
   {
@@ -301,7 +373,6 @@ exports.createResources = () => [
     name: "inspection_vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/22",
-      DnsHostnames: true,
       Tags: [
         {
           Key: "Env",
@@ -320,6 +391,8 @@ exports.createResources = () => [
           Value: "12345",
         },
       ],
+      DnsHostnames: true,
+      AmazonProvidedIpv6CidrBlock: true,
     }),
   },
   {
@@ -356,6 +429,34 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "EgressOnlyInternetGateway",
+    group: "EC2",
+    name: "inspection_eigw",
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+    }),
+  },
+  {
     type: "NatGateway",
     group: "EC2",
     name: ({ config }) => `inspection_natgw_${config.region}a`,
@@ -389,7 +490,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_internet_${config.region}a`,
-      eip: "eipalloc-06db97168d1f20842",
+      eip: "eipalloc-0d6739f1b6e787e33",
     }),
   },
   {
@@ -426,7 +527,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_internet_${config.region}b`,
-      eip: "eipalloc-061fad19bad4b2b05",
+      eip: "eipalloc-0bc01f989cd7c2cc0",
     }),
   },
   {
@@ -463,7 +564,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_internet_${config.region}c`,
-      eip: "eipalloc-0b3322ee3b391f68c",
+      eip: "eipalloc-09b77a2b8eb2926b1",
     }),
   },
   {
@@ -471,8 +572,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `dns_attachment_${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.4.0/27",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.8.0/27",
       Tags: [
         {
           Key: "Env",
@@ -499,6 +600,11 @@ exports.createResources = () => [
           Value: "attachment",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "dns_vpc",
@@ -509,8 +615,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `dns_attachment_${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.4.32/27",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.8.32/27",
       Tags: [
         {
           Key: "Env",
@@ -537,6 +643,11 @@ exports.createResources = () => [
           Value: "attachment",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "dns_vpc",
@@ -547,8 +658,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `dns_attachment_${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.4.64/27",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.0.8.64/27",
       Tags: [
         {
           Key: "Env",
@@ -575,6 +686,11 @@ exports.createResources = () => [
           Value: "attachment",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "dns_vpc",
@@ -585,8 +701,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `dns_endpoint_${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.4.128/26",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.8.128/26",
       Tags: [
         {
           Key: "Env",
@@ -613,6 +729,11 @@ exports.createResources = () => [
           Value: "endpoint",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "dns_vpc",
@@ -623,8 +744,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `dns_endpoint_${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.4.192/26",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.8.192/26",
       Tags: [
         {
           Key: "Env",
@@ -651,6 +772,11 @@ exports.createResources = () => [
           Value: "endpoint",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "dns_vpc",
@@ -661,8 +787,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `dns_endpoint_${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.5.0/26",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.0.9.0/26",
       Tags: [
         {
           Key: "Env",
@@ -689,6 +815,11 @@ exports.createResources = () => [
           Value: "endpoint",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "dns_vpc",
@@ -699,8 +830,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `endpoint_attachment_${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.8.0/27",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.4.0/27",
       Tags: [
         {
           Key: "Env",
@@ -727,6 +858,11 @@ exports.createResources = () => [
           Value: "attachment",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "endpoint_vpc",
@@ -737,8 +873,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `endpoint_attachment_${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.8.32/27",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.4.32/27",
       Tags: [
         {
           Key: "Env",
@@ -765,6 +901,11 @@ exports.createResources = () => [
           Value: "attachment",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "endpoint_vpc",
@@ -775,8 +916,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `endpoint_attachment_${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.8.64/27",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.0.4.64/27",
       Tags: [
         {
           Key: "Env",
@@ -803,6 +944,11 @@ exports.createResources = () => [
           Value: "attachment",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "endpoint_vpc",
@@ -813,8 +959,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `endpoint_endpoint_${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.8.128/26",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.4.128/26",
       Tags: [
         {
           Key: "Env",
@@ -841,6 +987,11 @@ exports.createResources = () => [
           Value: "endpoint",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "endpoint_vpc",
@@ -851,8 +1002,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `endpoint_endpoint_${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.8.192/26",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.4.192/26",
       Tags: [
         {
           Key: "Env",
@@ -879,6 +1030,11 @@ exports.createResources = () => [
           Value: "endpoint",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "endpoint_vpc",
@@ -889,8 +1045,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `endpoint_endpoint_${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.9.0/26",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.0.5.0/26",
       Tags: [
         {
           Key: "Env",
@@ -917,6 +1073,11 @@ exports.createResources = () => [
           Value: "endpoint",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "endpoint_vpc",
@@ -927,8 +1088,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_attachment_${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/27",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/27",
       Tags: [
         {
           Key: "Env",
@@ -955,6 +1116,11 @@ exports.createResources = () => [
           Value: "attachment",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
@@ -965,8 +1131,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_attachment_${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.32/27",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.0.32/27",
       Tags: [
         {
           Key: "Env",
@@ -993,6 +1159,11 @@ exports.createResources = () => [
           Value: "attachment",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
@@ -1003,8 +1174,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_attachment_${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.64/27",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.0.0.64/27",
       Tags: [
         {
           Key: "Env",
@@ -1031,6 +1202,11 @@ exports.createResources = () => [
           Value: "attachment",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
@@ -1041,8 +1217,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_inspection_${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.128/27",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.128/27",
       Tags: [
         {
           Key: "Env",
@@ -1069,6 +1245,11 @@ exports.createResources = () => [
           Value: "inspection",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
@@ -1079,8 +1260,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_inspection_${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.160/27",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.0.160/27",
       Tags: [
         {
           Key: "Env",
@@ -1107,6 +1288,11 @@ exports.createResources = () => [
           Value: "inspection",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
@@ -1117,8 +1303,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_inspection_${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.192/27",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.0.0.192/27",
       Tags: [
         {
           Key: "Env",
@@ -1145,6 +1331,11 @@ exports.createResources = () => [
           Value: "inspection",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
@@ -1155,8 +1346,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_internet_${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.224/27",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.224/27",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -1184,6 +1375,11 @@ exports.createResources = () => [
           Value: "internet",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
@@ -1194,8 +1390,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_internet_${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.1.0/27",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.1.0/27",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -1223,6 +1419,11 @@ exports.createResources = () => [
           Value: "internet",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
@@ -1233,8 +1434,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection_internet_${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.1.32/27",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.0.1.32/27",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -1262,6 +1463,11 @@ exports.createResources = () => [
           Value: "internet",
         },
       ],
+      EnableDns64: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        EnableResourceNameDnsARecord: true,
+        EnableResourceNameDnsAAAARecord: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
@@ -1827,17 +2033,6 @@ exports.createResources = () => [
     type: "Route",
     group: "EC2",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "dns_route_table",
-      transitGateway: "Org_TGW_dev",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
@@ -1850,6 +2045,17 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "dns_route_table",
+      transitGateway: "Org_TGW_dev",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
       routeTable: "endpoint_route_table",
@@ -1860,7 +2066,7 @@ exports.createResources = () => [
     type: "Route",
     group: "EC2",
     properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
       routeTable: "endpoint_route_table",
@@ -1875,6 +2081,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: `inspection_attachment_${config.region}a`,
+      egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
   {
@@ -1896,6 +2103,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: `inspection_attachment_${config.region}b`,
+      egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
   {
@@ -1917,6 +2125,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: `inspection_attachment_${config.region}c`,
+      egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
   {
@@ -1934,6 +2143,17 @@ exports.createResources = () => [
     type: "Route",
     group: "EC2",
     properties: ({}) => ({
+      DestinationIpv6CidrBlock: "::/0",
+    }),
+    dependencies: ({ config }) => ({
+      routeTable: `inspection_inspection_${config.region}a`,
+      egressOnlyInternetGateway: "inspection_eigw",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
@@ -1970,7 +2190,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}a`,
+      routeTable: `inspection_inspection_${config.region}b`,
+      egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
   {
@@ -2013,7 +2234,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}b`,
+      routeTable: `inspection_inspection_${config.region}c`,
+      egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
   {
@@ -2056,7 +2278,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}c`,
+      routeTable: `inspection_internet_${config.region}a`,
+      egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
   {
@@ -2068,16 +2291,6 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       routeTable: `inspection_internet_${config.region}a`,
       ig: "inspection_igw",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
-    }),
-    dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}a`,
     }),
   },
   {
@@ -2095,21 +2308,22 @@ exports.createResources = () => [
     type: "Route",
     group: "EC2",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+      DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
       routeTable: `inspection_internet_${config.region}b`,
-      ig: "inspection_igw",
+      egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
   {
     type: "Route",
     group: "EC2",
     properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
       routeTable: `inspection_internet_${config.region}b`,
+      ig: "inspection_igw",
     }),
   },
   {
@@ -2127,21 +2341,22 @@ exports.createResources = () => [
     type: "Route",
     group: "EC2",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+      DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
       routeTable: `inspection_internet_${config.region}c`,
-      ig: "inspection_igw",
+      egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
   {
     type: "Route",
     group: "EC2",
     properties: ({}) => ({
-      DestinationIpv6CidrBlock: "::/0",
+      DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
       routeTable: `inspection_internet_${config.region}c`,
+      ig: "inspection_igw",
     }),
   },
   {
@@ -2276,17 +2491,17 @@ exports.createResources = () => [
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "eipalloc-061fad19bad4b2b05",
+    name: "eipalloc-09b77a2b8eb2926b1",
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "eipalloc-06db97168d1f20842",
+    name: "eipalloc-0bc01f989cd7c2cc0",
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "eipalloc-0b3322ee3b391f68c",
+    name: "eipalloc-0d6739f1b6e787e33",
   },
   {
     type: "VpcEndpoint",
@@ -3014,46 +3229,7 @@ exports.createResources = () => [
   {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
-    name: "tgw-attach-00842d474a08ebb91",
-    properties: ({}) => ({
-      Options: {
-        DnsSupport: "enable",
-        Ipv6Support: "enable",
-        ApplianceModeSupport: "disable",
-      },
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
-    }),
-    dependencies: ({ config }) => ({
-      transitGateway: "Org_TGW_dev",
-      vpc: "endpoint_vpc",
-      subnets: [
-        `endpoint_attachment_${config.region}a`,
-        `endpoint_attachment_${config.region}b`,
-        `endpoint_attachment_${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "TransitGatewayVpcAttachment",
-    group: "EC2",
-    name: "tgw-attach-0f51b4b5bbd13a636",
+    name: "tgw-attach-005905e39c2e51994",
     properties: ({}) => ({
       Options: {
         DnsSupport: "enable",
@@ -3092,7 +3268,7 @@ exports.createResources = () => [
   {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
-    name: "tgw-attach-0f60748e2afa72b16",
+    name: "tgw-attach-02eb92b563d1e14bf",
     properties: ({}) => ({
       Options: {
         DnsSupport: "enable",
@@ -3129,10 +3305,49 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "TransitGatewayVpcAttachment",
+    group: "EC2",
+    name: "tgw-attach-065041c0c05cdb4fa",
+    properties: ({}) => ({
+      Options: {
+        DnsSupport: "enable",
+        Ipv6Support: "enable",
+        ApplianceModeSupport: "disable",
+      },
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+    }),
+    dependencies: ({ config }) => ({
+      transitGateway: "Org_TGW_dev",
+      vpc: "endpoint_vpc",
+      subnets: [
+        `endpoint_attachment_${config.region}a`,
+        `endpoint_attachment_${config.region}b`,
+        `endpoint_attachment_${config.region}c`,
+      ],
+    }),
+  },
+  {
     type: "TransitGatewayRouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      transitGatewayVpcAttachment: "tgw-attach-00842d474a08ebb91",
+      transitGatewayVpcAttachment: "tgw-attach-005905e39c2e51994",
       transitGatewayRouteTable: "shared",
     }),
   },
@@ -3140,7 +3355,7 @@ exports.createResources = () => [
     type: "TransitGatewayRouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      transitGatewayVpcAttachment: "tgw-attach-0f51b4b5bbd13a636",
+      transitGatewayVpcAttachment: "tgw-attach-02eb92b563d1e14bf",
       transitGatewayRouteTable: "shared",
     }),
   },
@@ -3148,7 +3363,7 @@ exports.createResources = () => [
     type: "TransitGatewayRouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      transitGatewayVpcAttachment: "tgw-attach-0f60748e2afa72b16",
+      transitGatewayVpcAttachment: "tgw-attach-065041c0c05cdb4fa",
       transitGatewayRouteTable: "shared",
     }),
   },
@@ -3484,6 +3699,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       firewall: "NetworkFirewall",
+      logGroups: [
+        "/aws/network-firewall/alerts",
+        "/aws/network-firewall/flows",
+      ],
     }),
   },
   {
@@ -3839,7 +4058,7 @@ exports.createResources = () => [
       AliasTarget: {
         HostedZoneId: "Z7K1066E3PUKB",
         DNSName:
-          "vpce-0f8a4d68dbf46a728-xqjiywiq.athena.eu-west-2.vpce.amazonaws.com.",
+          "vpce-0cf39574d1ae988da-ysvgez6h.athena.eu-west-2.vpce.amazonaws.com.",
         EvaluateTargetHealth: true,
       },
     }),
@@ -3856,7 +4075,7 @@ exports.createResources = () => [
       AliasTarget: {
         HostedZoneId: "Z7K1066E3PUKB",
         DNSName:
-          "vpce-0248438628a6e1e3f-p34gubkp.autoscaling.eu-west-2.vpce.amazonaws.com.",
+          "vpce-0afda4d44d52bc0e5-6bkh8eek.autoscaling.eu-west-2.vpce.amazonaws.com.",
         EvaluateTargetHealth: true,
       },
     }),
@@ -3873,7 +4092,7 @@ exports.createResources = () => [
       AliasTarget: {
         HostedZoneId: "Z7K1066E3PUKB",
         DNSName:
-          "vpce-0845dad27da5a903f-qv4qst6n.ec2.eu-west-2.vpce.amazonaws.com.",
+          "vpce-04674e70fedf8fe2f-rapirsjl.ec2.eu-west-2.vpce.amazonaws.com.",
         EvaluateTargetHealth: true,
       },
     }),
@@ -3890,7 +4109,7 @@ exports.createResources = () => [
       AliasTarget: {
         HostedZoneId: "Z7K1066E3PUKB",
         DNSName:
-          "vpce-054a6e7def0724abf-g42kettf.ec2messages.eu-west-2.vpce.amazonaws.com.",
+          "vpce-09a1251acf34d56a4-bfa49ova.ec2messages.eu-west-2.vpce.amazonaws.com.",
         EvaluateTargetHealth: true,
       },
     }),
@@ -3907,7 +4126,7 @@ exports.createResources = () => [
       AliasTarget: {
         HostedZoneId: "Z7K1066E3PUKB",
         DNSName:
-          "vpce-03222f45e6a44f945-y6ql8sg7.ecs.eu-west-2.vpce.amazonaws.com.",
+          "vpce-0a72036e862593ef2-3v8m9xe6.ecs.eu-west-2.vpce.amazonaws.com.",
         EvaluateTargetHealth: true,
       },
     }),
@@ -3924,7 +4143,7 @@ exports.createResources = () => [
       AliasTarget: {
         HostedZoneId: "Z7K1066E3PUKB",
         DNSName:
-          "vpce-01e78c25554c4c6d4-psshok31.logs.eu-west-2.vpce.amazonaws.com.",
+          "vpce-0e4dfe1039ae420d2-4mi0gqvi.logs.eu-west-2.vpce.amazonaws.com.",
         EvaluateTargetHealth: true,
       },
     }),
@@ -3941,7 +4160,7 @@ exports.createResources = () => [
       AliasTarget: {
         HostedZoneId: "Z7K1066E3PUKB",
         DNSName:
-          "vpce-0f75236d6cb015ed3-qgnpuqjs.rds.eu-west-2.vpce.amazonaws.com.",
+          "vpce-086a9e074aa903ad7-px7q2ite.rds.eu-west-2.vpce.amazonaws.com.",
         EvaluateTargetHealth: true,
       },
     }),
@@ -3958,7 +4177,7 @@ exports.createResources = () => [
       AliasTarget: {
         HostedZoneId: "Z7K1066E3PUKB",
         DNSName:
-          "vpce-0c1a399c4c4dcb3a2-qw3n5itl.sns.eu-west-2.vpce.amazonaws.com.",
+          "vpce-015b5949097426079-q57mwnca.sns.eu-west-2.vpce.amazonaws.com.",
         EvaluateTargetHealth: true,
       },
     }),
@@ -3975,7 +4194,7 @@ exports.createResources = () => [
       AliasTarget: {
         HostedZoneId: "Z7K1066E3PUKB",
         DNSName:
-          "vpce-0ae2768ddc311a04f-6dddupze.sqs.eu-west-2.vpce.amazonaws.com.",
+          "vpce-0863570edb44a5456-v7w42dw0.sqs.eu-west-2.vpce.amazonaws.com.",
         EvaluateTargetHealth: true,
       },
     }),
@@ -3992,7 +4211,7 @@ exports.createResources = () => [
       AliasTarget: {
         HostedZoneId: "Z7K1066E3PUKB",
         DNSName:
-          "vpce-030cc7e26d59ad218-u11ma746.ssm.eu-west-2.vpce.amazonaws.com.",
+          "vpce-0595e6d1215ec3bc1-3t4jul53.ssm.eu-west-2.vpce.amazonaws.com.",
         EvaluateTargetHealth: true,
       },
     }),
@@ -4009,7 +4228,7 @@ exports.createResources = () => [
       AliasTarget: {
         HostedZoneId: "Z7K1066E3PUKB",
         DNSName:
-          "vpce-0d192b76ccb18dcf7-r5y4v9vt.ssmmessages.eu-west-2.vpce.amazonaws.com.",
+          "vpce-027e40fe6bfd2d562-f8no5ms7.ssmmessages.eu-west-2.vpce.amazonaws.com.",
         EvaluateTargetHealth: true,
       },
     }),
@@ -4024,7 +4243,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Type: "SecureString",
       Value:
-        "AQICAHheTvfm+Q+xQjyXsaWLALoUqglKZPk0qRhRU4JfrpVo1wH50sUz5sUEe6Ks/CqcSEHBAAAAeTB3BgkqhkiG9w0BBwagajBoAgEAMGMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMzHDEULS5rYTO1j2WAgEQgDZB8F/W0Gsx3coSTprBZB447z1x6NZDlQNWFDDvpTf3nP+XQq/MLNtMMd/SNa7ARPqWqu04nys=",
+        "AQICAHhr/Nxf2T4S+qxKFNRnmh8ianmIxLFpol7uY+IE2cv30QGkX7R+j1ewRkQTW8IwN5fOAAAAeTB3BgkqhkiG9w0BBwagajBoAgEAMGMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM1OiZy3GmuoNygJThAgEQgDYJzP2smm92xRDK6dcIzGfwNyV09ggO7CB2HO+D+LicSoWKx6yqaZzpWlcyMZhLDkbfA5jh/ts=",
       DataType: "text",
       Tags: [
         {

@@ -3,8 +3,6 @@ title Resources for project iam
 skinparam monochrome true
 + Infra
 ++ aws
-+++ EC2
-++++ Instance (1)
 +++ IAM
 ++++ User (1)
 ++++ Group (1)

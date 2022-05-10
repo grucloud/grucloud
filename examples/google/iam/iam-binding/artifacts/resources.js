@@ -18,7 +18,7 @@ exports.createResources = () => [
     type: "Binding",
     group: "iam",
     name: "roles/firebasenotifications.viewer",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       serviceAccounts: ["sa-test-example"],
     }),
   },

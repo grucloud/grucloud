@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, map, eq, switchCase, fork } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  assign,
+  map,
+  eq,
+  switchCase,
+  fork,
+  or,
+} = require("rubico");
 const {
   defaultsDeep,
   pluck,
@@ -91,9 +101,17 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
       ]),
     ])();
 
-  const managedByOther = pipe([
-    get("live.ServiceName"),
-    callProp("startsWith", "com.amazonaws.vpce"),
+  const cannotBeDeleted = pipe([
+    get("live.Tags"),
+    find(eq(get("Key"), "Firewall")),
+  ]);
+
+  const managedByOther = or([
+    cannotBeDeleted,
+    pipe([
+      get("live.ServiceName"),
+      callProp("startsWith", "com.amazonaws.vpce"),
+    ]),
   ]);
 
   const findDependencies = ({ live, lives, config }) => [
@@ -154,12 +172,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
-  const getByName = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    getByNameCore({ getList, findName }),
-  ]);
+  const getByName = pipe([getByNameCore({ getList, findName })]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpcEndpoint-property
   const create = client.create({
@@ -239,6 +252,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
   return {
     spec,
     findId,
+    cannotBeDeleted,
     managedByOther,
     findDependencies,
     getByName,

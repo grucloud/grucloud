@@ -83,7 +83,7 @@ exports.createResources = () => [
         "zoneinfo",
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       userPool: "my-user-pool",
     }),
   },
@@ -91,7 +91,7 @@ exports.createResources = () => [
     type: "UserPoolDomain",
     group: "CognitoIdentityServiceProvider",
     name: "auth.grucloud.org",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       userPool: "my-user-pool",
       certificate: "grucloud.org",
     }),
@@ -100,14 +100,14 @@ exports.createResources = () => [
     type: "HostedZone",
     group: "Route53",
     name: "grucloud.org.",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       domain: "grucloud.org",
     }),
   },
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       certificate: "grucloud.org",
     }),
@@ -115,7 +115,7 @@ exports.createResources = () => [
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       userPoolDomain: "auth.grucloud.org",
     }),
@@ -133,7 +133,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
     }),
   },

@@ -22,7 +22,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       ipCidrRange: "10.164.0.0/20",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       network: "vpc",
     }),
   },
@@ -44,7 +44,7 @@ exports.createResources = () => [
         enable: false,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       network: "vpc",
     }),
   },
@@ -65,7 +65,7 @@ exports.createResources = () => [
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210927",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subNetwork: "subnetwork",
     }),
   },

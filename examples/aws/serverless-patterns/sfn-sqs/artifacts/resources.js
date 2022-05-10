@@ -42,6 +42,7 @@ exports.createResources = () => [
       queue: "sam-app-MyQueue-AqSTiBlPUT32",
     }),
   },
+  { type: "Queue", group: "SQS", name: "sam-app-MyQueue-AqSTiBlPUT32" },
   {
     type: "StateMachine",
     group: "StepFunctions",
@@ -65,6 +66,26 @@ exports.createResources = () => [
       },
       tags: [
         {
+          key: "gc-created-by-provider",
+          value: "aws",
+        },
+        {
+          key: "gc-managed-by",
+          value: "grucloud",
+        },
+        {
+          key: "gc-project-name",
+          value: "sfn-sqs",
+        },
+        {
+          key: "gc-stage",
+          value: "dev",
+        },
+        {
+          key: "Name",
+          value: "StateMachinetoSQS-Fy79sSx0sTLU",
+        },
+        {
           key: "stateMachine:createdBy",
           value: "SAM",
         },
@@ -75,5 +96,4 @@ exports.createResources = () => [
       sqsQueues: ["sam-app-MyQueue-AqSTiBlPUT32"],
     }),
   },
-  { type: "Queue", group: "SQS", name: "sam-app-MyQueue-AqSTiBlPUT32" },
 ];

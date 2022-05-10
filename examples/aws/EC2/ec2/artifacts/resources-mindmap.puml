@@ -5,6 +5,9 @@ skinparam monochrome true
 ++ aws
 +++ EC2
 ++++ KeyPair (1)
+++++ Vpc (1)
+++++ Subnet (1)
+++++ SecurityGroup (1)
 ++++ ElasticIpAddress (1)
 ++++ ElasticIpAddressAssociation (1)
 ++++ Instance (1)

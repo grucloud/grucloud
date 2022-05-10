@@ -19,7 +19,7 @@ exports.createResources = () => [
       },
       State: "ENABLED",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "sam-app-EventBus",
     }),
   },
@@ -29,7 +29,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Id: "CloudWatchLogTarget",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       rule: "sam-app-EventBusLogRule-O6HEQDLDXZKV",
       logGroup: "/aws/events/sam-app",
     }),
@@ -72,7 +72,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "sam-app-EventBus",
     }),
   },
@@ -110,7 +110,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-WorkflowExecutionRole-WM87YTOPGZ2D",
     }),
   },

@@ -65,7 +65,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-WorkflowExecutionRole-7I137IX4DEEI",
     }),
   },

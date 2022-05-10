@@ -9,7 +9,8 @@ const { CloudTrailEventDataStore } = require("./CloudTrailEventDataStore");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudTrail.html
 const GROUP = "CloudTrail";
-const compareCloudTrail = compareAws({ tagsKey: "TagsList" });
+const tagsKey = "TagsList";
+const compareCloudTrail = compareAws({ tagsKey });
 
 const filterEventSelector = when(
   and([
@@ -64,6 +65,7 @@ module.exports = pipe([
   map(
     defaultsDeep({
       group: GROUP,
+      tagsKey,
       compare: compareCloudTrail({}),
       isOurMinion,
     })

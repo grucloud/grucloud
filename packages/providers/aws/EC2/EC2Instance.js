@@ -8,20 +8,19 @@ const {
   eq,
   not,
   or,
-  tryCatch,
+  and,
   switchCase,
   omit,
   assign,
-  fork,
-  pick,
 } = require("rubico");
 const {
   defaultsDeep,
+  callProp,
   isEmpty,
   first,
   pluck,
   flatten,
-  size,
+  unless,
   find,
   includes,
   when,
@@ -52,6 +51,7 @@ const {
   findDependenciesVpc,
   fetchImageIdFromDescription,
   imageDescriptionFromId,
+  assignUserDataToBase64,
 } = require("./EC2Common");
 
 const ignoreErrorCodes = ["InvalidInstanceID.NotFound"];
@@ -61,12 +61,18 @@ const StateTerminated = "terminated";
 const StateStopped = "stopped";
 
 const configDefault =
-  ({ config, includeTags = true, ec2 }) =>
+  ({ config, ec2 }) =>
   ({
     name,
     namespace,
-    properties: { Image, UserData, ...otherProperties },
-    dependencies: { keyPair, subnet, securityGroups, iamInstanceProfile },
+    properties: { Image, ...otherProperties },
+    dependencies: {
+      keyPair,
+      subnets,
+      securityGroups,
+      iamInstanceProfile,
+      launchTemplate,
+    },
   }) =>
     pipe([
       tap((params) => {
@@ -79,41 +85,48 @@ const configDefault =
           () => otherProperties,
           defaultsDeep({
             ImageId,
-            ...(UserData && {
-              UserData: Buffer.from(UserData, "utf-8").toString("base64"),
-            }),
-            ...(iamInstanceProfile && {
-              IamInstanceProfile: {
-                Arn: getField(iamInstanceProfile, "Arn"),
+            TagSpecifications: [
+              {
+                ResourceType: "instance",
+                Tags: buildTags({ config, namespace, name }),
               },
-            }),
-            ...(includeTags && {
-              TagSpecifications: [
-                {
-                  ResourceType: "instance",
-                  Tags: buildTags({ config, namespace, name }),
-                },
-              ],
-            }),
-            ...(keyPair && { KeyName: keyPair.resource.name }),
+            ],
           }),
+          // IamInstanceProfile
+          when(
+            () => iamInstanceProfile,
+            assign({
+              IamInstanceProfile: () => ({
+                Arn: getField(iamInstanceProfile, "Arn"),
+              }),
+            })
+          ),
           // Subnet
           when(
-            () => subnet,
-            assign({
-              SubnetId: () => getField(subnet, "SubnetId"),
-            })
-          ),
-          // Security Groups
-          when(
-            () => securityGroups,
-            assign({
-              SecurityGroupIds: pipe([
-                () => securityGroups,
-                map((sg) => getField(sg, "GroupId")),
+            and([
+              () => subnets,
+              pipe([
+                () => launchTemplate,
+                switchCase([
+                  isEmpty,
+                  () => false,
+                  pipe([get("live.LaunchTemplateData.SecurityGroupIds")]),
+                ]),
               ]),
+            ]),
+            assign({
+              SubnetId: () => getField(subnets[0], "SubnetId"),
             })
           ),
+          when(
+            () => keyPair,
+            assign({
+              KeyName: () => keyPair.resource.name,
+            })
+          ),
+          tap((params) => {
+            assert(true);
+          }),
         ])(),
     ])();
 
@@ -125,12 +138,6 @@ exports.EC2Instance = ({ spec, config }) => {
 
   const { providerName } = config;
   assert(providerName);
-  const clientConfig = {
-    ...config,
-    retryCount: 100,
-    retryDelay: 5e3,
-    repeatCount: 1,
-  };
 
   const managedByOther = or([
     hasKeyInTags({
@@ -165,6 +172,18 @@ exports.EC2Instance = ({ spec, config }) => {
               providerName,
             }),
           get("id"),
+        ])(),
+      ],
+    },
+    {
+      type: "LaunchTemplate",
+      group: "EC2",
+      ids: [
+        pipe([
+          () => live,
+          get("Tags"),
+          find(eq(get("Key"), "aws:ec2launchtemplate:id")),
+          get("Value"),
         ])(),
       ],
     },
@@ -235,7 +254,6 @@ exports.EC2Instance = ({ spec, config }) => {
     ])();
 
   const findId = get("live.InstanceId");
-  const pickId = pick(["InstanceId"]);
 
   const findName = (params) => {
     assert(params.live);
@@ -275,6 +293,9 @@ exports.EC2Instance = ({ spec, config }) => {
           }),
           ec2().describeInstanceAttribute,
           get("UserData.Value"),
+          unless(isEmpty, (UserData) =>
+            Buffer.from(UserData, "base64").toString()
+          ),
         ]),
       }),
     ]);
@@ -387,6 +408,7 @@ exports.EC2Instance = ({ spec, config }) => {
   const create = client.create({
     method: "runInstances",
     shouldRetryOnExceptionMessages: ["Invalid IAM Instance Profile ARN"],
+    filterPayload: pipe([assignUserDataToBase64]),
     isInstanceUp,
     pickCreated: () =>
       pipe([

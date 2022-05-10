@@ -42,7 +42,7 @@ exports.createResources = () => [
       contentType: "text/json",
       storageClass: "STANDARD",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       bucket: "grucloud-test",
     }),
   },
