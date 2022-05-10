@@ -27,7 +27,7 @@ omit AWSLogs S3 Objects
 
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html
-
+  inferName DhxpOptionAssociation
 - gc gencode lambda with java.
 
 - AWS::Glue::Job

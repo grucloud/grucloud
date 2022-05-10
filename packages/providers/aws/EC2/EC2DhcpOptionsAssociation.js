@@ -75,10 +75,11 @@ exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
           ]),
         }),
         tap(({ dhcpOptions, vpc }) => {
-          assert(dhcpOptions);
+          //assert(dhcpOptions);
           assert(vpc);
         }),
-        ({ vpc, dhcpOptions }) => `dhcp-options-assoc::${dhcpOptions}::${vpc}`,
+        ({ vpc, dhcpOptions = "deleted" }) =>
+          `dhcp-options-assoc::${dhcpOptions}::${vpc}`,
       ])(),
     findId,
     getList:

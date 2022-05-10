@@ -55,36 +55,14 @@ const createModel = ({ config }) => ({
     getParam: "DhcpOptions",
     decorate: ({ endpoint, getById }) =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
         assign({
           DhcpConfigurations: pipe([
             get("DhcpConfigurations"),
             map(
               assign({
-                Values: pipe([
-                  get("Values"),
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  map(
-                    pipe([
-                      tap((params) => {
-                        assert(true);
-                      }),
-                      get("Value"),
-                      tap((params) => {
-                        assert(true);
-                      }),
-                    ])
-                  ),
-                ]),
+                Values: pipe([get("Values"), map(pipe([get("Value")]))]),
               })
             ),
-            tap((params) => {
-              assert(true);
-            }),
           ]),
         }),
       ]),

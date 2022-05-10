@@ -375,6 +375,7 @@ module.exports = pipe([
       type: "DhcpOptionsAssociation",
       Client: EC2DhcpOptionsAssociation,
       omitProperties: ["DhcpOptionsId", "VpcId"],
+      //TODO infername
       dependencies: {
         vpc: { type: "Vpc", group: "EC2", parent: true },
         dhcpOptions: { type: "DhcpOptions", group: "EC2", parent: true },
