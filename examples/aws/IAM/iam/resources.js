@@ -4,23 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Instance",
-    group: "EC2",
-    name: "web-iam",
-    properties: ({ config }) => ({
-      InstanceType: "t2.micro",
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
-      },
-      Placement: {
-        AvailabilityZone: `${config.region}d`,
-      },
-    }),
-    dependencies: ({}) => ({
-      iamInstanceProfile: "my-profile",
-    }),
-  },
-  {
     type: "User",
     group: "IAM",
     name: "Alice",

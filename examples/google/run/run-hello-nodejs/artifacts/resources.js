@@ -67,7 +67,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       service: "starhackit-server",
     }),
   },

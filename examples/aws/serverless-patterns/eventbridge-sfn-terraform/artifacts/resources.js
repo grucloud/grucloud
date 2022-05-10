@@ -181,7 +181,6 @@ exports.createResources = () => [
         includeExecutionData: true,
         level: "ALL",
       },
-      tags: [],
     }),
     dependencies: ({}) => ({
       role: "terraform-20220331194511828100000004",

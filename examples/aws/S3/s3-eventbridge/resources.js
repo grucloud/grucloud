@@ -13,9 +13,8 @@ exports.createResources = () => [
       IncludeGlobalServiceEvents: true,
       IsMultiRegionTrail: true,
       IsOrganizationTrail: false,
-      TagsList: [],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       bucket: "grucloud-s3-event-bridge-logs",
     }),
   },
@@ -46,7 +45,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Id: "S3NewImageEvent",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       rule: "sam-app-S3NewImageEvent-W0968CSQOUFJ",
       sqsQueue: "sam-app-NewImageEventQueue-DGEXqRa9ZM4Z",
     }),
@@ -139,7 +138,7 @@ exports.createResources = () => [
             {
               Effect: "Allow",
               Principal: {
-                Service: "events.amazonaws.com",
+                Service: `events.amazonaws.com`,
               },
               Action: "SQS:SendMessage",
               Resource: `arn:aws:sqs:${

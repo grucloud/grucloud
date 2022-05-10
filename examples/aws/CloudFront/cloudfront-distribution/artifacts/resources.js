@@ -103,31 +103,32 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       buckets: ["cloudfront-demo.grucloud.org"],
       certificate: "cloudfront-demo.grucloud.org",
       originAccessIdentities: [
-        "access-identity-cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com",
+        `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
       ],
     }),
   },
   {
     type: "OriginAccessIdentity",
     group: "CloudFront",
-    name: "access-identity-cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com",
+    name: ({ config }) =>
+      `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
   },
   {
     type: "HostedZone",
     group: "Route53",
     name: "grucloud.org.",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       domain: "grucloud.org",
     }),
   },
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       certificate: "cloudfront-demo.grucloud.org",
     }),
@@ -165,9 +166,9 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       originAccessIdentities: [
-        "access-identity-cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com",
+        `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
       ],
     }),
   },

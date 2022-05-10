@@ -85,7 +85,7 @@ exports.createResources = () => [
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210927",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       ip: "ip-webserver",
       disks: ["disk"],
     }),

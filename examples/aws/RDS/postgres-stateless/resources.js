@@ -257,11 +257,28 @@ exports.createResources = () => [
     type: "Instance",
     group: "EC2",
     name: "bastion",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       InstanceType: "t2.micro",
       Image: {
         Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
       },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc::security-group-public",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "subnet-public-a",
+          })}`,
+        },
+      ],
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },

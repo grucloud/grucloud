@@ -13,7 +13,8 @@ const {
 const { StepFunctionsStateMachine } = require("./StepFunctionsStateMachine");
 
 const GROUP = "StepFunctions";
-const compareStepFunctions = compareAws({ tagsKey: "tags" });
+const tagsKey = "tags";
+const compareStepFunctions = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
@@ -101,6 +102,7 @@ module.exports = pipe([
     defaultsDeep({
       group: GROUP,
       isOurMinion,
+      tagsKey,
       compare: compareStepFunctions({}),
     })
   ),

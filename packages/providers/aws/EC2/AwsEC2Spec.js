@@ -302,6 +302,9 @@ const getByIdfromLives =
 
 const omitNetworkInterfacesForDefaultSubnetAndSecurityGroup = ({ lives }) =>
   pipe([
+    tap((params) => {
+      assert(lives);
+    }),
     get("NetworkInterfaces"),
     and([
       eq(size, 1),
@@ -312,6 +315,9 @@ const omitNetworkInterfacesForDefaultSubnetAndSecurityGroup = ({ lives }) =>
           pipe([
             get("SubnetId"),
             getByIdfromLives({ lives, groupType: "EC2::Subnet" }),
+            tap((params) => {
+              assert(true);
+            }),
             get("isDefault"),
           ]),
           // only one default security group ?
@@ -464,13 +470,14 @@ module.exports = pipe([
         "SnapshotId",
         "State",
         "VolumeId",
-        "MultiAttachEnabled",
         "Device",
       ],
+      propertiesDefault: {
+        MultiAttachEnabled: false,
+      },
       setupEbsVolume,
       filterLive: () =>
         pipe([
-          pick(["Size", "VolumeType", "Device", "AvailabilityZone"]),
           assign({
             AvailabilityZone: buildAvailabilityZone,
           }),

@@ -101,6 +101,7 @@ exports.createResources = () => [
       ],
     }),
   },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "InternetGateway",
     group: "EC2",
@@ -858,6 +859,15 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-a",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
     type: "RouteTable",
     group: "EC2",
     name: "inspection-vpc-intra-subnet",
@@ -1510,6 +1520,15 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-default::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
@@ -1854,18 +1873,18 @@ exports.createResources = () => [
     name: "spoke-vpc-1-instance-1",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220419.0 x86_64 HVM gp2",
-      },
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
+      Image: {
+        Description: "Amazon Linux AMI 2018.03.0.20220419.0 x86_64 HVM gp2",
+      },
     }),
-    dependencies: ({ config }) => ({
-      subnets: [`spoke-vpc-1-private-subnet-${config.region}a`],
+    dependencies: ({}) => ({
+      subnets: ["subnet-default-a"],
       keyPair: "humorous-duckling",
       iamInstanceProfile: "terraform-ssm-ec2",
-      securityGroups: ["sg::spoke-vpc-1::public_instance_security_group"],
+      securityGroups: ["sg::vpc-default::default"],
     }),
   },
   {
@@ -1874,18 +1893,18 @@ exports.createResources = () => [
     name: "spoke-vpc-2-instance-1",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220419.0 x86_64 HVM gp2",
-      },
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
+      Image: {
+        Description: "Amazon Linux AMI 2018.03.0.20220419.0 x86_64 HVM gp2",
+      },
     }),
-    dependencies: ({ config }) => ({
-      subnet: `spoke-vpc-2-private-subnet-${config.region}a`,
+    dependencies: ({}) => ({
+      subnets: ["subnet-default-a"],
       keyPair: "humorous-duckling",
       iamInstanceProfile: "terraform-ssm-ec2",
-      securityGroups: ["sg::spoke-vpc-2::public_instance_security_group"],
+      securityGroups: ["sg::vpc-default::default"],
     }),
   },
   {

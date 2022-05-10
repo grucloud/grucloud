@@ -9,9 +9,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "volume",
     properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
       Size: 5,
       VolumeType: "standard",
-      AvailabilityZone: `${config.region}a`,
     }),
   },
   {

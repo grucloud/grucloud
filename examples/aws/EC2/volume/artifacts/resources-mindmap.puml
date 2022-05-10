@@ -6,5 +6,8 @@ skinparam monochrome true
 +++ EC2
 ++++ Volume (1)
 ++++ VolumeAttachment (1)
+++++ Vpc (1)
+++++ Subnet (1)
+++++ SecurityGroup (1)
 ++++ Instance (1)
 @endmindmap

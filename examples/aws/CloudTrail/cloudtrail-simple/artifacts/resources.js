@@ -13,7 +13,6 @@ exports.createResources = () => [
       IncludeGlobalServiceEvents: true,
       IsMultiRegionTrail: true,
       IsOrganizationTrail: false,
-      TagsList: [],
     }),
     dependencies: ({}) => ({
       bucket: "grucloud-s3-event-bridge-logs",
@@ -23,7 +22,7 @@ exports.createResources = () => [
     type: "Bucket",
     group: "S3",
     name: "grucloud-s3-event-bridge-logs",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       Policy: {
         Version: "2012-10-17",
         Statement: [
@@ -33,8 +32,8 @@ exports.createResources = () => [
             Principal: "*",
             Action: "s3:*",
             Resource: [
-              "arn:aws:s3:::grucloud-s3-event-bridge-logs/*",
-              "arn:aws:s3:::grucloud-s3-event-bridge-logs",
+              `arn:aws:s3:::grucloud-s3-event-bridge-logs/*`,
+              `arn:aws:s3:::grucloud-s3-event-bridge-logs`,
             ],
             Condition: {
               Bool: {
@@ -49,7 +48,7 @@ exports.createResources = () => [
               Service: "cloudtrail.amazonaws.com",
             },
             Action: "s3:GetBucketAcl",
-            Resource: "arn:aws:s3:::grucloud-s3-event-bridge-logs",
+            Resource: `arn:aws:s3:::grucloud-s3-event-bridge-logs`,
           },
           {
             Sid: "AllowCloudTrailToWriteToBucket",
@@ -58,8 +57,7 @@ exports.createResources = () => [
               Service: "cloudtrail.amazonaws.com",
             },
             Action: "s3:PutObject",
-            Resource:
-              "arn:aws:s3:::grucloud-s3-event-bridge-logs/AWSLogs/840541460064/*",
+            Resource: `arn:aws:s3:::grucloud-s3-event-bridge-logs/AWSLogs/${config.accountId()}/*`,
             Condition: {
               StringEquals: {
                 "s3:x-amz-acl": "bucket-owner-full-control",

@@ -44,6 +44,30 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Topic",
+    group: "SNS",
+    name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
+    properties: ({}) => ({
+      Attributes: {
+        DisplayName: "",
+        DeliveryPolicy: {
+          http: {
+            defaultHealthyRetryPolicy: {
+              minDelayTarget: 20,
+              maxDelayTarget: 20,
+              numRetries: 3,
+              numMaxDelayRetries: 0,
+              numNoDelayRetries: 0,
+              numMinDelayRetries: 0,
+              backoffFunction: "linear",
+            },
+            disableSubscriptionOverrides: false,
+          },
+        },
+      },
+    }),
+  },
+  {
     type: "StateMachine",
     group: "StepFunctions",
     name: "StateMachineExpressSynctoSNS-s4flfbpCO2tF",
@@ -78,30 +102,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",
-    }),
-  },
-  {
-    type: "Topic",
-    group: "SNS",
-    name: "sam-app-StateMachineSNSTopic-C6WGCI64MKY2",
-    properties: ({}) => ({
-      Attributes: {
-        DisplayName: "",
-        DeliveryPolicy: {
-          http: {
-            defaultHealthyRetryPolicy: {
-              minDelayTarget: 20,
-              maxDelayTarget: 20,
-              numRetries: 3,
-              numMaxDelayRetries: 0,
-              numNoDelayRetries: 0,
-              numMinDelayRetries: 0,
-              backoffFunction: "linear",
-            },
-            disableSubscriptionOverrides: false,
-          },
-        },
-      },
     }),
   },
 ];

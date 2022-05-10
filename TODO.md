@@ -4,6 +4,8 @@
 
 ## Aws
 
+omit AWSLogs S3 Objects
+
 - add EgressOnlyInternetGateway: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createEgressOnlyInternetGateway-property
 
 - add route dependency to EgressOnlyInternetGatewayId

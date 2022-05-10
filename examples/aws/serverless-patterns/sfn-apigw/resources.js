@@ -48,7 +48,7 @@ exports.createResources = () => [
     type: "Stage",
     group: "APIGateway",
     name: "Prod",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       restApi: "sam-app",
     }),
   },
@@ -56,7 +56,7 @@ exports.createResources = () => [
     type: "Stage",
     group: "APIGateway",
     name: "Stage",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       restApi: "sam-app",
     }),
   },
@@ -159,7 +159,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-ExampleLambdaFunctionRole-10XK3921W9OPT",
     }),
   },
@@ -217,7 +217,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-StatesExecutionRole-VZMKU2P2QBYH",
       logGroups: ["stepfunctions/StateMachinetoAPIGW"],
     }),

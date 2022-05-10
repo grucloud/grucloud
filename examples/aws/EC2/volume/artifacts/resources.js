@@ -6,37 +6,63 @@ exports.createResources = () => [
   {
     type: "Volume",
     group: "EC2",
-    name: "volume-test-volume",
+    name: "my-volume",
     properties: ({ config }) => ({
-      Size: 2,
-      VolumeType: "standard",
       AvailabilityZone: `${config.region}a`,
+      Size: 1,
+      Iops: 3000,
+      VolumeType: "gp3",
+      Throughput: 125,
     }),
   },
   {
     type: "VolumeAttachment",
     group: "EC2",
     properties: ({}) => ({
-      Device: "/dev/sdf",
+      Device: "/dev/sdb",
       DeleteOnTermination: false,
     }),
     dependencies: ({}) => ({
-      volume: "volume-test-volume",
-      instance: "server-4-test-volume",
+      volume: "my-volume",
+      instance: "machine4volume",
+    }),
+  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-default-a",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-default::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
     }),
   },
   {
     type: "Instance",
     group: "EC2",
-    name: "server-4-test-volume",
+    name: "machine4volume",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
-      },
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
+      },
+    }),
+    dependencies: ({}) => ({
+      subnets: ["subnet-default-a"],
+      securityGroups: ["sg::vpc-default::default"],
     }),
   },
 ];

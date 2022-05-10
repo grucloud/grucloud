@@ -60,7 +60,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "my-table",
     }),
   },
@@ -107,7 +107,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-MyStateMachineExecutionRole-ZVCE4J344HAN",
     }),
   },
