@@ -666,15 +666,6 @@ module.exports = pipe([
       },
       filterLive: () =>
         pipe([
-          pick([
-            "CidrBlock",
-            "Ipv6CidrBlock",
-            "AvailabilityZone",
-            "MapPublicIpOnLaunch",
-            "CustomerOwnedIpv4Pool",
-            "MapCustomerOwnedIpOnLaunch",
-            "MapPublicIpOnLaunch",
-          ]),
           assign({
             AvailabilityZone: buildAvailabilityZone,
           }),

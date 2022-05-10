@@ -593,7 +593,6 @@ exports.createResources = () => [
         ],
         level: "ALL",
       },
-      tags: [],
     }),
     dependencies: ({}) => ({
       role: "sfnStack-testtestMachineFlowRoleE75B9154-Y7HS9EGY2IQE",
