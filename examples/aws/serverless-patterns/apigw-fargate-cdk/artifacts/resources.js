@@ -122,8 +122,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/MyVpc/PrivateSubnet1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.128.0/18",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.128.0/18",
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
@@ -134,8 +134,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/MyVpc/PrivateSubnet2",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.192.0/18",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.192.0/18",
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
@@ -146,8 +146,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/MyVpc/PublicSubnet1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/18",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/18",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({
@@ -159,8 +159,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/MyVpc/PublicSubnet2",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.64.0/18",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.64.0/18",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({

@@ -66,26 +66,6 @@ exports.createResources = () => [
       },
       tags: [
         {
-          key: "gc-created-by-provider",
-          value: "aws",
-        },
-        {
-          key: "gc-managed-by",
-          value: "grucloud",
-        },
-        {
-          key: "gc-project-name",
-          value: "sfn-sqs",
-        },
-        {
-          key: "gc-stage",
-          value: "dev",
-        },
-        {
-          key: "Name",
-          value: "StateMachinetoSQS-Fy79sSx0sTLU",
-        },
-        {
           key: "stateMachine:createdBy",
           value: "SAM",
         },

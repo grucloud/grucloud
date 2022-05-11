@@ -22,8 +22,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcauroraisolatedSubnet1Subnet5370B90B",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/17",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/17",
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -34,8 +34,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcauroraisolatedSubnet2SubnetCB56E2A8",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.128.0/17",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.128.0/17",
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",

@@ -27,7 +27,7 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["s3:PutObject"],
-                Resource: "arn:aws:s3:::gc-my-sfn-bucket-destination/*",
+                Resource: `arn:aws:s3:::gc-my-sfn-bucket-destination/*`,
                 Effect: "Allow",
               },
             ],

@@ -59,8 +59,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/24",
     }),
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
@@ -71,8 +71,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.1.0/24",
     }),
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
@@ -83,8 +83,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.2.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.2.0/24",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({
@@ -96,8 +96,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.3.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.3.0/24",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({
@@ -109,8 +109,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.4.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.4.0/24",
     }),
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
@@ -121,8 +121,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet2",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.5.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.5.0/24",
     }),
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",

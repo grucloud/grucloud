@@ -74,13 +74,12 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "s3:GetObject",
-                Resource: "arn:aws:s3:::paperino-thumbnail-upload-372/*",
+                Resource: `arn:aws:s3:::paperino-thumbnail-upload-372/*`,
                 Effect: "Allow",
               },
               {
                 Action: "s3:PutObject",
-                Resource:
-                  "arn:aws:s3:::paperino-thumbnail-upload-372-resized/*",
+                Resource: `arn:aws:s3:::paperino-thumbnail-upload-372-resized/*`,
                 Effect: "Allow",
               },
               {
@@ -163,7 +162,7 @@ exports.createResources = () => [
                 "AWS:SourceAccount": `${config.accountId()}`,
               },
               ArnLike: {
-                "AWS:SourceArn": "arn:aws:s3:::paperino-thumbnail-upload-372",
+                "AWS:SourceArn": `arn:aws:s3:::paperino-thumbnail-upload-372`,
               },
             },
           },
