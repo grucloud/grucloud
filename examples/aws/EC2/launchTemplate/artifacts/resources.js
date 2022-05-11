@@ -18,8 +18,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "subnet-public",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}e`,
+      CidrBlock: "10.0.0.0/24",
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",

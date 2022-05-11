@@ -71,8 +71,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "ECSServiceStack/SkeletonVpc/applicationSubnet1",
     properties: ({ config }) => ({
-      CidrBlock: "172.31.32.0/20",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "172.31.32.0/20",
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -83,8 +83,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "ECSServiceStack/SkeletonVpc/applicationSubnet2",
     properties: ({ config }) => ({
-      CidrBlock: "172.31.48.0/20",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "172.31.48.0/20",
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -95,8 +95,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "ECSServiceStack/SkeletonVpc/dataSubnet1",
     properties: ({ config }) => ({
-      CidrBlock: "172.31.64.0/20",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "172.31.64.0/20",
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -107,8 +107,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "ECSServiceStack/SkeletonVpc/dataSubnet2",
     properties: ({ config }) => ({
-      CidrBlock: "172.31.80.0/20",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "172.31.80.0/20",
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -119,8 +119,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "ECSServiceStack/SkeletonVpc/publicSubnet1",
     properties: ({ config }) => ({
-      CidrBlock: "172.31.0.0/20",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "172.31.0.0/20",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({
@@ -132,8 +132,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "ECSServiceStack/SkeletonVpc/publicSubnet2",
     properties: ({ config }) => ({
-      CidrBlock: "172.31.16.0/20",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "172.31.16.0/20",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({

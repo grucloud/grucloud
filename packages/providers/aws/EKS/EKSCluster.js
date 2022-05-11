@@ -154,6 +154,7 @@ exports.EKSCluster = ({ spec, config }) => {
     method: "deleteCluster",
     getById,
     ignoreErrorCodes: ["ResourceNotFoundException"],
+    ignoreErrorMessages: ["No cluster found for name"],
     postDestroy: kubeConfigRemove,
   });
 

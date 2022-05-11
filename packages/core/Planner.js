@@ -34,7 +34,6 @@ const {
   includes,
 } = require("rubico/x");
 const { logError, convertError } = require("./Common");
-const { displayType } = require("./ProviderCommon");
 const STATES = {
   WAITING: "WAITING",
   RUNNING: "RUNNING",
@@ -125,29 +124,6 @@ const dependsOnTypeForward = (dependsOnType) =>
     }),
   ])();
 
-const dependsOnTypeReverse = (specs) =>
-  pipe([
-    tap((params) => {
-      assert(specs);
-    }),
-    () => specs,
-    map((spec) => ({
-      providerName: spec.providerName,
-      type: spec.type,
-      group: spec.group,
-      dependsOn: pipe([
-        () => specs,
-        filter(
-          pipe([get("dependsOnTypeDestroy", []), includes(displayType(spec))])
-        ),
-        map(pick(["providerName", "type", "group"])),
-      ])(),
-    })),
-    tap((xxx) => {
-      assert(true);
-    }),
-  ])();
-
 const findDependsOnType = ({
   providerName,
   group,
@@ -200,8 +176,12 @@ const findDependsOnType = ({
     }),
   ])();
 
-const dependsOnInstanceReverse = ({ plans }) =>
+const dependsOnInstanceReverse = ({ plans, specs }) =>
   pipe([
+    tap((params) => {
+      assert(plans);
+      assert(specs);
+    }),
     () => plans,
     pluck("resource"),
     map(({ uri, id, groupType, type, group, providerName }) => ({
@@ -224,9 +204,14 @@ const dependsOnInstanceReverse = ({ plans }) =>
             find(eq(identity, `${providerName}::${groupType}::${id}`)),
           ])
         ),
-        tap((params) => {
-          assert(true);
-        }),
+        filter(({ groupType: groupTypeDep }) =>
+          pipe([
+            () => specs,
+            find(eq(get("groupType"), groupType)),
+            get("dependsOnTypeDestroy"),
+            includes(groupTypeDep),
+          ])()
+        ),
         map(
           pick([
             "uri",
@@ -297,6 +282,7 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
               plans,
               dependsOnInstance: dependsOnInstanceReverse({
                 plans,
+                specs: dependsOnType,
               }),
             }),
           ]),

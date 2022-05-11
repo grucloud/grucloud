@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, map, pick, fork, filter, not } = require("rubico");
-const { defaultsDeep, first, unless, isEmpty, pluck } = require("rubico/x");
+const { pipe, tap, get, map, pick, fork, filter, not, and } = require("rubico");
+const { defaultsDeep, first, pluck } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
@@ -75,11 +75,10 @@ exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
           ]),
         }),
         tap(({ dhcpOptions, vpc }) => {
-          //assert(dhcpOptions);
+          assert(dhcpOptions);
           assert(vpc);
         }),
-        ({ vpc, dhcpOptions = "deleted" }) =>
-          `dhcp-options-assoc::${dhcpOptions}::${vpc}`,
+        ({ vpc, dhcpOptions }) => `dhcp-options-assoc::${dhcpOptions}::${vpc}`,
       ])(),
     findId,
     getList:
@@ -93,22 +92,26 @@ exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
               group: "EC2",
             }),
           pluck("live"),
+
           filter(
-            not(({ DhcpOptionsId }) =>
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                () =>
-                  lives.getById({
-                    id: DhcpOptionsId,
-                    providerName: config.providerName,
-                    type: "DhcpOptions",
-                    group: "EC2",
+            and([
+              get("DhcpOptionsId"),
+              not(({ DhcpOptionsId }) =>
+                pipe([
+                  tap((params) => {
+                    assert(true);
                   }),
-                get("managedByOther"),
-              ])()
-            )
+                  () =>
+                    lives.getById({
+                      id: DhcpOptionsId,
+                      providerName: config.providerName,
+                      type: "DhcpOptions",
+                      group: "EC2",
+                    }),
+                  get("managedByOther"),
+                ])()
+              ),
+            ])
           ),
           map(pick(["VpcId", "DhcpOptionsId"])),
         ])(),

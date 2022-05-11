@@ -16,8 +16,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "subnet-a",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.0.0/16",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "192.168.0.0/16",
       Tags: [
         {
           Key: "mykey",
