@@ -2,22 +2,22 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("EC2 EgressOnlyInternetGateway", async function () {
+describe("EC2 FlowLogs", async function () {
   let config;
   let provider;
-  let eoig;
+  let flowLog;
 
   before(async function () {
     provider = AwsProvider({ config });
-    eoig = provider.getClient({
-      groupType: "EC2::EgressOnlyInternetGateway",
+    flowLog = provider.getClient({
+      groupType: "EC2::FlowLogs",
     });
     await provider.start();
   });
   it(
     "list",
     pipe([
-      () => eoig.getList(),
+      () => flowLog.getList(),
       tap(({ items }) => {
         assert(Array.isArray(items));
       }),
@@ -27,9 +27,9 @@ describe("EC2 EgressOnlyInternetGateway", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        eoig.destroy({
+        flowLog.destroy({
           live: {
-            EgressOnlyInternetGatewayId: "eigw-0214d5aba979cedf1",
+            FlowLogId: "fl-0c95e8a96eb84d765",
           },
         }),
     ])
@@ -38,8 +38,8 @@ describe("EC2 EgressOnlyInternetGateway", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        eoig.getById({
-          EgressOnlyInternetGatewayId: "eigw-0214d5aba979cedf1",
+        flowLog.getById({
+          FlowLogId: "fl-0c95e8a96eb84d765",
         }),
     ])
   );
@@ -47,7 +47,7 @@ describe("EC2 EgressOnlyInternetGateway", async function () {
     "getByName with invalid id",
     pipe([
       () =>
-        eoig.getByName({
+        flowLog.getByName({
           name: "a123",
         }),
     ])

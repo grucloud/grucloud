@@ -8,16 +8,16 @@ const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
-const findId = pipe([get("live.FlowLogsId")]);
+const findId = pipe([get("live.FlowLogId")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
-  ignoreErrorCodes: ["TODO"],
+  ignoreErrorCodes: ["InvalidFlowLogId.NotFound"],
   getById: {
     pickId: pipe([
-      ({ FlowLogsId }) => ({
-        FlowLogsIds: [FlowLogsId],
+      ({ FlowLogId }) => ({
+        FlowLogIds: [FlowLogId],
       }),
     ]),
     method: "describeFlowLogs",
@@ -36,32 +36,42 @@ const createModel = ({ config }) => ({
   create: {
     method: "createFlowLogs",
     pickCreated: ({ payload }) =>
-      pipe([get("FlowLogIds"), first, (FlowLogsId) => ({ FlowLogsId })]),
+      pipe([
+        get("FlowLogIds"),
+        first,
+        tap((FlowLogId) => {
+          assert(FlowLogId);
+        }),
+        (FlowLogId) => ({ FlowLogId }),
+      ]),
   },
   destroy: {
     method: "deleteFlowLogs",
-    pickId: pick(["FlowLogsId"]),
+    pickId: ({ FlowLogId }) => ({ FlowLogIds: [FlowLogId] }),
   },
 });
 
 const findDependenciesFlowLog = ({ live, lives, config, type, group }) => ({
   type,
   group,
-  ids: pipe([
-    () => live.ResourceIds,
-    map((ResourceId) =>
-      pipe([
-        () =>
-          lives.getById({
-            id: ResourceId,
-            type,
-            group,
-            providerName: config.providerName,
-          }),
-        get("id"),
-      ])()
-    ),
-  ])(),
+  ids: [
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () =>
+        lives.getById({
+          id: live.ResourceId,
+          type,
+          group,
+          providerName: config.providerName,
+        }),
+      get("id"),
+      tap((params) => {
+        assert(true);
+      }),
+    ])(),
+  ],
 });
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2FlowLogs = ({ spec, config }) =>
@@ -71,51 +81,56 @@ exports.EC2FlowLogs = ({ spec, config }) =>
     config,
     findName: pipe([findNameInTagsOrId({ findId })]),
     findId,
-    findDependencies: ({ live, lives }) => [
-      ...findDependenciesFlowLog({
-        live,
-        lives,
-        config,
-        type: "Vpc",
-        group: "EC2",
+    findDependencies: pipe([
+      ({ live, lives }) => [
+        findDependenciesFlowLog({
+          live,
+          lives,
+          config,
+          type: "Vpc",
+          group: "EC2",
+        }),
+        findDependenciesFlowLog({
+          live,
+          lives,
+          config,
+          type: "Subnet",
+          group: "EC2",
+        }),
+        findDependenciesFlowLog({
+          live,
+          lives,
+          config,
+          type: "NetworkInterface",
+          group: "EC2",
+        }),
+        {
+          type: "Role",
+          group: "IAM",
+          ids: [pipe([() => live.DeliverLogsPermissionArn])()],
+        },
+        {
+          type: "LogGroup",
+          group: "CloudWatchLogs",
+          ids: [
+            pipe([
+              () =>
+                lives.getByName({
+                  name: live.LogGroupName,
+                  type: "LogGroup",
+                  group: "CloudWatchLogs",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ])(),
+          ],
+        },
+        //TODO S3
+      ],
+      tap((params) => {
+        assert(true);
       }),
-      ...findDependenciesFlowLog({
-        live,
-        lives,
-        config,
-        type: "Subnet",
-        group: "EC2",
-      }),
-      ...findDependenciesFlowLog({
-        live,
-        lives,
-        config,
-        type: "NetworkInterface",
-        group: "EC2",
-      }),
-      {
-        type: "Role",
-        group: "Iam",
-        ids: [pipe([() => live.DeliverLogsPermissionArn])()],
-      },
-      {
-        type: "LogGroup",
-        group: "CloudWatchLogs",
-        ids: [
-          pipe([
-            () =>
-              lives.getByName({
-                name: LogGroupName,
-                type,
-                group,
-                providerName: config.providerName,
-              }),
-            get("id"),
-          ])(),
-        ],
-      },
-      //TODO S3
-    ],
+    ]),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
@@ -126,10 +141,10 @@ exports.EC2FlowLogs = ({ spec, config }) =>
       dependencies: {
         vpc,
         subnet,
-        interface,
+        networkInterface,
         s3Bucket,
         iamRole,
-        cloudWatchLogGroups,
+        cloudWatchLogGroup,
       },
     }) =>
       pipe([
@@ -142,10 +157,10 @@ exports.EC2FlowLogs = ({ spec, config }) =>
           defaultsDeep({
             LogDestinationType: "s3",
           }),
-          () => cloudWatchLogGroups,
+          () => cloudWatchLogGroup,
           defaultsDeep({
             LogDestinationType: "cloud-watch-logs",
-            LogGroupName: cloudWatchLogGroups.resource.name,
+            LogGroupName: get("resource.name")(cloudWatchLogGroup),
             DeliverLogsPermissionArn: getField(iamRole, "Arn"),
           }),
           () => {
@@ -163,10 +178,10 @@ exports.EC2FlowLogs = ({ spec, config }) =>
             ResourceType: "Subnet",
             ResourceIds: [getField(subnet, "SubnetId")],
           }),
-          () => interface,
+          () => networkInterface,
           defaultsDeep({
             ResourceType: "NetworkInterface",
-            ResourceIds: [getField(interface, "NetworkInterfaceId")],
+            ResourceIds: [getField(networkInterface, "NetworkInterfaceId")],
           }),
           () => {
             assert(false, "missing flow logs resource dependencies");

@@ -85,14 +85,14 @@ const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const {
   EC2ElasticIpAddressAssociation,
 } = require("./EC2ElasticIpAddressAssociation");
+const { EC2FlowLogs } = require("./EC2FlowLogs");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
 const { EC2CustomerGateway } = require("./EC2CustomerGateway");
 const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
 
 const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
-const { AwsNetworkInterface } = require("./AwsNetworkInterface");
+const { EC2NetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
-const { AwsImage } = require("./AwsImage");
 
 const { EC2TransitGateway } = require("./EC2TransitGateway");
 const {
@@ -382,6 +382,60 @@ module.exports = pipe([
       },
     },
     {
+      type: "FlowLogs",
+      Client: EC2FlowLogs,
+      propertiesDefault: {
+        LogFormat:
+          "${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}",
+      },
+      omitProperties: [
+        "ResourceId",
+        "CreationTime",
+        "DeliverLogsPermissionArn",
+        "DeliverLogsStatus",
+        "LogGroupName",
+        "FlowLogId",
+        "FlowLogStatus",
+        "LogDestinationType",
+      ],
+      dependencies: {
+        vpc: { type: "Vpc", group: "EC2" },
+        subnet: { type: "Subnet", group: "EC2" },
+        networkInterface: { type: "NetworkInterface", group: "EC2" },
+        iamRole: { type: "Role", group: "IAM" },
+        cloudWatchLogGroup: { type: "LogGroup", group: "CloudWatchLogs" },
+        s3Bucket: { type: "Bucket", group: "S3" },
+      },
+      includeDefaultDependencies: true,
+      compare: compareEC2({
+        filterTarget: () => pipe([omit(["ResourceIds", "ResourceType"])]),
+      }),
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          when(
+            eq(get("LogDestinationType"), "s3"),
+            pipe([
+              assign({
+                LogDestination: pipe([
+                  get("LogDestination"),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  (LogDestination) => ({ Id: LogDestination, lives }),
+                  replaceWithName({
+                    groupType: "S3::Bucket",
+                    path: "id",
+                  }),
+                ]),
+              }),
+            ])
+          ),
+        ]),
+    },
+    {
       type: "Ipam",
       Client: EC2Ipam,
       omitProperties: [
@@ -460,7 +514,15 @@ module.exports = pipe([
       omitProperties: ["KeyPairId", "KeyFingerprint", "CreateTime"],
       filterLive: () => pick([]),
     },
-
+    {
+      type: "NetworkInterface",
+      Client: EC2NetworkInterface,
+      omitProperties: ["Attachment", ""],
+      filterLive: () => pipe([pick(["Description"])]),
+      dependencies: {
+        instance: { type: "Instance", group: "EC2" },
+      },
+    },
     {
       type: "Volume",
       Client: AwsVolume,

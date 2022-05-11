@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project flow-logs-interface
+title Resources for project flow-logs-vpc
 skinparam monochrome true
 + Infra
 ++ aws
@@ -7,7 +7,6 @@ skinparam monochrome true
 ++++ LogGroup (1)
 +++ EC2
 ++++ FlowLogs (1)
-++++ NetworkInterface (1)
 ++++ Vpc (1)
 ++++ InternetGateway (1)
 ++++ InternetGatewayAttachment (1)
@@ -15,8 +14,6 @@ skinparam monochrome true
 ++++ RouteTable (1)
 ++++ RouteTableAssociation (1)
 ++++ Route (1)
-++++ SecurityGroup (1)
-++++ Instance (1)
 +++ IAM
 ++++ Role (1)
 @endmindmap

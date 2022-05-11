@@ -14,27 +14,15 @@ exports.createResources = () => [
   {
     type: "FlowLogs",
     group: "EC2",
-    name: "flowlog-interface",
+    name: "fl4vpc",
     properties: ({}) => ({
       TrafficType: "ALL",
       MaxAggregationInterval: 60,
     }),
-    dependencies: ({}) => ({
-      networkInterface: "eni::machine",
+    dependencies: ({ config }) => ({
+      subnet: `project-subnet-public1-${config.region}a`,
       iamRole: "flow-role",
       cloudWatchLogGroup: "flowlog",
-    }),
-  },
-  {
-    type: "NetworkInterface",
-    group: "EC2",
-    name: "eni::machine",
-    readOnly: true,
-    properties: ({}) => ({
-      Description: "",
-    }),
-    dependencies: ({}) => ({
-      instance: "machine",
     }),
   },
   {
@@ -92,51 +80,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       routeTable: "project-rtb-public",
       ig: "project-igw",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::project-vpc::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "project-vpc",
-    }),
-  },
-  {
-    type: "Instance",
-    group: "EC2",
-    name: "machine",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::project-vpc::default",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: "project-subnet-public1-us-east-1a",
-          })}`,
-        },
-      ],
-      Image: {
-        Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220426.0 x86_64 HVM gp2",
-      },
-    }),
-    dependencies: ({ config }) => ({
-      subnets: [`project-subnet-public1-${config.region}a`],
-      securityGroups: ["sg::project-vpc::default"],
     }),
   },
   {

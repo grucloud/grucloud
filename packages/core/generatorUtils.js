@@ -813,6 +813,9 @@ const findUsedBy =
     pipe([
       tap(() => {
         //console.log("findUsedBy", resource.id);
+        if (resource.type === "NetworkInterface") {
+          console.log("findUsedBy", resource.id);
+        }
         assert(resource);
         assert(resource.id);
         assert(resource.groupType);
@@ -838,7 +841,11 @@ const findUsedBy =
             pipe([
               get("dependencies"),
               values,
+              tap((params) => {
+                assert(true);
+              }),
               any(
+                //TODO groupType
                 and([
                   eq(get("type"), resource.type),
                   eq(get("group"), resource.group),
@@ -1193,6 +1200,9 @@ const ignoreDefault =
           or([get("managedByOther") /*, get("cannotBeDeleted")*/]),
           pipe([
             get("usedBy", []),
+            tap((params) => {
+              assert(true);
+            }),
             not(find(eq(get("managedByOther"), false))),
           ]),
         ]),
@@ -1246,7 +1256,7 @@ const writeResource =
         or([ignoreResource({ lives }), ignoreDefault({ lives })]),
         (resource) => {
           assert(true);
-          //console.log(" Ignore", resource.name);
+          console.log(" Ignore", resource.name);
         },
         pipe([
           tap((params) => {
