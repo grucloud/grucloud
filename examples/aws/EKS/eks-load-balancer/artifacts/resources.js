@@ -88,8 +88,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "SubnetPrivateUSEAST1D",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.96.0/19",
       AvailabilityZone: `${config.region}d`,
+      CidrBlock: "192.168.96.0/19",
       Tags: [
         {
           Key: "kubernetes.io/role/internal-elb",
@@ -106,8 +106,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "SubnetPrivateUSEAST1F",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.64.0/19",
       AvailabilityZone: `${config.region}f`,
+      CidrBlock: "192.168.64.0/19",
       Tags: [
         {
           Key: "kubernetes.io/role/internal-elb",
@@ -124,8 +124,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "SubnetPublicUSEAST1D",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}d`,
+      CidrBlock: "192.168.32.0/19",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -143,8 +143,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "SubnetPublicUSEAST1F",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}f`,
+      CidrBlock: "192.168.0.0/19",
       MapPublicIpOnLaunch: true,
       Tags: [
         {

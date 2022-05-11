@@ -476,6 +476,8 @@ const SecurityGroupRuleBase = ({ config }) => {
             tap(() => {
               logger.error(`destroy sg rule error ${tos({ error, params })}`);
             }),
+            // TODO The specified rule does not exist in this security group
+            // InvalidPermission.NotFound
             () => {
               throw Error(error.message);
             },

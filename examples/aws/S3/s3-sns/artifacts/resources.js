@@ -46,7 +46,7 @@ exports.createResources = () => [
                   "aws:SourceAccount": `${config.accountId()}`,
                 },
                 ArnEquals: {
-                  "aws:SourceArn": "arn:aws:s3:::grucloud-s3-sns-test",
+                  "aws:SourceArn": `arn:aws:s3:::grucloud-s3-sns-test`,
                 },
               },
             },

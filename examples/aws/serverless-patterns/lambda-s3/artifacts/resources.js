@@ -37,8 +37,8 @@ exports.createResources = () => [
                   "s3:DeleteObject",
                 ],
                 Resource: [
-                  "arn:aws:s3:::gc-destination-example",
-                  "arn:aws:s3:::gc-destination-example/*",
+                  `arn:aws:s3:::gc-destination-example`,
+                  `arn:aws:s3:::gc-destination-example/*`,
                 ],
                 Effect: "Allow",
               },

@@ -18,7 +18,7 @@ skinparam monochrome true
 ++++ RouteTableAssociation (4)
 ++++ Route (3)
 ++++ SecurityGroup (4)
-++++ SecurityGroupRuleIngress (4)
+++++ SecurityGroupRuleIngress (3)
 ++++ ElasticIpAddress (1)
 ++++ LaunchTemplate (1)
 +++ EKS

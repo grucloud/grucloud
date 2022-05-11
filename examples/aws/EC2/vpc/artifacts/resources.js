@@ -34,8 +34,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "subnet-private-a",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.96.0/19",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "192.168.96.0/19",
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -46,8 +46,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "subnet-private-b",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.128.0/19",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "192.168.128.0/19",
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -58,8 +58,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "subnet-public-a",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "192.168.0.0/19",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({
@@ -71,8 +71,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "subnet-public-b",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "192.168.32.0/19",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({

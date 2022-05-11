@@ -16,8 +16,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "EfsLambdaSubnetA",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/24",
     }),
     dependencies: ({}) => ({
       vpc: "EfsLambdaVpc",
@@ -28,8 +28,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "EfsLambdaSubnetB",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.1.0/24",
     }),
     dependencies: ({}) => ({
       vpc: "EfsLambdaVpc",

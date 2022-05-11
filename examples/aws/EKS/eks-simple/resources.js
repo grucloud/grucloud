@@ -12,11 +12,7 @@ exports.createResources = () => [
       DnsHostnames: true,
     }),
   },
-  {
-    type: "InternetGateway",
-    group: "EC2",
-    name: "InternetGateway",
-  },
+  { type: "InternetGateway", group: "EC2", name: "InternetGateway" },
   {
     type: "InternetGatewayAttachment",
     group: "EC2",
@@ -29,7 +25,7 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "NATGateway",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnet: "SubnetPublicUSEAST1F",
       eip: "NATIP",
     }),
@@ -39,8 +35,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "SubnetPrivateUSEAST1D",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.96.0/19",
       AvailabilityZone: `${config.region}d`,
+      CidrBlock: "192.168.96.0/19",
       Tags: [
         {
           Key: "kubernetes.io/role/internal-elb",
@@ -48,7 +44,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -57,8 +53,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "SubnetPrivateUSEAST1F",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.64.0/19",
       AvailabilityZone: `${config.region}f`,
+      CidrBlock: "192.168.64.0/19",
       Tags: [
         {
           Key: "kubernetes.io/role/internal-elb",
@@ -66,7 +62,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -75,8 +71,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "SubnetPublicUSEAST1D",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}d`,
+      CidrBlock: "192.168.32.0/19",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -85,7 +81,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -94,8 +90,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "SubnetPublicUSEAST1F",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}f`,
+      CidrBlock: "192.168.0.0/19",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -104,7 +100,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -112,7 +108,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "PrivateRouteTableUSEAST1D",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -120,7 +116,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "PrivateRouteTableUSEAST1F",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -128,14 +124,14 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "PublicRouteTable",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PrivateRouteTableUSEAST1D",
       subnet: "SubnetPrivateUSEAST1D",
     }),
@@ -143,7 +139,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PrivateRouteTableUSEAST1F",
       subnet: "SubnetPrivateUSEAST1F",
     }),
@@ -151,7 +147,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PublicRouteTable",
       subnet: "SubnetPublicUSEAST1D",
     }),
@@ -159,7 +155,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PublicRouteTable",
       subnet: "SubnetPublicUSEAST1F",
     }),
@@ -170,7 +166,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PrivateRouteTableUSEAST1D",
       natGateway: "NATGateway",
     }),
@@ -181,7 +177,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PrivateRouteTableUSEAST1F",
       natGateway: "NATGateway",
     }),
@@ -192,7 +188,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "PublicRouteTable",
       ig: "InternetGateway",
     }),
@@ -204,7 +200,7 @@ exports.createResources = () => [
       GroupName: "ClusterSharedNodeSecurityGroup",
       Description: "Communication between all nodes in the cluster",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -216,7 +212,7 @@ exports.createResources = () => [
       Description:
         "Communication between the control plane and worker nodegroups",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "VPC",
     }),
   },
@@ -240,6 +236,10 @@ exports.createResources = () => [
           ])
         ),
       ])(),
+    dependencies: ({}) => ({
+      vpc: "VPC",
+      eksCluster: "my-cluster",
+    }),
   },
   {
     type: "SecurityGroupRuleIngress",
@@ -249,7 +249,7 @@ exports.createResources = () => [
         IpProtocol: "-1",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::VPC::ClusterSharedNodeSecurityGroup",
       securityGroupFrom: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
@@ -278,7 +278,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroups: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
@@ -291,7 +291,7 @@ exports.createResources = () => [
         mykey1: "value",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: [
         "SubnetPrivateUSEAST1D",
         "SubnetPrivateUSEAST1F",
@@ -321,7 +321,7 @@ exports.createResources = () => [
         mykey1: "value",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       cluster: "my-cluster",
       subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
       role: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",

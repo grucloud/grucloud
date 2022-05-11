@@ -50,8 +50,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcPrivateSubnet1Subnet536B997A",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.128.0/18",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.128.0/18",
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -62,8 +62,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcPrivateSubnet2Subnet3788AAA1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.192.0/18",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.192.0/18",
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -74,8 +74,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcPublicSubnet1Subnet5C2D37C4",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/18",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/18",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({
@@ -87,8 +87,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcPublicSubnet2Subnet691E08A3",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.64.0/18",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.64.0/18",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({

@@ -52,13 +52,13 @@ exports.createResources = () => [
     name: "Vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
-      DnsHostnames: true,
       Tags: [
         {
           Key: "my-tag",
           Value: "my-value",
         },
       ],
+      DnsHostnames: true,
     }),
   },
   {
@@ -87,8 +87,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "PubSubnetAz1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/24",
       Tags: [
         {
           Key: "my-tag",
@@ -105,8 +105,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "PubSubnetAz2",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.1.0/24",
       Tags: [
         {
           Key: "my-tag",

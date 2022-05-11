@@ -38,7 +38,6 @@ exports.createResources = () => [
     name: "inspection-vpc",
     properties: ({}) => ({
       CidrBlock: "10.129.0.0/16",
-      DnsHostnames: true,
       Tags: [
         {
           Key: "Environment",
@@ -53,6 +52,7 @@ exports.createResources = () => [
           Value: "terraform",
         },
       ],
+      DnsHostnames: true,
     }),
   },
   {
@@ -61,7 +61,6 @@ exports.createResources = () => [
     name: "spoke-vpc-1",
     properties: ({}) => ({
       CidrBlock: "10.11.0.0/16",
-      DnsHostnames: true,
       Tags: [
         {
           Key: "Environment",
@@ -76,6 +75,7 @@ exports.createResources = () => [
           Value: "terraform",
         },
       ],
+      DnsHostnames: true,
     }),
   },
   {
@@ -84,7 +84,6 @@ exports.createResources = () => [
     name: "spoke-vpc-2",
     properties: ({}) => ({
       CidrBlock: "10.12.0.0/16",
-      DnsHostnames: true,
       Tags: [
         {
           Key: "Environment",
@@ -99,6 +98,7 @@ exports.createResources = () => [
           Value: "terraform",
         },
       ],
+      DnsHostnames: true,
     }),
   },
   { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
@@ -161,8 +161,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.200.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.129.200.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -187,8 +187,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.201.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.129.201.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -213,8 +213,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.202.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.129.202.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -239,8 +239,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.1.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.129.1.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -265,8 +265,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.2.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.129.2.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -291,8 +291,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.3.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.129.3.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -317,8 +317,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.129.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.129.129.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -343,8 +343,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.130.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.129.130.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -369,8 +369,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.131.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.129.131.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -395,8 +395,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.200.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.11.200.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -421,8 +421,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.201.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.11.201.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -447,8 +447,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.202.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.11.202.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -473,8 +473,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.1.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.11.1.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -499,8 +499,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.2.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.11.2.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -525,8 +525,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.3.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.11.3.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -551,8 +551,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.129.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.11.129.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -577,8 +577,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.130.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.11.130.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -603,8 +603,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.131.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.11.131.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -629,8 +629,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.200.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.12.200.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -655,8 +655,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.201.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.12.201.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -681,8 +681,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.202.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.12.202.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -707,8 +707,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.1.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.12.1.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -733,8 +733,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.2.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.12.2.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -759,8 +759,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.3.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.12.3.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -785,8 +785,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.129.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.12.129.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -811,8 +811,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.130.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.12.130.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -837,8 +837,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.131.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.12.131.0/24",
       Tags: [
         {
           Key: "Environment",

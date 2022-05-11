@@ -38,8 +38,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "PubSubnetAz1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/24",
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",
@@ -50,8 +50,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "PubSubnetAz2",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.1.0/24",
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",
