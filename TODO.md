@@ -6,6 +6,8 @@
 
 omit AWSLogs S3 Objects
 
+- s3-eventbridge: missing cloudtrail EventDataStore
+
 - substitute zone, not ${region}/b
 
 - remove hard coded region from generate code
@@ -21,7 +23,6 @@ omit AWSLogs S3 Objects
 - aws_ram_resource_association
 
 - aws_ec2_transit_gateway_route_table_propagation
-- aws_flow_log
 
 - aws_route53_record alias aws_vpc_endpoint
 
