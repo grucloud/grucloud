@@ -60,9 +60,9 @@ omit AWSLogs S3 Objects
 - resource schema
 - document create key pair
 - UserData: ec2 update and displayResource
-- Resource pages
 - aws_route53_delegation_set
 - s3 analytics configuration
+- s3 object gencode is missing ACL:public-read
 
 ## Refactoring
 

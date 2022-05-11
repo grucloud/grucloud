@@ -116,7 +116,7 @@ exports.createResources = () => [
         CertificateSource: "acm",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       buckets: ["cloudfront.aws.test.grucloud.org"],
       certificate: "cloudfront.aws.test.grucloud.org",
     }),
@@ -125,14 +125,14 @@ exports.createResources = () => [
     type: "HostedZone",
     group: "Route53",
     name: "cloudfront.aws.test.grucloud.org.",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       domain: "grucloud.org",
     }),
   },
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "cloudfront.aws.test.grucloud.org.",
       certificate: "cloudfront.aws.test.grucloud.org",
     }),
@@ -140,7 +140,7 @@ exports.createResources = () => [
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "cloudfront.aws.test.grucloud.org.",
       distribution: "S3-cloudfront.aws.test.grucloud.org",
     }),
@@ -175,7 +175,7 @@ exports.createResources = () => [
       ContentType: "text/css",
       source: "s3/cloudfront.aws.test.grucloud.org/build/bundle.css",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       bucket: "cloudfront.aws.test.grucloud.org",
     }),
   },
@@ -187,7 +187,7 @@ exports.createResources = () => [
       ContentType: "application/javascript",
       source: "s3/cloudfront.aws.test.grucloud.org/build/bundle.js",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       bucket: "cloudfront.aws.test.grucloud.org",
     }),
   },
@@ -199,7 +199,7 @@ exports.createResources = () => [
       ContentType: "image/png",
       source: "s3/cloudfront.aws.test.grucloud.org/favicon.png",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       bucket: "cloudfront.aws.test.grucloud.org",
     }),
   },
@@ -211,7 +211,7 @@ exports.createResources = () => [
       ContentType: "text/css",
       source: "s3/cloudfront.aws.test.grucloud.org/global.css",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       bucket: "cloudfront.aws.test.grucloud.org",
     }),
   },
@@ -223,7 +223,7 @@ exports.createResources = () => [
       ContentType: "text/html",
       source: "s3/cloudfront.aws.test.grucloud.org/index.html",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       bucket: "cloudfront.aws.test.grucloud.org",
     }),
   },
