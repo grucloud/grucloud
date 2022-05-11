@@ -12,3 +12,4 @@ coverage
 **/test/*
 *.dot
 *.svg
+mochawesome-report

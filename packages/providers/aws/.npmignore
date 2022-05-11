@@ -13,3 +13,4 @@ coverage
 *.dot
 *.svg
 *.pem
+mochawesome-report
