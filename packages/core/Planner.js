@@ -192,9 +192,18 @@ const dependsOnInstanceReverse = ({ plans, specs }) =>
       dependsOn: pipe([
         () => plans,
         pluck("resource"),
-        filter(
+        filter((resource) =>
           pipe([
+            () => resource,
             get("dependencies"),
+            filter(({ groupType }) =>
+              pipe([
+                () => specs,
+                find(eq(get("groupType"), resource.groupType)),
+                get("dependsOnTypeDestroy"),
+                includes(groupType),
+              ])()
+            ),
             flatMap(({ providerName, groupType, ids }) =>
               pipe([
                 () => ids,
@@ -202,14 +211,6 @@ const dependsOnInstanceReverse = ({ plans, specs }) =>
               ])()
             ),
             find(eq(identity, `${providerName}::${groupType}::${id}`)),
-          ])
-        ),
-        filter(({ groupType: groupTypeDep }) =>
-          pipe([
-            () => specs,
-            find(eq(get("groupType"), groupType)),
-            get("dependsOnTypeDestroy"),
-            includes(groupTypeDep),
           ])()
         ),
         map(
