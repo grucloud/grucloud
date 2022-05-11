@@ -137,13 +137,7 @@ const findDependencyNames = ({
     }),
     filter(not(isEmpty)),
     filter(filterDependency({ resource })),
-    tap((params) => {
-      assert(true);
-    }),
     map(({ name }) => `${name}`),
-    tap((params) => {
-      assert(true);
-    }),
     (dependencyVarNames) => ({ list, dependencyVarNames }),
   ])();
 
