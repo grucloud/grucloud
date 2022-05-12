@@ -15,21 +15,33 @@ const { buildTags, isAwsError, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./SecretsManagerCommon");
 
+const ignoreErrorMessages = [
+  "You can't perform this operation on the secret because it was marked for deletion",
+];
+
 const model = {
   package: "secrets-manager",
   client: "SecretsManager",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
-  ignoreErrorMessages: [
-    "You can't perform this operation on the secret because it was marked for deletion",
-  ],
-  getById: { method: "getSecretValue" },
-  getList: { method: "listSecrets", getParam: "SecretList" },
-  update: { method: "putSecretValue" },
+  ignoreErrorCodes: ["ResourceNotFoundException", "InvalidRequestException"],
+  getById: {
+    method: "getSecretValue",
+    ignoreErrorMessages,
+  },
+  getList: {
+    method: "listSecrets",
+    getParam: "SecretList",
+    decorate:
+      ({ endpoint, getById }) =>
+      (live) =>
+        pipe([() => live, getSecretValue({ endpoint }), defaultsDeep(live)])(),
+  },
+  update: {
+    method: "putSecretValue",
+    filterParams: ({ payload }) => pipe([() => payload]),
+  },
   destroy: {
     method: "deleteSecret",
-    ignoreErrorMessages: [
-      "You can't perform this operation on the secret because it was marked for deletion",
-    ],
+    ignoreErrorMessages,
   },
 };
 
@@ -52,17 +64,8 @@ const getSecretValue = ({ endpoint }) =>
           ),
         })
       ),
-      tap((params) => {
-        assert(true);
-      }),
     ]),
-    (error) =>
-      pipe([
-        tap((params) => {
-          assert(error);
-        }),
-        () => undefined,
-      ])()
+    (error) => pipe([() => undefined])()
   );
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecretsManager.html
@@ -82,11 +85,6 @@ exports.SecretsManagerSecret = ({ spec, config }) =>
     findDependencies: ({ live }) => [
       { type: "Key", group: "KMS", ids: [live.KmsKeyId] },
     ],
-    decorateList:
-      ({ endpoint, getById }) =>
-      (live) =>
-        pipe([() => live, getSecretValue({ endpoint }), defaultsDeep(live)])(),
-    decorate: ({ endpoint }) => pipe([assign({})]),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
@@ -136,5 +134,4 @@ exports.SecretsManagerSecret = ({ spec, config }) =>
             },
           ])
         )(),
-    updateFilterParams: ({ payload }) => pipe([() => payload]),
   });
