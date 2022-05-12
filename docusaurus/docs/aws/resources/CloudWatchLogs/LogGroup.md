@@ -9,7 +9,17 @@ Manages an Cloud Watch Log Group [Cloud Watch Log Group](https://console.aws.ama
 
 ```js
 exports.createResources = () => [
-  { type: "LogGroup", group: "CloudWatchLogs", name: "restapi" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "loggroupwithkmskey",
+    properties: ({}) => ({
+      retentionInDays: 1,
+    }),
+    dependencies: ({}) => ({
+      kmsKey: "kms-key-aws-hub-and-spoke-demo-test",
+    }),
+  },
 ];
 ```
 
@@ -19,8 +29,13 @@ exports.createResources = () => [
 
 ## Full Examples
 
-- [simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatchLogs/logs)
+- [logGroup](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatchLogs/logs)
+- [logGroup with KMS key](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatchLogs/loggroup-key)
 - [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/hub-and-spoke-with-inspection-vpc)
+
+## Dependencies
+
+- [KMS Key](../KMS/Key.md)
 
 ## Used By
 

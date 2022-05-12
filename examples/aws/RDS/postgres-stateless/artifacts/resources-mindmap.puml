@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project postgres-stateless
+title Resources for project RDS Postgres Stateless
 skinparam monochrome true
 + Infra
 ++ aws

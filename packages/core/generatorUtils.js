@@ -813,9 +813,6 @@ const findUsedBy =
     pipe([
       tap(() => {
         //console.log("findUsedBy", resource.id);
-        if (resource.type === "NetworkInterface") {
-          console.log("findUsedBy", resource.id);
-        }
         assert(resource);
         assert(resource.id);
         assert(resource.groupType);

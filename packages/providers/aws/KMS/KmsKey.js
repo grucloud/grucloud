@@ -11,8 +11,16 @@ const {
   tryCatch,
   or,
   pick,
+  omit,
 } = require("rubico");
-const { find, first, defaultsDeep, isEmpty, callProp } = require("rubico/x");
+const {
+  find,
+  first,
+  defaultsDeep,
+  isEmpty,
+  callProp,
+  when,
+} = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "KmsKey",
 });
@@ -48,8 +56,14 @@ exports.KmsKey = ({ spec, config }) => {
 
   const decorate = () =>
     pipe([
-      tap((params) => {
-        assert(true);
+      assign({
+        Policy: pipe([
+          pickId,
+          defaultsDeep({ PolicyName: "default" }),
+          kms().getKeyPolicy,
+          get("Policy"),
+          JSON.parse,
+        ]),
       }),
       tryCatch(
         assign({
@@ -69,9 +83,6 @@ exports.KmsKey = ({ spec, config }) => {
         }),
         (error, item) => item
       ),
-      tap((params) => {
-        assert(true);
-      }),
     ]);
 
   const getById = client.getById({
@@ -102,22 +113,34 @@ exports.KmsKey = ({ spec, config }) => {
 
   const isInstanceDown = eq(get("KeyState"), "PendingDeletion");
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createKey-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createAlias-property
+  const createAlias = ({ name }) =>
+    pipe([
+      pickId,
+      ({ KeyId }) => ({ AliasName: `alias/${name}`, TargetKeyId: KeyId }),
+      kms().createAlias,
+    ]);
 
+  // https://docs.aws.amazon.com/AWSJavaS:criptSDK/latest/AWS/KMS.html#putKeyPolicy-property
+  const putKeyPolicy = ({ Policy }) =>
+    when(
+      () => Policy,
+      pipe([
+        pickId,
+        defaultsDeep({ PolicyName: "default", Policy: JSON.stringify(Policy) }),
+        kms().putKeyPolicy,
+      ])
+    );
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createKey-property
   const create = client.create({
     isInstanceUp,
     method: "createKey",
-    pickCreated: () => get("KeyMetadata"),
+    filterPayload: pipe([omit(["Policy"])]),
+    pickCreated: () => pipe([get("KeyMetadata")]),
     getById,
-    postCreate: ({ name }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        pickId,
-        ({ KeyId }) => ({ AliasName: `alias/${name}`, TargetKeyId: KeyId }),
-        kms().createAlias,
-      ]),
+    postCreate: ({ name, payload }) =>
+      pipe([tap(createAlias({ name })), tap(putKeyPolicy(payload))]),
   });
 
   const update = ({ name, payload, diff, live }) =>
@@ -195,6 +218,11 @@ exports.KmsKey = ({ spec, config }) => {
           tap(kms().updateKeyDescription),
         ])
       ),
+      // Update policy
+      tap.if(
+        () => get("liveDiff.updated.Policy")(diff),
+        pipe([putKeyPolicy(payload)])
+      ),
       tap(() => {
         logger.info(`key updated: ${name}`);
       }),
@@ -235,9 +263,11 @@ exports.KmsKey = ({ spec, config }) => {
       }),
     ])();
 
-  const isDefault = or([
-    pipe([get("live.Alias", ""), callProp("startsWith", "alias/aws/")]),
-    get("live.Description", callProp("startsWith", "Default ")),
+  const isDefault = pipe([
+    or([
+      pipe([get("live.Alias", ""), callProp("startsWith", "alias/aws/")]),
+      pipe([get("live.Description"), callProp("startsWith", "Default ")]),
+    ]),
   ]);
 
   const cannotBeDeleted = or([

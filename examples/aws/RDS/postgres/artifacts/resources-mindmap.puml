@@ -17,8 +17,6 @@ skinparam monochrome true
 ++++ SecurityGroupRuleIngress (1)
 +++ IAM
 ++++ Policy (1)
-+++ KMS
-++++ Key (1)
 +++ RDS
 ++++ DBSubnetGroup (1)
 ++++ DBInstance (1)

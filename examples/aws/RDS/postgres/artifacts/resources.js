@@ -148,14 +148,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Key",
-    group: "KMS",
-    name: "secret-key-test",
-    properties: ({}) => ({
-      Description: "",
-    }),
-  },
-  {
     type: "DBSubnetGroup",
     group: "RDS",
     name: "subnet-group-postgres",

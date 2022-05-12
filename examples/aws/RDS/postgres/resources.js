@@ -20,11 +20,7 @@ exports.createResources = () => [
       DnsHostnames: true,
     }),
   },
-  {
-    type: "InternetGateway",
-    group: "EC2",
-    name: "ig-postgres",
-  },
+  { type: "InternetGateway", group: "EC2", name: "ig-postgres" },
   {
     type: "InternetGatewayAttachment",
     group: "EC2",
@@ -38,10 +34,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "subnet-1",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "192.168.0.0/19",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-postgres",
     }),
   },
@@ -50,10 +46,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "subnet-2",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "192.168.32.0/19",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-postgres",
     }),
   },
@@ -61,14 +57,14 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "route-table-public",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-postgres",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-public",
       subnet: "subnet-1",
     }),
@@ -76,7 +72,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-public",
       subnet: "subnet-2",
     }),
@@ -87,7 +83,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "route-table-public",
       ig: "ig-postgres",
     }),
@@ -99,7 +95,7 @@ exports.createResources = () => [
       GroupName: "security-group",
       Description: "Managed By GruCloud",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-postgres",
     }),
   },
@@ -123,7 +119,7 @@ exports.createResources = () => [
         ToPort: 5432,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpc-postgres::security-group",
     }),
   },
@@ -151,7 +147,6 @@ exports.createResources = () => [
       Description: "Allow logs",
     }),
   },
-  { type: "Key", group: "KMS", name: "secret-key-test" },
   {
     type: "DBSubnetGroup",
     group: "RDS",
@@ -165,7 +160,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["subnet-1", "subnet-2"],
     }),
   },
@@ -194,7 +189,7 @@ exports.createResources = () => [
       ],
       MasterUserPassword: process.env.DB_INSTANCE_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       dbSubnetGroup: "subnet-group-postgres",
       securityGroups: ["sg::vpc-postgres::security-group"],
     }),

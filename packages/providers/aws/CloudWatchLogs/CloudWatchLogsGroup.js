@@ -9,7 +9,7 @@ const {
   switchCase,
   assign,
 } = require("rubico");
-const { defaultsDeep, callProp } = require("rubico/x");
+const { defaultsDeep, callProp, when } = require("rubico/x");
 const { AwsClient } = require("../AwsClient");
 const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
 const {
@@ -18,6 +18,7 @@ const {
   tagResource,
   untagResource,
 } = require("./CloudWatchLogsCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findId = pipe([get("live.arn"), callProp("replace", ":*", "")]);
 const pickId = pick(["logGroupName"]);
@@ -30,7 +31,7 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Key",
-      group: "kms",
+      group: "KMS",
       ids: [live.kmsKeyId],
     },
   ];
@@ -125,18 +126,15 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: {},
+    dependencies: { kmsKey },
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
         logGroupName: name,
         tags: buildTagsObject({ config, namespace, name, userTags: tags }),
-        // TODO kmsKeyId
       }),
-      tap((params) => {
-        assert(true);
-      }),
+      when(() => kmsKey, defaultsDeep({ kmsKeyId: getField(kmsKeyId, "Arn") })),
     ])();
 
   return {
