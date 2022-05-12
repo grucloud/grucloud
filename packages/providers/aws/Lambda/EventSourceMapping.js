@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { assign, pipe, tap, get, eq, pick } = require("rubico");
+const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, callProp, last } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -20,6 +20,10 @@ const nameFromArn = pipe([callProp("split", ":"), last]);
 
 const findName = pipe([
   get("live"),
+  tap(({ FunctionArn, EventSourceArn }) => {
+    assert(FunctionArn);
+    assert(EventSourceArn);
+  }),
   ({ FunctionArn, EventSourceArn }) =>
     `mapping-${nameFromArn(FunctionArn)}-${nameFromArn(EventSourceArn)}`,
 ]);
@@ -92,6 +96,9 @@ Apache Kafka
   const create = client.create({
     method: "createEventSourceMapping",
     getById,
+    shouldRetryOnExceptionMessages: [
+      "The provided execution role does not have permissions to call ReceiveMessage on SQS",
+    ],
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#updateEventSourceMapping-property
