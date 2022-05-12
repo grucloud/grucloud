@@ -1008,6 +1008,23 @@ const assignPolicyResource = ({ providerConfig, lives }) =>
 
 exports.assignPolicyResource = assignPolicyResource;
 
+const replacePrincipal = ({ providerConfig, lives, principalKind }) =>
+  pipe([
+    when(
+      get(principalKind),
+      assign({
+        [principalKind]: pipe([
+          get(principalKind),
+          switchCase([
+            Array.isArray,
+            map(replaceAccountAndRegion({ providerConfig, lives })),
+            replaceAccountAndRegion({ providerConfig, lives }),
+          ]),
+        ]),
+      })
+    ),
+  ]);
+
 const replaceStatement = ({ providerConfig, lives }) =>
   pipe([
     tap((params) => {
@@ -1018,19 +1035,8 @@ const replaceStatement = ({ providerConfig, lives }) =>
       assign({
         Principal: pipe([
           get("Principal"),
-          when(
-            get("Service"),
-            assign({
-              Service: pipe([
-                get("Service"),
-                switchCase([
-                  Array.isArray,
-                  map(replaceAccountAndRegion({ providerConfig, lives })),
-                  replaceAccountAndRegion({ providerConfig, lives }),
-                ]),
-              ]),
-            })
-          ),
+          replacePrincipal({ providerConfig, lives, principalKind: "Service" }),
+          replacePrincipal({ providerConfig, lives, principalKind: "AWS" }),
         ]),
       })
     ),
