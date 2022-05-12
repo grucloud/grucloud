@@ -134,7 +134,7 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
         logGroupName: name,
         tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
-      when(() => kmsKey, defaultsDeep({ kmsKeyId: getField(kmsKeyId, "Arn") })),
+      when(() => kmsKey, defaultsDeep({ kmsKeyId: getField(kmsKey, "Arn") })),
     ])();
 
   return {
