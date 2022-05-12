@@ -21,6 +21,8 @@ const {
   callProp,
   when,
 } = require("rubico/x");
+const moment = require("moment");
+
 const logger = require("@grucloud/core/logger")({
   prefix: "KmsKey",
 });
@@ -96,6 +98,11 @@ exports.KmsKey = ({ spec, config }) => {
   const getList = client.getList({
     method: "listKeys",
     getParam: "Keys",
+    transformListPost: pipe([
+      callProp("sort", (a, b) => {
+        return moment(b.CreationDate).isAfter(a.CreationDate) ? 1 : -1;
+      }),
+    ]),
     decorate: () => getById,
   });
 

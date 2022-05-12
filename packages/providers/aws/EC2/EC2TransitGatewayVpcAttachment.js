@@ -21,7 +21,7 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeTransitGatewayVpcAttachments",
     getParam: "TransitGatewayVpcAttachments",
-    transformList: pipe([filter(not(isInstanceDown))]),
+    transformListPre: pipe([filter(not(isInstanceDown))]),
   },
   create: { method: "createTransitGatewayVpcAttachment" },
   destroy: { method: "deleteTransitGatewayVpcAttachment" },

@@ -161,6 +161,16 @@ exports.assignAttachedPolicies = ({ policies = [] }) =>
       ),
     ]),
   });
+const findArnInCondition = ({ Condition }) =>
+  pipe([
+    () => [
+      "StringEquals.elasticfilesystem:AccessPointArn",
+      "ArnLike.AWS:SourceArn",
+      "ArnEquals.aws:SourceArn",
+      "ArnEquals.aws:PrincipalArn",
+    ],
+    map((prop) => get(prop)(Condition)),
+  ])();
 
 exports.findInStatement =
   ({ type, group, lives, config }) =>
@@ -171,18 +181,7 @@ exports.findInStatement =
       }),
       () => Resource,
       unless(Array.isArray, (resource) => [resource]),
-      when(
-        () => Condition,
-        append(get("StringEquals.elasticfilesystem:AccessPointArn")(Condition))
-      ),
-      when(
-        () => Condition,
-        append(get(["ArnLike", "AWS:SourceArn"])(Condition))
-      ),
-      when(
-        () => Condition,
-        append(get(["ArnEquals", "aws:SourceArn"])(Condition))
-      ),
+      append(findArnInCondition({ Condition })),
       filter(not(isEmpty)),
       map((arn) =>
         pipe([
@@ -195,5 +194,8 @@ exports.findInStatement =
           find(({ id }) => arn.includes(id)),
         ])()
       ),
+      tap((params) => {
+        assert(true);
+      }),
       filter(not(isEmpty)),
     ])();

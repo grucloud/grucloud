@@ -1327,9 +1327,9 @@ module.exports = pipe([
           type: "Firewall",
           group: "NetworkFirewall",
           parent: true,
-          //TODO remove
           ignoreOnDestroy: true,
         },
+        iamRoles: { type: "Role", group: "IAM", list: true },
       },
       Client: EC2VpcEndpoint,
       compare: compareEC2({
@@ -1348,9 +1348,6 @@ module.exports = pipe([
           assign({
             ServiceName: pipe([
               get("ServiceName"),
-              tap((params) => {
-                assert(true);
-              }),
               replaceRegion({ providerConfig }),
             ]),
           }),

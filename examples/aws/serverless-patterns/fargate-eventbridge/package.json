@@ -7,7 +7,7 @@
   "scripts": {
     "tree": "gc tree",
     "graph": "gc graph",
-    "gencode": "gc gencode --no-inventory-fetch",
+    "gencode": "gc gencode",
     "list": "gc list",
     "list-graph": "gc list -g",
     "plan": "gc plan",
@@ -15,6 +15,7 @@
     "destroy": "gc destroy -f",
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
+    "info": "gc info",
     "test": "mocha"
   },
   "author": "",

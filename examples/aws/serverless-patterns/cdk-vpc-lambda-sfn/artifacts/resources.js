@@ -331,7 +331,8 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.states`,
+    name: ({ config }) =>
+      `vpce::vpcStack/test-VPC::com.amazonaws.${config.region}.states`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [

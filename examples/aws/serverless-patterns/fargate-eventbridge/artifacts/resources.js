@@ -327,7 +327,8 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.events`,
+    name: ({ config }) =>
+      `vpce::Vpc8378EB38::com.amazonaws.${config.region}.events`,
     properties: ({ config, getId }) => ({
       PolicyDocument: {
         Version: "2012-10-17",
@@ -350,7 +351,7 @@ exports.createResources = () => [
             })}`,
             Effect: "Allow",
             Principal: {
-              AWS: "*",
+              AWS: `*`,
             },
           },
         ],
@@ -366,6 +367,7 @@ exports.createResources = () => [
         "VpcPrivateSubnet1Subnet536B997A",
         "VpcPrivateSubnet2Subnet3788AAA1",
       ],
+      iamRoles: ["CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL"],
     }),
   },
   {

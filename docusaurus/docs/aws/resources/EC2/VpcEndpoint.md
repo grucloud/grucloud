@@ -15,8 +15,8 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     name: "project-vpc-endpoint-vpce-s3",
-    properties: ({}) => ({
-      ServiceName: "com.amazonaws.us-east-1.s3",
+    properties: ({config}) => ({
+      ServiceName: `com.amazonaws.${config.region}.s3`,
       PolicyDocument: {
         Version: "2008-10-17",
         Statement: [
@@ -45,7 +45,7 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: "com.amazonaws.us-east-1.ec2",
+    name: "vpce::spoke-vpc-2::com.amazonaws.us-east-1.ec2",
     properties: ({}) => ({
       PolicyDocument: {
         Statement: [
@@ -87,6 +87,7 @@ exports.createResources = () => [
 
 - [Vpc](./Vpc.md)
 - [Subnet](./Subnet.md)
+- [IAM Role](../IAM/Role.md)
 
 ### Used By
 

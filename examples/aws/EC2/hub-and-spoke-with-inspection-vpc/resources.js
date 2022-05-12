@@ -10,6 +10,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       retentionInDays: 7,
     }),
+    dependencies: ({}) => ({
+      kmsKey: "kms-key-aws-hub-and-spoke-demo",
+    }),
   },
   {
     type: "LogGroup",
@@ -18,11 +21,14 @@ exports.createResources = () => [
     properties: ({}) => ({
       retentionInDays: 7,
     }),
+    dependencies: ({}) => ({
+      kmsKey: "kms-key-aws-hub-and-spoke-demo",
+    }),
   },
   {
     type: "KeyPair",
     group: "EC2",
-    name: "humorous-duckling",
+    name: "witty-macaw",
     properties: ({}) => ({
       Tags: [
         {
@@ -38,7 +44,6 @@ exports.createResources = () => [
     name: "inspection-vpc",
     properties: ({}) => ({
       CidrBlock: "10.129.0.0/16",
-      DnsHostnames: true,
       Tags: [
         {
           Key: "Environment",
@@ -53,6 +58,7 @@ exports.createResources = () => [
           Value: "terraform",
         },
       ],
+      DnsHostnames: true,
     }),
   },
   {
@@ -61,7 +67,6 @@ exports.createResources = () => [
     name: "spoke-vpc-1",
     properties: ({}) => ({
       CidrBlock: "10.11.0.0/16",
-      DnsHostnames: true,
       Tags: [
         {
           Key: "Environment",
@@ -76,6 +81,7 @@ exports.createResources = () => [
           Value: "terraform",
         },
       ],
+      DnsHostnames: true,
     }),
   },
   {
@@ -84,7 +90,6 @@ exports.createResources = () => [
     name: "spoke-vpc-2",
     properties: ({}) => ({
       CidrBlock: "10.12.0.0/16",
-      DnsHostnames: true,
       Tags: [
         {
           Key: "Environment",
@@ -99,9 +104,9 @@ exports.createResources = () => [
           Value: "terraform",
         },
       ],
+      DnsHostnames: true,
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "InternetGateway",
     group: "EC2",
@@ -161,8 +166,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.200.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.129.200.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -187,8 +192,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.201.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.129.201.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -213,8 +218,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.202.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.129.202.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -239,8 +244,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.1.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.129.1.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -265,8 +270,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.2.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.129.2.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -291,8 +296,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.3.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.129.3.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -317,8 +322,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.129.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.129.129.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -343,8 +348,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.130.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.129.130.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -369,8 +374,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `inspection-vpc-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.129.131.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.129.131.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -395,8 +400,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.200.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.11.200.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -421,8 +426,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.201.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.11.201.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -447,8 +452,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.202.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.11.202.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -473,8 +478,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.1.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.11.1.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -499,8 +504,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.2.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.11.2.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -525,8 +530,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.3.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.11.3.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -551,8 +556,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.129.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.11.129.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -577,8 +582,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.130.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.11.130.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -603,8 +608,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.11.131.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.11.131.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -629,8 +634,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.200.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.12.200.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -655,8 +660,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.201.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.12.201.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -681,8 +686,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.202.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.12.202.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -707,8 +712,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.1.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.12.1.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -733,8 +738,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.2.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.12.2.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -759,8 +764,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.3.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.12.3.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -785,8 +790,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.129.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.12.129.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -811,8 +816,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.130.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.12.130.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -837,8 +842,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
-      CidrBlock: "10.12.131.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "10.12.131.0/24",
       Tags: [
         {
           Key: "Environment",
@@ -856,15 +861,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-a",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
     }),
   },
   {
@@ -1307,7 +1303,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: "inspection-vpc-intra-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
@@ -1362,7 +1358,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: "inspection-vpc-public-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
@@ -1373,7 +1369,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: "inspection-vpc-public-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
@@ -1517,15 +1513,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc-default::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
     }),
   },
   {
@@ -1871,46 +1858,93 @@ exports.createResources = () => [
     type: "Instance",
     group: "EC2",
     name: "spoke-vpc-1-instance-1",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       InstanceType: "t2.micro",
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::spoke-vpc-1::public_instance_security_group",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "spoke-vpc-1-private-subnet-us-east-1a",
+          })}`,
+        },
+      ],
       Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220419.0 x86_64 HVM gp2",
+        Description: "Amazon Linux AMI 2018.03.0.20220503.0 x86_64 HVM gp2",
       },
     }),
-    dependencies: ({}) => ({
-      subnets: ["subnet-default-a"],
-      keyPair: "humorous-duckling",
+    dependencies: ({ config }) => ({
+      subnets: [`spoke-vpc-1-private-subnet-${config.region}a`],
+      keyPair: "witty-macaw",
       iamInstanceProfile: "terraform-ssm-ec2",
-      securityGroups: ["sg::vpc-default::default"],
+      securityGroups: ["sg::spoke-vpc-1::public_instance_security_group"],
     }),
   },
   {
     type: "Instance",
     group: "EC2",
     name: "spoke-vpc-2-instance-1",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       InstanceType: "t2.micro",
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::spoke-vpc-2::public_instance_security_group",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "spoke-vpc-2-private-subnet-us-east-1a",
+          })}`,
+        },
+      ],
       Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220419.0 x86_64 HVM gp2",
+        Description: "Amazon Linux AMI 2018.03.0.20220503.0 x86_64 HVM gp2",
       },
     }),
-    dependencies: ({}) => ({
-      subnets: ["subnet-default-a"],
-      keyPair: "humorous-duckling",
+    dependencies: ({ config }) => ({
+      subnets: [`spoke-vpc-2-private-subnet-${config.region}a`],
+      keyPair: "witty-macaw",
       iamInstanceProfile: "terraform-ssm-ec2",
-      securityGroups: ["sg::vpc-default::default"],
+      securityGroups: ["sg::spoke-vpc-2::public_instance_security_group"],
     }),
   },
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ec2`,
+    name: ({ config }) =>
+      `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
+    readOnly: true,
+    dependencies: ({ config }) => ({
+      vpc: "inspection-vpc",
+      subnets: [`inspection-vpc-private-subnet-${config.region}b`],
+      firewall: "NetworkFirewall",
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: ({ config }) =>
+      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ec2`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1939,7 +1973,8 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ec2messages`,
+    name: ({ config }) =>
+      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ec2messages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1957,18 +1992,19 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
     }),
     dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-2",
+      vpc: "spoke-vpc-1",
       subnets: [
-        `spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2-private-subnet-${config.region}c`,
+        `spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1-private-subnet-${config.region}c`,
       ],
     }),
   },
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ssm`,
+    name: ({ config }) =>
+      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ssm`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1997,7 +2033,128 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ssmmessages`,
+    name: ({ config }) =>
+      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ssmmessages`,
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: `*`,
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-1",
+      subnets: [
+        `spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: ({ config }) =>
+      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ec2`,
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: `*`,
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ec2`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: ({ config }) =>
+      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ec2messages`,
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: `*`,
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: ({ config }) =>
+      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ssm`,
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: `*`,
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: ({ config }) =>
+      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ssmmessages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -2021,18 +2178,6 @@ exports.createResources = () => [
         `spoke-vpc-2-private-subnet-${config.region}b`,
         `spoke-vpc-2-private-subnet-${config.region}c`,
       ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    name: ({ config }) =>
-      `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
-    readOnly: true,
-    dependencies: ({ config }) => ({
-      vpc: "inspection-vpc",
-      subnets: [`inspection-vpc-private-subnet-${config.region}a`],
-      firewall: "NetworkFirewall",
     }),
   },
   {
@@ -2223,8 +2368,37 @@ exports.createResources = () => [
     type: "Key",
     group: "KMS",
     name: "kms-key-aws-hub-and-spoke-demo",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       Description: "KMS Logs Key",
+      Policy: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "Enable IAM User Permissions",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${config.accountId()}:root`,
+            },
+            Action: "kms:*",
+            Resource: `*`,
+          },
+          {
+            Sid: "Enable KMS to be used by CloudWatch Logs",
+            Effect: "Allow",
+            Principal: {
+              Service: `logs.${config.region}.amazonaws.com`,
+            },
+            Action: [
+              "kms:ReEncrypt*",
+              "kms:GenerateDataKey*",
+              "kms:Encrypt*",
+              "kms:Describe*",
+              "kms:Decrypt*",
+            ],
+            Resource: `*`,
+          },
+        ],
+      },
     }),
   },
   {
