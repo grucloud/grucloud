@@ -4,6 +4,8 @@
 
 ## Aws
 
+cloudwatch logs depend on KMS
+
 omit AWSLogs S3 Objects
 
 - s3-eventbridge: missing cloudtrail EventDataStore
@@ -28,7 +30,10 @@ omit AWSLogs S3 Objects
 
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html
-  inferName DhxpOptionAssociation
+  inferName DhcpOptionAssociation
+
+- https://github.com/arpcefxl/aws-networking-terraform
+
 - gc gencode lambda with java.
 
 - AWS::Glue::Job
@@ -60,9 +65,9 @@ omit AWSLogs S3 Objects
 - resource schema
 - document create key pair
 - UserData: ec2 update and displayResource
-- Resource pages
 - aws_route53_delegation_set
 - s3 analytics configuration
+- s3 object gencode is missing ACL:public-read
 
 ## Refactoring
 

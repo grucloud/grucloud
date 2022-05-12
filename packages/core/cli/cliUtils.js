@@ -139,7 +139,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
         }
         const spinner = spinnerMap.get(uri);
         if (!spinner) {
-          logger.error(
+          logger.info(
             `event DONE but ${uri} was not created or is already deleted`
           );
           // assert(

@@ -1,23 +1,41 @@
 const assert = require("assert");
-const { get, pipe, tap } = require("rubico");
-const { isEmpty, first, unless, pluck } = require("rubico/x");
+const { get, pipe, tap, pick, switchCase } = require("rubico");
+const { isEmpty, first, unless, pluck, prepend } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "AwsNetworkInterface",
 });
-const { findNameInTagsOrId } = require("../AwsCommon");
+
 const { AwsClient } = require("../AwsClient");
 const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
-exports.AwsNetworkInterface = ({ spec, config }) => {
+
+exports.EC2NetworkInterface = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
   const awsSecurityGroup = AwsSecurityGroup({ config, spec });
   const findId = get("live.NetworkInterfaceId");
   const pickId = pick(["NetworkInterfaceId"]);
 
-  const findName = findNameInTagsOrId({ findId });
+  const findName = ({ live, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => live,
+      get("Attachment.InstanceId"),
+      (id) =>
+        lives.getById({
+          providerName: config.providerName,
+          type: "Instance",
+          group: "EC2",
+          id,
+        }),
+      get("name"),
+      switchCase([isEmpty, () => live.NetworkInterfaceId, prepend("eni::")]),
+    ])();
+
   const findNamespace = ({ live, lives }) =>
     pipe([
       () => live,
@@ -45,7 +63,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
       }),
     ])();
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     {
       type: "SecurityGroup",
       group: "EC2",
@@ -61,11 +79,35 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
       group: "EC2",
       ids: [live.SubnetId],
     },
+    {
+      type: "Instance",
+      group: "EC2",
+      ids: [
+        pipe([
+          () => live,
+          get("Attachment.InstanceId"),
+          (id) =>
+            lives.getById({
+              providerName: config.providerName,
+              type: "Instance",
+              group: "EC2",
+              id,
+            }),
+          get("name"),
+        ])(),
+      ],
+    },
   ];
 
   const getList = client.getList({
     method: "describeNetworkInterfaces",
     getParam: "NetworkInterfaces",
+    decorate: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
   });
 
   const destroy = client.destroy({
@@ -79,6 +121,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
   return {
     spec,
     managedByOther: () => true,
+    cannotBeDeleted: () => true,
     findDependencies,
     findNamespace,
     findId,

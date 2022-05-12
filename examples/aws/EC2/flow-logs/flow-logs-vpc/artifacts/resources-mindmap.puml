@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project flow-logs-vpc
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ FlowLogs (1)
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ Subnet (1)
+++++ RouteTable (1)
+++++ RouteTableAssociation (1)
+++++ Route (1)
++++ IAM
+++++ Role (1)
+@endmindmap

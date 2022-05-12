@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe.only("EC2 EgressOnlyInternetGateway", async function () {
+describe("EC2 EgressOnlyInternetGateway", async function () {
   let config;
   let provider;
   let eoig;
