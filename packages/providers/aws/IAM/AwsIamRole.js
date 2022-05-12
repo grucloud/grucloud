@@ -139,6 +139,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     ...findDependenciesRoleCommon({ live, lives, config }),
   ];
 
+  //TODO retry listAttachedRolePolicies NoSuchEntity
   const listAttachedRolePolicies = pipe([
     ({ RoleName }) =>
       iam().listAttachedRolePolicies({
@@ -157,6 +158,7 @@ exports.AwsIamRole = ({ spec, config }) => {
       get("PolicyNames", []),
       map(
         pipe([
+          //TODO retry NoSuchEntity
           (PolicyName) => ({ RoleName, PolicyName }),
           iam().getRolePolicy,
           pick(["PolicyDocument", "PolicyName"]),

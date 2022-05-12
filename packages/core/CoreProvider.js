@@ -222,7 +222,7 @@ function CoreProvider({
       tap.if(
         () => hookMap.has(name),
         () => {
-          logger.error(`hook ${name} already added`);
+          logger.info(`hook ${name} already added`);
         }
       ),
       (newHook) => hookMap.set(name, newHook),
