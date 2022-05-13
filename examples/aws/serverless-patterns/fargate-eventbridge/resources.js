@@ -27,7 +27,6 @@ exports.createResources = () => [
       internetGateway: "VpcIGWD7BA715C",
     }),
   },
-
   {
     type: "NatGateway",
     group: "EC2",
@@ -51,8 +50,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcPrivateSubnet1Subnet536B997A",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.128.0/18",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.128.0/18",
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -63,8 +62,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcPrivateSubnet2Subnet3788AAA1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.192.0/18",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.192.0/18",
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -75,8 +74,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcPublicSubnet1Subnet5C2D37C4",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/18",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/18",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({
@@ -88,8 +87,8 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcPublicSubnet2Subnet691E08A3",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.64.0/18",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.64.0/18",
       MapPublicIpOnLaunch: true,
     }),
     dependencies: ({}) => ({
@@ -328,7 +327,8 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.events`,
+    name: ({ config }) =>
+      `vpce::Vpc8378EB38::com.amazonaws.${config.region}.events`,
     properties: ({ config, getId }) => ({
       PolicyDocument: {
         Version: "2012-10-17",
@@ -351,7 +351,7 @@ exports.createResources = () => [
             })}`,
             Effect: "Allow",
             Principal: {
-              AWS: "*",
+              AWS: `*`,
             },
           },
         ],
@@ -367,6 +367,7 @@ exports.createResources = () => [
         "VpcPrivateSubnet1Subnet536B997A",
         "VpcPrivateSubnet2Subnet3788AAA1",
       ],
+      iamRoles: ["CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL"],
     }),
   },
   {

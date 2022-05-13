@@ -17,7 +17,7 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeTransitGateways",
     getParam: "TransitGateways",
-    transformList: pipe([filter(not(isInstanceDown))]),
+    transformListPre: pipe([filter(not(isInstanceDown))]),
   },
   create: { method: "createTransitGateway" },
   destroy: { method: "deleteTransitGateway" },

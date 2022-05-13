@@ -10,6 +10,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       retentionInDays: 7,
     }),
+    dependencies: ({}) => ({
+      kmsKey: "kms-key-aws-hub-and-spoke-demo",
+    }),
   },
   {
     type: "LogGroup",
@@ -18,11 +21,14 @@ exports.createResources = () => [
     properties: ({}) => ({
       retentionInDays: 7,
     }),
+    dependencies: ({}) => ({
+      kmsKey: "kms-key-aws-hub-and-spoke-demo",
+    }),
   },
   {
     type: "KeyPair",
     group: "EC2",
-    name: "humorous-duckling",
+    name: "witty-macaw",
     properties: ({}) => ({
       Tags: [
         {
@@ -101,7 +107,6 @@ exports.createResources = () => [
       DnsHostnames: true,
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
   {
     type: "InternetGateway",
     group: "EC2",
@@ -859,15 +864,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Subnet",
-    group: "EC2",
-    name: "subnet-default-a",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
     type: "RouteTable",
     group: "EC2",
     name: "inspection-vpc-intra-subnet",
@@ -1307,7 +1303,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: "inspection-vpc-intra-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
@@ -1362,7 +1358,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: "inspection-vpc-public-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
@@ -1373,7 +1369,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       routeTable: "inspection-vpc-public-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
@@ -1517,15 +1513,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc-default::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
     }),
   },
   {
@@ -1871,46 +1858,93 @@ exports.createResources = () => [
     type: "Instance",
     group: "EC2",
     name: "spoke-vpc-1-instance-1",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       InstanceType: "t2.micro",
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::spoke-vpc-1::public_instance_security_group",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "spoke-vpc-1-private-subnet-us-east-1a",
+          })}`,
+        },
+      ],
       Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220419.0 x86_64 HVM gp2",
+        Description: "Amazon Linux AMI 2018.03.0.20220503.0 x86_64 HVM gp2",
       },
     }),
-    dependencies: ({}) => ({
-      subnets: ["subnet-default-a"],
-      keyPair: "humorous-duckling",
+    dependencies: ({ config }) => ({
+      subnets: [`spoke-vpc-1-private-subnet-${config.region}a`],
+      keyPair: "witty-macaw",
       iamInstanceProfile: "terraform-ssm-ec2",
-      securityGroups: ["sg::vpc-default::default"],
+      securityGroups: ["sg::spoke-vpc-1::public_instance_security_group"],
     }),
   },
   {
     type: "Instance",
     group: "EC2",
     name: "spoke-vpc-2-instance-1",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       InstanceType: "t2.micro",
       Placement: {
         AvailabilityZone: `${config.region}a`,
       },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::spoke-vpc-2::public_instance_security_group",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "spoke-vpc-2-private-subnet-us-east-1a",
+          })}`,
+        },
+      ],
       Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220419.0 x86_64 HVM gp2",
+        Description: "Amazon Linux AMI 2018.03.0.20220503.0 x86_64 HVM gp2",
       },
     }),
-    dependencies: ({}) => ({
-      subnets: ["subnet-default-a"],
-      keyPair: "humorous-duckling",
+    dependencies: ({ config }) => ({
+      subnets: [`spoke-vpc-2-private-subnet-${config.region}a`],
+      keyPair: "witty-macaw",
       iamInstanceProfile: "terraform-ssm-ec2",
-      securityGroups: ["sg::vpc-default::default"],
+      securityGroups: ["sg::spoke-vpc-2::public_instance_security_group"],
     }),
   },
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ec2`,
+    name: ({ config }) =>
+      `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
+    readOnly: true,
+    dependencies: ({ config }) => ({
+      vpc: "inspection-vpc",
+      subnets: [`inspection-vpc-private-subnet-${config.region}b`],
+      firewall: "NetworkFirewall",
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: ({ config }) =>
+      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ec2`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1939,7 +1973,8 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ec2messages`,
+    name: ({ config }) =>
+      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ec2messages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1957,18 +1992,19 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
     }),
     dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-2",
+      vpc: "spoke-vpc-1",
       subnets: [
-        `spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2-private-subnet-${config.region}c`,
+        `spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1-private-subnet-${config.region}c`,
       ],
     }),
   },
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ssm`,
+    name: ({ config }) =>
+      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ssm`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1997,7 +2033,128 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ssmmessages`,
+    name: ({ config }) =>
+      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ssmmessages`,
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: `*`,
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-1",
+      subnets: [
+        `spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: ({ config }) =>
+      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ec2`,
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: `*`,
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ec2`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: ({ config }) =>
+      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ec2messages`,
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: `*`,
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: ({ config }) =>
+      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ssm`,
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: `*`,
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: ({ config }) =>
+      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ssmmessages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -2021,18 +2178,6 @@ exports.createResources = () => [
         `spoke-vpc-2-private-subnet-${config.region}b`,
         `spoke-vpc-2-private-subnet-${config.region}c`,
       ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    name: ({ config }) =>
-      `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}a`,
-    readOnly: true,
-    dependencies: ({ config }) => ({
-      vpc: "inspection-vpc",
-      subnets: [`inspection-vpc-private-subnet-${config.region}a`],
-      firewall: "NetworkFirewall",
     }),
   },
   {
@@ -2217,6 +2362,43 @@ exports.createResources = () => [
     name: "terraform-ssm-ec2",
     dependencies: ({}) => ({
       roles: ["test-ssm-ec2"],
+    }),
+  },
+  {
+    type: "Key",
+    group: "KMS",
+    name: "kms-key-aws-hub-and-spoke-demo",
+    properties: ({ config }) => ({
+      Description: "KMS Logs Key",
+      Policy: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "Enable IAM User Permissions",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${config.accountId()}:root`,
+            },
+            Action: "kms:*",
+            Resource: `*`,
+          },
+          {
+            Sid: "Enable KMS to be used by CloudWatch Logs",
+            Effect: "Allow",
+            Principal: {
+              Service: `logs.${config.region}.amazonaws.com`,
+            },
+            Action: [
+              "kms:ReEncrypt*",
+              "kms:GenerateDataKey*",
+              "kms:Encrypt*",
+              "kms:Describe*",
+              "kms:Decrypt*",
+            ],
+            Resource: `*`,
+          },
+        ],
+      },
     }),
   },
   {

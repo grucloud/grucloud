@@ -1,6 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, map, get, any, eq, filter, not } = require("rubico");
-const { size, isEmpty, find, append, callProp, isString } = require("rubico/x");
+const {
+  size,
+  isEmpty,
+  find,
+  prepend,
+  callProp,
+  isString,
+} = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "Lives" });
 
@@ -126,7 +133,7 @@ exports.createLives = (livesRaw = []) => {
           assert(Array.isArray(resources));
         }),
         filter(not(eq(get("id", ""), resource.id))),
-        append(resource),
+        prepend(resource),
         tap((resources) => {
           mapPerType.set(JSON.stringify({ type, group }), {
             type,

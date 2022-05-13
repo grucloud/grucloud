@@ -303,7 +303,7 @@ exports.EC2Instance = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeInstances",
     getParam: "Reservations",
-    transformList: pipe([
+    transformListPre: pipe([
       pluck("Instances"),
       flatten,
       filter(not(isInstanceTerminated)),

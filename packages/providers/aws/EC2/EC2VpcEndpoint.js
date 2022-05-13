@@ -9,6 +9,7 @@ const {
   switchCase,
   fork,
   or,
+  flatMap,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -19,6 +20,8 @@ const {
   isEmpty,
   first,
   size,
+  append,
+  prepend,
 } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -30,6 +33,7 @@ const {
   untagResource,
   findDependenciesVpc,
 } = require("./EC2Common");
+const { findInStatement } = require("../IAM/AwsIamCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const ignoreErrorCodes = ["InvalidVpcEndpointId.NotFound"];
 const findId = get("live.VpcEndpointId");
@@ -54,10 +58,24 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
         isEmpty,
         pipe([
           () => ({ live, lives }),
-          tap((params) => {
-            assert(true);
+          findNameInTagsOrId({
+            findId: () =>
+              pipe([
+                () =>
+                  lives.getById({
+                    id: live.VpcId,
+                    type: "Vpc",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
+                get("name"),
+                tap((name) => {
+                  assert(name);
+                }),
+                prepend("vpce::"),
+                append(`::${live.ServiceName}`),
+              ])(),
           }),
-          findNameInTagsOrId({ findId: get("live.ServiceName") }),
         ]),
         pipe([
           get("Value"),
@@ -142,6 +160,16 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
           get("Value"),
         ])(),
       ],
+    },
+    {
+      type: "Role",
+      group: "IAM",
+      ids: pipe([
+        () => live,
+        get("PolicyDocument.Statement", []),
+        flatMap(findInStatement({ type: "Role", group: "IAM", lives, config })),
+        pluck("id"),
+      ])(),
     },
   ];
 
