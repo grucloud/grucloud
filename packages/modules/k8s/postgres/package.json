@@ -1,14 +1,14 @@
 {
   "name": "@grucloud/module-k8s-postgres",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "description": "Grucloud module for the k8s postgres",
   "main": "iac.js",
   "scripts": {},
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.0.2",
-    "@grucloud/provider-k8s": "^7.0.2"
+    "@grucloud/core": "^7.0.3",
+    "@grucloud/provider-k8s": "^7.0.3"
   },
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/postgres",
   "repository": {

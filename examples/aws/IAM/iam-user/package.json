@@ -1,6 +1,6 @@
 {
   "name": "iam-user",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -16,8 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.0.2",
-    "@grucloud/provider-aws": "^7.0.2",
+    "@grucloud/core": "^7.0.3",
+    "@grucloud/provider-aws": "^7.0.3",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
