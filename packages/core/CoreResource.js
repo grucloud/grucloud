@@ -895,7 +895,7 @@ exports.ResourceMaker = ({
           config: client.retryConfigs.isUp,
         }),
       tap((params) => {
-        logger.error(`waitForResourceUp: ${toString()}, done`);
+        logger.info(`waitForResourceUp: ${toString()}, done`);
       }),
     ])();
 

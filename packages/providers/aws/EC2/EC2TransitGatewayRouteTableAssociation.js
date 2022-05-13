@@ -1,14 +1,5 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  filter,
-  map,
-  fork,
-  switchCase,
-  tryCatch,
-} = require("rubico");
+const { pipe, tap, get, filter, map, fork, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -16,9 +7,24 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { createAwsResource } = require("../AwsClient");
 const { isAwsError } = require("../AwsCommon");
 
+const pickId = pipe([
+  tap(({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) => {
+    assert(TransitGatewayRouteTableId);
+    assert(TransitGatewayAttachmentId);
+  }),
+  pick(["TransitGatewayAttachmentId", "TransitGatewayRouteTableId"]),
+]);
+
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateTransitGatewayRouteTable-property
+  create: {
+    method: "associateTransitGatewayRouteTable",
+    isExpectedException: isAwsError("Resource.AlreadyAssociated"),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateTransitGatewayRouteTable-property
+  destroy: { method: "disassociateTransitGatewayRouteTable", pickId },
 });
 
 const findId = pipe([
@@ -82,7 +88,7 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ spec, config }) =>
           assert(transitGatewayRouteTable);
         }),
         ({ transitGatewayVpcAttachment, transitGatewayRouteTable }) =>
-          `${transitGatewayVpcAttachment}::${transitGatewayRouteTable}`,
+          `tgw-rtb-assoc::${transitGatewayVpcAttachment}::${transitGatewayRouteTable}`,
         tap((params) => {
           assert(true);
         }),
@@ -108,51 +114,6 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ spec, config }) =>
           assert(true);
         }),
       ]),
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateTransitGatewayRouteTable-property
-    create:
-      ({ endpoint }) =>
-      ({ payload }) =>
-        tryCatch(
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            () => payload,
-            tap(
-              ({ TransitGatewayAttachmentId, TransitGatewayRouteTableId }) => {
-                assert(endpoint);
-                assert(payload);
-                assert(TransitGatewayAttachmentId);
-                assert(TransitGatewayRouteTableId);
-              }
-            ),
-            endpoint().associateTransitGatewayRouteTable,
-          ]),
-          pipe([
-            switchCase([
-              isAwsError("Resource.AlreadyAssociated"),
-              () => {},
-              (error) => {
-                throw error;
-              },
-            ]),
-          ])
-        )(),
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateTransitGatewayRouteTable-property
-    destroy:
-      ({ endpoint }) =>
-      ({ live }) =>
-        pipe([
-          tap((params) => {
-            assert(live);
-            assert(endpoint);
-          }),
-          () => live,
-          endpoint().disassociateTransitGatewayRouteTable,
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
     getByName: getByNameCore,
     configDefault: ({
       name,

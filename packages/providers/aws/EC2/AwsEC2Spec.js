@@ -99,6 +99,8 @@ const {
   EC2TransitGatewayVpcAttachment,
 } = require("./EC2TransitGatewayVpcAttachment");
 
+const { EC2TransitGatewayRoute } = require("./EC2TransitGatewayRoute");
+
 const {
   EC2TransitGatewayRouteTable,
 } = require("./EC2TransitGatewayRouteTable");
@@ -106,6 +108,10 @@ const {
 const {
   EC2TransitGatewayRouteTableAssociation,
 } = require("./EC2TransitGatewayRouteTableAssociation");
+
+const {
+  EC2TransitGatewayRouteTablePropagation,
+} = require("./EC2TransitGatewayRouteTablePropagation");
 
 const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
 const { EC2VpnGateway } = require("./EC2VpnGateway");
@@ -1378,6 +1384,46 @@ module.exports = pipe([
       propertiesDefault: {},
     },
     {
+      type: "TransitGatewayRoute",
+      Client: EC2TransitGatewayRoute,
+      includeDefaultDependencies: true,
+      omitProperties: [
+        "TransitGatewayRouteTableId",
+        "TransitGatewayAttachmentId",
+        "TransitGatewayId",
+        "State",
+        "CreationTime",
+      ],
+      propertiesDefault: {},
+      dependencies: {
+        transitGatewayRouteTable: {
+          type: "TransitGatewayRouteTable",
+          group: "EC2",
+          parent: true,
+        },
+        transitGatewayVpcAttachment: {
+          type: "TransitGatewayVpcAttachment",
+          group: "EC2",
+          parent: true,
+        },
+      },
+      inferName: ({
+        properties: { DestinationCidrBlock },
+        dependenciesSpec: {
+          transitGatewayVpcAttachment,
+          transitGatewayRouteTable,
+        },
+      }) =>
+        pipe([
+          tap(() => {
+            assert(transitGatewayVpcAttachment);
+            assert(transitGatewayRouteTable);
+          }),
+          () =>
+            `tgw-route::${transitGatewayVpcAttachment}::${transitGatewayRouteTable}::${DestinationCidrBlock}`,
+        ])(),
+    },
+    {
       type: "TransitGatewayRouteTable",
       Client: EC2TransitGatewayRouteTable,
       omitProperties: [
@@ -1439,7 +1485,8 @@ module.exports = pipe([
             assert(transitGatewayVpcAttachment);
             assert(transitGatewayRouteTable);
           }),
-          () => `${transitGatewayVpcAttachment}::${transitGatewayRouteTable}`,
+          () =>
+            `tgw-rtb-assoc::${transitGatewayVpcAttachment}::${transitGatewayRouteTable}`,
         ])(),
       compare: compareAws({
         filterTarget: () => pipe([pick([])]),
@@ -1456,6 +1503,50 @@ module.exports = pipe([
           group: "EC2",
           parent: true,
         },
+      },
+    },
+    {
+      type: "TransitGatewayRouteTablePropagation",
+      Client: EC2TransitGatewayRouteTablePropagation,
+      includeDefaultDependencies: true,
+      omitProperties: [
+        "TransitGatewayAttachmentId",
+        "TransitGatewayRouteTableId",
+        "ResourceId",
+        "ResourceType",
+        "State",
+      ],
+      inferName: ({
+        dependenciesSpec: {
+          transitGatewayRouteTable,
+          transitGatewayVpcAttachment,
+          //TODO other attachment type
+        },
+      }) =>
+        pipe([
+          tap(() => {
+            assert(transitGatewayRouteTable);
+            assert(transitGatewayVpcAttachment);
+          }),
+          () =>
+            `tgw-rtb-propagation::${transitGatewayRouteTable}::${transitGatewayVpcAttachment}`,
+        ])(),
+      compare: compareAws({
+        filterTarget: () => pipe([pick([])]),
+        filterLive: () => pipe([pick([])]),
+      }),
+      dependencies: {
+        transitGatewayRouteTable: {
+          type: "TransitGatewayRouteTable",
+          group: "EC2",
+          parent: true,
+        },
+        transitGatewayVpcAttachment: {
+          type: "TransitGatewayVpcAttachment",
+          group: "EC2",
+          parent: true,
+        },
+        // TODO add other attachment type
       },
     },
     {

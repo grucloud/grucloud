@@ -60,6 +60,17 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGatewayVpcAttachment: "tgw-attachment",
+    }),
+  },
+  {
     type: "TransitGatewayRouteTable",
     group: "EC2",
     name: "tgw-rtb-transit-gateway-default",
@@ -95,6 +106,14 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       transitGatewayVpcAttachment: "tgw-attachment",
       transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGatewayVpcAttachment: "tgw-attachment",
     }),
   },
 ];
