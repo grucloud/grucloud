@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-rds-postgres-stateless",
-  "version": "7.0.3",
+  "version": "7.0.4",
   "description": "",
   "private": true,
   "main": "iac.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.0.3",
-    "@grucloud/provider-aws": "^7.0.3",
+    "@grucloud/core": "^7.0.4",
+    "@grucloud/provider-aws": "^7.0.4",
     "rubico": "^1.6.26",
     "ssh2": "^0.8.9"
   },
