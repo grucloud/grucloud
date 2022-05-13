@@ -82,7 +82,10 @@ exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
                 providerName: config.providerName,
               }),
             find(eq(get("live.TransitGatewayId"), live.TransitGatewayId)),
-            get("name"),
+            get("name", ""),
+            tap((name) => {
+              //assert(name);
+            }),
             append("-default"),
             prepend("tgw-rtb-"),
           ])(),

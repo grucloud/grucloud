@@ -9,7 +9,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "subnet-default-a",
     isDefault: true,
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-default",
     }),
   },
@@ -18,7 +18,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "subnet-default-b",
     isDefault: true,
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-default",
     }),
   },
@@ -27,7 +27,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "rt-default-vpc-default",
     isDefault: true,
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-default",
     }),
   },
@@ -37,7 +37,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "rt-default-vpc-default",
       transitGateway: "transit-gateway",
     }),
@@ -60,6 +60,17 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGatewayVpcAttachment: "tgw-attachment",
+    }),
+  },
+  {
     type: "TransitGatewayRouteTable",
     group: "EC2",
     name: "tgw-rtb-transit-gateway-default",
@@ -68,7 +79,7 @@ exports.createResources = () => [
       DefaultAssociationRouteTable: true,
       DefaultPropagationRouteTable: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       transitGateway: "transit-gateway",
     }),
   },
@@ -83,7 +94,7 @@ exports.createResources = () => [
         ApplianceModeSupport: "disable",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       transitGateway: "transit-gateway",
       vpc: "vpc-default",
       subnets: ["subnet-default-a", "subnet-default-b"],
@@ -92,9 +103,17 @@ exports.createResources = () => [
   {
     type: "TransitGatewayRouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       transitGatewayVpcAttachment: "tgw-attachment",
       transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGatewayVpcAttachment: "tgw-attachment",
     }),
   },
 ];

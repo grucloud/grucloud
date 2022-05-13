@@ -21,9 +21,11 @@ skinparam monochrome true
 ++++ Instance (2)
 ++++ VpcEndpoint (9)
 ++++ TransitGateway (1)
+++++ TransitGatewayRoute (1)
 ++++ TransitGatewayRouteTable (2)
 ++++ TransitGatewayVpcAttachment (3)
 ++++ TransitGatewayRouteTableAssociation (3)
+++++ TransitGatewayRouteTablePropagation (3)
 +++ IAM
 ++++ Role (1)
 ++++ InstanceProfile (1)

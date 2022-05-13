@@ -28,7 +28,7 @@ exports.createResources = () => [
   {
     type: "KeyPair",
     group: "EC2",
-    name: "witty-macaw",
+    name: "large-badger",
     properties: ({}) => ({
       Tags: [
         {
@@ -1886,7 +1886,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       subnets: [`spoke-vpc-1-private-subnet-${config.region}a`],
-      keyPair: "witty-macaw",
+      keyPair: "large-badger",
       iamInstanceProfile: "terraform-ssm-ec2",
       securityGroups: ["sg::spoke-vpc-1::public_instance_security_group"],
     }),
@@ -1923,7 +1923,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       subnets: [`spoke-vpc-2-private-subnet-${config.region}a`],
-      keyPair: "witty-macaw",
+      keyPair: "large-badger",
       iamInstanceProfile: "terraform-ssm-ec2",
       securityGroups: ["sg::spoke-vpc-2::public_instance_security_group"],
     }),
@@ -2198,6 +2198,17 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Spoke_VPC_Route_Table",
+      transitGatewayVpcAttachment: "inspection-vpc-attachment",
+    }),
+  },
+  {
     type: "TransitGatewayRouteTable",
     group: "EC2",
     name: "Inspection_VPC_Route_Table",
@@ -2306,6 +2317,30 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       transitGatewayVpcAttachment: "spoke-vpc-2-attachment",
       transitGatewayRouteTable: "Spoke_VPC_Route_Table",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
+      transitGatewayVpcAttachment: "spoke-vpc-1-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
+      transitGatewayVpcAttachment: "spoke-vpc-2-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Spoke_VPC_Route_Table",
+      transitGatewayVpcAttachment: "inspection-vpc-attachment",
     }),
   },
   {

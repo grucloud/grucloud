@@ -15,7 +15,9 @@ Principal: {
 Service: [`states.amazonaws.com`, `events.amazonaws.com`],
 },
 
-omit AWSLogs S3 Objects
+- ec2 cpu_credits
+
+  omit AWSLogs S3 Objects
 
 - s3-eventbridge: missing cloudtrail EventDataStore
 
