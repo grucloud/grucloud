@@ -8,19 +8,16 @@ const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
-const { findDependenciesTransitGateway } = require("./EC2TransitGatewayCommon");
-
 const isInstanceDown = pipe([eq(get("State"), "deleted")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
   ignoreErrorCodes: ["InvalidTransitGatewayAttachmentID.NotFound"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeTransitGatewayVpcAttachments-property
-  // TODO
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeTransitGatewayPeeringAttachments-property
   getById: {
-    method: "describeTransitGatewayVpcAttachments",
-    getField: "TransitGatewayVpcAttachments",
+    method: "describeTransitGatewayPeeringAttachments",
+    getField: "TransitGatewayPeeringAttachments",
     pickId: pipe([
       tap(({ TransitGatewayAttachmentId }) => {
         assert(TransitGatewayAttachmentId);
@@ -30,9 +27,10 @@ const createModel = ({ config }) => ({
       }),
     ]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeTransitGatewayPeeringAttachments-property
   getList: {
-    method: "describeTransitGatewayVpcAttachments",
-    getParam: "TransitGatewayVpcAttachments",
+    method: "describeTransitGatewayPeeringAttachments",
+    getParam: "TransitGatewayPeeringAttachments",
     transformListPre: pipe([filter(not(isInstanceDown))]),
     decorate: ({ endpoint, getById }) =>
       pipe([
@@ -42,13 +40,16 @@ const createModel = ({ config }) => ({
         }),
       ]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createTransitGatewayPeeringAttachment-property
   create: {
-    method: "createTransitGatewayVpcAttachment",
-    pickCreated: ({ payload }) => pipe([get("TransitGatewayVpcAttachment")]),
+    method: "createTransitGatewayPeeringAttachment",
+    pickCreated: ({ payload }) =>
+      pipe([get("TransitGatewayPeeringAttachment")]),
     isInstanceUp: pipe([eq(get("State"), "available")]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteTransitGatewayPeeringAttachment-property
   destroy: {
-    method: "deleteTransitGatewayVpcAttachment",
+    method: "deleteTransitGatewayPeeringAttachment",
     pickId: pipe([
       tap(({ TransitGatewayAttachmentId }) => {
         assert(TransitGatewayAttachmentId);
@@ -67,34 +68,22 @@ const findId = pipe([
 ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
+exports.EC2TransitGatewayPeeringAttachment = ({ spec, config }) =>
   createAwsResource({
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live, lives }) => [
-      findDependenciesTransitGateway({ live, lives, config }),
+    findDependencies: ({ live }) => [
       {
-        type: "Vpc",
+        type: "TransitGateway",
         group: "EC2",
-        ids: [live.VpcId],
-      },
-      {
-        type: "Subnet",
-        group: "EC2",
-        ids: live.SubnetIds,
+        ids: [
+          live.RequesterTgwInfo.TransitGatewayId,
+          live.AccepterTgwInfo.TransitGatewayId,
+        ],
       },
     ],
     findName: findNameInTagsOrId({ findId }),
-    pickId: pipe([
-      tap(({ TransitGatewayAttachmentId }) => {
-        assert(TransitGatewayAttachmentId);
-      }),
-      ({ TransitGatewayAttachmentId }) => ({
-        TransitGatewayAttachmentIds: [TransitGatewayAttachmentId],
-      }),
-    ]),
-
     findId,
     cannotBeDeleted: eq(get("live.State"), "deleted"),
     getByName: getByNameCore,
@@ -104,22 +93,20 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: { transitGateway, vpc, subnets },
+      dependencies: { transitGateway, transitGatewayPeer },
     }) =>
       pipe([
         tap((params) => {
           assert(transitGateway);
-          assert(vpc);
-          assert(subnets);
+          assert(transitGatewayPeer);
         }),
         () => otherProps,
         defaultsDeep({
           TransitGatewayId: getField(transitGateway, "TransitGatewayId"),
-          VpcId: getField(vpc, "VpcId"),
-          SubnetIds: pipe([
-            () => subnets,
-            map((subnet) => getField(subnet, "SubnetId")),
-          ])(),
+          PeerTransitGatewayId: getField(
+            transitGatewayPeer,
+            "TransitGatewayId"
+          ),
           TagSpecifications: [
             {
               ResourceType: "transit-gateway-attachment",

@@ -8,6 +8,8 @@ const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
+const { findDependenciesTransitGateway } = require("./EC2TransitGatewayCommon");
+
 const managedByOther = get("live.DefaultAssociationRouteTable");
 
 const findId = pipe([
@@ -62,13 +64,7 @@ exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
     config,
     managedByOther,
     cannotBeDeleted: managedByOther,
-    findDependencies: ({ live }) => [
-      {
-        type: "TransitGateway",
-        group: "EC2",
-        ids: [live.TransitGatewayId],
-      },
-    ],
+    findDependencies: ({ live }) => [findDependenciesTransitGateway({ live })],
     findName: pipe([
       switchCase([
         get("live.DefaultAssociationRouteTable"),

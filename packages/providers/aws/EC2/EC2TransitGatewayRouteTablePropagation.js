@@ -7,6 +7,12 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { createAwsResource } = require("../AwsClient");
 const { isAwsError } = require("../AwsCommon");
 
+const {
+  findDependenciesVpcAttachment,
+  findDependenciesPeeringAttachment,
+  findNameRouteTableArm,
+} = require("./EC2TransitGatewayCommon");
+
 // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-transitgatewayroutetablepropagation.html
 
 const pickId = pipe([
@@ -56,94 +62,13 @@ exports.EC2TransitGatewayRouteTablePropagation = ({ spec, config }) =>
         group: "EC2",
         ids: [live.TransitGatewayRouteTableId],
       },
-      {
-        type: "TransitGatewayVpcAttachment",
-        group: "EC2",
-        ids: [
-          pipe([
-            () =>
-              lives.getById({
-                id: live.TransitGatewayAttachmentId,
-                type: "TransitGatewayVpcAttachment",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("id"),
-          ])(),
-        ],
-      },
+      findDependenciesVpcAttachment({ live, lives, config }),
+      findDependenciesPeeringAttachment({ live, lives, config }),
     ],
-    findName: ({ live, lives }) =>
-      pipe([
-        tap((params) => {
-          assert(live.TransitGatewayAttachmentId);
-          assert(live.TransitGatewayRouteTableId);
-        }),
-        fork({
-          //TODO add other attachment type
-          // transitGatewayXXXAttachment: pipe([
-          //   () =>
-          //     lives.getById({
-          //       id: live.TransitGatewayAttachmentId,
-          //       type: "TransitGatewayXXXAttachment",
-          //       group: "EC2",
-          //       providerName: config.providerName,
-          //     }),
-          //   get("name", ""),
-          // ]),
-          transitGatewayVpcAttachment: pipe([
-            () =>
-              lives.getById({
-                id: live.TransitGatewayAttachmentId,
-                type: "TransitGatewayVpcAttachment",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name", ""),
-          ]),
-          transitGatewayRouteTable: pipe([
-            () =>
-              lives.getById({
-                id: live.TransitGatewayRouteTableId,
-                type: "TransitGatewayRouteTable",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
-          ]),
-        }),
-        tap(
-          ({
-            transitGatewayRouteTable,
-            transitGatewayVpcAttachment,
-            transitGatewayXXXAttachment,
-          }) => {
-            assert(transitGatewayRouteTable);
-            assert(transitGatewayVpcAttachment || transitGatewayXXXAttachment);
-          }
-        ),
-        ({
-          transitGatewayRouteTable,
-          transitGatewayVpcAttachment = "",
-          transitGatewayXXXAttachment,
-        }) =>
-          pipe([
-            () => `tgw-rtb-propagation::${transitGatewayRouteTable}::`,
-            switchCase([
-              () => transitGatewayVpcAttachment,
-              append(transitGatewayVpcAttachment),
-              //TODO
-              // () => transitGatewayXXXAttachment,
-              // append(transitGatewayXXXAttachment),
-              () => {
-                assert(false, "missing attachment");
-              },
-            ]),
-          ])(),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
+    findName: findNameRouteTableArm({
+      prefix: "tgw-rtb-propagation",
+      config,
+    }),
     findId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#getTransitGatewayRouteTablePropagations-property
     getList: ({ client }) =>

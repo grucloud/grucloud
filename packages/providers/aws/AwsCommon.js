@@ -78,6 +78,15 @@ exports.replaceRegion = ({ providerConfig }) =>
     (resource) => () => "`" + resource + "`",
   ]);
 
+exports.replaceOwner = ({ providerConfig }) =>
+  pipe([
+    tap((params) => {
+      assert(providerConfig.accountId());
+    }),
+    callProp("replace", providerConfig.accountId(), "${config.accountId()}"),
+    (resource) => () => "`" + resource + "`",
+  ]);
+
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
 const extractKeys = ({ key }) =>
