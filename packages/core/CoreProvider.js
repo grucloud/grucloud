@@ -159,11 +159,10 @@ const getListHofDefault = ({ getList, spec }) =>
 
 function CoreProvider({
   name: providerName,
+  displayName = () => providerName,
   dependencies = {},
   type,
   programOptions = {},
-  mandatoryEnvs = [],
-  mandatoryConfigKeys = [],
   fnSpecs,
   makeConfig,
   info = () => ({}),
@@ -700,7 +699,7 @@ function CoreProvider({
       pipe([
         () =>
           onStateChange({
-            context: contextFromProvider({ providerName }),
+            context: contextFromProvider({ providerName: displayName() }),
             nextState: "WAITING",
           }),
         () =>
@@ -715,7 +714,7 @@ function CoreProvider({
   const spinnersStopProvider = ({ onStateChange, error }) =>
     tap(() =>
       onStateChange({
-        context: contextFromProvider({ providerName }),
+        context: contextFromProvider({ providerName: displayName() }),
         nextState: nextStateOnError(error),
         error,
       })
@@ -1144,7 +1143,7 @@ function CoreProvider({
           error: convertError({ error }),
         });
         onStateChange({
-          context: contextFromProvider({ providerName }),
+          context: contextFromProvider({ providerName: displayName() }),
           nextState: "ERROR",
         });
         throw error;
@@ -1560,7 +1559,7 @@ function CoreProvider({
       }),
       tap(({ error }) =>
         onStateChange({
-          context: contextFromProvider({ providerName }),
+          context: contextFromProvider({ providerName: displayName() }),
           nextState: nextStateOnError(error),
         })
       ),

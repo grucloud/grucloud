@@ -164,7 +164,7 @@ const AwsClient =
             logger.info(`getList ${type}, method: ${method}`);
             assert(method);
             assert(getParam);
-            assert(isFunction(endpoint()[method]));
+            //assert(isFunction(endpoint()[method]));
           }),
           () => params,
           defaultsDeep(extraParam),

@@ -39,6 +39,7 @@ const {
 } = require("rubico/x");
 const util = require("util");
 const Diff = require("diff");
+const { fromIni } = require("@aws-sdk/credential-providers");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
@@ -274,16 +275,16 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
   },
 });
 
-const createEndpointOption = ({ region } = {}) =>
+const createEndpointOption = (config) =>
   pipe([
     tap((params) => {
       assert(true);
     }),
     (region) => ({ region }),
     when(
-      () => region,
+      () => config.region,
       defaultsDeep({
-        region,
+        region: config.region,
       })
     ),
     when(
@@ -301,6 +302,13 @@ const createEndpointOption = ({ region } = {}) =>
         },
       })
     ),
+    when(
+      () => config.credentials,
+      defaultsDeep({ credentials: fromIni(config.credentials) })
+    ),
+    tap((params) => {
+      assert(true);
+    }),
   ]);
 
 exports.createEndpointOption = createEndpointOption;
