@@ -53,7 +53,11 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ spec, config }) =>
     spec,
     config,
     findDependencies: ({ live, lives }) => [
-      findDependenciesTransitGateway({ live, lives, config }),
+      {
+        type: "TransitGatewayRouteTable",
+        group: "EC2",
+        ids: [live.TransitGatewayRouteTableId],
+      },
       findDependenciesVpcAttachment({ live, lives, config }),
       findDependenciesPeeringAttachment({ live, lives, config }),
     ],
