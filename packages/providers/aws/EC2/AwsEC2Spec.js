@@ -891,13 +891,14 @@ module.exports = pipe([
       includeDefaultDependencies: true,
       dependencies: {
         routeTable: { type: "RouteTable", group: "EC2", parent: true },
-        ig: { type: "InternetGateway", group: "EC2" },
-        natGateway: { type: "NatGateway", group: "EC2" },
-        vpcEndpoint: { type: "VpcEndpoint", group: "EC2" },
-        transitGateway: { type: "TransitGateway", group: "EC2" },
+        ig: { type: "InternetGateway", group: "EC2", parent: true },
+        natGateway: { type: "NatGateway", group: "EC2", parent: true },
+        vpcEndpoint: { type: "VpcEndpoint", group: "EC2", parent: true },
+        transitGateway: { type: "TransitGateway", group: "EC2", parent: true },
         egressOnlyInternetGateway: {
           type: "EgressOnlyInternetGateway",
           group: "EC2",
+          parent: true,
         },
       },
     },

@@ -7,6 +7,7 @@ const { configTpl } = require("./configTpl");
 
 exports.generateCode = ({
   specs,
+  providers,
   providerConfig,
   commandOptions,
   programOptions,
@@ -18,6 +19,7 @@ exports.generateCode = ({
     () =>
       generatorMain({
         name: "gcp2gc",
+        providers,
         providerConfig,
         providerType: "google",
         specs,

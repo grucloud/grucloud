@@ -564,7 +564,7 @@ exports.compareEC2Instance = pipe([
       ]),
   }),
   tap((diff) => {
-    logger.debug(`compareEC2Instance ${tos(diff)}`);
+    //logger.debug(`compareEC2Instance ${tos(diff)}`);
   }),
   assign({
     updateNeedDestroy: pipe([
@@ -579,6 +579,6 @@ exports.compareEC2Instance = pipe([
     ]),
   }),
   tap((diff) => {
-    logger.debug(`compareEC2Instance ${tos(diff)}`);
+    //logger.debug(`compareEC2Instance ${tos(diff)}`);
   }),
 ]);

@@ -246,31 +246,41 @@ const AwsClient =
                   tap((params) => {
                     assert(true);
                   }),
-                  (param) => endpoint()[method](param),
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  when(() => getParam, get(getParam)),
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  switchCase([
-                    Array.isArray,
+                  tryCatch(
                     pipe([
-                      map(decorate({ name, parent: live, lives, endpoint })),
+                      (param) => endpoint()[method](param),
+                      when(() => getParam, get(getParam)),
                       tap((params) => {
                         assert(true);
                       }),
-                      when(pipe([first, Array.isArray]), flatten),
+                      switchCase([
+                        Array.isArray,
+                        pipe([
+                          map(
+                            decorate({ name, parent: live, lives, endpoint })
+                          ),
+                          tap((params) => {
+                            assert(true);
+                          }),
+                          when(pipe([first, Array.isArray]), flatten),
+                        ]),
+                        pipe([
+                          tap((params) => {
+                            assert(true);
+                          }),
+                          decorate({ name, parent: live, lives, endpoint }),
+                          (result) => [result],
+                        ]),
+                      ]),
                     ]),
-                    pipe([
-                      tap((params) => {
-                        assert(true);
-                      }),
-                      decorate({ name, parent: live, lives, endpoint }),
-                      (result) => [result],
-                    ]),
-                  ]),
+                    (error) => {
+                      //TODO
+                      assert(true);
+                    }
+                  ),
+                  tap((params) => {
+                    assert(true);
+                  }),
                 ]),
                 pipe([
                   decorate({

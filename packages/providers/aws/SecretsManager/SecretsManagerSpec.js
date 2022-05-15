@@ -60,7 +60,7 @@ module.exports = pipe([
     {
       type: "ResourcePolicy",
       Client: SecretsManagerResourcePolicy,
-      dependencies: { secret: { type: "Secret", group: GROUP }, list: true },
+      dependencies: { secret: { type: "Secret", group: GROUP, parent: true } },
       propertiesDefault: {},
       omitProperties: ["Name", "ARN"],
       filterLive: ({ providerConfig }) =>

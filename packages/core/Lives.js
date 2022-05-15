@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, map, get, any, eq, filter, not } = require("rubico");
+const { pipe, tap, map, get, any, eq, filter, not, fork } = require("rubico");
 const {
   size,
   isEmpty,
@@ -7,36 +7,64 @@ const {
   prepend,
   callProp,
   isString,
+  values,
+  groupBy,
+  pluck,
+  flatten,
 } = require("rubico/x");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const logger = require("./logger")({ prefix: "Lives" });
 
-exports.createLives = (livesRaw = []) => {
-  const livesToMap = map(({ providerName, results }) => [
-    providerName,
-    new Map(map((perProvider) => [perProvider.type, perProvider])(results)),
-  ]);
+const toGroupType = ({ group, type }) => `${group}::${type}`;
 
-  const mapPerProvider = new Map(livesToMap(livesRaw));
+exports.createLives = () => {
+  const mapPerType = new Map();
+
+  const getMapByIdByGroupType = (groupType) =>
+    mapPerType.get(groupType) || new Map();
+
+  const getResourcesAll = pipe([
+    () => mapPerType,
+    map((mapById) => [...mapById.values()]),
+    values,
+    flatten,
+    callProp("sort", (a, b) =>
+      `${a.groupType}${a.name}`.localeCompare(`${b.groupType}${b.name}`)
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
   const toJSON = () =>
     pipe([
-      () => mapPerProvider,
-      tap((results) => {
+      tap(() => {
         logger.debug(`toJSON `);
       }),
-      map.entries(([providerName, mapPerType]) => [
+      getResourcesAll,
+      groupBy("providerName"),
+      map.entries(([providerName, resourcesPerType]) => [
         providerName,
-        {
-          providerName,
-          kind: "livesPerType",
-          error: any(get("error"))([...mapPerType.values()]),
-          results: [...mapPerType.values()],
-        },
+        pipe([
+          () => resourcesPerType,
+          fork({
+            error: any(get("error")),
+            results: pipe([
+              groupBy("groupType"),
+              map.entries(([groupType, resources]) => [
+                groupType,
+                { groupType, resources },
+              ]),
+              values,
+            ]),
+          }),
+          defaultsDeep({ providerName, kind: "livesPerType" }),
+        ])(),
       ]),
-      (resultMap) => [...resultMap.values()],
-      tap((results) => {
-        logger.debug(`toJSON `);
+      values,
+      tap((params) => {
+        logger.debug(`toJSON done`);
       }),
     ])();
 
@@ -46,14 +74,10 @@ exports.createLives = (livesRaw = []) => {
         assert(providerName);
         assert(type);
       }),
-      () => mapPerProvider.get(providerName) || new Map(),
-      (mapPerType) => mapPerType.get(JSON.stringify({ type, group })),
-      tap.if(isEmpty, () => {
-        logger.debug(
-          `getByType cannot find type ${group}::${type} on provider ${providerName}`
-        );
-      }),
-      get("resources", []),
+      () => ({ group, type }),
+      toGroupType,
+      getMapByIdByGroupType,
+      (mapById) => [...mapById.values()],
       tap((resources) => {
         logger.debug(
           `getByType ${JSON.stringify({
@@ -91,115 +115,99 @@ exports.createLives = (livesRaw = []) => {
 
   return {
     get error() {
+      logger.info("get error");
       return any(get("error"))(toJSON());
     },
-    addResource: ({ providerName, type, group, groupType, resource }) => {
-      assert(providerName);
-      assert(type);
-      if (!groupType) {
-        assert(groupType);
-      }
-
-      //TODO
-      if (isEmpty(resource.live)) {
-        logger.error(`live addResource no live for ${type}`);
-        assert(true);
-        return;
-      }
-
-      const mapPerType = mapPerProvider.get(providerName) || new Map();
-
-      logger.info(
-        `live addResource ${JSON.stringify({
-          providerName,
-          type,
-          group,
-          groupType,
-          mapPerTypeSize: mapPerType.size,
-        })}`
-      );
-      //logger.debug(`live addResource resource: ${JSON.stringify(resource)}`);
-
+    addResource: ({ providerName, groupType, resource }) =>
       pipe([
-        () =>
-          mapPerType.get(JSON.stringify({ type, group })) || {
-            type,
-            group,
-            groupType,
-            resources: [],
-          },
-        get("resources"),
-        tap((resources) => {
-          assert(Array.isArray(resources));
+        tap((params) => {
+          assert(providerName);
+          if (!groupType) {
+            assert(groupType);
+          }
+          logger.info(
+            `live addResource ${JSON.stringify({
+              providerName,
+              groupType,
+              mapPerTypeSize: mapPerType.size,
+            })}`
+          );
+          if (isEmpty(resource.live)) {
+            logger.error(`live addResource no live for ${groupType}`);
+            assert(false);
+          }
         }),
-        filter(not(eq(get("id", ""), resource.id))),
-        prepend(resource),
-        tap((resources) => {
-          mapPerType.set(JSON.stringify({ type, group }), {
-            type,
-            group,
-            groupType,
-            providerName,
-            resources,
-          });
+        () => groupType,
+        getMapByIdByGroupType,
+        tap((mapById) => {
+          logger.info(
+            `live addResource ${JSON.stringify({
+              providerName,
+              groupType,
+              mapSize: mapById.size,
+            })}`
+          );
         }),
-        tap(() => {
-          mapPerProvider.set(providerName, mapPerType);
+        tap((mapById) => mapById.set(resource.id, resource)),
+        tap((mapById) => {
+          mapPerType.set(groupType, mapById);
         }),
-      ])();
-    },
-    addResources: ({
-      providerName,
-      type,
-      group,
-      groupType,
-      resources = [],
-      error: latestError,
-    }) => {
-      assert(providerName);
-      assert(type);
+      ])(),
+    addResources: ({ groupType, resources = [], error: latestError }) => {
       assert(groupType);
       assert(Array.isArray(resources) || latestError);
       logger.info(
         `live addResources ${JSON.stringify({
-          providerName,
-          group,
-          type,
           groupType,
-          resourceCount: resources.length,
+          resourceCount: size(resources),
         })}`
       );
 
-      const mapPerType = mapPerProvider.get(providerName) || new Map();
-      mapPerType.set(JSON.stringify({ type, group }), {
-        type,
-        group,
-        groupType,
-        resources,
-        error: latestError,
-      });
-      mapPerProvider.set(providerName, mapPerType);
+      if (isEmpty(resources)) {
+        return;
+      }
+      const mapById = getMapByIdByGroupType(groupType);
+
+      return pipe([
+        () => resources,
+        map((resource) =>
+          pipe([
+            () => resource,
+            get("id"),
+            tap((id) => {
+              if (mapById.get(id)) {
+                logger.info(
+                  `live addResources ${groupType}, id: '${id}' already exists`
+                );
+              }
+              mapById.set(id, resource);
+            }),
+          ])()
+        ),
+        tap((params) => {
+          mapPerType.set(groupType, mapById);
+        }),
+      ])();
     },
     get json() {
       return toJSON();
     },
+    // remove
     toJSON,
-    getByProvider: ({ providerName }) => {
-      const mapPerType = mapPerProvider.get(providerName) || new Map();
-      return [...mapPerType.values()];
-    },
-    setByProvider: ({ providerName, livesPerProvider }) => {
-      const mapPerType = new Map(
-        map((livesPerProvider) => [
-          JSON.stringify({
-            type: livesPerProvider.type,
-            group: livesPerProvider.group,
-          }),
-          livesPerProvider,
-        ])(livesPerProvider)
-      );
-      mapPerProvider.set(providerName, mapPerType);
-    },
+    getByProvider: ({ providerName }) =>
+      pipe([
+        getResourcesAll,
+        filter(eq(get("providerName"), providerName)),
+        groupBy("groupType"),
+        map.entries(([groupType, resources]) => [
+          groupType,
+          { groupType, resources },
+        ]),
+        values,
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
     getByType,
     getById,
     getByName,

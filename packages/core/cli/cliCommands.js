@@ -657,9 +657,6 @@ const doPlanApply = async ({
   pipe([
     () => ({ providerGru }),
     doPlanQuery({ commandOptions, programOptions }),
-    tap((xxx) => {
-      assert(xxx);
-    }),
     assign({
       resultDeploy: pipe([
         switchCase([
@@ -1672,10 +1669,11 @@ exports.Cli = ({
           }),
           (projectDefaults) => defaultsDeep(projectDefaults)(commandOptions),
           defaultsDeep({
-            outputCode: path.resolve(
+            outputDir: path.resolve(
               programOptions.workingDirectory,
-              "artifacts/resources.js"
+              "artifacts"
             ),
+            outputFile: "resources",
             outputConfig: path.resolve(
               programOptions.workingDirectory,
               "artifacts/config.js"

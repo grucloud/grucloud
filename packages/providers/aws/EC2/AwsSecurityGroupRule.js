@@ -138,7 +138,6 @@ const findName =
   ({ live, lives }) =>
     pipe([
       tap(() => {
-        assert(true);
         assert(live.IpPermission, `no IpPermission in ${tos(live)}`);
         assert(lives);
       }),
@@ -538,7 +537,12 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
       tap((params) => {
         assert(true);
       }),
-      findName({ kind: "ingress", config }),
+      get("live"),
+      ({ GroupId, IpPermission }) =>
+        `ingress::${GroupId}::${JSON.stringify(IpPermission)}`,
+      tap((params) => {
+        assert(true);
+      }),
     ]),
     findName: findName({ kind: "ingress", config }),
     findDependencies: findDependencies({ config }),
@@ -584,7 +588,14 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     spec,
     findDependencies: findDependencies({ config }),
     findNamespace,
-    findId: findName({ kind: "egress", config }),
+    findId: pipe([
+      get("live"),
+      tap((params) => {
+        assert(true);
+      }),
+      ({ GroupId, IpPermission }) =>
+        `egress::${GroupId}::${JSON.stringify(IpPermission)}`,
+    ]),
     findName: findName({ kind: "egress", config }),
     getByName: getByName({ kind: "egress", IsEgress: true, config }),
     getList: getList({ kind: "egress", IsEgress: true }),

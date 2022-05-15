@@ -84,20 +84,20 @@ exports.displayListSummary = pipe([
           ),
           () => results,
           filter(not(get("error"))),
-          forEach(({ type, group, resources }) =>
+          forEach(({ groupType, resources }) =>
             pipe([
               tap(() => {
-                assert(type);
+                assert(groupType);
                 assert(
                   Array.isArray(resources),
-                  `no resources for type ${type}`
+                  `no resources for type ${groupType}`
                 );
               }),
               () => pluck("displayName")(resources).join("\n"),
               tap.if(not(isEmpty), (content) =>
                 table.push([
                   {
-                    content: displayType({ type, group }),
+                    content: groupType,
                   },
                   { content },
                 ])
@@ -588,10 +588,10 @@ const displayPlanItem = ({ table, resource }) => {
 
 const displayTablePerType = ({
   providerName,
-  resourcesByType: { type, group, resources = [], error },
+  resourcesByType: { groupType, resources = [], error },
 }) => {
   assert(providerName);
-  assert(type);
+  assert(groupType);
   const tableDefinitions =
     find(eq(get("type")))(tablePerTypeDefinitions) || tablePerTypeDefault;
 
@@ -606,10 +606,7 @@ const displayTablePerType = ({
         table.push([
           {
             content: colors.yellow(
-              `${resources.length} ${displayType({
-                group,
-                type,
-              })} from ${providerName}`
+              `${resources.length} ${groupType} from ${providerName}`
             ),
           },
         ]),

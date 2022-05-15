@@ -157,41 +157,41 @@
 <path fill="none" stroke="#707070" d="M692.81,-225.09C704.05,-228.04 715.25,-231.04 726,-234 734.41,-236.32 743.12,-238.78 751.85,-241.29"/>
 <polygon fill="#707070" stroke="#707070" points="751.12,-244.73 761.7,-244.15 753.07,-238 751.12,-244.73"/>
 </g>
-<!-- TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment -->
+<!-- TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default -->
 <g id="node10" class="node">
-<title>TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment</title>
+<title>TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="386.5,-339 25.5,-339 25.5,-281 386.5,-281 386.5,-339"/>
 <text text-anchor="start" x="38" y="-319.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::TransitGatewayRouteTableAssociation</text>
-<text text-anchor="start" x="38" y="-294.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">tgw&#45;rtb&#45;assoc::tgw&#45;rtb&#45;transit&#45;g...</text>
+<text text-anchor="start" x="38" y="-294.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">tgw&#45;rtb&#45;assoc::tgw&#45;attachment::t...</text>
 </g>
-<!-- TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment&#45;&gt;TransitGatewayRouteTable::tgw&#45;rtb&#45;transit&#45;gateway&#45;default -->
-<g id="edge14" class="edge">
-<title>TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment&#45;&gt;TransitGatewayRouteTable::tgw&#45;rtb&#45;transit&#45;gateway&#45;default</title>
+<!-- TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default&#45;&gt;TransitGatewayRouteTable::tgw&#45;rtb&#45;transit&#45;gateway&#45;default -->
+<g id="edge13" class="edge">
+<title>TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default&#45;&gt;TransitGatewayRouteTable::tgw&#45;rtb&#45;transit&#45;gateway&#45;default</title>
 <path fill="none" stroke="#707070" d="M386.74,-291.39C400.99,-289.91 415.27,-288.44 429.23,-286.99"/>
 <polygon fill="#707070" stroke="#707070" points="429.75,-290.45 439.34,-285.94 429.03,-283.49 429.75,-290.45"/>
 </g>
-<!-- TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment&#45;&gt;TransitGatewayVpcAttachment::tgw&#45;attachment -->
-<g id="edge13" class="edge">
-<title>TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment&#45;&gt;TransitGatewayVpcAttachment::tgw&#45;attachment</title>
+<!-- TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default&#45;&gt;TransitGatewayVpcAttachment::tgw&#45;attachment -->
+<g id="edge14" class="edge">
+<title>TransitGatewayRouteTableAssociation::tgw&#45;rtb&#45;assoc::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default&#45;&gt;TransitGatewayVpcAttachment::tgw&#45;attachment</title>
 <path fill="none" stroke="#707070" d="M370.12,-280.85C376.27,-278.15 382.25,-275.21 388,-272 408.31,-260.65 403.93,-245.77 424,-234 426.69,-232.42 429.45,-230.91 432.26,-229.45"/>
 <polygon fill="#707070" stroke="#707070" points="433.94,-232.53 441.41,-225.03 430.89,-226.23 433.94,-232.53"/>
 </g>
-<!-- TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment -->
+<!-- TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default -->
 <g id="node11" class="node">
-<title>TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment</title>
+<title>TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="388,-263 24,-263 24,-205 388,-205 388,-263"/>
 <text text-anchor="start" x="36" y="-243.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::TransitGatewayRouteTablePropagation</text>
-<text text-anchor="start" x="36" y="-218.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">tgw&#45;rtb&#45;propagation::tgw&#45;rtb&#45;tra...</text>
+<text text-anchor="start" x="36" y="-218.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">tgw&#45;rtb&#45;propagation::tgw&#45;attachm...</text>
 </g>
-<!-- TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment&#45;&gt;TransitGatewayRouteTable::tgw&#45;rtb&#45;transit&#45;gateway&#45;default -->
+<!-- TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default&#45;&gt;TransitGatewayRouteTable::tgw&#45;rtb&#45;transit&#45;gateway&#45;default -->
 <g id="edge15" class="edge">
-<title>TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment&#45;&gt;TransitGatewayRouteTable::tgw&#45;rtb&#45;transit&#45;gateway&#45;default</title>
+<title>TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default&#45;&gt;TransitGatewayRouteTable::tgw&#45;rtb&#45;transit&#45;gateway&#45;default</title>
 <path fill="none" stroke="#707070" d="M388.08,-252.75C401.84,-254.17 415.61,-255.6 429.09,-257"/>
 <polygon fill="#707070" stroke="#707070" points="429.04,-260.51 439.34,-258.06 429.76,-253.55 429.04,-260.51"/>
 </g>
-<!-- TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment&#45;&gt;TransitGatewayVpcAttachment::tgw&#45;attachment -->
+<!-- TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default&#45;&gt;TransitGatewayVpcAttachment::tgw&#45;attachment -->
 <g id="edge16" class="edge">
-<title>TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;rtb&#45;transit&#45;gateway&#45;default::tgw&#45;attachment&#45;&gt;TransitGatewayVpcAttachment::tgw&#45;attachment</title>
+<title>TransitGatewayRouteTablePropagation::tgw&#45;rtb&#45;propagation::tgw&#45;attachment::tgw&#45;rtb&#45;transit&#45;gateway&#45;default&#45;&gt;TransitGatewayVpcAttachment::tgw&#45;attachment</title>
 <path fill="none" stroke="#707070" d="M388.08,-215.25C396.72,-214.36 405.37,-213.46 413.95,-212.57"/>
 <polygon fill="#707070" stroke="#707070" points="414.39,-216.05 423.98,-211.53 413.67,-209.08 414.39,-216.05"/>
 </g>

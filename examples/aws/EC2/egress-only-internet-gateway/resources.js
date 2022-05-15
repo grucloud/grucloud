@@ -35,8 +35,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `eoigw-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.128.0/20",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.128.0/20",
     }),
     dependencies: ({}) => ({
       vpc: "eoigw-vpc",
@@ -47,8 +47,8 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `eoigw-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/20",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/20",
     }),
     dependencies: ({}) => ({
       vpc: "eoigw-vpc",

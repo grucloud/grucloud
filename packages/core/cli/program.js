@@ -271,7 +271,8 @@ exports.createProgram = () => {
     )
     .option("--no-inventory-fetch", "do not fetch the inventory")
     .option("--no-download", "do not download assets")
-    .option("-o, --outputCode <file>", "resources.js output", "resources.js")
+    .option("-o, --outputDir <file>", "output directory", "")
+    .option("--outputFile <file>", "output filename", "resources")
     .option(
       "--outputEnv <file>",
       "default.env environment variables",

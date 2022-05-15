@@ -535,11 +535,13 @@ exports.ProviderGru = ({
               );
             }),
             () => provider.start({ onStateChange }),
+            //TODO
             () =>
               provider[functionName]({
                 onStateChange,
                 commandOptions,
                 programOptions,
+                providers: getProviders(),
               }),
             assign({ providerName: () => provider.name }),
             tap((xxx) => {
@@ -808,7 +810,11 @@ exports.ProviderGru = ({
       getProviders,
       map(
         tryCatch(
-          callProp("generateCode", { commandOptions, programOptions }),
+          callProp("generateCode", {
+            commandOptions,
+            programOptions,
+            providers: getProviders(),
+          }),
           (error) => {
             logger.error("generateCode", error);
             throw error;

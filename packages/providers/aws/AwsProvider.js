@@ -269,8 +269,10 @@ exports.AwsProvider = ({
     start,
     info,
     init,
-    generateCode: ({ commandOptions, programOptions }) =>
+    generateCode: ({ commandOptions, programOptions, providers }) =>
       generateCode({
+        providerName: name,
+        providers,
         providerConfig: makeConfig(),
         specs: fnSpecs(makeConfig()),
         commandOptions,

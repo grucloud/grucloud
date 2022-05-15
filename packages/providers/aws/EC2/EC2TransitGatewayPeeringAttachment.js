@@ -1,10 +1,10 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map, filter, not } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, pick, eq, fork, filter, not } = require("rubico");
+const { defaultsDeep, when, isEmpty } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
@@ -67,6 +67,53 @@ const findId = pipe([
   }),
 ]);
 
+const findNamePeeringAttachment =
+  ({ config }) =>
+  ({ live, lives }) =>
+    pipe([
+      () => live,
+      fork({
+        transitGatewayRequester: pipe([
+          get("RequesterTgwInfo.TransitGatewayId"),
+          (id) =>
+            lives.getById({
+              id,
+              type: "TransitGateway",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("name"),
+        ]),
+        transitGatewayAcceptor: pipe([
+          get("AccepterTgwInfo.TransitGatewayId"),
+          tap((params) => {
+            assert(true);
+          }),
+          (id) =>
+            pipe([
+              () =>
+                lives.getById({
+                  id,
+                  type: "TransitGateway",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name"),
+              when(isEmpty, () => id),
+            ])(),
+        ]),
+      }),
+      tap(({ transitGatewayRequester, transitGatewayAcceptor }) => {
+        assert(transitGatewayRequester);
+        assert(transitGatewayAcceptor);
+      }),
+      ({ transitGatewayRequester, transitGatewayAcceptor }) =>
+        `tgw-peering-attach::${transitGatewayRequester}::${transitGatewayAcceptor}`,
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2TransitGatewayPeeringAttachment = ({ spec, config }) =>
   createAwsResource({
@@ -83,7 +130,7 @@ exports.EC2TransitGatewayPeeringAttachment = ({ spec, config }) =>
         ],
       },
     ],
-    findName: findNameInTagsOrId({ findId }),
+    findName: findNamePeeringAttachment({ config }),
     findId,
     cannotBeDeleted: eq(get("live.State"), "deleted"),
     getByName: getByNameCore,

@@ -1220,13 +1220,14 @@ function CoreProvider({
               ...(error && { error }),
               resources,
               groupType: spec.groupType,
-              type: spec.type,
-              group: spec.group,
               providerName: spec.providerName,
             }),
-            tap(({ groupType, type }) => {
-              assert(type);
-              assert(groupType);
+            tap.if(get("error"), ({ error, resources }) => {
+              assert(error);
+            }),
+            tap((resourcesPerType) => {
+              assert(resourcesPerType);
+              //getLives().addResources(resourcesPerType);
             }),
           ])(),
       })),
@@ -1280,11 +1281,11 @@ function CoreProvider({
       }),
       assign({ providerName: () => providerName }),
       tap(({ results }) => {
-        getLives().setByProvider({ providerName, livesPerProvider: results });
+        //getLives().setByProvider({ providerName, livesPerProvider: results });
         logger.debug(
           `listLives provider ${providerName}, ${size(
             results
-          )} results: ${pluck("type")(results).join(", ")}`
+          )} results: ${pluck("groupType")(results).join(", ")}`
         );
       }),
     ])();
