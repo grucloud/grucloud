@@ -5,11 +5,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
     "tree": "gc tree",
+    "graph": "gc graph",
+    "gencode": "gc gencode",
+    "list": "gc list",
+    "list-graph": "gc list -g",
     "plan": "gc plan",
-    "list": "gc list -g",
-    "gencode": "gc gencode --no-inventory-fetch"
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "onDeployed": "gc run --onDeployed",
+    "onDestroyed": "gc run --onDestroyed",
+    "info": "gc info",
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",

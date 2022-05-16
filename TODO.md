@@ -4,6 +4,8 @@
 
 ## Aws
 
+- SecretsManagerResourcePolicy
+
 sort Service in:
 AssumeRolePolicyDocument: {
 Version: "2012-10-17",
@@ -15,9 +17,7 @@ Principal: {
 Service: [`states.amazonaws.com`, `events.amazonaws.com`],
 },
 
-- ec2 cpu_credits
-
-  omit AWSLogs S3 Objects
+omit AWSLogs S3 Objects
 
 - s3-eventbridge: missing cloudtrail EventDataStore
 
