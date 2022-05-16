@@ -389,6 +389,7 @@ exports.Function = ({ spec, config }) => {
       "Lambda was unable to configure access to your environment variables because the KMS key is invalid for CreateGrant.",
       "The role defined for the function cannot be assumed by Lambda",
       "EFS file system",
+      "The provided execution role does not have permissions to call CreateNetworkInterface on EC2",
     ],
     getById,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#createFunctionUrlConfig-property

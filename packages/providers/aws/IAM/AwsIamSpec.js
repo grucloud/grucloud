@@ -248,7 +248,7 @@ module.exports = pipe([
           type: "Policy",
           group: "IAM",
           list: true,
-          findDependencyNames: ({ resource, lives, providerName }) =>
+          findDependencyNames: ({ resource, lives }) =>
             pipe([
               () => resource.dependencies,
               find(eq(get("groupType"), `IAM::Policy`)),
@@ -260,7 +260,7 @@ module.exports = pipe([
                     type: "Policy",
                     group: "IAM",
                     lives,
-                    providerName,
+                    providerName: resource.providerName,
                   }),
                   switchCase([isEmpty, () => undefined, ({ name }) => name]),
                 ])()

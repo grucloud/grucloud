@@ -8,23 +8,55 @@ const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
+const { findDependenciesTransitGateway } = require("./EC2TransitGatewayCommon");
+
 const isInstanceDown = pipe([eq(get("State"), "deleted")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
   ignoreErrorCodes: ["InvalidTransitGatewayAttachmentID.NotFound"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeTransitGatewayVpcAttachments-property
+  // TODO
   getById: {
     method: "describeTransitGatewayVpcAttachments",
     getField: "TransitGatewayVpcAttachments",
+    pickId: pipe([
+      tap(({ TransitGatewayAttachmentId }) => {
+        assert(TransitGatewayAttachmentId);
+      }),
+      ({ TransitGatewayAttachmentId }) => ({
+        TransitGatewayAttachmentIds: [TransitGatewayAttachmentId],
+      }),
+    ]),
   },
   getList: {
     method: "describeTransitGatewayVpcAttachments",
     getParam: "TransitGatewayVpcAttachments",
     transformListPre: pipe([filter(not(isInstanceDown))]),
+    decorate: ({ endpoint, getById }) =>
+      pipe([
+        tap((params) => {
+          assert(getById);
+          assert(endpoint);
+        }),
+      ]),
   },
-  create: { method: "createTransitGatewayVpcAttachment" },
-  destroy: { method: "deleteTransitGatewayVpcAttachment" },
+  create: {
+    method: "createTransitGatewayVpcAttachment",
+    pickCreated: ({ payload }) => pipe([get("TransitGatewayVpcAttachment")]),
+    isInstanceUp: pipe([eq(get("State"), "available")]),
+  },
+  destroy: {
+    method: "deleteTransitGatewayVpcAttachment",
+    pickId: pipe([
+      tap(({ TransitGatewayAttachmentId }) => {
+        assert(TransitGatewayAttachmentId);
+      }),
+      pick(["TransitGatewayAttachmentId"]),
+    ]),
+    isInstanceDown,
+  },
 });
 
 const findId = pipe([
@@ -40,12 +72,8 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live }) => [
-      {
-        type: "TransitGateway",
-        group: "EC2",
-        ids: [live.TransitGatewayId],
-      },
+    findDependencies: ({ live, lives }) => [
+      findDependenciesTransitGateway({ live, lives, config }),
       {
         type: "Vpc",
         group: "EC2",
@@ -66,24 +94,8 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
         TransitGatewayAttachmentIds: [TransitGatewayAttachmentId],
       }),
     ]),
-    pickIdDestroy: pipe([
-      tap(({ TransitGatewayAttachmentId }) => {
-        assert(TransitGatewayAttachmentId);
-      }),
-      pick(["TransitGatewayAttachmentId"]),
-    ]),
-    findId,
-    decorateList: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
 
-    pickCreated: ({ payload }) => pipe([get("TransitGatewayVpcAttachment")]),
-    isInstanceUp: pipe([eq(get("State"), "available")]),
-    isInstanceDown,
+    findId,
     cannotBeDeleted: eq(get("live.State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,

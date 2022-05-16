@@ -123,7 +123,7 @@ module.exports = pipe([
           }),
         ]),
       dependencies: {
-        dbProxy: { type: "DBProxy", group: "RDS" },
+        dbProxy: { type: "DBProxy", group: "RDS", parent: true },
         dbClusters: { type: "DBCluster", group: "RDS", list: true },
         dbInstances: { type: "DBInstance", group: "RDS", list: true },
       },

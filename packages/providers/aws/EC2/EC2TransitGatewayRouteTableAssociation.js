@@ -1,11 +1,17 @@
 const assert = require("assert");
-const { pipe, tap, get, filter, map, fork, pick } = require("rubico");
+const { pipe, tap, get, filter, map, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
 const { isAwsError } = require("../AwsCommon");
+const {
+  findDependenciesTransitGateway,
+  findDependenciesVpcAttachment,
+  findDependenciesPeeringAttachment,
+  findNameRouteTableArm,
+} = require("./EC2TransitGatewayCommon");
 
 const pickId = pipe([
   tap(({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) => {
@@ -46,53 +52,20 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live }) => [
+    findDependencies: ({ live, lives }) => [
       {
         type: "TransitGatewayRouteTable",
         group: "EC2",
         ids: [live.TransitGatewayRouteTableId],
       },
-      {
-        type: "TransitGatewayVpcAttachment",
-        group: "EC2",
-        ids: [live.TransitGatewayAttachmentId],
-      },
+      findDependenciesVpcAttachment({ live, lives, config }),
+      findDependenciesPeeringAttachment({ live, lives, config }),
     ],
-    //TODO direct connect
-    findName: ({ live, lives }) =>
-      pipe([
-        fork({
-          transitGatewayVpcAttachment: pipe([
-            () =>
-              lives.getById({
-                id: live.TransitGatewayAttachmentId,
-                type: "TransitGatewayVpcAttachment",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
-          ]),
-          transitGatewayRouteTable: pipe([
-            () =>
-              lives.getById({
-                id: live.TransitGatewayRouteTableId,
-                type: "TransitGatewayRouteTable",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
-          ]),
-        }),
-        tap(({ transitGatewayVpcAttachment, transitGatewayRouteTable }) => {
-          assert(transitGatewayVpcAttachment);
-          assert(transitGatewayRouteTable);
-        }),
-        ({ transitGatewayVpcAttachment, transitGatewayRouteTable }) =>
-          `tgw-rtb-assoc::${transitGatewayVpcAttachment}::${transitGatewayRouteTable}`,
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
+    findName: findNameRouteTableArm({
+      prefix: "tgw-rtb-assoc",
+      config,
+    }),
+
     findId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeTransitGatewayAttachments-property
     getList: ({ endpoint }) =>

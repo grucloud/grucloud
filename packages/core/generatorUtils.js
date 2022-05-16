@@ -106,7 +106,6 @@ const findDependencyNames = ({
   list,
   type,
   group,
-  providerName,
   resource,
   lives,
   filterDependency = () => () => true,
@@ -116,8 +115,8 @@ const findDependencyNames = ({
       assert(type);
       assert(group);
       assert(lives);
-      assert(providerName);
       assert(resource.uri);
+      assert(resource.providerName);
       assert(Array.isArray(resource.dependencies));
     }),
     () => resource.dependencies,
@@ -130,7 +129,9 @@ const findDependencyNames = ({
       assert(true);
       //console.log(resource.uri, "#ids ", size(ids));
     }),
-    map(findLiveById({ type, group, lives, providerName })),
+    map(
+      findLiveById({ type, group, lives, providerName: resource.providerName })
+    ),
     tap((deps) => {
       assert(true);
       //console.log(resource.uri, "#deps ", size(deps));
@@ -389,7 +390,6 @@ const dependencyValue = ({ key, list, resource, providerConfig }) =>
   ]);
 
 const buildDependencies = ({
-  providerName,
   providerConfig,
   resource,
   lives,
@@ -419,7 +419,6 @@ const buildDependencies = ({
           }),
           ({ findDependencyNames }) =>
             findDependencyNames({
-              providerName,
               resource,
               lives,
               ...dependency,
@@ -537,7 +536,6 @@ const codeTpl = ({
     ]),
     append(
       buildDependencies({
-        providerName,
         providerConfig,
         resource,
         lives,
@@ -566,7 +564,7 @@ const displayDiff = pipe([
 ]);
 
 const promptSave =
-  ({ commandOptions }) =>
+  ({ commandOptions, filename }) =>
   ({ contentFormated, contentOld }) =>
     pipe([
       tap((params) => {
@@ -575,8 +573,8 @@ const promptSave =
       }),
       () =>
         Diff.structuredPatch(
-          "resources.js.old",
-          "resources.js.new",
+          `${filename}.old`,
+          `${filename}.new`,
           contentOld,
           contentFormated,
           "old",
@@ -589,14 +587,14 @@ const promptSave =
         pipe([get("hunks"), isEmpty]),
         pipe([
           tap((params) => {
-            console.log("Infrastructure has not changed.");
+            console.log(`Infrastructure has not changed in ${filename}`);
           }),
           () => false,
         ]), // No diff, do not save
         pipe([
           tap((params) => {
             console.log(
-              `Some changes has been detected between the lives resources and the target code.`
+              `Some changes has been detected between the lives resources and the target code in ${filename}`
             );
           }),
           displayDiff,
@@ -606,7 +604,7 @@ const promptSave =
               () => ({
                 type: "confirm",
                 name: "confirmWrite",
-                message: `Write new infrastructure to resource.js`,
+                message: `Write new infrastructure to ${filename}`,
                 initial: false,
               }),
               prompts,
@@ -618,6 +616,96 @@ const promptSave =
       ]),
     ])();
 
+const createESLint = () =>
+  new ESLint({
+    fix: true,
+    plugins: {
+      autofix: require("eslint-plugin-autofix"),
+    },
+    baseConfig: {
+      env: {
+        es6: true,
+        node: true,
+      },
+      parserOptions: {
+        ecmaVersion: 2017,
+      },
+      extends: ["eslint:recommended"],
+      plugins: ["autofix"],
+      rules: {
+        "autofix/no-unused-vars": "warn",
+      },
+    },
+  });
+
+const formatContent = ({ content }) =>
+  pipe([
+    tap((params) => {
+      assert(content);
+    }),
+    () => createESLint(),
+    (eslint) =>
+      pipe([
+        () => eslint.lintText(content),
+        tap((params) => {
+          assert(true);
+        }),
+        first,
+        switchCase([
+          get("fatalErrorCount"),
+          pipe([
+            tap((result) => {
+              console.log("Error linting");
+              console.log(content);
+              console.log(JSON.stringify(result, null, 4));
+            }),
+            () => content,
+          ]),
+          get("output"),
+        ]),
+        tryCatch(
+          (output) => prettier.format(output, { parser: "babel" }),
+          (error, output) =>
+            pipe([
+              tap(() => {
+                console.error(error);
+                console.error(output);
+              }),
+              () => {
+                throw error;
+              },
+            ])()
+        ),
+      ])(),
+  ]);
+
+const loadCurrentAndTarget =
+  ({ filename, programOptions, commandOptions }) =>
+  (content) =>
+    pipe([
+      tap(() => {
+        assert(filename);
+        assert(content);
+      }),
+      assign({
+        filenameResolved: () => filename,
+        contentFormated: formatContent({ content }),
+      }),
+      assign({
+        contentOld: tryCatch(
+          pipe([
+            ({ filenameResolved }) => fs.readFile(filenameResolved, "utf-8"),
+          ]),
+          (error) => {
+            //Ignore error
+          }
+        ),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
 const writeToFile =
   ({ filename, programOptions, commandOptions }) =>
   (content) =>
@@ -627,90 +715,13 @@ const writeToFile =
         assert(content);
         assert(programOptions);
       }),
-      assign({
-        filenameResolved: () =>
-          path.resolve(programOptions.workingDirectory, filename),
-        contentFormated: pipe([
-          () =>
-            new ESLint({
-              fix: true,
-              plugins: {
-                autofix: require("eslint-plugin-autofix"),
-              },
-              baseConfig: {
-                env: {
-                  es6: true,
-                  node: true,
-                },
-                parserOptions: {
-                  ecmaVersion: 2017,
-                },
-                extends: ["eslint:recommended"],
-                plugins: ["autofix"],
-                rules: {
-                  "autofix/no-unused-vars": "warn",
-                },
-              },
-            }),
-          (eslint) =>
-            pipe([
-              () => eslint.lintText(content),
-              tap((params) => {
-                assert(true);
-              }),
-              first,
-              switchCase([
-                get("fatalErrorCount"),
-                pipe([
-                  tap((result) => {
-                    console.log("Error linting");
-                    console.log(content);
-                    console.log(JSON.stringify(result, null, 4));
-                  }),
-                  () => content,
-                ]),
-                get("output"),
-              ]),
-              tryCatch(
-                (output) => prettier.format(output, { parser: "babel" }),
-                (error) =>
-                  pipe([
-                    tap(() => {
-                      console.error(error);
-                      console.error(content);
-                    }),
-                    () => {
-                      throw error;
-                    },
-                  ])()
-              ),
-            ])(),
-        ]),
-      }),
-      tap((params) => {
-        assert(true);
-      }),
-      assign({
-        contentOld: tryCatch(
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            ({ filenameResolved }) => fs.readFile(filenameResolved, "utf-8"),
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-          (error) => {
-            //Ignore error
-          }
-        ),
-      }),
+      () => content,
+      loadCurrentAndTarget({ filename, programOptions, commandOptions }),
       assign({
         doSave: pipe([
           switchCase([
             get("contentOld"),
-            promptSave({ commandOptions }),
+            promptSave({ commandOptions, filename }),
             () => true,
           ]),
         ]),
@@ -1045,7 +1056,6 @@ const readModel = ({
     filterModel,
     removeDefaultDependencies({ writersSpec }),
     addUsedBy({ writersSpec }),
-    //TODO handle multi provider
   ]);
 
 exports.readModel = readModel;
@@ -1068,25 +1078,62 @@ const readMapping = ({ commandOptions, programOptions }) =>
 
 exports.readMapping = readMapping;
 
+const buidFilename = ({
+  providerName,
+  providersCount,
+  commandOptions: { outputDir, outputFile },
+  workingDirectory,
+}) =>
+  pipe([
+    tap((params) => {
+      assert(outputFile);
+      assert(workingDirectory);
+    }),
+    switchCase([
+      () => providersCount === 1,
+      () => path.resolve(workingDirectory, outputDir, `${outputFile}.js`),
+      () =>
+        path.resolve(
+          workingDirectory,
+          outputDir,
+          `${outputFile}-${providerName}.js`
+        ),
+    ]),
+    tap((fileName) => {
+      //logger.debug(`buidFilename ${fileName}`);
+    }),
+  ])();
+
 const writeResourcesToFile =
-  ({ filename, resourcesTpl, programOptions, commandOptions }) =>
+  ({ providers, providerName, resourcesTpl, programOptions, commandOptions }) =>
   (resourceMap) =>
     pipe([
+      tap((params) => {
+        assert(providers);
+        assert(providerName);
+      }),
       () => resourceMap,
       pluck("types"),
       flatten,
       pluck("resources"),
       flatten,
       filter(not(isEmpty)),
-      tap((params) => {
-        assert(true);
-      }),
+      filter(eq(get("providerName"), providerName)),
       fork({
         resourcesVarNames: pluck("resourceVarName"),
         resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
       }),
       ({ resourcesCode }) => resourcesTpl({ resourcesCode }),
-      writeToFile({ filename, programOptions, commandOptions }),
+      writeToFile({
+        filename: buidFilename({
+          providerName,
+          commandOptions,
+          providersCount: size(providers),
+          workingDirectory: programOptions.workingDirectory,
+        }),
+        programOptions,
+        commandOptions,
+      }),
     ])();
 
 const writeEnv =
@@ -1150,12 +1197,10 @@ const isEqualById = ({ type, group, providerName, id }) =>
       assert(id);
     }),
     and([
-      //TODO
-      //or([and([() => isString(id), matchId(id)]), matchId(id?.id)]),
       or([matchId(id), matchId(id?.id)]),
       eq(get("type"), type),
       eq(get("group"), group),
-      eq(get("providerName"), providerName),
+      // Do not check by providerName, search in all providers.
     ]),
   ]);
 
@@ -1164,7 +1209,9 @@ const findLiveById =
   (id) =>
     pipe([
       tap(() => {
-        assert(providerName);
+        if (!providerName) {
+          assert(providerName);
+        }
         assert(group);
         assert(lives);
         assert(type);
@@ -1217,7 +1264,7 @@ const ignoreDefault =
 
 const writeResource =
   ({
-    providerName,
+    providerType,
     providerConfig,
     type,
     typeTarget,
@@ -1245,7 +1292,7 @@ const writeResource =
   ({ resource, lives, mapping }) =>
     pipe([
       tap(() => {
-        assert(providerName);
+        assert(resource.providerName);
         assert(spec);
       }),
       () => resource,
@@ -1253,7 +1300,7 @@ const writeResource =
         or([ignoreResource({ lives }), ignoreDefault({ lives })]),
         (resource) => {
           assert(true);
-          console.log(" Ignore", resource.name);
+          //console.log(" Ignore", resource.name);
         },
         pipe([
           tap((params) => {
@@ -1261,6 +1308,7 @@ const writeResource =
             // console.log(" Writing", resource.name);
           }),
           fork({
+            providerName: () => resource.providerName,
             resourceVarName: () => resourceVarName(resource.name),
             resourceName: () => resourceName(resource.name),
             properties: pipe([
@@ -1291,7 +1339,14 @@ const writeResource =
           tap((params) => {
             assert(true);
           }),
-          ({ resourceVarName, resourceName, properties, additionalCode }) => ({
+          ({
+            providerName,
+            resourceVarName,
+            resourceName,
+            properties,
+            additionalCode,
+          }) => ({
+            providerName,
             resourceVarName,
             env: envTpl({
               options,
@@ -1299,7 +1354,7 @@ const writeResource =
               environmentVariables,
             }),
             code: codeTpl({
-              providerName,
+              providerType,
               providerConfig,
               group,
               type: typeTarget || type,
@@ -1331,6 +1386,7 @@ const writeResources =
     typeTarget,
     group,
     providerName,
+    providerType,
     filterLive,
     propertiesDefault,
     omitProperties,
@@ -1355,16 +1411,10 @@ const writeResources =
         assert(lives);
         assert(type);
         assert(group);
-        assert(providerName);
+        assert(providerType);
       }),
       () => lives,
-      filter(
-        and([
-          eq(get("providerName"), providerName),
-          eq(get("type"), type),
-          eq(get("group"), group),
-        ])
-      ),
+      filter(and([eq(get("type"), type), eq(get("group"), group)])),
       tap.if(not(isEmpty), (resources) => {
         console.log(`Resources ${group}::${type} #${size(resources)}`);
       }),
@@ -1376,6 +1426,7 @@ const writeResources =
             }),
             (resource) =>
               writeResource({
+                providerType,
                 providerConfig,
                 environmentVariables,
                 commandOptions,
@@ -1424,19 +1475,20 @@ const createWritersSpec = pipe([
 exports.createWritersSpec = createWritersSpec;
 
 exports.generatorMain = ({
-  name,
+  providers,
+  providerName,
   providerConfig,
   commandOptions,
   programOptions,
   specs,
   providerType,
-  iacTpl,
   filterModel,
 }) =>
   tryCatch(
     pipe([
       tap((xxx) => {
         assert(specs);
+        assert(providerName);
       }),
       fork({
         lives: readModel({
@@ -1469,7 +1521,7 @@ exports.generatorMain = ({
                     commandOptions,
                     programOptions,
                     group,
-                    providerName: providerType, //TODO
+                    providerType,
                     ...spec,
                     spec,
                   }),
@@ -1483,7 +1535,8 @@ exports.generatorMain = ({
           }),
           fork({
             resources: writeResourcesToFile({
-              filename: commandOptions.outputCode,
+              providers,
+              providerName,
               resourcesTpl,
               programOptions,
               commandOptions,

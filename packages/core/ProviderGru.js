@@ -318,17 +318,18 @@ exports.ProviderGru = ({
             tryCatch(
               (planPerProvider) =>
                 pipe([
-                  () =>
-                    getProvider({
-                      providerName: planPerProvider.providerName,
-                    }),
+                  () => ({
+                    providerName: planPerProvider.providerName,
+                  }),
+                  getProvider,
                   (provider) =>
                     pipe([
-                      () =>
-                        provider.planApply({
-                          plan: planPerProvider,
-                          onStateChange,
-                        }),
+                      () => ({
+                        plan: planPerProvider,
+                        planAll: plan,
+                        onStateChange,
+                      }),
+                      provider.planApply,
                       tap((params) => {
                         assert(true);
                       }),
@@ -488,6 +489,7 @@ exports.ProviderGru = ({
                   resultDestroy: () =>
                     provider.planDestroy({
                       plans,
+                      planAll: plan,
                       onStateChange,
                       options,
                     }),
@@ -535,11 +537,13 @@ exports.ProviderGru = ({
               );
             }),
             () => provider.start({ onStateChange }),
+            //TODO
             () =>
               provider[functionName]({
                 onStateChange,
                 commandOptions,
                 programOptions,
+                providers: getProviders(),
               }),
             assign({ providerName: () => provider.name }),
             tap((xxx) => {
@@ -808,7 +812,11 @@ exports.ProviderGru = ({
       getProviders,
       map(
         tryCatch(
-          callProp("generateCode", { commandOptions, programOptions }),
+          callProp("generateCode", {
+            commandOptions,
+            programOptions,
+            providers: getProviders(),
+          }),
           (error) => {
             logger.error("generateCode", error);
             throw error;

@@ -89,6 +89,9 @@ exports.EC2Route = ({ spec, config }) => {
                 id: live.GatewayId,
               }),
             get("name"),
+            tap((name) => {
+              assert(name);
+            }),
             prepend(`${rt}-`),
           ])(),
         // Transit Gateway

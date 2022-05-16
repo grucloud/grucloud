@@ -1231,8 +1231,10 @@ exports.GoogleProvider = ({
         applicationCredentialsFile,
         serviceAccountName: ServiceAccountName,
       }),
-    generateCode: ({ commandOptions, programOptions }) =>
+    generateCode: ({ commandOptions, programOptions, providers }) =>
       generateCode({
+        providers,
+        providerName: name,
         providerConfig: mergedConfig,
         specs: fnSpecs(mergedConfig),
         commandOptions,

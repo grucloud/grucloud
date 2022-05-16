@@ -39,6 +39,7 @@ const {
   isOurMinion,
   assignPolicyDocumentAccountAndRegion,
   replaceRegion,
+  replaceOwner,
 } = require("../AwsCommon");
 
 const {
@@ -51,6 +52,11 @@ const {
   compareEC2Instance,
 } = require("./EC2Instance");
 const { appendCidrSuffix } = require("./EC2Common");
+const {
+  inferNameRouteTableArm,
+  transitGatewayAttachmentDependencies,
+} = require("./EC2TransitGatewayCommon");
+
 const { EC2LaunchTemplate } = require("./EC2LaunchTemplate");
 
 const { AwsClientKeyPair } = require("./AwsKeyPair");
@@ -98,6 +104,10 @@ const { EC2TransitGateway } = require("./EC2TransitGateway");
 const {
   EC2TransitGatewayVpcAttachment,
 } = require("./EC2TransitGatewayVpcAttachment");
+
+const {
+  EC2TransitGatewayPeeringAttachment,
+} = require("./EC2TransitGatewayPeeringAttachment");
 
 const { EC2TransitGatewayRoute } = require("./EC2TransitGatewayRoute");
 
@@ -352,6 +362,15 @@ const getLaunchTemplateVersionFromTags = pipe([
   find(eq(get("Key"), "aws:ec2launchtemplate:version")),
   get("Value"),
 ]);
+
+const replaceTgwInfo = ({ tgwType, providerConfig }) =>
+  pipe([
+    get(tgwType),
+    assign({
+      OwnerId: pipe([get("OwnerId"), replaceOwner({ providerConfig })]),
+      Region: pipe([get("Region"), replaceRegion({ providerConfig })]),
+    }),
+  ]);
 
 module.exports = pipe([
   () => [
@@ -872,13 +891,14 @@ module.exports = pipe([
       includeDefaultDependencies: true,
       dependencies: {
         routeTable: { type: "RouteTable", group: "EC2", parent: true },
-        ig: { type: "InternetGateway", group: "EC2" },
-        natGateway: { type: "NatGateway", group: "EC2" },
-        vpcEndpoint: { type: "VpcEndpoint", group: "EC2" },
-        transitGateway: { type: "TransitGateway", group: "EC2" },
+        ig: { type: "InternetGateway", group: "EC2", parent: true },
+        natGateway: { type: "NatGateway", group: "EC2", parent: true },
+        vpcEndpoint: { type: "VpcEndpoint", group: "EC2", parent: true },
+        transitGateway: { type: "TransitGateway", group: "EC2", parent: true },
         egressOnlyInternetGateway: {
           type: "EgressOnlyInternetGateway",
           group: "EC2",
+          parent: true,
         },
       },
     },
@@ -1401,26 +1421,13 @@ module.exports = pipe([
           group: "EC2",
           parent: true,
         },
-        transitGatewayVpcAttachment: {
-          type: "TransitGatewayVpcAttachment",
-          group: "EC2",
-          parent: true,
-        },
+        ...transitGatewayAttachmentDependencies,
       },
-      inferName: ({
-        properties: { DestinationCidrBlock },
-        dependenciesSpec: {
-          transitGatewayVpcAttachment,
-          transitGatewayRouteTable,
-        },
-      }) =>
+      inferName: ({ properties, dependenciesSpec }) =>
         pipe([
-          tap(() => {
-            assert(transitGatewayVpcAttachment);
-            assert(transitGatewayRouteTable);
-          }),
-          () =>
-            `tgw-route::${transitGatewayVpcAttachment}::${transitGatewayRouteTable}::${DestinationCidrBlock}`,
+          () => ({ properties, dependenciesSpec }),
+          inferNameRouteTableArm({ prefix: "tgw-route" }),
+          append(`::${properties.DestinationCidrBlock}`),
         ])(),
     },
     {
@@ -1438,9 +1445,94 @@ module.exports = pipe([
       },
     },
     {
+      type: "TransitGatewayPeeringAttachment",
+      Client: EC2TransitGatewayPeeringAttachment,
+      includeDefaultDependencies: true,
+      // inferName: pipe([
+      //   get("dependenciesSpec"),
+      //   tap(({ transitGateway, transitGatewayPeer }) => {
+      //     assert(transitGateway);
+      //     assert(transitGatewayPeer);
+      //   }),
+      //   ({ transitGateway, transitGatewayPeer }) =>
+      //     `tgw-peering-attach::${transitGateway}::${transitGatewayPeer}`,
+      // ]),
+      // TODO remove this
+      compare: compareEC2({
+        filterTarget: () => pipe([pick([])]),
+        filterLive: () => pipe([pick([])]),
+      }),
+      ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
+      omitProperties: [
+        "TransitGatewayAttachmentId",
+        "RequesterTgwInfo.TransitGatewayId",
+        "AccepterTgwInfo.TransitGatewayId",
+        "Status",
+        "State",
+        "CreationTime",
+      ],
+      propertiesDefault: {},
+      dependencies: {
+        transitGateway: {
+          type: "TransitGateway",
+          group: "EC2",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                tap((params) => {
+                  assert(dependency);
+                }),
+                () => resource,
+                eq(
+                  get("live.RequesterTgwInfo.TransitGatewayId"),
+                  dependency.live.TransitGatewayId
+                ),
+              ])(),
+        },
+        transitGatewayPeer: {
+          type: "TransitGateway",
+          group: "EC2",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                tap((params) => {
+                  assert(dependency);
+                }),
+                () => resource,
+                eq(
+                  get("live.AccepterTgwInfo.TransitGatewayId"),
+                  dependency.live.TransitGatewayId
+                ),
+                tap((params) => {
+                  assert(true);
+                }),
+              ])(),
+        },
+      },
+      filterLive: ({ providerConfig }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          assign({
+            RequesterTgwInfo: replaceTgwInfo({
+              tgwType: "RequesterTgwInfo",
+              providerConfig,
+            }),
+            AccepterTgwInfo: replaceTgwInfo({
+              tgwType: "AccepterTgwInfo",
+              providerConfig,
+            }),
+          }),
+        ]),
+    },
+    {
       type: "TransitGatewayVpcAttachment",
       Client: EC2TransitGatewayVpcAttachment,
       includeDefaultDependencies: true,
+      // TODO remove this
       ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
       omitProperties: [
         "TransitGatewayAttachmentId",
@@ -1474,35 +1566,18 @@ module.exports = pipe([
         "TransitGatewayAttachmentId",
         "TransitGatewayRouteTableId",
       ],
-      inferName: ({
-        dependenciesSpec: {
-          transitGatewayVpcAttachment,
-          transitGatewayRouteTable,
-        },
-      }) =>
-        pipe([
-          tap(() => {
-            assert(transitGatewayVpcAttachment);
-            assert(transitGatewayRouteTable);
-          }),
-          () =>
-            `tgw-rtb-assoc::${transitGatewayVpcAttachment}::${transitGatewayRouteTable}`,
-        ])(),
+      inferName: inferNameRouteTableArm({ prefix: "tgw-rtb-assoc" }),
       compare: compareAws({
         filterTarget: () => pipe([pick([])]),
         filterLive: () => pipe([pick([])]),
       }),
       dependencies: {
-        transitGatewayVpcAttachment: {
-          type: "TransitGatewayVpcAttachment",
-          group: "EC2",
-          parent: true,
-        },
         transitGatewayRouteTable: {
           type: "TransitGatewayRouteTable",
           group: "EC2",
           parent: true,
         },
+        ...transitGatewayAttachmentDependencies,
       },
     },
     {
@@ -1516,21 +1591,7 @@ module.exports = pipe([
         "ResourceType",
         "State",
       ],
-      inferName: ({
-        dependenciesSpec: {
-          transitGatewayRouteTable,
-          transitGatewayVpcAttachment,
-          //TODO other attachment type
-        },
-      }) =>
-        pipe([
-          tap(() => {
-            assert(transitGatewayRouteTable);
-            assert(transitGatewayVpcAttachment);
-          }),
-          () =>
-            `tgw-rtb-propagation::${transitGatewayRouteTable}::${transitGatewayVpcAttachment}`,
-        ])(),
+      inferName: inferNameRouteTableArm({ prefix: "tgw-rtb-propagation" }),
       compare: compareAws({
         filterTarget: () => pipe([pick([])]),
         filterLive: () => pipe([pick([])]),
@@ -1541,11 +1602,7 @@ module.exports = pipe([
           group: "EC2",
           parent: true,
         },
-        transitGatewayVpcAttachment: {
-          type: "TransitGatewayVpcAttachment",
-          group: "EC2",
-          parent: true,
-        },
+        ...transitGatewayAttachmentDependencies,
         // TODO add other attachment type
       },
     },

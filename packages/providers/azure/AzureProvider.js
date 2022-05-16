@@ -229,8 +229,10 @@ exports.AzureProvider = ({
       info,
       init,
       filterClient,
-      generateCode: ({ commandOptions, programOptions }) =>
+      generateCode: ({ commandOptions, programOptions, providers }) =>
         generateCode({
+          providers,
+          providerName: name,
           providerConfig: makeConfig(),
           specs: fnSpecs(makeConfig()),
           commandOptions,

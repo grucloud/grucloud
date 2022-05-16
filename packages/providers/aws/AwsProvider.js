@@ -12,6 +12,7 @@ const {
   switchCase,
 } = require("rubico");
 const {
+  prepend,
   first,
   pluck,
   isFunction,
@@ -28,9 +29,6 @@ const shell = require("shelljs");
 const path = require("path");
 
 const { STS } = require("@aws-sdk/client-sts");
-const {
-  execCommandShell,
-} = require("@grucloud/core/cli/providers/createProjectCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
@@ -44,9 +42,9 @@ const { generateCode } = require("./Aws2gc");
 const { createEC2 } = require("./EC2/EC2Common");
 const { fnSpecs } = require("./AwsProviderSpec");
 
-const getAvailabilityZonesName = ({ region }) =>
+const getAvailabilityZonesName = (config) =>
   pipe([
-    () => createEC2({ region }),
+    () => createEC2(config),
     tap((params) => {
       assert(true);
     }),
@@ -57,7 +55,9 @@ const getAvailabilityZonesName = ({ region }) =>
     get("AvailabilityZones"),
     pluck("ZoneName"),
     tap((ZoneNames) => {
-      logger.debug(`AvailabilityZones: for region ${region}: ${ZoneNames}`);
+      logger.debug(
+        `AvailabilityZones: for region ${config.region}: ${ZoneNames}`
+      );
     }),
   ])();
 
@@ -70,20 +70,22 @@ const validateConfig = ({ region, zone, zones }) => {
 };
 
 //TODO wrap for retry
-const fetchAccountId = tryCatch(
-  pipe([
-    tap(() => {
-      logger.debug(`fetchAccountId`);
-    }),
-    createEndpointOption({ region: "us-east-1" }),
-    (options) => new STS(options),
-    (sts) => sts.getCallerIdentity({}),
-    get("Account"),
-  ]),
-  (error) => {
-    throw error;
-  }
-);
+const fetchAccountId = (config) =>
+  tryCatch(
+    pipe([
+      tap(() => {
+        assert(config);
+        logger.debug(`fetchAccountId`);
+      }),
+      createEndpointOption(config),
+      (options) => new STS(options),
+      (sts) => sts.getCallerIdentity({}),
+      get("Account"),
+    ]),
+    (error) => {
+      throw error;
+    }
+  )();
 
 exports.AwsProvider = ({
   name = "aws",
@@ -91,6 +93,7 @@ exports.AwsProvider = ({
   config,
   programOptions,
   configs = [],
+  mapGloblalNameToResource,
   ...other
 }) => {
   assert(config ? isFunction(config) : true, "config must be a function");
@@ -99,32 +102,41 @@ exports.AwsProvider = ({
   let zone;
   let zones;
 
-  const getRegionFromCredentialFiles = pipe([
-    () => `aws configure get region`,
-    (command) => shell.exec(command, { silent: true }),
-    ({ stdout, stderr, code }) =>
-      switchCase([
-        () => code === 0,
-        pipe([() => stdout]),
-        pipe([
-          tap((params) => {
-            throw Error(stderr);
-          }),
-        ]),
-      ])(),
-    // TODO cut and paste with createProjetAws.js
-    callProp("replace", EOL, ""),
-    when(includes("undefined"), () => undefined),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+  const getRegionFromCredentialFiles = (config) =>
+    pipe([
+      tap((params) => {
+        assert(config);
+      }),
+      () => config,
+      get("credentials.profile", "default"),
+      prepend("aws configure get region --profile "),
+      tap((params) => {
+        assert(true);
+      }),
+      (command) => shell.exec(command, { silent: true }),
+      ({ stdout, stderr, code }) =>
+        switchCase([
+          () => code === 0,
+          pipe([() => stdout]),
+          pipe([
+            tap((params) => {
+              throw Error(stderr);
+            }),
+          ]),
+        ])(),
+      callProp("replace", EOL, ""),
+      when(includes("undefined"), () => undefined),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   const getRegion = (config) =>
     pipe([
       tap((params) => {
         assert(config);
       }),
+      () => config,
       getRegionFromCredentialFiles,
       (regionFromCredentialFiles) =>
         pipe([
@@ -163,7 +175,12 @@ exports.AwsProvider = ({
         configDefault: {
           stage,
           zone: () => zone,
-          accountId: () => accountId,
+          accountId: pipe([
+            () => accountId,
+            tap(() => {
+              assert(accountId);
+            }),
+          ]),
           region,
         },
         config,
@@ -175,9 +192,14 @@ exports.AwsProvider = ({
   //TODO refactor
   const start = pipe([
     tap(async (params) => {
-      accountId = await fetchAccountId();
       const merged = makeConfig();
-      zones = await getAvailabilityZonesName({ region });
+      accountId = await fetchAccountId(
+        defaultsDeep(merged)({
+          credentials: { clientConfig: { region: "us-east-1" } },
+        })
+      );
+
+      zones = await getAvailabilityZonesName(merged);
       assert(zones, `no zones for region ${region}`);
       zone = getZone({ zones, config: merged });
       assert(zone);
@@ -241,19 +263,23 @@ exports.AwsProvider = ({
     ...other,
     type: "aws",
     name,
+    displayName: () => `${name} ${region}`,
     programOptions,
     makeConfig,
     fnSpecs,
     start,
     info,
     init,
-    generateCode: ({ commandOptions, programOptions }) =>
+    generateCode: ({ commandOptions, programOptions, providers }) =>
       generateCode({
+        providerName: name,
+        providers,
         providerConfig: makeConfig(),
         specs: fnSpecs(makeConfig()),
         commandOptions,
         programOptions,
       }),
     getListHof,
+    mapGloblalNameToResource,
   });
 };

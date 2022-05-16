@@ -2299,39 +2299,23 @@ exports.createResources = () => [
     type: "TransitGatewayRouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
+      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
       transitGatewayVpcAttachment: "inspection-vpc-attachment",
-      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
     }),
   },
   {
     type: "TransitGatewayRouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      transitGatewayVpcAttachment: "spoke-vpc-1-attachment",
       transitGatewayRouteTable: "Spoke_VPC_Route_Table",
+      transitGatewayVpcAttachment: "spoke-vpc-1-attachment",
     }),
   },
   {
     type: "TransitGatewayRouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      transitGatewayVpcAttachment: "spoke-vpc-2-attachment",
       transitGatewayRouteTable: "Spoke_VPC_Route_Table",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
-      transitGatewayVpcAttachment: "spoke-vpc-1-attachment",
-    }),
-  },
-  {
-    type: "TransitGatewayRouteTablePropagation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
       transitGatewayVpcAttachment: "spoke-vpc-2-attachment",
     }),
   },
@@ -2341,6 +2325,22 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       transitGatewayRouteTable: "Spoke_VPC_Route_Table",
       transitGatewayVpcAttachment: "inspection-vpc-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
+      transitGatewayVpcAttachment: "spoke-vpc-1-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "Inspection_VPC_Route_Table",
+      transitGatewayVpcAttachment: "spoke-vpc-2-attachment",
     }),
   },
   {

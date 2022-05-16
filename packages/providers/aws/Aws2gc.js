@@ -302,6 +302,8 @@ const filterModel = pipe([
 ]);
 
 exports.generateCode = ({
+  providers,
+  providerName,
   specs,
   providerConfig,
   commandOptions,
@@ -311,10 +313,13 @@ exports.generateCode = ({
     pipe([
       tap(() => {
         assert(specs);
+        assert(providers);
       }),
       () =>
         generatorMain({
+          providers,
           name: "aws2gc",
+          providerName,
           providerType: "aws",
           specs,
           providerConfig,

@@ -77,6 +77,8 @@ const downloadAssets = ({ specs, commandOptions, programOptions }) =>
 
 exports.generateCode = ({
   specs,
+  providers,
+  providerName,
   providerConfig,
   commandOptions,
   programOptions,
@@ -84,12 +86,15 @@ exports.generateCode = ({
   pipe([
     tap(() => {
       assert(specs);
+      assert(providerName);
     }),
     () =>
       generatorMain({
+        providers,
         name: "az2gc",
         providerConfig,
         providerType: "azure",
+        providerName,
         specs,
         commandOptions,
         programOptions,

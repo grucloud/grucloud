@@ -51,6 +51,7 @@
     "@aws-sdk/client-sqs": "^3.76.0",
     "@aws-sdk/client-ssm": "^3.76.0",
     "@aws-sdk/client-sts": "^3.76.0",
+    "@aws-sdk/credential-providers": "^3.87.0",
     "@aws-sdk/s3-request-presigner": "^3.76.0",
     "@grucloud/core": "^7.0.4",
     "adm-zip": "^0.5.9",

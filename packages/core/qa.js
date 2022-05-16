@@ -93,7 +93,7 @@ exports.testEnd2End = ({
             cli.genCode({
               commandOptions: {
                 inventory: "artifacts/inventory.json",
-                outputCode: "artifacts/resources.js",
+                outputDir: "artifacts",
                 outputEnv: "default.template.env",
                 prompt: false,
               },

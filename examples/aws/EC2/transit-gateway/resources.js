@@ -104,8 +104,8 @@ exports.createResources = () => [
     type: "TransitGatewayRouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      transitGatewayVpcAttachment: "tgw-attachment",
       transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGatewayVpcAttachment: "tgw-attachment",
     }),
   },
   {

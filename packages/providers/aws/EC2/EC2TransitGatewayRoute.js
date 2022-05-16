@@ -1,11 +1,16 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, fork, switchCase, omit, map } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, append } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
+const {
+  findDependenciesVpcAttachment,
+  findDependenciesPeeringAttachment,
+  findNameRouteTableArm,
+} = require("./EC2TransitGatewayCommon");
 
 //TODO cannotBeDelete State = Deleted
 const findId = pipe([
@@ -62,29 +67,8 @@ exports.EC2TransitGatewayRoute = ({ spec, config }) =>
         group: "EC2",
         ids: [live.TransitGatewayRouteTableId],
       },
-      {
-        type: "TransitGatewayVpcAttachment",
-        group: "EC2",
-        ids: [
-          pipe([
-            tap((params) => {
-              assert(live.TransitGatewayAttachmentId);
-            }),
-            () =>
-              lives.getById({
-                id: live.TransitGatewayAttachmentId,
-                type: "TransitGatewayVpcAttachment",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("id"),
-            tap((params) => {
-              assert(true);
-            }),
-          ])(),
-        ],
-      },
-      //TODO more attachment type
+      findDependenciesVpcAttachment({ live, lives, config }),
+      findDependenciesPeeringAttachment({ live, lives, config }),
     ],
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#searchTransitGatewayRoutes-property
     getList: ({ client }) =>
@@ -124,9 +108,6 @@ exports.EC2TransitGatewayRoute = ({ spec, config }) =>
                     }),
                   ])()
                 ),
-                tap((params) => {
-                  assert(true);
-                }),
               ])(),
         }),
       ]),
@@ -135,34 +116,12 @@ exports.EC2TransitGatewayRoute = ({ spec, config }) =>
         tap((params) => {
           assert(live.DestinationCidrBlock);
         }),
-        fork({
-          transitGatewayVpcAttachment: pipe([
-            () =>
-              lives.getById({
-                id: live.TransitGatewayAttachmentId,
-                type: "TransitGatewayVpcAttachment",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
-          ]),
-          transitGatewayRouteTable: pipe([
-            () =>
-              lives.getById({
-                id: live.TransitGatewayRouteTableId,
-                type: "TransitGatewayRouteTable",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
-          ]),
+        () => ({ live, lives }),
+        findNameRouteTableArm({
+          prefix: "tgw-route",
+          config,
         }),
-        tap(({ transitGatewayVpcAttachment, transitGatewayRouteTable }) => {
-          assert(transitGatewayVpcAttachment);
-          assert(transitGatewayRouteTable);
-        }),
-        ({ transitGatewayVpcAttachment, transitGatewayRouteTable }) =>
-          `tgw-route::${transitGatewayVpcAttachment}::${transitGatewayRouteTable}::${live.DestinationCidrBlock}`,
+        append(`::${live.DestinationCidrBlock}`),
         tap((params) => {
           assert(true);
         }),

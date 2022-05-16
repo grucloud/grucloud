@@ -272,7 +272,7 @@ module.exports = pipe([
     {
       type: "ContainerInstance",
       dependencies: {
-        cluster: { type: "Cluster", group: "ECS" },
+        cluster: { type: "Cluster", group: "ECS", parent: true },
       },
       Client: ECSContainerInstance,
     },
