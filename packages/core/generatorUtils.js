@@ -1488,6 +1488,7 @@ exports.generatorMain = ({
     pipe([
       tap((xxx) => {
         assert(specs);
+        assert(providerName);
       }),
       fork({
         lives: readModel({

@@ -1234,6 +1234,7 @@ exports.GoogleProvider = ({
     generateCode: ({ commandOptions, programOptions, providers }) =>
       generateCode({
         providers,
+        providerName: name,
         providerConfig: mergedConfig,
         specs: fnSpecs(mergedConfig),
         commandOptions,

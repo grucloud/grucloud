@@ -68,6 +68,17 @@
       "port": 9229
     },
     {
+      "name": "Destroy Region B",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "destroy-regionB"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "onDeployed",
       "type": "node",
       "request": "launch",

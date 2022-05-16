@@ -23,7 +23,7 @@ exports.createResources = () => [
   {
     type: "TransitGatewayPeeringAttachment",
     group: "EC2",
-    name: "tgw-peer",
+    name: "tgw-peering",
     properties: ({ config }) => ({
       RequesterTgwInfo: {
         OwnerId: `${config.accountId()}`,

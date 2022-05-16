@@ -4,11 +4,30 @@ const { defaultsDeep, when, isEmpty } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { buildTags } = require("../AwsCommon");
+const { buildTags, findNameInTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
 const isInstanceDown = pipe([eq(get("State"), "deleted")]);
+
+const managedByOther =
+  ({ config }) =>
+  ({ live, lives }) =>
+    pipe([
+      () => live,
+      get("AccepterTgwInfo.TransitGatewayId"),
+      tap((params) => {
+        assert(true);
+      }),
+      (id) =>
+        lives.getById({
+          id,
+          type: "TransitGateway",
+          group: "EC2",
+          providerName: config.providerName,
+        }),
+      eq(get("providerName"), config.providerName),
+    ])();
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -71,27 +90,16 @@ const findNamePeeringAttachment =
   ({ config }) =>
   ({ live, lives }) =>
     pipe([
-      () => live,
-      fork({
-        transitGatewayRequester: pipe([
-          get("RequesterTgwInfo.TransitGatewayId"),
-          (id) =>
-            lives.getById({
-              id,
-              type: "TransitGateway",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
-          get("name"),
-        ]),
-        transitGatewayAcceptor: pipe([
-          get("AccepterTgwInfo.TransitGatewayId"),
-          tap((params) => {
-            assert(true);
-          }),
-          (id) =>
-            pipe([
-              () =>
+      () => ({ live }),
+      findNameInTags(),
+      when(
+        isEmpty,
+        pipe([
+          () => live,
+          fork({
+            transitGatewayRequester: pipe([
+              get("RequesterTgwInfo.TransitGatewayId"),
+              (id) =>
                 lives.getById({
                   id,
                   type: "TransitGateway",
@@ -99,16 +107,34 @@ const findNamePeeringAttachment =
                   providerName: config.providerName,
                 }),
               get("name"),
-              when(isEmpty, () => id),
-            ])(),
-        ]),
-      }),
-      tap(({ transitGatewayRequester, transitGatewayAcceptor }) => {
-        assert(transitGatewayRequester);
-        assert(transitGatewayAcceptor);
-      }),
-      ({ transitGatewayRequester, transitGatewayAcceptor }) =>
-        `tgw-peering-attach::${transitGatewayRequester}::${transitGatewayAcceptor}`,
+            ]),
+            transitGatewayAcceptor: pipe([
+              get("AccepterTgwInfo.TransitGatewayId"),
+              tap((params) => {
+                assert(true);
+              }),
+              (id) =>
+                pipe([
+                  () =>
+                    lives.getById({
+                      id,
+                      type: "TransitGateway",
+                      group: "EC2",
+                      providerName: config.providerName,
+                    }),
+                  get("name"),
+                  when(isEmpty, () => id),
+                ])(),
+            ]),
+          }),
+          tap(({ transitGatewayRequester, transitGatewayAcceptor }) => {
+            assert(transitGatewayRequester);
+            assert(transitGatewayAcceptor);
+          }),
+          ({ transitGatewayRequester, transitGatewayAcceptor }) =>
+            `tgw-peering-attach::${transitGatewayRequester}::${transitGatewayAcceptor}`,
+        ])
+      ),
       tap((params) => {
         assert(true);
       }),
@@ -120,6 +146,7 @@ exports.EC2TransitGatewayPeeringAttachment = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
+    managedByOther: managedByOther({ config }),
     findDependencies: ({ live }) => [
       {
         type: "TransitGateway",
@@ -139,16 +166,18 @@ exports.EC2TransitGatewayPeeringAttachment = ({ spec, config }) =>
     configDefault: ({
       name,
       namespace,
-      properties: { Tags, ...otherProps },
+      properties: { Tags, AccepterTgwInfo, ...otherProps },
       dependencies: { transitGateway, transitGatewayPeer },
     }) =>
       pipe([
         tap((params) => {
           assert(transitGateway);
           assert(transitGatewayPeer);
+          assert(AccepterTgwInfo);
         }),
-        () => otherProps,
-        defaultsDeep({
+        () => ({
+          PeerAccountId: AccepterTgwInfo.OwnerId,
+          PeerRegion: AccepterTgwInfo.Region,
           TransitGatewayId: getField(transitGateway, "TransitGatewayId"),
           PeerTransitGatewayId: getField(
             transitGatewayPeer,

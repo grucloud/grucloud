@@ -7,12 +7,13 @@
   "scripts": {
     "tree": "gc tree",
     "graph": "gc graph",
-    "gencode": "gc gencode --no-inventory-fetch",
+    "gencode": "gc gencode",
     "list": "gc list",
     "list-graph": "gc list -g",
     "plan": "gc plan",
     "apply": "gc apply -f",
     "destroy": "gc destroy -f",
+    "destroy-regionB": "gc destroy -f -p aws-secondary",
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
     "test": "mocha"

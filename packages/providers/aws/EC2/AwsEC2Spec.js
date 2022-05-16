@@ -1448,7 +1448,20 @@ module.exports = pipe([
       type: "TransitGatewayPeeringAttachment",
       Client: EC2TransitGatewayPeeringAttachment,
       includeDefaultDependencies: true,
+      // inferName: pipe([
+      //   get("dependenciesSpec"),
+      //   tap(({ transitGateway, transitGatewayPeer }) => {
+      //     assert(transitGateway);
+      //     assert(transitGatewayPeer);
+      //   }),
+      //   ({ transitGateway, transitGatewayPeer }) =>
+      //     `tgw-peering-attach::${transitGateway}::${transitGatewayPeer}`,
+      // ]),
       // TODO remove this
+      compare: compareEC2({
+        filterTarget: () => pipe([pick([])]),
+        filterLive: () => pipe([pick([])]),
+      }),
       ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
       omitProperties: [
         "TransitGatewayAttachmentId",

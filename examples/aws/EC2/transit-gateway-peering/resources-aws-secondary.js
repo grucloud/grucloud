@@ -3,33 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  {
-    type: "InternetGateway",
-    group: "EC2",
-    name: "ig-default",
-    isDefault: true,
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: "rt-default-vpc-default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      routeTable: "rt-default-vpc-default",
-      ig: "ig-default",
-    }),
-  },
   {
     type: "TransitGateway",
     group: "EC2",
@@ -45,25 +18,6 @@ exports.createResources = () => [
         DnsSupport: "enable",
         MulticastSupport: "disable",
       },
-    }),
-  },
-  {
-    type: "TransitGatewayPeeringAttachment",
-    group: "EC2",
-    name: "tgw-attach-0ebdf07128fa7bfbf",
-    properties: ({ config }) => ({
-      RequesterTgwInfo: {
-        OwnerId: `${config.accountId()}`,
-        Region: `us-east-1`,
-      },
-      AccepterTgwInfo: {
-        OwnerId: `${config.accountId()}`,
-        Region: `${config.region}`,
-      },
-    }),
-    dependencies: ({}) => ({
-      transitGateway: "tgw-requester",
-      transitGatewayPeer: "tgw-acceptor",
     }),
   },
 ];
