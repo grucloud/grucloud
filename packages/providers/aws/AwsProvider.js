@@ -93,6 +93,7 @@ exports.AwsProvider = ({
   config,
   programOptions,
   configs = [],
+  mapGloblalNameToResource,
   ...other
 }) => {
   assert(config ? isFunction(config) : true, "config must be a function");
@@ -279,5 +280,6 @@ exports.AwsProvider = ({
         programOptions,
       }),
     getListHof,
+    mapGloblalNameToResource,
   });
 };

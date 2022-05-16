@@ -1537,6 +1537,7 @@ exports.Cli = ({
   configs = [],
   stage,
   promptsInject,
+  mapGloblalNameToResource = new Map(),
 } = {}) =>
   pipe([
     tap(() => {
@@ -1567,6 +1568,7 @@ exports.Cli = ({
               config,
               configs,
               stage,
+              mapGloblalNameToResource,
             }),
           }),
         tap.if(() => createResources, createResources),

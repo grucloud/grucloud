@@ -50,11 +50,7 @@ exports.createResources = () => [
       DnsHostnames: true,
     }),
   },
-  {
-    type: "InternetGateway",
-    group: "EC2",
-    name: "CdkStack/Vpc",
-  },
+  { type: "InternetGateway", group: "EC2", name: "CdkStack/Vpc" },
   {
     type: "InternetGatewayAttachment",
     group: "EC2",
@@ -67,7 +63,7 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "CdkStack/Vpc/PublicSubnet1",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnet: "CdkStack/Vpc/PublicSubnet1",
       eip: "CdkStack/Vpc/PublicSubnet1",
     }),
@@ -76,7 +72,7 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "CdkStack/Vpc/PublicSubnet2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnet: "CdkStack/Vpc/PublicSubnet2",
       eip: "CdkStack/Vpc/PublicSubnet2",
     }),
@@ -86,10 +82,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/Vpc/PrivateSubnet1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.128.0/18",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.128.0/18",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
@@ -98,10 +94,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/Vpc/PrivateSubnet2",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.192.0/18",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.192.0/18",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
@@ -110,11 +106,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/Vpc/PublicSubnet1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/18",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/18",
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
@@ -123,11 +119,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/Vpc/PublicSubnet2",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.64.0/18",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.64.0/18",
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
@@ -135,7 +131,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "CdkStack/Vpc/PrivateSubnet1",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
@@ -143,7 +139,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "CdkStack/Vpc/PrivateSubnet2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
@@ -151,7 +147,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "CdkStack/Vpc/PublicSubnet1",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
@@ -159,14 +155,14 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "CdkStack/Vpc/PublicSubnet2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/Vpc/PrivateSubnet1",
       subnet: "CdkStack/Vpc/PrivateSubnet1",
     }),
@@ -174,7 +170,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/Vpc/PrivateSubnet2",
       subnet: "CdkStack/Vpc/PrivateSubnet2",
     }),
@@ -182,7 +178,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/Vpc/PublicSubnet1",
       subnet: "CdkStack/Vpc/PublicSubnet1",
     }),
@@ -190,7 +186,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/Vpc/PublicSubnet2",
       subnet: "CdkStack/Vpc/PublicSubnet2",
     }),
@@ -201,7 +197,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/Vpc/PrivateSubnet1",
       natGateway: "CdkStack/Vpc/PublicSubnet1",
     }),
@@ -212,7 +208,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/Vpc/PrivateSubnet2",
       natGateway: "CdkStack/Vpc/PublicSubnet2",
     }),
@@ -223,7 +219,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/Vpc/PublicSubnet1",
       ig: "CdkStack/Vpc",
     }),
@@ -234,7 +230,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/Vpc/PublicSubnet2",
       ig: "CdkStack/Vpc",
     }),
@@ -247,7 +243,7 @@ exports.createResources = () => [
         "CdkStack-AuroraServerlessClusterSecurityGroup5A67466E-X9V6DZN5GHP3",
       Description: "RDS security group",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
@@ -259,7 +255,7 @@ exports.createResources = () => [
       Description:
         "Automatically created Security Group for ELB CdkStackFargateServiceLB29CE988E",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
@@ -270,7 +266,7 @@ exports.createResources = () => [
       GroupName: "CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
       Description: "CdkStack/FargateService/Service/SecurityGroup",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
@@ -290,7 +286,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::CdkStack/Vpc::CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
     }),
@@ -305,7 +301,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::CdkStack/Vpc::CdkStack-FargateServiceSecurityGroup262B61DD-WQDTLA5IPKHR",
       securityGroupFrom: [
@@ -323,7 +319,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::CdkStack/Vpc::CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
       securityGroupFrom: [
@@ -456,7 +452,7 @@ exports.createResources = () => [
       ],
       requiresCompatibilities: ["FARGATE"],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       secret: "aurora-user-secret",
       rdsDbCluster: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
       taskRole: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-1HTR9O8XQQI4P",
@@ -505,7 +501,7 @@ exports.createResources = () => [
       schedulingStrategy: "REPLICA",
       serviceName: "CdkStack-FargateServiceECC8084D-c9wCaLN6rjPU",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       cluster: "CdkStack-ClusterEB0386A7-1MSjvijRu7By",
       taskDefinition: "CdkStackFargateServiceTaskDef2C533A52",
       subnets: ["CdkStack/Vpc/PrivateSubnet1", "CdkStack/Vpc/PrivateSubnet2"],
@@ -524,7 +520,7 @@ exports.createResources = () => [
       Type: "application",
       IpAddressType: "ipv4",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["CdkStack/Vpc/PublicSubnet1", "CdkStack/Vpc/PublicSubnet2"],
       securityGroups: [
         "sg::CdkStack/Vpc::CdkStack-FargateServiceLBSecurityGroup5F444C78-KL8I9CO98SRN",
@@ -541,7 +537,7 @@ exports.createResources = () => [
       HealthCheckProtocol: "HTTP",
       TargetType: "ip",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
   },
@@ -552,7 +548,7 @@ exports.createResources = () => [
       Port: 80,
       Protocol: "HTTP",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       loadBalancer: "CdkSt-Farga-SRS4XA0Y0M8",
       targetGroup: "CdkSt-Farga-1SEGM16UZSRPF",
     }),
@@ -612,7 +608,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       logGroups: [
         "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n",
       ],
@@ -669,7 +665,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       secrets: ["aurora-user-secret"],
     }),
   },
@@ -680,7 +676,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DBSubnetGroupDescription: "Subnets for AuroraServerlessCluster database",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["CdkStack/Vpc/PrivateSubnet1", "CdkStack/Vpc/PrivateSubnet2"],
     }),
   },
@@ -715,7 +711,7 @@ exports.createResources = () => [
         process.env
           .CDKSTACK_AURORASERVERLESSCLUSTERB4A18EF1_APXIDHEWYAZ0_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       dbSubnetGroup:
         "cdkstack-auroraserverlessclustersubnets734af39a-c9biv9kwphqk",
       securityGroups: [

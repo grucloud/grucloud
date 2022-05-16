@@ -78,7 +78,6 @@ const {
   providerRunning,
 } = require("./ProviderCommon");
 const { ResourceMaker } = require("./CoreResource");
-
 const { createClient, decorateLive, buildGroupType } = require("./Client");
 const { createLives } = require("./Lives");
 
@@ -173,6 +172,7 @@ function CoreProvider({
   getListHof = getListHofDefault,
   filterClient = () => true,
   createResources,
+  mapGloblalNameToResource = new Map(),
 }) {
   assert(makeConfig);
   let _lives;
@@ -295,6 +295,8 @@ function CoreProvider({
     )(resourcesObj);
 
     mapNameToResource.set(resourceKey, resource);
+    mapGloblalNameToResource.set(`${group}::${type}::${name}`, resource);
+
     const resourcesByType = getResourcesByType(resource);
     assert(resourcesByType);
     mapTypeToResources.set(
@@ -376,13 +378,13 @@ function CoreProvider({
     }),
     (name) =>
       pipe([
-        () => mapNameToResource.get(name),
+        () => mapGloblalNameToResource.get(name),
         tap((resource) => {
           if (!resource) {
             assert(
               false,
               `no resource for ${name}, available resources:\n${[
-                ...mapNameToResource.keys(),
+                ...mapGloblalNameToResource.keys(),
               ].join("\n")} )}`
             );
           }
@@ -390,7 +392,13 @@ function CoreProvider({
       ])(),
   ]);
 
-  const getResource = pipe([get("uri"), getResourceByName]);
+  const getResource = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    ({ type, group, name }) => `${group}::${type}::${name}`,
+    getResourceByName,
+  ]);
 
   const getSpecs = pipe([
     getProviderConfig,
@@ -1254,27 +1262,6 @@ function CoreProvider({
       }),
       tap((result) => {
         assert(result);
-      }),
-      assign({
-        results: pipe([
-          get("results"),
-          unless(
-            isEmpty,
-            pipe([
-              callProp("sort", (a, b) =>
-                a.groupType.localeCompare(b.groupType)
-              ),
-              map(
-                assign({
-                  resources: pipe([
-                    get("resources"),
-                    unless(isEmpty, sortResources),
-                  ]),
-                })
-              ),
-            ])
-          ),
-        ]),
       }),
       tap((result) => {
         assert(result);

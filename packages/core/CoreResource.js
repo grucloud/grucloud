@@ -382,7 +382,7 @@ exports.ResourceMaker = ({
         },
         pipe([
           //TODO change getResourceByName, should take an object
-          ({ type, group }) => `${provider.name}::${group}::${type}::${value}`,
+          ({ type, group }) => `${group}::${type}::${value}`,
           provider.getResourceByName,
         ]),
       ]),

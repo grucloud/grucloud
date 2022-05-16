@@ -31,6 +31,7 @@ const createProviderMaker =
     config: configOverride,
     configs: configsOverride = [],
     createResources: createResourcesUpdate,
+    mapGloblalNameToResource,
   }) =>
   (
     provider,
@@ -61,6 +62,7 @@ const createProviderMaker =
             createResources,
             createResourcesUpdate,
           }),
+          mapGloblalNameToResource,
           ...otherProps,
         }),
     ])();

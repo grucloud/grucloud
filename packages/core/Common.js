@@ -39,6 +39,7 @@ const {
   append,
   differenceWith,
   isDeepEqual,
+  includes,
 } = require("rubico/x");
 const util = require("util");
 const { detailedDiff } = require("deep-object-diff");
@@ -590,12 +591,17 @@ exports.replaceWithName =
       find(
         pipe([
           get(pathLive),
-          (id) => Id.match(new RegExp(groupType ? `${id}` : `^${id}`)),
+          (id) =>
+            pipe([
+              () => Id,
+              switchCase([
+                () => groupType,
+                includes(id),
+                callProp("startsWith", id),
+              ]),
+            ])(),
         ])
       ),
-      tap((params) => {
-        assert(true);
-      }),
       switchCase([
         isEmpty,
         () => Id,

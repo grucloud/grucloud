@@ -57,19 +57,20 @@ module.exports = pipe([
           }),
         ]),
     },
-    {
-      type: "ResourcePolicy",
-      Client: SecretsManagerResourcePolicy,
-      dependencies: { secret: { type: "Secret", group: GROUP, parent: true } },
-      propertiesDefault: {},
-      omitProperties: ["Name", "ARN"],
-      filterLive: ({ providerConfig }) =>
-        pipe([
-          tap((params) => {
-            assert(providerConfig);
-          }),
-        ]),
-    },
+    //TODO
+    // {
+    //   type: "ResourcePolicy",
+    //   Client: SecretsManagerResourcePolicy,
+    //   dependencies: { secret: { type: "Secret", group: GROUP, parent: true } },
+    //   propertiesDefault: {},
+    //   omitProperties: ["Name", "ARN"],
+    //   filterLive: ({ providerConfig }) =>
+    //     pipe([
+    //       tap((params) => {
+    //         assert(providerConfig);
+    //       }),
+    //     ]),
+    // },
   ],
   map(
     defaultsDeep({

@@ -68,10 +68,9 @@ exports.createLives = () => {
       }),
     ])();
 
-  const getByType = ({ providerName, type, group }) =>
+  const getByType = ({ type, group }) =>
     pipe([
       tap(() => {
-        assert(providerName);
         assert(type);
       }),
       () => ({ group, type }),
@@ -81,7 +80,6 @@ exports.createLives = () => {
       tap((resources) => {
         logger.debug(
           `getByType ${JSON.stringify({
-            providerName,
             type,
             group,
             count: size(resources),
@@ -153,11 +151,17 @@ exports.createLives = () => {
           mapPerType.set(groupType, mapById);
         }),
       ])(),
-    addResources: ({ groupType, resources = [], error: latestError }) => {
+    addResources: ({
+      providerName,
+      groupType,
+      resources = [],
+      error: latestError,
+    }) => {
       assert(groupType);
       assert(Array.isArray(resources) || latestError);
       logger.info(
         `live addResources ${JSON.stringify({
+          providerName,
           groupType,
           resourceCount: size(resources),
         })}`
