@@ -5,10 +5,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "graph-target": "gc graph",
-    "graph-live": "gc list --graph",
-    "e2e": "gc d -a -f && gc run --onDestroyed && gc d -a && gc l && gc a -f && gc a && gc run --onDeployed && gc d -f && gc d && gc l"
+    "tree": "gc tree",
+    "graph": "gc graph",
+    "gencode": "gc gencode",
+    "list": "gc list",
+    "list-graph": "gc list -g",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "destroy-all": "gc destroy -f -a",
+    "onDeployed": "gc run --onDeployed",
+    "onDestroyed": "gc run --onDestroyed",
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",

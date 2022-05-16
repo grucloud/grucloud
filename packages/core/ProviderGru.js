@@ -263,6 +263,17 @@ exports.ProviderGru = ({
                 ),
               ])(),
           }),
+          tap((params) => {
+            assert(true);
+          }),
+          assign({
+            results: pipe([
+              get("results"),
+              callProp("sort", (a, b) =>
+                a.providerName.localeCompare(b.providerName)
+              ),
+            ]),
+          }),
           (result) => ({
             lives: lives,
             resultQuery: result,

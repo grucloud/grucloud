@@ -237,7 +237,7 @@ const filterProvider =
 exports.filterProvider = filterProvider;
 
 exports.setupProviders =
-  ({ commandOptions = {}, programOptions } = {}) =>
+  ({ mapGloblalNameToResource, commandOptions = {}, programOptions } = {}) =>
   (infra) =>
     pipe([
       tap(() => {
@@ -245,6 +245,7 @@ exports.setupProviders =
           `setupProviders ${JSON.stringify({ commandOptions, programOptions })}`
         );
         assert(infra);
+        assert(mapGloblalNameToResource);
       }),
       () => infra,
       assign({
@@ -261,6 +262,7 @@ exports.setupProviders =
       }),
       (infraNew) => ({
         providerGru: ProviderGru({
+          mapGloblalNameToResource,
           commandOptions,
           programOptions,
           ...infraNew,

@@ -30,11 +30,10 @@ exports.createLives = () => {
     values,
     flatten,
     callProp("sort", (a, b) =>
-      `${a.groupType}${a.name}`.localeCompare(`${b.groupType}${b.name}`)
+      `${a.providerName}${a.groupType}${a.name}`.localeCompare(
+        `${b.providerName}${b.groupType}${b.name}`
+      )
     ),
-    tap((params) => {
-      assert(true);
-    }),
   ]);
 
   const toJSON = () =>

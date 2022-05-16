@@ -222,6 +222,7 @@ exports.createResources = () => [
             name: "rule",
             properties: {
               ruleType: "Basic",
+              priority: 1,
               httpListener: {
                 id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/httpListeners/listener`,
               },

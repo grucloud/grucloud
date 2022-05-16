@@ -138,7 +138,7 @@ const fnSpecs = (config) => {
     map(
       defaultsDeep({
         isOurMinion,
-        compare: compare({ filterLive: omit(["id"]) }),
+        compare: compare({ filterLive: () => omit(["id"]) }),
         group: "Compute",
       })
     ),
