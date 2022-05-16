@@ -1556,7 +1556,7 @@ function CoreProvider({
       }),
     ])({});
 
-  const planApply = ({ plan, onStateChange = identity }) =>
+  const planApply = ({ plan, planAll, onStateChange = identity }) =>
     pipe([
       tap(() => {
         assert(plan);
@@ -1566,13 +1566,20 @@ function CoreProvider({
       assign({
         resultDestroy: switchCase([
           () => isValidPlan(plan.resultDestroy),
-          () =>
-            planDestroy({
-              plans: plan.resultDestroy,
-              onStateChange,
-              direction: PlanDirection.UP,
-              title: TitleDestroying,
-            }),
+          pipe([
+            () => planAll,
+            get("results"),
+            pluck("resultDestroy"),
+            flatten,
+            (planDestroyAll) =>
+              planDestroy({
+                plans: plan.resultDestroy,
+                planDestroyAll,
+                onStateChange,
+                direction: PlanDirection.UP,
+                title: TitleDestroying,
+              }),
+          ]),
           () => ({ error: false, results: [], plans: [] }),
         ]),
       }),
@@ -1580,9 +1587,14 @@ function CoreProvider({
         resultCreate: switchCase([
           () => isValidPlan(plan.resultCreate),
           pipe([
-            () =>
+            () => planAll,
+            get("results"),
+            pluck("resultCreate"),
+            flatten,
+            (planCreateAll) =>
               upsertResources({
                 plans: plan.resultCreate,
+                planCreateAll,
                 onStateChange,
                 title: TitleDeploying,
               }),
@@ -1636,7 +1648,7 @@ function CoreProvider({
       });
     };
   };
-  const upsertResources = ({ plans, onStateChange, title }) => {
+  const upsertResources = ({ plans, planCreateAll, onStateChange, title }) => {
     assert(onStateChange);
     assert(title);
     assert(Array.isArray(plans));
@@ -1751,17 +1763,18 @@ function CoreProvider({
     return switchCase([
       () => !isEmpty(plans),
       pipe([
-        () =>
-          Planner({
-            plans,
-            dependsOnType: getSpecs(),
-            dependsOnInstance: mapToGraph(getMapNameToResource()),
-            executor,
-            onStateChange: onStateChangeResource({
-              operation: TitleDeploying,
-              onStateChange,
-            }),
+        () => ({
+          plans,
+          planCreateAll,
+          dependsOnType: getSpecs(),
+          dependsOnInstance: mapToGraph(mapGloblalNameToResource),
+          executor,
+          onStateChange: onStateChangeResource({
+            operation: TitleDeploying,
+            onStateChange,
           }),
+        }),
+        Planner,
         callProp("run"),
         tap((result) =>
           onStateChange({
@@ -1855,12 +1868,14 @@ function CoreProvider({
 
   const planDestroy = ({
     plans,
+    planAll,
     onStateChange = identity,
     direction = PlanDirection.DOWN,
   }) =>
     pipe([
       tap(() => {
         assert(Array.isArray(plans), "plans must be an array");
+        assert(planAll);
         logger.info(`planDestroy #plans ${plans.length}`);
         logger.debug(`planDestroy ${tos({ plans, direction })}`);
       }),
@@ -1874,8 +1889,13 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
-      () => ({
+      () => planAll,
+      get("results"),
+      pluck("plans"),
+      flatten,
+      (planDestroyAll) => ({
         plans,
+        planDestroyAll,
         dependsOnType: getSpecs(),
         dependsOnInstance: mapToGraph(getMapNameToResource()),
         executor: ({ item }) =>

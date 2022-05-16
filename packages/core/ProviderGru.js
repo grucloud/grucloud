@@ -318,17 +318,18 @@ exports.ProviderGru = ({
             tryCatch(
               (planPerProvider) =>
                 pipe([
-                  () =>
-                    getProvider({
-                      providerName: planPerProvider.providerName,
-                    }),
+                  () => ({
+                    providerName: planPerProvider.providerName,
+                  }),
+                  getProvider,
                   (provider) =>
                     pipe([
-                      () =>
-                        provider.planApply({
-                          plan: planPerProvider,
-                          onStateChange,
-                        }),
+                      () => ({
+                        plan: planPerProvider,
+                        planAll: plan,
+                        onStateChange,
+                      }),
+                      provider.planApply,
                       tap((params) => {
                         assert(true);
                       }),
@@ -488,6 +489,7 @@ exports.ProviderGru = ({
                   resultDestroy: () =>
                     provider.planDestroy({
                       plans,
+                      planAll: plan,
                       onStateChange,
                       options,
                     }),
