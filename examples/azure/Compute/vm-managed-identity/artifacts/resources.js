@@ -13,7 +13,7 @@ exports.createResources = () => [
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDN2bsPENDfUWBy81C6uvY3IvP/\r\nsBr1pCg0QZiZ6OtAo1fvNVk9rG4ApA9NlbDeECNn5idqXzb68jQ2YPWjOgfxY2KW\r\n/kpZrrkuksYOw7O7ylZp9bIL4kD+8FzFB8A1EogIbZb2wZ1gqFawrpdtHvCuOTGG\r\n2EUwowDvo5++Jm6ee3tzGxdnBj+ciJOFv4NHrJl0y1Dbh8WzISbgkVL5gwrJvmj+\r\nxIUIOUesabSccAw08TX0vEt5G/yB3Q1EGPQ8fib4Og3tJOJ4+IBpnEi4RM9vEjgZ\r\nYvwEmuUb7Vx78uTZ8DUChQ74Ot4DvTAioSSXHJMOmY3yyGJBmzbGtbl6c8nx9tq2\r\nhlznqM8emKEuSHAV7zhB9Pk3f2C1XFCtUApWpY7CZ/huBv9EP1nohWp2tRCJFERt\r\ne5u6Sz+g0Lgz9roPfFRSExS7F+vP96TRV+KmzYzgHAXHD57h59qqYOiUxjjieCrm\r\n8C8ZUQjG3GPJaMnd4eCNsk5xanrRxxbiVw9OPKU= generated-by-azure\r\n",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
     }),
   },
@@ -38,6 +38,7 @@ exports.createResources = () => [
                 },
               ],
             },
+            enableVMAgentPlatformUpdates: false,
           },
           adminPassword: process.env.RG_USER_MANAGED_IDENTITY_VM_ADMIN_PASSWORD,
         },
@@ -81,7 +82,7 @@ exports.createResources = () => [
         type: "UserAssigned",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
       managedIdentities: ["rg-user-managed-identity::identity-vault"],
       sshPublicKeys: ["rg-user-managed-identity::keypair"],
@@ -94,7 +95,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       name: "identity-vault",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
     }),
   },
@@ -114,7 +115,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
       virtualNetwork: "rg-user-managed-identity::vnet",
       publicIpAddress: "rg-user-managed-identity::vm-ip",
@@ -145,7 +146,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
     }),
   },
@@ -155,7 +156,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       name: "vm-ip",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
     }),
   },
@@ -168,7 +169,7 @@ exports.createResources = () => [
         addressPrefix: "10.1.0.0/24",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
       virtualNetwork: "rg-user-managed-identity::vnet",
     }),
@@ -184,7 +185,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
     }),
   },

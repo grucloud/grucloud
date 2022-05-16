@@ -64,13 +64,10 @@ exports.createResources = () => [
             },
           },
         },
-        apiServerAccessProfile: {
-          enablePrivateCluster: false,
-        },
         servicePrincipalProfile: {},
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-aks-basic",
     }),
   },

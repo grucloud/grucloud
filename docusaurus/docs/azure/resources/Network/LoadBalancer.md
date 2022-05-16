@@ -1586,6 +1586,15 @@ exports.createResources = () => [
                                 description: 'Individual port mappings for inbound NAT rule created for backend pool.'
                               },
                               description: 'Collection of inbound NAT rule port mappings.'
+                            },
+                            adminState: {
+                              type: 'string',
+                              description: 'A list of administrative states which once set can override health probe so that Load Balancer will always forward new connections to backend, or deny new connections and reset existing connections.',
+                              enum: [ 'None', 'Up', 'Down', 'Drain' ],
+                              'x-ms-enum': {
+                                name: 'LoadBalancerBackendAddressAdminState',
+                                modelAsString: true
+                              }
                             }
                           }
                         },
@@ -1806,6 +1815,11 @@ exports.createResources = () => [
                     type: 'string',
                     enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
                     'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+                  },
+                  drainPeriodInSeconds: {
+                    type: 'integer',
+                    format: 'int32',
+                    description: 'Amount of seconds Load Balancer waits for before sending RESET to client and backend address.'
                   }
                 }
               },
@@ -2574,6 +2588,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-05-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/loadBalancer.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/loadBalancer.json).

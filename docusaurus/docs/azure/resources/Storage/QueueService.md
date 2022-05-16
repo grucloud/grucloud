@@ -99,7 +99,7 @@ exports.createResources = () => [
                         'DELETE', 'GET',
                         'HEAD',   'MERGE',
                         'POST',   'OPTIONS',
-                        'PUT'
+                        'PUT',    'PATCH'
                       ]
                     },
                     description: 'Required if CorsRule element is present. A list of HTTP methods that are allowed to be executed by the origin.'
@@ -166,6 +166,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2021-09-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/storage/resource-manager/Microsoft.Storage/stable/2021-08-01/queue.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/storage/resource-manager/Microsoft.Storage/stable/2021-09-01/queue.json).

@@ -64,6 +64,18 @@ exports.createResources = () => [
             id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworkGateways/vpngw/natRules/natRule2",
           },
         ],
+        gatewayCustomBgpIpAddresses: [
+          {
+            ipConfigurationId:
+              "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworkGateways/vpngw/ipConfigurations/default",
+            customBgpIpAddress: "169.254.21.1",
+          },
+          {
+            ipConfigurationId:
+              "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworkGateways/vpngw/ipConfigurations/ActiveActive",
+            customBgpIpAddress: "169.254.21.3",
+          },
+        ],
         connectionType: "IPsec",
         connectionProtocol: "IKEv2",
         routingWeight: 0,
@@ -1837,6 +1849,26 @@ exports.createResources = () => [
           'x-ms-azure-resource': true
         },
         enableBgp: { type: 'boolean', description: 'EnableBgp flag.' },
+        gatewayCustomBgpIpAddresses: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              ipConfigurationId: {
+                type: 'string',
+                description: 'The IpconfigurationId of ipconfiguration which belongs to gateway.'
+              },
+              customBgpIpAddress: {
+                type: 'string',
+                description: 'The custom BgpPeeringAddress which belongs to IpconfigurationId.'
+              }
+            },
+            required: [ 'ipConfigurationId', 'customBgpIpAddress' ],
+            description: 'GatewayCustomBgpIpAddressIpConfiguration for a virtual network gateway connection.'
+          },
+          description: 'GatewayCustomBgpIpAddresses to be used for virtual network gateway Connection.',
+          'x-ms-identifiers': []
+        },
         useLocalAzureIpAddress: {
           type: 'boolean',
           description: 'Use private local Azure IP for the connection.'
@@ -2028,6 +2060,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-05-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/virtualNetworkGateway.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/virtualNetworkGateway.json).

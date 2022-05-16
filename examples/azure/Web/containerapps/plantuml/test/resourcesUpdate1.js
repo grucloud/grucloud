@@ -3,38 +3,38 @@ const { pipe, tap, get, eq, and } = require("rubico");
 const { find } = require("rubico/x");
 
 const createResources = ({ provider }) => {
-  provider.Web.makeContainerApp({
-    properties: ({ config }) => ({
-      name: "plantuml",
-      properties: {
-        configuration: {
-          ingress: {
-            external: true,
-            targetPort: 8080,
-          },
-        },
-        template: {
-          containers: [
-            {
-              image: "docker.io/plantuml/plantuml-server:jetty-v1.2021.16",
-              name: "plantuml",
-              resources: {
-                cpu: 1,
-                memory: "1Gi",
-              },
-            },
-          ],
-          scale: {
-            maxReplicas: 10,
-          },
-        },
-      },
-    }),
-    dependencies: () => ({
-      resourceGroup: "rg",
-      kubeEnvironment: "dev",
-    }),
-  });
+  // provider.Web.makeContainerApp({
+  //   properties: ({ config }) => ({
+  //     name: "plantuml",
+  //     properties: {
+  //       configuration: {
+  //         ingress: {
+  //           external: true,
+  //           targetPort: 8080,
+  //         },
+  //       },
+  //       template: {
+  //         containers: [
+  //           {
+  //             image: "docker.io/plantuml/plantuml-server:jetty-v1.2021.16",
+  //             name: "plantuml",
+  //             resources: {
+  //               cpu: 1,
+  //               memory: "1Gi",
+  //             },
+  //           },
+  //         ],
+  //         scale: {
+  //           maxReplicas: 10,
+  //         },
+  //       },
+  //     },
+  //   }),
+  //   dependencies: () => ({
+  //     resourceGroup: "rg",
+  //     kubeEnvironment: "dev",
+  //   }),
+  // });
 };
 
 exports.createResources = createResources;

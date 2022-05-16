@@ -372,6 +372,11 @@ exports.createResources = () => [
                               name: 'ProvisioningState',
                               modelAsString: true
                             }
+                          },
+                          drainPeriodInSeconds: {
+                            type: 'integer',
+                            format: 'int32',
+                            description: 'Amount of seconds Load Balancer waits for before sending RESET to client and backend address.'
                           }
                         }
                       },
@@ -1445,6 +1450,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-05-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/loadBalancer.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/loadBalancer.json).

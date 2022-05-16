@@ -92,7 +92,8 @@ omit AWSLogs S3 Objects
 
 ## Azure
 
-NetworkSecurityGroup defaultSecurityRules in gencode
+- App:ContainerAppsAuthConfig getAll
+- NetworkSecurityGroup defaultSecurityRules in gencode
 
 remove aks-managed-createOperationID from tags
 

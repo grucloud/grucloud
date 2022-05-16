@@ -403,6 +403,140 @@ exports.createResources = () => [
 ];
 
 ```
+
+### StorageAccountCreatePremiumBlockBlobStorage
+```js
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      sku: { name: "Premium_LRS" },
+      kind: "BlockBlobStorage",
+      location: "eastus",
+      properties: {
+        minimumTlsVersion: "TLS1_2",
+        allowSharedKeyAccess: true,
+        encryption: {
+          services: {
+            file: { keyType: "Account", enabled: true },
+            blob: { keyType: "Account", enabled: true },
+          },
+          requireInfrastructureEncryption: false,
+          keySource: "Microsoft.Storage",
+        },
+      },
+      tags: { key1: "value1", key2: "value2" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
+
+```
+
+### StorageAccountCreateDnsEndpointTypeToAzureDnsZone
+```js
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      sku: { name: "Standard_GRS" },
+      kind: "Storage",
+      location: "eastus",
+      extendedLocation: { type: "EdgeZone", name: "losangeles001" },
+      properties: {
+        keyPolicy: { keyExpirationPeriodInDays: 20 },
+        sasPolicy: {
+          sasExpirationPeriod: "1.15:59:59",
+          expirationAction: "Log",
+        },
+        dnsEndpointType: "AzureDnsZone",
+        isHnsEnabled: true,
+        isSftpEnabled: true,
+        allowBlobPublicAccess: false,
+        defaultToOAuthAuthentication: false,
+        minimumTlsVersion: "TLS1_2",
+        allowSharedKeyAccess: true,
+        routingPreference: {
+          routingChoice: "MicrosoftRouting",
+          publishMicrosoftEndpoints: true,
+          publishInternetEndpoints: true,
+        },
+        encryption: {
+          services: {
+            file: { keyType: "Account", enabled: true },
+            blob: { keyType: "Account", enabled: true },
+          },
+          requireInfrastructureEncryption: false,
+          keySource: "Microsoft.Storage",
+        },
+      },
+      tags: { key1: "value1", key2: "value2" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
+
+```
+
+### StorageAccountCreateDnsEndpointTypeToStandard
+```js
+exports.createResources = () => [
+  {
+    type: "StorageAccount",
+    group: "Storage",
+    name: "myStorageAccount",
+    properties: () => ({
+      sku: { name: "Standard_GRS" },
+      kind: "Storage",
+      location: "eastus",
+      extendedLocation: { type: "EdgeZone", name: "losangeles001" },
+      properties: {
+        keyPolicy: { keyExpirationPeriodInDays: 20 },
+        sasPolicy: {
+          sasExpirationPeriod: "1.15:59:59",
+          expirationAction: "Log",
+        },
+        dnsEndpointType: "Standard",
+        isHnsEnabled: true,
+        isSftpEnabled: true,
+        allowBlobPublicAccess: false,
+        defaultToOAuthAuthentication: false,
+        minimumTlsVersion: "TLS1_2",
+        allowSharedKeyAccess: true,
+        routingPreference: {
+          routingChoice: "MicrosoftRouting",
+          publishMicrosoftEndpoints: true,
+          publishInternetEndpoints: true,
+        },
+        encryption: {
+          services: {
+            file: { keyType: "Account", enabled: true },
+            blob: { keyType: "Account", enabled: true },
+          },
+          requireInfrastructureEncryption: false,
+          keySource: "Microsoft.Storage",
+        },
+      },
+      tags: { key1: "value1", key2: "value2" },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
@@ -718,6 +852,13 @@ exports.createResources = () => [
                   format: 'date-time',
                   description: 'Timestamp of last rotation of the Key Vault Key.',
                   'x-ms-client-name': 'LastKeyRotationTimestamp'
+                },
+                currentVersionedKeyExpirationTimestamp: {
+                  type: 'string',
+                  readOnly: true,
+                  format: 'date-time',
+                  description: 'This is a read only property that represents the expiration time of the current version of the customer managed key used for encryption.',
+                  'x-ms-client-name': 'CurrentVersionedKeyExpirationTimestamp'
                 }
               }
             },
@@ -831,8 +972,8 @@ exports.createResources = () => [
         },
         accessTier: {
           type: 'string',
-          description: 'Required for storage accounts where kind = BlobStorage. The access tier used for billing.',
-          enum: [ 'Hot', 'Cool' ],
+          description: "Required for storage accounts where kind = BlobStorage. The access tier is used for billing. The 'Premium' access tier is the default value for premium block blobs storage account type and it cannot be changed for the premium block blobs storage account type.",
+          enum: [ 'Hot', 'Cool', 'Premium' ],
           'x-ms-enum': { name: 'AccessTier', modelAsString: false }
         },
         azureFilesIdentityBasedAuthentication: {
@@ -1015,6 +1156,12 @@ exports.createResources = () => [
               }
             }
           }
+        },
+        dnsEndpointType: {
+          type: 'string',
+          enum: [ 'Standard', 'AzureDnsZone' ],
+          'x-ms-enum': { name: 'DnsEndpointType', modelAsString: true },
+          description: 'Allows you to specify the type of endpoint. Set this to AzureDNSZone to create a large number of accounts in a single subscription, which creates accounts in an Azure DNS Zone and the endpoint URL will have an alphanumeric DNS Zone identifier.'
         }
       }
     }
@@ -1024,6 +1171,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2021-09-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/storage/resource-manager/Microsoft.Storage/stable/2021-08-01/storage.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/storage/resource-manager/Microsoft.Storage/stable/2021-09-01/storage.json).

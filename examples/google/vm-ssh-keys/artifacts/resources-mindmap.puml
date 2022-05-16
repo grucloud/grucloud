@@ -4,7 +4,7 @@ skinparam monochrome true
 + Infra
 ++ google
 +++ compute
-++++ Address (1)
 ++++ Firewall (2)
+++++ Address (1)
 ++++ VmInstance (1)
 @endmindmap

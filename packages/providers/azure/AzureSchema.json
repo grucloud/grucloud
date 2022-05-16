@@ -1,5 +1,469 @@
 [
     {
+        "type": "Certificate",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "environment": {
+                "type": "ManagedEnvironment",
+                "group": "App",
+                "name": "environmentName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/certificates/{certificateName}",
+                "operationId": "Certificates_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/certificates/{certificateName}",
+                "operationId": "Certificates_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/certificates/{certificateName}",
+                "operationId": "Certificates_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/certificates/{certificateName}",
+                "operationId": "Certificates_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/certificates",
+                "operationId": "Certificates_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.password",
+            "properties.subjectName",
+            "properties.value",
+            "properties.issuer",
+            "properties.issueDate",
+            "properties.expirationDate",
+            "properties.thumbprint",
+            "properties.valid",
+            "properties.publicKeyHash"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": [],
+        "environmentVariables": [
+            {
+                "path": "properties.password",
+                "suffix": "PASSWORD"
+            },
+            {
+                "path": "properties.value",
+                "suffix": "VALUE"
+            }
+        ]
+    },
+    {
+        "type": "ContainerApp",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "managedIdentities": {
+                "type": "UserAssignedIdentity",
+                "group": "ManagedIdentity",
+                "createOnly": true,
+                "list": true
+            },
+            "managedEnvironment": {
+                "type": "ManagedEnvironment",
+                "group": "App",
+                "createOnly": true,
+                "pathId": "properties.managedEnvironmentId"
+            },
+            "certificate": {
+                "type": "Certificate",
+                "group": "App",
+                "createOnly": true,
+                "pathId": "properties.configuration.ingress.customDomains.items.certificateId"
+            },
+            "containerAppsSourceControl": {
+                "type": "ContainerAppsSourceControl",
+                "group": "App",
+                "createOnly": true,
+                "pathId": "properties.configuration.dapr.appId"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}",
+                "operationId": "ContainerApps_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}",
+                "operationId": "ContainerApps_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}",
+                "operationId": "ContainerApps_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}",
+                "operationId": "ContainerApps_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.App/containerApps",
+                "operationId": "ContainerApps_ListBySubscription"
+            }
+        },
+        "omitProperties": [
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.provisioningState",
+            "properties.managedEnvironmentId",
+            "properties.latestRevisionName",
+            "properties.latestRevisionFqdn",
+            "properties.customDomainVerificationId",
+            "properties.configuration.ingress.fqdn",
+            "properties.configuration.dapr.appId",
+            "properties.outboundIPAddresses"
+        ],
+        "pickProperties": [
+            "identity.type",
+            "identity.userAssignedIdentities",
+            "properties.configuration.secrets",
+            "properties.configuration.activeRevisionsMode",
+            "properties.configuration.ingress.external",
+            "properties.configuration.ingress.targetPort",
+            "properties.configuration.ingress.transport",
+            "properties.configuration.ingress.traffic",
+            "properties.configuration.ingress.customDomains",
+            "properties.configuration.ingress.allowInsecure",
+            "properties.configuration.registries",
+            "properties.configuration.dapr.enabled",
+            "properties.configuration.dapr.appProtocol",
+            "properties.configuration.dapr.appPort",
+            "properties.template.revisionSuffix",
+            "properties.template.containers",
+            "properties.template.scale.minReplicas",
+            "properties.template.scale.maxReplicas",
+            "properties.template.scale.rules",
+            "properties.template.volumes"
+        ],
+        "pickPropertiesCreate": [
+            "identity.type",
+            "identity.userAssignedIdentities",
+            "properties.configuration.secrets",
+            "properties.configuration.activeRevisionsMode",
+            "properties.configuration.ingress.external",
+            "properties.configuration.ingress.targetPort",
+            "properties.configuration.ingress.transport",
+            "properties.configuration.ingress.traffic",
+            "properties.configuration.ingress.customDomains",
+            "properties.configuration.ingress.allowInsecure",
+            "properties.configuration.registries",
+            "properties.configuration.dapr.enabled",
+            "properties.configuration.dapr.appProtocol",
+            "properties.configuration.dapr.appPort",
+            "properties.template.revisionSuffix",
+            "properties.template.containers",
+            "properties.template.scale.minReplicas",
+            "properties.template.scale.maxReplicas",
+            "properties.template.scale.rules",
+            "properties.template.volumes"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "configuration": {
+                    "ingress": {
+                        "external": false
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "ContainerAppsSourceControl",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "containerApp": {
+                "type": "ContainerApp",
+                "group": "App",
+                "name": "containerAppName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/sourcecontrols/{sourceControlName}",
+                "operationId": "ContainerAppsSourceControls_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/sourcecontrols/{sourceControlName}",
+                "operationId": "ContainerAppsSourceControls_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/sourcecontrols/{sourceControlName}",
+                "operationId": "ContainerAppsSourceControls_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/sourcecontrols",
+                "operationId": "ContainerAppsSourceControls_ListByContainerApp"
+            }
+        },
+        "omitProperties": [
+            "properties.operationState",
+            "properties.githubActionConfiguration.registryInfo.registryPassword",
+            "properties.githubActionConfiguration.azureCredentials.clientId",
+            "properties.githubActionConfiguration.azureCredentials.clientSecret",
+            "properties.githubActionConfiguration.azureCredentials.tenantId",
+            "properties.githubActionConfiguration.azureCredentials.subscriptionId"
+        ],
+        "pickProperties": [
+            "properties.repoUrl",
+            "properties.branch",
+            "properties.githubActionConfiguration.registryInfo.registryUrl",
+            "properties.githubActionConfiguration.registryInfo.registryUserName",
+            "properties.githubActionConfiguration.contextPath",
+            "properties.githubActionConfiguration.image",
+            "properties.githubActionConfiguration.publishType",
+            "properties.githubActionConfiguration.os",
+            "properties.githubActionConfiguration.runtimeStack",
+            "properties.githubActionConfiguration.runtimeVersion"
+        ],
+        "pickPropertiesCreate": [
+            "properties.repoUrl",
+            "properties.branch",
+            "properties.githubActionConfiguration.registryInfo.registryUrl",
+            "properties.githubActionConfiguration.registryInfo.registryUserName",
+            "properties.githubActionConfiguration.contextPath",
+            "properties.githubActionConfiguration.image",
+            "properties.githubActionConfiguration.publishType",
+            "properties.githubActionConfiguration.os",
+            "properties.githubActionConfiguration.runtimeStack",
+            "properties.githubActionConfiguration.runtimeVersion"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.githubActionConfiguration.registryInfo.registryPassword",
+                "suffix": "REGISTRY_PASSWORD"
+            },
+            {
+                "path": "properties.githubActionConfiguration.azureCredentials.clientId",
+                "suffix": "CLIENT_ID"
+            },
+            {
+                "path": "properties.githubActionConfiguration.azureCredentials.clientSecret",
+                "suffix": "CLIENT_SECRET"
+            },
+            {
+                "path": "properties.githubActionConfiguration.azureCredentials.tenantId",
+                "suffix": "TENANT_ID"
+            }
+        ]
+    },
+    {
+        "type": "DaprComponent",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "environment": {
+                "type": "ManagedEnvironment",
+                "group": "App",
+                "name": "environmentName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/daprComponents/{componentName}",
+                "operationId": "DaprComponents_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/daprComponents/{componentName}",
+                "operationId": "DaprComponents_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/daprComponents/{componentName}",
+                "operationId": "DaprComponents_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/daprComponents",
+                "operationId": "DaprComponents_List"
+            }
+        },
+        "pickProperties": [
+            "properties.componentType",
+            "properties.version",
+            "properties.ignoreErrors",
+            "properties.initTimeout",
+            "properties.secrets",
+            "properties.metadata",
+            "properties.scopes"
+        ],
+        "pickPropertiesCreate": [
+            "properties.componentType",
+            "properties.version",
+            "properties.ignoreErrors",
+            "properties.initTimeout",
+            "properties.secrets",
+            "properties.metadata",
+            "properties.scopes"
+        ]
+    },
+    {
+        "type": "ManagedEnvironment",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}",
+                "operationId": "ManagedEnvironments_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}",
+                "operationId": "ManagedEnvironments_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}",
+                "operationId": "ManagedEnvironments_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}",
+                "operationId": "ManagedEnvironments_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.App/managedEnvironments",
+                "operationId": "ManagedEnvironments_ListBySubscription"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.daprAIInstrumentationKey",
+            "properties.daprAIConnectionString",
+            "properties.vnetConfiguration.infrastructureSubnetId",
+            "properties.vnetConfiguration.runtimeSubnetId",
+            "properties.deploymentErrors",
+            "properties.defaultDomain",
+            "properties.staticIp",
+            "properties.appLogsConfiguration.logAnalyticsConfiguration.customerId",
+            "properties.appLogsConfiguration.logAnalyticsConfiguration.sharedKey"
+        ],
+        "pickProperties": [
+            "properties.vnetConfiguration.internal",
+            "properties.vnetConfiguration.dockerBridgeCidr",
+            "properties.vnetConfiguration.platformReservedCidr",
+            "properties.vnetConfiguration.platformReservedDnsIP",
+            "properties.appLogsConfiguration.destination",
+            "properties.zoneRedundant"
+        ],
+        "pickPropertiesCreate": [
+            "properties.vnetConfiguration.internal",
+            "properties.vnetConfiguration.dockerBridgeCidr",
+            "properties.vnetConfiguration.platformReservedCidr",
+            "properties.vnetConfiguration.platformReservedDnsIP",
+            "properties.appLogsConfiguration.destination",
+            "properties.zoneRedundant"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.daprAIInstrumentationKey",
+                "suffix": "DAPR_AI_INSTRUMENTATION_KEY"
+            },
+            {
+                "path": "properties.daprAIConnectionString",
+                "suffix": "DAPR_AI_CONNECTION_STRING"
+            },
+            {
+                "path": "properties.appLogsConfiguration.logAnalyticsConfiguration.sharedKey",
+                "suffix": "SHARED_KEY"
+            }
+        ]
+    },
+    {
+        "type": "ManagedEnvironmentsStorage",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "environment": {
+                "type": "ManagedEnvironment",
+                "group": "App",
+                "name": "environmentName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}",
+                "operationId": "ManagedEnvironmentsStorages_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}",
+                "operationId": "ManagedEnvironmentsStorages_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}",
+                "operationId": "ManagedEnvironmentsStorages_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages",
+                "operationId": "ManagedEnvironmentsStorages_List"
+            }
+        },
+        "omitProperties": [
+            "properties.azureFile.accountKey"
+        ],
+        "pickProperties": [
+            "properties.azureFile.accountName",
+            "properties.azureFile.accessMode",
+            "properties.azureFile.shareName"
+        ],
+        "pickPropertiesCreate": [
+            "properties.azureFile.accountName",
+            "properties.azureFile.accessMode",
+            "properties.azureFile.shareName"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.azureFile.accountKey",
+                "suffix": "ACCOUNT_KEY"
+            }
+        ]
+    },
+    {
         "type": "RoleAssignment",
         "group": "Authorization",
         "apiVersion": "2020-10-01-preview",
@@ -2879,7 +3343,7 @@
     {
         "type": "ExportPipeline",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-12-01-preview",
+        "apiVersion": "2022-02-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -2945,7 +3409,7 @@
     {
         "type": "ImportPipeline",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-12-01-preview",
+        "apiVersion": "2022-02-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3024,7 +3488,7 @@
     {
         "type": "PipelineRun",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-12-01-preview",
+        "apiVersion": "2022-02-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3101,7 +3565,7 @@
     {
         "type": "PrivateEndpointConnection",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-12-01-preview",
+        "apiVersion": "2022-02-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3151,7 +3615,7 @@
     {
         "type": "Registry",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-12-01-preview",
+        "apiVersion": "2022-02-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3201,6 +3665,9 @@
             "properties.policies.retentionPolicy.lastUpdatedTime",
             "properties.policies.retentionPolicy.status",
             "properties.policies.exportPolicy.status",
+            "properties.policies.azureADAuthenticationAsArmPolicy.status",
+            "properties.policies.softDeletePolicy.lastUpdatedTime",
+            "properties.policies.softDeletePolicy.status",
             "properties.encryption.status",
             "properties.encryption.keyVaultProperties.versionedKeyIdentifier",
             "properties.encryption.keyVaultProperties.keyRotationEnabled",
@@ -3214,10 +3681,10 @@
             "identity.userAssignedIdentities",
             "properties.adminUserEnabled",
             "properties.networkRuleSet.defaultAction",
-            "properties.networkRuleSet.virtualNetworkRules",
             "properties.networkRuleSet.ipRules",
             "properties.policies.trustPolicy.type",
             "properties.policies.retentionPolicy.days",
+            "properties.policies.softDeletePolicy.retentionDays",
             "properties.encryption.keyVaultProperties.keyIdentifier",
             "properties.encryption.keyVaultProperties.identity",
             "properties.dataEndpointEnabled",
@@ -3232,10 +3699,10 @@
             "identity.userAssignedIdentities",
             "properties.adminUserEnabled",
             "properties.networkRuleSet.defaultAction",
-            "properties.networkRuleSet.virtualNetworkRules",
             "properties.networkRuleSet.ipRules",
             "properties.policies.trustPolicy.type",
             "properties.policies.retentionPolicy.days",
+            "properties.policies.softDeletePolicy.retentionDays",
             "properties.encryption.keyVaultProperties.keyIdentifier",
             "properties.encryption.keyVaultProperties.identity",
             "properties.dataEndpointEnabled",
@@ -3264,6 +3731,13 @@
                     },
                     "exportPolicy": {
                         "status": "enabled"
+                    },
+                    "azureADAuthenticationAsArmPolicy": {
+                        "status": "enabled"
+                    },
+                    "softDeletePolicy": {
+                        "retentionDays": 7,
+                        "status": "disabled"
                     }
                 },
                 "publicNetworkAccess": "Enabled",
@@ -3330,7 +3804,7 @@
     {
         "type": "Replication",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-12-01-preview",
+        "apiVersion": "2022-02-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3389,7 +3863,7 @@
     {
         "type": "ScopeMap",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-12-01-preview",
+        "apiVersion": "2022-02-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3641,7 +4115,7 @@
     {
         "type": "Token",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-12-01-preview",
+        "apiVersion": "2022-02-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3702,7 +4176,7 @@
     {
         "type": "Webhook",
         "group": "ContainerRegistry",
-        "apiVersion": "2021-12-01-preview",
+        "apiVersion": "2022-02-01-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3757,7 +4231,7 @@
     {
         "type": "AgentPool",
         "group": "ContainerService",
-        "apiVersion": "2022-01-02-preview",
+        "apiVersion": "2022-04-02-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -3832,9 +4306,11 @@
             "properties.type",
             "properties.mode",
             "properties.orchestratorVersion",
+            "properties.currentOrchestratorVersion",
             "properties.upgradeSettings.maxSurge",
             "properties.availabilityZones",
             "properties.enableNodePublicIP",
+            "properties.enableCustomCATrust",
             "properties.scaleSetPriority",
             "properties.scaleSetEvictionPolicy",
             "properties.spotMaxPrice",
@@ -3906,9 +4382,11 @@
             "properties.type",
             "properties.mode",
             "properties.orchestratorVersion",
+            "properties.currentOrchestratorVersion",
             "properties.upgradeSettings.maxSurge",
             "properties.availabilityZones",
             "properties.enableNodePublicIP",
+            "properties.enableCustomCATrust",
             "properties.scaleSetPriority",
             "properties.scaleSetEvictionPolicy",
             "properties.spotMaxPrice",
@@ -4072,7 +4550,7 @@
     {
         "type": "MaintenanceConfiguration",
         "group": "ContainerService",
-        "apiVersion": "2022-01-02-preview",
+        "apiVersion": "2022-04-02-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -4120,7 +4598,7 @@
     {
         "type": "ManagedCluster",
         "group": "ContainerService",
-        "apiVersion": "2022-01-02-preview",
+        "apiVersion": "2022-04-02-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -4134,11 +4612,23 @@
                 "createOnly": true,
                 "list": true
             },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.apiServerAccessProfile.subnetId"
+            },
             "diskEncryptionSet": {
                 "type": "DiskEncryptionSet",
                 "group": "Compute",
                 "createOnly": true,
                 "pathId": "properties.diskEncryptionSetID"
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true,
+                "pathId": "properties.securityProfile.azureKeyVaultKms.keyId"
             }
         },
         "methods": {
@@ -4168,6 +4658,7 @@
             "identity.tenantId",
             "properties.provisioningState",
             "properties.powerState",
+            "properties.creationData.sourceResourceId",
             "properties.maxAgentPools",
             "properties.currentKubernetesVersion",
             "properties.fqdn",
@@ -4179,8 +4670,12 @@
             "properties.aadProfile.clientAppID",
             "properties.aadProfile.serverAppID",
             "properties.aadProfile.tenantID",
+            "properties.apiServerAccessProfile.subnetId",
             "properties.diskEncryptionSetID",
-            "properties.securityProfile.azureDefender.logAnalyticsWorkspaceResourceId"
+            "properties.httpProxyConfig.effectiveNoProxy",
+            "properties.securityProfile.azureDefender.logAnalyticsWorkspaceResourceId",
+            "properties.securityProfile.azureKeyVaultKms.keyId",
+            "properties.ingressProfile.webAppRouting.dnsZoneResourceId"
         ],
         "pickProperties": [
             "sku.name",
@@ -4213,6 +4708,7 @@
             "properties.enablePodSecurityPolicy",
             "properties.enableNamespaceResources",
             "properties.networkProfile.networkPlugin",
+            "properties.networkProfile.networkPluginMode",
             "properties.networkProfile.networkPolicy",
             "properties.networkProfile.networkMode",
             "properties.networkProfile.podCidr",
@@ -4262,6 +4758,7 @@
             "properties.apiServerAccessProfile.privateDNSZone",
             "properties.apiServerAccessProfile.enablePrivateClusterPublicFQDN",
             "properties.apiServerAccessProfile.disableRunCommand",
+            "properties.apiServerAccessProfile.enableVnetIntegration",
             "properties.identityProfile",
             "properties.privateLinkResources",
             "properties.disableLocalAccounts",
@@ -4270,6 +4767,13 @@
             "properties.httpProxyConfig.noProxy",
             "properties.httpProxyConfig.trustedCa",
             "properties.securityProfile.azureDefender.enabled",
+            "properties.securityProfile.azureKeyVaultKms.enabled",
+            "properties.securityProfile.workloadIdentity.enabled",
+            "properties.storageProfile.diskCSIDriver.enabled",
+            "properties.storageProfile.diskCSIDriver.version",
+            "properties.storageProfile.fileCSIDriver.enabled",
+            "properties.storageProfile.snapshotController.enabled",
+            "properties.ingressProfile.webAppRouting.enabled",
             "properties.publicNetworkAccess"
         ],
         "pickPropertiesCreate": [
@@ -4303,6 +4807,7 @@
             "properties.enablePodSecurityPolicy",
             "properties.enableNamespaceResources",
             "properties.networkProfile.networkPlugin",
+            "properties.networkProfile.networkPluginMode",
             "properties.networkProfile.networkPolicy",
             "properties.networkProfile.networkMode",
             "properties.networkProfile.podCidr",
@@ -4352,6 +4857,7 @@
             "properties.apiServerAccessProfile.privateDNSZone",
             "properties.apiServerAccessProfile.enablePrivateClusterPublicFQDN",
             "properties.apiServerAccessProfile.disableRunCommand",
+            "properties.apiServerAccessProfile.enableVnetIntegration",
             "properties.identityProfile",
             "properties.privateLinkResources",
             "properties.disableLocalAccounts",
@@ -4360,6 +4866,13 @@
             "properties.httpProxyConfig.noProxy",
             "properties.httpProxyConfig.trustedCa",
             "properties.securityProfile.azureDefender.enabled",
+            "properties.securityProfile.azureKeyVaultKms.enabled",
+            "properties.securityProfile.workloadIdentity.enabled",
+            "properties.storageProfile.diskCSIDriver.enabled",
+            "properties.storageProfile.diskCSIDriver.version",
+            "properties.storageProfile.fileCSIDriver.enabled",
+            "properties.storageProfile.snapshotController.enabled",
+            "properties.ingressProfile.webAppRouting.enabled",
             "properties.publicNetworkAccess"
         ],
         "environmentVariables": [
@@ -4396,9 +4909,64 @@
         }
     },
     {
+        "type": "ManagedClusterSnapshot",
+        "group": "ContainerService",
+        "apiVersion": "2022-04-02-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedclustersnapshots/{resourceName}",
+                "operationId": "ManagedClusterSnapshots_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedclustersnapshots/{resourceName}",
+                "operationId": "ManagedClusterSnapshots_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedclustersnapshots/{resourceName}",
+                "operationId": "ManagedClusterSnapshots_UpdateTags"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedclustersnapshots/{resourceName}",
+                "operationId": "ManagedClusterSnapshots_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedclustersnapshots",
+                "operationId": "ManagedClusterSnapshots_List"
+            }
+        },
+        "omitProperties": [
+            "properties.creationData.sourceResourceId",
+            "properties.managedClusterPropertiesReadOnly"
+        ],
+        "pickProperties": [
+            "properties.snapshotType"
+        ],
+        "pickPropertiesCreate": [
+            "properties.snapshotType"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "snapshotType": "NodePool",
+                "managedClusterPropertiesReadOnly": {
+                    "networkProfile": {
+                        "networkPlugin": "kubenet"
+                    }
+                }
+            }
+        }
+    },
+    {
         "type": "Snapshot",
         "group": "ContainerService",
-        "apiVersion": "2022-01-02-preview",
+        "apiVersion": "2022-04-02-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -4430,7 +4998,6 @@
             }
         },
         "omitProperties": [
-            "systemData",
             "properties.creationData.sourceResourceId",
             "properties.kubernetesVersion",
             "properties.nodeImageVersion",
@@ -4451,6 +5018,53 @@
                 "osType": "Linux"
             }
         }
+    },
+    {
+        "type": "TrustedAccessRoleBinding",
+        "group": "ContainerService",
+        "apiVersion": "2022-04-02-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "resource": {
+                "type": "ManagedCluster",
+                "group": "ContainerService",
+                "name": "resourceName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/trustedAccessRoleBindings/{trustedAccessRoleBindingName}",
+                "operationId": "TrustedAccessRoleBindings_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/trustedAccessRoleBindings/{trustedAccessRoleBindingName}",
+                "operationId": "TrustedAccessRoleBindings_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/trustedAccessRoleBindings/{trustedAccessRoleBindingName}",
+                "operationId": "TrustedAccessRoleBindings_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/trustedAccessRoleBindings",
+                "operationId": "TrustedAccessRoleBindings_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.sourceResourceId"
+        ],
+        "pickProperties": [
+            "properties.roles"
+        ],
+        "pickPropertiesCreate": [
+            "properties.roles"
+        ]
     },
     {
         "type": "Key",
@@ -4808,7 +5422,7 @@
     {
         "type": "UserAssignedIdentity",
         "group": "ManagedIdentity",
-        "apiVersion": "2018-11-30",
+        "apiVersion": "2021-09-30-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -4848,7 +5462,7 @@
     {
         "type": "ApplicationGateway",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -4884,7 +5498,7 @@
                 "type": "LoadBalancerBackendAddressPool",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.requestRoutingRules.items.backendAddressPool.id"
+                "pathId": "properties.routingRules.items.backendAddressPool.id"
             }
         },
         "methods": {
@@ -4938,10 +5552,13 @@
             "properties.probes",
             "properties.backendAddressPools",
             "properties.backendHttpSettingsCollection",
+            "properties.backendSettingsCollection",
             "properties.httpListeners",
+            "properties.listeners",
             "properties.sslProfiles",
             "properties.urlPathMaps",
             "properties.requestRoutingRules",
+            "properties.routingRules",
             "properties.rewriteRuleSets",
             "properties.redirectConfigurations",
             "properties.webApplicationFirewallConfiguration.enabled",
@@ -4987,10 +5604,13 @@
             "properties.probes",
             "properties.backendAddressPools",
             "properties.backendHttpSettingsCollection",
+            "properties.backendSettingsCollection",
             "properties.httpListeners",
+            "properties.listeners",
             "properties.sslProfiles",
             "properties.urlPathMaps",
             "properties.requestRoutingRules",
+            "properties.routingRules",
             "properties.rewriteRuleSets",
             "properties.redirectConfigurations",
             "properties.webApplicationFirewallConfiguration.enabled",
@@ -5021,7 +5641,7 @@
     {
         "type": "ApplicationGatewayPrivateEndpointConnection",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5086,7 +5706,7 @@
     {
         "type": "ApplicationSecurityGroup",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5128,7 +5748,7 @@
     {
         "type": "AzureFirewall",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5230,7 +5850,7 @@
     {
         "type": "BastionHost",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5313,9 +5933,64 @@
         }
     },
     {
+        "type": "ConfigurationPolicyGroup",
+        "group": "Network",
+        "apiVersion": "2021-08-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "vpnServerConfiguration": {
+                "type": "VpnServerConfiguration",
+                "group": "Network",
+                "name": "vpnServerConfigurationName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnServerConfigurations/{vpnServerConfigurationName}/configurationPolicyGroups/{configurationPolicyGroupName}",
+                "operationId": "ConfigurationPolicyGroups_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnServerConfigurations/{vpnServerConfigurationName}/configurationPolicyGroups/{configurationPolicyGroupName}",
+                "operationId": "ConfigurationPolicyGroups_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnServerConfigurations/{vpnServerConfigurationName}/configurationPolicyGroups/{configurationPolicyGroupName}",
+                "operationId": "ConfigurationPolicyGroups_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnServerConfigurations/{vpnServerConfigurationName}/configurationPolicyGroups",
+                "operationId": "configurationPolicyGroups_ListByVpnServerConfiguration"
+            }
+        },
+        "omitProperties": [
+            "properties.p2SConnectionConfigurations",
+            "properties.provisioningState",
+            "etag",
+            "type"
+        ],
+        "pickProperties": [
+            "properties.isDefault",
+            "properties.priority",
+            "properties.policyMembers",
+            "name"
+        ],
+        "pickPropertiesCreate": [
+            "properties.isDefault",
+            "properties.priority",
+            "properties.policyMembers",
+            "name"
+        ]
+    },
+    {
         "type": "ConnectionMonitor",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5390,7 +6065,7 @@
     {
         "type": "CustomIPPrefix",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5451,7 +6126,7 @@
     {
         "type": "DdosProtectionPlan",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5503,7 +6178,7 @@
     {
         "type": "DscpConfiguration",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5559,7 +6234,7 @@
     {
         "type": "ExpressRouteCircuit",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5630,7 +6305,8 @@
             "properties.serviceProviderProperties.bandwidthInMbps",
             "properties.bandwidthInGbps",
             "properties.gatewayManagerEtag",
-            "properties.globalReachEnabled"
+            "properties.globalReachEnabled",
+            "properties.authorizationKey"
         ],
         "pickPropertiesCreate": [
             "sku.name",
@@ -5646,13 +6322,14 @@
             "properties.serviceProviderProperties.bandwidthInMbps",
             "properties.bandwidthInGbps",
             "properties.gatewayManagerEtag",
-            "properties.globalReachEnabled"
+            "properties.globalReachEnabled",
+            "properties.authorizationKey"
         ]
     },
     {
         "type": "ExpressRouteCircuitAuthorization",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5703,7 +6380,7 @@
     {
         "type": "ExpressRouteCircuitConnection",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5773,7 +6450,7 @@
     {
         "type": "ExpressRouteCircuitPeering",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5895,7 +6572,7 @@
     {
         "type": "ExpressRouteConnection",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -5970,13 +6647,25 @@
     {
         "type": "ExpressRouteGateway",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
                 "group": "Resources",
                 "name": "resourceGroupName",
                 "parent": true
+            },
+            "expressRouteCircuitPeering": {
+                "type": "ExpressRouteCircuitPeering",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.expressRouteConnections.items.expressRouteCircuitPeering.id"
+            },
+            "routeTable": {
+                "type": "RouteTable",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.expressRouteConnections.items.routingConfiguration.associatedRouteTable.id"
             },
             "virtualHub": {
                 "type": "VirtualHub",
@@ -6008,24 +6697,76 @@
             }
         },
         "omitProperties": [
-            "properties.expressRouteConnections",
             "properties.provisioningState",
             "properties.virtualHub.id",
             "etag"
         ],
         "pickProperties": [
             "properties.autoScaleConfiguration.bounds.min",
-            "properties.autoScaleConfiguration.bounds.max"
+            "properties.autoScaleConfiguration.bounds.max",
+            "properties.expressRouteConnections"
         ],
         "pickPropertiesCreate": [
             "properties.autoScaleConfiguration.bounds.min",
-            "properties.autoScaleConfiguration.bounds.max"
+            "properties.autoScaleConfiguration.bounds.max",
+            "properties.expressRouteConnections"
+        ]
+    },
+    {
+        "type": "ExpressRoutePortAuthorization",
+        "group": "Network",
+        "apiVersion": "2021-08-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "expressRoutePort": {
+                "type": "ExpressRoutePortAuthorization",
+                "group": "Network",
+                "name": "expressRoutePortName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRoutePorts/{expressRoutePortName}/authorizations/{authorizationName}",
+                "operationId": "ExpressRoutePortAuthorizations_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRoutePorts/{expressRoutePortName}/authorizations/{authorizationName}",
+                "operationId": "ExpressRoutePortAuthorizations_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRoutePorts/{expressRoutePortName}/authorizations/{authorizationName}",
+                "operationId": "ExpressRoutePortAuthorizations_CreateOrUpdate"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRoutePorts/{expressRoutePortName}/authorizations",
+                "operationId": "ExpressRoutePortAuthorizations_List"
+            }
+        },
+        "omitProperties": [
+            "properties.authorizationKey",
+            "properties.authorizationUseStatus",
+            "properties.circuitResourceUri",
+            "properties.provisioningState",
+            "etag",
+            "type"
+        ],
+        "pickProperties": [
+            "name"
+        ],
+        "pickPropertiesCreate": [
+            "name"
         ]
     },
     {
         "type": "FirewallPolicy",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -6058,6 +6799,10 @@
             "put": {
                 "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/firewallPolicies/{firewallPolicyName}",
                 "operationId": "FirewallPolicies_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/firewallPolicies/{firewallPolicyName}",
+                "operationId": "FirewallPolicies_UpdateTags"
             },
             "getAll": {
                 "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/firewallPolicies",
@@ -6096,6 +6841,7 @@
             "properties.intrusionDetection.mode",
             "properties.intrusionDetection.configuration.signatureOverrides",
             "properties.intrusionDetection.configuration.bypassTrafficSettings",
+            "properties.intrusionDetection.configuration.privateRanges",
             "properties.transportSecurity.certificateAuthority.name",
             "properties.sku.tier",
             "identity.type",
@@ -6121,6 +6867,7 @@
             "properties.intrusionDetection.mode",
             "properties.intrusionDetection.configuration.signatureOverrides",
             "properties.intrusionDetection.configuration.bypassTrafficSettings",
+            "properties.intrusionDetection.configuration.privateRanges",
             "properties.transportSecurity.certificateAuthority.name",
             "properties.sku.tier",
             "identity.type",
@@ -6130,7 +6877,7 @@
     {
         "type": "FirewallPolicyRuleCollectionGroup",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -6234,7 +6981,7 @@
     {
         "type": "FlowLog",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -6321,7 +7068,7 @@
     {
         "type": "HubRouteTable",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -6375,7 +7122,7 @@
     {
         "type": "HubVirtualNetworkConnection",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -6449,7 +7196,7 @@
     {
         "type": "InboundNatRule",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -6611,7 +7358,7 @@
     {
         "type": "IpAllocation",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -6683,7 +7430,7 @@
     {
         "type": "IpGroup",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -6730,7 +7477,7 @@
     {
         "type": "LoadBalancer",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -6820,7 +7567,7 @@
     {
         "type": "LoadBalancerBackendAddressPool",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -6885,19 +7632,21 @@
             "properties.location",
             "properties.tunnelInterfaces",
             "properties.loadBalancerBackendAddresses",
+            "properties.drainPeriodInSeconds",
             "name"
         ],
         "pickPropertiesCreate": [
             "properties.location",
             "properties.tunnelInterfaces",
             "properties.loadBalancerBackendAddresses",
+            "properties.drainPeriodInSeconds",
             "name"
         ]
     },
     {
         "type": "LocalNetworkGateway",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -6961,7 +7710,7 @@
     {
         "type": "NatGateway",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -7016,7 +7765,7 @@
     {
         "type": "NatRule",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -7081,7 +7830,7 @@
     {
         "type": "NetworkInterface",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -7195,7 +7944,8 @@
             "properties.privateLinkService.properties.autoApproval",
             "properties.privateLinkService.properties.fqdns",
             "properties.privateLinkService.properties.enableProxyProtocol",
-            "properties.migrationPhase"
+            "properties.migrationPhase",
+            "properties.auxiliaryMode"
         ],
         "pickPropertiesCreate": [
             "extendedLocation.name",
@@ -7216,7 +7966,8 @@
             "properties.privateLinkService.properties.autoApproval",
             "properties.privateLinkService.properties.fqdns",
             "properties.privateLinkService.properties.enableProxyProtocol",
-            "properties.migrationPhase"
+            "properties.migrationPhase",
+            "properties.auxiliaryMode"
         ],
         "propertiesDefault": {
             "properties": {
@@ -7236,7 +7987,7 @@
     {
         "type": "NetworkInterfaceTapConfiguration",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -8179,7 +8930,7 @@
     {
         "type": "NetworkProfile",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -8226,7 +8977,7 @@
     {
         "type": "NetworkSecurityGroup",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -8276,7 +9027,7 @@
     {
         "type": "NetworkVirtualAppliance",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -8358,7 +9109,7 @@
     {
         "type": "NetworkWatcher",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -8399,7 +9150,7 @@
     {
         "type": "P2sVpnGateway",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -8539,7 +9290,7 @@
     {
         "type": "PacketCapture",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -8592,7 +9343,7 @@
     {
         "type": "PrivateDnsZoneGroup",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -8641,7 +9392,7 @@
     {
         "type": "PrivateEndpoint",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -8767,7 +9518,7 @@
     {
         "type": "PrivateLinkService",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -8849,7 +9600,7 @@
     {
         "type": "PrivateLinkServicePrivateEndpointConnection",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -8914,7 +9665,7 @@
     {
         "type": "PublicIPAddress",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9312,7 +10063,7 @@
     {
         "type": "PublicIPPrefix",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9402,7 +10153,7 @@
     {
         "type": "Route",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9459,7 +10210,7 @@
     {
         "type": "RouteFilter",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9506,7 +10257,7 @@
     {
         "type": "RouteFilterRule",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9561,7 +10312,7 @@
     {
         "type": "RouteTable",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9610,7 +10361,7 @@
     {
         "type": "RoutingIntent",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9660,7 +10411,7 @@
     {
         "type": "SecurityPartnerProvider",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9713,7 +10464,7 @@
     {
         "type": "ServiceEndpointPolicy",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9765,7 +10516,7 @@
     {
         "type": "ServiceEndpointPolicyDefinition",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9820,7 +10571,7 @@
     {
         "type": "Subnet",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9923,7 +10674,7 @@
     {
         "type": "VirtualApplianceSite",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -9979,7 +10730,7 @@
     {
         "type": "VirtualHub",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -10069,7 +10820,8 @@
             "properties.virtualRouterAsn",
             "properties.virtualRouterIps",
             "properties.allowBranchToBranchTraffic",
-            "properties.preferredRoutingGateway"
+            "properties.preferredRoutingGateway",
+            "properties.hubRoutingPreference"
         ],
         "pickPropertiesCreate": [
             "properties.addressPrefix",
@@ -10080,13 +10832,14 @@
             "properties.virtualRouterAsn",
             "properties.virtualRouterIps",
             "properties.allowBranchToBranchTraffic",
-            "properties.preferredRoutingGateway"
+            "properties.preferredRoutingGateway",
+            "properties.hubRoutingPreference"
         ]
     },
     {
         "type": "VirtualHubBgpConnection",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -10146,7 +10899,7 @@
     {
         "type": "VirtualHubIpConfiguration",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -10619,7 +11372,7 @@
     {
         "type": "VirtualHubRouteTableV2",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -10670,7 +11423,7 @@
     {
         "type": "VirtualNetwork",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -10760,7 +11513,7 @@
     {
         "type": "VirtualNetworkGateway",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -10890,7 +11643,7 @@
     {
         "type": "VirtualNetworkGatewayConnection",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -10914,7 +11667,7 @@
                 "type": "VirtualHubIpConfiguration",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.localNetworkGateway2.bgpSettings.bgpPeeringAddresses.items.ipconfigurationId"
+                "pathId": "properties.gatewayCustomBgpIpAddresses.items.ipConfigurationId"
             }
         },
         "methods": {
@@ -11048,6 +11801,7 @@
             "properties.connectionMode",
             "properties.sharedKey",
             "properties.enableBgp",
+            "properties.gatewayCustomBgpIpAddresses",
             "properties.useLocalAzureIpAddress",
             "properties.usePolicyBasedTrafficSelectors",
             "properties.ipsecPolicies",
@@ -11136,6 +11890,7 @@
             "properties.connectionMode",
             "properties.sharedKey",
             "properties.enableBgp",
+            "properties.gatewayCustomBgpIpAddresses",
             "properties.useLocalAzureIpAddress",
             "properties.usePolicyBasedTrafficSelectors",
             "properties.ipsecPolicies",
@@ -11146,7 +11901,7 @@
     {
         "type": "VirtualNetworkGatewayConnectionSharedKey",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -11181,7 +11936,7 @@
     {
         "type": "VirtualNetworkGatewayNatRule",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -11244,7 +11999,7 @@
     {
         "type": "VirtualNetworkPeering",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -11316,7 +12071,7 @@
     {
         "type": "VirtualNetworkTap",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -12248,7 +13003,7 @@
     {
         "type": "VirtualRouter",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -12300,7 +13055,7 @@
     {
         "type": "VirtualRouterPeering",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -12352,7 +13107,7 @@
     {
         "type": "VirtualWan",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -12406,7 +13161,7 @@
     {
         "type": "VpnConnection",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -12503,7 +13258,7 @@
     {
         "type": "VpnGateway",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -12590,7 +13345,7 @@
     {
         "type": "VpnServerConfiguration",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -12642,6 +13397,7 @@
             "properties.aadAuthenticationParameters.aadTenant",
             "properties.aadAuthenticationParameters.aadAudience",
             "properties.aadAuthenticationParameters.aadIssuer",
+            "properties.configurationPolicyGroups",
             "name"
         ],
         "pickPropertiesCreate": [
@@ -12659,13 +13415,14 @@
             "properties.aadAuthenticationParameters.aadTenant",
             "properties.aadAuthenticationParameters.aadAudience",
             "properties.aadAuthenticationParameters.aadIssuer",
+            "properties.configurationPolicyGroups",
             "name"
         ]
     },
     {
         "type": "VpnSite",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -12751,7 +13508,7 @@
     {
         "type": "WebApplicationFirewallPolicy",
         "group": "Network",
-        "apiVersion": "2021-05-01",
+        "apiVersion": "2021-08-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -12998,7 +13755,7 @@
     {
         "type": "Query",
         "group": "OperationalInsights",
-        "apiVersion": "2019-09-01-preview",
+        "apiVersion": "2019-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -13065,7 +13822,7 @@
     {
         "type": "QueryPack",
         "group": "OperationalInsights",
-        "apiVersion": "2019-09-01-preview",
+        "apiVersion": "2019-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -13622,7 +14379,7 @@
     {
         "type": "BlobContainer",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -13697,7 +14454,7 @@
     {
         "type": "BlobService",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -13736,6 +14493,7 @@
             "properties.defaultServiceVersion",
             "properties.deleteRetentionPolicy.enabled",
             "properties.deleteRetentionPolicy.days",
+            "properties.deleteRetentionPolicy.allowPermanentDelete",
             "properties.isVersioningEnabled",
             "properties.automaticSnapshotPolicyEnabled",
             "properties.changeFeed.enabled",
@@ -13744,6 +14502,7 @@
             "properties.restorePolicy.days",
             "properties.containerDeleteRetentionPolicy.enabled",
             "properties.containerDeleteRetentionPolicy.days",
+            "properties.containerDeleteRetentionPolicy.allowPermanentDelete",
             "properties.lastAccessTimeTrackingPolicy.enable",
             "properties.lastAccessTimeTrackingPolicy.name",
             "properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays",
@@ -13754,6 +14513,7 @@
             "properties.defaultServiceVersion",
             "properties.deleteRetentionPolicy.enabled",
             "properties.deleteRetentionPolicy.days",
+            "properties.deleteRetentionPolicy.allowPermanentDelete",
             "properties.isVersioningEnabled",
             "properties.automaticSnapshotPolicyEnabled",
             "properties.changeFeed.enabled",
@@ -13762,6 +14522,7 @@
             "properties.restorePolicy.days",
             "properties.containerDeleteRetentionPolicy.enabled",
             "properties.containerDeleteRetentionPolicy.days",
+            "properties.containerDeleteRetentionPolicy.allowPermanentDelete",
             "properties.lastAccessTimeTrackingPolicy.enable",
             "properties.lastAccessTimeTrackingPolicy.name",
             "properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays",
@@ -13771,7 +14532,7 @@
     {
         "type": "EncryptionScope",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -13825,7 +14586,7 @@
     {
         "type": "FileService",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -13861,6 +14622,7 @@
             "properties.cors.corsRules",
             "properties.shareDeleteRetentionPolicy.enabled",
             "properties.shareDeleteRetentionPolicy.days",
+            "properties.shareDeleteRetentionPolicy.allowPermanentDelete",
             "properties.protocolSettings.smb.multichannel.enabled",
             "properties.protocolSettings.smb.versions",
             "properties.protocolSettings.smb.authenticationMethods",
@@ -13871,6 +14633,7 @@
             "properties.cors.corsRules",
             "properties.shareDeleteRetentionPolicy.enabled",
             "properties.shareDeleteRetentionPolicy.days",
+            "properties.shareDeleteRetentionPolicy.allowPermanentDelete",
             "properties.protocolSettings.smb.multichannel.enabled",
             "properties.protocolSettings.smb.versions",
             "properties.protocolSettings.smb.authenticationMethods",
@@ -13881,7 +14644,7 @@
     {
         "type": "FileShare",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -13952,7 +14715,7 @@
     {
         "type": "LocalUser",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -14014,7 +14777,7 @@
     {
         "type": "ObjectReplicationPolicy",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -14065,7 +14828,7 @@
     {
         "type": "PrivateEndpointConnection",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -14115,7 +14878,7 @@
     {
         "type": "Queue",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -14165,7 +14928,7 @@
     {
         "type": "QueueService",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -14204,7 +14967,7 @@
     {
         "type": "StorageAccount",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -14270,7 +15033,8 @@
             "properties.largeFileSharesState",
             "properties.privateEndpointConnections",
             "properties.blobRestoreStatus",
-            "properties.immutableStorageWithVersioning.immutabilityPolicy.state"
+            "properties.immutableStorageWithVersioning.immutabilityPolicy.state",
+            "properties.storageAccountSkuConversionStatus"
         ],
         "pickProperties": [
             "identity.type",
@@ -14301,7 +15065,8 @@
             "properties.immutableStorageWithVersioning.enabled",
             "properties.immutableStorageWithVersioning.immutabilityPolicy.immutabilityPeriodSinceCreationInDays",
             "properties.immutableStorageWithVersioning.immutabilityPolicy.allowProtectedAppendWrites",
-            "properties.allowedCopyScope"
+            "properties.allowedCopyScope",
+            "properties.dnsEndpointType"
         ],
         "pickPropertiesCreate": [
             "sku.name",
@@ -14361,7 +15126,8 @@
             "properties.defaultToOAuthAuthentication",
             "properties.immutableStorageWithVersioning.enabled",
             "properties.immutableStorageWithVersioning.immutabilityPolicy.immutabilityPeriodSinceCreationInDays",
-            "properties.immutableStorageWithVersioning.immutabilityPolicy.allowProtectedAppendWrites"
+            "properties.immutableStorageWithVersioning.immutabilityPolicy.allowProtectedAppendWrites",
+            "properties.dnsEndpointType"
         ],
         "propertiesDefault": {
             "properties": {
@@ -14381,7 +15147,7 @@
     {
         "type": "Table",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -14421,13 +15187,17 @@
         "omitProperties": [
             "properties.tableName"
         ],
-        "pickProperties": [],
-        "pickPropertiesCreate": []
+        "pickProperties": [
+            "properties.signedIdentifiers"
+        ],
+        "pickPropertiesCreate": [
+            "properties.signedIdentifiers"
+        ]
     },
     {
         "type": "TableService",
         "group": "Storage",
-        "apiVersion": "2021-08-01",
+        "apiVersion": "2021-09-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -15140,12 +15910,6 @@
                 "group": "Web",
                 "createOnly": true,
                 "pathId": "properties.hostingEnvironmentProfile.id"
-            },
-            "kubeEnvironment": {
-                "type": "KubeEnvironment",
-                "group": "Web",
-                "createOnly": true,
-                "pathId": "properties.kubeEnvironmentProfile.id"
             }
         },
         "methods": {
@@ -15631,96 +16395,6 @@
         ]
     },
     {
-        "type": "ContainerApp",
-        "group": "Web",
-        "apiVersion": "2021-03-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "kubeEnvironment": {
-                "type": "KubeEnvironment",
-                "group": "Web",
-                "createOnly": true,
-                "pathId": "properties.kubeEnvironmentId"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerApps/{name}",
-                "operationId": "ContainerApps_Get"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerApps/{name}",
-                "operationId": "ContainerApps_CreateOrUpdate"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/containerApps/{name}",
-                "operationId": "ContainerApps_Delete"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Web/containerApps",
-                "operationId": "ContainerApps_ListBySubscription"
-            }
-        },
-        "omitProperties": [
-            "properties.provisioningState",
-            "properties.kubeEnvironmentId",
-            "properties.latestRevisionName",
-            "properties.latestRevisionFqdn",
-            "properties.configuration.ingress.fqdn",
-            "properties.template.dapr.appId"
-        ],
-        "pickProperties": [
-            "properties.configuration.secrets",
-            "properties.configuration.activeRevisionsMode",
-            "properties.configuration.ingress.external",
-            "properties.configuration.ingress.targetPort",
-            "properties.configuration.ingress.transport",
-            "properties.configuration.ingress.traffic",
-            "properties.configuration.ingress.allowInsecure",
-            "properties.configuration.registries",
-            "properties.template.revisionSuffix",
-            "properties.template.containers",
-            "properties.template.scale.minReplicas",
-            "properties.template.scale.maxReplicas",
-            "properties.template.scale.rules",
-            "properties.template.dapr.enabled",
-            "properties.template.dapr.appPort",
-            "properties.template.dapr.components"
-        ],
-        "pickPropertiesCreate": [
-            "properties.configuration.secrets",
-            "properties.configuration.activeRevisionsMode",
-            "properties.configuration.ingress.external",
-            "properties.configuration.ingress.targetPort",
-            "properties.configuration.ingress.transport",
-            "properties.configuration.ingress.traffic",
-            "properties.configuration.ingress.allowInsecure",
-            "properties.configuration.registries",
-            "properties.template.revisionSuffix",
-            "properties.template.containers",
-            "properties.template.scale.minReplicas",
-            "properties.template.scale.maxReplicas",
-            "properties.template.scale.rules",
-            "properties.template.dapr.enabled",
-            "properties.template.dapr.appPort",
-            "properties.template.dapr.components"
-        ],
-        "propertiesDefault": {
-            "properties": {
-                "configuration": {
-                    "ingress": {
-                        "external": false
-                    }
-                }
-            }
-        }
-    },
-    {
         "type": "CustomApi",
         "group": "Web",
         "apiVersion": "2016-06-01",
@@ -16010,97 +16684,6 @@
             "sku.size",
             "sku.family",
             "sku.capacity"
-        ]
-    },
-    {
-        "type": "KubeEnvironment",
-        "group": "Web",
-        "apiVersion": "2021-03-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/kubeEnvironments/{name}",
-                "operationId": "KubeEnvironments_Get"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/kubeEnvironments/{name}",
-                "operationId": "KubeEnvironments_CreateOrUpdate"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/kubeEnvironments/{name}",
-                "operationId": "KubeEnvironments_Delete"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/kubeEnvironments/{name}",
-                "operationId": "KubeEnvironments_Update"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Web/kubeEnvironments",
-                "operationId": "KubeEnvironments_ListBySubscription"
-            }
-        },
-        "omitProperties": [
-            "properties.provisioningState",
-            "properties.deploymentErrors",
-            "properties.defaultDomain",
-            "properties.arcConfiguration.kubeConfig",
-            "properties.appLogsConfiguration.logAnalyticsConfiguration.customerId",
-            "properties.appLogsConfiguration.logAnalyticsConfiguration.sharedKey",
-            "properties.containerAppsConfiguration.controlPlaneSubnetResourceId",
-            "properties.containerAppsConfiguration.appSubnetResourceId",
-            "properties.aksResourceID",
-            "extendedLocation.type"
-        ],
-        "pickProperties": [
-            "properties.internalLoadBalancerEnabled",
-            "properties.staticIp",
-            "properties.environmentType",
-            "properties.arcConfiguration.artifactsStorageType",
-            "properties.arcConfiguration.artifactStorageClassName",
-            "properties.arcConfiguration.artifactStorageMountPath",
-            "properties.arcConfiguration.artifactStorageNodeName",
-            "properties.arcConfiguration.artifactStorageAccessMode",
-            "properties.arcConfiguration.frontEndServiceConfiguration.kind",
-            "properties.appLogsConfiguration.destination",
-            "properties.containerAppsConfiguration.daprAIInstrumentationKey",
-            "properties.containerAppsConfiguration.platformReservedCidr",
-            "properties.containerAppsConfiguration.platformReservedDnsIP",
-            "properties.containerAppsConfiguration.dockerBridgeCidr",
-            "extendedLocation.name"
-        ],
-        "pickPropertiesCreate": [
-            "properties.internalLoadBalancerEnabled",
-            "properties.staticIp",
-            "properties.environmentType",
-            "properties.arcConfiguration.artifactsStorageType",
-            "properties.arcConfiguration.artifactStorageClassName",
-            "properties.arcConfiguration.artifactStorageMountPath",
-            "properties.arcConfiguration.artifactStorageNodeName",
-            "properties.arcConfiguration.artifactStorageAccessMode",
-            "properties.arcConfiguration.frontEndServiceConfiguration.kind",
-            "properties.appLogsConfiguration.destination",
-            "properties.containerAppsConfiguration.daprAIInstrumentationKey",
-            "properties.containerAppsConfiguration.platformReservedCidr",
-            "properties.containerAppsConfiguration.platformReservedDnsIP",
-            "properties.containerAppsConfiguration.dockerBridgeCidr",
-            "extendedLocation.name"
-        ],
-        "environmentVariables": [
-            {
-                "path": "properties.arcConfiguration.kubeConfig",
-                "suffix": "KUBE_CONFIG"
-            },
-            {
-                "path": "properties.appLogsConfiguration.logAnalyticsConfiguration.sharedKey",
-                "suffix": "SHARED_KEY"
-            }
         ]
     },
     {

@@ -104,6 +104,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2018-11-30`.
+The resource version is `2021-09-30-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/msi/resource-manager/Microsoft.ManagedIdentity/stable/2018-11-30/ManagedIdentity.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/msi/resource-manager/Microsoft.ManagedIdentity/preview/2021-09-30-preview/ManagedIdentity.json).

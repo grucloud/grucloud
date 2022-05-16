@@ -241,7 +241,7 @@ const filterByType =
                 }),
                 includes(spec.groupType),
                 tap((keep) => {
-                  logger.debug(`filterByType ${spec.groupType}, keep: ${keep}`);
+                  //logger.debug(`filterByType ${spec.groupType}, keep: ${keep}`);
                 }),
               ]),
             ]),

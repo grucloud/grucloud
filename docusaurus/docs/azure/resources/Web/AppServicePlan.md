@@ -26,7 +26,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       hostingEnvironment: "myHostingEnvironment",
-      kubeEnvironment: "myKubeEnvironment",
     }),
   },
 ];
@@ -35,7 +34,6 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [HostingEnvironment](../Web/HostingEnvironment.md)
-- [KubeEnvironment](../Web/KubeEnvironment.md)
 ## Swagger Schema
 ```js
 {

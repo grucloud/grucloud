@@ -148,7 +148,7 @@ exports.createResources = () => [
                         'DELETE', 'GET',
                         'HEAD',   'MERGE',
                         'POST',   'OPTIONS',
-                        'PUT'
+                        'PUT',    'PATCH'
                       ]
                     },
                     description: 'Required if CorsRule element is present. A list of HTTP methods that are allowed to be executed by the origin.'
@@ -192,6 +192,10 @@ exports.createResources = () => [
               minimum: 1,
               maximum: 365,
               description: 'Indicates the number of days that the deleted item should be retained. The minimum specified value can be 1 and the maximum value can be 365.'
+            },
+            allowPermanentDelete: {
+              type: 'boolean',
+              description: 'This property when set to true allows deletion of the soft deleted blob versions and snapshots. This property cannot be used blob restore policy. This property only applies to blob service and does not apply to containers or file share.'
             }
           }
         },
@@ -294,6 +298,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2021-09-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/storage/resource-manager/Microsoft.Storage/stable/2021-08-01/file.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/storage/resource-manager/Microsoft.Storage/stable/2021-09-01/file.json).
