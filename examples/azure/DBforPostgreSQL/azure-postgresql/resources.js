@@ -13,7 +13,7 @@ exports.createResources = () => [
         source: "user-override",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-postgres",
       server: "rg-postgres::gc-server",
     }),
@@ -28,7 +28,7 @@ exports.createResources = () => [
         endIpAddress: "0.0.0.0",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-postgres",
       server: "rg-postgres::gc-server",
     }),
@@ -52,7 +52,7 @@ exports.createResources = () => [
           process.env.RG_POSTGRES_GC_SERVER_ADMINISTRATOR_LOGIN_PASSWORD,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-postgres",
     }),
   },

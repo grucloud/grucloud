@@ -66,7 +66,7 @@ exports.createResources = () => [
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20220204",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       ip: "ip-webserver-ssh-keys",
     }),
   },

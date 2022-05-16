@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project tgw-requester
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ EC2
+++++ TransitGateway (1)
+++++ TransitGatewayPeeringAttachment (1)
+-- aws-secondary
+--- EC2
+---- TransitGateway (1)
+@endmindmap
