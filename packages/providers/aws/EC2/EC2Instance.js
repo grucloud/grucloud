@@ -12,6 +12,8 @@ const {
   switchCase,
   omit,
   assign,
+  pick,
+  any,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -297,7 +299,30 @@ exports.EC2Instance = ({ spec, config }) => {
             Buffer.from(UserData, "base64").toString()
           ),
         ]),
+        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstanceCreditSpecifications-property
       }),
+      when(
+        ({ InstanceType }) =>
+          pipe([
+            () => ["t2", "t3"],
+            any((type) => InstanceType.startsWith(type)),
+          ])(),
+        assign({
+          CreditSpecification: pipe([
+            ({ InstanceId }) => ({
+              InstanceIds: [InstanceId],
+            }),
+            ec2().describeInstanceCreditSpecifications,
+            get("InstanceCreditSpecifications"),
+            first,
+            pick(["CpuCredits"]),
+          ]),
+        })
+      ),
+      when(
+        not(eq(get("CreditSpecification.CpuCredits"), "unlimited")),
+        omit(["CreditSpecification"])
+      ),
     ]);
 
   const getList = client.getList({
