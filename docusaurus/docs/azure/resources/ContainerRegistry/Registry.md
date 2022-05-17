@@ -260,29 +260,6 @@ exports.createResources = () => [
               type: 'string',
               'x-ms-enum': { name: 'DefaultAction', modelAsString: true }
             },
-            virtualNetworkRules: {
-              description: 'The virtual network rules.',
-              type: 'array',
-              items: {
-                description: 'Virtual network rule.',
-                required: [ 'id' ],
-                type: 'object',
-                properties: {
-                  action: {
-                    description: 'The action of virtual network rule.',
-                    default: 'Allow',
-                    enum: [ 'Allow' ],
-                    type: 'string',
-                    'x-ms-enum': { name: 'Action', modelAsString: true }
-                  },
-                  id: {
-                    description: 'Resource ID of a subnet, for example: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{vnetName}/subnets/{subnetName}.',
-                    type: 'string',
-                    'x-ms-client-name': 'VirtualNetworkResourceId'
-                  }
-                }
-              }
-            },
             ipRules: {
               description: 'The IP ACL rules.',
               type: 'array',
@@ -381,6 +358,47 @@ exports.createResources = () => [
                   enum: [ 'enabled', 'disabled' ],
                   type: 'string',
                   'x-ms-enum': { name: 'ExportPolicyStatus', modelAsString: true }
+                }
+              }
+            },
+            azureADAuthenticationAsArmPolicy: {
+              description: 'The policy for using ARM audience token for a container registry.',
+              type: 'object',
+              properties: {
+                status: {
+                  description: 'The value that indicates whether the policy is enabled or not.',
+                  default: 'enabled',
+                  enum: [ 'enabled', 'disabled' ],
+                  type: 'string',
+                  'x-ms-enum': {
+                    name: 'AzureADAuthenticationAsArmPolicyStatus',
+                    modelAsString: true
+                  }
+                }
+              }
+            },
+            softDeletePolicy: {
+              description: 'The soft delete policy for a container registry.',
+              type: 'object',
+              properties: {
+                retentionDays: {
+                  format: 'int32',
+                  description: 'The number of days after which a soft-deleted item is permanently deleted.',
+                  default: 7,
+                  type: 'integer'
+                },
+                lastUpdatedTime: {
+                  format: 'date-time',
+                  description: 'The timestamp when the policy was last updated.',
+                  type: 'string',
+                  readOnly: true
+                },
+                status: {
+                  description: 'The value that indicates whether the policy is enabled or not.',
+                  default: 'disabled',
+                  enum: [ 'enabled', 'disabled' ],
+                  type: 'string',
+                  'x-ms-enum': { name: 'PolicyStatus', modelAsString: true }
                 }
               }
             }
@@ -618,6 +636,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-12-01-preview`.
+The resource version is `2022-02-01-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/preview/2021-12-01-preview/containerregistry.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/preview/2022-02-01-preview/containerregistry.json).

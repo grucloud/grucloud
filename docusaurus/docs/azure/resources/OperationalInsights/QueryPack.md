@@ -47,10 +47,12 @@ exports.createResources = () => [
 ## Swagger Schema
 ```js
 {
+  type: 'object',
   properties: {
     properties: {
       'x-ms-client-flatten': true,
       description: 'Properties that define a Log Analytics QueryPack resource.',
+      type: 'object',
       properties: {
         queryPackId: {
           type: 'string',
@@ -79,6 +81,7 @@ exports.createResources = () => [
   },
   allOf: [
     {
+      type: 'object',
       properties: {
         id: {
           type: 'string',
@@ -101,6 +104,7 @@ exports.createResources = () => [
           'x-ms-mutability': [ 'create', 'read' ]
         },
         tags: {
+          type: 'object',
           additionalProperties: { type: 'string' },
           description: 'Resource tags'
         }
@@ -115,6 +119,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2019-09-01-preview`.
+The resource version is `2019-09-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/preview/2019-09-01-preview/QueryPacks_API.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/stable/2019-09-01/QueryPacks.json).

@@ -7,7 +7,7 @@ const isDefaultSavedSearch = pipe([
     assert(params.live);
   }),
   get("live.name"),
-  callProp("startsWith", "LogManagement(logs)_"),
+  callProp("startsWith", "LogManagement("),
 ]);
 
 exports.fnSpecs = ({ config }) => {

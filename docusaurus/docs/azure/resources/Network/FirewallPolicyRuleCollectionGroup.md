@@ -170,10 +170,12 @@ exports.createResources = () => [
 ## Swagger Schema
 ```js
 {
+  type: 'object',
   properties: {
     properties: {
       'x-ms-client-flatten': true,
       description: 'The properties of the firewall policy rule collection group.',
+      type: 'object',
       properties: {
         priority: {
           type: 'integer',
@@ -187,6 +189,7 @@ exports.createResources = () => [
         ruleCollections: {
           type: 'array',
           items: {
+            type: 'object',
             description: 'Properties of the rule collection.',
             discriminator: 'ruleCollectionType',
             required: [ 'ruleCollectionType' ],
@@ -218,7 +221,8 @@ exports.createResources = () => [
               }
             }
           },
-          description: 'Group of Firewall Policy rule collections.'
+          description: 'Group of Firewall Policy rule collections.',
+          'x-ms-identifiers': []
         },
         provisioningState: {
           readOnly: true,
@@ -251,6 +255,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-05-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/firewallPolicy.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/firewallPolicy.json).

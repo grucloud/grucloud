@@ -3,72 +3,72 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "Workspace",
-    group: "OperationalInsights",
-    properties: ({}) => ({
-      name: "logs",
-      properties: {
-        sku: {
-          name: "pergb2018",
-        },
-        retentionInDays: 30,
-      },
-    }),
-    dependencies: () => ({
-      resourceGroup: "rg-plantuml",
-    }),
-  },
-  {
-    type: "ResourceGroup",
-    group: "Resources",
-    properties: ({}) => ({
-      name: "rg-plantuml",
-    }),
-  },
-  {
-    type: "ContainerApp",
-    group: "Web",
-    properties: ({}) => ({
-      name: "plantuml",
-      properties: {
-        configuration: {
-          ingress: {
-            external: true,
-            targetPort: 8080,
-          },
-        },
-        template: {
-          containers: [
-            {
-              image: "docker.io/plantuml/plantuml-server:jetty-v1.2021.15",
-              name: "plantuml",
-              resources: {
-                cpu: 0.25,
-                memory: "0.5Gi",
-              },
-            },
-          ],
-          scale: {
-            maxReplicas: 10,
-          },
-        },
-      },
-    }),
-    dependencies: () => ({
-      resourceGroup: "rg-plantuml",
-      kubeEnvironment: "rg-plantuml::dev",
-    }),
-  },
-  {
-    type: "KubeEnvironment",
-    group: "Web",
-    properties: ({}) => ({
-      name: "dev",
-    }),
-    dependencies: () => ({
-      resourceGroup: "rg-plantuml",
-      workspace: "rg-plantuml::logs",
-    }),
-  },
+  // {
+  //   type: "Workspace",
+  //   group: "OperationalInsights",
+  //   properties: ({}) => ({
+  //     name: "logs",
+  //     properties: {
+  //       sku: {
+  //         name: "pergb2018",
+  //       },
+  //       retentionInDays: 30,
+  //     },
+  //   }),
+  //   dependencies: () => ({
+  //     resourceGroup: "rg-plantuml",
+  //   }),
+  // },
+  // {
+  //   type: "ResourceGroup",
+  //   group: "Resources",
+  //   properties: ({}) => ({
+  //     name: "rg-plantuml",
+  //   }),
+  // },
+  // {
+  //   type: "ContainerApp",
+  //   group: "Web",
+  //   properties: ({}) => ({
+  //     name: "plantuml",
+  //     properties: {
+  //       configuration: {
+  //         ingress: {
+  //           external: true,
+  //           targetPort: 8080,
+  //         },
+  //       },
+  //       template: {
+  //         containers: [
+  //           {
+  //             image: "docker.io/plantuml/plantuml-server:jetty-v1.2021.15",
+  //             name: "plantuml",
+  //             resources: {
+  //               cpu: 0.25,
+  //               memory: "0.5Gi",
+  //             },
+  //           },
+  //         ],
+  //         scale: {
+  //           maxReplicas: 10,
+  //         },
+  //       },
+  //     },
+  //   }),
+  //   dependencies: () => ({
+  //     resourceGroup: "rg-plantuml",
+  //     kubeEnvironment: "rg-plantuml::dev",
+  //   }),
+  // },
+  // {
+  //   type: "KubeEnvironment",
+  //   group: "Web",
+  //   properties: ({}) => ({
+  //     name: "dev",
+  //   }),
+  //   dependencies: () => ({
+  //     resourceGroup: "rg-plantuml",
+  //     workspace: "rg-plantuml::logs",
+  //   }),
+  // },
 ];

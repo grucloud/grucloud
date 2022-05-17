@@ -15,6 +15,9 @@ exports.createResources = () => [
         osProfile: {
           computerName: "myVM",
           adminUsername: "ops",
+          linuxConfiguration: {
+            enableVMAgentPlatformUpdates: false,
+          },
           adminPassword: process.env.RG_VM_VM_ADMIN_PASSWORD,
         },
         storageProfile: {
@@ -49,7 +52,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-vm",
       networkInterfaces: ["rg-vm::network-interface"],
     }),
@@ -70,7 +73,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-vm",
       virtualNetwork: "rg-vm::virtual-network",
       publicIpAddress: "rg-vm::ip",
@@ -114,7 +117,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-vm",
     }),
   },
@@ -124,7 +127,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       name: "ip",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-vm",
     }),
   },
@@ -137,7 +140,7 @@ exports.createResources = () => [
         addressPrefix: "10.0.0.0/24",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-vm",
       virtualNetwork: "rg-vm::virtual-network",
     }),
@@ -153,7 +156,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-vm",
     }),
   },

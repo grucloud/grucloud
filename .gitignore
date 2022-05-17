@@ -10,3 +10,4 @@ test-results.xml
 .DS_Store
 list.svg
 inventory*.json
+mochawesome-report

@@ -33,8 +33,10 @@ exports.createResources = () => [
 ## Swagger Schema
 ```js
 {
+  type: 'object',
   allOf: [
     {
+      type: 'object',
       properties: {
         id: { readOnly: true, type: 'string', description: 'Resource ID.' },
         name: {
@@ -71,7 +73,7 @@ exports.createResources = () => [
         createdAt: {
           type: 'string',
           format: 'date-time',
-          description: 'The UTC timestamp of resource creation.'
+          description: 'The timestamp of resource creation (UTC).'
         },
         lastModifiedBy: {
           type: 'string',
@@ -86,17 +88,19 @@ exports.createResources = () => [
         lastModifiedAt: {
           type: 'string',
           format: 'date-time',
-          description: 'The type of identity that last modified the resource.'
+          description: 'The timestamp of resource last modification (UTC)'
         }
       }
     },
     properties: {
       description: 'Properties of a default maintenance configuration.',
       'x-ms-client-flatten': true,
+      type: 'object',
       properties: {
         timeInWeek: {
           type: 'array',
           items: {
+            type: 'object',
             properties: {
               day: {
                 description: 'The day of the week.',
@@ -133,6 +137,7 @@ exports.createResources = () => [
         notAllowedTime: {
           type: 'array',
           items: {
+            type: 'object',
             properties: {
               start: {
                 type: 'string',
@@ -158,6 +163,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2022-01-02-preview`.
+The resource version is `2022-04-02-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-01-02-preview/managedClusters.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-04-02-preview/managedClusters.json).

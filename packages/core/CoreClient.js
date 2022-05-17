@@ -162,7 +162,7 @@ module.exports = CoreClient = ({
       getList: tryCatch(
         pipe([
           tap((params) => {
-            logger.debug(`getList ${spec.type}`);
+            logger.debug(`getList ${spec.groupType}`);
           }),
           pathList,
           tap((params) => {
@@ -174,16 +174,19 @@ module.exports = CoreClient = ({
             pipe([
               (path) =>
                 retryCallOnError({
-                  name: `getList type: ${spec.type}, path ${path}`,
+                  name: `getList type: ${spec.groupType}, path ${path}`,
                   fn: () =>
                     axios.request(path, {
                       method: verbList,
                     }),
                   config,
                 }),
+              tap((params) => {
+                assert(true);
+              }),
               get("data"),
               tap((data) => {
-                logger.debug(`getList ${spec.type}, ${tos(data)}`);
+                logger.debug(`getList ${spec.groupType}, ${tos(data)}`);
               }),
               onResponseList({ axios, lives }),
               map(decorate({ axios, lives })),

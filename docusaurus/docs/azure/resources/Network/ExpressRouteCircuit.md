@@ -58,6 +58,7 @@ exports.createResources = () => [
         expressRoutePort: {
           id: "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/expressRoutePorts/portName",
         },
+        authorizationKey: "b0be57f5-1fba-463b-adec-ffe767354cdd",
         bandwidthInGbps: 10,
       },
     }),
@@ -672,7 +673,8 @@ exports.createResources = () => [
         globalReachEnabled: {
           type: 'boolean',
           description: 'Flag denoting global reach status.'
-        }
+        },
+        authorizationKey: { type: 'string', description: 'The authorizationKey.' }
       }
     },
     etag: {
@@ -710,6 +712,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-05-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/expressRouteCircuit.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/expressRouteCircuit.json).

@@ -1316,6 +1316,15 @@ exports.createResources = () => [
                       name: 'NetworkInterfaceMigrationPhase',
                       modelAsString: true
                     }
+                  },
+                  auxiliaryMode: {
+                    type: 'string',
+                    description: 'Auxiliary mode of Network Interface resource.',
+                    enum: [ 'None', 'MaxConnections', 'Floating' ],
+                    'x-ms-enum': {
+                      name: 'NetworkInterfaceAuxiliaryMode',
+                      modelAsString: true
+                    }
                   }
                 }
               },
@@ -2454,6 +2463,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-05-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/networkSecurityGroup.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/networkSecurityGroup.json).

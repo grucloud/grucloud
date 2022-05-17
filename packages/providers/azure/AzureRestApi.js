@@ -73,6 +73,7 @@ const PreDefinedDependenciesMap = {
 };
 
 const ResourcesExcludes = [
+  "App::ContainerAppsAuthConfig",
   "Authorization::AccessReviewDefaultSetting",
   "Authorization::AccessReviewHistoryDefinitionById",
   "Authorization::AccessReviewScheduleDefinitionById",
@@ -116,6 +117,8 @@ const ResourcesExcludes = [
   "KeyVault::PrivateEndpointConnection", // TODO 404
   "Web::CertificateCsr",
   "Web::ClassicMobileService",
+  "Web::ContainerApp",
+  "Web::KubeEnvironment",
   "Web::Domain",
   "Web::GetSourceControlSourceControl",
   "Web::GetPublishingUserPublishingUser",

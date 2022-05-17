@@ -417,6 +417,17 @@ exports.createResources = () => [
                               type: 'boolean',
                               description: 'EnableBgp flag.'
                             },
+                            vpnGatewayCustomBgpAddresses: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: [Object],
+                                required: [Array],
+                                description: 'GatewayCustomBgpIpAddressIpConfiguration for a virtual network gateway connection.'
+                              },
+                              description: 'vpnGatewayCustomBgpAddresses used by this connection.',
+                              'x-ms-identifiers': []
+                            },
                             usePolicyBasedTrafficSelectors: {
                               type: 'boolean',
                               description: 'Enable policy-based traffic selectors.'
@@ -833,6 +844,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-05-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/virtualWan.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/virtualWan.json).

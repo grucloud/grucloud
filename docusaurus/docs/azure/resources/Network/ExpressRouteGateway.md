@@ -22,6 +22,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      expressRouteCircuitPeering: "myExpressRouteCircuitPeering",
+      routeTable: "myRouteTable",
       virtualHub: "myVirtualHub",
     }),
   },
@@ -30,6 +32,8 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
+- [RouteTable](../Network/RouteTable.md)
 - [VirtualHub](../Network/VirtualHub.md)
 ## Swagger Schema
 ```js
@@ -60,7 +64,6 @@ exports.createResources = () => [
         },
         expressRouteConnections: {
           type: 'array',
-          readOnly: true,
           description: 'List of ExpressRoute connections to the ExpressRoute gateway.',
           items: {
             required: [ 'name' ],
@@ -233,6 +236,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-05-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/virtualWan.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/virtualWan.json).

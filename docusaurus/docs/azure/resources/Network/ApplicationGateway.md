@@ -844,7 +844,7 @@ exports.createResources = () => [
                   protocol: {
                     description: 'The protocol used for the probe.',
                     type: 'string',
-                    enum: [ 'Http', 'Https' ],
+                    enum: [ 'Http', 'Https', 'Tcp', 'Tls' ],
                     'x-ms-enum': {
                       name: 'ApplicationGatewayProtocol',
                       modelAsString: true
@@ -876,6 +876,10 @@ exports.createResources = () => [
                   pickHostNameFromBackendHttpSettings: {
                     type: 'boolean',
                     description: 'Whether the host header should be picked from the backend http settings. Default value is false.'
+                  },
+                  pickHostNameFromBackendSettings: {
+                    type: 'boolean',
+                    description: 'Whether the server name indication should be picked from the backend settings for Tls protocol. Default value is false.'
                   },
                   minServers: {
                     type: 'integer',
@@ -1169,7 +1173,7 @@ exports.createResources = () => [
                   protocol: {
                     description: 'The protocol used to communicate with the backend.',
                     type: 'string',
-                    enum: [ 'Http', 'Https' ],
+                    enum: [ 'Http', 'Https', 'Tcp', 'Tls' ],
                     'x-ms-enum': {
                       name: 'ApplicationGatewayProtocol',
                       modelAsString: true
@@ -1292,6 +1296,96 @@ exports.createResources = () => [
           },
           description: 'Backend http settings of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).'
         },
+        backendSettingsCollection: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              properties: {
+                'x-ms-client-flatten': true,
+                description: 'Properties of the application gateway backend settings.',
+                type: 'object',
+                properties: {
+                  port: {
+                    type: 'integer',
+                    format: 'int32',
+                    description: 'The destination port on the backend.'
+                  },
+                  protocol: {
+                    description: 'The protocol used to communicate with the backend.',
+                    type: 'string',
+                    enum: [ 'Http', 'Https', 'Tcp', 'Tls' ],
+                    'x-ms-enum': {
+                      name: 'ApplicationGatewayProtocol',
+                      modelAsString: true
+                    }
+                  },
+                  timeout: {
+                    type: 'integer',
+                    format: 'int32',
+                    description: 'Connection timeout in seconds. Application Gateway will fail the request if response is not received within ConnectionTimeout. Acceptable values are from 1 second to 86400 seconds.'
+                  },
+                  probe: {
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  trustedRootCertificates: {
+                    type: 'array',
+                    items: {
+                      properties: {
+                        id: { type: 'string', description: 'Resource ID.' }
+                      },
+                      description: 'Reference to another subresource.',
+                      'x-ms-azure-resource': true
+                    },
+                    description: 'Array of references to application gateway trusted root certificates.'
+                  },
+                  hostName: {
+                    type: 'string',
+                    description: 'Server name indication to be sent to the backend servers for Tls protocol.'
+                  },
+                  pickHostNameFromBackendAddress: {
+                    type: 'boolean',
+                    description: 'Whether to pick server name indication from the host name of the backend server for Tls protocol. Default value is false.'
+                  },
+                  provisioningState: {
+                    readOnly: true,
+                    description: 'The provisioning state of the backend HTTP settings resource.',
+                    type: 'string',
+                    enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+                    'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+                  }
+                }
+              },
+              name: {
+                type: 'string',
+                description: 'Name of the backend settings that is unique within an Application Gateway.'
+              },
+              etag: {
+                readOnly: true,
+                type: 'string',
+                description: 'A unique read-only string that changes whenever the resource is updated.'
+              },
+              type: {
+                readOnly: true,
+                type: 'string',
+                description: 'Type of the resource.'
+              }
+            },
+            allOf: [
+              {
+                properties: { id: { type: 'string', description: 'Resource ID.' } },
+                description: 'Reference to another subresource.',
+                'x-ms-azure-resource': true
+              }
+            ],
+            description: 'Backend address pool settings of an application gateway.'
+          },
+          description: 'Backend settings of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).'
+        },
         httpListeners: {
           type: 'array',
           items: {
@@ -1317,7 +1411,7 @@ exports.createResources = () => [
                   protocol: {
                     description: 'Protocol of the HTTP listener.',
                     type: 'string',
-                    enum: [ 'Http', 'Https' ],
+                    enum: [ 'Http', 'Https', 'Tcp', 'Tls' ],
                     'x-ms-enum': {
                       name: 'ApplicationGatewayProtocol',
                       modelAsString: true
@@ -1413,6 +1507,88 @@ exports.createResources = () => [
             description: 'Http listener of an application gateway.'
           },
           description: 'Http listeners of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).'
+        },
+        listeners: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              properties: {
+                'x-ms-client-flatten': true,
+                description: 'Properties of the application gateway listener.',
+                type: 'object',
+                properties: {
+                  frontendIPConfiguration: {
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  frontendPort: {
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  protocol: {
+                    description: 'Protocol of the listener.',
+                    type: 'string',
+                    enum: [ 'Http', 'Https', 'Tcp', 'Tls' ],
+                    'x-ms-enum': {
+                      name: 'ApplicationGatewayProtocol',
+                      modelAsString: true
+                    }
+                  },
+                  sslCertificate: {
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  sslProfile: {
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  provisioningState: {
+                    readOnly: true,
+                    description: 'The provisioning state of the listener resource.',
+                    type: 'string',
+                    enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+                    'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+                  }
+                }
+              },
+              name: {
+                type: 'string',
+                description: 'Name of the listener that is unique within an Application Gateway.'
+              },
+              etag: {
+                readOnly: true,
+                type: 'string',
+                description: 'A unique read-only string that changes whenever the resource is updated.'
+              },
+              type: {
+                readOnly: true,
+                type: 'string',
+                description: 'Type of the resource.'
+              }
+            },
+            allOf: [
+              {
+                properties: { id: { type: 'string', description: 'Resource ID.' } },
+                description: 'Reference to another subresource.',
+                'x-ms-azure-resource': true
+              }
+            ],
+            description: 'Listener of an application gateway.'
+          },
+          description: 'Listeners of the application gateway resource. For default limits, see [Application Gateway limits](https://docs.microsoft.com/azure/azure-subscription-service-limits#application-gateway-limits).'
         },
         sslProfiles: {
           type: 'array',
@@ -1846,6 +2022,81 @@ exports.createResources = () => [
             description: 'Request routing rule of an application gateway.'
           },
           description: 'Request routing rules of the application gateway resource.'
+        },
+        routingRules: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              properties: {
+                'x-ms-client-flatten': true,
+                description: 'Properties of the application gateway routing rule.',
+                type: 'object',
+                properties: {
+                  ruleType: {
+                    type: 'string',
+                    description: 'Rule type.',
+                    enum: [ 'Basic', 'PathBasedRouting' ],
+                    'x-ms-enum': {
+                      name: 'ApplicationGatewayRequestRoutingRuleType',
+                      modelAsString: true
+                    }
+                  },
+                  backendAddressPool: {
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  backendSettings: {
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  listener: {
+                    properties: {
+                      id: { type: 'string', description: 'Resource ID.' }
+                    },
+                    description: 'Reference to another subresource.',
+                    'x-ms-azure-resource': true
+                  },
+                  provisioningState: {
+                    readOnly: true,
+                    description: 'The provisioning state of the request routing rule resource.',
+                    type: 'string',
+                    enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
+                    'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
+                  }
+                }
+              },
+              name: {
+                type: 'string',
+                description: 'Name of the routing rule that is unique within an Application Gateway.'
+              },
+              etag: {
+                readOnly: true,
+                type: 'string',
+                description: 'A unique read-only string that changes whenever the resource is updated.'
+              },
+              type: {
+                readOnly: true,
+                type: 'string',
+                description: 'Type of the resource.'
+              }
+            },
+            allOf: [
+              {
+                properties: { id: { type: 'string', description: 'Resource ID.' } },
+                description: 'Reference to another subresource.',
+                'x-ms-azure-resource': true
+              }
+            ],
+            description: 'Routing rule of an application gateway.'
+          },
+          description: 'Routing rules of the application gateway resource.'
         },
         rewriteRuleSets: {
           type: 'array',
@@ -2817,6 +3068,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-05-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/applicationGateway.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/applicationGateway.json).

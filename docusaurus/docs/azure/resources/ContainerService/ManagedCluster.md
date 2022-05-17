@@ -1096,6 +1096,60 @@ exports.createResources = () => [
 
 ```
 
+### Create Managed Cluster with Web App Routing Ingress Profile configured
+```js
+exports.createResources = () => [
+  {
+    type: "ManagedCluster",
+    group: "ContainerService",
+    name: "myManagedCluster",
+    properties: () => ({
+      location: "location1",
+      tags: { tier: "production", archv2: "" },
+      sku: { name: "Basic", tier: "Free" },
+      properties: {
+        kubernetesVersion: "",
+        dnsPrefix: "dnsprefix1",
+        agentPoolProfiles: [
+          {
+            name: "nodepool1",
+            count: 3,
+            vmSize: "Standard_DS2_v2",
+            osType: "Linux",
+            type: "VirtualMachineScaleSets",
+            enableNodePublicIP: true,
+            mode: "System",
+          },
+        ],
+        linuxProfile: {
+          adminUsername: "azureuser",
+          ssh: { publicKeys: [{ keyData: "keydata" }] },
+        },
+        networkProfile: {
+          loadBalancerSku: "standard",
+          outboundType: "loadBalancer",
+          loadBalancerProfile: { managedOutboundIPs: { count: 2 } },
+        },
+        ingressProfile: {
+          webAppRouting: {
+            enabled: true,
+            dnsZoneResourceId:
+              "/subscriptions/SUB_ID/resourceGroups/RG_NAME/providers/Microsoft.Network/dnszones/DNS_ZONE_NAME",
+          },
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      diskEncryptionSet: "myDiskEncryptionSet",
+      routes: ["myRoute"],
+    }),
+  },
+];
+
+```
+
 ### Create Managed Cluster with AKS-managed NAT gateway as outbound type
 ```js
 exports.createResources = () => [
@@ -1270,6 +1324,54 @@ exports.createResources = () => [
         diskEncryptionSetID:
           "/subscriptions/subid1/resourceGroups/rg1/providers/Microsoft.Compute/diskEncryptionSets/des",
         enablePodSecurityPolicy: false,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      diskEncryptionSet: "myDiskEncryptionSet",
+      routes: ["myRoute"],
+    }),
+  },
+];
+
+```
+
+### Create Managed Cluster using a managed cluster snapshot
+```js
+exports.createResources = () => [
+  {
+    type: "ManagedCluster",
+    group: "ContainerService",
+    name: "myManagedCluster",
+    properties: () => ({
+      location: "location1",
+      tags: { tier: "production", archv2: "" },
+      sku: { name: "Basic", tier: "Free" },
+      properties: {
+        kubernetesVersion: "",
+        dnsPrefix: "dnsprefix1",
+        creationData: {
+          sourceResourceId:
+            "/subscriptions/subid1/resourceGroups/rg1/providers/Microsoft.ContainerService/managedclustersnapshots/snapshot1",
+        },
+        agentPoolProfiles: [
+          {
+            name: "nodepool1",
+            count: 3,
+            vmSize: "Standard_DS2_v2",
+            osType: "Linux",
+            type: "VirtualMachineScaleSets",
+            enableNodePublicIP: true,
+            mode: "System",
+            enableFIPS: true,
+          },
+        ],
+        linuxProfile: {
+          adminUsername: "azureuser",
+          ssh: { publicKeys: [{ keyData: "keydata" }] },
+        },
+        servicePrincipalProfile: { clientId: "clientid", secret: "secret" },
       },
     }),
     dependencies: ({}) => ({
@@ -1553,6 +1655,68 @@ exports.createResources = () => [
 ];
 
 ```
+
+### Create Managed Cluster with CustomCATrust enabled
+```js
+exports.createResources = () => [
+  {
+    type: "ManagedCluster",
+    group: "ContainerService",
+    name: "myManagedCluster",
+    properties: () => ({
+      location: "location1",
+      tags: { tier: "production", archv2: "" },
+      sku: { name: "Basic", tier: "Free" },
+      properties: {
+        kubernetesVersion: "",
+        dnsPrefix: "dnsprefix1",
+        agentPoolProfiles: [
+          {
+            name: "nodepool1",
+            count: 3,
+            vmSize: "Standard_DS2_v2",
+            osType: "Linux",
+            type: "VirtualMachineScaleSets",
+            enableNodePublicIP: true,
+            mode: "System",
+            enableCustomCATrust: true,
+          },
+        ],
+        linuxProfile: {
+          adminUsername: "azureuser",
+          ssh: { publicKeys: [{ keyData: "keydata" }] },
+        },
+        networkProfile: {
+          loadBalancerSku: "standard",
+          outboundType: "loadBalancer",
+          loadBalancerProfile: { managedOutboundIPs: { count: 2 } },
+        },
+        autoScalerProfile: {
+          "scan-interval": "20s",
+          "scale-down-delay-after-add": "15m",
+        },
+        windowsProfile: {
+          adminUsername: "azureuser",
+          adminPassword: "replacePassword1234$",
+        },
+        servicePrincipalProfile: { clientId: "clientid", secret: "secret" },
+        addonProfiles: {},
+        enableRBAC: true,
+        diskEncryptionSetID:
+          "/subscriptions/subid1/resourceGroups/rg1/providers/Microsoft.Compute/diskEncryptionSets/des",
+        enablePodSecurityPolicy: true,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
+      diskEncryptionSet: "myDiskEncryptionSet",
+      routes: ["myRoute"],
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
@@ -1561,9 +1725,11 @@ exports.createResources = () => [
 ## Swagger Schema
 ```js
 {
+  type: 'object',
   properties: {
     sku: {
       description: 'The managed cluster SKU.',
+      type: 'object',
       properties: {
         name: {
           type: 'string',
@@ -1595,6 +1761,7 @@ exports.createResources = () => [
     },
     extendedLocation: {
       description: 'The extended location of the Virtual Machine.',
+      type: 'object',
       properties: {
         name: {
           type: 'string',
@@ -1610,6 +1777,7 @@ exports.createResources = () => [
     },
     identity: {
       description: 'The identity of the managed cluster, if configured.',
+      type: 'object',
       properties: {
         principalId: {
           readOnly: true,
@@ -1671,6 +1839,7 @@ exports.createResources = () => [
     properties: {
       description: 'Properties of a managed cluster.',
       'x-ms-client-flatten': true,
+      type: 'object',
       properties: {
         provisioningState: {
           readOnly: true,
@@ -1680,6 +1849,7 @@ exports.createResources = () => [
         powerState: {
           description: 'The Power State of the cluster.',
           readOnly: true,
+          type: 'object',
           properties: {
             code: {
               type: 'string',
@@ -1699,6 +1869,16 @@ exports.createResources = () => [
                   }
                 ]
               }
+            }
+          }
+        },
+        creationData: {
+          description: 'CreationData to be used to specify the source Snapshot ID if the cluster will be created/upgraded using a snapshot.',
+          type: 'object',
+          properties: {
+            sourceResourceId: {
+              type: 'string',
+              description: 'This is the ARM ID of the source object to be used to create the target object.'
             }
           }
         },
@@ -1747,8 +1927,10 @@ exports.createResources = () => [
         agentPoolProfiles: {
           type: 'array',
           items: {
+            type: 'object',
             allOf: [
               {
+                type: 'object',
                 properties: {
                   count: {
                     type: 'integer',
@@ -1864,9 +2046,14 @@ exports.createResources = () => [
                   },
                   osSKU: {
                     type: 'string',
-                    enum: [ 'Ubuntu', 'CBLMariner' ],
+                    enum: [
+                      'Ubuntu',
+                      'CBLMariner',
+                      'Windows2019',
+                      'Windows2022'
+                    ],
                     'x-ms-enum': { name: 'OSSKU', modelAsString: true },
-                    description: 'Specifies an OS SKU. This value must not be specified if OSType is Windows.'
+                    description: 'Specifies the OS SKU used by the agent pool. If not specified, the default is Ubuntu if OSType=Linux or Windows2019 if OSType=Windows. And the default Windows OSSKU will be changed to Windows2022 after Windows2019 is deprecated.'
                   },
                   maxCount: {
                     type: 'integer',
@@ -1943,8 +2130,13 @@ exports.createResources = () => [
                   },
                   orchestratorVersion: {
                     type: 'string',
+                    title: 'The version of Kubernetes specified by the user.',
+                    description: 'Both patch version <major.minor.patch> and <major.minor> are supported. When <major.minor> is specified, the latest supported patch version is chosen automatically. Updating the agent pool with the same <major.minor> once it has been created will not trigger an upgrade, even if a newer patch version is available. As a best practice, you should upgrade all node pools in an AKS cluster to the same Kubernetes version. The node pool version must have the same major version as the control plane. The node pool minor version must be within two minor versions of the control plane version. The node pool version cannot be greater than the control plane version. For more information see [upgrading a node pool](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#upgrade-a-node-pool).'
+                  },
+                  currentOrchestratorVersion: {
+                    type: 'string',
                     title: 'The version of Kubernetes running on the Agent Pool.',
-                    description: 'As a best practice, you should upgrade all node pools in an AKS cluster to the same Kubernetes version. The node pool version must have the same major version as the control plane. The node pool minor version must be within two minor versions of the control plane version. The node pool version cannot be greater than the control plane version. For more information see [upgrading a node pool](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#upgrade-a-node-pool).'
+                    description: 'If orchestratorVersion was a fully specified version <major.minor.patch>, this field will be exactly equal to it. If orchestratorVersion was <major.minor>, this field will contain the full <major.minor.patch> version being used.'
                   },
                   nodeImageVersion: {
                     readOnly: true,
@@ -1953,6 +2145,7 @@ exports.createResources = () => [
                   },
                   upgradeSettings: {
                     description: 'Settings for upgrading the agentpool',
+                    type: 'object',
                     properties: {
                       maxSurge: {
                         type: 'string',
@@ -1969,6 +2162,7 @@ exports.createResources = () => [
                   powerState: {
                     title: 'Whether the Agent Pool is running or stopped.',
                     description: 'When an Agent Pool is first created it is initially Running. The Agent Pool can be stopped by setting this field to Stopped. A stopped Agent Pool stops all of its VMs and does not accrue billing charges. An Agent Pool can only be stopped if it is Running and provisioning state is Succeeded',
+                    type: 'object',
                     properties: {
                       code: {
                         type: 'string',
@@ -2000,6 +2194,11 @@ exports.createResources = () => [
                     type: 'boolean',
                     title: 'Whether each node is allocated its own public IP.',
                     description: 'Some scenarios may require nodes in a node pool to receive their own dedicated public IP addresses. A common scenario is for gaming workloads, where a console needs to make a direct connection to a cloud virtual machine to minimize hops. For more information see [assigning a public IP per node](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#assign-a-public-ip-per-node-for-your-node-pools). The default is false.'
+                  },
+                  enableCustomCATrust: {
+                    type: 'boolean',
+                    title: 'Whether to enable Custom CA Trust feature.',
+                    description: 'When set to true, AKS deploys a daemonset and host services to sync custom certificate authorities from a user-provided config map into node trust stores. Defaults to false.'
                   },
                   nodePublicIPPrefixID: {
                     type: 'string',
@@ -2346,18 +2545,16 @@ exports.createResources = () => [
                   }
                 },
                 description: 'Properties for the container service agent pool profile.'
-              },
-              {
-                properties: {
-                  name: {
-                    type: 'string',
-                    title: 'Unique name of the agent pool profile in the context of the subscription and resource group.',
-                    description: 'Windows agent pool names must be 6 characters or less.',
-                    pattern: '^[a-z][a-z0-9]{0,11}$'
-                  }
-                }
               }
             ],
+            properties: {
+              name: {
+                type: 'string',
+                title: 'Unique name of the agent pool profile in the context of the subscription and resource group.',
+                description: 'Windows agent pool names must be 6 characters or less.',
+                pattern: '^[a-z][a-z0-9]{0,11}$'
+              }
+            },
             required: [ 'name' ],
             description: 'Profile for the container service agent pool.'
           },
@@ -2365,6 +2562,7 @@ exports.createResources = () => [
         },
         linuxProfile: {
           description: 'The profile for Linux VMs in the Managed Cluster.',
+          type: 'object',
           properties: {
             adminUsername: {
               type: 'string',
@@ -2373,10 +2571,12 @@ exports.createResources = () => [
             },
             ssh: {
               description: 'The SSH configuration for Linux-based VMs running on Azure.',
+              type: 'object',
               properties: {
                 publicKeys: {
                   type: 'array',
                   items: {
+                    type: 'object',
                     properties: {
                       keyData: {
                         type: 'string',
@@ -2396,6 +2596,7 @@ exports.createResources = () => [
         },
         windowsProfile: {
           description: 'The profile for Windows VMs in the Managed Cluster.',
+          type: 'object',
           properties: {
             adminUsername: {
               type: 'string',
@@ -2453,6 +2654,7 @@ exports.createResources = () => [
         },
         servicePrincipalProfile: {
           description: 'Information about a service principal identity for the cluster to use for manipulating Azure APIs.',
+          type: 'object',
           properties: {
             clientId: {
               type: 'string',
@@ -2466,13 +2668,16 @@ exports.createResources = () => [
           required: [ 'clientId' ]
         },
         addonProfiles: {
+          type: 'object',
           additionalProperties: {
+            type: 'object',
             properties: {
               enabled: {
                 type: 'boolean',
                 description: 'Whether the add-on is enabled or not.'
               },
               config: {
+                type: 'object',
                 additionalProperties: { type: 'string' },
                 description: 'Key-value pairs for configuring an add-on.'
               },
@@ -2481,6 +2686,7 @@ exports.createResources = () => [
                 description: 'Information of user assigned identity used by this add-on.',
                 allOf: [
                   {
+                    type: 'object',
                     properties: {
                       resourceId: {
                         type: 'string',
@@ -2508,6 +2714,7 @@ exports.createResources = () => [
         podIdentityProfile: {
           title: 'The pod identity profile of the Managed Cluster.',
           description: 'See [use AAD pod identity](https://docs.microsoft.com/azure/aks/use-azure-ad-pod-identity) for more details on AAD pod identity integration.',
+          type: 'object',
           properties: {
             enabled: {
               type: 'boolean',
@@ -2522,6 +2729,7 @@ exports.createResources = () => [
               description: 'The pod identities to use in the cluster.',
               type: 'array',
               items: {
+                type: 'object',
                 properties: {
                   name: {
                     type: 'string',
@@ -2536,6 +2744,7 @@ exports.createResources = () => [
                     description: 'The binding selector to use for the AzureIdentityBinding resource.'
                   },
                   identity: {
+                    type: 'object',
                     properties: {
                       resourceId: {
                         type: 'string',
@@ -2563,6 +2772,7 @@ exports.createResources = () => [
                     }
                   },
                   provisioningInfo: {
+                    type: 'object',
                     readOnly: true,
                     properties: {
                       error: {
@@ -2605,6 +2815,7 @@ exports.createResources = () => [
               description: 'The pod identity exceptions to allow.',
               type: 'array',
               items: {
+                type: 'object',
                 properties: {
                   name: {
                     type: 'string',
@@ -2661,8 +2872,10 @@ exports.createResources = () => [
         },
         networkProfile: {
           description: 'The network configuration profile.',
+          type: 'object',
           properties: {
             networkPlugin: {
+              description: 'Network plugin used for building the Kubernetes network.',
               type: 'string',
               enum: [ 'azure', 'kubenet', 'none' ],
               default: 'kubenet',
@@ -2683,10 +2896,25 @@ exports.createResources = () => [
                     description: 'Do not use a network plugin. A custom CNI will need to be installed after cluster creation for networking functionality.'
                   }
                 ]
-              },
-              description: 'Network plugin used for building the Kubernetes network.'
+              }
+            },
+            networkPluginMode: {
+              description: 'Network plugin mode used for building the Kubernetes network.',
+              type: 'string',
+              enum: [ 'Overlay' ],
+              'x-ms-enum': {
+                name: 'NetworkPluginMode',
+                modelAsString: true,
+                values: [
+                  {
+                    value: 'Overlay',
+                    description: 'Pods are given IPs from the PodCIDR address space but use Azure Routing Domains rather than Kubenet reference plugins host-local and bridge.'
+                  }
+                ]
+              }
             },
             networkPolicy: {
+              description: 'Network policy used for building the Kubernetes network.',
               type: 'string',
               enum: [ 'calico', 'azure' ],
               'x-ms-enum': {
@@ -2702,10 +2930,11 @@ exports.createResources = () => [
                     description: 'Use Azure network policies. See [differences between Azure and Calico policies](https://docs.microsoft.com/azure/aks/use-network-policies#differences-between-azure-and-calico-policies-and-their-capabilities) for more information.'
                   }
                 ]
-              },
-              description: 'Network policy used for building the Kubernetes network.'
+              }
             },
             networkMode: {
+              title: 'The network mode Azure CNI is configured with.',
+              description: "This cannot be specified if networkPlugin is anything other than 'azure'.",
               type: 'string',
               enum: [ 'transparent', 'bridge' ],
               'x-ms-enum': {
@@ -2721,9 +2950,7 @@ exports.createResources = () => [
                     description: 'This is no longer supported'
                   }
                 ]
-              },
-              title: 'The network mode Azure CNI is configured with.',
-              description: "This cannot be specified if networkPlugin is anything other than 'azure'."
+              }
             },
             podCidr: {
               type: 'string',
@@ -2784,6 +3011,8 @@ exports.createResources = () => [
               description: 'This can only be set at cluster creation time and cannot be changed later. For more information see [egress outbound type](https://docs.microsoft.com/azure/aks/egress-outboundtype).'
             },
             loadBalancerSku: {
+              title: 'The load balancer sku for the managed cluster.',
+              description: "The default is 'standard'. See [Azure Load Balancer SKUs](https://docs.microsoft.com/azure/load-balancer/skus) for more information about the differences between load balancer SKUs.",
               type: 'string',
               enum: [ 'standard', 'basic' ],
               'x-ms-enum': {
@@ -2799,14 +3028,14 @@ exports.createResources = () => [
                     description: 'Use a basic Load Balancer with limited functionality.'
                   }
                 ]
-              },
-              title: 'The load balancer sku for the managed cluster.',
-              description: "The default is 'standard'. See [Azure Load Balancer SKUs](https://docs.microsoft.com/azure/load-balancer/skus) for more information about the differences between load balancer SKUs."
+              }
             },
             loadBalancerProfile: {
               description: 'Profile of the cluster load balancer.',
+              type: 'object',
               properties: {
                 managedOutboundIPs: {
+                  type: 'object',
                   properties: {
                     count: {
                       type: 'integer',
@@ -2828,10 +3057,12 @@ exports.createResources = () => [
                   description: 'Desired managed outbound IPs for the cluster load balancer.'
                 },
                 outboundIPPrefixes: {
+                  type: 'object',
                   properties: {
                     publicIPPrefixes: {
                       type: 'array',
                       items: {
+                        type: 'object',
                         properties: {
                           id: {
                             type: 'string',
@@ -2846,10 +3077,12 @@ exports.createResources = () => [
                   description: 'Desired outbound IP Prefix resources for the cluster load balancer.'
                 },
                 outboundIPs: {
+                  type: 'object',
                   properties: {
                     publicIPs: {
                       type: 'array',
                       items: {
+                        type: 'object',
                         properties: {
                           id: {
                             type: 'string',
@@ -2866,6 +3099,7 @@ exports.createResources = () => [
                 effectiveOutboundIPs: {
                   type: 'array',
                   items: {
+                    type: 'object',
                     properties: {
                       id: {
                         type: 'string',
@@ -2919,6 +3153,7 @@ exports.createResources = () => [
                 effectiveOutboundIPs: {
                   type: 'array',
                   items: {
+                    type: 'object',
                     properties: {
                       id: {
                         type: 'string',
@@ -2966,6 +3201,7 @@ exports.createResources = () => [
         },
         aadProfile: {
           description: 'The Azure Active Directory configuration.',
+          type: 'object',
           properties: {
             managed: {
               type: 'boolean',
@@ -3001,6 +3237,7 @@ exports.createResources = () => [
         },
         autoUpgradeProfile: {
           description: 'The auto upgrade configuration.',
+          type: 'object',
           properties: {
             upgradeChannel: {
               type: 'string',
@@ -3152,6 +3389,7 @@ exports.createResources = () => [
         },
         apiServerAccessProfile: {
           description: 'The access profile for managed cluster API server.',
+          type: 'object',
           properties: {
             authorizedIPRanges: {
               type: 'array',
@@ -3176,6 +3414,15 @@ exports.createResources = () => [
             disableRunCommand: {
               type: 'boolean',
               description: 'Whether to disable run command for the cluster or not.'
+            },
+            enableVnetIntegration: {
+              type: 'boolean',
+              description: 'Whether to enable apiserver vnet integration for the cluster or not.'
+            },
+            subnetId: {
+              type: 'string',
+              title: 'The subnet to be used when apiserver vnet integration is enabled.',
+              description: 'It is required when: 1. creating a new cluster with BYO Vnet; 2. updating an existing cluster to enable apiserver vnet integration.'
             }
           }
         },
@@ -3185,7 +3432,9 @@ exports.createResources = () => [
           description: "This is of the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskEncryptionSets/{encryptionSetName}'"
         },
         identityProfile: {
+          type: 'object',
           additionalProperties: {
+            type: 'object',
             properties: {
               resourceId: {
                 type: 'string',
@@ -3260,6 +3509,12 @@ exports.createResources = () => [
               items: { type: 'string' },
               description: 'The endpoints that should not go through proxy.'
             },
+            effectiveNoProxy: {
+              type: 'array',
+              readOnly: true,
+              items: { type: 'string' },
+              description: 'A read-only list of all endpoints for which traffic should not be sent to the proxy. This list is a superset of noProxy and values injected by AKS.'
+            },
             trustedCa: {
               type: 'string',
               description: 'Alternative CA cert to use for connecting to proxy servers.'
@@ -3283,6 +3538,90 @@ exports.createResources = () => [
                   description: 'Resource ID of the Log Analytics workspace to be associated with Azure Defender.  When Azure Defender is enabled, this field is required and must be a valid workspace resource ID. When Azure Defender is disabled, leave the field empty.'
                 }
               }
+            },
+            azureKeyVaultKms: {
+              description: 'Azure Key Vault [key management service](https://kubernetes.io/docs/tasks/administer-cluster/kms-provider/) settings for the security profile.',
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  description: 'Whether to enable Azure Key Vault key management service. The default is false.'
+                },
+                keyId: {
+                  type: 'string',
+                  description: 'Identifier of Azure Key Vault key. See [key identifier format](https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name) for more details. When Azure Key Vault key management service is enabled, this field is required and must be a valid key identifier. When Azure Key Vault key management service is disabled, leave the field empty.'
+                }
+              }
+            },
+            workloadIdentity: {
+              description: '[Workload Identity](https://azure.github.io/azure-workload-identity/docs/) settings for the security profile.',
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  description: 'Whether to enable Workload Identity'
+                }
+              }
+            }
+          }
+        },
+        storageProfile: {
+          description: 'Storage profile for the managed cluster.',
+          type: 'object',
+          properties: {
+            diskCSIDriver: {
+              description: 'AzureDisk CSI Driver settings for the storage profile.',
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  description: 'Whether to enable AzureDisk CSI Driver. The default value is true.'
+                },
+                version: {
+                  type: 'string',
+                  description: 'The version of AzureDisk CSI Driver. The default value is v1.'
+                }
+              }
+            },
+            fileCSIDriver: {
+              description: 'AzureFile CSI Driver settings for the storage profile.',
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  description: 'Whether to enable AzureFile CSI Driver. The default value is true.'
+                }
+              }
+            },
+            snapshotController: {
+              description: 'Snapshot Controller settings for the storage profile.',
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  description: 'Whether to enable Snapshot Controller. The default value is true.'
+                }
+              }
+            }
+          }
+        },
+        ingressProfile: {
+          description: 'Ingress profile for the managed cluster.',
+          type: 'object',
+          properties: {
+            webAppRouting: {
+              description: 'Web App Routing settings for the ingress profile.',
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  description: 'Whether to enable Web App Routing.'
+                },
+                dnsZoneResourceId: {
+                  type: 'string',
+                  description: 'Resource ID of the DNS Zone to be associated with the web app. Used only when Web App Routing is enabled.'
+                }
+              }
             }
           }
         },
@@ -3298,38 +3637,91 @@ exports.createResources = () => [
   },
   allOf: [
     {
-      description: 'The Resource model definition.',
+      title: 'Tracked Resource',
+      description: "The resource model definition for an Azure Resource Manager tracked top level resource which has 'tags' and a 'location'",
+      type: 'object',
       properties: {
-        id: { readOnly: true, type: 'string', description: 'Resource Id' },
-        name: {
-          readOnly: true,
-          type: 'string',
-          description: 'Resource name'
-        },
-        type: {
-          readOnly: true,
-          type: 'string',
-          description: 'Resource type'
-        },
-        location: {
-          type: 'string',
-          description: 'Resource location',
-          'x-ms-mutability': [ 'read', 'create' ]
-        },
         tags: {
           type: 'object',
           additionalProperties: { type: 'string' },
-          description: 'Resource tags'
+          'x-ms-mutability': [ 'read', 'create', 'update' ],
+          description: 'Resource tags.'
+        },
+        location: {
+          type: 'string',
+          'x-ms-mutability': [ 'read', 'create' ],
+          description: 'The geo-location where the resource lives'
         }
       },
       required: [ 'location' ],
-      'x-ms-azure-resource': true
+      allOf: [
+        {
+          title: 'Resource',
+          description: 'Common fields that are returned in the response for all Azure Resource Manager resources',
+          type: 'object',
+          properties: {
+            id: {
+              readOnly: true,
+              type: 'string',
+              description: 'Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}'
+            },
+            name: {
+              readOnly: true,
+              type: 'string',
+              description: 'The name of the resource'
+            },
+            type: {
+              readOnly: true,
+              type: 'string',
+              description: 'The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"'
+            },
+            systemData: {
+              readOnly: true,
+              type: 'object',
+              description: 'Azure Resource Manager metadata containing createdBy and modifiedBy information.',
+              properties: {
+                createdBy: {
+                  type: 'string',
+                  description: 'The identity that created the resource.'
+                },
+                createdByType: {
+                  type: 'string',
+                  description: 'The type of identity that created the resource.',
+                  enum: [ 'User', 'Application', 'ManagedIdentity', 'Key' ],
+                  'x-ms-enum': { name: 'createdByType', modelAsString: true }
+                },
+                createdAt: {
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'The timestamp of resource creation (UTC).'
+                },
+                lastModifiedBy: {
+                  type: 'string',
+                  description: 'The identity that last modified the resource.'
+                },
+                lastModifiedByType: {
+                  type: 'string',
+                  description: 'The type of identity that last modified the resource.',
+                  enum: [ 'User', 'Application', 'ManagedIdentity', 'Key' ],
+                  'x-ms-enum': { name: 'createdByType', modelAsString: true }
+                },
+                lastModifiedAt: {
+                  type: 'string',
+                  format: 'date-time',
+                  description: 'The timestamp of resource last modification (UTC)'
+                }
+              }
+            }
+          },
+          'x-ms-azure-resource': true
+        }
+      ]
     }
   ],
   description: 'Managed cluster.'
 }
 ```
 ## Misc
-The resource version is `2022-01-02-preview`.
+The resource version is `2022-04-02-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-01-02-preview/managedClusters.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-04-02-preview/managedClusters.json).

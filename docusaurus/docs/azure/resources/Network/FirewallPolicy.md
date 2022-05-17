@@ -99,10 +99,12 @@ exports.createResources = () => [
 ## Swagger Schema
 ```js
 {
+  type: 'object',
   properties: {
     properties: {
       'x-ms-client-flatten': true,
       description: 'Properties of the firewall policy.',
+      type: 'object',
       properties: {
         ruleCollectionGroups: {
           type: 'array',
@@ -155,7 +157,7 @@ exports.createResources = () => [
         },
         threatIntelWhitelist: {
           description: 'ThreatIntel Whitelist for Firewall Policy.',
-          'x-ms-discriminator-value': 'FirewallPolicyThreatIntelWhitelist',
+          type: 'object',
           properties: {
             ipAddresses: {
               type: 'array',
@@ -171,7 +173,7 @@ exports.createResources = () => [
         },
         insights: {
           description: 'Insights on Firewall Policy.',
-          'x-ms-discriminator-value': 'FirewallPolicyInsights',
+          type: 'object',
           properties: {
             isEnabled: {
               type: 'boolean',
@@ -184,14 +186,14 @@ exports.createResources = () => [
             },
             logAnalyticsResources: {
               description: 'Workspaces needed to configure the Firewall Policy Insights.',
-              'x-ms-discriminator-value': 'FirewallPolicyLogAnalyticsResources',
+              type: 'object',
               properties: {
                 workspaces: {
                   type: 'array',
                   description: 'List of workspaces for Firewall Policy Insights.',
                   items: {
+                    type: 'object',
                     description: 'Log Analytics Workspace for Firewall Policy Insights.',
-                    'x-ms-discriminator-value': 'FirewallPolicyLogAnalyticsWorkspace',
                     properties: {
                       region: {
                         type: 'string',
@@ -208,7 +210,8 @@ exports.createResources = () => [
                         'x-ms-azure-resource': true
                       }
                     }
-                  }
+                  },
+                  'x-ms-identifiers': []
                 },
                 defaultWorkspaceId: {
                   properties: {
@@ -223,7 +226,7 @@ exports.createResources = () => [
         },
         snat: {
           description: 'The private IP addresses/IP ranges to which traffic will not be SNAT.',
-          'x-ms-discriminator-value': 'FirewallPolicySNAT',
+          type: 'object',
           properties: {
             privateRanges: {
               type: 'array',
@@ -235,7 +238,6 @@ exports.createResources = () => [
         sql: {
           description: 'SQL Settings definition.',
           type: 'object',
-          'x-ms-discriminator-value': 'FirewallPolicySQL',
           properties: {
             allowSqlRedirect: {
               type: 'boolean',
@@ -245,7 +247,7 @@ exports.createResources = () => [
         },
         dnsSettings: {
           description: 'DNS Proxy Settings definition.',
-          'x-ms-discriminator-value': 'DnsSettings',
+          type: 'object',
           properties: {
             servers: {
               type: 'array',
@@ -265,7 +267,6 @@ exports.createResources = () => [
         },
         explicitProxySettings: {
           description: 'Explicit Proxy Settings definition.',
-          'x-ms-discriminator-value': 'ExplicitProxySettings',
           type: 'object',
           properties: {
             enableExplicitProxy: {
@@ -305,6 +306,7 @@ exports.createResources = () => [
         },
         intrusionDetection: {
           description: 'The configuration for Intrusion detection.',
+          type: 'object',
           properties: {
             mode: {
               description: 'Intrusion detection general state.',
@@ -317,11 +319,13 @@ exports.createResources = () => [
             },
             configuration: {
               description: 'Intrusion detection configuration properties.',
+              type: 'object',
               properties: {
                 signatureOverrides: {
                   type: 'array',
                   description: 'List of specific signatures states.',
                   items: {
+                    type: 'object',
                     properties: {
                       id: { type: 'string', description: 'Signature id.' },
                       mode: {
@@ -341,6 +345,7 @@ exports.createResources = () => [
                   type: 'array',
                   description: 'List of rules for traffic to bypass.',
                   items: {
+                    type: 'object',
                     properties: {
                       name: {
                         type: 'string',
@@ -386,7 +391,14 @@ exports.createResources = () => [
                       }
                     },
                     description: 'Intrusion detection bypass traffic specification.'
-                  }
+                  },
+                  'x-ms-identifiers': []
+                },
+                privateRanges: {
+                  type: 'array',
+                  description: 'IDPS Private IP address ranges are used to identify traffic direction (i.e. inbound, outbound, etc.). By default, only ranges defined by IANA RFC 1918 are considered private IP addresses. To modify default ranges, specify your Private IP address ranges with this property',
+                  items: { type: 'string' },
+                  'x-ms-identifiers': []
                 }
               }
             }
@@ -394,9 +406,11 @@ exports.createResources = () => [
         },
         transportSecurity: {
           description: 'TLS Configuration definition.',
+          type: 'object',
           properties: {
             certificateAuthority: {
               description: 'The CA used for intermediate CA generation.',
+              type: 'object',
               properties: {
                 keyVaultSecretId: {
                   type: 'string',
@@ -412,6 +426,7 @@ exports.createResources = () => [
         },
         sku: {
           description: 'The Firewall Policy SKU.',
+          type: 'object',
           properties: {
             tier: {
               type: 'string',
@@ -503,6 +518,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-05-01`.
+The resource version is `2021-08-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-05-01/firewallPolicy.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/firewallPolicy.json).
