@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="658px" preserveAspectRatio="none" style="width:418px;height:658px;background:#FFFFFF;" version="1.1" viewBox="0 0 418 658" width="418px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="646.7813" style="stroke:#000000;stroke-width:2.0;" width="405" x="6" y="6"/><line style="stroke:#000000;stroke-width:2.0;" x1="6" x2="411" y1="27.0146" y2="27.0146"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="179" x="119" y="22.0752">GruCloud CLI Installation</text><ellipse cx="85" cy="53.0146" fill="#000000" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><rect fill="#FFFFFF" height="209.0146" style="stroke:#000000;stroke-width:2.0;" width="257" x="16" y="98.0146"/><path d="M78,98.0146 L78,108.0293 L68,118.0293 L16,118.0293 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="52" x="19" y="113.0898">Node.js</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="118" x="26" y="135.0293"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="98" x="36" y="154.0762">node --version</text><polygon fill="#FFFFFF" points="41,263.0293,129,263.0293,141,275.0293,129,287.0293,41,287.0293,29,275.0293,41,263.0293" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="88" x="41" y="279.4041">version &gt;= 14?</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="141" y="272.7197">no</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="95" x="168" y="193.7373"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="182" y="215.8018"/><a href="https://nodejs.org" target="_blank" title="https://nodejs.org" xlink:actuate="onRequest" xlink:href="https://nodejs.org" xlink:show="new" xlink:title="https://nodejs.org" xlink:type="simple"><text fill="#0000FF" font-family="Verdana" font-size="12" lengthAdjust="spacing" text-decoration="underline" textLength="71" x="182" y="215.8018">Install Node</text></a><rect fill="#FFFFFF" height="209.0146" style="stroke:#000000;stroke-width:2.0;" width="381" x="20" y="355.3979"/><path d="M125,355.3979 L125,365.4126 L115,375.4126 L20,375.4126 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="95" x="23" y="370.4731">GruCloud CLI</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="104" x="33" y="392.4126"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="84" x="43" y="411.4595">gc --version</text><polygon fill="#FFFFFF" points="42,520.4126,128,520.4126,140,532.4126,128,544.4126,42,544.4126,30,532.4126,42,520.4126" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="86" x="42" y="536.7874">version &gt;= 3.0</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="140" y="530.103">no</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="227" x="164" y="451.1206"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="178" y="473.1851"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="203" x="178" y="472.7515">npm install -g @grucloud/core</text><ellipse cx="85" cy="622.7813" fill="#FFFFFF" rx="10" ry="10" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:2.5;" x1="78.8128" x2="91.1872" y1="616.5941" y2="628.9684"/><line style="stroke:#000000;stroke-width:2.5;" x1="91.1872" x2="78.8128" y1="616.5941" y2="628.9684"/><line style="stroke:#000000;stroke-width:1.5;" x1="85" x2="85" y1="167.0293" y2="263.0293"/><polygon fill="#000000" points="81,253.0293,85,263.0293,89,253.0293,85,257.0293" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="141" x2="215.5" y1="275.0293" y2="275.0293"/><line style="stroke:#000000;stroke-width:1.5;" x1="215.5" x2="215.5" y1="228.3213" y2="275.0293"/><polygon fill="#000000" points="211.5,238.3213,215.5,228.3213,219.5,238.3213,215.5,234.3213" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="215.5" x2="215.5" y1="151.0293" y2="193.7373"/><line style="stroke:#000000;stroke-width:1.5;" x1="215.5" x2="144" y1="151.0293" y2="151.0293"/><polygon fill="#000000" points="154,147.0293,144,151.0293,154,155.0293,150,151.0293" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="85" x2="85" y1="63.0146" y2="135.0293"/><polygon fill="#000000" points="81,125.0293,85,135.0293,89,125.0293,85,129.0293" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="85" x2="85" y1="424.4126" y2="520.4126"/><polygon fill="#000000" points="81,510.4126,85,520.4126,89,510.4126,85,514.4126" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="140" x2="277.5" y1="532.4126" y2="532.4126"/><line style="stroke:#000000;stroke-width:1.5;" x1="277.5" x2="277.5" y1="485.7046" y2="532.4126"/><polygon fill="#000000" points="273.5,495.7046,277.5,485.7046,281.5,495.7046,277.5,491.7046" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="277.5" x2="277.5" y1="408.4126" y2="451.1206"/><line style="stroke:#000000;stroke-width:1.5;" x1="277.5" x2="137" y1="408.4126" y2="408.4126"/><polygon fill="#000000" points="147,404.4126,137,408.4126,147,412.4126,143,408.4126" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="85" x2="85" y1="287.0293" y2="392.4126"/><polygon fill="#000000" points="81,382.4126,85,392.4126,89,382.4126,85,386.4126" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="89" y="344.0957">yes</text><line style="stroke:#000000;stroke-width:1.5;" x1="85" x2="85" y1="544.4126" y2="612.7813"/><polygon fill="#000000" points="81,602.7813,85,612.7813,89,602.7813,85,606.7813" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="89" y="582.9717">yes</text><!--MD5=[6a3f02fc46a6bb07af7557238840b675]
+@startuml grucloud-cli-install
+!theme plain
+skinparam svgLinkTarget _blank
+
+
+card "GruCloud CLI Installation"{
+start 
+partition "Node.js" {
+repeat :""node - -version"";
+backward: [[https://nodejs.org Install Node]];
+repeat while (version >= 14?) is (no) 
+->yes;
+}
+
+partition "GruCloud CLI" {
+repeat :""gc - -version"";
+backward: ""npm install -g @grucloud/core"";
+repeat while (version >= 3.0) is (no) 
+->yes;
+}
+end
+}
+@enduml
+
+@startuml grucloud-cli-install
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Object {
+  BorderColor black
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+skinparam svgLinkTarget _blank
+
+
+card "GruCloud CLI Installation"{
+start 
+partition "Node.js" {
+repeat :""node - -version"";
+backward: [[https://nodejs.org Install Node]];
+repeat while (version >= 14?) is (no) 
+->yes;
+}
+
+partition "GruCloud CLI" {
+repeat :""gc - -version"";
+backward: ""npm install -g @grucloud/core"";
+repeat while (version >= 3.0) is (no) 
+->yes;
+}
+end
+}
+@enduml
+
+PlantUML version 1.2021.14(Fri Nov 12 11:46:50 COT 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>
