@@ -110,25 +110,27 @@ exports.AwsProvider = ({
       () => config,
       get("credentials.profile", "default"),
       prepend("aws configure get region --profile "),
-      tap((params) => {
-        assert(true);
-      }),
-      (command) => shell.exec(command, { silent: true }),
-      ({ stdout, stderr, code }) =>
-        switchCase([
-          () => code === 0,
-          pipe([() => stdout]),
-          pipe([
-            tap((params) => {
-              throw Error(stderr);
-            }),
-          ]),
+      (command) =>
+        pipe([
+          () => shell.exec(command, { silent: true }),
+          ({ stdout, stderr, code }) =>
+            switchCase([
+              () => code === 0,
+              pipe([() => stdout]),
+              pipe([
+                tap((params) => {
+                  throw Error(
+                    `Could not run command: '${command}',\n${stderr}`
+                  );
+                }),
+              ]),
+            ])(),
+          callProp("replace", EOL, ""),
+          when(includes("undefined"), () => undefined),
+          tap((params) => {
+            assert(true);
+          }),
         ])(),
-      callProp("replace", EOL, ""),
-      when(includes("undefined"), () => undefined),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   const getRegion = (config) =>

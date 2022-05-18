@@ -68,6 +68,9 @@ const fnSpecs = (config) => {
             configDefault,
           }),
         type: "SecurityGroup",
+        dependencies: {
+          securityGroup: { type: "SecurityGroup", group: "Compute" },
+        },
       },
       {
         dependencies: {
@@ -138,7 +141,7 @@ const fnSpecs = (config) => {
     map(
       defaultsDeep({
         isOurMinion,
-        compare: compare({ filterLive: omit(["id"]) }),
+        compare: compare({ filterLive: () => omit(["id"]) }),
         group: "Compute",
       })
     ),

@@ -4,11 +4,15 @@ const hookGlobal = require("./hookGlobal");
 
 const createResources1 = () => [
   {
-    type: "Volume",
+    type: "Server",
     group: "Compute",
-    name: "volume1",
+    name: "server",
     properties: () => ({
-      size: 20_000_000_000,
+      diskSizeGb: "20",
+      machineType: "f1-micro",
+    }),
+    dependencies: () => ({
+      volume: "volume2",
     }),
   },
 ];
@@ -24,12 +28,12 @@ const createResources2 = () => [
   },
 ];
 
-exports.createStack = ({ config }) => {
+exports.createStack = ({ createProvider }) => {
   return {
     hookGlobal,
     stacks: [
       {
-        provider: MockProvider({
+        provider: createProvider(MockProvider, {
           name: "mock-1",
           createResources: createResources1,
           config: require("./config"),
@@ -39,7 +43,7 @@ exports.createStack = ({ config }) => {
         //isProviderUp: () => resources1.volume.getLive(),
       },
       {
-        provider: MockProvider({
+        provider: createProvider(MockProvider, {
           name: "mock-2",
           createResources: createResources2,
           //dependencies: { provider1 },

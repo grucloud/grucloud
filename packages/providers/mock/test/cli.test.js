@@ -228,23 +228,25 @@ describe("cli error", function () {
     )(commandsAll);
     assert.deepEqual(results, [422, 422, 422, 422, 422, 422]);
   });
-  it("cli Apply 500", async function () {
-    const result = await runProgram({
-      cmds: ["apply", "-f"],
-      configFile: configFile500,
-      onExit: ({ code, error: { error } }) => {
-        assert.equal(code, 422);
-        assert(error.resultDeploy);
-        assert(error.resultDeploy.results[0]);
+  //TODO
+  it("cli 500", async function () {
+    const results = await map.series((command) =>
+      runProgram({
+        cmds: command.split(" "),
+        configFile: configFile500,
+        onExit: ({ code, error }) => {
+          assert.equal(code, 422, `error i command ${command}`);
 
-        assert.equal(
-          error.resultDeploy.results[0].resultCreate.results[1].error.Status,
-          500
-        );
-      },
-    });
-    assert.deepEqual(result, 422);
+          assert(error.error.resultDestroy);
+          error.error.resultDestroy.results[0].resultDestroy.results.forEach(
+            (error) => assert(error)
+          );
+        },
+      })
+    )(commandsWrite);
+    assert.deepEqual(results, [422]);
   });
+
   it("cli timeout once", async function () {
     await map.series((command) =>
       runProgram({
@@ -264,7 +266,7 @@ describe("cli error", function () {
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
         assert(error.error);
-        const resultCreate = error.resultDeploy.results[0].resultCreate;
+        const resultCreate = error.resultDeploy.resultCreate;
         assert(resultCreate);
         assert(resultCreate.error);
         //TODO Sometimes it fails.
@@ -291,8 +293,11 @@ describe("cli error", function () {
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
         assert(error.lives.error, `error.lives.error`);
-        const livesJson = error.lives.json;
-        assert.equal(livesJson[0].results[0].error.message, "Network Error");
+        const livesJson = error.lives;
+        assert.equal(
+          livesJson.results[0].results[0].error.message,
+          "Network Error"
+        );
       },
     });
     assert.deepEqual(result, 422);
@@ -304,7 +309,10 @@ describe("cli error", function () {
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
         assert(error.lives.error);
-        assert.equal(error.lives.json[0].results[0].error.code, "ECONNABORTED");
+        assert.equal(
+          error.lives.results[0].results[0].error.code,
+          "ECONNABORTED"
+        );
       },
     });
     assert.deepEqual(result, 422);
@@ -330,7 +338,7 @@ describe("cli error", function () {
         const { resultQuery } = error;
         assert(error.lives.error);
         assert.equal(
-          error.lives.json[0].results[0].error.message,
+          error.lives.results[0].results[0].error.message,
           "Network Error"
         );
       },
@@ -345,7 +353,10 @@ describe("cli error", function () {
         assert.equal(code, 422);
         const { resultQuery } = error;
         assert(error.lives.error);
-        assert.equal(error.lives.json[0].results[0].error.code, "ECONNABORTED");
+        assert.equal(
+          error.lives.results[0].results[0].error.code,
+          "ECONNABORTED"
+        );
       },
     });
     assert.deepEqual(result, 422);
@@ -368,30 +379,14 @@ describe("cli error", function () {
         cmds: command.split(" "),
         configFile: configFile404,
         onExit: ({ code, error }) => {
-          assert.equal(code, 422);
+          assert.equal(code, 422, `should be an error for command ${command}`);
           assert(error);
         },
       })
     )(commandsReadOnly);
     assert.deepEqual(results, [422, 422]);
   });
-  it("cli 500", async function () {
-    const results = await map.series((command) =>
-      runProgram({
-        cmds: command.split(" "),
-        configFile: configFile500,
-        onExit: ({ code, error }) => {
-          assert.equal(code, 422);
 
-          assert(error.error.resultDestroy);
-          error.error.resultDestroy.results[0].resultDestroy.results.forEach(
-            (error) => assert(error)
-          );
-        },
-      })
-    )(commandsWrite);
-    assert.deepEqual(results, [422]);
-  });
   it("cli network error", async function () {
     const results = await map.series((command) =>
       runProgram({

@@ -161,6 +161,9 @@ exports.ResourceMaker = ({
 
   const getDependencies = pipe([
     () => dependencies,
+    tap((params) => {
+      assert(true);
+    }),
     unless(isFunction, (dependencies) => () => ({ ...dependencies })),
     (dep) => () => dep({ config, resources: provider.resources() }),
     (dep) => () => spec.transformDependencies({ provider })(dep()),
@@ -204,9 +207,6 @@ exports.ResourceMaker = ({
             }),
             tap((resource) => {
               provider.lives.addResource({
-                providerName: config.providerName,
-                type,
-                group,
                 groupType,
                 resource,
               });
@@ -381,9 +381,16 @@ exports.ResourceMaker = ({
           throw Error(`Cannot find the dependency ${depKey}, ${value} `);
         },
         pipe([
-          //TODO change getResourceByName, should take an object
-          ({ type, group }) => `${group}::${type}::${value}`,
-          provider.getResourceByName,
+          assign({ name: () => value }),
+          provider.getResource,
+          tap.if(isEmpty, () => {
+            logger.info(`no resource`);
+            // logger.info(
+            //   `no resource for ${uri}, available resources:\n${[
+            //     ...mapGloblalNameToResource.keys(),
+            //   ].join("\n")} )}`
+            // );
+          }),
         ]),
       ]),
     ])();
@@ -414,6 +421,9 @@ exports.ResourceMaker = ({
       ])(),
     ]),
     filter(not(isEmpty)),
+    tap((params) => {
+      assert(true);
+    }),
   ]);
 
   const resolveDependencies = ({
@@ -652,13 +662,17 @@ exports.ResourceMaker = ({
           throw Error(`Resource ${toString()} already exists`);
         }
       ),*/
-      () =>
+      tap((params) => {
+        assert(true);
+      }),
+      () => getDependencies(),
+      (dependencies) =>
         getClient().create({
           meta,
           name: getResourceName(),
           payload,
           namespace,
-          dependencies: getDependencies(),
+          dependencies,
           attributes,
           resolvedDependencies,
           lives: provider.lives,

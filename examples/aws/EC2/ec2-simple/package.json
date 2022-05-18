@@ -13,6 +13,7 @@
     "plan": "gc plan",
     "apply": "gc apply -f",
     "destroy": "gc destroy -f",
+    "destroy-all": "gc destroy -f -a",
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
     "test": "mocha"

@@ -48,7 +48,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-firewall",
       subnets: ["rg-firewall::virtual-network::azurefirewallsubnet"],
       publicIpAddresses: ["rg-firewall::ip-address"],
@@ -67,7 +67,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-firewall",
     }),
   },
@@ -83,7 +83,7 @@ exports.createResources = () => [
         publicIPAllocationMethod: "Static",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-firewall",
     }),
   },
@@ -96,7 +96,7 @@ exports.createResources = () => [
         addressPrefix: "10.0.0.0/24",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-firewall",
       virtualNetwork: "rg-firewall::virtual-network",
     }),
@@ -112,7 +112,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-firewall",
     }),
   },

@@ -202,6 +202,7 @@ exports.createResources = () => [
             },
           },
         ],
+        backendSettingsCollection: [],
         httpListeners: [
           {
             name: "listener",
@@ -218,11 +219,13 @@ exports.createResources = () => [
             },
           },
         ],
+        listeners: [],
         requestRoutingRules: [
           {
             name: "rule",
             properties: {
               ruleType: "Basic",
+              priority: 1,
               httpListener: {
                 id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/httpListeners/listener`,
               },
@@ -235,6 +238,7 @@ exports.createResources = () => [
             },
           },
         ],
+        routingRules: [],
         enableHttp2: false,
         autoscaleConfiguration: {
           minCapacity: 0,

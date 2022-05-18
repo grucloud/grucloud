@@ -82,6 +82,8 @@ omit AWSLogs S3 Objects
 
 ## Refactoring
 
+- remove getLives().getByProvider
+
 ## Common:
 
 - https://stackshare.io/terraform/alternatives

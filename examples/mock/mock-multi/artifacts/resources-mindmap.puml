@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project mock-multi
+skinparam monochrome true
++ Infra
+++ mock-1
++++ Compute
+++++ Volume (1)
+-- mock-2
+--- Compute
+---- Volume (1)
+@endmindmap

@@ -9,11 +9,12 @@ const {
   get,
   assign,
   any,
-  reduce,
+  omit,
   eq,
   not,
-  omit,
+  flatMap,
   transform,
+  pick,
 } = require("rubico");
 
 const {
@@ -27,23 +28,30 @@ const {
   includes,
   identity,
   isFunction,
+  flatten,
 } = require("rubico/x");
 const { Lister } = require("./Lister");
-const {
-  contextFromHookGlobal,
-  contextFromHookGlobalInit,
-  contextFromHookGlobalAction,
-  nextStateOnError,
-} = require("./ProviderCommon");
 const logger = require("./logger")({ prefix: "ProviderGru" });
 const { tos } = require("./tos");
-const { convertError } = require("./Common");
-
+const { Planner, mapToGraph } = require("./Planner");
+const { convertError, TitleDeploying, TitleDestroying } = require("./Common");
 const { displayLive } = require("./cli/displayUtils");
 const { buildGraphLive } = require("./GraphLive");
 const { buildGraphTarget } = require("./GraphTarget");
 const { buildGraphTree } = require("./GraphTree");
-
+const { createClient, decorateLive } = require("./Client");
+const {
+  nextStateOnError,
+  contextFromProvider,
+  contextFromPlanner,
+  contextFromResource,
+  createGetResource,
+  contextFromHookGlobal,
+  contextFromHookGlobalInit,
+  contextFromHookGlobalAction,
+  addErrorToResults,
+  assignErrorToObject,
+} = require("./ProviderCommon");
 const GraphCommon = require("./GraphCommon");
 const { createLives } = require("./Lives");
 
@@ -102,17 +110,260 @@ const buildDependsOnReverse = (stacks) =>
   ])();
 
 exports.ProviderGru = ({
-  commandOptions,
-  programOptions,
+  mapGloblalNameToResource,
   hookGlobal,
   stacks,
+  lives = createLives(),
+  programOptions,
 }) => {
   assert(Array.isArray(stacks));
+  assert(mapGloblalNameToResource);
+  assert(programOptions);
+  const getResource = createGetResource({ mapGloblalNameToResource });
 
-  const lives = createLives();
+  const getProviderConfig = pipe([
+    get("provider.config"),
+    tap((config) => {
+      assert(config);
+    }),
+  ]);
 
-  const getProviders = () => pipe([() => stacks, pluck("provider")])();
+  const getClient = ({ providerName, groupType }) =>
+    pipe([
+      tap(() => {
+        assert(groupType);
+        assert(providerName);
+      }),
+      getSpecs,
+      find(eq(get("groupType"), groupType)),
+      tap((spec) => {
+        assert(spec, `no ${groupType}`);
+      }),
+      (spec) =>
+        pipe([
+          () => ({ providerName }),
+          getProvider,
+          (provider) =>
+            createClient({
+              provider,
+              getTargetResources: () => mapGloblalNameToResource,
+              getResourcesByType: provider.getResourcesByType,
+              getResource,
+              spec,
+              config: provider.config,
+              providerName,
+              getListHof: provider.getListHof,
+              lives,
+            }),
+        ])(),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
+  const destroyById = ({ resource, live }) =>
+    pipe([
+      tap(() => {
+        assert(live);
+        assert(resource);
+        logger.debug(`destroyById: ${tos(resource.toString())}`);
+      }),
+      () => resource,
+      getClient,
+      tap((client) => {
+        assert(client, `Cannot find endpoint ${resource.toString()}}`);
+        assert(client.spec);
+      }),
+      tap((client) =>
+        retryCall({
+          name: `destroy ${client.spec.groupType}/${resource.name}`,
+          fn: () =>
+            client.destroy({
+              live,
+              id: client.findId({ live, lives }), // TODO remove id, only use live
+              name: resource.name,
+              resource,
+              lives,
+            }),
+          isExpectedResult: () => true,
+          shouldRetryOnException: client.shouldRetryOnExceptionDelete,
+          config: getProviderConfig(),
+        })
+      ),
+    ])();
+
+  const onStateChangeResource =
+    ({ operation, onStateChange }) =>
+    ({ resource, error, ...other }) =>
+      pipe([
+        tap((params) => {
+          assert(resource, "no resource");
+          assert(resource.type, "no resource.type");
+        }),
+        () =>
+          onStateChange({
+            context: contextFromResource({ operation, resource }),
+            error,
+            ...other,
+          }),
+        tap.if(
+          () => error,
+          pipe([
+            () =>
+              onStateChange({
+                context: contextFromPlanner({
+                  providerName: resource.providerName,
+                  title: TitleDeploying,
+                }),
+                nextState: nextStateOnError(true),
+              }),
+            () =>
+              onStateChange({
+                context: contextFromProvider({
+                  providerName: getProvider(resource).displayName(),
+                }),
+                nextState: nextStateOnError(true),
+              }),
+          ])
+        ),
+      ])();
+
+  const upsertResources = ({ plans, onStateChange, title }) =>
+    pipe([
+      tap((params) => {
+        assert(onStateChange);
+        assert(title);
+        assert(Array.isArray(plans));
+        assert(plans);
+      }),
+      () => plans,
+      switchCase([
+        isEmpty,
+        pipe([() => ({ error: false, plans })]),
+        pipe([
+          () => ({
+            plans,
+            dependsOnType: getSpecs(),
+            dependsOnInstance: mapToGraph(mapGloblalNameToResource),
+            executor: plannerExecutor,
+            onStateChange: onStateChangeResource({
+              operation: TitleDeploying,
+              onStateChange,
+            }),
+          }),
+          Planner,
+          callProp("run"),
+          tap((params) => {
+            assert(true);
+          }),
+          omit(["plans"]),
+        ]),
+      ]),
+    ])();
+
+  const plannerExecutor = ({ item: { resource, live, action, diff } }) =>
+    pipe([
+      tap(() => {
+        assert(resource);
+        assert(resource.type);
+        assert(resource.name);
+        logger.debug(
+          `plannerExecutor: executor ${resource.type} ${resource.name}, action: ${action}`
+        );
+      }),
+      () => ({}),
+      assign({ engine: () => getResource(resource) }),
+      tap(({ engine }) => {
+        assert(engine, `Cannot find resource ${tos(resource)}`);
+      }),
+      assign({
+        resolvedDependencies: ({ engine }) =>
+          engine.resolveDependencies({
+            dependenciesMustBeUp: true,
+          }),
+      }),
+      assign({
+        input: ({ engine, resolvedDependencies }) =>
+          engine.resolveConfig({
+            live,
+            resolvedDependencies,
+            deep: true,
+          }),
+      }),
+      assign({
+        output: switchCase([
+          //TODO rubico
+          () => action === "UPDATE",
+          ({ engine, input, resolvedDependencies }) =>
+            engine.update({
+              payload: input,
+              live,
+              diff: engine.spec.compare({
+                ...engine.spec,
+                live,
+                lives,
+                target: input,
+                config: getProviderConfig(engine),
+                targetResources: mapGloblalNameToResource,
+                programOptions,
+              }),
+              resolvedDependencies,
+              lives,
+            }),
+          //TODO rubico
+          () => action === "CREATE",
+          ({ engine, input, resolvedDependencies }) =>
+            pipe([
+              () =>
+                engine.create({
+                  payload: input,
+                  resolvedDependencies,
+                  lives,
+                }),
+              tap((live) => {
+                assert(live);
+              }),
+              decorateLive({
+                client: engine.getClient(),
+                lives,
+                config: getProviderConfig(engine),
+              }),
+              tap((resource) => {
+                lives.addResource({
+                  groupType: engine.spec.groupType,
+                  resource,
+                });
+              }),
+            ])(),
+          () => action === "WAIT_CREATION",
+          ({ engine, input, resolvedDependencies }) =>
+            pipe([
+              () => ({ lives }),
+              engine.waitForResourceUp,
+              tap((params) => {
+                assert(true);
+              }),
+            ])(),
+          () => {
+            assert(false, `action '${action}' is not handled`);
+          },
+        ]),
+      }),
+      pick(["input", "output"]),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+  const getProviders = pipe([() => stacks, pluck("provider")]);
+
+  const getSpecs = pipe([
+    getProviders,
+    flatMap(pipe([callProp("getSpecs")])),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
   pipe([
     () => stacks,
     forEach(({ provider, resources, hooks }) =>
@@ -155,10 +406,16 @@ exports.ProviderGru = ({
 
   const getProvider = ({ providerName }) =>
     pipe([
-      () => getProviders(),
+      tap(() => {
+        assert(providerName);
+      }),
+      getProviders,
       find(eq(get("name"), providerName)),
       tap.if(isEmpty, () => {
         assert(`no provider with name: '${providerName}'`);
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 
@@ -174,7 +431,7 @@ exports.ProviderGru = ({
         assert(onStateChange);
         assert(providers);
       }),
-      map(({ provider }) =>
+      map((provider) =>
         pipe([
           tap(() => {
             assert(provider);
@@ -199,7 +456,7 @@ exports.ProviderGru = ({
       tap((params) => {
         assert(true);
       }),
-      () => lives,
+      addErrorToResults,
     ]);
 
   const displayLives = (lives) =>
@@ -209,95 +466,106 @@ exports.ProviderGru = ({
         logger.info(`displayLive`);
       }),
       () => lives,
-      tap((livesContent) => {
-        assert(livesContent);
+      get("results"),
+      tap((results) => {
+        assert(results);
       }),
       forEach(({ results, providerName }) => {
         displayLive({ providerName, resources: results });
       }),
     ])();
 
-  const planQuery = ({ onStateChange = identity } = {}) =>
+  const planQuery = ({ onStateChange = identity, providers } = {}) =>
     pipe([
-      tap((providers) => {
+      tap(() => {
         logger.info(`planQuery`);
         assert(Array.isArray(providers));
       }),
+      () => providers,
       listLives({ onStateChange }),
       tap((params) => {
         assert(true);
       }),
       switchCase([
         get("error"),
-        pipe([
-          () => ({
-            lives: lives,
-          }),
-        ]),
-        pipe([
-          () => stacks,
-          map(({ provider, isProviderUp }) => ({
-            ...runnerParams({ provider, isProviderUp, stacks }),
-            executor: ({ results }) =>
-              pipe([
-                tap(() => {
-                  assert(results);
-                }),
-                () =>
-                  provider.planQuery({
-                    onStateChange,
+        (livesData) => ({ lives: livesData }),
+        (livesData) =>
+          pipe([
+            () => stacks,
+            map(({ provider, isProviderUp }) => ({
+              ...runnerParams({ provider, isProviderUp, stacks }),
+              executor: ({ results }) =>
+                pipe([
+                  tap(() => {
+                    assert(results);
                   }),
-              ])(),
-          })),
-          Lister({
-            onStateChange: ({ key, result, nextState }) =>
-              pipe([
-                tap.if(
-                  () => includes(nextState)(["DONE", "ERROR"]),
-                  pipe([
-                    () => getProvider({ providerName: key }),
-                    (provider) => {
-                      //TODO
-                    },
-                  ])
+                  () =>
+                    provider.planQuery({
+                      livesData,
+                      onStateChange,
+                    }),
+                ])(),
+            })),
+            Lister({
+              onStateChange: ({ key, result, nextState }) =>
+                pipe([
+                  tap.if(
+                    () => includes(nextState)(["DONE", "ERROR"]),
+                    pipe([
+                      () => getProvider({ providerName: key }),
+                      (provider) => {
+                        //TODO
+                      },
+                    ])
+                  ),
+                ])(),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+            assign({
+              results: pipe([
+                get("results"),
+                callProp("sort", (a, b) =>
+                  a.providerName.localeCompare(b.providerName)
                 ),
-              ])(),
-          }),
-          (result) => ({
-            lives: lives,
-            resultQuery: result,
-          }),
-          assign({ error: any(get("error")) }),
-          tap((result) => {
-            logger.info(`planQuery done`);
-          }),
-        ]),
+              ]),
+            }),
+            (result) => ({
+              lives: livesData,
+              resultQuery: result,
+            }),
+            assignErrorToObject,
+            tap((result) => {
+              logger.info(`planQuery done`);
+            }),
+          ])(),
       ]),
+      tap((params) => {
+        assert(true);
+      }),
     ]);
 
-  const planApply = ({ plan, onStateChange, onProviderEnd = () => {} }) =>
+  const planApply = ({ plan, onStateChange }) =>
     pipe([
       tap(() => {
         logger.info(`planApply`);
         assert(Array.isArray(plan.results));
       }),
-      () => plan.results,
+      () => plan,
+      get("results"),
       filter(not(get("error"))),
-      (results) => ({ results }),
+      (plans) => ({ plans }),
       assign({
         start: pipe([
-          get("results"),
+          get("plans"),
           map(
             tryCatch(
-              (planPerProvider) =>
-                pipe([
-                  () => ({
-                    providerName: planPerProvider.providerName,
-                  }),
-                  getProvider,
-                  // TODO do we need that here
-                  (provider) => provider.start({ onStateChange }),
-                ])(),
+              pipe([
+                pick(["providerName"]),
+                getProvider,
+                callProp("start", { onStateChange }),
+              ]),
               (error, { providerName }) => {
                 logger.error(
                   `planApply start error ${tos(convertError({ error }))}`
@@ -312,58 +580,79 @@ exports.ProviderGru = ({
         ]),
       }),
       assign({
-        results: pipe([
-          get("results"),
-          map(
-            tryCatch(
-              (planPerProvider) =>
-                pipe([
-                  () => ({
-                    providerName: planPerProvider.providerName,
-                  }),
-                  getProvider,
-                  (provider) =>
-                    pipe([
-                      () => ({
-                        plan: planPerProvider,
-                        planAll: plan,
-                        onStateChange,
-                      }),
-                      provider.planApply,
-                      tap((params) => {
-                        assert(true);
-                      }),
-                      assign({
-                        resultHooks: () =>
-                          provider.runOnDeployed({ onStateChange }),
-                      }),
-                      tap((params) => {
-                        assert(true);
-                      }),
-                      assign({
-                        error: pipe([/*omit(["lives"]),*/ any(get("error"))]),
-                      }),
-                      tap(({ error }) => {
-                        onProviderEnd({ provider, error });
-                      }),
-                    ])(),
-                ])(),
-              (error, { providerName }) =>
-                pipe([
-                  () => convertError({ error, name: "Apply" }),
-                  tap((error) => {
-                    logger.error(`planApply ${tos(error)}`);
-                  }),
-                  (error) => ({
-                    error,
-                    providerName,
-                  }),
-                ])()
-            )
-          ),
+        resultCreate: pipe([
+          get("plans"),
+          pluck("resultCreate"),
+          flatten,
+          (plans) =>
+            upsertResources({
+              plans,
+              onStateChange,
+              title: TitleDeploying,
+            }),
+          tap((params) => {
+            assert(true);
+          }),
         ]),
       }),
-      assign({ error: pipe([get("results"), any(get("error"))]) }),
+      assign({
+        resultHooks: pipe([
+          get("plans"),
+          tap((params) => {
+            assert(true);
+          }),
+          map(
+            tryCatch(
+              pipe([
+                pick(["providerName"]),
+                getProvider,
+                callProp("runOnDeployed", { onStateChange }),
+              ]),
+              (error, { providerName }) => {
+                logger.error(
+                  `planApply hooks error ${tos(convertError({ error }))}`
+                );
+                return {
+                  error: convertError({ error, name: "Apply" }),
+                  providerName,
+                };
+              }
+            )
+          ),
+          addErrorToResults,
+        ]),
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+      tap(
+        pipe([
+          get("plans"),
+          map(({ providerName }) =>
+            pipe([
+              () =>
+                onStateChange({
+                  context: contextFromPlanner({
+                    providerName,
+                    title: TitleDeploying,
+                  }),
+                  nextState: "DONE",
+                }),
+              () =>
+                onStateChange({
+                  context: contextFromProvider({
+                    providerName: getProvider({ providerName }).displayName(),
+                  }),
+                  nextState: "DONE",
+                }),
+            ])()
+          ),
+        ])
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+      assignErrorToObject,
       tap((result) => {
         logger.info(`planApply done`);
       }),
@@ -385,7 +674,7 @@ exports.ProviderGru = ({
               logger.info(`startProvider`);
             }),
             () => provider.start({ onStateChange }),
-            tap(() => {
+            tap((params) => {
               logger.info(`startProvider started`);
             }),
             () => ({
@@ -415,31 +704,41 @@ exports.ProviderGru = ({
           ])(),
       }),
       get("results"),
+      map(pick(["error", "providerName"])),
+      addErrorToResults,
       tap((results) => {
         logger.info(`startProvider #providers ${size(results)}`);
       }),
     ])();
 
-  const planQueryDestroy = ({ onStateChange, options }) =>
+  const planQueryDestroy = ({ onStateChange, options, providers }) =>
     pipe([
-      tap((providers) => {
+      tap(() => {
         logger.info(`planQueryDestroy ${JSON.stringify(options)}`);
         assert(onStateChange);
-        assert(stacks);
         assert(Array.isArray(providers));
       }),
+      () => providers,
       listLives({ onStateChange, options, readWrite: true }),
-      () =>
+      (livesData) =>
         pipe([
+          tap((params) => {
+            assert(livesData);
+          }),
           //TODO start twice ?
           () => ({ onStateChange }),
           startProvider,
-          map(({ provider, isProviderUp }) =>
+          () => providers,
+          map((provider) =>
             pipe([
+              tap((params) => {
+                assert(provider);
+              }),
               () =>
                 provider.planQueryDestroy({
                   onStateChange,
                   options,
+                  livesData,
                 }),
               tap(({ error }) => {
                 provider.spinnersStopProvider({
@@ -452,9 +751,9 @@ exports.ProviderGru = ({
           tap((params) => {
             assert(true);
           }),
-          (results) => ({ error: any(get("error"))(results), results }),
-          (resultQueryDestroy) => ({ lives: lives, resultQueryDestroy }),
-          assign({ error: any(get("error")) }),
+          addErrorToResults,
+          (resultQueryDestroy) => ({ lives: livesData, resultQueryDestroy }),
+          assignErrorToObject,
           tap((results) => {
             logger.info(`planQueryDestroy done`);
           }),
@@ -497,7 +796,7 @@ exports.ProviderGru = ({
                 assign({
                   resultHooks: () => provider.runOnDestroyed({ onStateChange }),
                 }),
-                assign({ error: any(get("error")) }),
+                assignErrorToObject,
                 tap((xxx) => {
                   assert(xxx);
                 }),
@@ -698,7 +997,7 @@ exports.ProviderGru = ({
                 actionPayload,
               }),
           }),
-          assign({ error: any(get("error")) }),
+          assignErrorToObject,
           tap((result) => {
             assert(true);
           }),
@@ -718,7 +1017,6 @@ exports.ProviderGru = ({
           (error) => ({ error, hookType }),
         ])
       ),
-      //assign({ error: any(get("error")) }),
       tap((result) => {
         assert(result);
       }),
@@ -857,5 +1155,6 @@ exports.ProviderGru = ({
         options,
       }),
     generateCode,
+    getResource,
   };
 };

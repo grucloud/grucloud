@@ -195,7 +195,13 @@ const decorateLive =
         Object.defineProperty(resource, "managedByUs", {
           enumerable: true,
           get: () =>
-            client.isOurMinion({ uri: resource.uri, live, lives, config }),
+            client.isOurMinion({
+              uri: resource.uri,
+              resource,
+              live,
+              lives,
+              config,
+            }),
         })
       ),
       tap((resource) =>
@@ -250,9 +256,12 @@ const decorateLives = ({ client, config, options, readOnly, lives }) =>
   ]);
 
 const createClient = ({
+  //provider,
   spec,
   providerName,
   config,
+  getResource,
+  //Remove getResourcesByType and getListHof
   getResourcesByType,
   getResourceFromLive,
   getListHof,
@@ -260,14 +269,14 @@ const createClient = ({
 }) =>
   pipe([
     tap((params) => {
-      assert(getListHof);
       assert(spec.Client, `missing Client for ${spec.groupType}`);
       assert(lives);
+      //TODO
+      // assert(provider)
     }),
     () => spec.Client({ providerName, spec, config, lives }),
     tap((client) => {
-      assert(getResourcesByType);
-      assert(getResourceFromLive);
+      //assert(getResourcesByType);
       assert(providerName);
       assert(client.spec);
       assert(client.findName);
@@ -296,24 +305,23 @@ const createClient = ({
       cannotBeDeleted: () => false,
       isDefault: () => false,
       managedByOther: () => false,
-      isOurMinion: ({ uri, live, lives }) =>
-        !!getResourceFromLive({
-          uri,
-          live,
-          lives,
-        }),
+      isOurMinion: ({ uri, resource, live, lives }) => !!getResource(resource),
       configDefault: get("properties"),
       isInstanceUp: not(isEmpty),
       providerName,
     }),
     assign({
       getList: ({ getList }) => getListHof({ getList, spec }),
+      //TODO
+      //getList: ({ getList }) => provider.getListHof({ getList, spec }),
       cannotBeDeleted:
         ({ cannotBeDeleted }) =>
         ({ live, resource, lives }) =>
           cannotBeDeleted({
             live,
             lives,
+            //TODO
+            //resources: provider.getResourcesByType(spec),
             resources: getResourcesByType(spec),
             resource,
             config,
@@ -329,6 +337,7 @@ const createClient = ({
                   client.getList({
                     lives,
                     deep: true,
+                    // resources: provider.getResourcesByType(client.spec),
                     resources: getResourcesByType(client.spec),
                   }),
                 tap((params) => {
@@ -349,7 +358,7 @@ const createClient = ({
                 }),
                 tap((resources) =>
                   lives.addResources({
-                    ...client.spec,
+                    groupType: client.spec.groupType,
                     resources,
                   })
                 ),

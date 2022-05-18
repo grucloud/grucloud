@@ -1045,10 +1045,13 @@ const readModel = ({
       ),
     JSON.parse,
     get("result"),
+    tap((params) => {
+      assert(true);
+    }),
     tap.if(get("error"), () => {
       throw Error("input inventory has errors, aborting");
     }),
-    get("results"),
+    get("lives.results"),
     pluck("results"),
     flatten,
     pluck("resources"),

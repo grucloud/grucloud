@@ -228,11 +228,11 @@ const dependsOnInstanceReverse = ({ plans, specs }) =>
     })),
   ])();
 
-const findDependsOnInstance = ({ uri, planAll, dependsOnInstance }) =>
+const findDependsOnInstance = ({ uri, plans, dependsOnInstance }) =>
   pipe([
     tap(() => {
       assert(uri);
-      assert(Array.isArray(planAll));
+      assert(Array.isArray(plans));
       assert(dependsOnInstance);
     }),
     () => dependsOnInstance,
@@ -244,7 +244,7 @@ const findDependsOnInstance = ({ uri, planAll, dependsOnInstance }) =>
     pluck("uri"),
     flatMap((uri) =>
       pipe([
-        () => planAll,
+        () => plans,
         filter(eq(get("resource.uri"), uri)),
         pluck("resource"),
       ])()
@@ -256,15 +256,7 @@ const findDependsOnInstance = ({ uri, planAll, dependsOnInstance }) =>
     }),
   ])();
 
-const DependencyTree = ({
-  plans,
-  planCreateAll,
-  planDestroyAll,
-  dependsOnType,
-  dependsOnInstance,
-  down,
-}) => {
-  assert(planCreateAll || planDestroyAll);
+const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
   assert(Array.isArray(plans));
   assert(Array.isArray(dependsOnType));
   assert(Array.isArray(dependsOnInstance));
@@ -276,6 +268,9 @@ const DependencyTree = ({
       pipe([
         () => plans,
         pluck("resource"),
+        tap((params) => {
+          assert(true);
+        }),
         map(({ name, providerName, type, group, uri }) => ({
           name,
           uri,
@@ -289,7 +284,7 @@ const DependencyTree = ({
             // }),
             ...findDependsOnInstance({
               uri,
-              planAll: planDestroyAll,
+              plans,
               dependsOnInstance: dependsOnInstanceReverse({
                 plans,
                 specs: dependsOnType,
@@ -319,7 +314,7 @@ const DependencyTree = ({
             }),
             ...findDependsOnInstance({
               uri,
-              planAll: planCreateAll,
+              plans,
               dependsOnInstance,
             }),
           ]),
@@ -333,8 +328,6 @@ const DependencyTree = ({
 
 exports.Planner = ({
   plans,
-  planCreateAll,
-  planDestroyAll,
   dependsOnType,
   dependsOnInstance,
   executor,
@@ -347,13 +340,11 @@ exports.Planner = ({
   assert(isFunction(executor));
   assert(isFunction(onStateChange));
 
-  logger.info(`Planner #plans: ${plans.length}`);
+  logger.info(`Planner #plans: ${size(plans)}`);
   //logger.debug(`Planner #plans: ${plans.length} ${tos({ plans })} `);
 
   const dependencyTree = DependencyTree({
     plans,
-    planCreateAll,
-    planDestroyAll,
     dependsOnType,
     dependsOnInstance,
     down,

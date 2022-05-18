@@ -30,11 +30,10 @@ exports.createLives = () => {
     values,
     flatten,
     callProp("sort", (a, b) =>
-      `${a.groupType}${a.name}`.localeCompare(`${b.groupType}${b.name}`)
+      `${a.providerName}${a.groupType}${a.name}`.localeCompare(
+        `${b.providerName}${b.groupType}${b.name}`
+      )
     ),
-    tap((params) => {
-      assert(true);
-    }),
   ]);
 
   const toJSON = () =>
@@ -116,16 +115,15 @@ exports.createLives = () => {
       logger.info("get error");
       return any(get("error"))(toJSON());
     },
-    addResource: ({ providerName, groupType, resource }) =>
+    addResource: ({ groupType, resource }) =>
       pipe([
         tap((params) => {
-          assert(providerName);
           if (!groupType) {
             assert(groupType);
           }
           logger.info(
             `live addResource ${JSON.stringify({
-              providerName,
+              providerName: resource.providerName,
               groupType,
               mapPerTypeSize: mapPerType.size,
             })}`
@@ -140,7 +138,7 @@ exports.createLives = () => {
         tap((mapById) => {
           logger.info(
             `live addResource ${JSON.stringify({
-              providerName,
+              providerName: resource.providerName,
               groupType,
               mapSize: mapById.size,
             })}`

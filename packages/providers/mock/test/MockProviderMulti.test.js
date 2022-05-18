@@ -1,63 +1,64 @@
 const assert = require("assert");
-const { eq, get } = require("rubico");
+const { groupBy } = require("rubico/x");
 
-const { find, groupBy } = require("rubico/x");
-const { MockProvider } = require("../MockProvider");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
-const { createProviderMaker } = require("@grucloud/core/cli/infra");
+
+const { MockProvider } = require("../MockProvider");
 
 describe("MockProviderMulti", async function () {
   const providerName1 = "provider1";
   const providerName2 = "provider2";
 
-  let provider1;
-  let provider2;
-
-  before(async () => {
-    provider1 = createProviderMaker({})(MockProvider, {
-      name: providerName1,
-      config: () => ({}),
-      createResources: () => [
-        {
-          type: "Volume",
-          group: "Compute",
-          name: "volume1",
-          properties: () => ({
-            size: 10_000_000_000,
-          }),
-        },
-      ],
-    });
-
-    provider2 = createProviderMaker({})(MockProvider, {
-      name: providerName2,
-      config: () => ({}),
-      dependencies: { provider1 },
-      createResources: () => [
-        {
-          type: "Volume",
-          group: "Compute",
-          name: "volume2",
-          properties: () => ({
-            size: 10_000_000_000,
-          }),
-        },
-      ],
-    });
-  });
+  before(async () => {});
 
   it("multi  apply", async function () {
     const cli = await Cli({
-      createStack: () => ({
-        stacks: [{ provider: provider1 }, { provider: provider2 }],
+      createStack: ({ createProvider }) => ({
+        stacks: [
+          {
+            provider: createProvider(MockProvider, {
+              name: providerName1,
+              config: () => ({}),
+              createResources: () => [
+                {
+                  type: "Volume",
+                  group: "Compute",
+                  name: "volume1",
+                  properties: () => ({
+                    size: 10_000_000_000,
+                  }),
+                },
+              ],
+            }),
+          },
+          {
+            provider: createProvider(MockProvider, {
+              name: providerName2,
+              config: () => ({}),
+              //TODO
+              //dependencies: { provider1 },
+              createResources: () => [
+                {
+                  type: "Volume",
+                  group: "Compute",
+                  name: "volume2",
+                  properties: () => ({
+                    size: 10_000_000_000,
+                  }),
+                },
+              ],
+            }),
+          },
+        ],
       }),
     });
+
     {
-      const result = await cli.list({
+      const { lives } = await cli.list({
         commandOptions: { provider: [providerName2] },
       });
-      assert(!result.error);
-      const mapProvider = groupBy("providerName")(result.results);
+      assert(!lives.error);
+      const mapProvider = groupBy("providerName")(lives.results);
       assert.equal(mapProvider.size, 1);
     }
     {
@@ -72,9 +73,9 @@ describe("MockProviderMulti", async function () {
       });
     }
     {
-      const result = await cli.list({});
-      assert(!result.error);
-      const mapProvider = groupBy("providerName")(result.results);
+      const { lives } = await cli.list({});
+      assert(!lives.error);
+      const mapProvider = groupBy("providerName")(lives.results);
       assert.equal(mapProvider.size, 2);
     }
     {

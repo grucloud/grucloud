@@ -858,14 +858,13 @@ exports.fnSpecs = ({ config }) => {
             ids: [pipe([() => live, get("properties.firewallPolicy.id")])()],
           },
         ],
-        omitProperties: ["properties.ipConfigurations"],
+        omitProperties: [],
         filterLive: ({ lives }) =>
           pipe([
             pick(["name", "sku", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
-                //pick(["ipConfigurations"]),
                 omit(["provisioningState"]),
                 assign({
                   firewallPolicy: pipe([
