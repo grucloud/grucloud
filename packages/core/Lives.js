@@ -4,7 +4,7 @@ const {
   size,
   isEmpty,
   find,
-  prepend,
+  when,
   callProp,
   isString,
   values,
@@ -67,7 +67,7 @@ exports.createLives = () => {
       }),
     ])();
 
-  const getByType = ({ type, group }) =>
+  const getByType = ({ type, group, providerName }) =>
     pipe([
       tap(() => {
         assert(type);
@@ -76,6 +76,7 @@ exports.createLives = () => {
       toGroupType,
       getMapByIdByGroupType,
       (mapById) => [...mapById.values()],
+      when(() => providerName, filter(eq(get("providerName"), providerName))),
       tap((resources) => {
         logger.debug(
           `getByType ${JSON.stringify({
@@ -94,7 +95,8 @@ exports.createLives = () => {
           assert(isString(id));
         }
       }),
-      () => getByType({ providerName, type, group }),
+      // no providerName for cross account dependencies
+      () => getByType({ type, group }),
       find(pipe([get("id"), eq(callProp("toUpperCase"), id.toUpperCase())])),
       tap((result) => {
         assert(true);

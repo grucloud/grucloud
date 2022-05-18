@@ -1680,11 +1680,17 @@ const genCode = ({
       () => infra,
       setupProviders({ mapGloblalNameToResource, commandOptions }),
       ({ providerGru }) =>
-        providerGru.runCommand({
-          functionName: "generateCode",
-          commandOptions,
-          programOptions,
-        }),
+        pipe([
+          () => ({ onStateChange: identity }),
+          providerGru.startProvider,
+          //TODO handle error
+          //TODO only if --no-fetch-inventory
+          () =>
+            providerGru.generateCode({
+              commandOptions,
+              programOptions,
+            }),
+        ])(),
       throwIfError,
     ]),
     DisplayAndThrow({ name: "genCode" })
