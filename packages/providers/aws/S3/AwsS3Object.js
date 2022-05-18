@@ -1,6 +1,8 @@
 const assert = require("assert");
 const fs = require("fs").promises;
 const path = require("path");
+const util = require("util");
+
 const {
   map,
   filter,
@@ -119,27 +121,38 @@ exports.AwsS3Object = ({ spec, config }) => {
           providerName: config.providerName,
         }),
       map.pool(mapPoolSize, (bucket) =>
-        pipe([
-          () => ({
-            Bucket: bucket.name,
-            MaxKeys: 1e3,
-          }),
-          s3().listObjectsV2,
-          get("Contents", []),
-          tap((params) => {
-            assert(true);
-          }),
-          map.pool(
-            mapPoolSize,
-            pipe([({ Key }) => ({ Key, Bucket: bucket.name }), getByKey])
-          ),
-        ])()
+        tryCatch(
+          pipe([
+            () => ({
+              Bucket: bucket.name,
+              MaxKeys: 1e3,
+            }),
+            s3().listObjectsV2,
+            get("Contents", []),
+            tap((params) => {
+              assert(true);
+            }),
+            map.pool(
+              mapPoolSize,
+              pipe([({ Key }) => ({ Key, Bucket: bucket.name }), getByKey])
+            ),
+          ]),
+          (error, bucket) =>
+            pipe([
+              tap((params) => {
+                logger.error(
+                  `listObjectsV2 bucket: ${bucket.name}, error: ${util.inspect(
+                    error
+                  )}`
+                );
+              }),
+              () => [{ error, bucket, config }],
+            ])()
+        )()
       ),
       flatten,
       filter(not(isEmpty)),
-      tap.if(any(get("error")), (objects) => {
-        throw { code: 500, errors: objects };
-      }),
+      filter(not(get("error"))),
     ])();
 
   const getByKey = ({ Key, Bucket }) =>
@@ -154,20 +167,36 @@ exports.AwsS3Object = ({ spec, config }) => {
         pipe([
           fork({
             ACL: pipe([s3().getObjectAcl, pick(["Grants", "Owner"])]),
-            signedUrl: pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              (input) =>
-                getSignedUrl(
-                  new S3Client(config),
-                  new GetObjectCommand(input),
-                  {}
-                ),
-              tap((params) => {
-                assert(true);
-              }),
-            ]),
+            signedUrl: tryCatch(
+              pipe([
+                tap((params) => {
+                  assert(true);
+                }),
+                (input) =>
+                  getSignedUrl(
+                    new S3Client(config),
+                    new GetObjectCommand(input),
+                    {}
+                  ),
+                tap((params) => {
+                  assert(true);
+                }),
+              ]),
+              (error, bucket) =>
+                pipe([
+                  // error happens when using AWS profile
+                  tap((params) => {
+                    logger.error(
+                      `getSignedUrl error for ${JSON.stringify(bucket)}`
+                    );
+                    logger.error(error);
+                    logger.error(error.stack);
+                  }),
+                  () => ({
+                    error,
+                  }),
+                ])()
+            ),
             content: pipe([s3().headObject]),
             Tags: pipe([
               //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObjectTagging-property
