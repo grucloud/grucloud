@@ -3,27 +3,8 @@ title Resources for project aks-basic
 skinparam monochrome true
 + Infra
 ++ azure
-+++ Authorization
-++++ RoleAssignment (1)
-+++ Compute
-++++ VirtualMachineScaleSet (1)
-++++ VirtualMachineScaleSetExtension (2)
-+++ ContainerRegistry
-++++ Registry (1)
 +++ ContainerService
-++++ AgentPool (1)
 ++++ ManagedCluster (1)
-+++ ManagedIdentity
-++++ UserAssignedIdentity (2)
-+++ Network
-++++ LoadBalancer (1)
-++++ LoadBalancerBackendAddressPool (2)
-++++ NetworkSecurityGroup (1)
-++++ PublicIPAddress (2)
-++++ Route (2)
-++++ RouteTable (1)
-++++ Subnet (1)
-++++ VirtualNetwork (1)
 +++ Resources
-++++ ResourceGroup (2)
+++++ ResourceGroup (1)
 @endmindmap

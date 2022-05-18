@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { tryCatch, map, pipe } = require("rubico");
+const { tryCatch, map, pipe, tap } = require("rubico");
 const { forEach } = require("rubico/x");
 const { createResources } = require("./MockStack");
 const prompts = require("prompts");
@@ -12,22 +12,27 @@ const { createProviderMaker } = require("@grucloud/core/cli/infra");
 describe("MockProviderCli", async function () {
   before(async () => {});
   it("init and uninit error", async function () {
-    const provider = createProviderMaker({})(MockProvider, {
-      config: () => ({}),
-      createResources,
-    });
-    const cli = await Cli({
-      createStack: () => ({ provider }),
-    });
-
     const errorMessage = "stub-error";
 
-    provider.init = sinon
-      .stub()
-      .returns(Promise.reject({ message: errorMessage }));
-    provider.unInit = sinon
-      .stub()
-      .returns(Promise.reject({ message: errorMessage }));
+    const cli = await Cli({
+      createStack: ({ createProvider }) => ({
+        provider: pipe([
+          () =>
+            createProvider(MockProvider, {
+              config: () => ({}),
+              createResources,
+            }),
+          tap((provider) => {
+            provider.init = sinon
+              .stub()
+              .returns(Promise.reject({ message: errorMessage }));
+            provider.unInit = sinon
+              .stub()
+              .returns(Promise.reject({ message: errorMessage }));
+          }),
+        ])(),
+      }),
+    });
 
     const checkError = ({ code, error }) => {
       assert.equal(code, 422);
@@ -55,20 +60,35 @@ describe("MockProviderCli", async function () {
       checkError(ex);
     }
   });
-  it.skip("start error", async function () {
-    const provider = createProviderMaker({})(MockProvider, {
-      config: () => ({}),
-      createResources,
-    });
+  it("start error", async function () {
     const errorMessage = "stub-error";
-
-    provider.start = sinon
-      .stub()
-      .returns(Promise.reject({ message: errorMessage }));
-    const infra = { provider };
+    const cli = await Cli({
+      createStack: ({ createProvider }) => ({
+        provider: pipe([
+          () =>
+            createProvider(MockProvider, {
+              config: () => ({}),
+              createResources,
+            }),
+          tap((provider) => {
+            provider.start = sinon
+              .stub()
+              .returns(Promise.reject({ message: errorMessage }));
+          }),
+        ])(),
+      }),
+    });
 
     await pipe([
-      map(
+      () => [
+        { command: "list" },
+        { command: "planQuery" },
+        { command: "planApply" },
+        { command: "planDestroy" },
+        // TODO graph
+        // TODO live { command: "planRunScript", options: { onDeployed: true } },
+      ],
+      map.series(
         tryCatch(
           async ({ command, options = {} }) => {
             const result = await cli[command]({
@@ -77,22 +97,19 @@ describe("MockProviderCli", async function () {
             assert(result.error);
             assert(false, `should not be here for command ${command}`);
           },
-          (ex) => ex
+          (ex, { command }) => {
+            assert(command);
+            return ex;
+          }
         )
       ),
       forEach((ex) => {
         assert.equal(ex.code, 422);
         assert(ex.error);
-        assert(ex.error.message);
+        assert(ex.error.start.error);
         //assert(ex.error.result.resultStart);
       }),
-    ])([
-      //{ command: "list" },
-      { command: "planQuery" },
-      { command: "planApply" },
-      { command: "planDestroy" },
-      // TODO live { command: "planRunScript", options: { onDeployed: true } },
-    ]);
+    ])();
   });
   //TODO
   it.skip("abort deploy and destroy", async function () {

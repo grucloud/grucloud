@@ -68,6 +68,9 @@ const fnSpecs = (config) => {
             configDefault,
           }),
         type: "SecurityGroup",
+        dependencies: {
+          securityGroup: { type: "SecurityGroup", group: "Compute" },
+        },
       },
       {
         dependencies: {

@@ -61,16 +61,17 @@ describe("MockProviderHooksGlobal", async function () {
   it("global onDeployed and onDestroyed called when apply fails", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
-
     const hookGlobal = makehookGlobal({ onDeployed, onDestroyed });
 
-    const provider = MockProvider({
-      createResources,
-      config: config404,
-    });
-
     const cli = await Cli({
-      createStack: () => ({ stacks: [{ provider }], hookGlobal }),
+      createStack: ({ createProvider }) => ({
+        hookGlobal,
+        provider: createProvider(MockProvider, {
+          name: "mock1",
+          createResources,
+          config: config404,
+        }),
+      }),
     });
 
     try {
@@ -90,19 +91,25 @@ describe("MockProviderHooksGlobal", async function () {
       });
       assert(false, "should not be here");
     } catch (error) {
-      const lives = error.error.lives.json;
+      const lives = error.error.lives.results;
       assert.equal(lives[0].results[0].error.response.status, 404);
     }
     assert(onDestroyed.init.called);
   });
   it("planApply init throw ", async function () {
-    const provider = MockProvider({ config: () => ({}), createResources });
-
     const hookGlobal = makeHookGlobalThrowInit();
 
     const cli = await Cli({
-      createStack: () => ({ stacks: [{ provider }], hookGlobal }),
+      createStack: ({ createProvider }) => ({
+        hookGlobal,
+        provider: createProvider(MockProvider, {
+          name: "mock1",
+          createResources,
+          config: () => ({}),
+        }),
+      }),
     });
+
     try {
       const result = await cli.planApply({
         commandOptions: { force: true },
@@ -126,13 +133,19 @@ describe("MockProviderHooksGlobal", async function () {
     }
   });
   it("run --onDeployed init throw ", async function () {
-    const provider = MockProvider({ config: () => ({}), createResources });
-
     const hookGlobal = makeHookGlobalThrowInit();
 
     const cli = await Cli({
-      createStack: () => ({ stacks: [{ provider }], hookGlobal }),
+      createStack: ({ createProvider }) => ({
+        hookGlobal,
+        provider: createProvider(MockProvider, {
+          name: "mock1",
+          createResources,
+          config: () => ({}),
+        }),
+      }),
     });
+
     try {
       await cli.planRunScript({
         commandOptions: { onDeployedGlobal: true },
@@ -144,7 +157,6 @@ describe("MockProviderHooksGlobal", async function () {
   });
 
   it("action throw ", async function () {
-    const provider = MockProvider({ config: () => ({}), createResources });
     const message = "i throw in a command";
 
     const hookGlobal = () => ({
@@ -180,9 +192,15 @@ describe("MockProviderHooksGlobal", async function () {
         ],
       },
     });
-
     const cli = await Cli({
-      createStack: () => ({ stacks: [{ provider }], hookGlobal }),
+      createStack: ({ createProvider }) => ({
+        hookGlobal,
+        provider: createProvider(MockProvider, {
+          name: "mock1",
+          createResources,
+          config: () => ({}),
+        }),
+      }),
     });
 
     try {

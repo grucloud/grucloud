@@ -237,7 +237,11 @@ const filterProvider =
 exports.filterProvider = filterProvider;
 
 exports.setupProviders =
-  ({ mapGloblalNameToResource, commandOptions = {}, programOptions } = {}) =>
+  ({
+    mapGloblalNameToResource,
+    commandOptions = {},
+    programOptions = {},
+  } = {}) =>
   (infra) =>
     pipe([
       tap(() => {

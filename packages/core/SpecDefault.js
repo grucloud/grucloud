@@ -55,6 +55,7 @@ const SpecDefault = ({ providerName }) => ({
   listOnly: false,
   isOurMinion: () => false,
   propertiesDefault: {},
+  dependencies: {},
   resourceKey: resourceKeyDefault,
   transformDependencies: () => identity,
   postCreate: () => identity,

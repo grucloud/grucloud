@@ -2,17 +2,7 @@ const assert = require("assert");
 const fs = require("fs").promises;
 const querystring = require("querystring");
 
-const {
-  pipe,
-  tap,
-  eq,
-  map,
-  get,
-  filter,
-  tryCatch,
-  switchCase,
-  not,
-} = require("rubico");
+const { pipe, tap, eq, map, get, filter, tryCatch, not } = require("rubico");
 const { defaultsDeep, find, isEmpty, when } = require("rubico/x");
 const {
   logError,
@@ -37,10 +27,14 @@ const { tos } = require("@grucloud/core/tos");
 const findName = get("live.name");
 const findId = get("live.id");
 
-const objectPath = (bucketName, name) => {
-  assert(name);
-  return `/${bucketName}/o/${querystring.escape(name)}`;
-};
+const objectPath = ({ bucket, name }) =>
+  pipe([
+    tap(() => {
+      assert(bucket);
+      assert(name);
+    }),
+    () => `/${bucket}/o/${querystring.escape(name)}`,
+  ])();
 
 exports.GcpObject = ({ spec, config: configProvider }) => {
   assert(spec);
@@ -82,7 +76,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
     },
   ];
 
-  const getBucket = ({ name, dependencies = {} }) => {
+  const getBucket = ({ name, dependencies }) => {
     assert(name);
     const { bucket } = dependencies();
     if (!bucket) {
@@ -107,17 +101,17 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
 
   const getObject = tryCatch(
     pipe([
-      ({ bucket, name }) => objectPath(bucket.name, name),
+      ({ bucket, name }) => objectPath({ bucket: bucket.name, name }),
       (path) =>
         retryCallOnError({
           name: `getObject ${path}`,
           fn: () => axios.get(path),
           config: configProvider,
-          isExpectedException: (error) => error.response?.status === 404,
+          isExpectedException: eq(get("response.status"), 404),
         }),
       get("data"),
       tap((result) => {
-        logger.debug(`getObject ${tos(result)}`);
+        //logger.debug(`getObject ${tos(result)}`);
       }),
     ]),
     (error) => {
@@ -229,31 +223,34 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
 
   const update = create;
 
-  const destroy = ({ resource }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          assert(resource);
-          logger.info(`destroy object name: ${resource.toString()}`);
-        }),
-        getBucket,
-        (bucket) => objectPath(bucket.name, resource.name),
-        (path) =>
-          retryCallOnError({
-            name: `destroy object ${path}`,
-            fn: () => axios.delete(path),
-            config: configProvider,
+  const destroy = ({ live }) =>
+    pipe([
+      () => live,
+      tryCatch(
+        pipe([
+          tap(({ bucket, name }) => {
+            assert(bucket);
+            assert(name);
+            logger.info(`destroy object name: ${bucket}::${name}`);
           }),
-        get("data"),
-        tap(() => {
-          logger.info(`destroyed object ${resource.toString()}`);
-        }),
-      ]),
-      (error, resource) => {
-        logError(`destroyed ${resource.toString()}`, error);
-        throw axiosErrorToJSON(error);
-      }
-    )(resource);
+          objectPath,
+          (path) =>
+            retryCallOnError({
+              name: `destroy object ${path}`,
+              fn: () => axios.delete(path),
+              config: configProvider,
+            }),
+          get("data"),
+          tap(() => {
+            logger.debug(`destroyed object ${live.id}`);
+          }),
+        ]),
+        (error, { bucket, name }) => {
+          logError(`destroyed ${bucket}::${name}`, error);
+          throw axiosErrorToJSON(error);
+        }
+      ),
+    ])();
 
   return {
     spec,

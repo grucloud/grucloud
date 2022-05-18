@@ -9,10 +9,10 @@ describe("EC2 DhcpOptions", async function () {
 
   before(async function () {
     provider = AwsProvider({ config });
+    await provider.start();
     dhcpOptions = provider.getClient({
       groupType: "EC2::DhcpOptions",
     });
-    await provider.start();
   });
   it(
     "list",

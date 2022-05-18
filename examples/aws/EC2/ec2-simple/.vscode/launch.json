@@ -68,6 +68,17 @@
       "port": 9229
     },
     {
+      "name": "Destroy All",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "destroy-all"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "onDeployed",
       "type": "node",
       "request": "launch",

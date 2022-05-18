@@ -1,25 +1,9 @@
 const assert = require("assert");
 const { MockProvider } = require("../MockProvider");
 const { createAxiosMock } = require("../MockAxios");
-const { ProviderGru } = require("@grucloud/core/ProviderGru");
-const { createProviderMaker } = require("@grucloud/core/cli/infra");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
-const createMockProvider = async ({
-  name,
-  config,
-  mockCloud,
-  createResources,
-}) => {
-  return createProviderMaker({})(MockProvider, {
-    name,
-    createResources,
-    config: () => ({
-      //...config,
-      mockCloud,
-      createAxios: createAxiosMock,
-    }),
-  });
-};
+const { pipe, tap } = require("rubico");
+const { Cli } = require("@grucloud/core/cli/cliCommands");
 
 describe("MockProvider errors", async function () {
   let config;
@@ -31,82 +15,112 @@ describe("MockProvider errors", async function () {
   after(async () => {});
 
   it("create 2 resources with the same name", async function () {
-    const provider = await createMockProvider({
-      name: "mock",
-      config,
-      mockCloud: MockCloud(),
-      createResources: () => [
-        { type: "Ip", group: "Compute", name: "myip" },
-        { type: "Ip", group: "Compute", name: "myip" },
-      ],
-    });
-    const resources = provider.resources();
-    assert(!isEmpty(resources));
-  });
-  it("create 2 providers with the same resource name", async function () {
-    const provider1 = await createMockProvider({
-      name: "mock1",
-      config,
-      mockCloud,
-      createResources: () => [{ type: "Ip", group: "Compute", name: "myip" }],
-    });
-    const provider2 = await createMockProvider({
-      name: "mock2",
-      config,
-      mockCloud,
-      createResources: () => [{ type: "Ip", group: "Compute", name: "myip" }],
+    const cli = await Cli({
+      createStack: ({ createProvider }) => ({
+        stacks: [
+          {
+            provider: createProvider(MockProvider, {
+              name: "mock",
+              config,
+              mockCloud: MockCloud(),
+              createResources: pipe([
+                tap((params) => {
+                  assert(true);
+                }),
+                () => [
+                  { type: "Ip", group: "Compute", name: "myip" },
+                  { type: "Ip", group: "Compute", name: "myip" },
+                ],
+              ]),
+            }),
+          },
+        ],
+      }),
     });
 
-    const providersGru = ProviderGru({
-      stacks: [{ provider: provider1 }, { provider: provider2 }],
+    const result = await cli.planQuery({});
+    assert(!result.error);
+  });
+  it("create 2 providers with the same resource name", async function () {
+    const config = () => ({ mockCloud, createAxios: createAxiosMock });
+
+    const cli = await Cli({
+      createStack: ({ createProvider }) => ({
+        stacks: [
+          {
+            provider: createProvider(MockProvider, {
+              name: "mock1",
+              createResources: () => [
+                { type: "Ip", group: "Compute", name: "myip" },
+              ],
+              config,
+            }),
+          },
+          {
+            provider: createProvider(MockProvider, {
+              name: "mock2",
+              createResources: () => [
+                { type: "Ip", group: "Compute", name: "myip" },
+              ],
+              config,
+            }),
+          },
+        ],
+      }),
     });
-    const result = providersGru.planQuery();
+
+    const result = await cli.planQuery({});
+
     assert(!result.error);
   });
 
   it("empty create plan, non empty destroy plan", async function () {
-    const mockCloud = MockCloud();
-    {
-      const provider = await createMockProvider({
-        name: "mock1",
-        config,
-        mockCloud,
-        createResources: () => [
-          {
-            type: "Volume",
-            group: "Compute",
-            name: "volume1",
-            properties: () => ({
-              size: 20_000_000_000,
-            }),
-          },
-          {
-            type: "Server",
-            group: "Compute",
-            name: "web-server",
-            properties: () => ({
-              diskSizeGb: "20",
-              machineType: "f1-micro",
-            }),
-          },
-          { type: "Ip", group: "Compute", name: "myip" },
-        ],
-      });
+    const config = () => ({ mockCloud, createAxios: createAxiosMock });
 
-      const providersGru = ProviderGru({ stacks: [{ provider }] });
-      const { error } = providersGru.planQuery();
-      assert(!error);
-    }
-    {
-      const provider = await createMockProvider({
-        name: "mock2",
-        config,
-        mockCloud,
-        createResources: () => [],
-      });
-      const providersGru = ProviderGru({ stacks: [{ provider }] });
-      const { error } = providersGru.planQuery();
-      assert(!error);
-    }
+    const cli = await Cli({
+      createStack: ({ createProvider }) => ({
+        stacks: [
+          {
+            provider: createProvider(MockProvider, {
+              name: "mock1",
+              config,
+              mockCloud,
+              createResources: () => [
+                {
+                  type: "Volume",
+                  group: "Compute",
+                  name: "volume1",
+                  properties: () => ({
+                    size: 20_000_000_000,
+                  }),
+                },
+                {
+                  type: "Server",
+                  group: "Compute",
+                  name: "web-server",
+                  properties: () => ({
+                    diskSizeGb: "20",
+                    machineType: "f1-micro",
+                  }),
+                },
+                { type: "Ip", group: "Compute", name: "myip" },
+              ],
+            }),
+          },
+          {
+            provider: createProvider(MockProvider, {
+              name: "mock2",
+              config,
+              mockCloud,
+              createResources: () => [],
+            }),
+          },
+        ],
+      }),
+    });
+
+    const result = await cli.planQuery({});
+
+    assert(!result.error);
   });
 });

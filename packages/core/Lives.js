@@ -115,16 +115,15 @@ exports.createLives = () => {
       logger.info("get error");
       return any(get("error"))(toJSON());
     },
-    addResource: ({ providerName, groupType, resource }) =>
+    addResource: ({ groupType, resource }) =>
       pipe([
         tap((params) => {
-          assert(providerName);
           if (!groupType) {
             assert(groupType);
           }
           logger.info(
             `live addResource ${JSON.stringify({
-              providerName,
+              providerName: resource.providerName,
               groupType,
               mapPerTypeSize: mapPerType.size,
             })}`
@@ -139,7 +138,7 @@ exports.createLives = () => {
         tap((mapById) => {
           logger.info(
             `live addResource ${JSON.stringify({
-              providerName,
+              providerName: resource.providerName,
               groupType,
               mapSize: mapById.size,
             })}`

@@ -5,7 +5,6 @@ const { createResources } = require("./MockStack");
 const config404 = require("./config/config.404");
 const { MockProvider } = require("../MockProvider");
 const { Cli } = require("@grucloud/core/cli/cliCommands");
-const { createProviderMaker } = require("@grucloud/core/cli/infra");
 
 const { tos } = require("@grucloud/core/tos");
 
@@ -13,23 +12,21 @@ describe("MockProviderHooks", async function () {
   it("onDeployed", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
-
-    const provider = createProviderMaker({})(MockProvider, { createResources });
-
-    provider.hookAdd({
-      name: "mock-test",
-      hookInstance: {
-        onDeployed: {
-          init: onDeployed.init,
-        },
-        onDestroyed: {
-          init: onDestroyed.init,
-        },
-      },
-    });
-
     const cli = await Cli({
-      createStack: () => ({ provider }),
+      createStack: ({ createProvider }) => ({
+        provider: createProvider(MockProvider, { createResources }),
+        hooks: [
+          () => ({
+            name: "mock-test",
+            onDeployed: {
+              init: onDeployed.init,
+            },
+            onDestroyed: {
+              init: onDestroyed.init,
+            },
+          }),
+        ],
+      }),
     });
 
     await cli.planApply({
@@ -46,25 +43,26 @@ describe("MockProviderHooks", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
 
-    const provider = createProviderMaker({})(MockProvider, {
-      config: config404,
-      createResources,
+    const cli = await Cli({
+      createStack: ({ createProvider }) => ({
+        provider: createProvider(MockProvider, {
+          config: config404,
+          createResources,
+        }),
+        hooks: [
+          () => ({
+            name: "mock-test",
+            onDeployed: {
+              init: onDeployed.init,
+            },
+            onDestroyed: {
+              init: onDestroyed.init,
+            },
+          }),
+        ],
+      }),
     });
 
-    provider.hookAdd({
-      name: "mock-test",
-      hookInstance: {
-        onDeployed: {
-          init: onDeployed.init,
-        },
-        onDestroyed: {
-          init: onDestroyed.init,
-        },
-      },
-    });
-    const cli = await Cli({
-      createStack: () => ({ provider }),
-    });
     try {
       await cli.planApply({
         commandOptions: { force: true },
@@ -82,33 +80,34 @@ describe("MockProviderHooks", async function () {
       });
       assert(false, "should not be here");
     } catch (error) {
-      const lives = error.error.lives.json;
+      const lives = error.error.lives.results;
       assert.equal(lives[0].results[0].error.response.status, 404);
     }
 
     assert(!onDestroyed.init.called);
   });
   it("planApply init throw ", async function () {
-    const provider = createProviderMaker({})(MockProvider, { createResources });
-
     const cli = await Cli({
-      createStack: () => ({ provider }),
-    });
-
-    provider.hookAdd({
-      name: "mock-init-throw",
-      hookInstance: {
-        onDeployed: {
-          init: () => {
-            throw "i throw in onDeployed init";
-          },
-        },
-        onDestroyed: {
-          init: () => {
-            throw "i throw in onDestroyed init";
-          },
-        },
-      },
+      createStack: ({ createProvider }) => ({
+        provider: createProvider(MockProvider, {
+          createResources,
+        }),
+        hooks: [
+          () => ({
+            name: "mock-test",
+            onDeployed: {
+              init: () => {
+                throw "i throw in onDeployed init";
+              },
+            },
+            onDestroyed: {
+              init: () => {
+                throw "i throw in onDestroyed init";
+              },
+            },
+          }),
+        ],
+      }),
     });
 
     try {
@@ -121,7 +120,7 @@ describe("MockProviderHooks", async function () {
       const { error } = exception;
       assert(error.error);
 
-      const { resultHooks } = error.resultDeploy.results[0];
+      const { resultHooks } = error.resultDeploy;
       assert(resultHooks.error);
       assert(resultHooks.results[0].error);
     }
@@ -139,21 +138,22 @@ describe("MockProviderHooks", async function () {
     }
   });
   it("run --onDeployed init throw ", async function () {
-    const provider = createProviderMaker({})(MockProvider, { createResources });
-
     const cli = await Cli({
-      createStack: () => ({ provider, createResources }),
-    });
-
-    provider.hookAdd({
-      name: "mock-run-ondeployed-init-throw",
-      hookInstance: {
-        onDeployed: {
-          init: () => {
-            throw "i throw in onDeployed init";
-          },
-        },
-      },
+      createStack: ({ createProvider }) => ({
+        provider: createProvider(MockProvider, {
+          createResources,
+        }),
+        hooks: [
+          () => ({
+            name: "mock-test",
+            onDeployed: {
+              init: () => {
+                throw "i throw in onDeployed init";
+              },
+            },
+          }),
+        ],
+      }),
     });
 
     try {
@@ -168,47 +168,47 @@ describe("MockProviderHooks", async function () {
   });
 
   it("action throw ", async function () {
-    const provider = createProviderMaker({})(MockProvider, { createResources });
+    const message = "i throw in a command";
 
     const cli = await Cli({
-      createStack: () => ({ provider }),
-    });
-
-    const message = "i throw in a command";
-    provider.hookAdd({
-      name: "mock-action-throw",
-      hookInstance: {
-        onDeployed: {
-          init: () => {},
-          actions: [
-            {
-              name: "Ping",
-              command: async () => {},
+      createStack: ({ createProvider }) => ({
+        provider: createProvider(MockProvider, { createResources }),
+        hooks: [
+          () => ({
+            name: "mock-test",
+            onDeployed: {
+              init: () => {},
+              actions: [
+                {
+                  name: "Ping",
+                  command: async () => {},
+                },
+                {
+                  name: "SSH",
+                  command: async () => {
+                    throw Error(message);
+                  },
+                },
+              ],
             },
-            {
-              name: "SSH",
-              command: async () => {
-                throw Error(message);
-              },
+            onDestroyed: {
+              init: () => {},
+              actions: [
+                {
+                  name: "Ping",
+                  command: async () => {},
+                },
+                {
+                  name: "SSH",
+                  command: async () => {
+                    throw Error(message);
+                  },
+                },
+              ],
             },
-          ],
-        },
-        onDestroyed: {
-          init: () => {},
-          actions: [
-            {
-              name: "Ping",
-              command: async () => {},
-            },
-            {
-              name: "SSH",
-              command: async () => {
-                throw Error(message);
-              },
-            },
-          ],
-        },
-      },
+          }),
+        ],
+      }),
     });
 
     try {
@@ -218,7 +218,7 @@ describe("MockProviderHooks", async function () {
       assert(false, "should not be here");
     } catch (ex) {
       const { error } = ex;
-      const { resultHooks } = error.resultDeploy.results[0];
+      const { resultHooks } = error.resultDeploy;
       assert(resultHooks.error);
       assert(resultHooks.results[0].error);
     }

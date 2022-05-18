@@ -1,8 +1,11 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, fork, filter, not } = require("rubico");
-const { defaultsDeep, when, isEmpty } = require("rubico/x");
+const { when, isEmpty, includes } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const logger = require("@grucloud/core/logger")({
+  prefix: "TgwPeeringAttachment",
+});
 
 const { buildTags, findNameInTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
@@ -64,7 +67,14 @@ const createModel = ({ config }) => ({
     method: "createTransitGatewayPeeringAttachment",
     pickCreated: ({ payload }) =>
       pipe([get("TransitGatewayPeeringAttachment")]),
-    isInstanceUp: pipe([eq(get("State"), "available")]),
+    configIsUp: { retryCount: 20 * 10, retryDelay: 5e3 },
+    isInstanceUp: pipe([
+      tap(({ State }) => {
+        logger.debug(`TransitGatewayPeeringAttachment State: ${State}`);
+      }),
+      ({ State }) =>
+        pipe([() => ["available", "pendingAcceptance"], includes(State)])(),
+    ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteTransitGatewayPeeringAttachment-property
   destroy: {

@@ -13,9 +13,12 @@ const {
   not,
   and,
   or,
+  fork,
+  assign,
 } = require("rubico");
 
 const {
+  isObject,
   isString,
   isEmpty,
   size,
@@ -39,6 +42,23 @@ const PlanDirection = {
 };
 
 exports.PlanDirection = PlanDirection;
+
+exports.addErrorToResults = pipe([
+  tap((results) => {
+    assert(Array.isArray(results));
+  }),
+  fork({
+    error: any(get("error")),
+    results: identity,
+  }),
+]);
+
+exports.assignErrorToObject = pipe([
+  tap((obj) => {
+    assert(isObject(obj));
+  }),
+  assign({ error: any(get("error")) }),
+]);
 
 const displayType = ({ group, type }) =>
   `${isEmpty(group) ? "" : `${group}::`}${type}`;
@@ -572,3 +592,25 @@ exports.contextFromHookGlobalAction = ({ hookType, name }) => {
     displayText: () => name,
   };
 };
+
+// TODO add param to throw
+exports.createGetResource = ({ mapGloblalNameToResource }) =>
+  pipe([
+    tap(({ type, group, name }) => {
+      assert(type);
+      assert(group);
+      assert(name);
+    }),
+    ({ type, group, name }) => `${group}::${type}::${name}`,
+    (uri) =>
+      pipe([
+        () => mapGloblalNameToResource.get(uri),
+        tap.if(isEmpty, () => {
+          logger.info(
+            `no resource for ${uri}, available resources:\n${[
+              ...mapGloblalNameToResource.keys(),
+            ].join("\n")} )}`
+          );
+        }),
+      ])(),
+  ]);

@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe.only("EC2TransitGatewayRoute", async function () {
+describe("EC2TransitGatewayRoute", async function () {
   let config;
   let provider;
   let transitGatewayRoute;
@@ -14,7 +14,7 @@ describe.only("EC2TransitGatewayRoute", async function () {
     });
     await provider.start();
   });
-  it.only(
+  it(
     "delete with invalid id",
     pipe([
       () =>

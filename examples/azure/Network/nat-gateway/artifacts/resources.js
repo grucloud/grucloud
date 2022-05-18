@@ -15,7 +15,7 @@ exports.createResources = () => [
         idleTimeoutInMinutes: 4,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-natgateway",
       publicIpAddresses: ["rg-natgateway::ip-address"],
     }),
@@ -32,7 +32,7 @@ exports.createResources = () => [
         publicIPAllocationMethod: "Static",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-natgateway",
     }),
   },
@@ -45,7 +45,7 @@ exports.createResources = () => [
         addressPrefix: "10.0.0.0/24",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-natgateway",
       virtualNetwork: "rg-natgateway::virtual-network",
     }),
@@ -61,7 +61,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-natgateway",
     }),
   },

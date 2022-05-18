@@ -30,7 +30,7 @@ const createResources2 = () => [
 
 exports.createStack = ({ createProvider }) => {
   return {
-    //hookGlobal,
+    hookGlobal,
     stacks: [
       {
         provider: createProvider(MockProvider, {
@@ -38,7 +38,7 @@ exports.createStack = ({ createProvider }) => {
           createResources: createResources1,
           config: require("./config"),
         }),
-        //hooks: [require("./hookProvider1")],
+        hooks: [require("./hookProvider1")],
         //TODO
         //isProviderUp: () => resources1.volume.getLive(),
       },
@@ -49,7 +49,7 @@ exports.createStack = ({ createProvider }) => {
           //dependencies: { provider1 },
           config: require("./config"),
         }),
-        //shooks: [require("./hookProvider2")],
+        hooks: [require("./hookProvider2")],
       },
     ],
   };
