@@ -16,7 +16,15 @@ const {
   omit,
 } = require("rubico");
 const Axios = require("axios");
-const { pluck, when, callProp, isEmpty, isObject } = require("rubico/x");
+const {
+  pluck,
+  when,
+  callProp,
+  isEmpty,
+  isString,
+  isObject,
+  unless,
+} = require("rubico/x");
 const mime = require("mime-types");
 
 const path = require("path");
@@ -76,47 +84,52 @@ const objectFileNameFullFromLive = ({ live, commandOptions, programOptions }) =>
 
 const downloadAsset = ({ url, assetPath }) =>
   pipe([
-    () => path.resolve(assetPath),
-    tap((params) => {
-      assert(true);
-    }),
-    tap(
+    when(
+      () => isString(url),
       pipe([
-        path.dirname,
-        tap((dir) => {
-          assert(dir);
+        () => path.resolve(assetPath),
+        tap((params) => {
+          assert(true);
         }),
-        (dir) => fs.mkdir(dir, { recursive: true }),
+        tap(
+          pipe([
+            path.dirname,
+            tap((dir) => {
+              assert(dir);
+            }),
+            (dir) => fs.mkdir(dir, { recursive: true }),
+          ])
+        ),
+        Fs.createWriteStream,
+        (writer) =>
+          tryCatch(
+            pipe([
+              () =>
+                Axios({
+                  url,
+                  method: "GET",
+                  responseType: "stream",
+                }),
+              get("data"),
+              callProp("pipe", writer),
+              () =>
+                new Promise((resolve, reject) => {
+                  writer.on("finish", resolve);
+                  writer.on("error", reject);
+                }),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
+            (error) =>
+              pipe([
+                tap((params) => {
+                  throw Error(error.message);
+                }),
+              ])()
+          )(),
       ])
     ),
-    Fs.createWriteStream,
-    (writer) =>
-      tryCatch(
-        pipe([
-          () =>
-            Axios({
-              url,
-              method: "GET",
-              responseType: "stream",
-            }),
-          get("data"),
-          callProp("pipe", writer),
-          () =>
-            new Promise((resolve, reject) => {
-              writer.on("finish", resolve);
-              writer.on("error", reject);
-            }),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-        (error) =>
-          pipe([
-            tap((params) => {
-              throw Error(error.message);
-            }),
-          ])()
-      )(),
   ])();
 
 const downloadS3Objects = ({ lives, commandOptions, programOptions }) =>
@@ -268,38 +281,43 @@ const removeTagsArray = ({ tagsKey, key }) =>
     ),
   ]);
 
-const filterModel = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  filter(
-    not(
-      pipe([
-        get("live.Tags"),
-        any(({ Key = "" } = {}) =>
-          pipe([
-            () => ignoreResourceWithTags,
-            any((ignoreTag) => Key.startsWith(ignoreTag)),
-          ])()
-        ),
-      ])
-    )
-  ),
-  map(
-    assign({
-      live: pipe([
-        get("live"),
-        removeOurTags,
-        removeTagsArray({ tagsKey: "Tags", key: "Key" }),
-        removeTagsArray({ tagsKey: "TagsList", key: "Key" }),
-        removeTagsArray({ tagsKey: "tags", key: "key" }),
-      ]),
-    })
-  ),
-  tap((params) => {
-    assert(true);
-  }),
-]);
+const filterModel = ({ commandOptions }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    unless(
+      () => commandOptions.download,
+      filter(not(eq(get("groupType"), "S3::Object")))
+    ),
+    filter(
+      not(
+        pipe([
+          get("live.Tags"),
+          any(({ Key = "" } = {}) =>
+            pipe([
+              () => ignoreResourceWithTags,
+              any((ignoreTag) => Key.startsWith(ignoreTag)),
+            ])()
+          ),
+        ])
+      )
+    ),
+    map(
+      assign({
+        live: pipe([
+          get("live"),
+          removeOurTags,
+          removeTagsArray({ tagsKey: "Tags", key: "Key" }),
+          removeTagsArray({ tagsKey: "TagsList", key: "Key" }),
+          removeTagsArray({ tagsKey: "tags", key: "key" }),
+        ]),
+      })
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
 exports.generateCode = ({
   providers,
@@ -326,7 +344,7 @@ exports.generateCode = ({
           commandOptions,
           programOptions,
           configTpl,
-          filterModel,
+          filterModel: filterModel({ commandOptions }),
         }),
       tap((params) => {
         assert(true);
