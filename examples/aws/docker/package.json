@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/docker-cli",
-  "version": "7.0.4",
+  "version": "7.1.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,11 +21,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.0.4",
-    "@grucloud/provider-aws": "^7.0.4",
-    "@grucloud/provider-azure": "^7.0.4",
-    "@grucloud/provider-google": "^7.0.4",
-    "@grucloud/provider-k8s": "^7.0.4",
-    "@grucloud/provider-openstack": "^7.0.4"
+    "@grucloud/core": "^7.1.0",
+    "@grucloud/provider-aws": "^7.1.0",
+    "@grucloud/provider-azure": "^7.1.0",
+    "@grucloud/provider-google": "^7.1.0",
+    "@grucloud/provider-k8s": "^7.1.0",
+    "@grucloud/provider-openstack": "^7.1.0"
   }
 }
