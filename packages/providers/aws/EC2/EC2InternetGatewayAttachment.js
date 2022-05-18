@@ -17,6 +17,7 @@ const { createAwsResource } = require("../AwsClient");
 
 const pickId = pick(["VpcId", "InternetGatewayId"]);
 
+// TODO isDefault
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
@@ -25,6 +26,7 @@ const createModel = ({ config }) => ({
   destroy: {
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#detachInternetGateway-property
     method: "detachInternetGateway",
+    ignoreErrorCodes: ["InvalidInternetGatewayID.NotFound"],
     shouldRetryOnExceptionCodes: ["DependencyViolation"],
   },
 });
