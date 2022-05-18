@@ -1,6 +1,6 @@
 {
   "name": "5-zendesk",
-  "version": "7.0.4",
+  "version": "7.1.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.0.4",
-    "@grucloud/provider-aws": "^7.0.4",
+    "@grucloud/core": "^7.1.0",
+    "@grucloud/provider-aws": "^7.1.0",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
