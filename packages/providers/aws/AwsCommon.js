@@ -321,8 +321,8 @@ const createEndpointProxy = (regionForce) => (client) => (config) =>
     }),
     () => regionForce,
     createEndpointOption(config),
-    tap((params) => {
-      assert(true);
+    tap(({ region }) => {
+      assert(region);
     }),
     (options) => new client(options),
     (endpoint) =>

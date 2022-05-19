@@ -1108,7 +1108,9 @@ exports.ProviderGru = ({
         );
       }),
       getProviders,
-      map(
+      // Synchronous loop
+      map.pool(
+        1,
         tryCatch(
           callProp("generateCode", {
             commandOptions,
@@ -1130,9 +1132,11 @@ exports.ProviderGru = ({
     planApply,
     planQueryDestroy,
     planDestroy,
+    generateCode,
     displayLives,
     getProvider,
     getProviders,
+
     runCommand,
     runCommandGlobal,
     buildGraphTarget: ({ options }) =>

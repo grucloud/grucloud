@@ -1081,10 +1081,11 @@ const readMapping = ({ commandOptions, programOptions }) =>
 
 exports.readMapping = readMapping;
 
-const buidFilename = ({
+const buildFilename = ({
   providerName,
-  providersCount,
-  commandOptions: { outputDir, outputFile },
+  providers,
+
+  commandOptions: { outputDir, outputFile, provider },
   workingDirectory,
 }) =>
   pipe([
@@ -1093,17 +1094,17 @@ const buidFilename = ({
       assert(workingDirectory);
     }),
     switchCase([
-      () => providersCount === 1,
-      () => path.resolve(workingDirectory, outputDir, `${outputFile}.js`),
+      () => provider || size(providers) > 1,
       () =>
         path.resolve(
           workingDirectory,
           outputDir,
           `${outputFile}-${providerName}.js`
         ),
+      () => path.resolve(workingDirectory, outputDir, `${outputFile}.js`),
     ]),
     tap((fileName) => {
-      //logger.debug(`buidFilename ${fileName}`);
+      //logger.debug(`buildFilename ${fileName}`);
     }),
   ])();
 
@@ -1128,10 +1129,11 @@ const writeResourcesToFile =
       }),
       ({ resourcesCode }) => resourcesTpl({ resourcesCode }),
       writeToFile({
-        filename: buidFilename({
+        filename: buildFilename({
           providerName,
           commandOptions,
-          providersCount: size(providers),
+          providers,
+          //providersCount: size(providers),
           workingDirectory: programOptions.workingDirectory,
         }),
         programOptions,
