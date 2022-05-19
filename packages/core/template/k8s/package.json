@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-k8s-template",
-  "version": "7.2.0",
+  "version": "7.2.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,12 +20,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.2.0",
-    "@grucloud/provider-k8s": "^7.2.0",
+    "@grucloud/core": "^7.2.1",
+    "@grucloud/provider-k8s": "^7.2.1",
     "rubico": "1.8.10"
   },
   "devDependencies": {
-    "@grucloud/k8s-manifest2code": "^7.2.0",
+    "@grucloud/k8s-manifest2code": "^7.2.1",
     "mocha": "^9.1.3",
     "mocha-junit-reporter": "^2.0.2"
   }
