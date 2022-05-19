@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-google-vm",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.1.0",
-    "@grucloud/provider-google": "^7.1.0",
+    "@grucloud/core": "^7.2.0",
+    "@grucloud/provider-google": "^7.2.0",
     "ping": "^0.4.1",
     "rubico": "^1.6.27",
     "ssh2": "^0.8.9"
