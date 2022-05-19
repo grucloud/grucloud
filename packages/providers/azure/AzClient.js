@@ -11,6 +11,7 @@ const {
   not,
   filter,
   and,
+  always,
 } = require("rubico");
 const {
   callProp,
@@ -373,8 +374,8 @@ module.exports = AzClient = ({
             () => value,
             switchCase([
               and([
-                not(eq(value, "{subscriptionId}")),
-                not(eq(value, "{scope}")),
+                not(eq(always(value), "{subscriptionId}")),
+                not(eq(always(value), "{scope}")),
                 callProp("startsWith", "{"),
               ]),
               () => acc + 1,
