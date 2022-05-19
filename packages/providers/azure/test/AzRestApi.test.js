@@ -158,6 +158,7 @@ describe("AzureRestApi", function () {
           "compute",
           "containerservice",
           "containerregistry",
+          "cosmos-db",
           "keyvault",
           "msi",
           "operationalinsights",
