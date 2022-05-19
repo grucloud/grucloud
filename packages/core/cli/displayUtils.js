@@ -30,6 +30,7 @@ const {
   append,
   prepend,
 } = require("rubico/x");
+const logger = require("../logger")({ prefix: "Display" });
 
 const { planToResourcesPerType } = require("../Common");
 
@@ -105,7 +106,9 @@ exports.displayListSummary = pipe([
             ])()
           ),
           tap(() => {
+            logger.debug("display table summary");
             console.log(table.toString());
+            logger.debug("display table summary done");
           }),
         ])(),
     ])()
