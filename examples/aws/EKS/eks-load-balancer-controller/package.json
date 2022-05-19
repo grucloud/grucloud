@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-eks-load-balancer-controller",
-  "version": "7.2.1",
+  "version": "7.2.2",
   "description": "Example for the AWS EKS with a load balancer controller",
   "main": "iac.js",
   "private": true,
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.2.1",
-    "@grucloud/provider-aws": "^7.2.1",
+    "@grucloud/core": "^7.2.2",
+    "@grucloud/provider-aws": "^7.2.2",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
