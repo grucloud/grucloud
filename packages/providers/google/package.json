@@ -18,7 +18,7 @@
     "google-auth-library": "7.6.1",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.33",
-    "rubico": "^1.7.3",
+    "rubico": "1.8.10",
     "shelljs": "^0.8.4",
     "url-join": "^4.0.1"
   },

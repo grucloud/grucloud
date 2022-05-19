@@ -16,7 +16,7 @@
     "@grucloud/module-k8s-cert-manager": "^7.0.4",
     "@grucloud/provider-aws": "^7.0.4",
     "@grucloud/provider-k8s": "^7.0.4",
-    "rubico": "^1.6.21"
+    "rubico": "1.8.10"
   },
   "devDependencies": {
     "@grucloud/k8s-manifest2code": "^7.0.3",

@@ -14,7 +14,7 @@
     "@grucloud/k8s-manifest2code": "^7.0.3",
     "@grucloud/provider-k8s": "^7.0.4",
     "js-yaml": "^4.1.0",
-    "rubico": "^1.6.21"
+    "rubico": "1.8.10"
   },
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/cert-manager",
   "repository": {

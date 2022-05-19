@@ -16,6 +16,6 @@
     "@grucloud/module-k8s-web-ui-dashboard": "^7.0.4",
     "@grucloud/provider-k8s": "^7.0.4",
     "axios": "^0.21.1",
-    "rubico": "^1.6.27"
+    "rubico": "1.8.10"
   }
 }

@@ -23,7 +23,7 @@
     "commander": "^8.0.0",
     "ipaddr.js": "^2.0.1",
     "prettier": "^2.3.2",
-    "rubico": "^1.7.0"
+    "rubico": "1.8.10"
   },
   "devDependencies": {
     "mocha": "^9.0.2"

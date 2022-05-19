@@ -22,7 +22,7 @@
   "dependencies": {
     "@grucloud/core": "^7.0.4",
     "@grucloud/provider-aws": "^7.0.4",
-    "rubico": "^1.6.26",
+    "rubico": "1.8.10",
     "ssh2": "^0.8.9"
   },
   "devDependencies": {

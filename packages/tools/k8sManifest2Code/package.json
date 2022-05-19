@@ -19,7 +19,7 @@
     "commander": "^7.0.0",
     "js-yaml": "^4.0.0",
     "prettier": "^2.2.1",
-    "rubico": "^1.6.17",
+    "rubico": "1.8.10",
     "winston": "^3.3.3"
   },
   "keywords": [

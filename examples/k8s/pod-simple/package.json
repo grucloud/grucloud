@@ -15,7 +15,7 @@
   "dependencies": {
     "@grucloud/core": "^7.0.4",
     "@grucloud/provider-k8s": "^7.0.4",
-    "rubico": "^1.8.3"
+    "rubico": "1.8.10"
   },
   "devDependencies": {
     "@grucloud/k8s-manifest2code": "^7.0.3",
