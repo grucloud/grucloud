@@ -18,6 +18,7 @@
     "destroy-regionB": "gc destroy -f -p aws-secondary",
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
+    "info": "gc info",
     "test": "mocha"
   },
   "author": "",

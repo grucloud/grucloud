@@ -47,6 +47,7 @@ exports.EC2Route = ({ spec, config }) => {
       tap(() => {
         assert(live.RouteTableId);
         assert(lives);
+        logger.debug(`route findId ${JSON.stringify(live)}`);
       }),
       () =>
         lives.getById({
@@ -56,7 +57,7 @@ exports.EC2Route = ({ spec, config }) => {
           id: live.RouteTableId,
         }),
       tap((routeTable) => {
-        assert(true);
+        assert(routeTable, `no rtb ${live.RouteTableId}`);
       }),
       get("name", "no-route-table-id"),
       switchCase([
@@ -90,7 +91,10 @@ exports.EC2Route = ({ spec, config }) => {
               }),
             get("name"),
             tap((name) => {
-              assert(name);
+              assert(
+                name,
+                `no id for VpcEndpoint: ${live.GatewayId}, provider: ${config.providerName}`
+              );
             }),
             prepend(`${rt}-`),
           ])(),

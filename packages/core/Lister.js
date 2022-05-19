@@ -1,6 +1,5 @@
 const assert = require("assert");
 const logger = require("./logger")({ prefix: "Lister" });
-const { tos } = require("./tos");
 const {
   filter,
   map,
@@ -13,9 +12,18 @@ const {
   not,
   switchCase,
   assign,
+  fork,
 } = require("rubico");
 
-const { isEmpty, isFunction, forEach, includes, find } = require("rubico/x");
+const {
+  identity,
+  isEmpty,
+  isFunction,
+  forEach,
+  includes,
+  find,
+  size,
+} = require("rubico/x");
 const { logError } = require("./Common");
 
 const STATES = {
@@ -26,98 +34,106 @@ const STATES = {
 };
 
 exports.Lister =
-  ({ onStateChange }) =>
+  ({ onStateChange, name }) =>
   (inputs) => {
     assert(Array.isArray(inputs));
     assert(isFunction(onStateChange));
     const resultMap = new Map();
 
-    const runItem = async ({
-      entry: { meta, key, isUp = () => true, executor },
-      onEnd,
-      inputsFiltered,
-    }) =>
-      pipe([
-        tap(() => {
-          assert(onEnd);
-          assert(key);
-          assert(executor);
-          assert(inputsFiltered);
-        }),
-        tryCatch(
-          pipe([
-            tap(() => onStateChange({ key, meta, nextState: STATES.RUNNING })),
-            () => executor({ results: [...resultMap.values()] }),
-            tap((result) =>
-              onStateChange({ key, meta, result, nextState: STATES.DONE })
+    logger.debug(`Lister: ${name}, #inputs ${size(inputs)}`);
+
+    const runItem =
+      ({ onEnd, inputsFiltered }) =>
+      ({ meta, key, isUp = () => true, executor }) =>
+        pipe([
+          tap(() => {
+            assert(onEnd);
+            assert(key);
+            assert(executor);
+            assert(inputsFiltered);
+            logger.debug(`runItem key: ${key}`);
+          }),
+          tryCatch(
+            pipe([
+              tap(() =>
+                onStateChange({ key, meta, nextState: STATES.RUNNING })
+              ),
+              () => ({ results: [...resultMap.values()] }),
+              executor,
+              tap((result) =>
+                onStateChange({ key, meta, result, nextState: STATES.DONE })
+              ),
+            ]),
+            (error) => {
+              logger.error(`runItem error with key: ${key}`);
+              logError("runItem", error);
+              onStateChange({ key, meta, nextState: STATES.ERROR, error });
+              return { ...meta, key, error };
+            }
+          ),
+          tap((result) => {
+            resultMap.set(key, result);
+          }),
+          onEnd({ inputsFiltered, key, isUp }),
+        ])();
+
+    const onEnd =
+      ({ inputsFiltered, key, isUp, meta }) =>
+      (result) =>
+        pipe([
+          tap(() => {
+            assert(inputsFiltered);
+          }),
+          () => inputsFiltered,
+          //Exclude the current resource
+          filter(not(eq(get("key"), key))),
+          // Find resources that depends on the one that just ended
+          tap((params) => {
+            assert(true);
+          }),
+          filter(pipe([get("dependsOn"), includes(key)])),
+          tap((results) => {
+            logger.debug(`Lister onEnd ${key}, #${size(results)}`);
+          }),
+          switchCase([
+            isUp,
+            map.pool(10, (entry) =>
+              pipe([
+                () => entry,
+                get("dependsOn"),
+                // Remove from the dependsOn array the one that just ended
+                filter(not(includes(key))),
+                tap((updatedDependsOn) => {
+                  logger.debug(
+                    `Lister onEnd ${entry.key}, new updatedDependsOn: ${updatedDependsOn}`
+                  );
+                  entry.dependsOn = updatedDependsOn;
+                }),
+                tap.if(isEmpty, () =>
+                  runItem({ inputsFiltered, onEnd })(entry)
+                ),
+              ])()
+            ),
+            map((entry) =>
+              pipe([
+                () => entry,
+                tap(() => {
+                  logger.debug(`Lister ${key} is not up`, entry);
+                  assert(entry.key);
+                }),
+                () =>
+                  resultMap.set(entry.key, {
+                    ...entry.meta,
+                    error: `Dependency ${key} is not up`,
+                    errorClass: "Dependency",
+                  }),
+              ])()
             ),
           ]),
-          (error) => {
-            logger.error(`runItem error with key: ${key}`);
-            logError("runItem", error);
-            onStateChange({ key, meta, nextState: STATES.ERROR, error });
-            return { ...meta, key, error };
-          }
-        ),
-        tap((result) => {
-          resultMap.set(key, result);
-        }),
-        (result) => onEnd({ inputsFiltered, key, isUp, result }),
-      ])();
-
-    const onEnd = async ({ inputsFiltered, key, isUp, meta, result }) =>
-      pipe([
-        tap(() => {
-          assert(inputsFiltered);
-        }),
-        () => inputsFiltered,
-        //Exclude the current resource
-        filter(not(eq(get("key"), key))),
-        // Find resources that depends on the one that just ended
-        tap((params) => {
-          assert(true);
-        }),
-        filter(pipe([get("dependsOn"), includes(key)])),
-        tap((results) => {
-          logger.debug(`Lister onEnd ${key}, #${results.length}`);
-        }),
-        switchCase([
-          () => isUp(),
-          map.pool(10, (entry) =>
-            pipe([
-              () => entry,
-              get("dependsOn"),
-              // Remove from the dependsOn array the one that just ended
-              filter(not(includes(key))),
-              tap((updatedDependsOn) => {
-                logger.debug(
-                  `Lister onEnd ${entry.key}, new updatedDependsOn: ${updatedDependsOn}`
-                );
-                entry.dependsOn = updatedDependsOn;
-              }),
-              tap.if(isEmpty, () => runItem({ inputsFiltered, entry, onEnd })),
-            ])()
-          ),
-          map((entry) =>
-            pipe([
-              () => entry,
-              tap(() => {
-                logger.debug(`Lister ${key} is not up`, entry);
-                assert(entry.key);
-              }),
-              () =>
-                resultMap.set(entry.key, {
-                  ...entry.meta,
-                  error: `Dependency ${key} is not up`,
-                  errorClass: "Dependency",
-                }),
-            ])()
-          ),
-        ]),
-        tap((result) => {
-          logger.debug(`Lister onEnd ${key}`);
-        }),
-      ])();
+          tap((result) => {
+            logger.debug(`Lister onEnd ${key}`);
+          }),
+        ])();
 
     return pipe([
       () => inputs,
@@ -125,32 +141,30 @@ exports.Lister =
         assign({
           dependsOn: pipe([
             get("dependsOn"),
-            filter((dependsOn) => find(eq(get("key"), dependsOn))(inputs)),
+            filter((dependsOn) =>
+              pipe([() => inputs, find(eq(get("key"), dependsOn))])()
+            ),
           ]),
         })
       ),
       (inputsFiltered) =>
         pipe([
-          tap((results) => {
-            logger.debug(`Lister run: `);
-          }),
           () => inputsFiltered,
           //TODO we could have items in dependsOn as long as they are not on the plan
           filter(pipe([get("dependsOn"), isEmpty])),
-          tap((x) => {
-            logger.debug(`Lister run: start ${x.length}/${inputs.length}`);
+          tap((params) => {
+            logger.debug(`Lister run: start ${size(params)}/${inputs.length}`);
           }),
           tap.if(isEmpty, () => {
             //assert(false, `all resources has dependsOn, plan: ${tos({ inputs })}`);
           }),
-          forEach((entry) => runItem({ entry, onEnd, inputsFiltered })),
-          () => [...resultMap.values()],
-          (results) => ({ error: any(get("error"))(results), results }),
+          forEach(runItem({ onEnd, inputsFiltered })),
+          () => inputs,
+          map(({ key }) => resultMap.get(key)),
+          fork({ error: any(get("error")), results: identity }),
           tap(({ error, results }) => {
             logger.info(`Lister ${error && "error"}`);
             error.stack && logger.error(error.stack);
-
-            //logger.debug(`Lister ${error && "error"}, result: ${tos(results)}`);
           }),
         ])(),
     ])();

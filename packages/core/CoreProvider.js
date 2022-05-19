@@ -1082,7 +1082,7 @@ function CoreProvider({
     tryCatch(
       pipe([
         tap(() => {
-          logger.debug(`start`);
+          logger.debug(`start ${providerName}`);
         }),
         tap(() =>
           onStateChange({
@@ -1118,7 +1118,7 @@ function CoreProvider({
           ])
         ),
         tap(() => {
-          logger.debug(`start done`);
+          logger.debug(`start done ${providerName}`);
         }),
       ]),
       (error) => {
