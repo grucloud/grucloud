@@ -1423,7 +1423,7 @@ const DoCommand = ({
     ]),
   ]);
 
-const info = ({
+const information = ({
   mapGloblalNameToResource,
   infra,
   commandOptions = {},
@@ -1830,7 +1830,7 @@ exports.Cli = ({
           commandOptions,
         }),
       info: ({ commandOptions } = {}) =>
-        info({
+        information({
           mapGloblalNameToResource,
           infra,
           programOptions,

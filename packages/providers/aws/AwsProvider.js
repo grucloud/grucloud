@@ -69,24 +69,6 @@ const validateConfig = ({ region, zone, zones }) => {
   }
 };
 
-//TODO wrap for retry
-const fetchAccountId = (config) =>
-  tryCatch(
-    pipe([
-      tap(() => {
-        assert(config);
-        logger.debug(`fetchAccountId`);
-      }),
-      createEndpointOption(config),
-      (options) => new STS(options),
-      (sts) => sts.getCallerIdentity({}),
-      get("Account"),
-    ]),
-    (error) => {
-      throw error;
-    }
-  )();
-
 exports.AwsProvider = ({
   name = "aws",
   stage = "dev",
@@ -102,10 +84,32 @@ exports.AwsProvider = ({
   let zone;
   let zones;
 
+  //TODO wrap for retry
+  const fetchAccountId = (config) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          assert(config);
+          logger.debug(`fetchAccountId ${name}`);
+        }),
+        createEndpointOption(config),
+        (options) => new STS(options),
+        (sts) => sts.getCallerIdentity({}),
+        get("Account"),
+        tap((accountId) => {
+          logger.debug(`fetchAccountId ${name}, accountId: ${accountId}`);
+        }),
+      ]),
+      (error) => {
+        throw error;
+      }
+    )();
+
   const getRegionFromCredentialFiles = (config) =>
     pipe([
       tap((params) => {
         assert(config);
+        logger.debug(`getRegionFromCredentialFiles ${name}`);
       }),
       () => config,
       get("credentials.profile", "default"),
@@ -131,6 +135,9 @@ exports.AwsProvider = ({
             assert(true);
           }),
         ])(),
+      tap((region) => {
+        logger.debug(`getRegionFromCredentialFiles ${name} region: ${region}`);
+      }),
     ])();
 
   const getRegion = (config) =>
@@ -149,7 +156,8 @@ exports.AwsProvider = ({
           ),
           defaultsDeep({ region: regionFromCredentialFiles }),
           defaultsDeep(config),
-          get("region", "us-east-1"),
+          //get("region", "us-east-1"),
+          get("region"),
           tap((region) => {
             assert(region);
             logger.info(`using region '${region}'`);
@@ -213,7 +221,7 @@ exports.AwsProvider = ({
     }),
   ]);
 
-  const info = () => ({
+  const information = () => ({
     accountId,
     region,
     zone,
@@ -270,7 +278,7 @@ exports.AwsProvider = ({
     makeConfig,
     fnSpecs,
     start,
-    info,
+    info: information,
     init,
     generateCode: ({ commandOptions, programOptions, providers }) =>
       generateCode({

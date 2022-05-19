@@ -845,13 +845,11 @@ exports.ProviderGru = ({
                 providers: getProviders(),
               }),
             assign({ providerName: () => provider.name }),
-            tap((xxx) => {
-              assert(xxx);
-            }),
           ])(),
       })),
       Lister({
         onStateChange: onStateChangeDefault({ onStateChange }),
+        name: functionName,
       }),
       tap((result) => {
         logger.info(`runCommand result: ${tos(result)}`);

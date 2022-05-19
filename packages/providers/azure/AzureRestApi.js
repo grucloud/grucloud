@@ -1437,12 +1437,23 @@ const pickResourceInfo = pipe([
             (schema) =>
               pipe([
                 () => schema,
+                tap.if(
+                  () =>
+                    resource.methods.put.operationId ===
+                    "NotebookWorkspaces_CreateOrUpdate",
+                  () => {
+                    assert(true);
+                  }
+                ),
                 get("properties"),
                 when(isEmpty, () => get("allOf[1].properties")(schema)),
+                when(isEmpty, () => get("allOf[0].properties")(schema)),
                 tap.if(isEmpty, (properties) => {
                   assert(
                     properties,
-                    `no properties in ${resource.methods.put.operationId}`
+                    `no properties in ${
+                      resource.methods.put.operationId
+                    }, schema: ${JSON.stringify(schema, null, 4)}`
                   );
                 }),
                 buildPickProperties({}),
