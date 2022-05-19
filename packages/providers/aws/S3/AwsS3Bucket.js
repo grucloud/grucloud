@@ -14,6 +14,8 @@ const {
   all,
   tryCatch,
   any,
+  assign,
+  omit,
 } = require("rubico");
 const {
   pluck,
@@ -164,6 +166,19 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       pipe([
         () => s3().getBucketEncryption(params),
         get("ServerSideEncryptionConfiguration"),
+        assign({
+          Rules: pipe([
+            get("Rules"),
+            map(
+              pipe([
+                when(
+                  eq(get("BucketKeyEnabled"), false),
+                  omit(["BucketKeyEnabled"])
+                ),
+              ])
+            ),
+          ]),
+        }),
       ]),
       throwIfNotAwsError("ServerSideEncryptionConfigurationNotFoundError")
     );

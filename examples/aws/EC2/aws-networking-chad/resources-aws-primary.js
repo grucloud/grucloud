@@ -604,7 +604,6 @@ exports.createResources = () => [
             ApplyServerSideEncryptionByDefault: {
               SSEAlgorithm: "AES256",
             },
-            BucketKeyEnabled: false,
           },
         ],
       },

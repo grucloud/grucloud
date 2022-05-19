@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project terraform-backend-s3-dynamodb
+skinparam monochrome true
++ Infra
+++ aws
++++ DynamoDB
+++++ Table (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

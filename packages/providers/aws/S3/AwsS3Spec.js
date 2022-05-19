@@ -80,7 +80,6 @@ module.exports = pipe([
               "LocationConstraint",
               "ACL", //TODO
               "PolicyStatus.IsPublic",
-              "ServerSideEncryptionConfiguration.Rules[0].BucketKeyEnabled",
             ]),
             when(
               get("NotificationConfiguration"),
