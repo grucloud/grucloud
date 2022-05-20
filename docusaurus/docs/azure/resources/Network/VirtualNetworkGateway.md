@@ -198,8 +198,8 @@ exports.createResources = () => [
           description: 'disableIPSecReplayProtection flag.'
         },
         gatewayDefaultSite: {
+          description: 'The reference to the LocalNetworkGateway resource which represents local network site having default routes. Assign Null value in case of removing existing default site setting.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         sku: {

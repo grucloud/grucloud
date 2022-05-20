@@ -37,8 +37,8 @@ exports.createResources = () => [
       type: 'object',
       properties: {
         resource: {
+          description: 'The standard JSON format of a Table',
           type: 'object',
-          description: 'Cosmos DB table id object',
           properties: {
             id: {
               type: 'string',

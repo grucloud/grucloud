@@ -168,7 +168,7 @@ exports.createResources = () => [
           'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
         },
         runRequest: {
-          description: 'The request parameters for scheduling a run.',
+          description: 'The request (parameters) for the run',
           required: [ 'type' ],
           type: 'object',
           properties: {
@@ -193,7 +193,8 @@ exports.createResources = () => [
           discriminator: 'type'
         },
         runResult: {
-          description: 'Run resource properties',
+          description: 'The result of this task run',
+          readOnly: true,
           type: 'object',
           allOf: [
             {
@@ -492,7 +493,8 @@ exports.createResources = () => [
                   type: 'string'
                 },
                 logArtifact: {
-                  description: 'Properties for a registry image.',
+                  description: 'The image description for the log artifact.',
+                  readOnly: true,
                   type: 'object',
                   properties: {
                     registry: {
@@ -508,8 +510,7 @@ exports.createResources = () => [
                       description: 'The sha256-based digest of the image manifest.',
                       type: 'string'
                     }
-                  },
-                  readOnly: true
+                  }
                 },
                 provisioningState: {
                   description: 'The provisioning state of a run.',
@@ -531,8 +532,7 @@ exports.createResources = () => [
                 }
               }
             }
-          },
-          readOnly: true
+          }
         },
         forceUpdateTag: {
           description: 'How the run should be forced to rerun even if the run request configuration has not changed',

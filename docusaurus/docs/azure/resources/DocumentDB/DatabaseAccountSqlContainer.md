@@ -65,8 +65,8 @@ exports.createResources = () => [
       type: 'object',
       properties: {
         resource: {
+          description: 'The standard JSON format of a container',
           type: 'object',
-          description: 'Cosmos DB SQL container resource object',
           properties: {
             id: {
               type: 'string',

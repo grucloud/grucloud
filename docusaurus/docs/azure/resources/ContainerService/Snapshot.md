@@ -79,6 +79,7 @@ exports.createResources = () => [
           description: 'The version of node image.'
         },
         osType: {
+          readOnly: true,
           type: 'string',
           default: 'Linux',
           enum: [ 'Linux', 'Windows' ],
@@ -90,15 +91,14 @@ exports.createResources = () => [
               { value: 'Windows', description: 'Use Windows.' }
             ]
           },
-          description: 'The operating system type. The default is Linux.',
-          readOnly: true
+          description: 'The operating system type. The default is Linux.'
         },
         osSku: {
+          readOnly: true,
           type: 'string',
           enum: [ 'Ubuntu', 'CBLMariner', 'Windows2019', 'Windows2022' ],
           'x-ms-enum': { name: 'OSSKU', modelAsString: true },
-          description: 'Specifies the OS SKU used by the agent pool. If not specified, the default is Ubuntu if OSType=Linux or Windows2019 if OSType=Windows. And the default Windows OSSKU will be changed to Windows2022 after Windows2019 is deprecated.',
-          readOnly: true
+          description: 'Specifies the OS SKU used by the agent pool. If not specified, the default is Ubuntu if OSType=Linux or Windows2019 if OSType=Windows. And the default Windows OSSKU will be changed to Windows2022 after Windows2019 is deprecated.'
         },
         vmSize: {
           readOnly: true,

@@ -51,7 +51,7 @@ module.exports = CoreClient = ({
   verbUpdate = "PATCH",
   isInstanceUp = not(isEmpty),
   isInstanceDown = isEmpty,
-
+  listIsExpectedException = () => false,
   configDefault = ({ name, properties }) => ({
     name,
     ...properties,
@@ -179,6 +179,7 @@ module.exports = CoreClient = ({
                     axios.request(path, {
                       method: verbList,
                     }),
+                  isExpectedException: listIsExpectedException,
                   config,
                 }),
               tap((params) => {

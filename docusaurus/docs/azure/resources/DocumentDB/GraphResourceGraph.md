@@ -39,8 +39,8 @@ exports.createResources = () => [
       type: 'object',
       properties: {
         resource: {
+          description: 'The standard JSON format of a Graph resource',
           type: 'object',
-          description: 'Cosmos DB Graph resource object',
           properties: {
             id: {
               type: 'string',

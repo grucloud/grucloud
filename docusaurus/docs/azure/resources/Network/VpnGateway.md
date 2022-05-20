@@ -103,8 +103,8 @@ exports.createResources = () => [
       description: 'Properties of the VPN gateway.',
       properties: {
         virtualHub: {
+          description: 'The VirtualHub to which the gateway belongs.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         connections: {
@@ -117,10 +117,10 @@ exports.createResources = () => [
                 description: 'Properties of the VPN connection.',
                 properties: {
                   remoteVpnSite: {
+                    description: 'Id of the connected vpn site.',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   routingWeight: {
@@ -346,8 +346,8 @@ exports.createResources = () => [
                           description: 'Properties of the VPN site link connection.',
                           properties: {
                             vpnSiteLink: {
+                              description: 'Id of the connected vpn site link.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             routingWeight: {
@@ -518,13 +518,13 @@ exports.createResources = () => [
                     description: 'The Routing Configuration indicating the associated and propagated route tables on this connection.',
                     properties: {
                       associatedRouteTable: {
+                        description: 'The resource id RouteTable associated with this RoutingConfiguration.',
                         properties: {
                           id: {
                             type: 'string',
                             description: 'Resource ID.'
                           }
                         },
-                        description: 'Reference to another subresource.',
                         'x-ms-azure-resource': true
                       },
                       propagatedRouteTables: {

@@ -49,8 +49,8 @@ exports.createResources = () => [
       type: 'object',
       properties: {
         resource: {
+          description: 'The standard JSON format of a trigger',
           type: 'object',
-          description: 'Cosmos DB SQL trigger resource object',
           properties: {
             id: {
               type: 'string',

@@ -42,7 +42,6 @@ const {
   isObject,
 } = require("rubico/x");
 const path = require("path");
-const util = require("util");
 const fs = require("fs").promises;
 const { camelCase } = require("change-case");
 const pluralize = require("pluralize");
@@ -50,9 +49,29 @@ const { snakeCase } = require("change-case");
 const SwaggerParser = require("@apidevtools/swagger-parser");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
-const { isSubstituable } = require("./AzureCommon");
+const { isSubstituable } = require("../AzureCommon");
 const { writeDoc } = require("./AzureDoc");
 
+exports.SpecGroupDirs = [
+  //"apimanagement",
+  //"appconfiguration",
+  //"dns",
+
+  "app",
+  "authorization",
+  "compute",
+  "containerservice",
+  "containerregistry",
+  "cosmos-db",
+  "keyvault",
+  "msi",
+  "operationalinsights",
+  "postgresql",
+  "network",
+  "storage",
+  "web",
+  //"webpubsub",
+];
 const PreDefinedDependenciesMap = {
   virtualNetworkSubnetResourceId: {
     type: "Subnet",
@@ -815,7 +834,7 @@ const findDependenciesSameGroupStrict = ({ depName, group }) =>
       pipe([
         and([
           () => depName.match(new RegExp(`${resource.type}$`, "ig")),
-          eq(group, resource.group),
+          () => group === resource.group,
         ]),
       ])()
     ),
@@ -1044,13 +1063,18 @@ const addDependencies = ({ resources }) =>
   });
 
 const isOmit = (key) =>
-  or([
-    get("readOnly"),
-    () => key.match(new RegExp("Id$", "gi")),
-    () => key.match(new RegExp("status", "gi")),
-    () => key.match(new RegExp("state", "gi")),
-    //get("x-ms-mutability"),
-    isSecret(key),
+  pipe([
+    tap((params) => {
+      assert(key);
+    }),
+    or([
+      get("readOnly"),
+      () => key.match(new RegExp("Id$", "gi")),
+      () => key.match(new RegExp("status", "gi")),
+      () => key.match(new RegExp("state", "gi")),
+      //get("x-ms-mutability"),
+      isSecret(key),
+    ]),
   ]);
 
 const isSecret = (key) =>
@@ -1198,8 +1222,7 @@ const getParentPath = ({ obj, key, parentPath }) =>
     switchCase([
       or([
         get("x-ms-client-flatten"),
-        //eq(key, "items"),
-        and([eq(key, "properties"), () => !isEmpty(parentPath)]),
+        and([() => key === "properties", () => !isEmpty(parentPath)]),
       ]),
       () => parentPath,
       () => [...parentPath, key],
@@ -1287,7 +1310,7 @@ const buildDependenciesFromBody =
                 ]),
                 // Else
                 //TODO
-                eq(obj?.type, "array"),
+                () => obj?.type === "array",
                 pipe([
                   tap((params) => {
                     assert(obj);

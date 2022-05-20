@@ -185,13 +185,13 @@ exports.createResources = () => [
                             ]
                           },
                           natGateway: {
+                            description: 'Nat gateway associated with this subnet.',
                             properties: {
                               id: {
                                 type: 'string',
                                 description: 'Resource ID.'
                               }
                             },
-                            description: 'Reference to another subresource.',
                             'x-ms-azure-resource': true
                           },
                           serviceEndpoints: {
@@ -507,10 +507,10 @@ exports.createResources = () => [
                             description: 'The DDoS protection custom policy associated with the public IP address.',
                             properties: {
                               ddosCustomPolicy: {
+                                readOnly: false,
+                                description: 'The DDoS custom policy associated with the public IP.',
                                 properties: [Object],
-                                description: 'Reference to another subresource.',
-                                'x-ms-azure-resource': true,
-                                readOnly: false
+                                'x-ms-azure-resource': true
                               },
                               protectionCoverage: {
                                 readOnly: false,
@@ -539,13 +539,13 @@ exports.createResources = () => [
                             description: 'The IP address associated with the public IP address resource.'
                           },
                           publicIPPrefix: {
+                            description: 'The Public IP Prefix this Public IP Address should be allocated from.',
                             properties: {
                               id: {
                                 type: 'string',
                                 description: 'Resource ID.'
                               }
                             },
-                            description: 'Reference to another subresource.',
                             'x-ms-azure-resource': true
                           },
                           idleTimeoutInMinutes: {
@@ -696,17 +696,17 @@ exports.createResources = () => [
                     ]
                   },
                   publicIPPrefix: {
+                    description: 'The reference to the Public IP Prefix resource.',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   gatewayLoadBalancer: {
+                    description: 'The reference to gateway load balancer frontend IP.',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   provisioningState: {
@@ -768,6 +768,7 @@ exports.createResources = () => [
                     'x-ms-enum': { name: 'IPAllocationMethod', modelAsString: true }
                   },
                   subnet: {
+                    description: 'The reference to the subnet resource.',
                     properties: {
                       properties: {
                         'x-ms-client-flatten': true,
@@ -827,13 +828,13 @@ exports.createResources = () => [
                             ]
                           },
                           natGateway: {
+                            description: 'Nat gateway associated with this subnet.',
                             properties: {
                               id: {
                                 type: 'string',
                                 description: 'Resource ID.'
                               }
                             },
-                            description: 'Reference to another subresource.',
                             'x-ms-azure-resource': true
                           },
                           serviceEndpoints: {
@@ -1036,8 +1037,7 @@ exports.createResources = () => [
                         description: 'Reference to another subresource.',
                         'x-ms-azure-resource': true
                       }
-                    ],
-                    description: 'Subnet in a virtual network resource.'
+                    ]
                   },
                   primary: {
                     type: 'boolean',
@@ -1112,12 +1112,12 @@ exports.createResources = () => [
                 description: 'Properties of the network interface.',
                 properties: {
                   virtualMachine: {
+                    description: 'The reference to a virtual machine.',
+                    readOnly: true,
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
-                    'x-ms-azure-resource': true,
-                    readOnly: true
+                    'x-ms-azure-resource': true
                   },
                   networkSecurityGroup: {
                     description: 'The reference to the NetworkSecurityGroup resource.',
@@ -1435,8 +1435,8 @@ exports.createResources = () => [
                           description: 'Network interface IP configuration properties.',
                           properties: {
                             gatewayLoadBalancer: {
+                              description: 'The reference to gateway load balancer frontend IP.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             virtualNetworkTaps: {
@@ -1709,12 +1709,12 @@ exports.createResources = () => [
                     description: 'A list of references to linked BareMetal resources.'
                   },
                   dscpConfiguration: {
+                    description: 'A reference to the dscp configuration to which the network interface is linked.',
+                    readOnly: true,
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
-                    'x-ms-azure-resource': true,
-                    readOnly: true
+                    'x-ms-azure-resource': true
                   },
                   resourceGuid: {
                     readOnly: true,
@@ -1854,6 +1854,8 @@ exports.createResources = () => [
                 description: 'Properties of the private end point connection.',
                 properties: {
                   privateEndpoint: {
+                    readOnly: true,
+                    description: 'The resource of private end point.',
                     properties: {
                       extendedLocation: {
                         description: 'The extended location of the load balancer.',
@@ -2037,9 +2039,7 @@ exports.createResources = () => [
                         description: 'Common resource representation.',
                         'x-ms-azure-resource': true
                       }
-                    ],
-                    description: 'Private endpoint resource.',
-                    readOnly: true
+                    ]
                   },
                   privateLinkServiceConnectionState: {
                     description: 'A collection of information about the state of the connection between service consumer and provider.',

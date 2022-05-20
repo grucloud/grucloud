@@ -33,12 +33,12 @@ Provides a **SitePremierAddOn** from the **Web** group
       }
     },
     properties: {
+      description: 'Resource specific properties',
       type: 'object',
-      properties: {},
-      description: 'Resource specific properties'
+      properties: {}
     },
     sku: {
-      description: 'Describes a sku for a scalable resource',
+      description: 'Sku description of the resource',
       type: 'object',
       properties: {
         name: { description: 'Name of the resource sku', type: 'string' },

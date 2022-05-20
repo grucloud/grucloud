@@ -208,13 +208,13 @@ exports.createResources = () => [
                           ]
                         },
                         natGateway: {
+                          description: 'Nat gateway associated with this subnet.',
                           properties: {
                             id: {
                               type: 'string',
                               description: 'Resource ID.'
                             }
                           },
-                          description: 'Reference to another subresource.',
                           'x-ms-azure-resource': true
                         },
                         serviceEndpoints: {
@@ -659,10 +659,10 @@ exports.createResources = () => [
           description: 'The DDoS protection custom policy associated with the public IP address.',
           properties: {
             ddosCustomPolicy: {
+              readOnly: false,
+              description: 'The DDoS custom policy associated with the public IP.',
               properties: { id: { type: 'string', description: 'Resource ID.' } },
-              description: 'Reference to another subresource.',
-              'x-ms-azure-resource': true,
-              readOnly: false
+              'x-ms-azure-resource': true
             },
             protectionCoverage: {
               readOnly: false,
@@ -703,8 +703,8 @@ exports.createResources = () => [
           description: 'The IP address associated with the public IP address resource.'
         },
         publicIPPrefix: {
+          description: 'The Public IP Prefix this Public IP Address should be allocated from.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         idleTimeoutInMinutes: {

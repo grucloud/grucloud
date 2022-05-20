@@ -458,10 +458,10 @@ exports.createResources = () => [
                   ]
                 },
                 natGateway: {
+                  description: 'Nat gateway associated with this subnet.',
                   properties: {
                     id: { type: 'string', description: 'Resource ID.' }
                   },
-                  description: 'Reference to another subresource.',
                   'x-ms-azure-resource': true
                 },
                 serviceEndpoints: {
@@ -734,6 +734,7 @@ exports.createResources = () => [
                         description: 'Properties of the IP configuration profile.',
                         properties: {
                           subnet: {
+                            description: 'The reference to the subnet resource to create a container network interface ip configuration.',
                             properties: [Circular *1],
                             allOf: [
                               {
@@ -741,8 +742,7 @@ exports.createResources = () => [
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               }
-                            ],
-                            description: 'Subnet in a virtual network resource.'
+                            ]
                           },
                           provisioningState: {
                             readOnly: true,
@@ -1050,13 +1050,13 @@ exports.createResources = () => [
                         description: 'Properties of the application gateway IP configuration.',
                         properties: {
                           subnet: {
+                            description: 'Reference to the subnet resource. A subnet from where application gateway gets its private address.',
                             properties: {
                               id: {
                                 type: 'string',
                                 description: 'Resource ID.'
                               }
                             },
-                            description: 'Reference to another subresource.',
                             'x-ms-azure-resource': true
                           },
                           provisioningState: {
@@ -1156,12 +1156,12 @@ exports.createResources = () => [
                 description: 'Properties of the network interface.',
                 properties: {
                   virtualMachine: {
+                    description: 'The reference to a virtual machine.',
+                    readOnly: true,
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
-                    'x-ms-azure-resource': true,
-                    readOnly: true
+                    'x-ms-azure-resource': true
                   },
                   networkSecurityGroup: {
                     description: 'The reference to the NetworkSecurityGroup resource.',
@@ -1335,8 +1335,8 @@ exports.createResources = () => [
                           description: 'Network interface IP configuration properties.',
                           properties: {
                             gatewayLoadBalancer: {
+                              description: 'The reference to gateway load balancer frontend IP.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             virtualNetworkTaps: {
@@ -1609,12 +1609,12 @@ exports.createResources = () => [
                     description: 'A list of references to linked BareMetal resources.'
                   },
                   dscpConfiguration: {
+                    description: 'A reference to the dscp configuration to which the network interface is linked.',
+                    readOnly: true,
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
-                    'x-ms-azure-resource': true,
-                    readOnly: true
+                    'x-ms-azure-resource': true
                   },
                   resourceGuid: {
                     readOnly: true,

@@ -80,8 +80,8 @@ exports.createResources = () => [
       description: 'Properties of the P2SVpnGateway.',
       properties: {
         virtualHub: {
+          description: 'The VirtualHub to which the gateway belongs.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         p2SConnectionConfigurations: {
@@ -107,13 +107,13 @@ exports.createResources = () => [
                     description: 'The Routing Configuration indicating the associated and propagated route tables on this connection.',
                     properties: {
                       associatedRouteTable: {
+                        description: 'The resource id RouteTable associated with this RoutingConfiguration.',
                         properties: {
                           id: {
                             type: 'string',
                             description: 'Resource ID.'
                           }
                         },
-                        description: 'Reference to another subresource.',
                         'x-ms-azure-resource': true
                       },
                       propagatedRouteTables: {
@@ -310,8 +310,8 @@ exports.createResources = () => [
           description: 'The scale unit for this p2s vpn gateway.'
         },
         vpnServerConfiguration: {
+          description: 'The VpnServerConfiguration to which the p2sVpnGateway is attached to.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         vpnClientConnectionHealth: {

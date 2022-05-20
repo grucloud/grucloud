@@ -2744,6 +2744,7 @@ exports.createResources = () => [
                     description: 'The binding selector to use for the AzureIdentityBinding resource.'
                   },
                   identity: {
+                    description: 'The user assigned identity details.',
                     type: 'object',
                     properties: {
                       resourceId: {
@@ -2758,8 +2759,7 @@ exports.createResources = () => [
                         type: 'string',
                         description: 'The object ID of the user assigned identity.'
                       }
-                    },
-                    description: 'Details about a user assigned identity.'
+                    }
                   },
                   provisioningState: {
                     type: 'string',

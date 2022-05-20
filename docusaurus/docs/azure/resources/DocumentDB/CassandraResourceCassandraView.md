@@ -47,8 +47,8 @@ exports.createResources = () => [
       type: 'object',
       properties: {
         resource: {
+          description: 'The standard JSON format of a Cassandra view',
           type: 'object',
-          description: 'Cosmos DB Cassandra view resource object',
           properties: {
             id: {
               type: 'string',

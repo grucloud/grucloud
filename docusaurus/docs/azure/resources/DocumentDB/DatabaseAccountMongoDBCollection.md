@@ -51,8 +51,8 @@ exports.createResources = () => [
       type: 'object',
       properties: {
         resource: {
+          description: 'The standard JSON format of a MongoDB collection',
           type: 'object',
-          description: 'Cosmos DB MongoDB collection resource object',
           properties: {
             id: {
               type: 'string',

@@ -95,13 +95,13 @@ exports.createResources = () => [
                       description: 'Network interface IP configuration properties.',
                       properties: {
                         gatewayLoadBalancer: {
+                          description: 'The reference to gateway load balancer frontend IP.',
                           properties: {
                             id: {
                               type: 'string',
                               description: 'Resource ID.'
                             }
                           },
-                          description: 'Reference to another subresource.',
                           'x-ms-azure-resource': true
                         },
                         virtualNetworkTaps: {
@@ -244,6 +244,7 @@ exports.createResources = () => [
                           'x-ms-enum': { name: 'IPVersion', modelAsString: true }
                         },
                         subnet: {
+                          description: 'Subnet bound to the IP configuration.',
                           properties: {
                             properties: {
                               'x-ms-client-flatten': true,
@@ -290,8 +291,7 @@ exports.createResources = () => [
                               description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             }
-                          ],
-                          description: 'Subnet in a virtual network resource.'
+                          ]
                         },
                         primary: {
                           type: 'boolean',
@@ -528,6 +528,7 @@ exports.createResources = () => [
                           'x-ms-enum': { name: 'IPVersion', modelAsString: true }
                         },
                         subnet: {
+                          description: 'The reference to the subnet resource.',
                           properties: {
                             properties: {
                               'x-ms-client-flatten': true,
@@ -574,8 +575,7 @@ exports.createResources = () => [
                               description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             }
-                          ],
-                          description: 'Subnet in a virtual network resource.'
+                          ]
                         },
                         publicIPAddress: {
                           description: 'The reference to the Public IP resource.',
@@ -636,23 +636,23 @@ exports.createResources = () => [
                           ]
                         },
                         publicIPPrefix: {
+                          description: 'The reference to the Public IP Prefix resource.',
                           properties: {
                             id: {
                               type: 'string',
                               description: 'Resource ID.'
                             }
                           },
-                          description: 'Reference to another subresource.',
                           'x-ms-azure-resource': true
                         },
                         gatewayLoadBalancer: {
+                          description: 'The reference to gateway load balancer frontend IP.',
                           properties: {
                             id: {
                               type: 'string',
                               description: 'Resource ID.'
                             }
                           },
-                          description: 'Reference to another subresource.',
                           'x-ms-azure-resource': true
                         },
                         provisioningState: {

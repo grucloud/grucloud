@@ -391,6 +391,8 @@ exports.createResources = () => [
                     ]
                   },
                   privateEndpoint: {
+                    readOnly: true,
+                    description: 'A reference to the private endpoint to which the network interface is linked.',
                     properties: {
                       extendedLocation: {
                         description: 'The extended location of the load balancer.',
@@ -415,6 +417,7 @@ exports.createResources = () => [
                         description: 'Properties of the private endpoint.',
                         properties: {
                           subnet: {
+                            description: 'The ID of the subnet from which the private IP will be allocated.',
                             properties: {
                               properties: {
                                 'x-ms-client-flatten': true,
@@ -441,8 +444,7 @@ exports.createResources = () => [
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               }
-                            ],
-                            description: 'Subnet in a virtual network resource.'
+                            ]
                           },
                           networkInterfaces: {
                             type: 'array',
@@ -566,9 +568,7 @@ exports.createResources = () => [
                         description: 'Common resource representation.',
                         'x-ms-azure-resource': true
                       }
-                    ],
-                    description: 'Private endpoint resource.',
-                    readOnly: true
+                    ]
                   },
                   ipConfigurations: {
                     type: 'array',
@@ -579,8 +579,8 @@ exports.createResources = () => [
                           description: 'Network interface IP configuration properties.',
                           properties: {
                             gatewayLoadBalancer: {
+                              description: 'The reference to gateway load balancer frontend IP.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             virtualNetworkTaps: {
@@ -642,14 +642,14 @@ exports.createResources = () => [
                               }
                             },
                             subnet: {
+                              description: 'Subnet bound to the IP configuration.',
                               properties: {
                                 properties: [Object],
                                 name: [Object],
                                 etag: [Object],
                                 type: [Object]
                               },
-                              allOf: [ [Object] ],
-                              description: 'Subnet in a virtual network resource.'
+                              allOf: [ [Object] ]
                             },
                             primary: {
                               type: 'boolean',
@@ -853,12 +853,12 @@ exports.createResources = () => [
                     description: 'A list of references to linked BareMetal resources.'
                   },
                   dscpConfiguration: {
+                    description: 'A reference to the dscp configuration to which the network interface is linked.',
+                    readOnly: true,
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
-                    'x-ms-azure-resource': true,
-                    readOnly: true
+                    'x-ms-azure-resource': true
                   },
                   resourceGuid: {
                     readOnly: true,

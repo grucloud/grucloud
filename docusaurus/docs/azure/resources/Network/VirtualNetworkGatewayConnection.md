@@ -114,6 +114,7 @@ exports.createResources = () => [
       properties: {
         authorizationKey: { type: 'string', description: 'The authorizationKey.' },
         virtualNetworkGateway1: {
+          description: 'The reference to virtual network gateway resource.',
           properties: {
             properties: {
               'x-ms-client-flatten': true,
@@ -239,10 +240,10 @@ exports.createResources = () => [
                   description: 'disableIPSecReplayProtection flag.'
                 },
                 gatewayDefaultSite: {
+                  description: 'The reference to the LocalNetworkGateway resource which represents local network site having default routes. Assign Null value in case of removing existing default site setting.',
                   properties: {
                     id: { type: 'string', description: 'Resource ID.' }
                   },
-                  description: 'Reference to another subresource.',
                   'x-ms-azure-resource': true
                 },
                 sku: {
@@ -851,10 +852,10 @@ exports.createResources = () => [
               'x-ms-azure-resource': true
             }
           ],
-          required: [ 'properties' ],
-          description: 'A common class for general resource information.'
+          required: [ 'properties' ]
         },
         virtualNetworkGateway2: {
+          description: 'The reference to virtual network gateway resource.',
           properties: {
             properties: {
               'x-ms-client-flatten': true,
@@ -980,10 +981,10 @@ exports.createResources = () => [
                   description: 'disableIPSecReplayProtection flag.'
                 },
                 gatewayDefaultSite: {
+                  description: 'The reference to the LocalNetworkGateway resource which represents local network site having default routes. Assign Null value in case of removing existing default site setting.',
                   properties: {
                     id: { type: 'string', description: 'Resource ID.' }
                   },
-                  description: 'Reference to another subresource.',
                   'x-ms-azure-resource': true
                 },
                 sku: {
@@ -1592,8 +1593,7 @@ exports.createResources = () => [
               'x-ms-azure-resource': true
             }
           ],
-          required: [ 'properties' ],
-          description: 'A common class for general resource information.'
+          required: [ 'properties' ]
         },
         localNetworkGateway2: {
           description: 'The reference to local network gateway resource.',
@@ -1844,8 +1844,8 @@ exports.createResources = () => [
           description: 'The ingress bytes transferred in this connection.'
         },
         peer: {
+          description: 'The reference to peerings resource.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         enableBgp: { type: 'boolean', description: 'EnableBgp flag.' },

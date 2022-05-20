@@ -1050,17 +1050,17 @@ exports.createResources = () => [
                     description: 'The Firewall Internal Load Balancer IP to be used as the next hop in User Defined Routes.'
                   },
                   subnet: {
+                    description: "Reference to the subnet resource. This resource must be named 'AzureFirewallSubnet' or 'AzureFirewallManagementSubnet'.",
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   publicIPAddress: {
+                    description: 'Reference to the PublicIP resource. This field is a mandatory input if subnet is not null.',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   provisioningState: {
@@ -1099,6 +1099,7 @@ exports.createResources = () => [
           description: 'IP configuration of the Azure Firewall resource.'
         },
         managementIpConfiguration: {
+          description: 'IP configuration of the Azure Firewall used for management traffic.',
           properties: {
             properties: {
               'x-ms-client-flatten': true,
@@ -1110,17 +1111,17 @@ exports.createResources = () => [
                   description: 'The Firewall Internal Load Balancer IP to be used as the next hop in User Defined Routes.'
                 },
                 subnet: {
+                  description: "Reference to the subnet resource. This resource must be named 'AzureFirewallSubnet' or 'AzureFirewallManagementSubnet'.",
                   properties: {
                     id: { type: 'string', description: 'Resource ID.' }
                   },
-                  description: 'Reference to another subresource.',
                   'x-ms-azure-resource': true
                 },
                 publicIPAddress: {
+                  description: 'Reference to the PublicIP resource. This field is a mandatory input if subnet is not null.',
                   properties: {
                     id: { type: 'string', description: 'Resource ID.' }
                   },
-                  description: 'Reference to another subresource.',
                   'x-ms-azure-resource': true
                 },
                 provisioningState: {
@@ -1153,8 +1154,7 @@ exports.createResources = () => [
               description: 'Reference to another subresource.',
               'x-ms-azure-resource': true
             }
-          ],
-          description: 'IP configuration of an Azure Firewall.'
+          ]
         },
         provisioningState: {
           readOnly: true,
@@ -1170,13 +1170,13 @@ exports.createResources = () => [
           'x-ms-enum': { name: 'AzureFirewallThreatIntelMode', modelAsString: true }
         },
         virtualHub: {
+          description: 'The virtualHub to which the firewall belongs.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         firewallPolicy: {
+          description: 'The firewallPolicy associated with this azure firewall.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         hubIPAddresses: {

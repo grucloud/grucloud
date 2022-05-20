@@ -109,13 +109,13 @@ exports.createResources = () => [
                     description: 'The Routing Configuration indicating the associated and propagated route tables on this connection.',
                     properties: {
                       associatedRouteTable: {
+                        description: 'The resource id RouteTable associated with this RoutingConfiguration.',
                         properties: {
                           id: {
                             type: 'string',
                             description: 'Resource ID.'
                           }
                         },
-                        description: 'Reference to another subresource.',
                         'x-ms-azure-resource': true
                       },
                       propagatedRouteTables: {
