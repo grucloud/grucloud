@@ -13,7 +13,7 @@ const path = require("path");
 const fse = require("fs-extra");
 const prettier = require("prettier");
 const util = require("util");
-const { createSpecsOveride, findByGroupAndType } = require("./AzureSpec");
+const { createSpecsOveride, findByGroupAndType } = require("../AzureSpec");
 
 const buildDocResourceFilename =
   ({ directoryDoc }) =>

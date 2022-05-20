@@ -146,9 +146,9 @@ describe("AzureRestApi", function () {
         directorySpec: path.resolve(process.cwd(), specDir),
         directoryDoc: path.resolve(
           process.cwd(),
-          "../../../docusaurus/docs/azure/resources/"
+          "../../../../docusaurus/docs/azure/resources/"
         ),
-        outputSchemaFile: path.resolve(process.cwd(), "AzureSchema.json"),
+        outputSchemaFile: path.resolve(process.cwd(), "../AzureSchema.json"),
         filterDirs: [
           //"apimanagement",
           //"appconfiguration",
