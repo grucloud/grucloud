@@ -47,6 +47,11 @@ const listExpectedExceptionMessage = [
   "Mongo User Defination is not enabled for the account",
 ];
 
+const shouldRetryOnExceptionCreate = pipe([
+  get("error.response.status"),
+  (status) => pipe([() => [429], includes(status)])(),
+]);
+
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 
 const onResponseListDefault = () => get("value", []);
@@ -458,6 +463,7 @@ module.exports = AzClient = ({
           any((expectedMessage) => message.includes(expectedMessage)),
         ])(),
     ]),
+    shouldRetryOnExceptionCreate,
     findTargetId,
     verbCreate: verbCreateFromMethods(methods),
     verbUpdate: verbUpdateFromMethods(methods),
