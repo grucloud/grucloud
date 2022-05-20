@@ -9,6 +9,7 @@ const {
   processSwaggerFiles,
   processSwagger,
   buildDependenciesFromBody,
+  SpecGroupDirs,
 } = require("../AzureRestApi");
 const SwaggerParser = require("@apidevtools/swagger-parser");
 
@@ -149,25 +150,7 @@ describe("AzureRestApi", function () {
           "../../../../docusaurus/docs/azure/resources/"
         ),
         outputSchemaFile: path.resolve(process.cwd(), "../AzureSchema.json"),
-        filterDirs: [
-          //"apimanagement",
-          //"appconfiguration",
-          //"dns",
-          "app",
-          "authorization",
-          "compute",
-          "containerservice",
-          "containerregistry",
-          "cosmos-db",
-          "keyvault",
-          "msi",
-          "operationalinsights",
-          "postgresql",
-          "network",
-          "storage",
-          "web",
-          //"webpubsub",
-        ],
+        filterDirs: SpecGroupDirs,
       }),
       processSwaggerFiles,
       tap((params) => {

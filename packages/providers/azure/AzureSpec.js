@@ -35,7 +35,9 @@ const { compare } = require("@grucloud/core/Common");
 const AuthorizationSpec = require("./resources/AuthorizationSpec");
 const ContainerServiceSpec = require("./resources/ContainerServiceSpec");
 const ComputeSpec = require("./resources/ComputeSpec");
+
 const DBForPortgreSQLSpec = require("./resources/DBForPostgreSQLSpec");
+const DocumentDBSpec = require("./resources/DocumentDBSpec");
 const KeyVaultSpec = require("./resources/KeyVaultSpec");
 const NetworkSpec = require("./resources/NetworkSpec");
 const OperationalInsightsSpec = require("./resources/OperationalInsightsSpec");
@@ -57,6 +59,7 @@ const createSpecsOveride = (config) =>
       ComputeSpec,
       ContainerServiceSpec,
       DBForPortgreSQLSpec,
+      DocumentDBSpec,
       KeyVaultSpec,
       NetworkSpec,
       OperationalInsightsSpec,

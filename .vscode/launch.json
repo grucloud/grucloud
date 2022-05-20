@@ -153,6 +153,23 @@
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/",
       "port": 9229
+    },
+    {
+      "name": "Azure Gen Spec",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test",
+        "--",
+        "--trace-warnings",
+        "--inspect-brk=9229"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/packages/providers/azure/az-spec-api-gen",
+      "port": 9229
     }
   ]
 }

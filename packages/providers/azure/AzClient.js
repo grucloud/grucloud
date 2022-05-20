@@ -12,6 +12,7 @@ const {
   filter,
   and,
   always,
+  any,
 } = require("rubico");
 const {
   callProp,
@@ -38,6 +39,13 @@ const {
   createAxiosAzure,
   shortName,
 } = require("./AzureCommon");
+
+const listExpectedExceptionMessage = [
+  "DataTransfer capability is not supported on this account",
+  "No valid GraphAPICompute Service found",
+  "Mongo Role Defination is not enabled for the account",
+  "Mongo User Defination is not enabled for the account",
+];
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 
@@ -442,6 +450,14 @@ module.exports = AzClient = ({
     pathUpdate,
     pathDelete,
     pathList,
+    listIsExpectedException: pipe([
+      get("response.data.message", ""),
+      (message) =>
+        pipe([
+          () => listExpectedExceptionMessage,
+          any((expectedMessage) => message.includes(expectedMessage)),
+        ])(),
+    ]),
     findTargetId,
     verbCreate: verbCreateFromMethods(methods),
     verbUpdate: verbUpdateFromMethods(methods),

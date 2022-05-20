@@ -52,6 +52,26 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 const { isSubstituable } = require("../AzureCommon");
 const { writeDoc } = require("./AzureDoc");
 
+exports.SpecGroupDirs = [
+  //"apimanagement",
+  //"appconfiguration",
+  //"dns",
+
+  "app",
+  "authorization",
+  "compute",
+  "containerservice",
+  "containerregistry",
+  "cosmos-db",
+  "keyvault",
+  "msi",
+  "operationalinsights",
+  "postgresql",
+  "network",
+  "storage",
+  "web",
+  //"webpubsub",
+];
 const PreDefinedDependenciesMap = {
   virtualNetworkSubnetResourceId: {
     type: "Subnet",
@@ -1043,13 +1063,18 @@ const addDependencies = ({ resources }) =>
   });
 
 const isOmit = (key) =>
-  or([
-    get("readOnly"),
-    () => key.match(new RegExp("Id$", "gi")),
-    () => key.match(new RegExp("status", "gi")),
-    () => key.match(new RegExp("state", "gi")),
-    //get("x-ms-mutability"),
-    isSecret(key),
+  pipe([
+    tap((params) => {
+      assert(key);
+    }),
+    or([
+      get("readOnly"),
+      () => key.match(new RegExp("Id$", "gi")),
+      () => key.match(new RegExp("status", "gi")),
+      () => key.match(new RegExp("state", "gi")),
+      //get("x-ms-mutability"),
+      isSecret(key),
+    ]),
   ]);
 
 const isSecret = (key) =>
