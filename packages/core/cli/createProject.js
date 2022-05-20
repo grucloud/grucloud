@@ -15,6 +15,14 @@ const { createProjectGoogle } = require("./providers/createProjectGoogle");
 const { createProjectAzure } = require("./providers/createProjectAzure");
 const { createProjectK8s } = require("./providers/createProjectK8s");
 
+// NPM removes the .gitignore file when publishing the package
+const GitIgnoreContent = `
+*.env
+*.log
+*.pem
+node_modules
+`;
+
 const promptProvider = pipe([
   () => ({
     type: "select",
@@ -149,6 +157,15 @@ const writeConfigToFile = ({ config, dirs: { destination } }) =>
     (filename) => fs.writeFile(filename, config),
   ])();
 
+const writeGitIgnore = ({ dirs: { destination } }) =>
+  pipe([
+    tap(() => {
+      assert(destination);
+    }),
+    () => path.resolve(destination, ".gitignore"),
+    (filename) => fs.writeFile(filename, GitIgnoreContent),
+  ])();
+
 exports.writeConfigToFile = writeConfigToFile;
 
 exports.createProject =
@@ -178,5 +195,6 @@ exports.createProject =
       tap(updatePackageJson),
       tap(writeConfigToFile),
       tap(npmInstall),
+      tap(writeGitIgnore),
       tap(displayGuide),
     ])();

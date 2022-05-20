@@ -6,6 +6,8 @@ const path = require("path");
 const { createProject } = require("../createProject");
 const fs = require("fs").promises;
 
+assert(process.env.AZURE_SUBSCRIPTION_ID);
+
 const runProject = ({ injects }) =>
   tryCatch(
     pipe([
@@ -37,7 +39,7 @@ describe("createProject", function () {
       injects: [
         "azure",
         "azure-project-test",
-        "e012cd34-c794-4e35-916f-f38dcd8ac45c",
+        process.env.AZURE_SUBSCRIPTION_ID,
         "sp-test",
         "canadacentral",
       ],

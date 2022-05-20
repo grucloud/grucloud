@@ -9,8 +9,7 @@
   },
   "homepage": "https://www.grucloud.com",
   "scripts": {
-    "test:mock": "NODE_PATH=. mocha  './cli/**/*.test.js'  './test/**/*.test.js'",
-    "test": "npm run test:mock"
+    "test": "dotenv -e ../../secrets/default.env --  mocha  './cli/**/*.test.js'  './test/**/*.test.js'"
   },
   "keywords": [
     "cloud",
@@ -19,6 +18,8 @@
   "author": "Frederic Heem",
   "license": "ISC",
   "devDependencies": {
+    "dotenv": "^16.0.0",
+    "dotenv-cli": "^5.0.0",
     "mocha": "8.2.1",
     "mocha-junit-reporter": "2.0.0",
     "sinon": "9.2.3"
