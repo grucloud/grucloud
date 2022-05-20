@@ -1,6 +1,7 @@
 const Spinnies = require("spinnies");
 const assert = require("assert");
 const fse = require("fs-extra");
+const shell = require("shelljs");
 const path = require("path");
 const {
   map,
@@ -11,11 +12,10 @@ const {
   not,
   any,
   or,
-  tryCatch,
   get,
   assign,
 } = require("rubico");
-const { pluck, isEmpty, when, callProp, last } = require("rubico/x");
+const { pluck, isEmpty, when, callProp, last, forEach } = require("rubico/x");
 const logger = require("../logger")({ prefix: "CliUtils" });
 const { tos } = require("../tos");
 const { ProviderGru } = require("../ProviderGru");
@@ -24,7 +24,7 @@ const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "
 
 const spinner = { interval: 300, frames };
 
-exports.runAsyncCommand = async ({ text, command }) => {
+const runAsyncCommand = async ({ text, command }) => {
   console.log(`${text}`);
   assert(text);
   assert(command);
@@ -199,6 +199,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
     throw error;
   }
 };
+exports.runAsyncCommand = runAsyncCommand;
 
 const displayProviderList = pipe([
   tap((xx) => {
