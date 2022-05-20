@@ -1,6 +1,16 @@
 const assert = require("assert");
 const { of, iif, throwError } = require("rxjs");
-const { pipe, tryCatch, switchCase, or, tap } = require("rubico");
+const {
+  pipe,
+  tryCatch,
+  switchCase,
+  or,
+  tap,
+  not,
+  eq,
+  get,
+  and,
+} = require("rubico");
 const { identity } = require("rubico/x");
 const {
   retryWhen,
@@ -104,13 +114,21 @@ const retryCall = async ({
           })
         )
       ),
-      catchError(({ hasMaxCount, error }) => {
-        if (!hasMaxCount && error?.code == 503) {
-          return of(error.result);
-        } else {
-          return throwError(error);
-        }
-      })
+      catchError(
+        pipe([
+          tap(({ error }) => {
+            // beware, shouldRetryOnException could throw an exception, any missing require ?
+            assert(error);
+          }),
+          switchCase([
+            and([not(get("hasMaxCount")), eq(get("error.code"), 503)]),
+            ({ error }) => of(error.result),
+            ({ error }) => {
+              return throwError(error);
+            },
+          ]),
+        ])
+      )
     )
     .toPromise();
 };

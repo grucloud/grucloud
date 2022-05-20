@@ -1,21 +1,9 @@
 const Spinnies = require("spinnies");
 const assert = require("assert");
 const fse = require("fs-extra");
-const shell = require("shelljs");
 const path = require("path");
-const {
-  map,
-  pipe,
-  switchCase,
-  tap,
-  filter,
-  not,
-  any,
-  or,
-  get,
-  assign,
-} = require("rubico");
-const { pluck, isEmpty, when, callProp, last, forEach } = require("rubico/x");
+const { pipe, tap, filter, not, any, or, get, assign } = require("rubico");
+const { pluck, isEmpty, when, callProp, last } = require("rubico/x");
 const logger = require("../logger")({ prefix: "CliUtils" });
 const { tos } = require("../tos");
 const { ProviderGru } = require("../ProviderGru");
