@@ -646,6 +646,8 @@ exports.createResources = () => [
   ],
   properties: {
     properties: {
+      description: 'Properties of an agent pool.',
+      'x-ms-client-flatten': true,
       type: 'object',
       properties: {
         count: {
@@ -1245,9 +1247,7 @@ exports.createResources = () => [
           title: 'The fully qualified resource ID of the Dedicated Host Group to provision virtual machines from, used only in creation scenario and not allowed to changed once set.',
           description: 'This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}. For more information see [Azure dedicated hosts](https://docs.microsoft.com/azure/virtual-machines/dedicated-hosts).'
         }
-      },
-      description: 'Properties for the container service agent pool profile.',
-      'x-ms-client-flatten': true
+      }
     }
   },
   description: 'Agent Pool.'

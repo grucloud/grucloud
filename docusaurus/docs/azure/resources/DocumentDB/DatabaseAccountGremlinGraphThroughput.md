@@ -39,8 +39,8 @@ exports.createResources = () => [
       type: 'object',
       properties: {
         resource: {
+          description: 'The standard JSON format of a resource throughput',
           type: 'object',
-          description: 'Cosmos DB resource throughput object',
           properties: {
             throughput: {
               type: 'integer',

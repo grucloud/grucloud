@@ -51,10 +51,10 @@ exports.createResources = () => [
         },
         peerIp: { type: 'string', readOnly: false, description: 'Peer IP.' },
         hubVirtualNetworkConnection: {
+          description: 'The reference to the HubVirtualNetworkConnection resource.',
+          readOnly: false,
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
-          'x-ms-azure-resource': true,
-          readOnly: false
+          'x-ms-azure-resource': true
         },
         provisioningState: {
           description: 'The provisioning state of the resource.',

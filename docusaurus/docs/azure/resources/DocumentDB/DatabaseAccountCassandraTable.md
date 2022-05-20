@@ -50,8 +50,8 @@ exports.createResources = () => [
       type: 'object',
       properties: {
         resource: {
+          description: 'The standard JSON format of a Cassandra table',
           type: 'object',
-          description: 'Cosmos DB Cassandra table id object',
           properties: {
             id: {
               type: 'string',

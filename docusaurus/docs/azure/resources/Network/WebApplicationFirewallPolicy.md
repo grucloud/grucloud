@@ -784,18 +784,18 @@ exports.createResources = () => [
                               }
                             },
                             subnet: {
+                              description: 'Reference to the subnet resource.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             publicIPAddress: {
+                              description: 'Reference to the PublicIP resource.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             privateLinkConfiguration: {
+                              description: 'Reference to the application gateway private link configuration.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             provisioningState: {
@@ -1130,8 +1130,8 @@ exports.createResources = () => [
                               description: 'Request timeout in seconds. Application Gateway will fail the request if response is not received within RequestTimeout. Acceptable values are from 1 second to 86400 seconds.'
                             },
                             probe: {
+                              description: 'Probe resource of an application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             authenticationCertificates: {
@@ -1258,8 +1258,8 @@ exports.createResources = () => [
                               description: 'Connection timeout in seconds. Application Gateway will fail the request if response is not received within ConnectionTimeout. Acceptable values are from 1 second to 86400 seconds.'
                             },
                             probe: {
+                              description: 'Probe resource of an application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             trustedRootCertificates: {
@@ -1336,13 +1336,13 @@ exports.createResources = () => [
                           description: 'Properties of the application gateway HTTP listener.',
                           properties: {
                             frontendIPConfiguration: {
+                              description: 'Frontend IP configuration resource of an application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             frontendPort: {
+                              description: 'Frontend port resource of an application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             protocol: {
@@ -1359,13 +1359,13 @@ exports.createResources = () => [
                               description: 'Host name of HTTP listener.'
                             },
                             sslCertificate: {
+                              description: 'SSL certificate resource of an application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             sslProfile: {
+                              description: 'SSL profile resource of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             requireServerNameIndication: {
@@ -1396,8 +1396,8 @@ exports.createResources = () => [
                               description: 'Custom error configurations of the HTTP listener.'
                             },
                             firewallPolicy: {
+                              description: 'Reference to the FirewallPolicy resource.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             hostNames: {
@@ -1449,13 +1449,13 @@ exports.createResources = () => [
                           type: 'object',
                           properties: {
                             frontendIPConfiguration: {
+                              description: 'Frontend IP configuration resource of an application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             frontendPort: {
+                              description: 'Frontend port resource of an application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             protocol: {
@@ -1468,13 +1468,13 @@ exports.createResources = () => [
                               }
                             },
                             sslCertificate: {
+                              description: 'SSL certificate resource of an application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             sslProfile: {
+                              description: 'SSL profile resource of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             provisioningState: {
@@ -1613,28 +1613,28 @@ exports.createResources = () => [
                           description: 'Properties of the application gateway URL path map.',
                           properties: {
                             defaultBackendAddressPool: {
+                              description: 'Default backend address pool resource of URL path map.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             defaultBackendHttpSettings: {
+                              description: 'Default backend http settings resource of URL path map.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             defaultRewriteRuleSet: {
+                              description: 'Default Rewrite rule set resource of URL path map.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             defaultRedirectConfiguration: {
+                              description: 'Default redirect configuration resource of URL path map.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             defaultLoadDistributionPolicy: {
+                              description: 'Default Load Distribution Policy resource of URL path map.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             pathRules: {
@@ -1721,38 +1721,38 @@ exports.createResources = () => [
                               description: 'Priority of the request routing rule.'
                             },
                             backendAddressPool: {
+                              description: 'Backend address pool resource of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             backendHttpSettings: {
+                              description: 'Backend http settings resource of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             httpListener: {
+                              description: 'Http listener resource of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             urlPathMap: {
+                              description: 'URL path map resource of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             rewriteRuleSet: {
+                              description: 'Rewrite Rule Set resource in Basic rule of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             redirectConfiguration: {
+                              description: 'Redirect configuration resource of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             loadDistributionPolicy: {
+                              description: 'Load Distribution Policy resource of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             provisioningState: {
@@ -1823,18 +1823,18 @@ exports.createResources = () => [
                               }
                             },
                             backendAddressPool: {
+                              description: 'Backend address pool resource of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             backendSettings: {
+                              description: 'Backend settings resource of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             listener: {
+                              description: 'Listener resource of the application gateway.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             provisioningState: {
@@ -1967,8 +1967,8 @@ exports.createResources = () => [
                               }
                             },
                             targetListener: {
+                              description: 'Reference to a listener to redirect the request to.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             targetUrl: {
@@ -2154,10 +2154,10 @@ exports.createResources = () => [
                     ]
                   },
                   firewallPolicy: {
+                    description: 'Reference to the FirewallPolicy resource.',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   enableHttp2: {
@@ -2263,14 +2263,14 @@ exports.createResources = () => [
                           description: 'Properties of the application gateway private endpoint connection.',
                           properties: {
                             privateEndpoint: {
+                              readOnly: true,
+                              description: 'The resource of private end point.',
                               properties: {
                                 extendedLocation: [Object],
                                 properties: [Object],
                                 etag: [Object]
                               },
-                              allOf: [ [Object] ],
-                              description: 'Private endpoint resource.',
-                              readOnly: true
+                              allOf: [ [Object] ]
                             },
                             privateLinkServiceConnectionState: {
                               description: 'A collection of information about the state of the connection between service consumer and provider.',

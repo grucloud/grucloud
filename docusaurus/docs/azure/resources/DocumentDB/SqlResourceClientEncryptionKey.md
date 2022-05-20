@@ -52,8 +52,8 @@ exports.createResources = () => [
       type: 'object',
       properties: {
         resource: {
+          description: 'The standard JSON format of a ClientEncryptionKey',
           type: 'object',
-          description: 'Cosmos DB client encryption key resource object.',
           properties: {
             id: {
               type: 'string',

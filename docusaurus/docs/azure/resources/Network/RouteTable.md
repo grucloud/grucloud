@@ -302,10 +302,10 @@ exports.createResources = () => [
                     ]
                   },
                   natGateway: {
+                    description: 'Nat gateway associated with this subnet.',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   serviceEndpoints: {
@@ -681,9 +681,9 @@ exports.createResources = () => [
                           description: 'Properties of the IP configuration profile.',
                           properties: {
                             subnet: {
+                              description: 'The reference to the subnet resource to create a container network interface ip configuration.',
                               properties: [Circular *3],
-                              allOf: [ [Object] ],
-                              description: 'Subnet in a virtual network resource.'
+                              allOf: [ [Object] ]
                             },
                             provisioningState: {
                               readOnly: true,
@@ -994,8 +994,8 @@ exports.createResources = () => [
                           description: 'Properties of the application gateway IP configuration.',
                           properties: {
                             subnet: {
+                              description: 'Reference to the subnet resource. A subnet from where application gateway gets its private address.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             provisioningState: {

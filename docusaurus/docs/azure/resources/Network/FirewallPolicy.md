@@ -124,10 +124,10 @@ exports.createResources = () => [
           'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
         },
         basePolicy: {
+          readOnly: false,
+          description: 'The parent firewall policy from which rules are inherited.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
-          'x-ms-azure-resource': true,
-          readOnly: false
+          'x-ms-azure-resource': true
         },
         firewalls: {
           type: 'array',
@@ -200,13 +200,13 @@ exports.createResources = () => [
                         description: 'Region to configure the Workspace.'
                       },
                       workspaceId: {
+                        description: 'The workspace Id for Firewall Policy Insights.',
                         properties: {
                           id: {
                             type: 'string',
                             description: 'Resource ID.'
                           }
                         },
-                        description: 'Reference to another subresource.',
                         'x-ms-azure-resource': true
                       }
                     }
@@ -214,10 +214,10 @@ exports.createResources = () => [
                   'x-ms-identifiers': []
                 },
                 defaultWorkspaceId: {
+                  description: 'The default workspace Id for Firewall Policy Insights.',
                   properties: {
                     id: { type: 'string', description: 'Resource ID.' }
                   },
-                  description: 'Reference to another subresource.',
                   'x-ms-azure-resource': true
                 }
               }

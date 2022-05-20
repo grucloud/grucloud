@@ -67,8 +67,8 @@ exports.createResources = () => [
       type: 'object',
       properties: {
         resource: {
+          description: 'The standard JSON format of a Gremlin graph',
           type: 'object',
-          description: 'Cosmos DB Gremlin graph resource object',
           properties: {
             id: {
               type: 'string',

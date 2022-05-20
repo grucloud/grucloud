@@ -495,10 +495,10 @@ exports.createResources = () => [
                     ]
                   },
                   natGateway: {
+                    description: 'Nat gateway associated with this subnet.',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   serviceEndpoints: {
@@ -874,9 +874,9 @@ exports.createResources = () => [
                           description: 'Properties of the IP configuration profile.',
                           properties: {
                             subnet: {
+                              description: 'The reference to the subnet resource to create a container network interface ip configuration.',
                               properties: [Circular *2],
-                              allOf: [ [Object] ],
-                              description: 'Subnet in a virtual network resource.'
+                              allOf: [ [Object] ]
                             },
                             provisioningState: {
                               readOnly: true,
@@ -1187,8 +1187,8 @@ exports.createResources = () => [
                           description: 'Properties of the application gateway IP configuration.',
                           properties: {
                             subnet: {
+                              description: 'Reference to the subnet resource. A subnet from where application gateway gets its private address.',
                               properties: { id: [Object] },
-                              description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             },
                             provisioningState: {
@@ -1288,10 +1288,10 @@ exports.createResources = () => [
                     description: 'If remote gateways can be used on this virtual network. If the flag is set to true, and allowGatewayTransit on remote peering is also true, virtual network will use gateways of remote virtual network for transit. Only one peering can have this flag set to true. This flag cannot be set if virtual network already has a gateway.'
                   },
                   remoteVirtualNetwork: {
+                    description: 'The reference to the remote virtual network. The remote virtual network can be in the same or different region (preview). See here to register for the preview and learn more (https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-create-peering).',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   remoteAddressSpace: {
@@ -1438,10 +1438,10 @@ exports.createResources = () => [
           description: 'Indicates if VM protection is enabled for all the subnets in the virtual network.'
         },
         ddosProtectionPlan: {
+          default: null,
+          description: 'The DDoS protection plan associated with the virtual network.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
-          'x-ms-azure-resource': true,
-          default: null
+          'x-ms-azure-resource': true
         },
         bgpCommunities: {
           default: null,

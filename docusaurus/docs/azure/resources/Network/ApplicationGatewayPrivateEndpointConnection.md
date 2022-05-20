@@ -43,6 +43,8 @@ exports.createResources = () => [
       description: 'Properties of the application gateway private endpoint connection.',
       properties: {
         privateEndpoint: {
+          readOnly: true,
+          description: 'The resource of private end point.',
           properties: <ref *1> {
             extendedLocation: {
               description: 'The extended location of the load balancer.',
@@ -153,13 +155,13 @@ exports.createResources = () => [
                           ]
                         },
                         natGateway: {
+                          description: 'Nat gateway associated with this subnet.',
                           properties: {
                             id: {
                               type: 'string',
                               description: 'Resource ID.'
                             }
                           },
-                          description: 'Reference to another subresource.',
                           'x-ms-azure-resource': true
                         },
                         serviceEndpoints: {
@@ -552,15 +554,15 @@ exports.createResources = () => [
                         description: 'Properties of the network interface.',
                         properties: {
                           virtualMachine: {
+                            description: 'The reference to a virtual machine.',
+                            readOnly: true,
                             properties: {
                               id: {
                                 type: 'string',
                                 description: 'Resource ID.'
                               }
                             },
-                            description: 'Reference to another subresource.',
-                            'x-ms-azure-resource': true,
-                            readOnly: true
+                            'x-ms-azure-resource': true
                           },
                           networkSecurityGroup: {
                             description: 'The reference to the NetworkSecurityGroup resource.',
@@ -685,15 +687,15 @@ exports.createResources = () => [
                             description: 'A list of references to linked BareMetal resources.'
                           },
                           dscpConfiguration: {
+                            description: 'A reference to the dscp configuration to which the network interface is linked.',
+                            readOnly: true,
                             properties: {
                               id: {
                                 type: 'string',
                                 description: 'Resource ID.'
                               }
                             },
-                            description: 'Reference to another subresource.',
-                            'x-ms-azure-resource': true,
-                            readOnly: true
+                            'x-ms-azure-resource': true
                           },
                           resourceGuid: {
                             readOnly: true,
@@ -1168,9 +1170,7 @@ exports.createResources = () => [
               description: 'Common resource representation.',
               'x-ms-azure-resource': true
             }
-          ],
-          description: 'Private endpoint resource.',
-          readOnly: true
+          ]
         },
         privateLinkServiceConnectionState: {
           description: 'A collection of information about the state of the connection between service consumer and provider.',

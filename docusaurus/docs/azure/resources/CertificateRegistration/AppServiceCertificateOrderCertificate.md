@@ -42,8 +42,9 @@ Provides a **AppServiceCertificateOrderCertificate** from the **CertificateRegis
   ],
   properties: {
     properties: {
-      description: 'Key Vault container for a certificate that is purchased through Azure.',
+      description: 'Core resource properties',
       type: 'object',
+      'x-ms-client-flatten': true,
       properties: {
         keyVaultId: { description: 'Key Vault resource Id.', type: 'string' },
         keyVaultSecretName: { description: 'Key Vault secret name.', type: 'string' },
@@ -66,8 +67,7 @@ Provides a **AppServiceCertificateOrderCertificate** from the **CertificateRegis
           readOnly: true,
           'x-ms-enum': { name: 'KeyVaultSecretStatus', modelAsString: false }
         }
-      },
-      'x-ms-client-flatten': true
+      }
     }
   }
 }

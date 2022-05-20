@@ -166,8 +166,8 @@ exports.createResources = () => [
           description: 'Who was the last to modify the peering.'
         },
         routeFilter: {
+          description: 'The reference to the RouteFilter resource.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         ipv6PeeringConfig: {
@@ -226,8 +226,8 @@ exports.createResources = () => [
               }
             },
             routeFilter: {
+              description: 'The reference to the RouteFilter resource.',
               properties: { id: { type: 'string', description: 'Resource ID.' } },
-              description: 'Reference to another subresource.',
               'x-ms-azure-resource': true
             },
             state: {
@@ -260,17 +260,17 @@ exports.createResources = () => [
                 description: 'Properties of the express route circuit connection.',
                 properties: {
                   expressRouteCircuitPeering: {
+                    description: 'Reference to Express Route Circuit Private Peering Resource of the circuit initiating connection.',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   peerExpressRouteCircuitPeering: {
+                    description: 'Reference to Express Route Circuit Private Peering Resource of the peered circuit.',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   addressPrefix: {
@@ -354,17 +354,17 @@ exports.createResources = () => [
                 description: 'Properties of the peer express route circuit connection.',
                 properties: {
                   expressRouteCircuitPeering: {
+                    description: 'Reference to Express Route Circuit Private Peering Resource of the circuit.',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   peerExpressRouteCircuitPeering: {
+                    description: 'Reference to Express Route Circuit Private Peering Resource of the peered circuit.',
                     properties: {
                       id: { type: 'string', description: 'Resource ID.' }
                     },
-                    description: 'Reference to another subresource.',
                     'x-ms-azure-resource': true
                   },
                   addressPrefix: {

@@ -53,33 +53,33 @@ exports.createResources = () => [
       description: 'Properties of the virtual hub.',
       properties: {
         virtualWan: {
+          description: 'The VirtualWAN to which the VirtualHub belongs.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         vpnGateway: {
+          description: 'The VpnGateway associated with this VirtualHub.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         p2SVpnGateway: {
+          description: 'The P2SVpnGateway associated with this VirtualHub.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         expressRouteGateway: {
+          description: 'The expressRouteGateway associated with this VirtualHub.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         azureFirewall: {
+          description: 'The azureFirewall associated with this VirtualHub.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         securityPartnerProvider: {
+          description: 'The securityPartnerProvider associated with this VirtualHub.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         addressPrefix: {

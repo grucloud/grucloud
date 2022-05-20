@@ -62,8 +62,8 @@ exports.createResources = () => [
       description: 'Properties of the VPN site.',
       properties: {
         virtualWan: {
+          description: 'The VirtualWAN to which the vpnSite belongs.',
           properties: { id: { type: 'string', description: 'Resource ID.' } },
-          description: 'Reference to another subresource.',
           'x-ms-azure-resource': true
         },
         deviceProperties: {
