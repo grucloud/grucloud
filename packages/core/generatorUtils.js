@@ -207,7 +207,7 @@ const buildProperties = ({
     }),
     //TODO
     //when(() => pickProperties, pick(pickProperties)),
-    omit(omitProperties),
+    unless(() => pickPropertiesCreate, omit(omitProperties)),
     differenceObject(propertiesDefault),
     tap((params) => {
       assert(true);

@@ -14,7 +14,8 @@ const {
 const path = require("path");
 const prompts = require("prompts");
 const fs = require("fs").promises;
-
+const { runShellCommands } = require("../runShellCommands");
+assert(runShellCommands);
 const RolesDefault = [
   "Owner",
   "Key Vault Administrator",
@@ -23,7 +24,12 @@ const RolesDefault = [
   "Key Vault Secrets Officer",
 ];
 
-const NamespacesDefault = ["Microsoft.Network", "Microsoft.Compute"];
+const NamespacesDefault = [
+  "Microsoft.Network",
+  "Microsoft.Compute",
+  "Microsoft.DocumentDB",
+  "Microsoft.DBforPostgreSQL",
+];
 
 const { execCommandShell } = require("./createProjectCommon");
 
@@ -123,12 +129,10 @@ const fetchAppIdPassword = pipe([
 const registerNamespaces = () =>
   pipe([
     () => NamespacesDefault,
-    map.series((namespace) =>
-      pipe([
-        () => `az provider register --namespace ${namespace}`,
-        execCommandShell(),
-      ])()
-    ),
+    map(prepend("az provider register --namespace ")),
+    runShellCommands({
+      text: "Register namespaces",
+    }),
   ])();
 
 const assignRoleAssignments = ({ account: { id }, app: { appId } }) =>
@@ -138,13 +142,13 @@ const assignRoleAssignments = ({ account: { id }, app: { appId } }) =>
       assert(id);
     }),
     () => RolesDefault,
-    map.series((role) =>
-      pipe([
-        () =>
-          `az role assignment create --scope "/subscriptions/${id}" --role "${role}" --assignee ${appId}`,
-        execCommandShell(),
-      ])()
+    map(
+      (role) =>
+        `az role assignment create --scope "/subscriptions/${id}" --role "${role}" --assignee ${appId}`
     ),
+    runShellCommands({
+      text: "Role Assignments",
+    }),
   ])();
 
 const writeEnv = ({ dirs, app, account }) =>

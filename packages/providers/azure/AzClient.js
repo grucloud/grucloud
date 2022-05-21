@@ -27,6 +27,7 @@ const {
   prepend,
   findIndex,
   isEmpty,
+  includes,
 } = require("rubico/x");
 const CoreClient = require("@grucloud/core/CoreClient");
 
@@ -46,6 +47,11 @@ const listExpectedExceptionMessage = [
   "Mongo Role Defination is not enabled for the account",
   "Mongo User Defination is not enabled for the account",
 ];
+
+const shouldRetryOnExceptionCreate = pipe([
+  get("error.response.status"),
+  (status) => pipe([() => [429], includes(status)])(),
+]);
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 
@@ -458,6 +464,7 @@ module.exports = AzClient = ({
           any((expectedMessage) => message.includes(expectedMessage)),
         ])(),
     ]),
+    shouldRetryOnExceptionCreate,
     findTargetId,
     verbCreate: verbCreateFromMethods(methods),
     verbUpdate: verbUpdateFromMethods(methods),
