@@ -76,6 +76,72 @@ exports.HookType = {
   ON_DEPLOYED: "onDeployed",
   ON_DESTROYED: "onDestroyed",
 };
+const removeKeyBracket = pipe([callProp("replace", "[]", "")]);
+const hasKeyBracket = pipe([includes("[]")]);
+
+const deepPickByPath =
+  ([firstKey, ...remainingKeys]) =>
+  (source) =>
+    pipe([
+      () => source,
+      switchCase([
+        isEmpty,
+        identity,
+        () => hasKeyBracket(firstKey),
+        // Deal with array
+        pipe([
+          get(removeKeyBracket(firstKey)),
+          tap((values) => {
+            assert(
+              Array.isArray(values),
+              `should be an Array: ${JSON.stringify(
+                values
+              )}, key: ${firstKey}, source: ${JSON.stringify(source, null, 4)}`
+            );
+          }),
+          map(pipe([deepPickByPath(remainingKeys)])),
+          (results) => ({ [removeKeyBracket(firstKey)]: results }),
+        ]),
+        // No array
+        pipe([
+          pick([firstKey]),
+          when(
+            () => !isEmpty(remainingKeys),
+            // has remaining keys
+            pipe([
+              get(firstKey),
+              deepPickByPath(remainingKeys),
+              switchCase([
+                isEmpty,
+                () => ({}),
+                (objNested) => ({ [firstKey]: objNested }),
+              ]),
+              tap((params) => {
+                assert(true);
+              }),
+            ])
+          ),
+        ]),
+      ]),
+    ])();
+
+exports.deepPickByPath = deepPickByPath;
+
+const deepPick = (paths) => (obj) =>
+  pipe([
+    () => paths,
+    reduce(
+      (acc, path) =>
+        pipe([
+          () => obj,
+          deepPickByPath(pipe([() => path, callProp("split", ".")])()),
+          defaultsDeep(acc),
+        ])(),
+      {}
+    ),
+  ])();
+
+exports.deepPick = deepPick;
 
 const omitPathIfEmpty = (path) => (obj) =>
   pipe([() => obj, when(pipe([get(path), isEmpty]), omit([path]))])();

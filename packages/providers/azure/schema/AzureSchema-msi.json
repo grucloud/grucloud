@@ -1,0 +1,42 @@
+[
+    {
+        "type": "UserAssignedIdentity",
+        "group": "ManagedIdentity",
+        "apiVersion": "2021-09-30-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{resourceName}",
+                "operationId": "UserAssignedIdentities_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{resourceName}",
+                "operationId": "UserAssignedIdentities_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{resourceName}",
+                "operationId": "UserAssignedIdentities_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{resourceName}",
+                "operationId": "UserAssignedIdentities_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities",
+                "operationId": "UserAssignedIdentities_ListByResourceGroup"
+            }
+        },
+        "omitProperties": [
+            "properties"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    }
+]

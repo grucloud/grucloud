@@ -1,0 +1,1092 @@
+[
+    {
+        "type": "AgentPool",
+        "group": "ContainerRegistry",
+        "apiVersion": "2019-06-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/agentPools/{agentPoolName}",
+                "operationId": "AgentPools_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/agentPools/{agentPoolName}",
+                "operationId": "AgentPools_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/agentPools/{agentPoolName}",
+                "operationId": "AgentPools_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/agentPools/{agentPoolName}",
+                "operationId": "AgentPools_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/agentPools",
+                "operationId": "AgentPools_List"
+            }
+        },
+        "omitProperties": [
+            "properties.virtualNetworkSubnetResourceId",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "properties.count",
+            "properties.tier",
+            "properties.os"
+        ],
+        "pickPropertiesCreate": [
+            "properties.count",
+            "properties.tier",
+            "properties.os"
+        ]
+    },
+    {
+        "type": "BuildStep",
+        "group": "ContainerRegistry",
+        "apiVersion": "2018-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            },
+            "buildTask": {
+                "type": "BuildTask",
+                "group": "ContainerRegistry",
+                "name": "buildTaskName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}/steps/{stepName}",
+                "operationId": "BuildSteps_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}/steps/{stepName}",
+                "operationId": "BuildSteps_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}/steps/{stepName}",
+                "operationId": "BuildSteps_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}/steps/{stepName}",
+                "operationId": "BuildSteps_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}/steps",
+                "operationId": "BuildSteps_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.type"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
+        "type": "BuildTask",
+        "group": "ContainerRegistry",
+        "apiVersion": "2018-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}",
+                "operationId": "BuildTasks_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}",
+                "operationId": "BuildTasks_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}",
+                "operationId": "BuildTasks_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks/{buildTaskName}",
+                "operationId": "BuildTasks_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/buildTasks",
+                "operationId": "BuildTasks_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.creationDate",
+            "properties.status"
+        ],
+        "pickProperties": [
+            "properties.alias",
+            "properties.sourceRepository.sourceControlType",
+            "properties.sourceRepository.repositoryUrl",
+            "properties.sourceRepository.isCommitTriggerEnabled",
+            "properties.sourceRepository.sourceControlAuthProperties.tokenType",
+            "properties.sourceRepository.sourceControlAuthProperties.token",
+            "properties.sourceRepository.sourceControlAuthProperties.refreshToken",
+            "properties.sourceRepository.sourceControlAuthProperties.scope",
+            "properties.sourceRepository.sourceControlAuthProperties.expiresIn",
+            "properties.platform.osType",
+            "properties.platform.cpu",
+            "properties.timeout"
+        ],
+        "pickPropertiesCreate": [
+            "properties.alias",
+            "properties.sourceRepository.sourceControlType",
+            "properties.sourceRepository.repositoryUrl",
+            "properties.sourceRepository.isCommitTriggerEnabled",
+            "properties.sourceRepository.sourceControlAuthProperties.tokenType",
+            "properties.sourceRepository.sourceControlAuthProperties.token",
+            "properties.sourceRepository.sourceControlAuthProperties.refreshToken",
+            "properties.sourceRepository.sourceControlAuthProperties.scope",
+            "properties.sourceRepository.sourceControlAuthProperties.expiresIn",
+            "properties.platform.osType",
+            "properties.platform.cpu",
+            "properties.timeout"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "sourceRepository": {
+                    "isCommitTriggerEnabled": false
+                },
+                "timeout": 3600
+            }
+        }
+    },
+    {
+        "type": "ExportPipeline",
+        "group": "ContainerRegistry",
+        "apiVersion": "2022-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "managedIdentities": {
+                "type": "UserAssignedIdentity",
+                "group": "ManagedIdentity",
+                "createOnly": true,
+                "list": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/exportPipelines/{exportPipelineName}",
+                "operationId": "ExportPipelines_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/exportPipelines/{exportPipelineName}",
+                "operationId": "ExportPipelines_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/exportPipelines/{exportPipelineName}",
+                "operationId": "ExportPipelines_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/exportPipelines",
+                "operationId": "ExportPipelines_List"
+            }
+        },
+        "omitProperties": [
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "location",
+            "identity.type",
+            "properties.target.type",
+            "properties.target.uri",
+            "properties.target.keyVaultUri"
+        ],
+        "pickPropertiesCreate": [
+            "location",
+            "identity.type",
+            "properties.target.type",
+            "properties.target.uri",
+            "properties.target.keyVaultUri"
+        ]
+    },
+    {
+        "type": "ImportPipeline",
+        "group": "ContainerRegistry",
+        "apiVersion": "2022-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "managedIdentities": {
+                "type": "UserAssignedIdentity",
+                "group": "ManagedIdentity",
+                "createOnly": true,
+                "list": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/importPipelines/{importPipelineName}",
+                "operationId": "ImportPipelines_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/importPipelines/{importPipelineName}",
+                "operationId": "ImportPipelines_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/importPipelines/{importPipelineName}",
+                "operationId": "ImportPipelines_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/importPipelines",
+                "operationId": "ImportPipelines_List"
+            }
+        },
+        "omitProperties": [
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.trigger.sourceTrigger.status",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "location",
+            "identity.type",
+            "properties.source.type",
+            "properties.source.uri",
+            "properties.source.keyVaultUri"
+        ],
+        "pickPropertiesCreate": [
+            "location",
+            "identity.type",
+            "properties.source.type",
+            "properties.source.uri",
+            "properties.source.keyVaultUri"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "source": {
+                    "type": "AzureStorageBlobContainer"
+                },
+                "trigger": {
+                    "sourceTrigger": {
+                        "status": "Enabled"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "PipelineRun",
+        "group": "ContainerRegistry",
+        "apiVersion": "2022-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/pipelineRuns/{pipelineRunName}",
+                "operationId": "PipelineRuns_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/pipelineRuns/{pipelineRunName}",
+                "operationId": "PipelineRuns_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/pipelineRuns/{pipelineRunName}",
+                "operationId": "PipelineRuns_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/pipelineRuns",
+                "operationId": "PipelineRuns_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.request.pipelineResourceId",
+            "properties.response"
+        ],
+        "pickProperties": [
+            "properties.request.source.type",
+            "properties.request.source.name",
+            "properties.request.target.type",
+            "properties.request.target.name",
+            "properties.request.catalogDigest",
+            "properties.forceUpdateTag"
+        ],
+        "pickPropertiesCreate": [
+            "properties.request.source.type",
+            "properties.request.source.name",
+            "properties.request.target.type",
+            "properties.request.target.name",
+            "properties.request.catalogDigest",
+            "properties.forceUpdateTag"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "request": {
+                    "source": {
+                        "type": "AzureStorageBlob"
+                    },
+                    "target": {
+                        "type": "AzureStorageBlob"
+                    }
+                },
+                "response": {
+                    "source": {
+                        "type": "AzureStorageBlobContainer"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "PrivateEndpointConnection",
+        "group": "ContainerRegistry",
+        "apiVersion": "2022-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "PrivateEndpointConnections_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "PrivateEndpointConnections_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "PrivateEndpointConnections_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/privateEndpointConnections",
+                "operationId": "PrivateEndpointConnections_List"
+            }
+        },
+        "omitProperties": [
+            "properties.privateEndpoint.id",
+            "properties.privateLinkServiceConnectionState",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
+        "type": "Registry",
+        "group": "ContainerRegistry",
+        "apiVersion": "2022-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "managedIdentities": {
+                "type": "UserAssignedIdentity",
+                "group": "ManagedIdentity",
+                "createOnly": true,
+                "list": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries",
+                "operationId": "Registries_List"
+            }
+        },
+        "omitProperties": [
+            "sku.tier",
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.loginServer",
+            "properties.creationDate",
+            "properties.provisioningState",
+            "properties.status",
+            "properties.policies.quarantinePolicy.status",
+            "properties.policies.trustPolicy.status",
+            "properties.policies.retentionPolicy.lastUpdatedTime",
+            "properties.policies.retentionPolicy.status",
+            "properties.policies.exportPolicy.status",
+            "properties.policies.azureADAuthenticationAsArmPolicy.status",
+            "properties.policies.softDeletePolicy.lastUpdatedTime",
+            "properties.policies.softDeletePolicy.status",
+            "properties.encryption.status",
+            "properties.encryption.keyVaultProperties.versionedKeyIdentifier",
+            "properties.encryption.keyVaultProperties.keyRotationEnabled",
+            "properties.encryption.keyVaultProperties.lastKeyRotationTimestamp",
+            "properties.dataEndpointHostNames",
+            "properties.privateEndpointConnections"
+        ],
+        "pickProperties": [
+            "sku.name",
+            "identity.type",
+            "properties.adminUserEnabled",
+            "properties.networkRuleSet.defaultAction",
+            "properties.networkRuleSet.ipRules[].action",
+            "properties.networkRuleSet.ipRules[].value",
+            "properties.policies.trustPolicy.type",
+            "properties.policies.retentionPolicy.days",
+            "properties.policies.softDeletePolicy.retentionDays",
+            "properties.encryption.keyVaultProperties.keyIdentifier",
+            "properties.encryption.keyVaultProperties.identity",
+            "properties.dataEndpointEnabled",
+            "properties.publicNetworkAccess",
+            "properties.networkRuleBypassOptions",
+            "properties.zoneRedundancy",
+            "properties.anonymousPullEnabled"
+        ],
+        "pickPropertiesCreate": [
+            "sku.name",
+            "identity.type",
+            "properties.adminUserEnabled",
+            "properties.networkRuleSet.defaultAction",
+            "properties.networkRuleSet.ipRules[].action",
+            "properties.networkRuleSet.ipRules[].value",
+            "properties.policies.trustPolicy.type",
+            "properties.policies.retentionPolicy.days",
+            "properties.policies.softDeletePolicy.retentionDays",
+            "properties.encryption.keyVaultProperties.keyIdentifier",
+            "properties.encryption.keyVaultProperties.identity",
+            "properties.dataEndpointEnabled",
+            "properties.publicNetworkAccess",
+            "properties.networkRuleBypassOptions",
+            "properties.zoneRedundancy",
+            "properties.anonymousPullEnabled"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "adminUserEnabled": false,
+                "networkRuleSet": {
+                    "defaultAction": "Allow"
+                },
+                "policies": {
+                    "quarantinePolicy": {
+                        "status": "disabled"
+                    },
+                    "trustPolicy": {
+                        "type": "Notary",
+                        "status": "disabled"
+                    },
+                    "retentionPolicy": {
+                        "days": 7,
+                        "status": "disabled"
+                    },
+                    "exportPolicy": {
+                        "status": "enabled"
+                    },
+                    "azureADAuthenticationAsArmPolicy": {
+                        "status": "enabled"
+                    },
+                    "softDeletePolicy": {
+                        "retentionDays": 7,
+                        "status": "disabled"
+                    }
+                },
+                "publicNetworkAccess": "Enabled",
+                "networkRuleBypassOptions": "AzureServices",
+                "zoneRedundancy": "Disabled",
+                "anonymousPullEnabled": false
+            }
+        }
+    },
+    {
+        "type": "RegistryProperties",
+        "group": "ContainerRegistry",
+        "apiVersion": "2016-06-27-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_GetProperties"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}",
+                "operationId": "Registries_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries",
+                "operationId": "Registries_ListByResourceGroup"
+            }
+        },
+        "omitProperties": [
+            "properties.loginServer",
+            "properties.creationDate"
+        ],
+        "pickProperties": [
+            "properties.adminUserEnabled",
+            "properties.storageAccount.name",
+            "properties.storageAccount.accessKey"
+        ],
+        "pickPropertiesCreate": [
+            "properties.adminUserEnabled",
+            "properties.storageAccount.name",
+            "properties.storageAccount.accessKey"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "adminUserEnabled": false
+            }
+        }
+    },
+    {
+        "type": "Replication",
+        "group": "ContainerRegistry",
+        "apiVersion": "2022-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/replications/{replicationName}",
+                "operationId": "Replications_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/replications/{replicationName}",
+                "operationId": "Replications_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/replications/{replicationName}",
+                "operationId": "Replications_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/replications/{replicationName}",
+                "operationId": "Replications_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/replications",
+                "operationId": "Replications_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.status"
+        ],
+        "pickProperties": [
+            "properties.regionEndpointEnabled",
+            "properties.zoneRedundancy"
+        ],
+        "pickPropertiesCreate": [
+            "properties.regionEndpointEnabled",
+            "properties.zoneRedundancy"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "regionEndpointEnabled": true,
+                "zoneRedundancy": "Disabled"
+            }
+        }
+    },
+    {
+        "type": "ScopeMap",
+        "group": "ContainerRegistry",
+        "apiVersion": "2022-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/scopeMaps/{scopeMapName}",
+                "operationId": "ScopeMaps_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/scopeMaps/{scopeMapName}",
+                "operationId": "ScopeMaps_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/scopeMaps/{scopeMapName}",
+                "operationId": "ScopeMaps_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/scopeMaps/{scopeMapName}",
+                "operationId": "ScopeMaps_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/scopeMaps",
+                "operationId": "ScopeMaps_List"
+            }
+        },
+        "omitProperties": [
+            "properties.type",
+            "properties.creationDate",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "properties.description"
+        ],
+        "pickPropertiesCreate": [
+            "properties.description"
+        ]
+    },
+    {
+        "type": "Task",
+        "group": "ContainerRegistry",
+        "apiVersion": "2019-06-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "managedIdentities": {
+                "type": "UserAssignedIdentity",
+                "group": "ManagedIdentity",
+                "createOnly": true,
+                "list": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tasks/{taskName}",
+                "operationId": "Tasks_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tasks/{taskName}",
+                "operationId": "Tasks_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tasks/{taskName}",
+                "operationId": "Tasks_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tasks/{taskName}",
+                "operationId": "Tasks_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tasks",
+                "operationId": "Tasks_List"
+            }
+        },
+        "omitProperties": [
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.provisioningState",
+            "properties.creationDate",
+            "properties.status",
+            "properties.step.baseImageDependencies",
+            "properties.trigger.baseImageTrigger.status"
+        ],
+        "pickProperties": [
+            "identity.type",
+            "properties.platform.os",
+            "properties.platform.architecture",
+            "properties.platform.variant",
+            "properties.agentConfiguration.cpu",
+            "properties.agentPoolName",
+            "properties.timeout",
+            "properties.step.type",
+            "properties.step.contextPath",
+            "properties.step.contextAccessToken",
+            "properties.trigger.timerTriggers[].schedule",
+            "properties.trigger.timerTriggers[].name",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlType",
+            "properties.trigger.sourceTriggers[].sourceRepository.repositoryUrl",
+            "properties.trigger.sourceTriggers[].sourceRepository.branch",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlAuthProperties.tokenType",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlAuthProperties.token",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlAuthProperties.refreshToken",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlAuthProperties.scope",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlAuthProperties.expiresIn",
+            "properties.trigger.sourceTriggers[].name",
+            "properties.trigger.baseImageTrigger.baseImageTriggerType",
+            "properties.trigger.baseImageTrigger.updateTriggerEndpoint",
+            "properties.trigger.baseImageTrigger.updateTriggerPayloadType",
+            "properties.trigger.baseImageTrigger.name",
+            "properties.credentials.sourceRegistry.loginMode",
+            "properties.credentials.customRegistries.userName.value",
+            "properties.credentials.customRegistries.userName.type",
+            "properties.credentials.customRegistries.identity",
+            "properties.logTemplate",
+            "properties.isSystemTask"
+        ],
+        "pickPropertiesCreate": [
+            "identity.type",
+            "properties.platform.os",
+            "properties.platform.architecture",
+            "properties.platform.variant",
+            "properties.agentConfiguration.cpu",
+            "properties.agentPoolName",
+            "properties.timeout",
+            "properties.step.type",
+            "properties.step.contextPath",
+            "properties.step.contextAccessToken",
+            "properties.trigger.timerTriggers[].schedule",
+            "properties.trigger.timerTriggers[].name",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlType",
+            "properties.trigger.sourceTriggers[].sourceRepository.repositoryUrl",
+            "properties.trigger.sourceTriggers[].sourceRepository.branch",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlAuthProperties.tokenType",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlAuthProperties.token",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlAuthProperties.refreshToken",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlAuthProperties.scope",
+            "properties.trigger.sourceTriggers[].sourceRepository.sourceControlAuthProperties.expiresIn",
+            "properties.trigger.sourceTriggers[].name",
+            "properties.trigger.baseImageTrigger.baseImageTriggerType",
+            "properties.trigger.baseImageTrigger.updateTriggerEndpoint",
+            "properties.trigger.baseImageTrigger.updateTriggerPayloadType",
+            "properties.trigger.baseImageTrigger.name",
+            "properties.credentials.sourceRegistry.loginMode",
+            "properties.credentials.customRegistries.userName.value",
+            "properties.credentials.customRegistries.userName.type",
+            "properties.credentials.customRegistries.identity",
+            "properties.logTemplate",
+            "properties.isSystemTask"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "timeout": 3600,
+                "trigger": {
+                    "baseImageTrigger": {
+                        "status": "Enabled"
+                    }
+                },
+                "isSystemTask": false
+            }
+        }
+    },
+    {
+        "type": "TaskRun",
+        "group": "ContainerRegistry",
+        "apiVersion": "2019-06-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "managedIdentities": {
+                "type": "UserAssignedIdentity",
+                "group": "ManagedIdentity",
+                "createOnly": true,
+                "list": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/taskRuns/{taskRunName}",
+                "operationId": "TaskRuns_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/taskRuns/{taskRunName}",
+                "operationId": "TaskRuns_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/taskRuns/{taskRunName}",
+                "operationId": "TaskRuns_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/taskRuns/{taskRunName}",
+                "operationId": "TaskRuns_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/taskRuns",
+                "operationId": "TaskRuns_List"
+            }
+        },
+        "omitProperties": [
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.provisioningState",
+            "properties.runResult"
+        ],
+        "pickProperties": [
+            "identity.type",
+            "properties.runRequest.type",
+            "properties.runRequest.isArchiveEnabled",
+            "properties.runRequest.agentPoolName",
+            "properties.runRequest.logTemplate",
+            "properties.forceUpdateTag",
+            "location"
+        ],
+        "pickPropertiesCreate": [
+            "identity.type",
+            "properties.runRequest.type",
+            "properties.runRequest.isArchiveEnabled",
+            "properties.runRequest.agentPoolName",
+            "properties.runRequest.logTemplate",
+            "properties.forceUpdateTag",
+            "location"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "runRequest": {
+                    "isArchiveEnabled": false
+                },
+                "runResult": {
+                    "properties": {
+                        "isArchiveEnabled": false
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "Token",
+        "group": "ContainerRegistry",
+        "apiVersion": "2022-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "scopeMap": {
+                "type": "ScopeMap",
+                "group": "ContainerRegistry",
+                "createOnly": true,
+                "pathId": "properties.scopeMapId"
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tokens/{tokenName}",
+                "operationId": "Tokens_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tokens/{tokenName}",
+                "operationId": "Tokens_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tokens/{tokenName}",
+                "operationId": "Tokens_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tokens/{tokenName}",
+                "operationId": "Tokens_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/tokens",
+                "operationId": "Tokens_List"
+            }
+        },
+        "omitProperties": [
+            "properties.creationDate",
+            "properties.provisioningState",
+            "properties.scopeMapId",
+            "properties.status"
+        ],
+        "pickProperties": [
+            "properties.credentials.certificates[].name",
+            "properties.credentials.certificates[].expiry",
+            "properties.credentials.certificates[].thumbprint",
+            "properties.credentials.certificates[].encodedPemCertificate",
+            "properties.credentials.passwords[].creationTime",
+            "properties.credentials.passwords[].expiry",
+            "properties.credentials.passwords[].name"
+        ],
+        "pickPropertiesCreate": [
+            "properties.credentials.certificates[].name",
+            "properties.credentials.certificates[].expiry",
+            "properties.credentials.certificates[].thumbprint",
+            "properties.credentials.certificates[].encodedPemCertificate",
+            "properties.credentials.passwords[].creationTime",
+            "properties.credentials.passwords[].expiry",
+            "properties.credentials.passwords[].name"
+        ]
+    },
+    {
+        "type": "Webhook",
+        "group": "ContainerRegistry",
+        "apiVersion": "2022-02-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "registry": {
+                "type": "Registry",
+                "group": "ContainerRegistry",
+                "name": "registryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/webhooks/{webhookName}",
+                "operationId": "Webhooks_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/webhooks/{webhookName}",
+                "operationId": "Webhooks_Create"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/webhooks/{webhookName}",
+                "operationId": "Webhooks_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/webhooks/{webhookName}",
+                "operationId": "Webhooks_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}/webhooks",
+                "operationId": "Webhooks_List"
+            }
+        },
+        "omitProperties": [
+            "properties.status",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "properties.scope"
+        ],
+        "pickPropertiesCreate": [
+            "location",
+            "properties.scope"
+        ]
+    }
+]

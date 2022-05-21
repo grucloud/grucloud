@@ -7,44 +7,50 @@ exports.createResources = () => [
     type: "DatabaseAccount",
     group: "DocumentDB",
     properties: ({}) => ({
-      name: "grucloud",
-      identity: {
-        type: "None",
-      },
       properties: {
-        consistencyPolicy: {
-          defaultConsistencyLevel: "Session",
-          maxStalenessPrefix: 100,
-          maxIntervalInSeconds: 5,
-        },
-        ipRules: [],
-        isVirtualNetworkFilterEnabled: false,
-        enableAutomaticFailover: false,
-        capabilities: [],
-        virtualNetworkRules: [],
-        enableMultipleWriteLocations: false,
-        disableKeyBasedMetadataWriteAccess: false,
-        defaultIdentity: "FirstPartyIdentity",
-        publicNetworkAccess: "Enabled",
-        enableFreeTier: true,
-        enableAnalyticalStorage: false,
-        analyticalStorageConfiguration: {
-          schemaType: "WellDefined",
-        },
-        backupPolicy: {
-          type: "Periodic",
-        },
-        cors: [],
-        networkAclBypass: "None",
-        networkAclBypassResourceIds: [],
+        disableLocalAuth: false,
         diagnosticLogSettings: {
           enableFullTextQuery: "None",
         },
-        disableLocalAuth: false,
-        capacity: {
-          totalThroughputLimit: 1000,
+        networkAclBypass: "None",
+        cors: [],
+        backupPolicy: {
+          periodicModeProperties: {
+            backupStorageRedundancy: "Geo",
+            backupRetentionIntervalInHours: 8,
+            backupIntervalInMinutes: 240,
+          },
+          type: "Periodic",
+        },
+        enableAnalyticalStorage: false,
+        enableFreeTier: true,
+        publicNetworkAccess: "Enabled",
+        defaultIdentity: "FirstPartyIdentity",
+        disableKeyBasedMetadataWriteAccess: false,
+        enableMultipleWriteLocations: false,
+        virtualNetworkRules: [],
+        capabilities: [],
+        enableAutomaticFailover: false,
+        isVirtualNetworkFilterEnabled: false,
+        ipRules: [],
+        databaseAccountOfferType: "Standard",
+        locations: [
+          {
+            isZoneRedundant: false,
+            failoverPriority: 0,
+            locationName: "East US",
+          },
+        ],
+        consistencyPolicy: {
+          maxIntervalInSeconds: 5,
+          maxStalenessPrefix: 100,
+          defaultConsistencyLevel: "Session",
         },
       },
+      identity: {
+        type: "None",
+      },
+      name: "grucloud",
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-cosmos",

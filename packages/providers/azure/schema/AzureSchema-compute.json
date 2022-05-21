@@ -1,0 +1,2750 @@
+[
+    {
+        "type": "AvailabilitySet",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "proximityPlacementGroup": {
+                "type": "ProximityPlacementGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.proximityPlacementGroup.id"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/availabilitySets/{availabilitySetName}",
+                "operationId": "AvailabilitySets_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/availabilitySets/{availabilitySetName}",
+                "operationId": "AvailabilitySets_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/availabilitySets/{availabilitySetName}",
+                "operationId": "AvailabilitySets_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/availabilitySets/{availabilitySetName}",
+                "operationId": "AvailabilitySets_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/availabilitySets",
+                "operationId": "AvailabilitySets_ListBySubscription"
+            }
+        },
+        "omitProperties": [
+            "properties.proximityPlacementGroup.id",
+            "properties.statuses"
+        ],
+        "pickProperties": [
+            "properties.platformUpdateDomainCount",
+            "properties.platformFaultDomainCount",
+            "sku.name",
+            "sku.tier",
+            "sku.capacity"
+        ],
+        "pickPropertiesCreate": [
+            "properties.platformUpdateDomainCount",
+            "properties.platformFaultDomainCount",
+            "sku.name",
+            "sku.tier",
+            "sku.capacity"
+        ]
+    },
+    {
+        "type": "CapacityReservation",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "capacityReservationGroup": {
+                "type": "CapacityReservationGroup",
+                "group": "Compute",
+                "name": "capacityReservationGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/capacityReservationGroups/{capacityReservationGroupName}/capacityReservations/{capacityReservationName}",
+                "operationId": "CapacityReservations_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/capacityReservationGroups/{capacityReservationGroupName}/capacityReservations/{capacityReservationName}",
+                "operationId": "CapacityReservations_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/capacityReservationGroups/{capacityReservationGroupName}/capacityReservations/{capacityReservationName}",
+                "operationId": "CapacityReservations_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/capacityReservationGroups/{capacityReservationGroupName}/capacityReservations/{capacityReservationName}",
+                "operationId": "CapacityReservations_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/capacityReservationGroups/{capacityReservationGroupName}/capacityReservations",
+                "operationId": "CapacityReservations_ListByCapacityReservationGroup"
+            }
+        },
+        "omitProperties": [
+            "properties.reservationId",
+            "properties.virtualMachinesAssociated",
+            "properties.provisioningTime",
+            "properties.provisioningState",
+            "properties.instanceView",
+            "properties.timeCreated"
+        ],
+        "pickProperties": [
+            "sku.name",
+            "sku.tier",
+            "sku.capacity"
+        ],
+        "pickPropertiesCreate": [
+            "sku.name",
+            "sku.tier",
+            "sku.capacity"
+        ]
+    },
+    {
+        "type": "CapacityReservationGroup",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/capacityReservationGroups/{capacityReservationGroupName}",
+                "operationId": "CapacityReservationGroups_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/capacityReservationGroups/{capacityReservationGroupName}",
+                "operationId": "CapacityReservationGroups_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/capacityReservationGroups/{capacityReservationGroupName}",
+                "operationId": "CapacityReservationGroups_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/capacityReservationGroups/{capacityReservationGroupName}",
+                "operationId": "CapacityReservationGroups_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/capacityReservationGroups",
+                "operationId": "CapacityReservationGroups_ListBySubscription"
+            }
+        },
+        "omitProperties": [
+            "properties.capacityReservations",
+            "properties.virtualMachinesAssociated",
+            "properties.instanceView"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
+        "type": "CloudService",
+        "group": "Compute",
+        "apiVersion": "2021-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/cloudServices/{cloudServiceName}",
+                "operationId": "CloudServices_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/cloudServices/{cloudServiceName}",
+                "operationId": "CloudServices_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/cloudServices/{cloudServiceName}",
+                "operationId": "CloudServices_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/cloudServices/{cloudServiceName}",
+                "operationId": "CloudServices_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/cloudServices",
+                "operationId": "CloudServices_ListAll"
+            }
+        },
+        "omitProperties": [
+            "id",
+            "name",
+            "type",
+            "properties.networkProfile.swappableCloudService.id",
+            "properties.provisioningState",
+            "properties.uniqueId"
+        ],
+        "pickProperties": [
+            "location",
+            "properties.packageUrl",
+            "properties.configuration",
+            "properties.configurationUrl",
+            "properties.startCloudService",
+            "properties.allowModelOverride",
+            "properties.upgradeMode",
+            "properties.roleProfile.roles[].name",
+            "properties.roleProfile.roles[].sku.name",
+            "properties.roleProfile.roles[].sku.tier",
+            "properties.roleProfile.roles[].sku.capacity",
+            "properties.osProfile.secrets[].vaultCertificates[].certificateUrl",
+            "properties.networkProfile.loadBalancerConfigurations[].name",
+            "properties.networkProfile.loadBalancerConfigurations[].properties.frontendIPConfigurations[].name",
+            "properties.networkProfile.loadBalancerConfigurations[].properties.frontendIPConfigurations[].properties.privateIPAddress",
+            "properties.extensionProfile.extensions[].name",
+            "properties.extensionProfile.extensions[].properties.publisher",
+            "properties.extensionProfile.extensions[].properties.type",
+            "properties.extensionProfile.extensions[].properties.typeHandlerVersion",
+            "properties.extensionProfile.extensions[].properties.autoUpgradeMinorVersion",
+            "properties.extensionProfile.extensions[].properties.settings",
+            "properties.extensionProfile.extensions[].properties.protectedSettings",
+            "properties.extensionProfile.extensions[].properties.protectedSettingsFromKeyVault.secretUrl",
+            "properties.extensionProfile.extensions[].properties.forceUpdateTag"
+        ],
+        "pickPropertiesCreate": [
+            "location",
+            "properties.packageUrl",
+            "properties.configuration",
+            "properties.configurationUrl",
+            "properties.startCloudService",
+            "properties.allowModelOverride",
+            "properties.upgradeMode",
+            "properties.roleProfile.roles[].name",
+            "properties.roleProfile.roles[].sku.name",
+            "properties.roleProfile.roles[].sku.tier",
+            "properties.roleProfile.roles[].sku.capacity",
+            "properties.osProfile.secrets[].vaultCertificates[].certificateUrl",
+            "properties.networkProfile.loadBalancerConfigurations[].name",
+            "properties.networkProfile.loadBalancerConfigurations[].properties.frontendIPConfigurations[].name",
+            "properties.networkProfile.loadBalancerConfigurations[].properties.frontendIPConfigurations[].properties.privateIPAddress",
+            "properties.extensionProfile.extensions[].name",
+            "properties.extensionProfile.extensions[].properties.publisher",
+            "properties.extensionProfile.extensions[].properties.type",
+            "properties.extensionProfile.extensions[].properties.typeHandlerVersion",
+            "properties.extensionProfile.extensions[].properties.autoUpgradeMinorVersion",
+            "properties.extensionProfile.extensions[].properties.settings",
+            "properties.extensionProfile.extensions[].properties.protectedSettings",
+            "properties.extensionProfile.extensions[].properties.protectedSettingsFromKeyVault.secretUrl",
+            "properties.extensionProfile.extensions[].properties.forceUpdateTag"
+        ]
+    },
+    {
+        "type": "CloudServiceRoleInstance",
+        "group": "Compute",
+        "apiVersion": "2021-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "cloudService": {
+                "type": "CloudService",
+                "group": "Compute",
+                "name": "cloudServiceName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/cloudServices/{cloudServiceName}/roleInstances/{roleInstanceName}",
+                "operationId": "CloudServiceRoleInstances_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/cloudServices/{cloudServiceName}/roleInstances/{roleInstanceName}",
+                "operationId": "CloudServiceRoleInstances_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/cloudServices/{cloudServiceName}/roleInstances",
+                "operationId": "CloudServiceRoleInstances_List"
+            }
+        },
+        "omitProperties": [
+            "id",
+            "name",
+            "type",
+            "location",
+            "tags",
+            "sku.name",
+            "sku.tier",
+            "properties.networkProfile.networkInterfaces",
+            "properties.instanceView.platformUpdateDomain",
+            "properties.instanceView.platformFaultDomain",
+            "properties.instanceView.privateId",
+            "properties.instanceView.statuses"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
+        "type": "CloudServicesUpdateDomainUpdateDomain",
+        "group": "Compute",
+        "apiVersion": "2021-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "cloudService": {
+                "type": "CloudService",
+                "group": "Compute",
+                "name": "cloudServiceName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/cloudServices/{cloudServiceName}/updateDomains/{updateDomain}",
+                "operationId": "CloudServicesUpdateDomain_WalkUpdateDomain"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/cloudServices/{cloudServiceName}/updateDomains/{updateDomain}",
+                "operationId": "CloudServicesUpdateDomain_GetUpdateDomain"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/cloudServices/{cloudServiceName}/updateDomains",
+                "operationId": "CloudServicesUpdateDomain_ListUpdateDomains"
+            }
+        },
+        "omitProperties": [
+            "id",
+            "name"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
+        "type": "DedicatedHost",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "dedicatedHostGroup": {
+                "type": "DedicatedHostGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.hostId"
+            },
+            "hostGroup": {
+                "type": "DedicatedHostGroup",
+                "group": "Compute",
+                "name": "hostGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}/hosts/{hostName}",
+                "operationId": "DedicatedHosts_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}/hosts/{hostName}",
+                "operationId": "DedicatedHosts_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}/hosts/{hostName}",
+                "operationId": "DedicatedHosts_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}/hosts/{hostName}",
+                "operationId": "DedicatedHosts_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}/hosts",
+                "operationId": "DedicatedHosts_ListByHostGroup"
+            }
+        },
+        "omitProperties": [
+            "properties.hostId",
+            "properties.virtualMachines",
+            "properties.provisioningTime",
+            "properties.provisioningState",
+            "properties.instanceView",
+            "properties.timeCreated"
+        ],
+        "pickProperties": [
+            "properties.platformFaultDomain",
+            "properties.autoReplaceOnFailure",
+            "properties.licenseType",
+            "sku.name",
+            "sku.tier",
+            "sku.capacity"
+        ],
+        "pickPropertiesCreate": [
+            "properties.platformFaultDomain",
+            "properties.autoReplaceOnFailure",
+            "properties.licenseType",
+            "sku.name",
+            "sku.tier",
+            "sku.capacity"
+        ]
+    },
+    {
+        "type": "DedicatedHostGroup",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}",
+                "operationId": "DedicatedHostGroups_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}",
+                "operationId": "DedicatedHostGroups_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}",
+                "operationId": "DedicatedHostGroups_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}",
+                "operationId": "DedicatedHostGroups_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups",
+                "operationId": "DedicatedHostGroups_ListByResourceGroup"
+            }
+        },
+        "omitProperties": [
+            "properties.hosts",
+            "properties.instanceView"
+        ],
+        "pickProperties": [
+            "properties.platformFaultDomainCount",
+            "properties.supportAutomaticPlacement"
+        ],
+        "pickPropertiesCreate": [
+            "properties.platformFaultDomainCount",
+            "properties.supportAutomaticPlacement"
+        ]
+    },
+    {
+        "type": "Disk",
+        "group": "Compute",
+        "apiVersion": "2021-12-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "image": {
+                "type": "Image",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.creationData.imageReference.id"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "diskEncryptionSet": {
+                "type": "DiskEncryptionSet",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.securityProfile.secureVMDiskEncryptionSetId"
+            },
+            "diskAccess": {
+                "type": "DiskAccess",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.diskAccessId"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}",
+                "operationId": "Disks_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}",
+                "operationId": "Disks_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}",
+                "operationId": "Disks_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}",
+                "operationId": "Disks_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/disks",
+                "operationId": "Disks_List"
+            }
+        },
+        "omitProperties": [
+            "managedBy",
+            "managedByExtended",
+            "sku.tier",
+            "properties.timeCreated",
+            "properties.creationData.storageAccountId",
+            "properties.creationData.imageReference.id",
+            "properties.creationData.galleryImageReference.id",
+            "properties.creationData.sourceResourceId",
+            "properties.creationData.sourceUniqueId",
+            "properties.diskSizeBytes",
+            "properties.uniqueId",
+            "properties.provisioningState",
+            "properties.diskState",
+            "properties.encryption.diskEncryptionSetId",
+            "properties.shareInfo",
+            "properties.diskAccessId",
+            "properties.propertyUpdatesInProgress",
+            "properties.securityProfile.secureVMDiskEncryptionSetId"
+        ],
+        "pickProperties": [
+            "sku.name",
+            "extendedLocation.name",
+            "extendedLocation.type",
+            "properties.osType",
+            "properties.hyperVGeneration",
+            "properties.purchasePlan.name",
+            "properties.purchasePlan.publisher",
+            "properties.purchasePlan.product",
+            "properties.purchasePlan.promotionCode",
+            "properties.supportedCapabilities.acceleratedNetwork",
+            "properties.supportedCapabilities.architecture",
+            "properties.creationData.createOption",
+            "properties.creationData.imageReference.lun",
+            "properties.creationData.galleryImageReference.lun",
+            "properties.creationData.sourceUri",
+            "properties.creationData.uploadSizeBytes",
+            "properties.creationData.logicalSectorSize",
+            "properties.creationData.securityDataUri",
+            "properties.diskSizeGB",
+            "properties.encryptionSettingsCollection.enabled",
+            "properties.encryptionSettingsCollection.encryptionSettings[].diskEncryptionKey.secretUrl",
+            "properties.encryptionSettingsCollection.encryptionSettings[].keyEncryptionKey.keyUrl",
+            "properties.encryptionSettingsCollection.encryptionSettingsVersion",
+            "properties.diskIOPSReadWrite",
+            "properties.diskMBpsReadWrite",
+            "properties.diskIOPSReadOnly",
+            "properties.diskMBpsReadOnly",
+            "properties.encryption.type",
+            "properties.maxShares",
+            "properties.networkAccessPolicy",
+            "properties.tier",
+            "properties.burstingEnabled",
+            "properties.supportsHibernation",
+            "properties.securityProfile.securityType",
+            "properties.publicNetworkAccess",
+            "properties.dataAccessAuthMode"
+        ],
+        "pickPropertiesCreate": [
+            "sku.name",
+            "extendedLocation.name",
+            "extendedLocation.type",
+            "properties.osType",
+            "properties.hyperVGeneration",
+            "properties.purchasePlan.name",
+            "properties.purchasePlan.publisher",
+            "properties.purchasePlan.product",
+            "properties.purchasePlan.promotionCode",
+            "properties.supportedCapabilities.acceleratedNetwork",
+            "properties.supportedCapabilities.architecture",
+            "properties.creationData.createOption",
+            "properties.creationData.imageReference.lun",
+            "properties.creationData.galleryImageReference.lun",
+            "properties.creationData.sourceUri",
+            "properties.creationData.uploadSizeBytes",
+            "properties.creationData.logicalSectorSize",
+            "properties.creationData.securityDataUri",
+            "properties.diskSizeGB",
+            "properties.encryptionSettingsCollection.enabled",
+            "properties.encryptionSettingsCollection.encryptionSettings[].diskEncryptionKey.secretUrl",
+            "properties.encryptionSettingsCollection.encryptionSettings[].keyEncryptionKey.keyUrl",
+            "properties.encryptionSettingsCollection.encryptionSettingsVersion",
+            "properties.diskIOPSReadWrite",
+            "properties.diskMBpsReadWrite",
+            "properties.diskIOPSReadOnly",
+            "properties.diskMBpsReadOnly",
+            "properties.encryption.type",
+            "properties.maxShares",
+            "properties.networkAccessPolicy",
+            "properties.tier",
+            "properties.burstingEnabled",
+            "properties.supportsHibernation",
+            "properties.securityProfile.securityType",
+            "properties.publicNetworkAccess",
+            "properties.dataAccessAuthMode"
+        ]
+    },
+    {
+        "type": "DiskAccess",
+        "group": "Compute",
+        "apiVersion": "2021-12-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskAccesses/{diskAccessName}",
+                "operationId": "DiskAccesses_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskAccesses/{diskAccessName}",
+                "operationId": "DiskAccesses_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskAccesses/{diskAccessName}",
+                "operationId": "DiskAccesses_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskAccesses/{diskAccessName}",
+                "operationId": "DiskAccesses_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/diskAccesses",
+                "operationId": "DiskAccesses_List"
+            }
+        },
+        "omitProperties": [
+            "properties.privateEndpointConnections",
+            "properties.provisioningState",
+            "properties.timeCreated"
+        ],
+        "pickProperties": [
+            "extendedLocation.name",
+            "extendedLocation.type"
+        ],
+        "pickPropertiesCreate": [
+            "extendedLocation.name",
+            "extendedLocation.type"
+        ]
+    },
+    {
+        "type": "DiskAccessAPrivateEndpointConnection",
+        "group": "Compute",
+        "apiVersion": "2021-12-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "diskAccess": {
+                "type": "DiskAccess",
+                "group": "Compute",
+                "name": "diskAccessName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskAccesses/{diskAccessName}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "DiskAccesses_UpdateAPrivateEndpointConnection"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskAccesses/{diskAccessName}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "DiskAccesses_GetAPrivateEndpointConnection"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskAccesses/{diskAccessName}/privateEndpointConnections/{privateEndpointConnectionName}",
+                "operationId": "DiskAccesses_DeleteAPrivateEndpointConnection"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskAccesses/{diskAccessName}/privateEndpointConnections",
+                "operationId": "DiskAccesses_ListPrivateEndpointConnections"
+            }
+        },
+        "omitProperties": [
+            "properties.privateEndpoint",
+            "properties.privateLinkServiceConnectionState",
+            "properties.provisioningState",
+            "id",
+            "name",
+            "type"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
+        "type": "DiskEncryptionSet",
+        "group": "Compute",
+        "apiVersion": "2021-12-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSetName}",
+                "operationId": "DiskEncryptionSets_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSetName}",
+                "operationId": "DiskEncryptionSets_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSetName}",
+                "operationId": "DiskEncryptionSets_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskEncryptionSets/{diskEncryptionSetName}",
+                "operationId": "DiskEncryptionSets_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/diskEncryptionSets",
+                "operationId": "DiskEncryptionSets_List"
+            }
+        },
+        "omitProperties": [
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.activeKey.sourceVault.id",
+            "properties.previousKeys",
+            "properties.provisioningState",
+            "properties.lastKeyRotationTimestamp",
+            "properties.autoKeyRotationError"
+        ],
+        "pickProperties": [
+            "identity.type",
+            "properties.encryptionType",
+            "properties.activeKey.keyUrl",
+            "properties.rotationToLatestKeyVersionEnabled"
+        ],
+        "pickPropertiesCreate": [
+            "identity.type",
+            "properties.encryptionType",
+            "properties.activeKey.keyUrl",
+            "properties.rotationToLatestKeyVersionEnabled"
+        ]
+    },
+    {
+        "type": "Gallery",
+        "group": "Compute",
+        "apiVersion": "2021-10-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}",
+                "operationId": "Galleries_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}",
+                "operationId": "Galleries_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}",
+                "operationId": "Galleries_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}",
+                "operationId": "Galleries_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/galleries",
+                "operationId": "Galleries_List"
+            }
+        },
+        "omitProperties": [
+            "properties.identifier.uniqueName",
+            "properties.provisioningState",
+            "properties.sharingProfile.groups",
+            "properties.sharingStatus"
+        ],
+        "pickProperties": [
+            "properties.description",
+            "properties.sharingProfile.permissions",
+            "properties.softDeletePolicy.isSoftDeleteEnabled"
+        ],
+        "pickPropertiesCreate": [
+            "properties.description",
+            "properties.sharingProfile.permissions",
+            "properties.softDeletePolicy.isSoftDeleteEnabled"
+        ]
+    },
+    {
+        "type": "GalleryApplication",
+        "group": "Compute",
+        "apiVersion": "2021-10-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "gallery": {
+                "type": "Gallery",
+                "group": "Compute",
+                "name": "galleryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications/{galleryApplicationName}",
+                "operationId": "GalleryApplications_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications/{galleryApplicationName}",
+                "operationId": "GalleryApplications_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications/{galleryApplicationName}",
+                "operationId": "GalleryApplications_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications/{galleryApplicationName}",
+                "operationId": "GalleryApplications_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications",
+                "operationId": "GalleryApplications_ListByGallery"
+            }
+        },
+        "omitProperties": [
+            "properties.privacyStatementUri"
+        ],
+        "pickProperties": [
+            "properties.description",
+            "properties.eula",
+            "properties.releaseNoteUri",
+            "properties.endOfLifeDate",
+            "properties.supportedOSType"
+        ],
+        "pickPropertiesCreate": [
+            "properties.description",
+            "properties.eula",
+            "properties.releaseNoteUri",
+            "properties.endOfLifeDate",
+            "properties.supportedOSType"
+        ]
+    },
+    {
+        "type": "GalleryApplicationVersion",
+        "group": "Compute",
+        "apiVersion": "2021-10-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "gallery": {
+                "type": "Gallery",
+                "group": "Compute",
+                "name": "galleryName",
+                "parent": true
+            },
+            "galleryApplication": {
+                "type": "GalleryApplication",
+                "group": "Compute",
+                "name": "galleryApplicationName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications/{galleryApplicationName}/versions/{galleryApplicationVersionName}",
+                "operationId": "GalleryApplicationVersions_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications/{galleryApplicationName}/versions/{galleryApplicationVersionName}",
+                "operationId": "GalleryApplicationVersions_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications/{galleryApplicationName}/versions/{galleryApplicationVersionName}",
+                "operationId": "GalleryApplicationVersions_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications/{galleryApplicationName}/versions/{galleryApplicationVersionName}",
+                "operationId": "GalleryApplicationVersions_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/applications/{galleryApplicationName}/versions",
+                "operationId": "GalleryApplicationVersions_ListByGalleryApplication"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.replicationStatus"
+        ],
+        "pickProperties": [
+            "properties,publishingProfile,targetRegions[],name.properties,publishingProfile,targetRegions[],regionalReplicaCount.properties,publishingProfile,targetRegions[],storageAccountType..properties,publishingProfile,targetRegions[],encryption,dataDiskImages[],lun.properties,publishingProfile,replicaCount.properties,publishingProfile,excludeFromLatest.properties,publishingProfile,endOfLifeDate.properties,publishingProfile,storageAccountType.properties,publishingProfile,replicationMode.properties,publishingProfile,targetExtendedLocations[],name.properties,publishingProfile,targetExtendedLocations[],extendedLocation,name.properties,publishingProfile,targetExtendedLocations[],extendedLocation,type.properties,publishingProfile,targetExtendedLocations[],extendedLocationReplicaCount.properties,publishingProfile,targetExtendedLocations[],storageAccountType..properties,publishingProfile,targetExtendedLocations[],encryption,dataDiskImages[],lun"
+        ],
+        "pickPropertiesCreate": [
+            "properties,publishingProfile,targetRegions[],name.properties,publishingProfile,targetRegions[],regionalReplicaCount.properties,publishingProfile,targetRegions[],storageAccountType..properties,publishingProfile,targetRegions[],encryption,dataDiskImages[],lun.properties,publishingProfile,replicaCount.properties,publishingProfile,excludeFromLatest.properties,publishingProfile,endOfLifeDate.properties,publishingProfile,storageAccountType.properties,publishingProfile,replicationMode.properties,publishingProfile,targetExtendedLocations[],name.properties,publishingProfile,targetExtendedLocations[],extendedLocation,name.properties,publishingProfile,targetExtendedLocations[],extendedLocation,type.properties,publishingProfile,targetExtendedLocations[],extendedLocationReplicaCount.properties,publishingProfile,targetExtendedLocations[],storageAccountType..properties,publishingProfile,targetExtendedLocations[],encryption,dataDiskImages[],lun"
+        ]
+    },
+    {
+        "type": "GalleryImage",
+        "group": "Compute",
+        "apiVersion": "2021-10-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "gallery": {
+                "type": "Gallery",
+                "group": "Compute",
+                "name": "galleryName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/images/{galleryImageName}",
+                "operationId": "GalleryImages_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/images/{galleryImageName}",
+                "operationId": "GalleryImages_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/images/{galleryImageName}",
+                "operationId": "GalleryImages_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/images/{galleryImageName}",
+                "operationId": "GalleryImages_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/images",
+                "operationId": "GalleryImages_ListByGallery"
+            }
+        },
+        "omitProperties": [
+            "properties.privacyStatementUri",
+            "properties.osState",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "properties.description",
+            "properties.eula",
+            "properties.releaseNoteUri",
+            "properties.osType",
+            "properties.hyperVGeneration",
+            "properties.endOfLifeDate",
+            "properties.identifier.publisher",
+            "properties.identifier.offer",
+            "properties.identifier.sku",
+            "properties.recommended.vCPUs.min",
+            "properties.recommended.vCPUs.max",
+            "properties.recommended.memory.min",
+            "properties.recommended.memory.max",
+            "properties.purchasePlan.name",
+            "properties.purchasePlan.publisher",
+            "properties.purchasePlan.product",
+            "properties.features[].name",
+            "properties.features[].value",
+            "properties.architecture"
+        ],
+        "pickPropertiesCreate": [
+            "properties.description",
+            "properties.eula",
+            "properties.releaseNoteUri",
+            "properties.osType",
+            "properties.hyperVGeneration",
+            "properties.endOfLifeDate",
+            "properties.identifier.publisher",
+            "properties.identifier.offer",
+            "properties.identifier.sku",
+            "properties.recommended.vCPUs.min",
+            "properties.recommended.vCPUs.max",
+            "properties.recommended.memory.min",
+            "properties.recommended.memory.max",
+            "properties.purchasePlan.name",
+            "properties.purchasePlan.publisher",
+            "properties.purchasePlan.product",
+            "properties.features[].name",
+            "properties.features[].value",
+            "properties.architecture"
+        ]
+    },
+    {
+        "type": "GalleryImageVersion",
+        "group": "Compute",
+        "apiVersion": "2021-10-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "gallery": {
+                "type": "Gallery",
+                "group": "Compute",
+                "name": "galleryName",
+                "parent": true
+            },
+            "galleryImage": {
+                "type": "GalleryImage",
+                "group": "Compute",
+                "name": "galleryImageName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/images/{galleryImageName}/versions/{galleryImageVersionName}",
+                "operationId": "GalleryImageVersions_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/images/{galleryImageName}/versions/{galleryImageVersionName}",
+                "operationId": "GalleryImageVersions_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/images/{galleryImageName}/versions/{galleryImageVersionName}",
+                "operationId": "GalleryImageVersions_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/images/{galleryImageName}/versions/{galleryImageVersionName}",
+                "operationId": "GalleryImageVersions_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/galleries/{galleryName}/images/{galleryImageName}/versions",
+                "operationId": "GalleryImageVersions_ListByGalleryImage"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.storageProfile.source.id",
+            "properties.replicationStatus"
+        ],
+        "pickProperties": [
+            "properties,publishingProfile,targetRegions[],name.properties,publishingProfile,targetRegions[],regionalReplicaCount.properties,publishingProfile,targetRegions[],storageAccountType..properties,publishingProfile,targetRegions[],encryption,dataDiskImages[],lun.properties,publishingProfile,replicaCount.properties,publishingProfile,excludeFromLatest.properties,publishingProfile,endOfLifeDate.properties,publishingProfile,storageAccountType.properties,publishingProfile,replicationMode.properties,publishingProfile,targetExtendedLocations[],name.properties,publishingProfile,targetExtendedLocations[],extendedLocation,name.properties,publishingProfile,targetExtendedLocations[],extendedLocation,type.properties,publishingProfile,targetExtendedLocations[],extendedLocationReplicaCount.properties,publishingProfile,targetExtendedLocations[],storageAccountType..properties,publishingProfile,targetExtendedLocations[],encryption,dataDiskImages[],lun",
+            "properties.storageProfile.source.uri",
+            "properties,storageProfile,osDiskImage,hostCaching.properties,storageProfile,osDiskImage,source,uri",
+            "properties.storageProfile.dataDiskImages[].lun"
+        ],
+        "pickPropertiesCreate": [
+            "properties,publishingProfile,targetRegions[],name.properties,publishingProfile,targetRegions[],regionalReplicaCount.properties,publishingProfile,targetRegions[],storageAccountType..properties,publishingProfile,targetRegions[],encryption,dataDiskImages[],lun.properties,publishingProfile,replicaCount.properties,publishingProfile,excludeFromLatest.properties,publishingProfile,endOfLifeDate.properties,publishingProfile,storageAccountType.properties,publishingProfile,replicationMode.properties,publishingProfile,targetExtendedLocations[],name.properties,publishingProfile,targetExtendedLocations[],extendedLocation,name.properties,publishingProfile,targetExtendedLocations[],extendedLocation,type.properties,publishingProfile,targetExtendedLocations[],extendedLocationReplicaCount.properties,publishingProfile,targetExtendedLocations[],storageAccountType..properties,publishingProfile,targetExtendedLocations[],encryption,dataDiskImages[],lun",
+            "properties.storageProfile.source.uri",
+            "properties,storageProfile,osDiskImage,hostCaching.properties,storageProfile,osDiskImage,source,uri",
+            "properties.storageProfile.dataDiskImages[].lun"
+        ]
+    },
+    {
+        "type": "Image",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "virtualMachine": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.sourceVirtualMachine.id"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/images/{imageName}",
+                "operationId": "Images_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/images/{imageName}",
+                "operationId": "Images_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/images/{imageName}",
+                "operationId": "Images_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/images/{imageName}",
+                "operationId": "Images_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/images",
+                "operationId": "Images_List"
+            }
+        },
+        "omitProperties": [
+            "properties.sourceVirtualMachine.id",
+            "properties.storageProfile.osDisk.osState",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "properties,storageProfile,osDisk,blobUri.properties,storageProfile,osDisk,caching.properties,storageProfile,osDisk,diskSizeGB.properties,storageProfile,osDisk,storageAccountType.",
+            "properties.storageProfile.dataDisks[].lun",
+            "properties.storageProfile.zoneResilient",
+            "properties.hyperVGeneration",
+            "extendedLocation.name",
+            "extendedLocation.type"
+        ],
+        "pickPropertiesCreate": [
+            "properties,storageProfile,osDisk,blobUri.properties,storageProfile,osDisk,caching.properties,storageProfile,osDisk,diskSizeGB.properties,storageProfile,osDisk,storageAccountType.",
+            "properties.storageProfile.dataDisks[].lun",
+            "properties.storageProfile.zoneResilient",
+            "properties.hyperVGeneration",
+            "extendedLocation.name",
+            "extendedLocation.type"
+        ]
+    },
+    {
+        "type": "ProximityPlacementGroup",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/proximityPlacementGroups/{proximityPlacementGroupName}",
+                "operationId": "ProximityPlacementGroups_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/proximityPlacementGroups/{proximityPlacementGroupName}",
+                "operationId": "ProximityPlacementGroups_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/proximityPlacementGroups/{proximityPlacementGroupName}",
+                "operationId": "ProximityPlacementGroups_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/proximityPlacementGroups/{proximityPlacementGroupName}",
+                "operationId": "ProximityPlacementGroups_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/proximityPlacementGroups",
+                "operationId": "ProximityPlacementGroups_ListBySubscription"
+            }
+        },
+        "omitProperties": [
+            "properties.virtualMachines",
+            "properties.virtualMachineScaleSets",
+            "properties.availabilitySets",
+            "properties.colocationStatus"
+        ],
+        "pickProperties": [
+            "properties.proximityPlacementGroupType"
+        ],
+        "pickPropertiesCreate": [
+            "properties.proximityPlacementGroupType"
+        ]
+    },
+    {
+        "type": "RestorePointCollection",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "restorePoint": {
+                "type": "RestorePoint",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.restorePointCollectionId"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/restorePointCollections/{restorePointCollectionName}",
+                "operationId": "RestorePointCollections_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/restorePointCollections/{restorePointCollectionName}",
+                "operationId": "RestorePointCollections_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/restorePointCollections/{restorePointCollectionName}",
+                "operationId": "RestorePointCollections_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/restorePointCollections/{restorePointCollectionName}",
+                "operationId": "RestorePointCollections_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/restorePointCollections",
+                "operationId": "RestorePointCollections_ListAll"
+            }
+        },
+        "omitProperties": [
+            "properties.source.location",
+            "properties.source.id",
+            "properties.provisioningState",
+            "properties.restorePointCollectionId",
+            "properties.restorePoints"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
+        "type": "Snapshot",
+        "group": "Compute",
+        "apiVersion": "2021-12-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "image": {
+                "type": "Image",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.creationData.imageReference.id"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "diskEncryptionSet": {
+                "type": "DiskEncryptionSet",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.securityProfile.secureVMDiskEncryptionSetId"
+            },
+            "diskAccess": {
+                "type": "DiskAccess",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.diskAccessId"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/snapshots/{snapshotName}",
+                "operationId": "Snapshots_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/snapshots/{snapshotName}",
+                "operationId": "Snapshots_Update"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/snapshots/{snapshotName}",
+                "operationId": "Snapshots_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/snapshots/{snapshotName}",
+                "operationId": "Snapshots_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/snapshots",
+                "operationId": "Snapshots_List"
+            }
+        },
+        "omitProperties": [
+            "managedBy",
+            "sku.tier",
+            "properties.timeCreated",
+            "properties.creationData.storageAccountId",
+            "properties.creationData.imageReference.id",
+            "properties.creationData.galleryImageReference.id",
+            "properties.creationData.sourceResourceId",
+            "properties.creationData.sourceUniqueId",
+            "properties.diskSizeBytes",
+            "properties.diskState",
+            "properties.uniqueId",
+            "properties.provisioningState",
+            "properties.encryption.diskEncryptionSetId",
+            "properties.diskAccessId",
+            "properties.securityProfile.secureVMDiskEncryptionSetId"
+        ],
+        "pickProperties": [
+            "sku.name",
+            "extendedLocation.name",
+            "extendedLocation.type",
+            "properties.osType",
+            "properties.hyperVGeneration",
+            "properties.purchasePlan.name",
+            "properties.purchasePlan.publisher",
+            "properties.purchasePlan.product",
+            "properties.purchasePlan.promotionCode",
+            "properties.supportedCapabilities.acceleratedNetwork",
+            "properties.supportedCapabilities.architecture",
+            "properties.creationData.createOption",
+            "properties.creationData.imageReference.lun",
+            "properties.creationData.galleryImageReference.lun",
+            "properties.creationData.sourceUri",
+            "properties.creationData.uploadSizeBytes",
+            "properties.creationData.logicalSectorSize",
+            "properties.creationData.securityDataUri",
+            "properties.diskSizeGB",
+            "properties.encryptionSettingsCollection.enabled",
+            "properties.encryptionSettingsCollection.encryptionSettings[].diskEncryptionKey.secretUrl",
+            "properties.encryptionSettingsCollection.encryptionSettings[].keyEncryptionKey.keyUrl",
+            "properties.encryptionSettingsCollection.encryptionSettingsVersion",
+            "properties.incremental",
+            "properties.encryption.type",
+            "properties.networkAccessPolicy",
+            "properties.securityProfile.securityType",
+            "properties.supportsHibernation",
+            "properties.publicNetworkAccess",
+            "properties.dataAccessAuthMode"
+        ],
+        "pickPropertiesCreate": [
+            "sku.name",
+            "extendedLocation.name",
+            "extendedLocation.type",
+            "properties.osType",
+            "properties.hyperVGeneration",
+            "properties.purchasePlan.name",
+            "properties.purchasePlan.publisher",
+            "properties.purchasePlan.product",
+            "properties.purchasePlan.promotionCode",
+            "properties.supportedCapabilities.acceleratedNetwork",
+            "properties.supportedCapabilities.architecture",
+            "properties.creationData.createOption",
+            "properties.creationData.imageReference.lun",
+            "properties.creationData.galleryImageReference.lun",
+            "properties.creationData.sourceUri",
+            "properties.creationData.uploadSizeBytes",
+            "properties.creationData.logicalSectorSize",
+            "properties.creationData.securityDataUri",
+            "properties.diskSizeGB",
+            "properties.encryptionSettingsCollection.enabled",
+            "properties.encryptionSettingsCollection.encryptionSettings[].diskEncryptionKey.secretUrl",
+            "properties.encryptionSettingsCollection.encryptionSettings[].keyEncryptionKey.keyUrl",
+            "properties.encryptionSettingsCollection.encryptionSettingsVersion",
+            "properties.incremental",
+            "properties.encryption.type",
+            "properties.networkAccessPolicy",
+            "properties.securityProfile.securityType",
+            "properties.supportsHibernation",
+            "properties.publicNetworkAccess",
+            "properties.dataAccessAuthMode"
+        ]
+    },
+    {
+        "type": "SshPublicKey",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/sshPublicKeys/{sshPublicKeyName}",
+                "operationId": "SshPublicKeys_Create"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/sshPublicKeys/{sshPublicKeyName}",
+                "operationId": "SshPublicKeys_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/sshPublicKeys/{sshPublicKeyName}",
+                "operationId": "SshPublicKeys_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/sshPublicKeys/{sshPublicKeyName}",
+                "operationId": "SshPublicKeys_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/sshPublicKeys",
+                "operationId": "SshPublicKeys_ListBySubscription"
+            }
+        },
+        "pickProperties": [
+            "properties.publicKey"
+        ],
+        "pickPropertiesCreate": [
+            "properties.publicKey"
+        ]
+    },
+    {
+        "type": "VirtualMachine",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "managedIdentities": {
+                "type": "UserAssignedIdentity",
+                "group": "ManagedIdentity",
+                "createOnly": true,
+                "list": true
+            },
+            "galleryImage": {
+                "type": "GalleryImage",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.storageProfile.imageReference.communityGalleryImageId"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "availabilitySet": {
+                "type": "AvailabilitySet",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.availabilitySet.id"
+            },
+            "virtualMachineScaleSet": {
+                "type": "VirtualMachineScaleSet",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.virtualMachineScaleSet.id"
+            },
+            "proximityPlacementGroup": {
+                "type": "ProximityPlacementGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.proximityPlacementGroup.id"
+            },
+            "dedicatedHostGroup": {
+                "type": "DedicatedHostGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.hostGroup.id"
+            },
+            "virtualMachineScaleSetVm": {
+                "type": "VirtualMachineScaleSetVM",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.vmId"
+            },
+            "capacityReservationGroup": {
+                "type": "CapacityReservationGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.capacityReservation.capacityReservationGroup.id"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}",
+                "operationId": "VirtualMachines_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}",
+                "operationId": "VirtualMachines_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}",
+                "operationId": "VirtualMachines_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}",
+                "operationId": "VirtualMachines_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines",
+                "operationId": "VirtualMachines_ListAll"
+            }
+        },
+        "omitProperties": [
+            "properties.storageProfile.imageReference.exactVersion",
+            "properties.storageProfile.imageReference.sharedGalleryImageId",
+            "properties.storageProfile.imageReference.communityGalleryImageId",
+            "properties.storageProfile.osDisk.encryptionSettings.diskEncryptionKey.sourceVault.id",
+            "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.sourceVault.id",
+            "properties.osProfile.adminPassword",
+            "properties.availabilitySet.id",
+            "properties.virtualMachineScaleSet.id",
+            "properties.proximityPlacementGroup.id",
+            "properties.host.id",
+            "properties.hostGroup.id",
+            "properties.provisioningState",
+            "properties.instanceView",
+            "properties.vmId",
+            "properties.capacityReservation.capacityReservationGroup.id",
+            "properties.timeCreated",
+            "resources",
+            "identity.principalId",
+            "identity.tenantId"
+        ],
+        "pickProperties": [
+            "plan.name",
+            "plan.publisher",
+            "plan.product",
+            "plan.promotionCode",
+            "properties.hardwareProfile.vmSize",
+            "properties.hardwareProfile.vmSizeProperties.vCPUsAvailable",
+            "properties.hardwareProfile.vmSizeProperties.vCPUsPerCore",
+            "",
+            "properties.storageProfile.osDisk.osType",
+            "properties.storageProfile.osDisk.encryptionSettings.diskEncryptionKey.secretUrl",
+            "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.keyUrl",
+            "properties.storageProfile.osDisk.encryptionSettings.enabled",
+            "properties.storageProfile.osDisk.name",
+            "properties.storageProfile.osDisk.vhd.uri",
+            "properties.storageProfile.osDisk.image.uri",
+            "properties.storageProfile.osDisk.caching",
+            "properties.storageProfile.osDisk.writeAcceleratorEnabled",
+            "properties.storageProfile.osDisk.diffDiskSettings.option",
+            "properties.storageProfile.osDisk.diffDiskSettings.placement",
+            "properties.storageProfile.osDisk.createOption",
+            "properties.storageProfile.osDisk.diskSizeGB",
+            "",
+            "properties.storageProfile.osDisk.deleteOption",
+            "properties.storageProfile.dataDisks[].lun",
+            "properties.storageProfile.dataDisks[].name",
+            "properties.storageProfile.dataDisks[].vhd.uri",
+            "properties.storageProfile.dataDisks[].image.uri",
+            "properties.storageProfile.dataDisks[].caching",
+            "properties.storageProfile.dataDisks[].writeAcceleratorEnabled",
+            "properties.storageProfile.dataDisks[].createOption",
+            "properties.storageProfile.dataDisks[].diskSizeGB",
+            "",
+            "properties.storageProfile.dataDisks[].toBeDetached",
+            "properties.storageProfile.dataDisks[].detachOption",
+            "properties.storageProfile.dataDisks[].deleteOption",
+            "properties.additionalCapabilities.ultraSSDEnabled",
+            "properties.additionalCapabilities.hibernationEnabled",
+            "properties.osProfile.computerName",
+            "properties.osProfile.adminUsername",
+            "properties.osProfile.customData",
+            "properties.osProfile.windowsConfiguration.provisionVMAgent",
+            "properties.osProfile.windowsConfiguration.enableAutomaticUpdates",
+            "properties.osProfile.windowsConfiguration.timeZone",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].passName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].componentName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].settingName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].content",
+            "properties.osProfile.windowsConfiguration.patchSettings.patchMode",
+            "properties.osProfile.windowsConfiguration.patchSettings.enableHotpatching",
+            "properties.osProfile.windowsConfiguration.patchSettings.assessmentMode",
+            "properties.osProfile.windowsConfiguration.winRM.listeners[].protocol",
+            "properties.osProfile.windowsConfiguration.winRM.listeners[].certificateUrl",
+            "properties.osProfile.linuxConfiguration.disablePasswordAuthentication",
+            "properties.osProfile.linuxConfiguration.ssh.publicKeys[].path",
+            "properties.osProfile.linuxConfiguration.ssh.publicKeys[].keyData",
+            "properties.osProfile.linuxConfiguration.provisionVMAgent",
+            "properties.osProfile.linuxConfiguration.patchSettings.patchMode",
+            "properties.osProfile.linuxConfiguration.patchSettings.assessmentMode",
+            "properties.osProfile.secrets[].vaultCertificates[].certificateUrl",
+            "properties.osProfile.secrets[].vaultCertificates[].certificateStore",
+            "properties.osProfile.allowExtensionOperations",
+            "properties.osProfile.requireGuestProvisionSignal",
+            "properties.networkProfile.networkInterfaces[].properties.primary",
+            "properties.networkProfile.networkInterfaces[].properties.deleteOption",
+            "properties.networkProfile.networkApiVersion",
+            "properties.networkProfile.networkInterfaceConfigurations[].name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.primary",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.deleteOption",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableAcceleratedNetworking",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableFpga",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableIPForwarding",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.primary",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.idleTimeoutInMinutes",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.deleteOption",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.dnsSettings.domainNameLabel",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].ipTagType",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].tag",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAddressVersion",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAllocationMethod",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.tier",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.privateIPAddressVersion",
+            "properties.securityProfile.uefiSettings.secureBootEnabled",
+            "properties.securityProfile.uefiSettings.vTpmEnabled",
+            "properties.securityProfile.encryptionAtHost",
+            "properties.securityProfile.securityType",
+            "properties.diagnosticsProfile.bootDiagnostics.enabled",
+            "properties.diagnosticsProfile.bootDiagnostics.storageUri",
+            "properties.priority",
+            "properties.evictionPolicy",
+            "properties.licenseType",
+            "properties.extensionsTimeBudget",
+            "properties.platformFaultDomain",
+            "properties.scheduledEventsProfile.terminateNotificationProfile.notBeforeTimeout",
+            "properties.scheduledEventsProfile.terminateNotificationProfile.enable",
+            "properties.userData",
+            "properties.applicationProfile.galleryApplications[].tags",
+            "properties.applicationProfile.galleryApplications[].order",
+            "properties.applicationProfile.galleryApplications[].configurationReference",
+            "identity.type",
+            "extendedLocation.name",
+            "extendedLocation.type"
+        ],
+        "pickPropertiesCreate": [
+            "plan.name",
+            "plan.publisher",
+            "plan.product",
+            "plan.promotionCode",
+            "properties.hardwareProfile.vmSize",
+            "properties.hardwareProfile.vmSizeProperties.vCPUsAvailable",
+            "properties.hardwareProfile.vmSizeProperties.vCPUsPerCore",
+            "",
+            "properties.storageProfile.osDisk.osType",
+            "properties.storageProfile.osDisk.encryptionSettings.diskEncryptionKey.secretUrl",
+            "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.keyUrl",
+            "properties.storageProfile.osDisk.encryptionSettings.enabled",
+            "properties.storageProfile.osDisk.name",
+            "properties.storageProfile.osDisk.vhd.uri",
+            "properties.storageProfile.osDisk.image.uri",
+            "properties.storageProfile.osDisk.caching",
+            "properties.storageProfile.osDisk.writeAcceleratorEnabled",
+            "properties.storageProfile.osDisk.diffDiskSettings.option",
+            "properties.storageProfile.osDisk.diffDiskSettings.placement",
+            "properties.storageProfile.osDisk.createOption",
+            "properties.storageProfile.osDisk.diskSizeGB",
+            "",
+            "properties.storageProfile.osDisk.deleteOption",
+            "properties.storageProfile.dataDisks[].lun",
+            "properties.storageProfile.dataDisks[].name",
+            "properties.storageProfile.dataDisks[].vhd.uri",
+            "properties.storageProfile.dataDisks[].image.uri",
+            "properties.storageProfile.dataDisks[].caching",
+            "properties.storageProfile.dataDisks[].writeAcceleratorEnabled",
+            "properties.storageProfile.dataDisks[].createOption",
+            "properties.storageProfile.dataDisks[].diskSizeGB",
+            "",
+            "properties.storageProfile.dataDisks[].toBeDetached",
+            "properties.storageProfile.dataDisks[].detachOption",
+            "properties.storageProfile.dataDisks[].deleteOption",
+            "properties.additionalCapabilities.ultraSSDEnabled",
+            "properties.additionalCapabilities.hibernationEnabled",
+            "properties.osProfile.computerName",
+            "properties.osProfile.adminUsername",
+            "properties.osProfile.customData",
+            "properties.osProfile.windowsConfiguration.provisionVMAgent",
+            "properties.osProfile.windowsConfiguration.enableAutomaticUpdates",
+            "properties.osProfile.windowsConfiguration.timeZone",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].passName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].componentName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].settingName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].content",
+            "properties.osProfile.windowsConfiguration.patchSettings.patchMode",
+            "properties.osProfile.windowsConfiguration.patchSettings.enableHotpatching",
+            "properties.osProfile.windowsConfiguration.patchSettings.assessmentMode",
+            "properties.osProfile.windowsConfiguration.winRM.listeners[].protocol",
+            "properties.osProfile.windowsConfiguration.winRM.listeners[].certificateUrl",
+            "properties.osProfile.linuxConfiguration.disablePasswordAuthentication",
+            "properties.osProfile.linuxConfiguration.ssh.publicKeys[].path",
+            "properties.osProfile.linuxConfiguration.ssh.publicKeys[].keyData",
+            "properties.osProfile.linuxConfiguration.provisionVMAgent",
+            "properties.osProfile.linuxConfiguration.patchSettings.patchMode",
+            "properties.osProfile.linuxConfiguration.patchSettings.assessmentMode",
+            "properties.osProfile.secrets[].vaultCertificates[].certificateUrl",
+            "properties.osProfile.secrets[].vaultCertificates[].certificateStore",
+            "properties.osProfile.allowExtensionOperations",
+            "properties.osProfile.requireGuestProvisionSignal",
+            "properties.networkProfile.networkInterfaces[].properties.primary",
+            "properties.networkProfile.networkInterfaces[].properties.deleteOption",
+            "properties.networkProfile.networkApiVersion",
+            "properties.networkProfile.networkInterfaceConfigurations[].name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.primary",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.deleteOption",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableAcceleratedNetworking",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableFpga",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableIPForwarding",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.primary",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.idleTimeoutInMinutes",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.deleteOption",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.dnsSettings.domainNameLabel",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].ipTagType",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].tag",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAddressVersion",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAllocationMethod",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.tier",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.privateIPAddressVersion",
+            "properties.securityProfile.uefiSettings.secureBootEnabled",
+            "properties.securityProfile.uefiSettings.vTpmEnabled",
+            "properties.securityProfile.encryptionAtHost",
+            "properties.securityProfile.securityType",
+            "properties.diagnosticsProfile.bootDiagnostics.enabled",
+            "properties.diagnosticsProfile.bootDiagnostics.storageUri",
+            "properties.priority",
+            "properties.evictionPolicy",
+            "properties.licenseType",
+            "properties.extensionsTimeBudget",
+            "properties.platformFaultDomain",
+            "properties.scheduledEventsProfile.terminateNotificationProfile.notBeforeTimeout",
+            "properties.scheduledEventsProfile.terminateNotificationProfile.enable",
+            "properties.userData",
+            "properties.applicationProfile.galleryApplications[].tags",
+            "properties.applicationProfile.galleryApplications[].order",
+            "properties.applicationProfile.galleryApplications[].configurationReference",
+            "identity.type",
+            "extendedLocation.name",
+            "extendedLocation.type"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.osProfile.adminPassword",
+                "suffix": "ADMIN_PASSWORD"
+            }
+        ]
+    },
+    {
+        "type": "VirtualMachineExtension",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "vm": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "name": "vmName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions/{vmExtensionName}",
+                "operationId": "VirtualMachineExtensions_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions/{vmExtensionName}",
+                "operationId": "VirtualMachineExtensions_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions/{vmExtensionName}",
+                "operationId": "VirtualMachineExtensions_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions/{vmExtensionName}",
+                "operationId": "VirtualMachineExtensions_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions",
+                "operationId": "VirtualMachineExtensions_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.instanceView.substatuses",
+            "properties.instanceView.statuses"
+        ],
+        "pickProperties": [
+            "properties.forceUpdateTag",
+            "properties.publisher",
+            "properties.type",
+            "properties.typeHandlerVersion",
+            "properties.autoUpgradeMinorVersion",
+            "properties.enableAutomaticUpgrade",
+            "properties.instanceView.name",
+            "properties.instanceView.type",
+            "properties.instanceView.typeHandlerVersion",
+            "properties.suppressFailures"
+        ],
+        "pickPropertiesCreate": [
+            "properties.forceUpdateTag",
+            "properties.publisher",
+            "properties.type",
+            "properties.typeHandlerVersion",
+            "properties.autoUpgradeMinorVersion",
+            "properties.enableAutomaticUpgrade",
+            "properties.instanceView.name",
+            "properties.instanceView.type",
+            "properties.instanceView.typeHandlerVersion",
+            "properties.suppressFailures"
+        ]
+    },
+    {
+        "type": "VirtualMachineRunCommandByVirtualMachine",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "vm": {
+                "type": "VirtualMachine",
+                "group": "Compute",
+                "name": "vmName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/runCommands/{runCommandName}",
+                "operationId": "VirtualMachineRunCommands_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/runCommands/{runCommandName}",
+                "operationId": "VirtualMachineRunCommands_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/runCommands/{runCommandName}",
+                "operationId": "VirtualMachineRunCommands_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/runCommands/{runCommandName}",
+                "operationId": "VirtualMachineRunCommands_GetByVirtualMachine"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/runCommands",
+                "operationId": "VirtualMachineRunCommands_ListByVirtualMachine"
+            }
+        },
+        "omitProperties": [
+            "properties.source.commandId",
+            "properties.runAsPassword",
+            "properties.provisioningState",
+            "properties.instanceView"
+        ],
+        "pickProperties": [
+            "properties.source.script",
+            "properties.source.scriptUri",
+            "properties.parameters[].name",
+            "properties.parameters[].value",
+            "properties.protectedParameters[].name",
+            "properties.protectedParameters[].value",
+            "properties.asyncExecution",
+            "properties.runAsUser",
+            "properties.timeoutInSeconds",
+            "properties.outputBlobUri",
+            "properties.errorBlobUri"
+        ],
+        "pickPropertiesCreate": [
+            "properties.source.script",
+            "properties.source.scriptUri",
+            "properties.parameters[].name",
+            "properties.parameters[].value",
+            "properties.protectedParameters[].name",
+            "properties.protectedParameters[].value",
+            "properties.asyncExecution",
+            "properties.runAsUser",
+            "properties.timeoutInSeconds",
+            "properties.outputBlobUri",
+            "properties.errorBlobUri"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.runAsPassword",
+                "suffix": "RUN_AS_PASSWORD"
+            }
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "asyncExecution": false
+            }
+        }
+    },
+    {
+        "type": "VirtualMachineScaleSet",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "managedIdentities": {
+                "type": "UserAssignedIdentity",
+                "group": "ManagedIdentity",
+                "createOnly": true,
+                "list": true
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "galleryImage": {
+                "type": "GalleryImage",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.virtualMachineProfile.storageProfile.imageReference.communityGalleryImageId"
+            },
+            "capacityReservationGroup": {
+                "type": "CapacityReservationGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.virtualMachineProfile.capacityReservation.capacityReservationGroup.id"
+            },
+            "proximityPlacementGroup": {
+                "type": "ProximityPlacementGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.proximityPlacementGroup.id"
+            },
+            "dedicatedHostGroup": {
+                "type": "DedicatedHostGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.hostGroup.id"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}",
+                "operationId": "VirtualMachineScaleSets_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}",
+                "operationId": "VirtualMachineScaleSets_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}",
+                "operationId": "VirtualMachineScaleSets_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}",
+                "operationId": "VirtualMachineScaleSets_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets",
+                "operationId": "VirtualMachineScaleSets_ListAll"
+            }
+        },
+        "omitProperties": [
+            "properties.virtualMachineProfile.osProfile.adminPassword",
+            "properties.virtualMachineProfile.storageProfile.imageReference.exactVersion",
+            "properties.virtualMachineProfile.storageProfile.imageReference.sharedGalleryImageId",
+            "properties.virtualMachineProfile.storageProfile.imageReference.communityGalleryImageId",
+            "properties.virtualMachineProfile.networkProfile.healthProbe.id",
+            "properties.virtualMachineProfile.capacityReservation.capacityReservationGroup.id",
+            "properties.provisioningState",
+            "properties.uniqueId",
+            "properties.proximityPlacementGroup.id",
+            "properties.hostGroup.id",
+            "properties.timeCreated",
+            "identity.principalId",
+            "identity.tenantId"
+        ],
+        "pickProperties": [
+            "sku.name",
+            "sku.tier",
+            "sku.capacity",
+            "plan.name",
+            "plan.publisher",
+            "plan.product",
+            "plan.promotionCode",
+            "properties.upgradePolicy.mode",
+            "properties.upgradePolicy.rollingUpgradePolicy.maxBatchInstancePercent",
+            "properties.upgradePolicy.rollingUpgradePolicy.maxUnhealthyInstancePercent",
+            "properties.upgradePolicy.rollingUpgradePolicy.maxUnhealthyUpgradedInstancePercent",
+            "properties.upgradePolicy.rollingUpgradePolicy.pauseTimeBetweenBatches",
+            "properties.upgradePolicy.rollingUpgradePolicy.enableCrossZoneUpgrade",
+            "properties.upgradePolicy.rollingUpgradePolicy.prioritizeUnhealthyInstances",
+            "properties.upgradePolicy.automaticOSUpgradePolicy.enableAutomaticOSUpgrade",
+            "properties.upgradePolicy.automaticOSUpgradePolicy.disableAutomaticRollback",
+            "properties.automaticRepairsPolicy.enabled",
+            "properties.automaticRepairsPolicy.gracePeriod",
+            "properties.automaticRepairsPolicy.repairAction",
+            "properties.virtualMachineProfile.osProfile.computerNamePrefix",
+            "properties.virtualMachineProfile.osProfile.adminUsername",
+            "properties.virtualMachineProfile.osProfile.customData",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.provisionVMAgent",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.enableAutomaticUpdates",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.timeZone",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.additionalUnattendContent[].passName",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.additionalUnattendContent[].componentName",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.additionalUnattendContent[].settingName",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.additionalUnattendContent[].content",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.patchSettings.patchMode",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.patchSettings.enableHotpatching",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.patchSettings.assessmentMode",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.winRM.listeners[].protocol",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.winRM.listeners[].certificateUrl",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.disablePasswordAuthentication",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.ssh.publicKeys[].path",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.ssh.publicKeys[].keyData",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.provisionVMAgent",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.patchSettings.patchMode",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.patchSettings.assessmentMode",
+            "properties.virtualMachineProfile.osProfile.secrets[].vaultCertificates[].certificateUrl",
+            "properties.virtualMachineProfile.osProfile.secrets[].vaultCertificates[].certificateStore",
+            "properties.virtualMachineProfile.osProfile.allowExtensionOperations",
+            "",
+            "properties.virtualMachineProfile.storageProfile.osDisk.name",
+            "properties.virtualMachineProfile.storageProfile.osDisk.caching",
+            "properties.virtualMachineProfile.storageProfile.osDisk.writeAcceleratorEnabled",
+            "properties.virtualMachineProfile.storageProfile.osDisk.createOption",
+            "properties.virtualMachineProfile.storageProfile.osDisk.diffDiskSettings.option",
+            "properties.virtualMachineProfile.storageProfile.osDisk.diffDiskSettings.placement",
+            "properties.virtualMachineProfile.storageProfile.osDisk.diskSizeGB",
+            "properties.virtualMachineProfile.storageProfile.osDisk.osType",
+            "properties.virtualMachineProfile.storageProfile.osDisk.image.uri",
+            "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.storageAccountType",
+            "",
+            "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.securityProfile.securityEncryptionType",
+            "",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].name",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].lun",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].caching",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].writeAcceleratorEnabled",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].createOption",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].diskSizeGB",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].managedDisk.storageAccountType",
+            "",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].managedDisk.securityProfile.securityEncryptionType",
+            "",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].diskIOPSReadWrite",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].diskMBpsReadWrite",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].name",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.primary",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.enableAcceleratedNetworking",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.enableFpga",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].name",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.primary",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.name",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.idleTimeoutInMinutes",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.dnsSettings.domainNameLabel",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].ipTagType",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].tag",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAddressVersion",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.deleteOption",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.name",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.tier",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.privateIPAddressVersion",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.enableIPForwarding",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.deleteOption",
+            "properties.virtualMachineProfile.networkProfile.networkApiVersion",
+            "properties.virtualMachineProfile.securityProfile.uefiSettings.secureBootEnabled",
+            "properties.virtualMachineProfile.securityProfile.uefiSettings.vTpmEnabled",
+            "properties.virtualMachineProfile.securityProfile.encryptionAtHost",
+            "properties.virtualMachineProfile.securityProfile.securityType",
+            "properties.virtualMachineProfile.diagnosticsProfile.bootDiagnostics.enabled",
+            "properties.virtualMachineProfile.diagnosticsProfile.bootDiagnostics.storageUri",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].name",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.forceUpdateTag",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.publisher",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.type",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.typeHandlerVersion",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.autoUpgradeMinorVersion",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.enableAutomaticUpgrade",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.suppressFailures",
+            "properties.virtualMachineProfile.extensionProfile.extensionsTimeBudget",
+            "properties.virtualMachineProfile.licenseType",
+            "properties.virtualMachineProfile.priority",
+            "properties.virtualMachineProfile.evictionPolicy",
+            "properties.virtualMachineProfile.scheduledEventsProfile.terminateNotificationProfile.notBeforeTimeout",
+            "properties.virtualMachineProfile.scheduledEventsProfile.terminateNotificationProfile.enable",
+            "properties.virtualMachineProfile.userData",
+            "properties.virtualMachineProfile.applicationProfile.galleryApplications[].tags",
+            "properties.virtualMachineProfile.applicationProfile.galleryApplications[].order",
+            "properties.virtualMachineProfile.applicationProfile.galleryApplications[].configurationReference",
+            "properties.virtualMachineProfile.hardwareProfile.vmSizeProperties.vCPUsAvailable",
+            "properties.virtualMachineProfile.hardwareProfile.vmSizeProperties.vCPUsPerCore",
+            "properties.overprovision",
+            "properties.doNotRunExtensionsOnOverprovisionedVMs",
+            "properties.singlePlacementGroup",
+            "properties.zoneBalance",
+            "properties.platformFaultDomainCount",
+            "properties.additionalCapabilities.ultraSSDEnabled",
+            "properties.additionalCapabilities.hibernationEnabled",
+            "properties.scaleInPolicy.forceDeletion",
+            "properties.orchestrationMode",
+            "properties.spotRestorePolicy.enabled",
+            "properties.spotRestorePolicy.restoreTimeout",
+            "identity.type",
+            "extendedLocation.name",
+            "extendedLocation.type"
+        ],
+        "pickPropertiesCreate": [
+            "sku.name",
+            "sku.tier",
+            "sku.capacity",
+            "plan.name",
+            "plan.publisher",
+            "plan.product",
+            "plan.promotionCode",
+            "properties.upgradePolicy.mode",
+            "properties.upgradePolicy.rollingUpgradePolicy.maxBatchInstancePercent",
+            "properties.upgradePolicy.rollingUpgradePolicy.maxUnhealthyInstancePercent",
+            "properties.upgradePolicy.rollingUpgradePolicy.maxUnhealthyUpgradedInstancePercent",
+            "properties.upgradePolicy.rollingUpgradePolicy.pauseTimeBetweenBatches",
+            "properties.upgradePolicy.rollingUpgradePolicy.enableCrossZoneUpgrade",
+            "properties.upgradePolicy.rollingUpgradePolicy.prioritizeUnhealthyInstances",
+            "properties.upgradePolicy.automaticOSUpgradePolicy.enableAutomaticOSUpgrade",
+            "properties.upgradePolicy.automaticOSUpgradePolicy.disableAutomaticRollback",
+            "properties.automaticRepairsPolicy.enabled",
+            "properties.automaticRepairsPolicy.gracePeriod",
+            "properties.automaticRepairsPolicy.repairAction",
+            "properties.virtualMachineProfile.osProfile.computerNamePrefix",
+            "properties.virtualMachineProfile.osProfile.adminUsername",
+            "properties.virtualMachineProfile.osProfile.customData",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.provisionVMAgent",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.enableAutomaticUpdates",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.timeZone",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.additionalUnattendContent[].passName",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.additionalUnattendContent[].componentName",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.additionalUnattendContent[].settingName",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.additionalUnattendContent[].content",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.patchSettings.patchMode",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.patchSettings.enableHotpatching",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.patchSettings.assessmentMode",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.winRM.listeners[].protocol",
+            "properties.virtualMachineProfile.osProfile.windowsConfiguration.winRM.listeners[].certificateUrl",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.disablePasswordAuthentication",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.ssh.publicKeys[].path",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.ssh.publicKeys[].keyData",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.provisionVMAgent",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.patchSettings.patchMode",
+            "properties.virtualMachineProfile.osProfile.linuxConfiguration.patchSettings.assessmentMode",
+            "properties.virtualMachineProfile.osProfile.secrets[].vaultCertificates[].certificateUrl",
+            "properties.virtualMachineProfile.osProfile.secrets[].vaultCertificates[].certificateStore",
+            "properties.virtualMachineProfile.osProfile.allowExtensionOperations",
+            "",
+            "properties.virtualMachineProfile.storageProfile.osDisk.name",
+            "properties.virtualMachineProfile.storageProfile.osDisk.caching",
+            "properties.virtualMachineProfile.storageProfile.osDisk.writeAcceleratorEnabled",
+            "properties.virtualMachineProfile.storageProfile.osDisk.createOption",
+            "properties.virtualMachineProfile.storageProfile.osDisk.diffDiskSettings.option",
+            "properties.virtualMachineProfile.storageProfile.osDisk.diffDiskSettings.placement",
+            "properties.virtualMachineProfile.storageProfile.osDisk.diskSizeGB",
+            "properties.virtualMachineProfile.storageProfile.osDisk.osType",
+            "properties.virtualMachineProfile.storageProfile.osDisk.image.uri",
+            "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.storageAccountType",
+            "",
+            "properties.virtualMachineProfile.storageProfile.osDisk.managedDisk.securityProfile.securityEncryptionType",
+            "",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].name",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].lun",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].caching",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].writeAcceleratorEnabled",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].createOption",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].diskSizeGB",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].managedDisk.storageAccountType",
+            "",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].managedDisk.securityProfile.securityEncryptionType",
+            "",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].diskIOPSReadWrite",
+            "properties.virtualMachineProfile.storageProfile.dataDisks[].diskMBpsReadWrite",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].name",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.primary",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.enableAcceleratedNetworking",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.enableFpga",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].name",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.primary",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.name",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.idleTimeoutInMinutes",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.dnsSettings.domainNameLabel",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].ipTagType",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].tag",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAddressVersion",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.deleteOption",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.name",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.tier",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.privateIPAddressVersion",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.enableIPForwarding",
+            "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.deleteOption",
+            "properties.virtualMachineProfile.networkProfile.networkApiVersion",
+            "properties.virtualMachineProfile.securityProfile.uefiSettings.secureBootEnabled",
+            "properties.virtualMachineProfile.securityProfile.uefiSettings.vTpmEnabled",
+            "properties.virtualMachineProfile.securityProfile.encryptionAtHost",
+            "properties.virtualMachineProfile.securityProfile.securityType",
+            "properties.virtualMachineProfile.diagnosticsProfile.bootDiagnostics.enabled",
+            "properties.virtualMachineProfile.diagnosticsProfile.bootDiagnostics.storageUri",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].name",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.forceUpdateTag",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.publisher",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.type",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.typeHandlerVersion",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.autoUpgradeMinorVersion",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.enableAutomaticUpgrade",
+            "properties.virtualMachineProfile.extensionProfile.extensions[].properties.suppressFailures",
+            "properties.virtualMachineProfile.extensionProfile.extensionsTimeBudget",
+            "properties.virtualMachineProfile.licenseType",
+            "properties.virtualMachineProfile.priority",
+            "properties.virtualMachineProfile.evictionPolicy",
+            "properties.virtualMachineProfile.scheduledEventsProfile.terminateNotificationProfile.notBeforeTimeout",
+            "properties.virtualMachineProfile.scheduledEventsProfile.terminateNotificationProfile.enable",
+            "properties.virtualMachineProfile.userData",
+            "properties.virtualMachineProfile.applicationProfile.galleryApplications[].tags",
+            "properties.virtualMachineProfile.applicationProfile.galleryApplications[].order",
+            "properties.virtualMachineProfile.applicationProfile.galleryApplications[].configurationReference",
+            "properties.virtualMachineProfile.hardwareProfile.vmSizeProperties.vCPUsAvailable",
+            "properties.virtualMachineProfile.hardwareProfile.vmSizeProperties.vCPUsPerCore",
+            "properties.overprovision",
+            "properties.doNotRunExtensionsOnOverprovisionedVMs",
+            "properties.singlePlacementGroup",
+            "properties.zoneBalance",
+            "properties.platformFaultDomainCount",
+            "properties.additionalCapabilities.ultraSSDEnabled",
+            "properties.additionalCapabilities.hibernationEnabled",
+            "properties.scaleInPolicy.forceDeletion",
+            "properties.orchestrationMode",
+            "properties.spotRestorePolicy.enabled",
+            "properties.spotRestorePolicy.restoreTimeout",
+            "identity.type",
+            "extendedLocation.name",
+            "extendedLocation.type"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.virtualMachineProfile.osProfile.adminPassword",
+                "suffix": "ADMIN_PASSWORD"
+            }
+        ]
+    },
+    {
+        "type": "VirtualMachineScaleSetExtension",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "vmScaleSet": {
+                "type": "VirtualMachineScaleSet",
+                "group": "Compute",
+                "name": "vmScaleSetName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions/{vmssExtensionName}",
+                "operationId": "VirtualMachineScaleSetExtensions_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions/{vmssExtensionName}",
+                "operationId": "VirtualMachineScaleSetExtensions_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions/{vmssExtensionName}",
+                "operationId": "VirtualMachineScaleSetExtensions_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions/{vmssExtensionName}",
+                "operationId": "VirtualMachineScaleSetExtensions_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions",
+                "operationId": "VirtualMachineScaleSetExtensions_List"
+            }
+        },
+        "omitProperties": [
+            "type",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [
+            "name",
+            "properties.forceUpdateTag",
+            "properties.publisher",
+            "properties.type",
+            "properties.typeHandlerVersion",
+            "properties.autoUpgradeMinorVersion",
+            "properties.enableAutomaticUpgrade",
+            "properties.suppressFailures"
+        ],
+        "pickPropertiesCreate": [
+            "name",
+            "properties.forceUpdateTag",
+            "properties.publisher",
+            "properties.type",
+            "properties.typeHandlerVersion",
+            "properties.autoUpgradeMinorVersion",
+            "properties.enableAutomaticUpgrade",
+            "properties.suppressFailures"
+        ]
+    },
+    {
+        "type": "VirtualMachineScaleSetVM",
+        "group": "Compute",
+        "apiVersion": "2021-11-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "cloudServiceRoleInstance": {
+                "type": "CloudServiceRoleInstance",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "instanceId"
+            },
+            "galleryImage": {
+                "type": "GalleryImage",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.storageProfile.imageReference.communityGalleryImageId"
+            },
+            "vault": {
+                "type": "Vault",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "key": {
+                "type": "Key",
+                "group": "KeyVault",
+                "createOnly": true
+            },
+            "availabilitySet": {
+                "type": "AvailabilitySet",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.availabilitySet.id"
+            },
+            "vmScaleSet": {
+                "type": "VirtualMachineScaleSet",
+                "group": "Compute",
+                "name": "vmScaleSetName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}",
+                "operationId": "VirtualMachineScaleSetVMs_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}",
+                "operationId": "VirtualMachineScaleSetVMs_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}",
+                "operationId": "VirtualMachineScaleSetVMs_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines",
+                "operationId": "VirtualMachineScaleSetVMs_List"
+            }
+        },
+        "omitProperties": [
+            "instanceId",
+            "sku",
+            "properties.latestModelApplied",
+            "properties.vmId",
+            "properties.instanceView",
+            "properties.storageProfile.imageReference.exactVersion",
+            "properties.storageProfile.imageReference.sharedGalleryImageId",
+            "properties.storageProfile.imageReference.communityGalleryImageId",
+            "properties.storageProfile.osDisk.encryptionSettings.diskEncryptionKey.sourceVault.id",
+            "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.sourceVault.id",
+            "properties.osProfile.adminPassword",
+            "properties.availabilitySet.id",
+            "properties.provisioningState",
+            "properties.modelDefinitionApplied",
+            "resources",
+            "zones"
+        ],
+        "pickProperties": [
+            "properties.hardwareProfile.vmSize",
+            "properties.hardwareProfile.vmSizeProperties.vCPUsAvailable",
+            "properties.hardwareProfile.vmSizeProperties.vCPUsPerCore",
+            "",
+            "properties.storageProfile.osDisk.osType",
+            "properties.storageProfile.osDisk.encryptionSettings.diskEncryptionKey.secretUrl",
+            "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.keyUrl",
+            "properties.storageProfile.osDisk.encryptionSettings.enabled",
+            "properties.storageProfile.osDisk.name",
+            "properties.storageProfile.osDisk.vhd.uri",
+            "properties.storageProfile.osDisk.image.uri",
+            "properties.storageProfile.osDisk.caching",
+            "properties.storageProfile.osDisk.writeAcceleratorEnabled",
+            "properties.storageProfile.osDisk.diffDiskSettings.option",
+            "properties.storageProfile.osDisk.diffDiskSettings.placement",
+            "properties.storageProfile.osDisk.createOption",
+            "properties.storageProfile.osDisk.diskSizeGB",
+            "",
+            "properties.storageProfile.osDisk.deleteOption",
+            "properties.storageProfile.dataDisks[].lun",
+            "properties.storageProfile.dataDisks[].name",
+            "properties.storageProfile.dataDisks[].vhd.uri",
+            "properties.storageProfile.dataDisks[].image.uri",
+            "properties.storageProfile.dataDisks[].caching",
+            "properties.storageProfile.dataDisks[].writeAcceleratorEnabled",
+            "properties.storageProfile.dataDisks[].createOption",
+            "properties.storageProfile.dataDisks[].diskSizeGB",
+            "",
+            "properties.storageProfile.dataDisks[].toBeDetached",
+            "properties.storageProfile.dataDisks[].detachOption",
+            "properties.storageProfile.dataDisks[].deleteOption",
+            "properties.additionalCapabilities.ultraSSDEnabled",
+            "properties.additionalCapabilities.hibernationEnabled",
+            "properties.osProfile.computerName",
+            "properties.osProfile.adminUsername",
+            "properties.osProfile.customData",
+            "properties.osProfile.windowsConfiguration.provisionVMAgent",
+            "properties.osProfile.windowsConfiguration.enableAutomaticUpdates",
+            "properties.osProfile.windowsConfiguration.timeZone",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].passName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].componentName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].settingName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].content",
+            "properties.osProfile.windowsConfiguration.patchSettings.patchMode",
+            "properties.osProfile.windowsConfiguration.patchSettings.enableHotpatching",
+            "properties.osProfile.windowsConfiguration.patchSettings.assessmentMode",
+            "properties.osProfile.windowsConfiguration.winRM.listeners[].protocol",
+            "properties.osProfile.windowsConfiguration.winRM.listeners[].certificateUrl",
+            "properties.osProfile.linuxConfiguration.disablePasswordAuthentication",
+            "properties.osProfile.linuxConfiguration.ssh.publicKeys[].path",
+            "properties.osProfile.linuxConfiguration.ssh.publicKeys[].keyData",
+            "properties.osProfile.linuxConfiguration.provisionVMAgent",
+            "properties.osProfile.linuxConfiguration.patchSettings.patchMode",
+            "properties.osProfile.linuxConfiguration.patchSettings.assessmentMode",
+            "properties.osProfile.secrets[].vaultCertificates[].certificateUrl",
+            "properties.osProfile.secrets[].vaultCertificates[].certificateStore",
+            "properties.osProfile.allowExtensionOperations",
+            "properties.osProfile.requireGuestProvisionSignal",
+            "properties.securityProfile.uefiSettings.secureBootEnabled",
+            "properties.securityProfile.uefiSettings.vTpmEnabled",
+            "properties.securityProfile.encryptionAtHost",
+            "properties.securityProfile.securityType",
+            "properties.networkProfile.networkInterfaces[].properties.primary",
+            "properties.networkProfile.networkInterfaces[].properties.deleteOption",
+            "properties.networkProfile.networkApiVersion",
+            "properties.networkProfile.networkInterfaceConfigurations[].name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.primary",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.deleteOption",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableAcceleratedNetworking",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableFpga",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableIPForwarding",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.primary",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.idleTimeoutInMinutes",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.deleteOption",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.dnsSettings.domainNameLabel",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].ipTagType",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].tag",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAddressVersion",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAllocationMethod",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.tier",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.privateIPAddressVersion",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].name",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.primary",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.enableAcceleratedNetworking",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.enableFpga",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].name",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.primary",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.name",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.idleTimeoutInMinutes",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.dnsSettings.domainNameLabel",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].ipTagType",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].tag",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAddressVersion",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.deleteOption",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.name",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.tier",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.privateIPAddressVersion",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.enableIPForwarding",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.deleteOption",
+            "properties.diagnosticsProfile.bootDiagnostics.enabled",
+            "properties.diagnosticsProfile.bootDiagnostics.storageUri",
+            "properties.licenseType",
+            "properties.protectionPolicy.protectFromScaleIn",
+            "properties.protectionPolicy.protectFromScaleSetActions",
+            "properties.userData",
+            "plan.name",
+            "plan.publisher",
+            "plan.product",
+            "plan.promotionCode"
+        ],
+        "pickPropertiesCreate": [
+            "properties.hardwareProfile.vmSize",
+            "properties.hardwareProfile.vmSizeProperties.vCPUsAvailable",
+            "properties.hardwareProfile.vmSizeProperties.vCPUsPerCore",
+            "",
+            "properties.storageProfile.osDisk.osType",
+            "properties.storageProfile.osDisk.encryptionSettings.diskEncryptionKey.secretUrl",
+            "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.keyUrl",
+            "properties.storageProfile.osDisk.encryptionSettings.enabled",
+            "properties.storageProfile.osDisk.name",
+            "properties.storageProfile.osDisk.vhd.uri",
+            "properties.storageProfile.osDisk.image.uri",
+            "properties.storageProfile.osDisk.caching",
+            "properties.storageProfile.osDisk.writeAcceleratorEnabled",
+            "properties.storageProfile.osDisk.diffDiskSettings.option",
+            "properties.storageProfile.osDisk.diffDiskSettings.placement",
+            "properties.storageProfile.osDisk.createOption",
+            "properties.storageProfile.osDisk.diskSizeGB",
+            "",
+            "properties.storageProfile.osDisk.deleteOption",
+            "properties.storageProfile.dataDisks[].lun",
+            "properties.storageProfile.dataDisks[].name",
+            "properties.storageProfile.dataDisks[].vhd.uri",
+            "properties.storageProfile.dataDisks[].image.uri",
+            "properties.storageProfile.dataDisks[].caching",
+            "properties.storageProfile.dataDisks[].writeAcceleratorEnabled",
+            "properties.storageProfile.dataDisks[].createOption",
+            "properties.storageProfile.dataDisks[].diskSizeGB",
+            "",
+            "properties.storageProfile.dataDisks[].toBeDetached",
+            "properties.storageProfile.dataDisks[].detachOption",
+            "properties.storageProfile.dataDisks[].deleteOption",
+            "properties.additionalCapabilities.ultraSSDEnabled",
+            "properties.additionalCapabilities.hibernationEnabled",
+            "properties.osProfile.computerName",
+            "properties.osProfile.adminUsername",
+            "properties.osProfile.customData",
+            "properties.osProfile.windowsConfiguration.provisionVMAgent",
+            "properties.osProfile.windowsConfiguration.enableAutomaticUpdates",
+            "properties.osProfile.windowsConfiguration.timeZone",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].passName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].componentName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].settingName",
+            "properties.osProfile.windowsConfiguration.additionalUnattendContent[].content",
+            "properties.osProfile.windowsConfiguration.patchSettings.patchMode",
+            "properties.osProfile.windowsConfiguration.patchSettings.enableHotpatching",
+            "properties.osProfile.windowsConfiguration.patchSettings.assessmentMode",
+            "properties.osProfile.windowsConfiguration.winRM.listeners[].protocol",
+            "properties.osProfile.windowsConfiguration.winRM.listeners[].certificateUrl",
+            "properties.osProfile.linuxConfiguration.disablePasswordAuthentication",
+            "properties.osProfile.linuxConfiguration.ssh.publicKeys[].path",
+            "properties.osProfile.linuxConfiguration.ssh.publicKeys[].keyData",
+            "properties.osProfile.linuxConfiguration.provisionVMAgent",
+            "properties.osProfile.linuxConfiguration.patchSettings.patchMode",
+            "properties.osProfile.linuxConfiguration.patchSettings.assessmentMode",
+            "properties.osProfile.secrets[].vaultCertificates[].certificateUrl",
+            "properties.osProfile.secrets[].vaultCertificates[].certificateStore",
+            "properties.osProfile.allowExtensionOperations",
+            "properties.osProfile.requireGuestProvisionSignal",
+            "properties.securityProfile.uefiSettings.secureBootEnabled",
+            "properties.securityProfile.uefiSettings.vTpmEnabled",
+            "properties.securityProfile.encryptionAtHost",
+            "properties.securityProfile.securityType",
+            "properties.networkProfile.networkInterfaces[].properties.primary",
+            "properties.networkProfile.networkInterfaces[].properties.deleteOption",
+            "properties.networkProfile.networkApiVersion",
+            "properties.networkProfile.networkInterfaceConfigurations[].name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.primary",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.deleteOption",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableAcceleratedNetworking",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableFpga",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.enableIPForwarding",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.primary",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.idleTimeoutInMinutes",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.deleteOption",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.dnsSettings.domainNameLabel",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].ipTagType",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].tag",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAddressVersion",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAllocationMethod",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.name",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.tier",
+            "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.privateIPAddressVersion",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].name",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.primary",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.enableAcceleratedNetworking",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.enableFpga",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].name",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.primary",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.name",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.idleTimeoutInMinutes",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.dnsSettings.domainNameLabel",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].ipTagType",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.ipTags[].tag",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPAddressVersion",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.deleteOption",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.name",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.sku.tier",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.privateIPAddressVersion",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.enableIPForwarding",
+            "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.deleteOption",
+            "properties.diagnosticsProfile.bootDiagnostics.enabled",
+            "properties.diagnosticsProfile.bootDiagnostics.storageUri",
+            "properties.licenseType",
+            "properties.protectionPolicy.protectFromScaleIn",
+            "properties.protectionPolicy.protectFromScaleSetActions",
+            "properties.userData",
+            "plan.name",
+            "plan.publisher",
+            "plan.product",
+            "plan.promotionCode"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.osProfile.adminPassword",
+                "suffix": "ADMIN_PASSWORD"
+            }
+        ]
+    },
+    {
+        "type": "ContainerService",
+        "group": "ContainerService",
+        "apiVersion": "2017-01-31",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/containerServices/{containerServiceName}",
+                "operationId": "ContainerServices_CreateOrUpdate"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/containerServices/{containerServiceName}",
+                "operationId": "ContainerServices_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/containerServices/{containerServiceName}",
+                "operationId": "ContainerServices_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/containerServices",
+                "operationId": "ContainerServices_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.servicePrincipalProfile.clientId",
+            "properties.masterProfile.fqdn",
+            "properties.windowsProfile.adminPassword",
+            "properties.diagnosticsProfile.vmDiagnostics.storageUri"
+        ],
+        "pickProperties": [
+            "properties.orchestratorProfile.orchestratorType",
+            "properties.customProfile.orchestrator",
+            "properties.servicePrincipalProfile.secret",
+            "properties.masterProfile.count",
+            "properties.masterProfile.dnsPrefix",
+            "properties.agentPoolProfiles[].name",
+            "properties.agentPoolProfiles[].count",
+            "properties.agentPoolProfiles[].vmSize",
+            "properties.agentPoolProfiles[].dnsPrefix",
+            "properties.windowsProfile.adminUsername",
+            "properties.linuxProfile.adminUsername",
+            "properties.linuxProfile.ssh.publicKeys[].keyData",
+            "properties.diagnosticsProfile.vmDiagnostics.enabled"
+        ],
+        "pickPropertiesCreate": [
+            "properties.orchestratorProfile.orchestratorType",
+            "properties.customProfile.orchestrator",
+            "properties.servicePrincipalProfile.secret",
+            "properties.masterProfile.count",
+            "properties.masterProfile.dnsPrefix",
+            "properties.agentPoolProfiles[].name",
+            "properties.agentPoolProfiles[].count",
+            "properties.agentPoolProfiles[].vmSize",
+            "properties.agentPoolProfiles[].dnsPrefix",
+            "properties.windowsProfile.adminUsername",
+            "properties.linuxProfile.adminUsername",
+            "properties.linuxProfile.ssh.publicKeys[].keyData",
+            "properties.diagnosticsProfile.vmDiagnostics.enabled"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.windowsProfile.adminPassword",
+                "suffix": "ADMIN_PASSWORD"
+            }
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "masterProfile": {
+                    "count": 1
+                }
+            }
+        }
+    }
+]

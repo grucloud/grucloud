@@ -1,0 +1,542 @@
+[
+    {
+        "type": "Cluster",
+        "group": "OperationalInsights",
+        "apiVersion": "2021-06-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "managedIdentities": {
+                "type": "UserAssignedIdentity",
+                "group": "ManagedIdentity",
+                "createOnly": true,
+                "list": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "createOnly": true,
+                "pathId": "properties.associatedWorkspaces.items.workspaceId"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/clusters/{clusterName}",
+                "operationId": "Clusters_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/clusters/{clusterName}",
+                "operationId": "Clusters_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/clusters/{clusterName}",
+                "operationId": "Clusters_Get"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/clusters/{clusterName}",
+                "operationId": "Clusters_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.OperationalInsights/clusters",
+                "operationId": "Clusters_List"
+            }
+        },
+        "omitProperties": [
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.clusterId",
+            "properties.provisioningState",
+            "properties.lastModifiedDate",
+            "properties.createdDate",
+            "properties.capacityReservationProperties.lastSkuUpdate",
+            "properties.capacityReservationProperties.minCapacity"
+        ],
+        "pickProperties": [
+            "identity.type",
+            "sku.capacity",
+            "sku.name",
+            "properties.isDoubleEncryptionEnabled",
+            "properties.isAvailabilityZonesEnabled",
+            "properties.billingType",
+            "properties.keyVaultProperties.keyVaultUri",
+            "properties.keyVaultProperties.keyName",
+            "properties.keyVaultProperties.keyVersion",
+            "properties.keyVaultProperties.keyRsaSize"
+        ],
+        "pickPropertiesCreate": [
+            "identity.type",
+            "sku.capacity",
+            "sku.name",
+            "properties.isDoubleEncryptionEnabled",
+            "properties.isAvailabilityZonesEnabled",
+            "properties.billingType",
+            "properties.keyVaultProperties.keyVaultUri",
+            "properties.keyVaultProperties.keyName",
+            "properties.keyVaultProperties.keyVersion",
+            "properties.keyVaultProperties.keyRsaSize"
+        ]
+    },
+    {
+        "type": "DataExport",
+        "group": "OperationalInsights",
+        "apiVersion": "2020-08-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "name": "workspaceName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataExports/{dataExportName}",
+                "operationId": "DataExports_CreateOrUpdate"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataExports/{dataExportName}",
+                "operationId": "DataExports_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataExports/{dataExportName}",
+                "operationId": "DataExports_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/dataExports",
+                "operationId": "DataExports_ListByWorkspace"
+            }
+        },
+        "omitProperties": [
+            "properties.dataExportId",
+            "properties.destination.resourceId",
+            "properties.destination.type"
+        ],
+        "pickProperties": [
+            "properties.destination.metaData.eventHubName",
+            "properties.enable",
+            "properties.createdDate",
+            "properties.lastModifiedDate"
+        ],
+        "pickPropertiesCreate": [
+            "properties.destination.metaData.eventHubName",
+            "properties.enable",
+            "properties.createdDate",
+            "properties.lastModifiedDate"
+        ]
+    },
+    {
+        "type": "LinkedService",
+        "group": "OperationalInsights",
+        "apiVersion": "2020-08-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "name": "workspaceName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/linkedServices/{linkedServiceName}",
+                "operationId": "LinkedServices_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/linkedServices/{linkedServiceName}",
+                "operationId": "LinkedServices_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/linkedServices/{linkedServiceName}",
+                "operationId": "LinkedServices_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/linkedServices",
+                "operationId": "LinkedServices_ListByWorkspace"
+            }
+        },
+        "omitProperties": [
+            "properties.resourceId",
+            "properties.writeAccessResourceId",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
+        "type": "Query",
+        "group": "OperationalInsights",
+        "apiVersion": "2019-09-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "queryPack": {
+                "type": "QueryPack",
+                "group": "OperationalInsights",
+                "name": "queryPackName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}/queries/{id}",
+                "operationId": "Queries_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}/queries/{id}",
+                "operationId": "Queries_Put"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}/queries/{id}",
+                "operationId": "Queries_Update"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}/queries/{id}",
+                "operationId": "Queries_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}/queries",
+                "operationId": "Queries_List"
+            }
+        },
+        "omitProperties": [
+            "properties.id",
+            "properties.timeCreated",
+            "properties.timeModified",
+            "properties.author"
+        ],
+        "pickProperties": [
+            "properties.displayName",
+            "properties.description",
+            "properties.body"
+        ],
+        "pickPropertiesCreate": [
+            "properties.displayName",
+            "properties.description",
+            "properties.body"
+        ]
+    },
+    {
+        "type": "QueryPack",
+        "group": "OperationalInsights",
+        "apiVersion": "2019-09-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "query": {
+                "type": "Query",
+                "group": "OperationalInsights",
+                "createOnly": true,
+                "pathId": "properties.queryPackId"
+            }
+        },
+        "methods": {
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}",
+                "operationId": "QueryPacks_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}",
+                "operationId": "QueryPacks_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}",
+                "operationId": "QueryPacks_CreateOrUpdate"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/queryPacks/{queryPackName}",
+                "operationId": "QueryPacks_UpdateTags"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.OperationalInsights/queryPacks",
+                "operationId": "QueryPacks_List"
+            }
+        },
+        "omitProperties": [
+            "properties.queryPackId",
+            "properties.timeCreated",
+            "properties.timeModified",
+            "properties.provisioningState"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": []
+    },
+    {
+        "type": "SavedSearch",
+        "group": "OperationalInsights",
+        "apiVersion": "2020-08-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "name": "workspaceName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/savedSearches/{savedSearchId}",
+                "operationId": "SavedSearches_Delete"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/savedSearches/{savedSearchId}",
+                "operationId": "SavedSearches_CreateOrUpdate"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/savedSearches/{savedSearchId}",
+                "operationId": "SavedSearches_Get"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/savedSearches",
+                "operationId": "SavedSearches_ListByWorkspace"
+            }
+        },
+        "pickProperties": [
+            "etag",
+            "properties.category",
+            "properties.displayName",
+            "properties.query",
+            "properties.functionAlias",
+            "properties.functionParameters",
+            "properties.version",
+            "properties.tags[].name",
+            "properties.tags[].value"
+        ],
+        "pickPropertiesCreate": [
+            "etag",
+            "properties.category",
+            "properties.displayName",
+            "properties.query",
+            "properties.functionAlias",
+            "properties.functionParameters",
+            "properties.version",
+            "properties.tags[].name",
+            "properties.tags[].value"
+        ]
+    },
+    {
+        "type": "StorageInsight",
+        "group": "OperationalInsights",
+        "apiVersion": "2015-03-20",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "linkedStorageAccount": {
+                "type": "LinkedStorageAccount",
+                "group": "OperationalInsights",
+                "createOnly": true,
+                "pathId": "properties.storageAccount.id"
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "name": "workspaceName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}",
+                "operationId": "StorageInsights_CreateOrUpdate"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}",
+                "operationId": "StorageInsights_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}",
+                "operationId": "StorageInsights_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs",
+                "operationId": "StorageInsights_ListByWorkspace"
+            }
+        },
+        "omitProperties": [
+            "properties.storageAccount.id",
+            "properties.status"
+        ],
+        "pickProperties": [
+            "properties.storageAccount.key",
+            "eTag"
+        ],
+        "pickPropertiesCreate": [
+            "properties.storageAccount.key",
+            "eTag"
+        ]
+    },
+    {
+        "type": "StorageInsightConfig",
+        "group": "OperationalInsights",
+        "apiVersion": "2020-08-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "linkedStorageAccount": {
+                "type": "LinkedStorageAccount",
+                "group": "OperationalInsights",
+                "createOnly": true,
+                "pathId": "properties.storageAccount.id"
+            },
+            "workspace": {
+                "type": "Workspace",
+                "group": "OperationalInsights",
+                "name": "workspaceName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}",
+                "operationId": "StorageInsightConfigs_CreateOrUpdate"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}",
+                "operationId": "StorageInsightConfigs_Get"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}",
+                "operationId": "StorageInsightConfigs_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs",
+                "operationId": "StorageInsightConfigs_ListByWorkspace"
+            }
+        },
+        "omitProperties": [
+            "properties.storageAccount.id",
+            "properties.status"
+        ],
+        "pickProperties": [
+            "properties.storageAccount.key",
+            "eTag"
+        ],
+        "pickPropertiesCreate": [
+            "properties.storageAccount.key",
+            "eTag"
+        ]
+    },
+    {
+        "type": "Workspace",
+        "group": "OperationalInsights",
+        "apiVersion": "2021-12-01-preview",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "cluster": {
+                "type": "Cluster",
+                "group": "OperationalInsights",
+                "createOnly": true,
+                "pathId": "properties.features.clusterResourceId"
+            }
+        },
+        "methods": {
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}",
+                "operationId": "Workspaces_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}",
+                "operationId": "Workspaces_Delete"
+            },
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}",
+                "operationId": "Workspaces_Get"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}",
+                "operationId": "Workspaces_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.OperationalInsights/workspaces",
+                "operationId": "Workspaces_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.customerId",
+            "properties.sku.lastSkuUpdate",
+            "properties.workspaceCapping.quotaNextResetTime",
+            "properties.workspaceCapping.dataIngestionStatus",
+            "properties.createdDate",
+            "properties.modifiedDate",
+            "properties.privateLinkScopedResources",
+            "properties.features.clusterResourceId",
+            "properties.defaultDataCollectionRuleResourceId",
+            "systemData"
+        ],
+        "pickProperties": [
+            "properties.sku.name",
+            "properties.sku.capacityReservationLevel",
+            "properties.retentionInDays",
+            "properties.publicNetworkAccessForIngestion",
+            "properties.publicNetworkAccessForQuery",
+            "properties.forceCmkForQuery",
+            "properties.features.enableDataExport",
+            "properties.features.immediatePurgeDataOn30Days",
+            "properties.features.enableLogAccessUsingOnlyResourcePermissions",
+            "properties.features.disableLocalAuth",
+            "eTag"
+        ],
+        "pickPropertiesCreate": [
+            "properties.sku.name",
+            "properties.sku.capacityReservationLevel",
+            "properties.retentionInDays",
+            "properties.publicNetworkAccessForIngestion",
+            "properties.publicNetworkAccessForQuery",
+            "properties.forceCmkForQuery",
+            "properties.features.enableDataExport",
+            "properties.features.immediatePurgeDataOn30Days",
+            "properties.features.enableLogAccessUsingOnlyResourcePermissions",
+            "properties.features.disableLocalAuth",
+            "eTag"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+            }
+        }
+    }
+]

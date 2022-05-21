@@ -1,0 +1,546 @@
+[
+    {
+        "type": "Certificate",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "environment": {
+                "type": "ManagedEnvironment",
+                "group": "App",
+                "name": "environmentName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/certificates/{certificateName}",
+                "operationId": "Certificates_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/certificates/{certificateName}",
+                "operationId": "Certificates_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/certificates/{certificateName}",
+                "operationId": "Certificates_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/certificates/{certificateName}",
+                "operationId": "Certificates_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/certificates",
+                "operationId": "Certificates_List"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.password",
+            "properties.subjectName",
+            "properties.value",
+            "properties.issuer",
+            "properties.issueDate",
+            "properties.expirationDate",
+            "properties.thumbprint",
+            "properties.valid",
+            "properties.publicKeyHash"
+        ],
+        "pickProperties": [],
+        "pickPropertiesCreate": [],
+        "environmentVariables": [
+            {
+                "path": "properties.password",
+                "suffix": "PASSWORD"
+            },
+            {
+                "path": "properties.value",
+                "suffix": "VALUE"
+            }
+        ]
+    },
+    {
+        "type": "ContainerApp",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "managedIdentities": {
+                "type": "UserAssignedIdentity",
+                "group": "ManagedIdentity",
+                "createOnly": true,
+                "list": true
+            },
+            "managedEnvironment": {
+                "type": "ManagedEnvironment",
+                "group": "App",
+                "createOnly": true,
+                "pathId": "properties.managedEnvironmentId"
+            },
+            "certificate": {
+                "type": "Certificate",
+                "group": "App",
+                "createOnly": true,
+                "pathId": "properties.configuration.ingress.customDomains.items.certificateId"
+            },
+            "containerAppsSourceControl": {
+                "type": "ContainerAppsSourceControl",
+                "group": "App",
+                "createOnly": true,
+                "pathId": "properties.configuration.dapr.appId"
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}",
+                "operationId": "ContainerApps_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}",
+                "operationId": "ContainerApps_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}",
+                "operationId": "ContainerApps_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}",
+                "operationId": "ContainerApps_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.App/containerApps",
+                "operationId": "ContainerApps_ListBySubscription"
+            }
+        },
+        "omitProperties": [
+            "identity.principalId",
+            "identity.tenantId",
+            "properties.provisioningState",
+            "properties.managedEnvironmentId",
+            "properties.latestRevisionName",
+            "properties.latestRevisionFqdn",
+            "properties.customDomainVerificationId",
+            "properties.configuration.ingress.fqdn",
+            "properties.configuration.dapr.appId",
+            "properties.outboundIPAddresses"
+        ],
+        "pickProperties": [
+            "identity.type",
+            "properties.configuration.secrets[].name",
+            "properties.configuration.activeRevisionsMode",
+            "properties.configuration.ingress.external",
+            "properties.configuration.ingress.targetPort",
+            "properties.configuration.ingress.transport",
+            "properties.configuration.ingress.traffic[].revisionName",
+            "properties.configuration.ingress.traffic[].weight",
+            "properties.configuration.ingress.traffic[].latestRevision",
+            "properties.configuration.ingress.traffic[].label",
+            "properties.configuration.ingress.customDomains[].name",
+            "properties.configuration.ingress.customDomains[].bindingType",
+            "properties.configuration.ingress.allowInsecure",
+            "properties.configuration.registries[].server",
+            "properties.configuration.registries[].username",
+            "properties.configuration.registries[].passwordSecretRef",
+            "properties.configuration.registries[].identity",
+            "properties.configuration.dapr.enabled",
+            "properties.configuration.dapr.appProtocol",
+            "properties.configuration.dapr.appPort",
+            "properties.template.revisionSuffix",
+            "properties.template.containers[].image",
+            "properties.template.containers[].name",
+            "properties.template.containers[].env[].name",
+            "properties.template.containers[].env[].value",
+            "properties.template.containers[].env[].secretRef",
+            "properties.template.containers[].resources.memory",
+            "properties.template.containers[].probes[].failureThreshold",
+            "properties.template.containers[].probes[].httpGet.host",
+            "properties.template.containers[].probes[].httpGet.httpHeaders[].name",
+            "properties.template.containers[].probes[].httpGet.httpHeaders[].value",
+            "properties.template.containers[].probes[].httpGet.path",
+            "properties.template.containers[].probes[].httpGet.port",
+            "properties.template.containers[].probes[].httpGet.scheme",
+            "properties.template.containers[].probes[].initialDelaySeconds",
+            "properties.template.containers[].probes[].periodSeconds",
+            "properties.template.containers[].probes[].successThreshold",
+            "properties.template.containers[].probes[].tcpSocket.host",
+            "properties.template.containers[].probes[].tcpSocket.port",
+            "properties.template.containers[].probes[].terminationGracePeriodSeconds",
+            "properties.template.containers[].probes[].timeoutSeconds",
+            "properties.template.containers[].probes[].type",
+            "properties.template.containers[].volumeMounts[].volumeName",
+            "properties.template.containers[].volumeMounts[].mountPath",
+            "properties.template.scale.minReplicas",
+            "properties.template.scale.maxReplicas",
+            "properties.template.scale.rules[].name",
+            "properties.template.scale.rules[].azureQueue.queueName",
+            "properties.template.scale.rules[].azureQueue.queueLength",
+            "properties.template.scale.rules[].azureQueue.auth[].secretRef",
+            "properties.template.scale.rules[].azureQueue.auth[].triggerParameter",
+            "properties.template.scale.rules[].custom.type",
+            "properties.template.scale.rules[].custom.auth[].secretRef",
+            "properties.template.scale.rules[].custom.auth[].triggerParameter",
+            "properties.template.scale.rules[].http.auth[].secretRef",
+            "properties.template.scale.rules[].http.auth[].triggerParameter",
+            "properties.template.volumes[].name",
+            "properties.template.volumes[].storageType",
+            "properties.template.volumes[].storageName"
+        ],
+        "pickPropertiesCreate": [
+            "identity.type",
+            "properties.configuration.secrets[].name",
+            "properties.configuration.activeRevisionsMode",
+            "properties.configuration.ingress.external",
+            "properties.configuration.ingress.targetPort",
+            "properties.configuration.ingress.transport",
+            "properties.configuration.ingress.traffic[].revisionName",
+            "properties.configuration.ingress.traffic[].weight",
+            "properties.configuration.ingress.traffic[].latestRevision",
+            "properties.configuration.ingress.traffic[].label",
+            "properties.configuration.ingress.customDomains[].name",
+            "properties.configuration.ingress.customDomains[].bindingType",
+            "properties.configuration.ingress.allowInsecure",
+            "properties.configuration.registries[].server",
+            "properties.configuration.registries[].username",
+            "properties.configuration.registries[].passwordSecretRef",
+            "properties.configuration.registries[].identity",
+            "properties.configuration.dapr.enabled",
+            "properties.configuration.dapr.appProtocol",
+            "properties.configuration.dapr.appPort",
+            "properties.template.revisionSuffix",
+            "properties.template.containers[].image",
+            "properties.template.containers[].name",
+            "properties.template.containers[].env[].name",
+            "properties.template.containers[].env[].value",
+            "properties.template.containers[].env[].secretRef",
+            "properties.template.containers[].resources.memory",
+            "properties.template.containers[].probes[].failureThreshold",
+            "properties.template.containers[].probes[].httpGet.host",
+            "properties.template.containers[].probes[].httpGet.httpHeaders[].name",
+            "properties.template.containers[].probes[].httpGet.httpHeaders[].value",
+            "properties.template.containers[].probes[].httpGet.path",
+            "properties.template.containers[].probes[].httpGet.port",
+            "properties.template.containers[].probes[].httpGet.scheme",
+            "properties.template.containers[].probes[].initialDelaySeconds",
+            "properties.template.containers[].probes[].periodSeconds",
+            "properties.template.containers[].probes[].successThreshold",
+            "properties.template.containers[].probes[].tcpSocket.host",
+            "properties.template.containers[].probes[].tcpSocket.port",
+            "properties.template.containers[].probes[].terminationGracePeriodSeconds",
+            "properties.template.containers[].probes[].timeoutSeconds",
+            "properties.template.containers[].probes[].type",
+            "properties.template.containers[].volumeMounts[].volumeName",
+            "properties.template.containers[].volumeMounts[].mountPath",
+            "properties.template.scale.minReplicas",
+            "properties.template.scale.maxReplicas",
+            "properties.template.scale.rules[].name",
+            "properties.template.scale.rules[].azureQueue.queueName",
+            "properties.template.scale.rules[].azureQueue.queueLength",
+            "properties.template.scale.rules[].azureQueue.auth[].secretRef",
+            "properties.template.scale.rules[].azureQueue.auth[].triggerParameter",
+            "properties.template.scale.rules[].custom.type",
+            "properties.template.scale.rules[].custom.auth[].secretRef",
+            "properties.template.scale.rules[].custom.auth[].triggerParameter",
+            "properties.template.scale.rules[].http.auth[].secretRef",
+            "properties.template.scale.rules[].http.auth[].triggerParameter",
+            "properties.template.volumes[].name",
+            "properties.template.volumes[].storageType",
+            "properties.template.volumes[].storageName"
+        ],
+        "propertiesDefault": {
+            "properties": {
+                "configuration": {
+                    "ingress": {
+                        "external": false
+                    }
+                }
+            }
+        }
+    },
+    {
+        "type": "ContainerAppsSourceControl",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "containerApp": {
+                "type": "ContainerApp",
+                "group": "App",
+                "name": "containerAppName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/sourcecontrols/{sourceControlName}",
+                "operationId": "ContainerAppsSourceControls_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/sourcecontrols/{sourceControlName}",
+                "operationId": "ContainerAppsSourceControls_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/sourcecontrols/{sourceControlName}",
+                "operationId": "ContainerAppsSourceControls_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}/sourcecontrols",
+                "operationId": "ContainerAppsSourceControls_ListByContainerApp"
+            }
+        },
+        "omitProperties": [
+            "properties.operationState",
+            "properties.githubActionConfiguration.registryInfo.registryPassword",
+            "properties.githubActionConfiguration.azureCredentials.clientId",
+            "properties.githubActionConfiguration.azureCredentials.clientSecret",
+            "properties.githubActionConfiguration.azureCredentials.tenantId",
+            "properties.githubActionConfiguration.azureCredentials.subscriptionId"
+        ],
+        "pickProperties": [
+            "properties.repoUrl",
+            "properties.branch",
+            "properties.githubActionConfiguration.registryInfo.registryUrl",
+            "properties.githubActionConfiguration.registryInfo.registryUserName",
+            "properties.githubActionConfiguration.contextPath",
+            "properties.githubActionConfiguration.image",
+            "properties.githubActionConfiguration.publishType",
+            "properties.githubActionConfiguration.os",
+            "properties.githubActionConfiguration.runtimeStack",
+            "properties.githubActionConfiguration.runtimeVersion"
+        ],
+        "pickPropertiesCreate": [
+            "properties.repoUrl",
+            "properties.branch",
+            "properties.githubActionConfiguration.registryInfo.registryUrl",
+            "properties.githubActionConfiguration.registryInfo.registryUserName",
+            "properties.githubActionConfiguration.contextPath",
+            "properties.githubActionConfiguration.image",
+            "properties.githubActionConfiguration.publishType",
+            "properties.githubActionConfiguration.os",
+            "properties.githubActionConfiguration.runtimeStack",
+            "properties.githubActionConfiguration.runtimeVersion"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.githubActionConfiguration.registryInfo.registryPassword",
+                "suffix": "REGISTRY_PASSWORD"
+            },
+            {
+                "path": "properties.githubActionConfiguration.azureCredentials.clientId",
+                "suffix": "CLIENT_ID"
+            },
+            {
+                "path": "properties.githubActionConfiguration.azureCredentials.clientSecret",
+                "suffix": "CLIENT_SECRET"
+            },
+            {
+                "path": "properties.githubActionConfiguration.azureCredentials.tenantId",
+                "suffix": "TENANT_ID"
+            }
+        ]
+    },
+    {
+        "type": "DaprComponent",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "environment": {
+                "type": "ManagedEnvironment",
+                "group": "App",
+                "name": "environmentName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/daprComponents/{componentName}",
+                "operationId": "DaprComponents_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/daprComponents/{componentName}",
+                "operationId": "DaprComponents_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/daprComponents/{componentName}",
+                "operationId": "DaprComponents_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/daprComponents",
+                "operationId": "DaprComponents_List"
+            }
+        },
+        "pickProperties": [
+            "properties.componentType",
+            "properties.version",
+            "properties.ignoreErrors",
+            "properties.initTimeout",
+            "properties.secrets[].name",
+            "properties.metadata[].name",
+            "properties.metadata[].value",
+            "properties.metadata[].secretRef"
+        ],
+        "pickPropertiesCreate": [
+            "properties.componentType",
+            "properties.version",
+            "properties.ignoreErrors",
+            "properties.initTimeout",
+            "properties.secrets[].name",
+            "properties.metadata[].name",
+            "properties.metadata[].value",
+            "properties.metadata[].secretRef"
+        ]
+    },
+    {
+        "type": "ManagedEnvironment",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}",
+                "operationId": "ManagedEnvironments_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}",
+                "operationId": "ManagedEnvironments_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}",
+                "operationId": "ManagedEnvironments_Delete"
+            },
+            "patch": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}",
+                "operationId": "ManagedEnvironments_Update"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.App/managedEnvironments",
+                "operationId": "ManagedEnvironments_ListBySubscription"
+            }
+        },
+        "omitProperties": [
+            "properties.provisioningState",
+            "properties.daprAIInstrumentationKey",
+            "properties.daprAIConnectionString",
+            "properties.vnetConfiguration.infrastructureSubnetId",
+            "properties.vnetConfiguration.runtimeSubnetId",
+            "properties.deploymentErrors",
+            "properties.defaultDomain",
+            "properties.staticIp",
+            "properties.appLogsConfiguration.logAnalyticsConfiguration.customerId",
+            "properties.appLogsConfiguration.logAnalyticsConfiguration.sharedKey"
+        ],
+        "pickProperties": [
+            "properties.vnetConfiguration.internal",
+            "properties.vnetConfiguration.dockerBridgeCidr",
+            "properties.vnetConfiguration.platformReservedCidr",
+            "properties.vnetConfiguration.platformReservedDnsIP",
+            "properties.appLogsConfiguration.destination",
+            "properties.zoneRedundant"
+        ],
+        "pickPropertiesCreate": [
+            "properties.vnetConfiguration.internal",
+            "properties.vnetConfiguration.dockerBridgeCidr",
+            "properties.vnetConfiguration.platformReservedCidr",
+            "properties.vnetConfiguration.platformReservedDnsIP",
+            "properties.appLogsConfiguration.destination",
+            "properties.zoneRedundant"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.daprAIInstrumentationKey",
+                "suffix": "DAPR_AI_INSTRUMENTATION_KEY"
+            },
+            {
+                "path": "properties.daprAIConnectionString",
+                "suffix": "DAPR_AI_CONNECTION_STRING"
+            },
+            {
+                "path": "properties.appLogsConfiguration.logAnalyticsConfiguration.sharedKey",
+                "suffix": "SHARED_KEY"
+            }
+        ]
+    },
+    {
+        "type": "ManagedEnvironmentsStorage",
+        "group": "App",
+        "apiVersion": "2022-03-01",
+        "dependencies": {
+            "resourceGroup": {
+                "type": "ResourceGroup",
+                "group": "Resources",
+                "name": "resourceGroupName",
+                "parent": true
+            },
+            "environment": {
+                "type": "ManagedEnvironment",
+                "group": "App",
+                "name": "environmentName",
+                "parent": true
+            }
+        },
+        "methods": {
+            "get": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}",
+                "operationId": "ManagedEnvironmentsStorages_Get"
+            },
+            "put": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}",
+                "operationId": "ManagedEnvironmentsStorages_CreateOrUpdate"
+            },
+            "delete": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}",
+                "operationId": "ManagedEnvironmentsStorages_Delete"
+            },
+            "getAll": {
+                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages",
+                "operationId": "ManagedEnvironmentsStorages_List"
+            }
+        },
+        "omitProperties": [
+            "properties.azureFile.accountKey"
+        ],
+        "pickProperties": [
+            "properties.azureFile.accountName",
+            "properties.azureFile.accessMode",
+            "properties.azureFile.shareName"
+        ],
+        "pickPropertiesCreate": [
+            "properties.azureFile.accountName",
+            "properties.azureFile.accessMode",
+            "properties.azureFile.shareName"
+        ],
+        "environmentVariables": [
+            {
+                "path": "properties.azureFile.accountKey",
+                "suffix": "ACCOUNT_KEY"
+            }
+        ]
+    }
+]
