@@ -494,7 +494,7 @@ const processSwagger =
       }),
       () => path.resolve(dir, name),
       tap((filename) => {
-        console.log(`parsing ${filename}`);
+        //console.log(`parsing ${filename}`);
       }),
       (filename) => SwaggerParser.dereference(filename, {}),
       (swagger) =>
@@ -1571,110 +1571,118 @@ const getSchemaFromMethods = ({ method }) =>
       ])(),
   ]);
 
-const pickPropertiesGet = (resource) =>
-  pipe([
-    () => resource,
-    getSchemaFromMethods({ method: "get" }),
-    buildPickProperties({ swagger: resource.swagger }),
-    tap((params) => {
-      assert(Array.isArray(params));
-    }),
-    map(
-      pipe([
-        tap((params) => {
-          assert(
-            Array.isArray(params),
-            `not an array:${JSON.stringify(params)}`
-          );
-        }),
-        callProp("join", "."),
-      ])
-    ),
-  ])();
-
-const pickResourceInfo = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  pick(["type", "group", "apiVersion", "dependencies", "methods", "swagger"]),
-  assign({
-    omitProperties: pipe([
+const pickPropertiesGet =
+  ({ swagger }) =>
+  (resource) =>
+    pipe([
+      () => resource,
       getSchemaFromMethods({ method: "get" }),
-      buildOmitReadOnly({}),
-      map(callProp("join", ".")),
-    ]),
-    pickProperties: pickPropertiesGet,
-    pickPropertiesCreate: (resource) =>
-      pipe([
-        () => resource,
-        get("methods.put"),
-        get("parameters"),
-        find(eq(get("in"), "body")),
-        switchCase([
-          isEmpty,
-          () => pickPropertiesGet(resource),
-          pipe([
-            get("schema"),
-            tap((schema) => {
-              assert(schema);
-            }),
-            (schema) =>
-              pipe([
-                () => schema,
-                get("properties"),
-                when(isEmpty, () => get("allOf[1].properties")(schema)),
-                when(isEmpty, () => get("allOf[0].properties")(schema)),
-                tap.if(isEmpty, (properties) => {
-                  assert(
-                    properties,
-                    `no properties in ${
-                      resource.methods.put.operationId
-                    }, schema: ${JSON.stringify(schema, null, 4)}`
-                  );
-                }),
-                buildPickProperties({ swagger: resource.swagger }),
-                map(callProp("join", ".")),
-              ])(),
-          ]),
-        ]),
-      ])(),
-    environmentVariables: pipe([
-      getSchemaFromMethods({ method: "get" }),
-      buildEnvironmentVariables({}),
-      map(
-        fork({
-          path: pipe([callProp("join", ".")]),
-          suffix: pipe([last, snakeCase, callProp("toUpperCase")]),
-        })
-      ),
-    ]),
-    propertiesDefault: pipe([
-      getSchemaFromMethods({ method: "get" }),
-      buildPropertiesDefault({}),
-    ]),
-    methods: pipe([
-      get("methods"),
-      map.entries(([key, value]) => [
-        key,
-        pipe([
-          () => value,
-          tap((params) => {
-            assert(true);
-          }),
-          pick(["path", "operationId"]),
-        ])(),
-      ]),
+      buildPickProperties({ swagger }),
       tap((params) => {
-        assert(true);
+        assert(Array.isArray(params));
       }),
+      map(
+        pipe([
+          tap((params) => {
+            assert(
+              Array.isArray(params),
+              `not an array:${JSON.stringify(params)}`
+            );
+          }),
+          callProp("join", "."),
+        ])
+      ),
+    ])();
+
+const pickResourceInfo = ({ swagger, ...other }) =>
+  pipe([
+    tap(() => {
+      assert(other);
+      assert(swagger);
+    }),
+    () => other,
+    pick(["type", "group", "apiVersion", "dependencies", "methods"]),
+    assign({
+      omitProperties: pipe([
+        getSchemaFromMethods({ method: "get" }),
+        buildOmitReadOnly({}),
+        map(callProp("join", ".")),
+      ]),
+      pickProperties: pickPropertiesGet({ swagger }),
+      pickPropertiesCreate: (resource) =>
+        pipe([
+          () => resource,
+          get("methods.put"),
+          get("parameters"),
+          find(eq(get("in"), "body")),
+          switchCase([
+            isEmpty,
+            () => pickPropertiesGet({ swagger })(resource),
+            pipe([
+              get("schema"),
+              tap((schema) => {
+                assert(schema);
+              }),
+              (schema) =>
+                pipe([
+                  () => schema,
+                  get("properties"),
+                  when(isEmpty, () => get("allOf[1].properties")(schema)),
+                  when(isEmpty, () => get("allOf[0].properties")(schema)),
+                  tap.if(isEmpty, (properties) => {
+                    assert(
+                      properties,
+                      `no properties in ${
+                        resource.methods.put.operationId
+                      }, schema: ${JSON.stringify(schema, null, 4)}`
+                    );
+                  }),
+                  buildPickProperties({ swagger }),
+                  map(callProp("join", ".")),
+                ])(),
+            ]),
+          ]),
+        ])(),
+      environmentVariables: pipe([
+        getSchemaFromMethods({ method: "get" }),
+        buildEnvironmentVariables({}),
+        map(
+          fork({
+            path: pipe([callProp("join", ".")]),
+            suffix: pipe([last, snakeCase, callProp("toUpperCase")]),
+          })
+        ),
+      ]),
+      propertiesDefault: pipe([
+        getSchemaFromMethods({ method: "get" }),
+        buildPropertiesDefault({}),
+      ]),
+      methods: pipe([
+        get("methods"),
+        map.entries(([key, value]) => [
+          key,
+          pipe([
+            () => value,
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["path", "operationId"]),
+          ])(),
+        ]),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+    }),
+    omitIfEmpty([
+      "environmentVariables",
+      "omitProperties",
+      "propertiesDefault",
     ]),
-  }),
-  omit(["swagger"]),
-  omitIfEmpty(["environmentVariables", "omitProperties", "propertiesDefault"]),
-  tap((params) => {
-    assert(true);
-  }),
-]);
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const filterGetAll = ({ name, dependencies, methods }) =>
   pipe([

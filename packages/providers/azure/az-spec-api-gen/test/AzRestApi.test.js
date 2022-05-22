@@ -140,33 +140,28 @@ describe("AzureRestApi", function () {
 
   it.only("processSwaggerFiles", async function () {
     await pipe([
-      () => SpecGroupDirs,
-      map.series((group) =>
-        tryCatch(
-          pipe([
-            tap((params) => {
-              console.log(`reading group: ${group}`);
-            }),
-            () => ({
-              directorySpec: path.resolve(process.cwd(), specDir),
-              directoryDoc: path.resolve(
-                process.cwd(),
-                "../../../../docusaurus/docs/azure/resources/"
-              ),
-              outputSchemaFile: path.resolve(
-                process.cwd(),
-                "../",
-                "schema",
-                `AzureSchema-${group}.json`
-              ),
-              filterDirs: [group],
-            }),
-            processSwaggerFiles,
-          ]),
-          (error) => {
-            assert(false, `error generating ${group}`);
-          }
-        )()
+      tryCatch(
+        pipe([
+          () => ({
+            directorySpec: path.resolve(process.cwd(), specDir),
+            directoryDoc: path.resolve(
+              process.cwd(),
+              "../../../../docusaurus/docs/azure/resources/"
+            ),
+            outputSchemaFile: path.resolve(
+              process.cwd(),
+              "../",
+              "schema",
+              `AzureSchema.json`
+            ),
+            filterDirs: SpecGroupDirs,
+          }),
+          processSwaggerFiles,
+        ]),
+        (error) => {
+          //assert(false, `error generating ${group}`);
+          throw error;
+        }
       ),
       tap((params) => {
         assert(true);

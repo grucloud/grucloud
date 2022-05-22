@@ -48,12 +48,7 @@ const WebSpec = require("./resources/WebSpec");
 
 const AzTag = require("./AzTag");
 
-const { SpecGroupDirs } = require("./AzureSpecDirs");
-
-const Schema = pipe([
-  () => SpecGroupDirs,
-  flatMap((group) => require(`./schema/AzureSchema-${group}`)),
-])();
+const Schema = require("./schema/AzureSchema.json");
 
 const AzClient = require("./AzClient");
 const { isSubstituable } = require("./AzureCommon");
