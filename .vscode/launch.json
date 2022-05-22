@@ -155,7 +155,7 @@
       "port": 9229
     },
     {
-      "name": "Azure Gen Spec",
+      "name": "Azure Gen Spec and doc",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",

@@ -94,6 +94,12 @@ omit AWSLogs S3 Objects
 
 ## Azure
 
+- response: │
+  │ status: 503 │
+  │ data: │
+  │ error: │
+  │ code: ServerTimeout
+
 - App:ContainerAppsAuthConfig getAll
 - NetworkSecurityGroup defaultSecurityRules in gencode
 
