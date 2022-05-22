@@ -558,6 +558,7 @@ exports.createResources = () => [
                         description: 'Specifies the version of the script handler.'
                       },
                       status: {
+                        description: 'The extension handler status.',
                         properties: {
                           code: {
                             type: 'string',
@@ -585,8 +586,7 @@ exports.createResources = () => [
                             format: 'date-time',
                             description: 'The time of the status.'
                           }
-                        },
-                        description: 'Instance view status.'
+                        }
                       }
                     },
                     description: 'The instance view of a virtual machine extension handler.'
@@ -696,9 +696,9 @@ exports.createResources = () => [
                               description: 'The URL referencing a secret in a Key Vault.'
                             },
                             sourceVault: {
+                              description: 'The relative URL of the Key Vault containing the secret.',
                               properties: { id: [Object] },
-                              'x-ms-azure-resource': true,
-                              description: 'The relative URL of the Key Vault containing the secret.'
+                              'x-ms-azure-resource': true
                             }
                           },
                           required: [ 'secretUrl', 'sourceVault' ]
@@ -711,9 +711,9 @@ exports.createResources = () => [
                               description: 'The URL referencing a key encryption key in Key Vault.'
                             },
                             sourceVault: {
+                              description: 'The relative URL of the Key Vault containing the key.',
                               properties: { id: [Object] },
-                              'x-ms-azure-resource': true,
-                              description: 'The relative URL of the Key Vault containing the key.'
+                              'x-ms-azure-resource': true
                             }
                           },
                           required: [ 'keyUrl', 'sourceVault' ]
@@ -869,6 +869,8 @@ exports.createResources = () => [
               description: 'The health status for the VM.',
               properties: {
                 status: {
+                  readOnly: true,
+                  description: 'The health status information for the VM.',
                   properties: {
                     code: { type: 'string', description: 'The status code.' },
                     level: {
@@ -893,9 +895,7 @@ exports.createResources = () => [
                       format: 'date-time',
                       description: 'The time of the status.'
                     }
-                  },
-                  description: 'Instance view status.',
-                  readOnly: true
+                  }
                 }
               }
             },
@@ -913,6 +913,8 @@ exports.createResources = () => [
                   description: 'The serial console log blob Uri. <br><br>NOTE: This will **not** be set if boot diagnostics is currently enabled with managed storage.'
                 },
                 status: {
+                  readOnly: true,
+                  description: 'The boot diagnostics status information for the VM. <br><br> NOTE: It will be set only if there are errors encountered in enabling boot diagnostics.',
                   properties: {
                     code: { type: 'string', description: 'The status code.' },
                     level: {
@@ -937,9 +939,7 @@ exports.createResources = () => [
                       format: 'date-time',
                       description: 'The time of the status.'
                     }
-                  },
-                  description: 'Instance view status.',
-                  readOnly: true
+                  }
                 }
               }
             },
@@ -1175,14 +1175,14 @@ exports.createResources = () => [
                           description: 'The URL referencing a secret in a Key Vault.'
                         },
                         sourceVault: {
+                          description: 'The relative URL of the Key Vault containing the secret.',
                           properties: {
                             id: {
                               type: 'string',
                               description: 'Resource Id'
                             }
                           },
-                          'x-ms-azure-resource': true,
-                          description: 'The relative URL of the Key Vault containing the secret.'
+                          'x-ms-azure-resource': true
                         }
                       },
                       required: [ 'secretUrl', 'sourceVault' ]
@@ -1195,14 +1195,14 @@ exports.createResources = () => [
                           description: 'The URL referencing a key encryption key in Key Vault.'
                         },
                         sourceVault: {
+                          description: 'The relative URL of the Key Vault containing the key.',
                           properties: {
                             id: {
                               type: 'string',
                               description: 'Resource Id'
                             }
                           },
-                          'x-ms-azure-resource': true,
-                          description: 'The relative URL of the Key Vault containing the key.'
+                          'x-ms-azure-resource': true
                         }
                       },
                       required: [ 'keyUrl', 'sourceVault' ]
@@ -1733,11 +1733,11 @@ exports.createResources = () => [
               items: {
                 properties: {
                   sourceVault: {
+                    description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.',
                     properties: {
                       id: { type: 'string', description: 'Resource Id' }
                     },
-                    'x-ms-azure-resource': true,
-                    description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.'
+                    'x-ms-azure-resource': true
                   },
                   vaultCertificates: {
                     type: 'array',
@@ -1877,14 +1877,14 @@ exports.createResources = () => [
                         description: 'Whether IP forwarding enabled on this NIC.'
                       },
                       networkSecurityGroup: {
+                        description: 'The network security group.',
                         properties: {
                           id: {
                             type: 'string',
                             description: 'Resource Id'
                           }
                         },
-                        'x-ms-azure-resource': true,
-                        description: 'The network security group.'
+                        'x-ms-azure-resource': true
                       },
                       dnsSettings: {
                         description: 'The dns settings to be applied on the network interfaces.',
@@ -1973,14 +1973,14 @@ exports.createResources = () => [
                         description: 'Specifies whether the network interface is FPGA networking-enabled.'
                       },
                       networkSecurityGroup: {
+                        description: 'The network security group.',
                         properties: {
                           id: {
                             type: 'string',
                             description: 'Resource Id'
                           }
                         },
-                        'x-ms-azure-resource': true,
-                        description: 'The network security group.'
+                        'x-ms-azure-resource': true
                       },
                       dnsSettings: {
                         description: 'The dns settings to be applied on the network interfaces.',
@@ -2075,9 +2075,9 @@ exports.createResources = () => [
           }
         },
         availabilitySet: {
+          description: 'Specifies information about the availability set that the virtual machine should be assigned to. Virtual machines specified in the same availability set are allocated to different nodes to maximize availability. For more information about availability sets, see [Availability sets overview](https://docs.microsoft.com/azure/virtual-machines/availability-set-overview). <br><br> For more information on Azure planned maintenance, see [Maintenance and updates for Virtual Machines in Azure](https://docs.microsoft.com/azure/virtual-machines/maintenance-and-updates) <br><br> Currently, a VM can only be added to availability set at creation time. An existing VM cannot be added to an availability set.',
           properties: { id: { type: 'string', description: 'Resource Id' } },
-          'x-ms-azure-resource': true,
-          description: 'Specifies information about the availability set that the virtual machine should be assigned to. Virtual machines specified in the same availability set are allocated to different nodes to maximize availability. For more information about availability sets, see [Availability sets overview](https://docs.microsoft.com/azure/virtual-machines/availability-set-overview). <br><br> For more information on Azure planned maintenance, see [Maintenance and updates for Virtual Machines in Azure](https://docs.microsoft.com/azure/virtual-machines/maintenance-and-updates) <br><br> Currently, a VM can only be added to availability set at creation time. An existing VM cannot be added to an availability set.'
+          'x-ms-azure-resource': true
         },
         provisioningState: {
           readOnly: true,

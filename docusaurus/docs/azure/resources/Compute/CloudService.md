@@ -346,12 +346,12 @@ exports.createResources = () => [
                 type: 'object',
                 properties: {
                   sourceVault: {
+                    description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.',
                     type: 'object',
                     properties: {
                       id: { description: 'Resource Id', type: 'string' }
                     },
-                    'x-ms-azure-resource': true,
-                    description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.'
+                    'x-ms-azure-resource': true
                   },
                   vaultCertificates: {
                     description: 'The list of key vault references in SourceVault which contain certificates.',
@@ -426,10 +426,10 @@ exports.createResources = () => [
               }
             },
             swappableCloudService: {
+              description: 'The id reference of the cloud service containing the target IP with which the subject cloud service can perform a swap. This property cannot be updated once it is set. The swappable cloud service referred by this id must be present otherwise an error will be thrown.',
               type: 'object',
               properties: { id: { description: 'Resource Id', type: 'string' } },
-              'x-ms-azure-resource': true,
-              description: 'The id reference of the cloud service containing the target IP with which the subject cloud service can perform a swap. This property cannot be updated once it is set. The swappable cloud service referred by this id must be present otherwise an error will be thrown.'
+              'x-ms-azure-resource': true
             }
           }
         },

@@ -48,6 +48,7 @@ exports.createResources = () => [
             ],
             properties: {
               colocationStatus: {
+                description: 'Describes colocation status of a resource in the Proximity Placement Group.',
                 properties: {
                   code: { type: 'string', description: 'The status code.' },
                   level: {
@@ -69,8 +70,7 @@ exports.createResources = () => [
                     format: 'date-time',
                     description: 'The time of the status.'
                   }
-                },
-                description: 'Instance view status.'
+                }
               }
             }
           },
@@ -88,6 +88,7 @@ exports.createResources = () => [
             ],
             properties: {
               colocationStatus: {
+                description: 'Describes colocation status of a resource in the Proximity Placement Group.',
                 properties: {
                   code: { type: 'string', description: 'The status code.' },
                   level: {
@@ -109,8 +110,7 @@ exports.createResources = () => [
                     format: 'date-time',
                     description: 'The time of the status.'
                   }
-                },
-                description: 'Instance view status.'
+                }
               }
             }
           },
@@ -128,6 +128,7 @@ exports.createResources = () => [
             ],
             properties: {
               colocationStatus: {
+                description: 'Describes colocation status of a resource in the Proximity Placement Group.',
                 properties: {
                   code: { type: 'string', description: 'The status code.' },
                   level: {
@@ -149,14 +150,14 @@ exports.createResources = () => [
                     format: 'date-time',
                     description: 'The time of the status.'
                   }
-                },
-                description: 'Instance view status.'
+                }
               }
             }
           },
           description: 'A list of references to all availability sets in the proximity placement group.'
         },
         colocationStatus: {
+          description: 'Describes colocation status of the Proximity Placement Group.',
           properties: {
             code: { type: 'string', description: 'The status code.' },
             level: {
@@ -178,8 +179,7 @@ exports.createResources = () => [
               format: 'date-time',
               description: 'The time of the status.'
             }
-          },
-          description: 'Instance view status.'
+          }
         }
       }
     }

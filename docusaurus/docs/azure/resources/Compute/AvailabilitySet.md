@@ -55,9 +55,9 @@ exports.createResources = () => [
           description: 'A list of references to all virtual machines in the availability set.'
         },
         proximityPlacementGroup: {
+          description: 'Specifies information about the proximity placement group that the availability set should be assigned to. <br><br>Minimum api-version: 2018-04-01.',
           properties: { id: { type: 'string', description: 'Resource Id' } },
-          'x-ms-azure-resource': true,
-          description: 'Specifies information about the proximity placement group that the availability set should be assigned to. <br><br>Minimum api-version: 2018-04-01.'
+          'x-ms-azure-resource': true
         },
         statuses: {
           readOnly: true,

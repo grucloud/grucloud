@@ -2882,14 +2882,14 @@ exports.createResources = () => [
                           description: 'The URL referencing a secret in a Key Vault.'
                         },
                         sourceVault: {
+                          description: 'The relative URL of the Key Vault containing the secret.',
                           properties: {
                             id: {
                               type: 'string',
                               description: 'Resource Id'
                             }
                           },
-                          'x-ms-azure-resource': true,
-                          description: 'The relative URL of the Key Vault containing the secret.'
+                          'x-ms-azure-resource': true
                         }
                       },
                       required: [ 'secretUrl', 'sourceVault' ]
@@ -2902,14 +2902,14 @@ exports.createResources = () => [
                           description: 'The URL referencing a key encryption key in Key Vault.'
                         },
                         sourceVault: {
+                          description: 'The relative URL of the Key Vault containing the key.',
                           properties: {
                             id: {
                               type: 'string',
                               description: 'Resource Id'
                             }
                           },
-                          'x-ms-azure-resource': true,
-                          description: 'The relative URL of the Key Vault containing the key.'
+                          'x-ms-azure-resource': true
                         }
                       },
                       required: [ 'keyUrl', 'sourceVault' ]
@@ -3440,11 +3440,11 @@ exports.createResources = () => [
               items: {
                 properties: {
                   sourceVault: {
+                    description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.',
                     properties: {
                       id: { type: 'string', description: 'Resource Id' }
                     },
-                    'x-ms-azure-resource': true,
-                    description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.'
+                    'x-ms-azure-resource': true
                   },
                   vaultCertificates: {
                     type: 'array',
@@ -3556,14 +3556,14 @@ exports.createResources = () => [
                         description: 'Whether IP forwarding enabled on this NIC.'
                       },
                       networkSecurityGroup: {
+                        description: 'The network security group.',
                         properties: {
                           id: {
                             type: 'string',
                             description: 'Resource Id'
                           }
                         },
-                        'x-ms-azure-resource': true,
-                        description: 'The network security group.'
+                        'x-ms-azure-resource': true
                       },
                       dnsSettings: {
                         description: 'The dns settings to be applied on the network interfaces.',
@@ -3672,19 +3672,19 @@ exports.createResources = () => [
           }
         },
         availabilitySet: {
+          description: 'Specifies information about the availability set that the virtual machine should be assigned to. Virtual machines specified in the same availability set are allocated to different nodes to maximize availability. For more information about availability sets, see [Availability sets overview](https://docs.microsoft.com/azure/virtual-machines/availability-set-overview). <br><br> For more information on Azure planned maintenance, see [Maintenance and updates for Virtual Machines in Azure](https://docs.microsoft.com/azure/virtual-machines/maintenance-and-updates) <br><br> Currently, a VM can only be added to availability set at creation time. The availability set to which the VM is being added should be under the same resource group as the availability set resource. An existing VM cannot be added to an availability set. <br><br>This property cannot exist along with a non-null properties.virtualMachineScaleSet reference.',
           properties: { id: { type: 'string', description: 'Resource Id' } },
-          'x-ms-azure-resource': true,
-          description: 'Specifies information about the availability set that the virtual machine should be assigned to. Virtual machines specified in the same availability set are allocated to different nodes to maximize availability. For more information about availability sets, see [Availability sets overview](https://docs.microsoft.com/azure/virtual-machines/availability-set-overview). <br><br> For more information on Azure planned maintenance, see [Maintenance and updates for Virtual Machines in Azure](https://docs.microsoft.com/azure/virtual-machines/maintenance-and-updates) <br><br> Currently, a VM can only be added to availability set at creation time. The availability set to which the VM is being added should be under the same resource group as the availability set resource. An existing VM cannot be added to an availability set. <br><br>This property cannot exist along with a non-null properties.virtualMachineScaleSet reference.'
+          'x-ms-azure-resource': true
         },
         virtualMachineScaleSet: {
+          description: 'Specifies information about the virtual machine scale set that the virtual machine should be assigned to. Virtual machines specified in the same virtual machine scale set are allocated to different nodes to maximize availability. Currently, a VM can only be added to virtual machine scale set at creation time. An existing VM cannot be added to a virtual machine scale set. <br><br>This property cannot exist along with a non-null properties.availabilitySet reference. <br><br>Minimum api‐version: 2019‐03‐01',
           properties: { id: { type: 'string', description: 'Resource Id' } },
-          'x-ms-azure-resource': true,
-          description: 'Specifies information about the virtual machine scale set that the virtual machine should be assigned to. Virtual machines specified in the same virtual machine scale set are allocated to different nodes to maximize availability. Currently, a VM can only be added to virtual machine scale set at creation time. An existing VM cannot be added to a virtual machine scale set. <br><br>This property cannot exist along with a non-null properties.availabilitySet reference. <br><br>Minimum api‐version: 2019‐03‐01'
+          'x-ms-azure-resource': true
         },
         proximityPlacementGroup: {
+          description: 'Specifies information about the proximity placement group that the virtual machine should be assigned to. <br><br>Minimum api-version: 2018-04-01.',
           properties: { id: { type: 'string', description: 'Resource Id' } },
-          'x-ms-azure-resource': true,
-          description: 'Specifies information about the proximity placement group that the virtual machine should be assigned to. <br><br>Minimum api-version: 2018-04-01.'
+          'x-ms-azure-resource': true
         },
         priority: {
           description: 'Specifies the priority for the virtual machine. <br><br>Minimum api-version: 2019-03-01',
@@ -3712,14 +3712,14 @@ exports.createResources = () => [
           }
         },
         host: {
+          description: 'Specifies information about the dedicated host that the virtual machine resides in. <br><br>Minimum api-version: 2018-10-01.',
           properties: { id: { type: 'string', description: 'Resource Id' } },
-          'x-ms-azure-resource': true,
-          description: 'Specifies information about the dedicated host that the virtual machine resides in. <br><br>Minimum api-version: 2018-10-01.'
+          'x-ms-azure-resource': true
         },
         hostGroup: {
+          description: 'Specifies information about the dedicated host group that the virtual machine resides in. <br><br>Minimum api-version: 2020-06-01. <br><br>NOTE: User cannot specify both host and hostGroup properties.',
           properties: { id: { type: 'string', description: 'Resource Id' } },
-          'x-ms-azure-resource': true,
-          description: 'Specifies information about the dedicated host group that the virtual machine resides in. <br><br>Minimum api-version: 2020-06-01. <br><br>NOTE: User cannot specify both host and hostGroup properties.'
+          'x-ms-azure-resource': true
         },
         provisioningState: {
           readOnly: true,
@@ -3782,6 +3782,7 @@ exports.createResources = () => [
                         description: 'Specifies the version of the script handler.'
                       },
                       status: {
+                        description: 'The extension handler status.',
                         properties: {
                           code: {
                             type: 'string',
@@ -3809,8 +3810,7 @@ exports.createResources = () => [
                             format: 'date-time',
                             description: 'The time of the status.'
                           }
-                        },
-                        description: 'Instance view status.'
+                        }
                       }
                     },
                     description: 'The instance view of a virtual machine extension handler.'
@@ -3920,9 +3920,9 @@ exports.createResources = () => [
                               description: 'The URL referencing a secret in a Key Vault.'
                             },
                             sourceVault: {
+                              description: 'The relative URL of the Key Vault containing the secret.',
                               properties: { id: [Object] },
-                              'x-ms-azure-resource': true,
-                              description: 'The relative URL of the Key Vault containing the secret.'
+                              'x-ms-azure-resource': true
                             }
                           },
                           required: [ 'secretUrl', 'sourceVault' ]
@@ -3935,9 +3935,9 @@ exports.createResources = () => [
                               description: 'The URL referencing a key encryption key in Key Vault.'
                             },
                             sourceVault: {
+                              description: 'The relative URL of the Key Vault containing the key.',
                               properties: { id: [Object] },
-                              'x-ms-azure-resource': true,
-                              description: 'The relative URL of the Key Vault containing the key.'
+                              'x-ms-azure-resource': true
                             }
                           },
                           required: [ 'keyUrl', 'sourceVault' ]
@@ -4093,6 +4093,8 @@ exports.createResources = () => [
               description: 'The health status for the VM.',
               properties: {
                 status: {
+                  readOnly: true,
+                  description: 'The health status information for the VM.',
                   properties: {
                     code: { type: 'string', description: 'The status code.' },
                     level: {
@@ -4117,9 +4119,7 @@ exports.createResources = () => [
                       format: 'date-time',
                       description: 'The time of the status.'
                     }
-                  },
-                  description: 'Instance view status.',
-                  readOnly: true
+                  }
                 }
               }
             },
@@ -4137,6 +4137,8 @@ exports.createResources = () => [
                   description: 'The serial console log blob Uri. <br><br>NOTE: This will **not** be set if boot diagnostics is currently enabled with managed storage.'
                 },
                 status: {
+                  readOnly: true,
+                  description: 'The boot diagnostics status information for the VM. <br><br> NOTE: It will be set only if there are errors encountered in enabling boot diagnostics.',
                   properties: {
                     code: { type: 'string', description: 'The status code.' },
                     level: {
@@ -4161,9 +4163,7 @@ exports.createResources = () => [
                       format: 'date-time',
                       description: 'The time of the status.'
                     }
-                  },
-                  description: 'Instance view status.',
-                  readOnly: true
+                  }
                 }
               }
             },
@@ -4259,6 +4259,8 @@ exports.createResources = () => [
                       description: 'The UTC timestamp when the operation began.'
                     },
                     error: {
+                      readOnly: true,
+                      description: 'The errors that were encountered during execution of the operation. The details array contains the list of them.',
                       properties: {
                         details: {
                           type: 'array',
@@ -4307,9 +4309,7 @@ exports.createResources = () => [
                           type: 'string',
                           description: 'The error message.'
                         }
-                      },
-                      description: 'Api error.',
-                      readOnly: true
+                      }
                     }
                   }
                 },
@@ -4385,6 +4385,8 @@ exports.createResources = () => [
                       description: 'The UTC timestamp when the operation began.'
                     },
                     error: {
+                      readOnly: true,
+                      description: 'The errors that were encountered during execution of the operation. The details array contains the list of them.',
                       properties: {
                         details: {
                           type: 'array',
@@ -4433,9 +4435,7 @@ exports.createResources = () => [
                           type: 'string',
                           description: 'The error message.'
                         }
-                      },
-                      description: 'Api error.',
-                      readOnly: true
+                      }
                     }
                   }
                 },
@@ -4527,9 +4527,9 @@ exports.createResources = () => [
           type: 'object',
           properties: {
             capacityReservationGroup: {
+              description: 'Specifies the capacity reservation group resource id that should be used for allocating the virtual machine or scaleset vm instances provided enough capacity has been reserved. Please refer to https://aka.ms/CapacityReservation for more details.',
               properties: { id: { type: 'string', description: 'Resource Id' } },
-              'x-ms-azure-resource': true,
-              description: 'Specifies the capacity reservation group resource id that should be used for allocating the virtual machine or scaleset vm instances provided enough capacity has been reserved. Please refer to https://aka.ms/CapacityReservation for more details.'
+              'x-ms-azure-resource': true
             }
           }
         },

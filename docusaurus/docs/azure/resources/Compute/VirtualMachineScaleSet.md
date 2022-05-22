@@ -3020,14 +3020,14 @@ exports.createResources = () => [
                   items: {
                     properties: {
                       sourceVault: {
+                        description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.',
                         properties: {
                           id: {
                             type: 'string',
                             description: 'Resource Id'
                           }
                         },
-                        'x-ms-azure-resource': true,
-                        description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.'
+                        'x-ms-azure-resource': true
                       },
                       vaultCertificates: {
                         type: 'array',
@@ -3365,14 +3365,14 @@ exports.createResources = () => [
                             description: 'Specifies whether the network interface is FPGA networking-enabled.'
                           },
                           networkSecurityGroup: {
+                            description: 'The network security group.',
                             properties: {
                               id: {
                                 type: 'string',
                                 description: 'Resource Id'
                               }
                             },
-                            'x-ms-azure-resource': true,
-                            description: 'The network security group.'
+                            'x-ms-azure-resource': true
                           },
                           dnsSettings: {
                             description: 'The dns settings to be applied on the network interfaces.',
@@ -3638,11 +3638,11 @@ exports.createResources = () => [
               type: 'object',
               properties: {
                 capacityReservationGroup: {
+                  description: 'Specifies the capacity reservation group resource id that should be used for allocating the virtual machine or scaleset vm instances provided enough capacity has been reserved. Please refer to https://aka.ms/CapacityReservation for more details.',
                   properties: {
                     id: { type: 'string', description: 'Resource Id' }
                   },
-                  'x-ms-azure-resource': true,
-                  description: 'Specifies the capacity reservation group resource id that should be used for allocating the virtual machine or scaleset vm instances provided enough capacity has been reserved. Please refer to https://aka.ms/CapacityReservation for more details.'
+                  'x-ms-azure-resource': true
                 }
               }
             },
@@ -3737,14 +3737,14 @@ exports.createResources = () => [
           description: 'Fault Domain count for each placement group.'
         },
         proximityPlacementGroup: {
+          description: 'Specifies information about the proximity placement group that the virtual machine scale set should be assigned to. <br><br>Minimum api-version: 2018-04-01.',
           properties: { id: { type: 'string', description: 'Resource Id' } },
-          'x-ms-azure-resource': true,
-          description: 'Specifies information about the proximity placement group that the virtual machine scale set should be assigned to. <br><br>Minimum api-version: 2018-04-01.'
+          'x-ms-azure-resource': true
         },
         hostGroup: {
+          description: 'Specifies information about the dedicated host group that the virtual machine scale set resides in. <br><br>Minimum api-version: 2020-06-01.',
           properties: { id: { type: 'string', description: 'Resource Id' } },
-          'x-ms-azure-resource': true,
-          description: 'Specifies information about the dedicated host group that the virtual machine scale set resides in. <br><br>Minimum api-version: 2020-06-01.'
+          'x-ms-azure-resource': true
         },
         additionalCapabilities: {
           description: 'Specifies additional capabilities enabled or disabled on the Virtual Machines in the Virtual Machine Scale Set. For instance: whether the Virtual Machines have the capability to support attaching managed data disks with UltraSSD_LRS storage account type.',

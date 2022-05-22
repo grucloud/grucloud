@@ -69,6 +69,8 @@ exports.createResources = () => [
           description: 'The provisioning state, which only appears in the response.'
         },
         instanceView: {
+          readOnly: true,
+          description: 'The Capacity reservation instance view.',
           type: 'object',
           properties: {
             utilizationInfo: {
@@ -122,9 +124,7 @@ exports.createResources = () => [
               'x-ms-identifiers': [],
               description: 'The resource status information.'
             }
-          },
-          description: 'The instance view of a capacity reservation that provides as snapshot of the runtime properties of the capacity reservation that is managed by the platform and can change outside of control plane operations.',
-          readOnly: true
+          }
         },
         timeCreated: {
           readOnly: true,
