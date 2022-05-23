@@ -9,6 +9,7 @@
     "graph": "gc graph",
     "gencode": "gc gencode",
     "list": "gc list",
+    "list-rg": "gc list --resource-group rg-aks-basic",
     "list-graph": "gc list -g",
     "plan": "gc plan",
     "apply": "gc apply -f",

@@ -19,6 +19,12 @@ const optionFilteredByProvider = [
   collect,
 ];
 
+const optionFilteredByResourceGroup = [
+  "--resource-group <value>",
+  "Azure only: Filter by resource groups, multiple values allowed",
+  collect,
+];
+
 const optionFilteredByTypes = [
   "-t, --types <value>",
   "Include by type, multiple values allowed",
@@ -211,6 +217,7 @@ exports.createProgram = () => {
       "display resources which can be deleted, a.k.a non default resources"
     )
     .option(...optionFilteredByProvider)
+    .option(...optionFilteredByResourceGroup)
     .option(...optionFilteredByTypes)
     .option(...optionFilteredByGroups)
     .option(...optionDotFileLive)
@@ -264,6 +271,7 @@ exports.createProgram = () => {
     .option(...optionFilteredByTypes)
     .option(...optionFilteredByGroups)
     .option(...optionExcludesByTypes)
+    .option(...optionFilteredByResourceGroup)
     .option(
       "--inventory <file>",
       "resources inventory",
