@@ -109,8 +109,10 @@ const buildDefaultSpec = fork({
                     tap((depName) => {
                       assert(depName);
                     }),
-                    //TODO
-                    callProp("toLowerCase"),
+                    when(
+                      () => value === "{resourceGroupName}",
+                      callProp("toLowerCase")
+                    ),
                     (depName) => [...acc, depName],
                   ])
                 ),

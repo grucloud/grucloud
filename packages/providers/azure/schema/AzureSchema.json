@@ -6093,10 +6093,12 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]
@@ -6191,6 +6193,7 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.defaultTtl",
             "properties.resource.schema.columns[].name",
             "properties.resource.schema.columns[].type",
@@ -6202,6 +6205,7 @@
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.defaultTtl",
             "properties.resource.schema.columns[].name",
             "properties.resource.schema.columns[].type",
@@ -6309,11 +6313,13 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.viewDefinition",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.viewDefinition",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
@@ -6664,10 +6670,12 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]
@@ -6709,10 +6717,12 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]
@@ -6807,6 +6817,7 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.indexingPolicy.automatic",
             "properties.resource.indexingPolicy.indexingMode",
             "properties.resource.indexingPolicy.includedPaths[].path",
@@ -6829,6 +6840,7 @@
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.indexingPolicy.automatic",
             "properties.resource.indexingPolicy.indexingMode",
             "properties.resource.indexingPolicy.includedPaths[].path",
@@ -6947,6 +6959,7 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.shardKey",
             "properties.resource.indexes[].key.keys",
             "properties.resource.indexes[].options.expireAfterSeconds",
@@ -6956,6 +6969,7 @@
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.shardKey",
             "properties.resource.indexes[].key.keys",
             "properties.resource.indexes[].options.expireAfterSeconds",
@@ -7055,10 +7069,12 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]
@@ -7415,6 +7431,7 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.encryptionAlgorithm",
             "properties.resource.wrappedDataEncryptionKey",
             "properties.resource.keyWrapMetadata.name",
@@ -7423,6 +7440,7 @@
             "properties.resource.keyWrapMetadata.algorithm"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.encryptionAlgorithm",
             "properties.resource.wrappedDataEncryptionKey",
             "properties.resource.keyWrapMetadata.name",
@@ -7474,6 +7492,7 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.indexingPolicy.automatic",
             "properties.resource.indexingPolicy.indexingMode",
             "properties.resource.indexingPolicy.includedPaths[].path",
@@ -7501,6 +7520,7 @@
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.indexingPolicy.automatic",
             "properties.resource.indexingPolicy.indexingMode",
             "properties.resource.indexingPolicy.includedPaths[].path",
@@ -7618,12 +7638,14 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource._colls",
             "properties.resource._users",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]
@@ -7828,9 +7850,11 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.body"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.body",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
@@ -7885,11 +7909,13 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.body",
             "properties.resource.triggerType",
             "properties.resource.triggerOperation"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.body",
             "properties.resource.triggerType",
             "properties.resource.triggerOperation",
@@ -7946,9 +7972,11 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.body"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.body",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
@@ -7991,10 +8019,12 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]

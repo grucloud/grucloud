@@ -7,63 +7,119 @@ exports.createResources = () => [
     type: "DatabaseAccount",
     group: "DocumentDB",
     properties: ({}) => ({
-      properties: {
-        disableLocalAuth: false,
-        diagnosticLogSettings: {
-          enableFullTextQuery: "None",
-        },
-        networkAclBypass: "None",
-        cors: [],
-        backupPolicy: {
-          periodicModeProperties: {
-            backupStorageRedundancy: "Geo",
-            backupRetentionIntervalInHours: 8,
-            backupIntervalInMinutes: 240,
-          },
-          type: "Periodic",
-        },
-        analyticalStorageConfiguration: {
-          schemaType: "WellDefined",
-        },
-        enableAnalyticalStorage: false,
-        enableFreeTier: true,
-        publicNetworkAccess: "Enabled",
-        defaultIdentity: "FirstPartyIdentity",
-        disableKeyBasedMetadataWriteAccess: false,
-        enableMultipleWriteLocations: false,
-        virtualNetworkRules: [],
-        capabilities: [],
-        enableAutomaticFailover: false,
-        isVirtualNetworkFilterEnabled: false,
-        ipRules: [],
-        databaseAccountOfferType: "Standard",
-        locations: [
-          {
-            isZoneRedundant: false,
-            failoverPriority: 0,
-            locationName: "East US",
-          },
-        ],
-        consistencyPolicy: {
-          maxIntervalInSeconds: 5,
-          maxStalenessPrefix: 100,
-          defaultConsistencyLevel: "Session",
-        },
-      },
+      name: "grucloud",
       identity: {
         type: "None",
       },
-      name: "grucloud",
+      properties: {
+        consistencyPolicy: {
+          defaultConsistencyLevel: "Session",
+          maxStalenessPrefix: 100,
+          maxIntervalInSeconds: 5,
+        },
+        locations: [
+          {
+            locationName: "East US",
+            failoverPriority: 0,
+            isZoneRedundant: false,
+          },
+        ],
+        databaseAccountOfferType: "Standard",
+        isVirtualNetworkFilterEnabled: false,
+        enableAutomaticFailover: false,
+        enableMultipleWriteLocations: false,
+        disableKeyBasedMetadataWriteAccess: false,
+        defaultIdentity: "FirstPartyIdentity",
+        publicNetworkAccess: "Enabled",
+        enableFreeTier: true,
+        enableAnalyticalStorage: false,
+        analyticalStorageConfiguration: {
+          schemaType: "WellDefined",
+        },
+        backupPolicy: {
+          type: "Periodic",
+          periodicModeProperties: {
+            backupIntervalInMinutes: 240,
+            backupRetentionIntervalInHours: 8,
+            backupStorageRedundancy: "Geo",
+          },
+        },
+        networkAclBypass: "None",
+        networkAclBypassResourceIds: [],
+        diagnosticLogSettings: {
+          enableFullTextQuery: "None",
+        },
+        disableLocalAuth: false,
+        capacity: {
+          totalThroughputLimit: 1000,
+        },
+      },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "rg-cosmos",
+      resourceGroup: "rg-cosmosdb",
+    }),
+  },
+  {
+    type: "SqlResourceSqlContainer",
+    group: "DocumentDB",
+    properties: ({}) => ({
+      name: "Items",
+      properties: {
+        resource: {
+          id: "Items",
+          indexingPolicy: {
+            automatic: true,
+            indexingMode: "consistent",
+            includedPaths: [
+              {
+                path: "/*",
+              },
+            ],
+            excludedPaths: [
+              {
+                path: '/"_etag"/?',
+              },
+            ],
+          },
+          partitionKey: {
+            paths: ["/partitionKey"],
+            kind: "Hash",
+          },
+          conflictResolutionPolicy: {
+            mode: "LastWriterWins",
+            conflictResolutionPath: "/_ts",
+            conflictResolutionProcedure: "",
+          },
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "rg-cosmosdb",
+      account: "rg-cosmosdb::grucloud",
+      database: "rg-cosmosdb::grucloud::ToDoList",
+    }),
+  },
+  {
+    type: "SqlResourceSqlDatabase",
+    group: "DocumentDB",
+    properties: ({}) => ({
+      name: "ToDoList",
+      properties: {
+        resource: {
+          id: "ToDoList",
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "rg-cosmosdb",
+      account: "rg-cosmosdb::grucloud",
     }),
   },
   {
     type: "ResourceGroup",
     group: "Resources",
     properties: ({}) => ({
-      name: "rg-cosmos",
+      name: "rg-cosmosdb",
     }),
   },
 ];

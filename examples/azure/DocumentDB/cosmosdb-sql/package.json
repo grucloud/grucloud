@@ -20,6 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/cosmos": "3.9.1",
     "@grucloud/core": "^7.2.2",
     "@grucloud/provider-azure": "^7.2.2",
     "rubico": "1.8.10"

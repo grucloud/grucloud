@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 273)">
 <title>graphname</title>
 <polygon fill="#fafafa" stroke="transparent" points="-4,4 -4,-273 1330,-273 1330,4 -4,4"/>
-<text text-anchor="start" x="549" y="-244.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project cosmosdb&#45;sql</text>
+<text text-anchor="start" x="530" y="-244.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project cosmosdb&#45;simple</text>
 <text text-anchor="start" x="659.5" y="-228.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
-<text text-anchor="start" x="549" y="-207.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Live Diagram</text>
+<text text-anchor="start" x="530" y="-207.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_azure</title>
 <polygon fill="#f5f5f5" stroke="#f5f5f5" points="8,-8 8,-185 1318,-185 1318,-8 8,-8"/>
@@ -22,67 +22,67 @@
 <polygon fill="#eeeeee" stroke="#eeeeee" points="16,-54 16,-177 1310,-177 1310,-54 16,-54"/>
 <text text-anchor="start" x="662.86" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
-<!-- DatabaseAccount::::rg&#45;cosmosdb::grucloud -->
+<!-- DatabaseAccount::rg&#45;cosmosdb::grucloud -->
 <g id="node1" class="node">
-<title>DatabaseAccount::::rg&#45;cosmosdb::grucloud</title>
+<title>DatabaseAccount::rg&#45;cosmosdb::grucloud</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1028,-129 757,-129 757,-71 1028,-71 1028,-129"/>
 <text text-anchor="start" x="769.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">DocumentDB::DatabaseAccount</text>
 <text text-anchor="start" x="769.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rg&#45;cosmosdb::grucloud</text>
 </g>
-<!-- ResourceGroup::::rg&#45;cosmosdb -->
+<!-- ResourceGroup::rg&#45;cosmosdb -->
 <g id="node4" class="node">
-<title>ResourceGroup::::rg&#45;cosmosdb</title>
+<title>ResourceGroup::rg&#45;cosmosdb</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1302,-169 1064,-169 1064,-111 1302,-111 1302,-169"/>
 <text text-anchor="start" x="1076" y="-149.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Resources::ResourceGroup</text>
 <text text-anchor="start" x="1076" y="-124.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rg&#45;cosmosdb</text>
 </g>
-<!-- DatabaseAccount::::rg&#45;cosmosdb::grucloud&#45;&gt;ResourceGroup::::rg&#45;cosmosdb -->
+<!-- DatabaseAccount::rg&#45;cosmosdb::grucloud&#45;&gt;ResourceGroup::rg&#45;cosmosdb -->
 <g id="edge1" class="edge">
-<title>DatabaseAccount::::rg&#45;cosmosdb::grucloud&#45;&gt;ResourceGroup::::rg&#45;cosmosdb</title>
+<title>DatabaseAccount::rg&#45;cosmosdb::grucloud&#45;&gt;ResourceGroup::rg&#45;cosmosdb</title>
 <path fill="none" stroke="#707070" d="M1028.04,-118.65C1036.59,-119.84 1045.19,-121.03 1053.71,-122.21"/>
 <polygon fill="#707070" stroke="#707070" points="1053.29,-125.69 1063.67,-123.59 1054.25,-118.75 1053.29,-125.69"/>
 </g>
-<!-- SqlResourceSqlContainer::::rg&#45;cosmosdb::grucloud::ToDoList::Items -->
+<!-- SqlResourceSqlContainer::rg&#45;cosmosdb::grucloud::ToDoList::Items -->
 <g id="node2" class="node">
-<title>SqlResourceSqlContainer::::rg&#45;cosmosdb::grucloud::ToDoList::Items</title>
+<title>SqlResourceSqlContainer::rg&#45;cosmosdb::grucloud::ToDoList::Items</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="356,-149 24,-149 24,-91 356,-91 356,-149"/>
 <text text-anchor="start" x="36" y="-129.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">DocumentDB::SqlResourceSqlContainer</text>
 <text text-anchor="start" x="36" y="-104.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rg&#45;cosmosdb::grucloud::ToDoList:...</text>
 </g>
-<!-- SqlResourceSqlContainer::::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;DatabaseAccount::::rg&#45;cosmosdb::grucloud -->
+<!-- SqlResourceSqlContainer::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;DatabaseAccount::rg&#45;cosmosdb::grucloud -->
 <g id="edge3" class="edge">
-<title>SqlResourceSqlContainer::::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;DatabaseAccount::::rg&#45;cosmosdb::grucloud</title>
+<title>SqlResourceSqlContainer::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;DatabaseAccount::rg&#45;cosmosdb::grucloud</title>
 <path fill="none" stroke="#707070" d="M325.66,-90.96C347.73,-87.24 370.43,-84.02 392,-82 537.58,-68.36 574.98,-74.31 721,-82 729.33,-82.44 737.88,-83 746.51,-83.64"/>
 <polygon fill="#707070" stroke="#707070" points="746.41,-87.15 756.65,-84.44 746.96,-80.17 746.41,-87.15"/>
 </g>
-<!-- SqlResourceSqlDatabase::::rg&#45;cosmosdb::grucloud::ToDoList -->
+<!-- SqlResourceSqlDatabase::rg&#45;cosmosdb::grucloud::ToDoList -->
 <g id="node3" class="node">
-<title>SqlResourceSqlDatabase::::rg&#45;cosmosdb::grucloud::ToDoList</title>
+<title>SqlResourceSqlDatabase::rg&#45;cosmosdb::grucloud::ToDoList</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="721,-149 392,-149 392,-91 721,-91 721,-149"/>
 <text text-anchor="start" x="404.5" y="-129.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">DocumentDB::SqlResourceSqlDatabase</text>
 <text text-anchor="start" x="404.5" y="-104.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rg&#45;cosmosdb::grucloud::ToDoList</text>
 </g>
-<!-- SqlResourceSqlContainer::::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;SqlResourceSqlDatabase::::rg&#45;cosmosdb::grucloud::ToDoList -->
+<!-- SqlResourceSqlContainer::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;SqlResourceSqlDatabase::rg&#45;cosmosdb::grucloud::ToDoList -->
 <g id="edge4" class="edge">
-<title>SqlResourceSqlContainer::::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;SqlResourceSqlDatabase::::rg&#45;cosmosdb::grucloud::ToDoList</title>
+<title>SqlResourceSqlContainer::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;SqlResourceSqlDatabase::rg&#45;cosmosdb::grucloud::ToDoList</title>
 <path fill="none" stroke="#707070" d="M356.19,-120C364.72,-120 373.3,-120 381.85,-120"/>
 <polygon fill="#707070" stroke="#707070" points="381.88,-123.5 391.88,-120 381.88,-116.5 381.88,-123.5"/>
 </g>
-<!-- SqlResourceSqlContainer::::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;ResourceGroup::::rg&#45;cosmosdb -->
+<!-- SqlResourceSqlContainer::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;ResourceGroup::rg&#45;cosmosdb -->
 <g id="edge2" class="edge">
-<title>SqlResourceSqlContainer::::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;ResourceGroup::::rg&#45;cosmosdb</title>
+<title>SqlResourceSqlContainer::rg&#45;cosmosdb::grucloud::ToDoList::Items&#45;&gt;ResourceGroup::rg&#45;cosmosdb</title>
 <path fill="none" stroke="#707070" d="M325.66,-149.04C347.73,-152.76 370.43,-155.98 392,-158 624.56,-179.79 897.22,-164.63 1053.77,-152.04"/>
 <polygon fill="#707070" stroke="#707070" points="1054.23,-155.51 1063.92,-151.21 1053.67,-148.53 1054.23,-155.51"/>
 </g>
-<!-- SqlResourceSqlDatabase::::rg&#45;cosmosdb::grucloud::ToDoList&#45;&gt;DatabaseAccount::::rg&#45;cosmosdb::grucloud -->
+<!-- SqlResourceSqlDatabase::rg&#45;cosmosdb::grucloud::ToDoList&#45;&gt;DatabaseAccount::rg&#45;cosmosdb::grucloud -->
 <g id="edge6" class="edge">
-<title>SqlResourceSqlDatabase::::rg&#45;cosmosdb::grucloud::ToDoList&#45;&gt;DatabaseAccount::::rg&#45;cosmosdb::grucloud</title>
+<title>SqlResourceSqlDatabase::rg&#45;cosmosdb::grucloud::ToDoList&#45;&gt;DatabaseAccount::rg&#45;cosmosdb::grucloud</title>
 <path fill="none" stroke="#707070" d="M721.08,-110.21C729.54,-109.7 738.01,-109.19 746.41,-108.69"/>
 <polygon fill="#707070" stroke="#707070" points="746.83,-112.17 756.6,-108.08 746.41,-105.18 746.83,-112.17"/>
 </g>
-<!-- SqlResourceSqlDatabase::::rg&#45;cosmosdb::grucloud::ToDoList&#45;&gt;ResourceGroup::::rg&#45;cosmosdb -->
+<!-- SqlResourceSqlDatabase::rg&#45;cosmosdb::grucloud::ToDoList&#45;&gt;ResourceGroup::rg&#45;cosmosdb -->
 <g id="edge5" class="edge">
-<title>SqlResourceSqlDatabase::::rg&#45;cosmosdb::grucloud::ToDoList&#45;&gt;ResourceGroup::::rg&#45;cosmosdb</title>
+<title>SqlResourceSqlDatabase::rg&#45;cosmosdb::grucloud::ToDoList&#45;&gt;ResourceGroup::rg&#45;cosmosdb</title>
 <path fill="none" stroke="#707070" d="M721,-135.89C733.18,-136.72 745.28,-137.44 757,-138 856.51,-142.71 969.27,-143.01 1053.62,-142.24"/>
 <polygon fill="#707070" stroke="#707070" points="1053.8,-145.74 1063.77,-142.14 1053.73,-138.74 1053.8,-145.74"/>
 </g>

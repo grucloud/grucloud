@@ -49,7 +49,12 @@ exports.createAxiosAzure = ({ baseURL, bearerToken }) =>
       }),
   ])();
 
-exports.shortName = pipe([callProp("split", "::"), last]);
+exports.shortName = pipe([
+  callProp("split", "::"),
+  last,
+  //TODO
+  //callProp("toLowerCase"),
+]);
 
 exports.isSubstituable = callProp("startsWith", "{");
 

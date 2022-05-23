@@ -314,7 +314,11 @@ exports.getByNameCore =
           tap((currentName) => {
             logger.debug(`getByNameCore ${name}: findName: ${currentName}`);
           }),
-          (currentName) => isDeepEqual(name, currentName),
+          switchCase([
+            isString,
+            pipe([eq(callProp("toLowerCase"), name.toLowerCase())]),
+            (currentName) => isDeepEqual(name, currentName),
+          ]),
         ])
       ), //TODO check on meta
       tap((instance) => {

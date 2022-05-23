@@ -52,7 +52,7 @@ const SwaggerParser = require("@apidevtools/swagger-parser");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { isSubstituable } = require("../AzureCommon");
 const { writeDoc } = require("./AzureDoc");
-const { ResourcesExcludes } = require("./ResourcesExcludes");
+const { ResourcesExcludes } = require("../AzureResourcesExcludes");
 
 const PreDefinedDependenciesMap = {
   virtualNetworkSubnetResourceId: {
@@ -1000,14 +1000,23 @@ const addDependencies = ({ resources }) =>
       ])(),
   });
 
-const isOmit = (key) =>
+const isOmit = ({ key, obj }) =>
   pipe([
     tap((params) => {
       assert(key);
     }),
     or([
       get("readOnly"),
-      () => key.match(new RegExp("Id$", "gi")),
+      and([
+        () => key.match(new RegExp("Id$", "gi")),
+        not(
+          pipe([
+            () => obj,
+            get("description", ""),
+            callProp("startsWith", "Name"),
+          ])
+        ),
+      ]),
       () => key.match(new RegExp("status", "gi")),
       () => key.match(new RegExp("state", "gi")),
       //get("x-ms-mutability"),
@@ -1033,7 +1042,7 @@ const buildOmitReadOnly =
           switchCase([
             isPreviousProperties({ parentPath, key }),
             pipe([() => undefined]),
-            isOmit(key),
+            isOmit({ key, obj }),
             pipe([() => [[...parentPath, key]]]),
             pipe([
               get("properties"),
@@ -1139,10 +1148,16 @@ const buildPickPropertiesObject = ({ key, swagger, parentPath, accumulator }) =>
       ]),
       fromProperties: pipe([
         get("properties"),
+        tap((params) => {
+          assert(true);
+        }),
         buildPickProperties({
           swagger,
           parentPath: [...parentPath, key],
           accumulator,
+        }),
+        tap((params) => {
+          assert(true);
         }),
       ]),
       fromAditionalProperties: switchCase([
@@ -1209,22 +1224,18 @@ const buildPickProperties =
           switchCase([
             // loop detection
             isPreviousProperties({ parentPath, key }),
-            pipe([() => undefined]),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => undefined,
+            ]),
             // omit ?
-            or([isOmit(key) /*, get("x-ms-mutability")*/]),
+            or([isOmit({ key, obj }) /*, get("x-ms-mutability")*/]),
             () => undefined,
             // is Array ?
             pipe([get("items")]),
             buildPickPropertiesArray({ key, swagger, parentPath, accumulator }),
-            // // is simple type ?
-            // pipe([
-            //   ({ type }) =>
-            //     pipe([
-            //       () => ["string", "integer", "boolean", "double", "number"],
-            //       includes(type),
-            //     ])(),
-            // ]),
-            // pipe([() => [[...parentPath, key]]]),
             //discriminator
             pipe([get("discriminator")]),
             buildPickPropertiesEnum({ key, swagger, parentPath, accumulator }),
@@ -1236,19 +1247,12 @@ const buildPickProperties =
               parentPath,
               accumulator,
             }),
-            pipe([() => [[...parentPath, key]]]),
-            // pipe([
-            //   tap((params) => {
-            //     console.error(
-            //       `type is not a string, array or object ${JSON.stringify(
-            //         params,
-            //         null,
-            //         4
-            //       )}`
-            //     );
-            //   }),
-            //   () => [],
-            // ]),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => [[...parentPath, key]],
+            ]),
           ]),
         ])(),
       ]),
@@ -1592,6 +1596,14 @@ const pickResourceInfo = ({ swagger, ...other }) =>
               (schema) =>
                 pipe([
                   () => schema,
+                  tap.if(
+                    () =>
+                      schema.description ===
+                      "Parameters to create and update Cosmos DB SQL database.",
+                    (params) => {
+                      assert(true);
+                    }
+                  ),
                   get("properties"),
                   when(isEmpty, () => get("allOf[1].properties")(schema)),
                   when(isEmpty, () => get("allOf[0].properties")(schema)),
@@ -1604,6 +1616,9 @@ const pickResourceInfo = ({ swagger, ...other }) =>
                     );
                   }),
                   buildPickProperties({ swagger }),
+                  tap((params) => {
+                    assert(true);
+                  }),
                   map(callProp("join", ".")),
                 ])(),
             ]),

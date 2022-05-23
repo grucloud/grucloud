@@ -13,6 +13,8 @@ const {
   and,
   always,
   any,
+  assign,
+  omit,
 } = require("rubico");
 const {
   callProp,
@@ -69,6 +71,12 @@ const verbUpdateFromMethods = switchCase([
   get("patch"),
   () => "PATCH",
   () => "PUT",
+]);
+
+const onCreateFilterPayload = pipe([
+  tap((params) => {
+    assert(true);
+  }),
 ]);
 
 module.exports = AzClient = ({
@@ -477,6 +485,7 @@ module.exports = AzClient = ({
     findTargetId,
     verbCreate: verbCreateFromMethods(methods),
     verbUpdate: verbUpdateFromMethods(methods),
+    onCreateFilterPayload,
     isInstanceUp,
     isDefault: spec.isDefault,
     cannotBeDeleted,

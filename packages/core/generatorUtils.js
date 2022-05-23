@@ -313,17 +313,29 @@ const configBuildPropertiesDefault = ({
   resource,
   properties,
   hasNoProperty,
+  providerConfig,
 }) =>
   pipe([
     tap(() => {
       assert(resource);
+      assert(providerConfig);
     }),
-    () =>
-      !isEmpty(properties) && !resource.isDefault && !hasNoProperty
-        ? `\nproperties: ({config, getId, generatePassword}) => (${printProperties(
-            properties
-          )}),`
-        : "",
+    () => properties,
+    providerConfig.tranformResource({ resource }),
+    switchCase([
+      and([
+        not(
+          isEmpty,
+          () => !resource.isDefault,
+          () => !hasNoProperty
+        ),
+      ]),
+      pipe([
+        printProperties,
+        prepend("\nproperties: ({config, getId, generatePassword}) => ("),
+        append("),"),
+      ]),
+    ]),
     tap((params) => {
       assert(true);
     }),
@@ -358,14 +370,13 @@ const replaceRegion = ({ providerConfig }) =>
       includes(providerConfig.region),
     ]),
     pipe([
-      callProp("replace", providerConfig.region, "${config.region}"),
+      callProp("replaceAll", providerConfig.region, "${config.region}"),
       (resource) => "`" + resource + "`",
     ]),
     pipe([
       tap((params) => {
         assert(true);
       }),
-      (resource) => "'" + resource + "'",
     ]),
   ]);
 
@@ -385,7 +396,13 @@ const dependencyValue = ({ key, list, resource, providerConfig }) =>
       }
     }),
     callProp("sort"),
-    map(replaceRegion({ providerConfig })),
+    map(
+      pipe([
+        replaceRegion({ providerConfig }),
+        providerConfig.tranformResourceName({ resource }),
+        unless(includes("`"), pipe([prepend('"'), append('"')])),
+      ])
+    ),
     when(() => list, pipe([(values) => `[${values}]`])),
   ]);
 
@@ -456,7 +473,7 @@ const buildDependencies = ({
      }),`,
       ]),
       tap((params) => {
-        //console.log(params);
+        assert(true);
       }),
     ]),
   ])();
@@ -469,16 +486,23 @@ const buildPrefix = switchCase([
   () => "",
 ]);
 
-const buildName = ({ inferName, resourceName, resource, providerConfig }) =>
+const buildName = ({
+  inferName,
+  resourceName,
+  resource,
+  providerConfig,
+  mapping,
+}) =>
   pipe([
     tap((params) => {
-      assert(true);
+      assert(providerConfig);
     }),
     switchCase([
       and([() => inferName, () => !resource.managedByOther]),
       () => "",
       pipe([
         () => resourceName,
+        providerConfig.tranformResourceName({ resource }),
         switchCase([
           pipe([includes(providerConfig.region)]),
           pipe([
@@ -486,7 +510,7 @@ const buildName = ({ inferName, resourceName, resource, providerConfig }) =>
             prepend("name: ({config}) => "),
             append(","),
           ]),
-          () => `name: "${resourceName}",`,
+          pipe([prepend('name: "'), append('",')]),
         ]),
       ]),
     ]),
@@ -529,6 +553,7 @@ const codeTpl = ({
           configBuildPropertiesDefault({
             resource,
             properties,
+            providerConfig,
             hasNoProperty: hasNoProperty({ resource }),
           })
         ),
@@ -1503,8 +1528,15 @@ exports.generatorMain = ({
           filterModel,
         }),
         mapping: readMapping({ commandOptions, programOptions }),
+        providerConfig: pipe([
+          () => providerConfig,
+          defaultsDeep({
+            tranformResourceName: ({ resource }) => identity,
+            tranformResource: ({ resource }) => identity,
+          }),
+        ]),
       }),
-      ({ lives, mapping }) =>
+      ({ lives, mapping, providerConfig }) =>
         pipe([
           () => specs,
           createWritersSpec,

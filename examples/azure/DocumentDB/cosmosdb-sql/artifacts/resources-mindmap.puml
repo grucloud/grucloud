@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project cosmosdb-simple
+skinparam monochrome true
++ Infra
+++ azure
++++ DocumentDB
+++++ DatabaseAccount (1)
+++++ SqlResourceSqlContainer (1)
+++++ SqlResourceSqlDatabase (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

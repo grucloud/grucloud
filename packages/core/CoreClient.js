@@ -76,6 +76,7 @@ module.exports = CoreClient = ({
   cannotBeDeleted,
   shouldRetryOnExceptionCreate = shouldRetryOnExceptionCreateDefault,
   shouldRetryOnExceptionDelete = shouldRetryOnExceptionDeleteDefault,
+  onCreateFilterPayload = identity,
   onCreateExpectedException,
   findDependencies,
   isUpById,
@@ -246,7 +247,7 @@ module.exports = CoreClient = ({
                       fn: () =>
                         axios.request(path, {
                           method: verbCreate,
-                          data: payload,
+                          data: onCreateFilterPayload(payload),
                         }),
                       config: { ...config, repeatCount: 0 },
                     }),
