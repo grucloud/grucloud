@@ -6,7 +6,7 @@ const {
   unionWith,
   differenceWith,
 } = require("rubico/x");
-const { get, switchCase, all, transform, map, tap, pipe } = require("rubico");
+const { get, switchCase, all, transform, map, pick, pipe } = require("rubico");
 const { copyDeep } = require("rubico/monad/Struct");
 
 const list = {

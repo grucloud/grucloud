@@ -17,6 +17,7 @@ const {
   pick,
   reduce,
   gte,
+  omit,
 } = require("rubico");
 const {
   append,
@@ -52,26 +53,6 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 const { isSubstituable } = require("../AzureCommon");
 const { writeDoc } = require("./AzureDoc");
 
-exports.SpecGroupDirs = [
-  //"apimanagement",
-  //"appconfiguration",
-  //"dns",
-
-  "app",
-  "authorization",
-  "compute",
-  "containerservice",
-  "containerregistry",
-  "cosmos-db",
-  "keyvault",
-  "msi",
-  "operationalinsights",
-  "postgresql",
-  "network",
-  "storage",
-  "web",
-  //"webpubsub",
-];
 const PreDefinedDependenciesMap = {
   virtualNetworkSubnetResourceId: {
     type: "Subnet",
@@ -436,7 +417,15 @@ const makeResourceDir = ({ dir, name }) =>
     }),
   ])();
 
-const findResources = ({ dir, name, paths, group, groupDir, apiVersion }) =>
+const findResources = ({
+  dir,
+  name,
+  paths,
+  group,
+  groupDir,
+  apiVersion,
+  swagger,
+}) =>
   pipe([
     () => paths,
     filter(
@@ -483,6 +472,7 @@ const findResources = ({ dir, name, paths, group, groupDir, apiVersion }) =>
             }),
           ])(),
           dir: makeResourceDir({ dir, name }),
+          swagger,
         }),
       ])()
     ),
@@ -529,6 +519,9 @@ const processSwagger =
             resources,
           }),
         ])(),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
 exports.processSwagger = processSwagger;
@@ -1113,29 +1106,204 @@ const buildOmitReadOnly =
       (results) => [...accumulator, ...results],
     ])();
 
+const findTypesByDiscriminator =
+  ({ swagger }) =>
+  (typedef) =>
+    pipe([
+      tap((params) => {
+        assert(swagger);
+        assert(typedef);
+      }),
+      () => typedef,
+      get("properties"),
+      get(typedef.discriminator),
+      get("enum", []),
+      flatMap((enumValue) =>
+        pipe([
+          () => swagger,
+          get("definitions"),
+          filter(pipe([eq(get("x-ms-discriminator-value"), enumValue)])),
+        ])()
+      ),
+    ])();
+
+const buildPickPropertiesEnum = ({ key, swagger, parentPath, accumulator }) =>
+  pipe([
+    fork({
+      fromBase: pipe([
+        pipe([
+          get("properties"),
+          tap((properties) => {
+            assert(properties);
+          }),
+          buildPickProperties({
+            swagger,
+            parentPath: [...parentPath, key],
+            accumulator,
+          }),
+        ]),
+      ]),
+      fromEnums: pipe([
+        findTypesByDiscriminator({ swagger }),
+        flatMap(
+          pipe([
+            get("properties"),
+            tap((properties) => {
+              assert(properties);
+            }),
+            buildPickProperties({
+              swagger,
+              parentPath: [...parentPath, key],
+              accumulator,
+            }),
+          ])
+        ),
+      ]),
+    }),
+    ({ fromBase, fromEnums }) => [...fromBase, ...fromEnums],
+  ]);
+
+const buildPickPropertiesObject = ({ key, swagger, parentPath, accumulator }) =>
+  pipe([
+    tap((params) => {
+      assert(params);
+    }),
+    fork({
+      fromAllOf: pipe([
+        get("allOf", []),
+        map(
+          pipe([
+            get("properties"),
+            tap((properties) => {
+              assert(properties);
+            }),
+            buildPickProperties({
+              swagger,
+              parentPath: [...parentPath, key],
+              accumulator,
+            }),
+          ])
+        ),
+        tap.if(not(isEmpty), () => {
+          assert(true);
+        }),
+        flatten,
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      fromProperties: pipe([
+        get("properties"),
+        buildPickProperties({
+          swagger,
+          parentPath: [...parentPath, key],
+          accumulator,
+        }),
+      ]),
+      fromAditionalProperties: switchCase([
+        get("additionalProperties"),
+        pipe([
+          get("additionalProperties"),
+          tap((properties) => {
+            assert(true);
+          }),
+          () => [[...parentPath, key]],
+        ]),
+        () => [],
+      ]),
+    }),
+    tap((params) => {
+      assert(true);
+    }),
+    ({ fromAllOf = [], fromProperties = [], fromAditionalProperties = [] }) => [
+      ...fromAllOf,
+      ...fromProperties,
+      ...fromAditionalProperties,
+    ],
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
+const isSwaggerObject = pipe([
+  or([get("properties"), get("allOf"), get("additionalProperties")]),
+]);
+
+const buildPickPropertiesArray = ({ key, swagger, parentPath, accumulator }) =>
+  pipe([
+    get("items"),
+    tap((items) => {
+      assert(items);
+    }),
+    switchCase([
+      isSwaggerObject,
+      // array of objects
+      buildPickPropertiesObject({
+        key: `${key}[]`,
+        swagger,
+        parentPath,
+        accumulator,
+      }),
+      // array of simple types
+      pipe([() => [[...parentPath, key]]]),
+    ]),
+  ]);
+
 const buildPickProperties =
-  ({ parentPath = [], accumulator = [] }) =>
+  ({ swagger, parentPath = [], accumulator = [] }) =>
   (properties = {}) =>
     pipe([
+      tap((params) => {
+        assert(swagger);
+      }),
       () => properties,
       map.entries(([key, obj]) => [
         key,
         pipe([
           () => obj,
           switchCase([
+            // loop detection
             isPreviousProperties({ parentPath, key }),
             pipe([() => undefined]),
+            // omit ?
             or([isOmit(key) /*, get("x-ms-mutability")*/]),
             () => undefined,
-            and([not(isOmit(key)), not(get("properties"))]),
+            // is Array ?
+            pipe([get("items")]),
+            buildPickPropertiesArray({ key, swagger, parentPath, accumulator }),
+            // // is simple type ?
+            // pipe([
+            //   ({ type }) =>
+            //     pipe([
+            //       () => ["string", "integer", "boolean", "double", "number"],
+            //       includes(type),
+            //     ])(),
+            // ]),
+            // pipe([() => [[...parentPath, key]]]),
+            //discriminator
+            pipe([get("discriminator")]),
+            buildPickPropertiesEnum({ key, swagger, parentPath, accumulator }),
+            // is Object
+            isSwaggerObject,
+            buildPickPropertiesObject({
+              key,
+              swagger,
+              parentPath,
+              accumulator,
+            }),
             pipe([() => [[...parentPath, key]]]),
-            pipe([
-              get("properties"),
-              buildPickProperties({
-                parentPath: [...parentPath, key],
-                accumulator,
-              }),
-            ]),
+            // pipe([
+            //   tap((params) => {
+            //     console.error(
+            //       `type is not a string, array or object ${JSON.stringify(
+            //         params,
+            //         null,
+            //         4
+            //       )}`
+            //     );
+            //   }),
+            //   () => [],
+            // ]),
           ]),
         ])(),
       ]),
@@ -1144,6 +1312,8 @@ const buildPickProperties =
       flatten,
       (results) => [...accumulator, ...results],
     ])();
+
+exports.buildPickProperties = buildPickProperties;
 
 const buildEnvironmentVariables =
   ({ parentPath = [], accumulator = [] }) =>
@@ -1422,105 +1592,118 @@ const getSchemaFromMethods = ({ method }) =>
       ])(),
   ]);
 
-const pickPropertiesGet = pipe([
-  getSchemaFromMethods({ method: "get" }),
-  buildPickProperties({}),
-  map(callProp("join", ".")),
-  tap((params) => {
-    assert(true);
-  }),
-]);
-
-const pickResourceInfo = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  pick(["type", "group", "apiVersion", "dependencies", "methods"]),
-  assign({
-    omitProperties: pipe([
+const pickPropertiesGet =
+  ({ swagger }) =>
+  (resource) =>
+    pipe([
+      () => resource,
       getSchemaFromMethods({ method: "get" }),
-      buildOmitReadOnly({}),
-      map(callProp("join", ".")),
-    ]),
-    pickProperties: pickPropertiesGet,
-    pickPropertiesCreate: (resource) =>
-      pipe([
-        () => resource,
-        get("methods.put"),
-        get("parameters"),
-        find(eq(get("in"), "body")),
-        switchCase([
-          isEmpty,
-          () => pickPropertiesGet(resource),
-          pipe([
-            get("schema"),
-            tap((schema) => {
-              assert(schema);
-            }),
-            (schema) =>
-              pipe([
-                () => schema,
-                tap.if(
-                  () =>
-                    resource.methods.put.operationId ===
-                    "NotebookWorkspaces_CreateOrUpdate",
-                  () => {
-                    assert(true);
-                  }
-                ),
-                get("properties"),
-                when(isEmpty, () => get("allOf[1].properties")(schema)),
-                when(isEmpty, () => get("allOf[0].properties")(schema)),
-                tap.if(isEmpty, (properties) => {
-                  assert(
-                    properties,
-                    `no properties in ${
-                      resource.methods.put.operationId
-                    }, schema: ${JSON.stringify(schema, null, 4)}`
-                  );
-                }),
-                buildPickProperties({}),
-                map(callProp("join", ".")),
-              ])(),
-          ]),
-        ]),
-      ])(),
-    environmentVariables: pipe([
-      getSchemaFromMethods({ method: "get" }),
-      buildEnvironmentVariables({}),
-      map(
-        fork({
-          path: pipe([callProp("join", ".")]),
-          suffix: pipe([last, snakeCase, callProp("toUpperCase")]),
-        })
-      ),
-    ]),
-    propertiesDefault: pipe([
-      getSchemaFromMethods({ method: "get" }),
-      buildPropertiesDefault({}),
-    ]),
-    methods: pipe([
-      get("methods"),
-      map.entries(([key, value]) => [
-        key,
-        pipe([
-          () => value,
-          tap((params) => {
-            assert(true);
-          }),
-          pick(["path", "operationId"]),
-        ])(),
-      ]),
+      buildPickProperties({ swagger }),
       tap((params) => {
-        assert(true);
+        assert(Array.isArray(params));
       }),
+      map(
+        pipe([
+          tap((params) => {
+            assert(
+              Array.isArray(params),
+              `not an array:${JSON.stringify(params)}`
+            );
+          }),
+          callProp("join", "."),
+        ])
+      ),
+    ])();
+
+const pickResourceInfo = ({ swagger, ...other }) =>
+  pipe([
+    tap(() => {
+      assert(other);
+      assert(swagger);
+    }),
+    () => other,
+    pick(["type", "group", "apiVersion", "dependencies", "methods"]),
+    assign({
+      omitProperties: pipe([
+        getSchemaFromMethods({ method: "get" }),
+        buildOmitReadOnly({}),
+        map(callProp("join", ".")),
+      ]),
+      pickProperties: pickPropertiesGet({ swagger }),
+      pickPropertiesCreate: (resource) =>
+        pipe([
+          () => resource,
+          get("methods.put"),
+          get("parameters"),
+          find(eq(get("in"), "body")),
+          switchCase([
+            isEmpty,
+            () => pickPropertiesGet({ swagger })(resource),
+            pipe([
+              get("schema"),
+              tap((schema) => {
+                assert(schema);
+              }),
+              (schema) =>
+                pipe([
+                  () => schema,
+                  get("properties"),
+                  when(isEmpty, () => get("allOf[1].properties")(schema)),
+                  when(isEmpty, () => get("allOf[0].properties")(schema)),
+                  tap.if(isEmpty, (properties) => {
+                    assert(
+                      properties,
+                      `no properties in ${
+                        resource.methods.put.operationId
+                      }, schema: ${JSON.stringify(schema, null, 4)}`
+                    );
+                  }),
+                  buildPickProperties({ swagger }),
+                  map(callProp("join", ".")),
+                ])(),
+            ]),
+          ]),
+        ])(),
+      environmentVariables: pipe([
+        getSchemaFromMethods({ method: "get" }),
+        buildEnvironmentVariables({}),
+        map(
+          fork({
+            path: pipe([callProp("join", ".")]),
+            suffix: pipe([last, snakeCase, callProp("toUpperCase")]),
+          })
+        ),
+      ]),
+      propertiesDefault: pipe([
+        getSchemaFromMethods({ method: "get" }),
+        buildPropertiesDefault({}),
+      ]),
+      methods: pipe([
+        get("methods"),
+        map.entries(([key, value]) => [
+          key,
+          pipe([
+            () => value,
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["path", "operationId"]),
+          ])(),
+        ]),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+    }),
+    omitIfEmpty([
+      "environmentVariables",
+      "omitProperties",
+      "propertiesDefault",
     ]),
-  }),
-  omitIfEmpty(["environmentVariables", "omitProperties", "propertiesDefault"]),
-  tap((params) => {
-    assert(true);
-  }),
-]);
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const filterGetAll = ({ name, dependencies, methods }) =>
   pipe([

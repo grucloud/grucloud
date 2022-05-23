@@ -20,8 +20,8 @@ const buildDocResourceFilename =
   ({ group, type }) =>
     pipe([
       () => path.resolve(directoryDoc, group, `${type}.md`),
-      tap((params) => {
-        assert(true);
+      tap((filename) => {
+        console.log(`Writing markdown: ${filename}`);
       }),
     ])();
 

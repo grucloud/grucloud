@@ -258,8 +258,8 @@ exports.createResources = () => [
                                 'x-ms-enum': [Object]
                               },
                               encryptionSettings: {
-                                properties: [Object],
-                                description: 'Describes a Encryption Settings for a Disk'
+                                description: 'Gets the disk encryption settings.',
+                                properties: [Object]
                               },
                               name: {
                                 type: 'string',
@@ -282,8 +282,8 @@ exports.createResources = () => [
                                 allOf: [Array]
                               },
                               diskRestorePoint: {
-                                properties: [Object],
-                                description: 'The API entity reference.'
+                                description: 'Gets the disk restore point Id.',
+                                properties: [Object]
                               }
                             }
                           },
@@ -486,13 +486,13 @@ exports.createResources = () => [
                     description: 'Gets the creation time of the restore point.'
                   },
                   sourceRestorePoint: {
+                    description: 'Resource Id of the source restore point from which a copy needs to be created.',
                     properties: {
                       id: {
                         type: 'string',
                         description: 'The ARM resource id in the form of /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/...'
                       }
-                    },
-                    description: 'The API entity reference.'
+                    }
                   },
                   instanceView: {
                     readOnly: true,

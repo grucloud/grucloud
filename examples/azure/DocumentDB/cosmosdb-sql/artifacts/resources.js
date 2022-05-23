@@ -22,6 +22,9 @@ exports.createResources = () => [
           },
           type: "Periodic",
         },
+        analyticalStorageConfiguration: {
+          schemaType: "WellDefined",
+        },
         enableAnalyticalStorage: false,
         enableFreeTier: true,
         publicNetworkAccess: "Enabled",

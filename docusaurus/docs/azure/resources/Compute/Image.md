@@ -343,9 +343,9 @@ exports.createResources = () => [
       'x-ms-client-flatten': true,
       properties: {
         sourceVirtualMachine: {
+          description: 'The source virtual machine from which Image is created.',
           properties: { id: { type: 'string', description: 'Resource Id' } },
-          'x-ms-azure-resource': true,
-          description: 'The source virtual machine from which Image is created.'
+          'x-ms-azure-resource': true
         },
         storageProfile: {
           description: 'Specifies the storage settings for the virtual machine disks.',
@@ -386,18 +386,18 @@ exports.createResources = () => [
                 {
                   properties: {
                     snapshot: {
+                      description: 'The snapshot.',
                       properties: {
                         id: { type: 'string', description: 'Resource Id' }
                       },
-                      'x-ms-azure-resource': true,
-                      description: 'The snapshot.'
+                      'x-ms-azure-resource': true
                     },
                     managedDisk: {
+                      description: 'The managedDisk.',
                       properties: {
                         id: { type: 'string', description: 'Resource Id' }
                       },
-                      'x-ms-azure-resource': true,
-                      description: 'The managedDisk.'
+                      'x-ms-azure-resource': true
                     },
                     blobUri: {
                       type: 'string',
@@ -464,24 +464,24 @@ exports.createResources = () => [
                   {
                     properties: {
                       snapshot: {
+                        description: 'The snapshot.',
                         properties: {
                           id: {
                             type: 'string',
                             description: 'Resource Id'
                           }
                         },
-                        'x-ms-azure-resource': true,
-                        description: 'The snapshot.'
+                        'x-ms-azure-resource': true
                       },
                       managedDisk: {
+                        description: 'The managedDisk.',
                         properties: {
                           id: {
                             type: 'string',
                             description: 'Resource Id'
                           }
                         },
-                        'x-ms-azure-resource': true,
-                        description: 'The managedDisk.'
+                        'x-ms-azure-resource': true
                       },
                       blobUri: {
                         type: 'string',
@@ -550,8 +550,8 @@ exports.createResources = () => [
           description: 'The provisioning state.'
         },
         hyperVGeneration: {
+          description: 'Specifies the HyperVGenerationType of the VirtualMachine created from the image. From API Version 2019-03-01 if the image source is a blob, then we need the user to specify the value, if the source is managed resource like disk or snapshot, we may require the user to specify the property if we cannot deduce it from the source managed resource.',
           type: 'string',
-          description: 'Specifies the HyperVGeneration Type',
           enum: [ 'V1', 'V2' ],
           'x-ms-enum': { name: 'HyperVGenerationTypes', modelAsString: true }
         }

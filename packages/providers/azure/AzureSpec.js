@@ -30,7 +30,7 @@ const {
   isEmpty,
 } = require("rubico/x");
 
-const { compare } = require("@grucloud/core/Common");
+const { compare, deepPick } = require("@grucloud/core/Common");
 
 const AuthorizationSpec = require("./resources/AuthorizationSpec");
 const ContainerServiceSpec = require("./resources/ContainerServiceSpec");
@@ -48,7 +48,8 @@ const WebSpec = require("./resources/WebSpec");
 
 const AzTag = require("./AzTag");
 
-const Schema = require("./AzureSchema.json");
+const Schema = require("./schema/AzureSchema.json");
+
 const AzClient = require("./AzClient");
 const { isSubstituable } = require("./AzureCommon");
 
@@ -171,14 +172,21 @@ const buildDefaultSpec = fork({
   filterLive:
     ({ pickPropertiesCreate = [] }) =>
     () =>
+      //TODO
       pipe([
-        pick(["name", ...pickPropertiesCreate]),
+        tap((params) => {
+          assert(true);
+        }),
+        deepPick(["name", ...pickPropertiesCreate]),
         omit([
           "properties.provisioningState",
           "etag",
           "type",
           "identity.userAssignedIdentities",
         ]),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
   compare: ({
     pickProperties = [],

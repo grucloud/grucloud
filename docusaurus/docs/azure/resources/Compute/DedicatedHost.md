@@ -89,6 +89,8 @@ exports.createResources = () => [
           description: 'The provisioning state, which only appears in the response.'
         },
         instanceView: {
+          readOnly: true,
+          description: 'The dedicated host instance view.',
           properties: {
             assetId: {
               readOnly: true,
@@ -149,9 +151,7 @@ exports.createResources = () => [
               'x-ms-identifiers': [],
               description: 'The resource status information.'
             }
-          },
-          description: 'The instance view of a dedicated host.',
-          readOnly: true
+          }
         },
         timeCreated: {
           readOnly: true,

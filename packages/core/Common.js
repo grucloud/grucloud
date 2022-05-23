@@ -76,6 +76,70 @@ exports.HookType = {
   ON_DEPLOYED: "onDeployed",
   ON_DESTROYED: "onDestroyed",
 };
+const removeKeyBracket = pipe([callProp("replace", "[]", "")]);
+const hasKeyBracket = pipe([includes("[]")]);
+
+const deepPickByPath =
+  ([firstKey, ...remainingKeys]) =>
+  (source) =>
+    pipe([
+      () => source,
+      switchCase([
+        isEmpty,
+        identity,
+        () => hasKeyBracket(firstKey),
+        // Deal with array
+        pipe([
+          get(removeKeyBracket(firstKey)),
+          switchCase([
+            isEmpty,
+            () => ({}),
+            pipe([
+              map(pipe([deepPickByPath(remainingKeys)])),
+              (results) => ({ [removeKeyBracket(firstKey)]: results }),
+            ]),
+          ]),
+        ]),
+        // No array
+        pipe([
+          pick([firstKey]),
+          when(
+            () => !isEmpty(remainingKeys),
+            // has remaining keys
+            pipe([
+              get(firstKey),
+              deepPickByPath(remainingKeys),
+              switchCase([
+                isEmpty,
+                () => ({}),
+                (objNested) => ({ [firstKey]: objNested }),
+              ]),
+              tap((params) => {
+                assert(true);
+              }),
+            ])
+          ),
+        ]),
+      ]),
+    ])();
+
+exports.deepPickByPath = deepPickByPath;
+
+const deepPick = (paths) => (source) =>
+  pipe([
+    () => paths,
+    reduce(
+      (acc, path) =>
+        pipe([
+          () => source,
+          deepPickByPath(pipe([() => path, callProp("split", ".")])()),
+          (obj) => pipe([() => acc, defaultsDeep(obj)])(),
+        ])(),
+      {}
+    ),
+  ])();
+
+exports.deepPick = deepPick;
 
 const omitPathIfEmpty = (path) => (obj) =>
   pipe([() => obj, when(pipe([get(path), isEmpty]), omit([path]))])();
