@@ -41,7 +41,9 @@ const {
   shortName,
 } = require("./AzureCommon");
 
-const listExpectedExceptionMessage = [
+const listExpectedExceptionCodes = [404];
+
+const listExpectedExceptionMessages = [
   "DataTransfer capability is not supported on this account",
   "No valid GraphAPICompute Service found",
   "Mongo Role Defination is not enabled for the account",
@@ -456,13 +458,20 @@ module.exports = AzClient = ({
     pathUpdate,
     pathDelete,
     pathList,
-    listIsExpectedException: pipe([
-      get("response.data.message", ""),
-      (message) =>
-        pipe([
-          () => listExpectedExceptionMessage,
-          any((expectedMessage) => message.includes(expectedMessage)),
-        ])(),
+    listIsExpectedException: or([
+      pipe([
+        get("response.status"),
+        (status) =>
+          pipe([() => listExpectedExceptionCodes, includes(status)])(),
+      ]),
+      pipe([
+        get("response.data.message", ""),
+        (message) =>
+          pipe([
+            () => listExpectedExceptionMessages,
+            any((expectedMessage) => message.includes(expectedMessage)),
+          ])(),
+      ]),
     ]),
     shouldRetryOnExceptionCreate,
     findTargetId,
