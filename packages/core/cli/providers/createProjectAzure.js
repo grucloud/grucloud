@@ -25,10 +25,11 @@ const RolesDefault = [
 ];
 
 const NamespacesDefault = [
-  "Microsoft.Network",
   "Microsoft.Compute",
+  "Microsoft.ContainerService",
   "Microsoft.DocumentDB",
   "Microsoft.DBforPostgreSQL",
+  "Microsoft.Network",
 ];
 
 const { execCommandShell } = require("./createProjectCommon");

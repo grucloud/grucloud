@@ -1127,6 +1127,128 @@ const findTypesByDiscriminator =
       ),
     ])();
 
+const buildPickPropertiesEnum = ({ key, swagger, parentPath, accumulator }) =>
+  pipe([
+    fork({
+      fromBase: pipe([
+        pipe([
+          get("properties"),
+          tap((properties) => {
+            assert(properties);
+          }),
+          buildPickProperties({
+            swagger,
+            parentPath: [...parentPath, key],
+            accumulator,
+          }),
+        ]),
+      ]),
+      fromEnums: pipe([
+        findTypesByDiscriminator({ swagger }),
+        flatMap(
+          pipe([
+            get("properties"),
+            tap((properties) => {
+              assert(properties);
+            }),
+            buildPickProperties({
+              swagger,
+              parentPath: [...parentPath, key],
+              accumulator,
+            }),
+          ])
+        ),
+      ]),
+    }),
+    ({ fromBase, fromEnums }) => [...fromBase, ...fromEnums],
+  ]);
+
+const buildPickPropertiesObject = ({ key, swagger, parentPath, accumulator }) =>
+  pipe([
+    tap((params) => {
+      assert(params);
+    }),
+    fork({
+      fromAllOf: pipe([
+        get("allOf", []),
+        map(
+          pipe([
+            get("properties"),
+            tap((properties) => {
+              assert(properties);
+            }),
+            buildPickProperties({
+              swagger,
+              parentPath: [...parentPath, key],
+              accumulator,
+            }),
+          ])
+        ),
+        tap.if(not(isEmpty), () => {
+          assert(true);
+        }),
+        flatten,
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      fromProperties: pipe([
+        get("properties"),
+        buildPickProperties({
+          swagger,
+          parentPath: [...parentPath, key],
+          accumulator,
+        }),
+      ]),
+      fromAditionalProperties: switchCase([
+        get("additionalProperties"),
+        pipe([
+          get("additionalProperties"),
+          tap((properties) => {
+            assert(true);
+          }),
+          () => [[...parentPath, key]],
+        ]),
+        () => [],
+      ]),
+    }),
+    tap((params) => {
+      assert(true);
+    }),
+    ({ fromAllOf = [], fromProperties = [], fromAditionalProperties = [] }) => [
+      ...fromAllOf,
+      ...fromProperties,
+      ...fromAditionalProperties,
+    ],
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
+const isSwaggerObject = pipe([
+  or([get("properties"), get("allOf"), get("additionalProperties")]),
+]);
+
+const buildPickPropertiesArray = ({ key, swagger, parentPath, accumulator }) =>
+  pipe([
+    get("items"),
+    tap((items) => {
+      assert(items);
+    }),
+    switchCase([
+      isSwaggerObject,
+      // array of objects
+      buildPickPropertiesObject({
+        key: `${key}[]`,
+        swagger,
+        parentPath,
+        accumulator,
+      }),
+      // array of simple types
+      pipe([() => [[...parentPath, key]]]),
+    ]),
+  ]);
+
 const buildPickProperties =
   ({ swagger, parentPath = [], accumulator = [] }) =>
   (properties = {}) =>
@@ -1147,142 +1269,41 @@ const buildPickProperties =
             or([isOmit(key) /*, get("x-ms-mutability")*/]),
             () => undefined,
             // is Array ?
-            pipe([eq(get("type"), "array")]),
-            pipe([
-              get("items.properties"),
-              tap((properties) => {
-                //TODO
-                //assert(properties);
-              }),
-              buildPickProperties({
-                swagger,
-                parentPath: [...parentPath, `${key}[]`],
-                accumulator,
-              }),
-            ]),
-            // is simple type ?
-            pipe([
-              ({ type }) =>
-                pipe([
-                  () => ["string", "integer", "boolean", "double"],
-                  includes(type),
-                ])(),
-            ]),
-            pipe([() => [[...parentPath, key]]]),
+            pipe([get("items")]),
+            buildPickPropertiesArray({ key, swagger, parentPath, accumulator }),
+            // // is simple type ?
+            // pipe([
+            //   ({ type }) =>
+            //     pipe([
+            //       () => ["string", "integer", "boolean", "double", "number"],
+            //       includes(type),
+            //     ])(),
+            // ]),
+            // pipe([() => [[...parentPath, key]]]),
             //discriminator
             pipe([get("discriminator")]),
-            pipe([
-              fork({
-                fromBase: pipe([
-                  pipe([
-                    get("properties"),
-                    tap((properties) => {
-                      assert(properties);
-                    }),
-                    buildPickProperties({
-                      swagger,
-                      parentPath: [...parentPath, key],
-                      accumulator,
-                    }),
-                  ]),
-                ]),
-                fromEnums: pipe([
-                  findTypesByDiscriminator({ swagger }),
-                  flatMap(
-                    pipe([
-                      get("properties"),
-                      tap((properties) => {
-                        assert(properties);
-                      }),
-                      buildPickProperties({
-                        swagger,
-                        parentPath: [...parentPath, key],
-                        accumulator,
-                      }),
-                    ])
-                  ),
-                ]),
-              }),
-              ({ fromBase, fromEnums }) => [...fromBase, ...fromEnums],
-            ]),
-            // is allOf
-            pipe([get("allOf")]),
-            pipe([
-              tap((params) => {
-                assert(params);
-              }),
-              fork({
-                fromAllOf: pipe([
-                  get("allOf"),
-                  map(
-                    pipe([
-                      get("properties"),
-                      tap((properties) => {
-                        assert(properties);
-                      }),
-                      buildPickProperties({
-                        swagger,
-                        parentPath: [...parentPath, key],
-                        accumulator,
-                      }),
-                    ])
-                  ),
-                ]),
-                fromProperties: pipe([
-                  get("properties"),
-                  buildPickProperties({
-                    swagger,
-                    parentPath: [...parentPath, key],
-                    accumulator,
-                  }),
-                ]),
-              }),
-              tap((params) => {
-                assert(true);
-              }),
-              ({ fromAllOf, fromProperties }) => [
-                ...fromAllOf,
-                ...fromProperties,
-              ],
-            ]),
+            buildPickPropertiesEnum({ key, swagger, parentPath, accumulator }),
             // is Object
-            //pipe([eq(get("type"), "object")]),
-            pipe([get("properties")]),
-            pipe([
-              get("properties"),
-              buildPickProperties({
-                swagger,
-                parentPath: [...parentPath, key],
-                accumulator,
-              }),
-            ]),
-            pipe([get("additionalProperties")]),
-            pipe([
-              get("additionalProperties"),
-              tap((properties) => {
-                assert(properties);
-              }),
-              switchCase([
-                get("properties"),
-                pipe([
-                  get("properties"),
-                  buildPickProperties({
-                    swagger,
-                    parentPath: [...parentPath, key],
-                    accumulator,
-                  }),
-                ]),
-                (params) => {
-                  //assert(false);
-                },
-              ]),
-            ]),
-            pipe([
-              tap((params) => {
-                //assert(false, `type is not a string, array or object`);
-              }),
-              () => [],
-            ]),
+            isSwaggerObject,
+            buildPickPropertiesObject({
+              key,
+              swagger,
+              parentPath,
+              accumulator,
+            }),
+            pipe([() => [[...parentPath, key]]]),
+            // pipe([
+            //   tap((params) => {
+            //     console.error(
+            //       `type is not a string, array or object ${JSON.stringify(
+            //         params,
+            //         null,
+            //         4
+            //       )}`
+            //     );
+            //   }),
+            //   () => [],
+            // ]),
           ]),
         ])(),
       ]),

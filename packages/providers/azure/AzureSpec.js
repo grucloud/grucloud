@@ -174,6 +174,9 @@ const buildDefaultSpec = fork({
     () =>
       //TODO
       pipe([
+        tap((params) => {
+          assert(true);
+        }),
         deepPick(["name", ...pickPropertiesCreate]),
         omit([
           "properties.provisioningState",
@@ -181,6 +184,9 @@ const buildDefaultSpec = fork({
           "type",
           "identity.userAssignedIdentities",
         ]),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
   compare: ({
     pickProperties = [],

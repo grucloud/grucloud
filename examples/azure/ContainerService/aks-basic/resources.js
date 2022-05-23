@@ -20,21 +20,21 @@ exports.createResources = () => [
         dnsPrefix: "cluster-dns",
         agentPoolProfiles: [
           {
-            name: "agentpool",
             count: 1,
             vmSize: "Standard_B4ms",
             osDiskSizeGB: 128,
             osDiskType: "Managed",
             kubeletDiskType: "OS",
             maxPods: 110,
-            type: "VirtualMachineScaleSets",
-            enableAutoScaling: false,
-            orchestratorVersion: "1.21.7",
-            enableNodePublicIP: false,
-            mode: "System",
             osType: "Linux",
             osSKU: "Ubuntu",
+            enableAutoScaling: false,
+            type: "VirtualMachineScaleSets",
+            mode: "System",
+            orchestratorVersion: "1.21.7",
+            enableNodePublicIP: false,
             enableFIPS: false,
+            name: "agentpool",
           },
         ],
         addonProfiles: {
@@ -44,6 +44,7 @@ exports.createResources = () => [
           },
           httpApplicationRouting: {
             enabled: false,
+            config: null,
           },
         },
         oidcIssuerProfile: {
@@ -63,16 +64,27 @@ exports.createResources = () => [
               count: 1,
             },
           },
+          podCidrs: ["10.244.0.0/16"],
+          serviceCidrs: ["10.0.0.0/16"],
+          ipFamilies: ["IPv4"],
         },
-        apiServerAccessProfile: {
-          enablePrivateCluster: false,
+        storageProfile: {
+          diskCSIDriver: {
+            enabled: true,
+          },
+          fileCSIDriver: {
+            enabled: true,
+          },
+          snapshotController: {
+            enabled: true,
+          },
         },
         servicePrincipalProfile: {
           clientId: "msi",
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-aks-basic",
     }),
   },

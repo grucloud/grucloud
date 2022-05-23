@@ -12,7 +12,12 @@ const {
   eq,
 } = require("rubico");
 const { defaultsDeep, when, callProp } = require("rubico/x");
-const { compare, omitIfEmpty, shellRun } = require("@grucloud/core/Common");
+const {
+  compare,
+  omitIfEmpty,
+  shellRun,
+  deepPick,
+} = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ContainerService" });
 
@@ -192,12 +197,15 @@ exports.fnSpecs = ({ config }) =>
             tap((params) => {
               assert(pickPropertiesCreate);
             }),
-            pick([
+            deepPick([
               "name",
               ...pickPropertiesCreate,
               "properties.servicePrincipalProfile.clientId",
               "identity.type",
             ]),
+            tap((params) => {
+              assert(true);
+            }),
             assign({
               properties: pipe([
                 get("properties"),
@@ -206,7 +214,7 @@ exports.fnSpecs = ({ config }) =>
                   "nodeResourceGroup",
                   "windowsProfile", // For now no windows need to add the password as env var
                 ]),
-                assignContainerProp,
+                //assignContainerProp,
               ]),
             }),
           ]),

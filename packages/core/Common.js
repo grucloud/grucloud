@@ -91,16 +91,14 @@ const deepPickByPath =
         // Deal with array
         pipe([
           get(removeKeyBracket(firstKey)),
-          tap((values) => {
-            assert(
-              Array.isArray(values),
-              `should be an Array: ${JSON.stringify(
-                values
-              )}, key: ${firstKey}, source: ${JSON.stringify(source, null, 4)}`
-            );
-          }),
-          map(pipe([deepPickByPath(remainingKeys)])),
-          (results) => ({ [removeKeyBracket(firstKey)]: results }),
+          switchCase([
+            isEmpty,
+            () => ({}),
+            pipe([
+              map(pipe([deepPickByPath(remainingKeys)])),
+              (results) => ({ [removeKeyBracket(firstKey)]: results }),
+            ]),
+          ]),
         ]),
         // No array
         pipe([
@@ -127,15 +125,15 @@ const deepPickByPath =
 
 exports.deepPickByPath = deepPickByPath;
 
-const deepPick = (paths) => (obj) =>
+const deepPick = (paths) => (source) =>
   pipe([
     () => paths,
     reduce(
       (acc, path) =>
         pipe([
-          () => obj,
+          () => source,
           deepPickByPath(pipe([() => path, callProp("split", ".")])()),
-          defaultsDeep(acc),
+          (obj) => pipe([() => acc, defaultsDeep(obj)])(),
         ])(),
       {}
     ),

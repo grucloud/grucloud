@@ -16,6 +16,11 @@ describe("Common", function () {
     const result = deepPick(["a[].b"])(obj);
     assert(isDeepEqual(result, expectedResult));
   });
+  it("deepPick obj order", async function () {
+    const obj = { name: "a", prop: "prop" };
+    const result = deepPick(["name", "prop"])(obj);
+    assert(isDeepEqual(result, obj));
+  });
   it("deepPick undefined", async function () {
     const obj = undefined;
     const expectedResult = undefined;
@@ -45,6 +50,16 @@ describe("Common", function () {
     const expectedResult = { a: [{ b: 1 }, { b: 2 }] };
     const result = deepPickByPath(["a[]", "b"])(obj);
     assert(isDeepEqual(result, expectedResult));
+  });
+  it("deepPickByPath  not in object", async function () {
+    const obj = { a: 1 };
+    const result = deepPickByPath(["b"])(obj);
+    assert(isDeepEqual(result, {}));
+  });
+  it("deepPickByPath with array not in object", async function () {
+    const obj = { a: 1 };
+    const result = deepPickByPath(["b[]"])(obj);
+    assert(isDeepEqual(result, {}));
   });
   it("flattenObject", async function () {
     const result = flattenObject({
