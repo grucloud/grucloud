@@ -1,4 +1,4 @@
 node_modules/
-*.env
+default.env
 *.log
 *.pem

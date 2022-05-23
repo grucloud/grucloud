@@ -1,0 +1,23 @@
+@startmindmap
+title Resources for project aws-networking-chad
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ DynamoDB
+++++ Table (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ NatGateway (3)
+++++ Subnet (6)
+++++ RouteTable (4)
+++++ RouteTableAssociation (6)
+++++ Route (7)
+++++ ElasticIpAddress (3)
+++++ VpcEndpoint (1)
++++ S3
+++++ Bucket (2)
+-- aws-secondary
+
+@endmindmap
