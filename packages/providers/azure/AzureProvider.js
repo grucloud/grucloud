@@ -15,6 +15,8 @@ const {
   or,
 } = require("rubico");
 const {
+  size,
+  when,
   uniq,
   pluck,
   callProp,
@@ -52,6 +54,54 @@ const ResourceInclusionList = [
   "RoleAssignment",
   "RoleDefinition", //Authorization
 ];
+
+const filterByResourceGroup = ({ commandOptions }) =>
+  pipe([
+    when(
+      () => commandOptions.resourceGroup,
+      (live) =>
+        pipe([
+          () => commandOptions.resourceGroup,
+          any((rg) =>
+            pipe([
+              () => live.id,
+              callProp("toUpperCase"),
+              includes(`RESOURCEGROUPS/${rg.toUpperCase()}`),
+            ])()
+          ),
+        ])()
+    ),
+  ]);
+
+const getListHof = ({ getList, spec }) =>
+  tryCatch(
+    (liveParam) =>
+      pipe([
+        tap((param) => {
+          logger.debug(`getList ${spec.groupType}`);
+        }),
+        () => liveParam,
+        getList,
+        tap((items) => {
+          Array.isArray(items);
+        }),
+        filter(filterByResourceGroup({ commandOptions: liveParam.options })),
+        filter(not(isEmpty)),
+        (items) => ({ items, total: size(items) }),
+        tap(({ total, items }) => {
+          logger.debug(`getList ${spec.groupType} total: ${total}`);
+        }),
+      ])(),
+    (error) =>
+      pipe([
+        tap((params) => {
+          logger.error(`getList #${spec.groupType}, ${error}`);
+        }),
+        () => {
+          throw error;
+        },
+      ])()
+  );
 
 exports.AzureProvider = ({
   name = "azure",
@@ -238,6 +288,7 @@ exports.AzureProvider = ({
           commandOptions,
           programOptions,
         }),
+      getListHof,
     }),
   };
 };

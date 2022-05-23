@@ -20,16 +20,18 @@ The **list** commands lists the live resources.
 
 ## Command Options
 
-```
+```sh
 gc help list
 ```
 
-```
+```txt
 Usage: gc list|l [options]
 
 List the live resources
 
 Options:
+  -j, --json <file>            write inventory to a file in json format (default:
+                               "artifacts/inventory.json")
   -g, --graph                  create an SVG representation of the live infrastructure
   -a, --all                    List also read-only resources
   -n, --name <value>           List by name
@@ -37,9 +39,16 @@ Options:
   -o, --our                    List only our managed resources
   --default-exclude            Exclude the default resources, i.e VPC and Subnet
   -e, --types-exclude <value>  Exclude by type, multiple values allowed
-  -d, --canBeDeleted           display resources which can be deleted, a.k.a non default resources
+  -d, --canBeDeleted           display resources which can be deleted, a.k.a non default
+                               resources
   -p, --provider <value>       Filter by provider, multiple values allowed
+  --resource-group <value>     Azure only: Filter by resource groups, multiple values
+                               allowed
   -t, --types <value>          Include by type, multiple values allowed
+  --group <value>              Include by group, multiple values allowed
+  --dot-file <dotFile>         output 'dot' file name for the live diagram (default:
+                               "artifacts/diagram-live.dot")
+  --title <value>              diagram title (default: "aks-basic")
   -h, --help                   display help for command
 ```
 
@@ -127,4 +136,12 @@ The **provider** option only lists resources for a given provider
 
 ```
 gc list --provider=aws
+```
+
+### resource-group
+
+The **resource-group** option filters based on the resource group. Azure only.
+
+```sh
+gc list --resource-group=my-rg
 ```

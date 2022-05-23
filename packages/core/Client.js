@@ -335,6 +335,7 @@ const createClient = ({
               pipe([
                 () =>
                   client.getList({
+                    options,
                     lives,
                     deep: true,
                     // resources: provider.getResourcesByType(client.spec),
