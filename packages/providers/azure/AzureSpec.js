@@ -15,9 +15,11 @@ const {
   reduce,
   fork,
   switchCase,
+  any,
 } = require("rubico");
 
 const {
+  includes,
   unless,
   when,
   defaultsDeep,
@@ -110,7 +112,10 @@ const buildDefaultSpec = fork({
                       assert(depName);
                     }),
                     when(
-                      () => value === "{resourceGroupName}",
+                      pipe([
+                        () => ["resourceGroup", "networkSecurityGroup"],
+                        any((type) => pipe([() => value, includes(type)])()),
+                      ]),
                       callProp("toLowerCase")
                     ),
                     (depName) => [...acc, depName],
@@ -179,7 +184,7 @@ const buildDefaultSpec = fork({
         tap((params) => {
           assert(true);
         }),
-        deepPick(["name", ...pickPropertiesCreate]),
+        deepPick(["name", "kind", ...pickPropertiesCreate]),
         omit([
           "properties.provisioningState",
           "etag",
@@ -191,24 +196,24 @@ const buildDefaultSpec = fork({
         }),
       ]),
   compare: ({
-    pickProperties = [],
+    pickPropertiesCreate = [],
     omitProperties = [],
     propertiesDefault = {},
   }) =>
     compare({
-      filterTarget: () =>
+      filterTarget: (input) =>
         pipe([
           tap((params) => {
-            assert(true);
+            assert(input);
           }),
         ]),
       filterAll: () =>
         pipe([
           tap((params) => {
-            assert(pickProperties);
+            assert(pickPropertiesCreate);
             assert(propertiesDefault);
           }),
-          pick(pickProperties),
+          pick(pickPropertiesCreate),
           defaultsDeep(propertiesDefault),
           omit(omitProperties),
           omit([
@@ -219,6 +224,9 @@ const buildDefaultSpec = fork({
             "etag",
             "identity", //TODO
           ]),
+          tap((params) => {
+            assert(true);
+          }),
         ]),
     }),
   isOurMinion: () => AzTag.isOurMinion,

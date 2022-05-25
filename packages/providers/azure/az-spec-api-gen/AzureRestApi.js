@@ -71,6 +71,10 @@ const PreDefinedDependenciesMap = {
     type: "Key",
     group: "KeyVault",
   },
+  serverFarmId: {
+    type: "AppServicePlan",
+    group: "Web",
+  },
 };
 
 const OpertionIdReplaceMap = {
@@ -886,7 +890,7 @@ const findDependenciesFromResources = ({
     ),
   ])();
 
-const findPreDefinedDependencies = ({ depId }) =>
+const findPreDefinedDependencies = ({ depId, pathId }) =>
   pipe([
     tap(() => {
       assert(depId);
@@ -895,6 +899,7 @@ const findPreDefinedDependencies = ({ depId }) =>
     tap((params) => {
       assert(true);
     }),
+    unless(isEmpty, defaultsDeep({ pathId })),
   ])();
 
 const addDependencyFromBody = ({ resources, type, group, method }) =>
@@ -923,7 +928,7 @@ const addDependencyFromBody = ({ resources, type, group, method }) =>
         }),
         map(({ depId, pathId }) =>
           pipe([
-            () => findPreDefinedDependencies({ depId }),
+            () => findPreDefinedDependencies({ depId, pathId }),
             tap((params) => {
               assert(true);
             }),

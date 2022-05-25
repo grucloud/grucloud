@@ -7,7 +7,7 @@ Provides a **WebApp** from the **Web** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
-- [ServerFarm](../Web/ServerFarm.md)
+- [AppServicePlan](../Web/AppServicePlan.md)
 - [HostingEnvironment](../Web/HostingEnvironment.md)
 - [Subnet](../Network/Subnet.md)
 ## Swagger Schema

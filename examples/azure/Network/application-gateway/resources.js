@@ -13,7 +13,7 @@ exports.createResources = () => [
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDJIm/qoOB61JXbMH7c9jcaVdBJ\r\nQ8NwwIyWfOIklNQG80JFQKQlc/pO1wS30+WlNhjLFXCokZdrJmDzry68BAz92lJ4\r\nTQHRZoZmzsjs40bIQ1xTw72w+LT/eMj2YJIMvKcokIOY/ZziKYwEhGjJCv7Gg2Da\r\nyHN8mbxMs6IL35Q80lJJBrc91AZ/ZplZFu07GySY78+JuNFI+WqO5ltNHduf+u1u\r\nrHrT7NbwDAhTsV7PaP9/q9u8iWJyglH8QfTyNMjciMxTHxjgDFV9xPfsyaMaB8tf\r\nkcSNx9rAmtH62D3FWup8gvGs4PHUoSIihvogtEWyLquQqP4CJUUcLjE7xSIDdZ5R\r\nuqo5Xf1nfBQXdB7atwT8rSEm9CdpSlcWbJ4yzeki9IUMR8iPnHB27lxuBlyHiYPL\r\n8vSXe1ofbl7J0NErjjoyDn1x75hDZGHX9VLh1BMz03DkJ5+zKRtwWYHozQvi7AA8\r\nIRDzslT6+u/ZwpkfbPlwyh8pQFBOTn2l3SlupLk= generated-by-azure\r\n",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-ag",
     }),
   },
@@ -49,6 +49,7 @@ exports.createResources = () => [
                 ],
               },
               provisionVMAgent: true,
+              enableVMAgentPlatformUpdates: false,
             },
             allowExtensionOperations: true,
             adminPassword: process.env.RG_AG_VMSS_ADMIN_PASSWORD,
@@ -129,11 +130,11 @@ exports.createResources = () => [
         platformFaultDomainCount: 1,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-ag",
-      subnets: ["rg-ag::vnet::default"],
       sshPublicKeys: ["rg-ag::admingrucloud"],
       networkSecurityGroups: ["rg-ag::basicnsgvnet-nic01"],
+      subnets: ["rg-ag::vnet::default"],
       applicationGateways: ["rg-ag::ag"],
     }),
   },
@@ -242,7 +243,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-ag",
       subnets: ["rg-ag::vnet::subnet-ag"],
       publicIpAddresses: ["rg-ag::ip"],
@@ -257,7 +258,7 @@ exports.createResources = () => [
         securityRules: [],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-ag",
     }),
   },
@@ -273,7 +274,7 @@ exports.createResources = () => [
         publicIPAllocationMethod: "Static",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-ag",
     }),
   },
@@ -286,7 +287,7 @@ exports.createResources = () => [
         addressPrefix: "10.0.0.0/24",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-ag",
       virtualNetwork: "rg-ag::vnet",
     }),
@@ -300,7 +301,7 @@ exports.createResources = () => [
         addressPrefix: "10.0.1.0/24",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-ag",
       virtualNetwork: "rg-ag::vnet",
     }),
@@ -316,7 +317,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-ag",
     }),
   },

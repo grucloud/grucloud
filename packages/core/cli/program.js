@@ -8,6 +8,7 @@ const pkg = require("../package.json");
 const { Cli } = require("./cliCommands");
 const { createInfra } = require("./infra");
 const YAML = require("./json2yaml");
+const util = require("util");
 
 const { createProject } = require("./createProject");
 
@@ -60,7 +61,7 @@ const optionDotFileLive = [
 
 const handleError = (error) => {
   if (!error.error?.displayed) {
-    console.error(YAML.stringify(error));
+    console.error(YAML.stringify(util.inspect(error, { depth: 8 })));
   }
   throw error;
 };

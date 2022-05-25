@@ -24,6 +24,7 @@ const {
   when,
   last,
   values,
+  includes,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildGetId } = require("@grucloud/core/Common");
@@ -162,8 +163,12 @@ exports.findDependenciesUserAssignedIdentity = ({ live, lives, config }) =>
 const isInstanceUp = switchCase([
   get("properties.provisioningState"),
   eq(get("properties.provisioningState"), "Succeeded"),
+  // for DBforPostgreSQL::Server,
   get("properties.state"),
-  eq(get("properties.state"), "Ready"), // for DBforPostgreSQL::Server
+  pipe([
+    get("properties.state"),
+    (state) => pipe([() => ["Ready", "Running"], includes(state)])(),
+  ]),
   get("id"), // Last resort
 ]);
 

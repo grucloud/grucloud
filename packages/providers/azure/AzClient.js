@@ -13,8 +13,7 @@ const {
   and,
   always,
   any,
-  assign,
-  omit,
+  fork,
 } = require("rubico");
 const {
   callProp,
@@ -42,6 +41,7 @@ const {
   createAxiosAzure,
   shortName,
 } = require("./AzureCommon");
+const logger = require("@grucloud/core/logger")({ prefix: "AzClient" });
 
 const listExpectedExceptionCodes = [404];
 
@@ -50,11 +50,28 @@ const listExpectedExceptionMessages = [
   "No valid GraphAPICompute Service found",
   "Mongo Role Defination is not enabled for the account",
   "Mongo User Defination is not enabled for the account",
+  "This runtime stack is not yet supported on Linux", // Web::WebAppProcess
 ];
 
 const shouldRetryOnExceptionCreate = pipe([
-  get("error.response.status"),
-  (status) => pipe([() => [429], includes(status)])(),
+  fork({
+    status: get("error.response.status"),
+    code: get("error.response.data.error.code"),
+  }),
+  tap(({ status, code }) => {
+    logger.error(
+      `shouldRetryOnExceptionCreate status: ${status}, code: ${code}`
+    );
+  }),
+  or([
+    and([eq(get("status"), 503), eq(get("code"), "ServerTimeout")]),
+    and([eq(get("status"), 429), eq(get("code"), "RetryableError")]),
+    and([eq(get("status"), 409), eq(get("code"), "Conflict")]),
+    and([
+      eq(get("status"), 409),
+      eq(get("code"), "AnotherOperationInProgress"),
+    ]),
+  ]),
 ]);
 
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
@@ -239,9 +256,24 @@ module.exports = AzClient = ({
         () => dependencies,
         map.entries(([varName, resource]) => [varName, { varName, resource }]),
         values,
-        find(eq(pipe([({ varName }) => `{${varName}Name}`]), paramName)),
+        tap((params) => {
+          assert(true);
+        }),
+        find(
+          or([
+            eq(pipe([({ varName }) => `{${varName}Name}`]), paramName),
+            eq(pipe([({ varName }) => `{${varName}}`]), paramName),
+          ])
+        ),
         tap((resource) => {
-          assert(resource);
+          assert(
+            resource,
+            `no resource for ${paramName} in dependencies ${JSON.stringify(
+              dependencies,
+              null,
+              4
+            )}`
+          );
         }),
         get("resource.name"),
         tap((name) => {
@@ -478,6 +510,16 @@ module.exports = AzClient = ({
           pipe([
             () => listExpectedExceptionMessages,
             any((expectedMessage) => message.includes(expectedMessage)),
+          ])(),
+      ]),
+      pipe([
+        get("response.data", ""),
+        (message) =>
+          pipe([
+            () => listExpectedExceptionMessages,
+            any((expectedMessage) =>
+              pipe([() => message, includes(expectedMessage)])()
+            ),
           ])(),
       ]),
     ]),

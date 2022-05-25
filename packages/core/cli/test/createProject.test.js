@@ -41,7 +41,7 @@ describe("createProject", function () {
         "azure-project-test",
         process.env.AZURE_SUBSCRIPTION_ID,
         "sp-test",
-        "canadacentral",
+        "uksouth",
       ],
     });
   });

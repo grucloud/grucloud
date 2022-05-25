@@ -105,6 +105,9 @@ const filterVirtualMachineProperties =
         "diagnosticsProfile",
         "networkProfile",
       ]),
+      tap((params) => {
+        assert(true);
+      }),
       omit([
         "osProfile.requireGuestProvisionSignal",
         "storageProfile.imageReference.exactVersion",
@@ -802,7 +805,10 @@ exports.fnSpecs = ({ config }) =>
               ]),
             }),
           ]),
-        omitProperties: ["properties.osProfile.adminPassword"],
+        omitProperties: [
+          "properties.osProfile.adminPassword",
+          "properties.osProfile.requireGuestProvisionSignal",
+        ],
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           findDependenciesUserAssignedIdentity({ live }),

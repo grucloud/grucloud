@@ -6,7 +6,7 @@ Provides a **WebAppDomainOwnershipIdentifier** from the **Web** group
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Site](../Web/Site.md)
+- [WebApp](../Web/WebApp.md)
 ## Swagger Schema
 ```js
 {

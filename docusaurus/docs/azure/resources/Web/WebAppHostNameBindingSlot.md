@@ -7,8 +7,8 @@ Provides a **WebAppHostNameBindingSlot** from the **Web** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Domain](../DomainRegistration/Domain.md)
-- [Site](../Web/Site.md)
-- [SiteSlot](../Web/SiteSlot.md)
+- [WebApp](../Web/WebApp.md)
+- [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
 ```js
 {

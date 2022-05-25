@@ -69,7 +69,7 @@ exports.createResources = () => [
     group: "Storage",
     properties: ({}) => ({
       name: "gcstorageweb",
-      location: "canadacentral",
+      location: "uksouth",
       properties: {
         supportsHttpsTrafficOnly: true,
         allowBlobPublicAccess: true,

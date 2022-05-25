@@ -6,7 +6,7 @@ const createResources = ({ provider }) => {
   provider.KeyVault.makeVault({
     name: "rg-vault-ap::gcvaultaccesspolicy",
     properties: ({ config }) => ({
-      location: "canadacentral",
+      location: "uksouth",
       properties: {
         sku: {
           family: "A",

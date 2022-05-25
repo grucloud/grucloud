@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "DatabaseAccount",
     group: "DocumentDB",
-    properties: ({}) => ({
-      name: "grucloud",
+    properties: ({ config }) => ({
+      name: `myorg-${config.stage}-grucloud`,
       identity: {
         type: "None",
       },
@@ -55,8 +55,8 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: ({}) => ({
-      resourceGroup: "rg-cosmosdb",
+    dependencies: ({ config }) => ({
+      resourceGroup: `myorg-${config.stage}-rg-cosmosdb`,
     }),
   },
   {
@@ -93,10 +93,10 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: ({}) => ({
-      resourceGroup: "rg-cosmosdb",
-      account: "rg-cosmosdb::grucloud",
-      database: "rg-cosmosdb::grucloud::ToDoList",
+    dependencies: ({ config }) => ({
+      resourceGroup: `myorg-${config.stage}-rg-cosmosdb`,
+      account: `myorg-${config.stage}-rg-cosmosdb::myorg-${config.stage}-grucloud`,
+      database: `myorg-${config.stage}-rg-cosmosdb::myorg-${config.stage}-grucloud::ToDoList`,
     }),
   },
   {
@@ -110,16 +110,16 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: ({}) => ({
-      resourceGroup: "rg-cosmosdb",
-      account: "rg-cosmosdb::grucloud",
+    dependencies: ({ config }) => ({
+      resourceGroup: `myorg-${config.stage}-rg-cosmosdb`,
+      account: `myorg-${config.stage}-rg-cosmosdb::myorg-${config.stage}-grucloud`,
     }),
   },
   {
     type: "ResourceGroup",
     group: "Resources",
-    properties: ({}) => ({
-      name: "rg-cosmosdb",
+    properties: ({ config }) => ({
+      name: `myorg-${config.stage}-rg-cosmosdb`,
     }),
   },
 ];

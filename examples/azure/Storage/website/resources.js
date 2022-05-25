@@ -73,7 +73,7 @@ exports.createResources = () => [
         name: "Standard_RAGRS",
       },
       kind: "StorageV2",
-      location: "canadacentral",
+      location: "uksouth",
       properties: {
         encryption: {
           services: {

@@ -7,8 +7,8 @@ Provides a **WebAppSwiftVirtualNetworkConnectionSlot** from the **Web** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Subnet](../Network/Subnet.md)
-- [Site](../Web/Site.md)
-- [SiteSlot](../Web/SiteSlot.md)
+- [WebApp](../Web/WebApp.md)
+- [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
 ```js
 {

@@ -23,6 +23,7 @@
   "dependencies": {
     "@grucloud/core": "^7.2.2",
     "@grucloud/provider-azure": "^7.2.2",
+    "axios": "^0.27.2",
     "rubico": "^1.8.3"
   },
   "devDependencies": {

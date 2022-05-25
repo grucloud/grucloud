@@ -55,8 +55,8 @@ exports.ResourcesExcludes = [
   "Network::VirtualWAN", // Renamed to VirtualWan
   "OperationalInsights::DataCollectorLog", //404
   "OperationalInsights::DataSource", // Must specify a valid kind filter. For example, $filter=kind eq 'windowsPerformanceCounter'.
-  "OperationalInsights::Table", // No registered resource provider found for location 'canadacentral' and API version '2021-06-01'
-  "PrivateEndpointConnection::DBforPostgreSQL", // No registered resource provider found for location 'centralus' and API version '2018-06-01' for type 'flexibleServers'. The supported api-versions are '2020-02-14-privatepreview, 2021-04-10-privatepreview, 2020-02-14-preview, 2020-11-05-preview, 2021-05-01-privatepreview, 2021-06-01-preview, 2021-06-01'. The supported locations are 'australiaeast, australiasoutheast, brazilsouth, canadacentral, centralindia, centralus, eastasia, eastus, eastus2, francecentral, germanywestcentral, koreacentral, japaneast, japanwest, northcentralus, northeurope, norwayeast, southafricanorth, southcentralus, southeastasia, switzerlandnorth, swedencentral, uaenorth, canadacentral, ukwest, westcentralus, westus, westus2, westus3, westeurope'.
+  "OperationalInsights::Table", // No registered resource provider found for location 'uksouth' and API version '2021-06-01'
+  "PrivateEndpointConnection::DBforPostgreSQL", // No registered resource provider found for location 'centralus' and API version '2018-06-01' for type 'flexibleServers'. The supported api-versions are '2020-02-14-privatepreview, 2021-04-10-privatepreview, 2020-02-14-preview, 2020-11-05-preview, 2021-05-01-privatepreview, 2021-06-01-preview, 2021-06-01'. The supported locations are 'australiaeast, australiasoutheast, brazilsouth, uksouth, centralindia, centralus, eastasia, eastus, eastus2, francecentral, germanywestcentral, koreacentral, japaneast, japanwest, northcentralus, northeurope, norwayeast, southafricanorth, southcentralus, southeastasia, switzerlandnorth, swedencentral, uaenorth, uksouth, ukwest, westcentralus, westus, westus2, westus3, westeurope'.
   "Storage::BlobInventoryPolicy", //TODO 404 on list
   "KeyVault::PrivateEndpointConnection", // TODO 404
   "Web::CertificateCsr",
@@ -70,5 +70,32 @@ exports.ResourcesExcludes = [
   "Web::ManagedHostingEnvironment",
   "Web::ProviderPublishingUser",
   "Web::ProviderSourceControl",
+  "Web::Site",
+  "Web::SiteBackupStatus",
+  "Web::SiteBackupStatusSlot",
+  "Web::SiteConfig",
+  "Web::SiteConfigSlot",
+  "Web::SiteDeployment",
+  "Web::SiteDeploymentSlot",
+  "Web::SiteHostNameBinding",
+  "Web::SiteHostNameBindingSlot",
+  "Web::SiteInstanceDeployment",
+  "Web::SiteInstanceDeploymentSlot",
+  "Web::SiteLogsConfig",
+  "Web::SiteLogsConfigSlot",
+  "Web::SitePremierAddOn",
+  "Web::SitePremierAddOnSlot",
+  "Web::SiteRelayServiceConnection",
+  "Web::SiteRelayServiceConnectionSlot",
+  "Web::SiteSlot",
+  "Web::SiteSlotConfigNames",
+  "Web::SiteSourceControl",
+  "Web::SiteSourceControlSlot",
+  "Web::SiteVNETConnection",
+  "Web::SiteVNETConnectionSlot",
+  "Web::ServerFarm",
+  //TODO remove ?
+  //"Web::ServerFarmRouteForVnet",
   "Web::WebAppOneDeployStatus",
+  "Web::WebAppProcess",
 ];

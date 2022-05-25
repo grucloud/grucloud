@@ -7,7 +7,7 @@ Provides a **WebAppHostNameBinding** from the **Web** group
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Domain](../DomainRegistration/Domain.md)
-- [Site](../Web/Site.md)
+- [WebApp](../Web/WebApp.md)
 ## Swagger Schema
 ```js
 {

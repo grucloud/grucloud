@@ -43,6 +43,9 @@ const assignApplicationGatewayDependencyId = ({ config }) =>
   });
 
 const applicationGatewayOmitIfEmpty = omitIfEmpty([
+  "backendSettingsCollection",
+  "listeners",
+  "routingRules",
   "sslCertificates",
   "trustedRootCertificates",
   "trustedClientCertificates",

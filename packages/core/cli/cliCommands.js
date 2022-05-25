@@ -5,6 +5,7 @@ const colors = require("colors/safe");
 const fs = require("fs").promises;
 const path = require("path");
 const shell = require("shelljs");
+const util = require("util");
 
 const {
   map,
@@ -252,6 +253,7 @@ const displayErrorResults = ({ results = [], name }) => {
   }
 };
 
+//TODO
 const displayListError = (input) =>
   pipe([
     () => input,
@@ -293,7 +295,7 @@ const displayError = ({ name, error }) => {
 
   if (!results) {
     const convertedError = convertError({ error });
-    console.log(YAML.stringify(convertedError));
+    console.log(YAML.stringify(util.inspect(convertedError, { depth: 5 })));
   }
 };
 
@@ -1445,7 +1447,7 @@ const information = ({
           programOptions,
         }),
       tap((info) => {
-        console.log(YAML.stringify(info.results));
+        console.log(YAML.stringify(util.inspect(info.results, { depth: 8 })));
       }),
     ]),
     DisplayAndThrow({ name: "info" })

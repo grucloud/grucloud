@@ -18,7 +18,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       hostingEnvironment: "myHostingEnvironment",
-      serverFarm: "myServerFarm",
+      appServicePlan: "myAppServicePlan",
     }),
   },
 ];
@@ -27,7 +27,7 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [HostingEnvironment](../Web/HostingEnvironment.md)
-- [ServerFarm](../Web/ServerFarm.md)
+- [AppServicePlan](../Web/AppServicePlan.md)
 ## Swagger Schema
 ```js
 {
