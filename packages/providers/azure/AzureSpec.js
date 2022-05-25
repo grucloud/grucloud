@@ -213,7 +213,7 @@ const buildDefaultSpec = fork({
             assert(pickPropertiesCreate);
             assert(propertiesDefault);
           }),
-          pick(pickPropertiesCreate),
+          deepPick(pickPropertiesCreate),
           defaultsDeep(propertiesDefault),
           omit(omitProperties),
           omit([

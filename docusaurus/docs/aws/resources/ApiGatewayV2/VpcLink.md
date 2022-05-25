@@ -29,7 +29,7 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [Subnet](./EC2/Subnet.md)
+- [Subnet](../EC2/Subnet.md)
 - [Security Group](../EC2/SecurityGroup.md)
 
 ## Full Examples

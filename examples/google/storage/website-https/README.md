@@ -20,8 +20,8 @@ This deployment is composed of the resources depicted in the following diagram:
 
 Below are the links to the resource documentation:
 
-- [Object](https://www.grucloud.com/docs/google/resources/storage/GcpObject)
-- [Bucket](https://www.grucloud.com/docs/google/resources/storage/GcpBucket)
+- [Object](https://www.grucloud.com/docs/google/resources/Storage/GcpObject)
+- [Bucket](https://www.grucloud.com/docs/google/resources/Storage/GcpBucket)
 - [Backend Bucket](https://www.grucloud.com/docs/google/resources/Compute/BackendBucket)
 - [Global Forwarding Rule](https://www.grucloud.com/docs/google/resources/Compute/GlobalForwardingRule)
 - [Https Target Proxy](https://www.grucloud.com/docs/google/resources/Compute/HttpsTargetProxy)

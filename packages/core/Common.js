@@ -534,7 +534,7 @@ const assignHasDiff = pipe([
     hasDiff: or([get("hasTagsDiff"), get("hasDataDiff")]),
   }),
 ]);
-exports.assignHasDiff;
+exports.assignHasDiff = assignHasDiff;
 
 exports.compare = ({
   filterAll = () => identity,

@@ -292,6 +292,7 @@ exports.ResourceMaker = ({
           // DO we still need omitProperties, pick pickProperties and propertiesDefault ? let's provider spec instead
           omitProperties: spec.omitProperties,
           pickProperties: spec.pickProperties,
+          pickPropertiesCreate: spec.pickPropertiesCreate,
           propertiesDefault: spec.propertiesDefault,
           target,
           live,

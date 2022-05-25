@@ -976,6 +976,10 @@ exports.fnSpecs = ({ config }) => {
           "properties.enableAcceleratedNetworking",
           "properties.enableIPForwarding",
         ],
+        pickPropertiesCreate: [
+          "properties.enableAcceleratedNetworking",
+          "properties.enableIPForwarding",
+        ],
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {

@@ -1,21 +1,20 @@
 const assert = require("assert");
 const path = require("path");
-const fs = require("fs").promises;
 
-const { pipe, tap, get, eq, map, tryCatch } = require("rubico");
+const { pipe, tap, get, eq, tryCatch } = require("rubico");
 const { find } = require("rubico/x");
+const SwaggerParser = require("@apidevtools/swagger-parser");
 
 const { SpecGroupDirs } = require("../../AzureSpecDirs");
 
-const specDir = "node_modules/azure-rest-api-specs/specification/";
 const {
   processSwaggerFiles,
   processSwagger,
   buildDependenciesFromBody,
-
   buildPickProperties,
 } = require("../AzureRestApi");
-const SwaggerParser = require("@apidevtools/swagger-parser");
+
+const specDir = "node_modules/azure-rest-api-specs/specification/";
 
 describe("AzureRestApi", function () {
   before(async function () {});
