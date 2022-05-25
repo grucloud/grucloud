@@ -132,26 +132,4 @@ exports.createResources = () => [
       },
     }),
   },
-  {
-    type: "Object",
-    group: "S3",
-    name: "file-test",
-    properties: ({}) => ({
-      ContentType: "text/plain",
-      source: "s3/grucloud-test-basic.txt/file-test",
-      Tags: [
-        {
-          Key: "Key1",
-          Value: "Value1",
-        },
-        {
-          Key: "Key2",
-          Value: "Value2",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      bucket: "grucloud-test-basic.txt",
-    }),
-  },
 ];

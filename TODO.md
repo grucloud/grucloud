@@ -4,6 +4,7 @@
 
 ## Aws
 
+- add isInstanceError for aws create, for instance in transit gateway
 - SecretsManagerResourcePolicy
 
 sort Service in:
