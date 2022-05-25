@@ -22,8 +22,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      name: "mySite",
-      slot: "mySiteSlot",
+      name: "myWebApp",
+      slot: "myWebAppSlot",
     }),
   },
 ];
@@ -31,8 +31,8 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Site](../Web/Site.md)
-- [SiteSlot](../Web/SiteSlot.md)
+- [WebApp](../Web/WebApp.md)
+- [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
 ```js
 {

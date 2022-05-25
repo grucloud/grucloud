@@ -183,7 +183,10 @@ exports.fnSpecs = ({ config }) =>
                     "addonProfiles.azureKeyvaultSecretsProvider.identity",
                     "diskEncryptionSetID",
                   ]),
-                  omitIfEmpty(["addonProfiles.httpApplicationRouting.config"]),
+                  omitIfEmpty([
+                    "addonProfiles.httpApplicationRouting.config",
+                    "securityProfile",
+                  ]),
                   assignContainerProp,
                 ]),
               }),

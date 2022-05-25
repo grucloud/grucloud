@@ -202,7 +202,6 @@ exports.createResources = () => [
             },
           },
         ],
-        backendSettingsCollection: [],
         httpListeners: [
           {
             name: "listener",
@@ -219,7 +218,6 @@ exports.createResources = () => [
             },
           },
         ],
-        listeners: [],
         requestRoutingRules: [
           {
             name: "rule",
@@ -238,7 +236,6 @@ exports.createResources = () => [
             },
           },
         ],
-        routingRules: [],
         enableHttp2: false,
         autoscaleConfiguration: {
           minCapacity: 0,

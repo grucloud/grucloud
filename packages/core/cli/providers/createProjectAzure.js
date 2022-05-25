@@ -30,6 +30,7 @@ const NamespacesDefault = [
   "Microsoft.DocumentDB",
   "Microsoft.DBforPostgreSQL",
   "Microsoft.Network",
+  "Microsoft.Storage",
 ];
 
 const { execCommandShell } = require("./createProjectCommon");

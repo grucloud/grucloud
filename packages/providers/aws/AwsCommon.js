@@ -47,6 +47,7 @@ const { retryCall } = require("@grucloud/core/Retry");
 const {
   configProviderDefault,
   compare,
+  assignHasDiff,
   replaceWithName,
 } = require("@grucloud/core/Common");
 
@@ -189,21 +190,7 @@ exports.compareAws =
       tap((params) => {
         assert(true);
       }),
-      assign({
-        hasTagsDiff: gte(pipe([get("tags.diffTags"), size]), 2),
-        hasDataDiff: and([
-          gte(pipe([get("jsonDiff"), size]), 2),
-          or([
-            pipe([get("liveDiff.needUpdate")]),
-            pipe([get("liveDiff.added"), not(isEmpty)]),
-            pipe([get("liveDiff.updated"), not(isEmpty)]),
-            pipe([get("liveDiff.deleted"), not(isEmpty)]),
-          ]),
-        ]),
-      }),
-      assign({
-        hasDiff: or([get("hasTagsDiff"), get("hasDataDiff")]),
-      }),
+      assignHasDiff,
       tap((params) => {
         assert(true);
       }),

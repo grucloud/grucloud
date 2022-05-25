@@ -1,16 +1,44 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, pick, map, assign, omit, any } = require("rubico");
-const { defaultsDeep, find } = require("rubico/x");
-const { getField } = require("@grucloud/core/ProviderCommon");
+const { pipe, eq, get, tap, pick, map, assign, omit } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
 const { compare } = require("@grucloud/core/Common");
 
-const { findDependenciesResourceGroup, buildTags } = require("../AzureCommon");
-
-exports.fnSpecs = ({ config }) => {
-  const { providerName, location } = config;
-
-  return pipe([
+exports.fnSpecs = ({ config }) =>
+  pipe([
     () => [
+      {
+        type: "WebAppHostNameBinding",
+        ignoreResource: () => () => true,
+        cannotBeDeleted: () => true,
+      },
+      {
+        type: "AppServicePlan",
+        compare: compare({
+          filterAll: ({ pickProperties }) =>
+            pipe([
+              pick(pickProperties),
+              omit(["properties.reserved"]),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
+        }),
+        filterLive: ({ pickPropertiesCreate }) =>
+          pipe([
+            assign({
+              //reserved is not returned correctly so set it manually for linux.
+              properties: pipe([
+                get("properties"),
+                when(
+                  eq(get("kind"), "linux"),
+                  assign({ reserved: () => true })
+                ),
+              ]),
+            }),
+            pick(["name", "kind", ...pickPropertiesCreate]),
+          ]),
+      },
+
       // {
       //   // https://docs.microsoft.com/en-us/rest/api/appservice/kube-environments
       //   type: "KubeEnvironment",
@@ -225,4 +253,3 @@ exports.fnSpecs = ({ config }) => {
     ],
     map(defaultsDeep({ group: "Web" })),
   ])();
-};

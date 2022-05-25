@@ -3,5 +3,9 @@ title Resources for project grucloud-example-azure-app-service
 skinparam monochrome true
 + Infra
 ++ azure
-
++++ Resources
+++++ ResourceGroup (1)
++++ Web
+++++ AppServicePlan (1)
+++++ WebApp (1)
 @endmindmap

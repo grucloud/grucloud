@@ -29,7 +29,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      scopeResourceGroup: "mc_rg-aks-basic_cluster_canadacentral",
+      scopeResourceGroup: "mc_rg-aks-basic_cluster_uksouth",
       principalManagedCluster: "rg-aks-basic::cluster",
     }),
   },

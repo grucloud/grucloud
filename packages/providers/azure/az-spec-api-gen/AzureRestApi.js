@@ -52,6 +52,7 @@ const SwaggerParser = require("@apidevtools/swagger-parser");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { isSubstituable } = require("../AzureCommon");
 const { writeDoc } = require("./AzureDoc");
+const { ResourcesExcludes } = require("../AzureResourcesExcludes");
 
 const PreDefinedDependenciesMap = {
   virtualNetworkSubnetResourceId: {
@@ -70,64 +71,12 @@ const PreDefinedDependenciesMap = {
     type: "Key",
     group: "KeyVault",
   },
+  serverFarmId: {
+    type: "AppServicePlan",
+    group: "Web",
+  },
 };
 
-const ResourcesExcludes = [
-  "App::ContainerAppsAuthConfig",
-  "Authorization::AccessReviewDefaultSetting",
-  "Authorization::AccessReviewHistoryDefinitionById",
-  "Authorization::AccessReviewScheduleDefinitionById",
-  "Authorization::AccessReviewInstanceById",
-  "Authorization::ScopeRoleAssignmentApprovalStepById",
-  "Authorization::RoleAssignmentApprovalStepById",
-  "Authorization::RoleAssignmentById",
-  "Authorization::RoleAssignmentScheduleRequest",
-  "Authorization::RoleEligibilityScheduleRequest",
-  "Authorization::RoleManagementPolicy",
-  "Authorization::RoleManagementPolicyAssignment",
-  "Compute::VirtualMachineScaleSetVMExtension",
-  "Compute::VirtualMachineScaleSetVMRunCommand",
-  "ContainerRegistry::ConnectedRegistry",
-  "ContainerService::PrivateEndpointConnection", // 400 Cluster cluster is not a private cluster.
-  "ContainerService::OpenShiftManagedCluster", // 404
-  "DBforPostgreSQL::PrivateEndpointConnection",
-  "DBforPostgreSQL::ServerSecurityAlertPolicy",
-  "DBforPostgreSQL::ServerKey",
-  "DBforPostgreSQL::ServerAdministrator",
-  "DBforPostgreSQL::VirtualNetworkRule",
-  "Network::AdminRule",
-  "Network::ExpressRouteCrossConnection",
-  "Network::ExpressRouteCrossConnectionPeering", //TODO 404 on list
-  "Network::ExpressRoutePort",
-  "Network::FirewallPolicyIdpsSignaturesOverride",
-  "Network::InterfaceEndpoint",
-  "Network::ManagementGroupNetworkManagerConnection",
-  "Network::NetworkManager",
-  "Network::NetworkSecurityPerimeter",
-  "Network::PublicIpAddress", // Renamed to PublicIPAddress
-  "Network::SecurityRule",
-  "Network::SubscriptionNetworkManagerConnection",
-  "Network::UserRule",
-  "Network::VirtualWAN", // Renamed to VirtualWan
-  "OperationalInsights::DataCollectorLog", //404
-  "OperationalInsights::DataSource", // Must specify a valid kind filter. For example, $filter=kind eq 'windowsPerformanceCounter'.
-  "OperationalInsights::Table", // No registered resource provider found for location 'canadacentral' and API version '2021-06-01'
-  "PrivateEndpointConnection::DBforPostgreSQL", // No registered resource provider found for location 'centralus' and API version '2018-06-01' for type 'flexibleServers'. The supported api-versions are '2020-02-14-privatepreview, 2021-04-10-privatepreview, 2020-02-14-preview, 2020-11-05-preview, 2021-05-01-privatepreview, 2021-06-01-preview, 2021-06-01'. The supported locations are 'australiaeast, australiasoutheast, brazilsouth, canadacentral, centralindia, centralus, eastasia, eastus, eastus2, francecentral, germanywestcentral, koreacentral, japaneast, japanwest, northcentralus, northeurope, norwayeast, southafricanorth, southcentralus, southeastasia, switzerlandnorth, swedencentral, uaenorth, canadacentral, ukwest, westcentralus, westus, westus2, westus3, westeurope'.
-  "Storage::BlobInventoryPolicy", //TODO 404 on list
-  "KeyVault::PrivateEndpointConnection", // TODO 404
-  "Web::CertificateCsr",
-  "Web::ClassicMobileService",
-  "Web::ContainerApp",
-  "Web::KubeEnvironment",
-  "Web::Domain",
-  "Web::GetSourceControlSourceControl",
-  "Web::GetPublishingUserPublishingUser",
-  "Web::GlobalSubscriptionPublishingCredentials",
-  "Web::ManagedHostingEnvironment",
-  "Web::ProviderPublishingUser",
-  "Web::ProviderSourceControl",
-  "Web::WebAppOneDeployStatus",
-];
 const OpertionIdReplaceMap = {
   Servers_Get: "FlexibleServers_Get",
   //Storage
@@ -941,7 +890,7 @@ const findDependenciesFromResources = ({
     ),
   ])();
 
-const findPreDefinedDependencies = ({ depId }) =>
+const findPreDefinedDependencies = ({ depId, pathId }) =>
   pipe([
     tap(() => {
       assert(depId);
@@ -950,6 +899,7 @@ const findPreDefinedDependencies = ({ depId }) =>
     tap((params) => {
       assert(true);
     }),
+    unless(isEmpty, defaultsDeep({ pathId })),
   ])();
 
 const addDependencyFromBody = ({ resources, type, group, method }) =>
@@ -978,7 +928,7 @@ const addDependencyFromBody = ({ resources, type, group, method }) =>
         }),
         map(({ depId, pathId }) =>
           pipe([
-            () => findPreDefinedDependencies({ depId }),
+            () => findPreDefinedDependencies({ depId, pathId }),
             tap((params) => {
               assert(true);
             }),
@@ -1055,14 +1005,23 @@ const addDependencies = ({ resources }) =>
       ])(),
   });
 
-const isOmit = (key) =>
+const isOmit = ({ key, obj }) =>
   pipe([
     tap((params) => {
       assert(key);
     }),
     or([
       get("readOnly"),
-      () => key.match(new RegExp("Id$", "gi")),
+      and([
+        () => key.match(new RegExp("Id$", "gi")),
+        not(
+          pipe([
+            () => obj,
+            get("description", ""),
+            callProp("startsWith", "Name"),
+          ])
+        ),
+      ]),
       () => key.match(new RegExp("status", "gi")),
       () => key.match(new RegExp("state", "gi")),
       //get("x-ms-mutability"),
@@ -1088,7 +1047,7 @@ const buildOmitReadOnly =
           switchCase([
             isPreviousProperties({ parentPath, key }),
             pipe([() => undefined]),
-            isOmit(key),
+            isOmit({ key, obj }),
             pipe([() => [[...parentPath, key]]]),
             pipe([
               get("properties"),
@@ -1194,10 +1153,16 @@ const buildPickPropertiesObject = ({ key, swagger, parentPath, accumulator }) =>
       ]),
       fromProperties: pipe([
         get("properties"),
+        tap((params) => {
+          assert(true);
+        }),
         buildPickProperties({
           swagger,
           parentPath: [...parentPath, key],
           accumulator,
+        }),
+        tap((params) => {
+          assert(true);
         }),
       ]),
       fromAditionalProperties: switchCase([
@@ -1264,22 +1229,18 @@ const buildPickProperties =
           switchCase([
             // loop detection
             isPreviousProperties({ parentPath, key }),
-            pipe([() => undefined]),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => undefined,
+            ]),
             // omit ?
-            or([isOmit(key) /*, get("x-ms-mutability")*/]),
+            or([isOmit({ key, obj }) /*, get("x-ms-mutability")*/]),
             () => undefined,
             // is Array ?
             pipe([get("items")]),
             buildPickPropertiesArray({ key, swagger, parentPath, accumulator }),
-            // // is simple type ?
-            // pipe([
-            //   ({ type }) =>
-            //     pipe([
-            //       () => ["string", "integer", "boolean", "double", "number"],
-            //       includes(type),
-            //     ])(),
-            // ]),
-            // pipe([() => [[...parentPath, key]]]),
             //discriminator
             pipe([get("discriminator")]),
             buildPickPropertiesEnum({ key, swagger, parentPath, accumulator }),
@@ -1291,19 +1252,12 @@ const buildPickProperties =
               parentPath,
               accumulator,
             }),
-            pipe([() => [[...parentPath, key]]]),
-            // pipe([
-            //   tap((params) => {
-            //     console.error(
-            //       `type is not a string, array or object ${JSON.stringify(
-            //         params,
-            //         null,
-            //         4
-            //       )}`
-            //     );
-            //   }),
-            //   () => [],
-            // ]),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => [[...parentPath, key]],
+            ]),
           ]),
         ])(),
       ]),
@@ -1647,6 +1601,14 @@ const pickResourceInfo = ({ swagger, ...other }) =>
               (schema) =>
                 pipe([
                   () => schema,
+                  tap.if(
+                    () =>
+                      schema.description ===
+                      "Parameters to create and update Cosmos DB SQL database.",
+                    (params) => {
+                      assert(true);
+                    }
+                  ),
                   get("properties"),
                   when(isEmpty, () => get("allOf[1].properties")(schema)),
                   when(isEmpty, () => get("allOf[0].properties")(schema)),
@@ -1659,6 +1621,9 @@ const pickResourceInfo = ({ swagger, ...other }) =>
                     );
                   }),
                   buildPickProperties({ swagger }),
+                  tap((params) => {
+                    assert(true);
+                  }),
                   map(callProp("join", ".")),
                 ])(),
             ]),

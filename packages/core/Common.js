@@ -17,6 +17,7 @@ const {
   or,
   switchCase,
   flatMap,
+  gte,
 } = require("rubico");
 const {
   uniq,
@@ -225,7 +226,15 @@ exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
   ])();
 
 exports.axiosErrorToJSON = (error = {}) => {
-  const message = get("response.data.message", error.message)(error);
+  const message = pipe([
+    () => error,
+    get("response.data.message"),
+    when(isEmpty, () => get("response.data.Message")(error)),
+    when(isEmpty, () => get("message")(error)),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
   const exception = new Error(message);
   exception.isAxiosError = error.isAxiosError;
   exception.name = error.name;
@@ -314,7 +323,11 @@ exports.getByNameCore =
           tap((currentName) => {
             logger.debug(`getByNameCore ${name}: findName: ${currentName}`);
           }),
-          (currentName) => isDeepEqual(name, currentName),
+          switchCase([
+            isString,
+            pipe([eq(callProp("toLowerCase"), name.toLowerCase())]),
+            (currentName) => isDeepEqual(name, currentName),
+          ]),
         ])
       ), //TODO check on meta
       tap((instance) => {
@@ -504,6 +517,25 @@ const removeOurTags = pipe([
 
 exports.removeOurTags = removeOurTags;
 
+const assignHasDiff = pipe([
+  assign({
+    hasTagsDiff: gte(pipe([get("tags.diffTags"), size]), 2),
+    hasDataDiff: and([
+      gte(pipe([get("jsonDiff"), size]), 2),
+      or([
+        pipe([get("liveDiff.needUpdate")]),
+        pipe([get("liveDiff.added"), not(isEmpty)]),
+        pipe([get("liveDiff.updated"), not(isEmpty)]),
+        pipe([get("liveDiff.deleted"), not(isEmpty)]),
+      ]),
+    ]),
+  }),
+  assign({
+    hasDiff: or([get("hasTagsDiff"), get("hasDataDiff")]),
+  }),
+]);
+exports.assignHasDiff;
+
 exports.compare = ({
   filterAll = () => identity,
   filterTarget = () => identity,
@@ -520,51 +552,37 @@ exports.compare = ({
       liveIn: get("live"),
     }),
     assign({
-      target: ({
-        target = {},
-        propertiesDefault = {},
-        omitProperties = [],
-        pickProperties,
-        ...otherProps
-      }) =>
+      target: (input) =>
         pipe([
-          () => target,
           tap((params) => {
-            assert(propertiesDefault);
+            assert(input.propertiesDefault);
           }),
-          defaultsDeep(propertiesDefault),
+          () => input,
+          get("target", {}),
+          defaultsDeep(input.propertiesDefault),
           removeOurTags,
-          filterTarget(otherProps),
-          filterAll(otherProps),
+          filterTarget(input),
+          filterAll(input),
           filterTargetDefault,
           //TODO
           //when(() => pickProperties, pick(pickProperties)),
-
-          omit(omitProperties),
+          when(() => input.omitProperties, omit(input.omitProperties)),
           tap((params) => {
             assert(true);
           }),
         ])(),
-      live: ({
-        live = {},
-        propertiesDefault,
-        omitProperties = [],
-        pickProperties,
-        ...otherProps
-      }) =>
+      live: (input) =>
         pipe([
-          tap((params) => {
-            assert(omitProperties);
-          }),
-          () => live,
+          () => input,
+          get("live", {}),
           removeOurTags,
-          defaultsDeep(propertiesDefault),
-          filterLive(otherProps),
-          filterAll(otherProps),
+          defaultsDeep(input.propertiesDefault),
+          filterLive(input),
+          filterAll(input),
           filterLiveDefault,
           // TODO
           //when(() => pickProperties, pick(pickProperties)),
-          omit(omitProperties),
+          when(() => input.omitProperties, omit(input.omitProperties)),
           tap((params) => {
             assert(true);
           }),
@@ -595,7 +613,9 @@ exports.compare = ({
         }),
       ]),
     }),
+    assignHasDiff,
     tap((diff) => {
+      assert(diff);
       // logger.debug(`compare ${tos(diff)}`);
     }),
   ]);

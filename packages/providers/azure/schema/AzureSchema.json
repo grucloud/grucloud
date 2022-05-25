@@ -847,7 +847,8 @@
             "vault": {
                 "type": "Vault",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.extensionProfile.extensions.items.protectedSettingsFromKeyVault.sourceVault"
             }
         },
         "methods": {
@@ -1171,12 +1172,14 @@
             "vault": {
                 "type": "Vault",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.encryptionSettingsCollection.encryptionSettings.items.keyEncryptionKey.sourceVault"
             },
             "key": {
                 "type": "Key",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.encryptionSettingsCollection.encryptionSettings.items.keyEncryptionKey.keyUrl"
             },
             "diskEncryptionSet": {
                 "type": "DiskEncryptionSet",
@@ -1429,12 +1432,14 @@
             "vault": {
                 "type": "Vault",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.activeKey.sourceVault"
             },
             "key": {
                 "type": "Key",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.activeKey.keyUrl"
             }
         },
         "methods": {
@@ -2092,12 +2097,14 @@
             "vault": {
                 "type": "Vault",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.encryptionSettingsCollection.encryptionSettings.items.keyEncryptionKey.sourceVault"
             },
             "key": {
                 "type": "Key",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.encryptionSettingsCollection.encryptionSettings.items.keyEncryptionKey.keyUrl"
             },
             "diskEncryptionSet": {
                 "type": "DiskEncryptionSet",
@@ -2285,12 +2292,14 @@
             "vault": {
                 "type": "Vault",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.osProfile.secrets.items.sourceVault"
             },
             "key": {
                 "type": "Key",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.keyUrl"
             },
             "networkSecurityGroup": {
                 "type": "NetworkSecurityGroup",
@@ -2801,7 +2810,8 @@
             "vault": {
                 "type": "Vault",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.virtualMachineProfile.osProfile.secrets.items.sourceVault"
             },
             "galleryImage": {
                 "type": "GalleryImage",
@@ -3255,12 +3265,14 @@
             "vault": {
                 "type": "Vault",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.osProfile.secrets.items.sourceVault"
             },
             "key": {
                 "type": "Key",
                 "group": "KeyVault",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.keyUrl"
             },
             "networkSecurityGroup": {
                 "type": "NetworkSecurityGroup",
@@ -3667,7 +3679,8 @@
             "subnet": {
                 "type": "Subnet",
                 "group": "Network",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.virtualNetworkSubnetResourceId"
             },
             "registry": {
                 "type": "Registry",
@@ -6093,10 +6106,12 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]
@@ -6191,6 +6206,7 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.defaultTtl",
             "properties.resource.schema.columns[].name",
             "properties.resource.schema.columns[].type",
@@ -6202,6 +6218,7 @@
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.defaultTtl",
             "properties.resource.schema.columns[].name",
             "properties.resource.schema.columns[].type",
@@ -6309,11 +6326,13 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.viewDefinition",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.viewDefinition",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
@@ -6543,887 +6562,6 @@
         }
     },
     {
-        "type": "DatabaseAccountCassandraKeyspace",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces/{keyspaceName}",
-                "operationId": "DatabaseAccounts_GetCassandraKeyspace"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces/{keyspaceName}",
-                "operationId": "DatabaseAccounts_CreateUpdateCassandraKeyspace"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces/{keyspaceName}",
-                "operationId": "DatabaseAccounts_DeleteCassandraKeyspace"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces",
-                "operationId": "DatabaseAccounts_ListCassandraKeyspaces"
-            }
-        },
-        "pickProperties": [],
-        "pickPropertiesCreate": [
-            "properties.options"
-        ]
-    },
-    {
-        "type": "DatabaseAccountCassandraKeyspaceThroughput",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "keyspace": {
-                "type": "DatabaseAccountCassandraKeyspace",
-                "group": "DocumentDB",
-                "name": "keyspaceName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces/{keyspaceName}/settings/throughput",
-                "operationId": "DatabaseAccounts_GetCassandraKeyspaceThroughput"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces/{keyspaceName}/settings/throughput",
-                "operationId": "DatabaseAccounts_UpdateCassandraKeyspaceThroughput"
-            }
-        },
-        "pickProperties": [
-            "properties.throughput"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.throughput"
-        ]
-    },
-    {
-        "type": "DatabaseAccountCassandraTable",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "keyspace": {
-                "type": "DatabaseAccountCassandraKeyspace",
-                "group": "DocumentDB",
-                "name": "keyspaceName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces/{keyspaceName}/tables/{tableName}",
-                "operationId": "DatabaseAccounts_GetCassandraTable"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces/{keyspaceName}/tables/{tableName}",
-                "operationId": "DatabaseAccounts_CreateUpdateCassandraTable"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces/{keyspaceName}/tables/{tableName}",
-                "operationId": "DatabaseAccounts_DeleteCassandraTable"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces/{keyspaceName}/tables",
-                "operationId": "DatabaseAccounts_ListCassandraTables"
-            }
-        },
-        "pickProperties": [
-            "properties.defaultTtl",
-            "properties.schema.columns[].name",
-            "properties.schema.columns[].type",
-            "properties.schema.partitionKeys[].name",
-            "properties.schema.clusterKeys[].name",
-            "properties.schema.clusterKeys[].orderBy"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.defaultTtl",
-            "properties.resource.schema.columns[].name",
-            "properties.resource.schema.columns[].type",
-            "properties.resource.schema.partitionKeys[].name",
-            "properties.resource.schema.clusterKeys[].name",
-            "properties.resource.schema.clusterKeys[].orderBy",
-            "properties.options"
-        ]
-    },
-    {
-        "type": "DatabaseAccountCassandraTableThroughput",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "keyspace": {
-                "type": "DatabaseAccountCassandraKeyspace",
-                "group": "DocumentDB",
-                "name": "keyspaceName",
-                "parent": true
-            },
-            "table": {
-                "type": "DatabaseAccountCassandraTable",
-                "group": "DocumentDB",
-                "name": "tableName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces/{keyspaceName}/tables/{tableName}/settings/throughput",
-                "operationId": "DatabaseAccounts_GetCassandraTableThroughput"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/cassandra/keyspaces/{keyspaceName}/tables/{tableName}/settings/throughput",
-                "operationId": "DatabaseAccounts_UpdateCassandraTableThroughput"
-            }
-        },
-        "pickProperties": [
-            "properties.throughput"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.throughput"
-        ]
-    },
-    {
-        "type": "DatabaseAccountGremlinDatabase",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases/{databaseName}",
-                "operationId": "DatabaseAccounts_GetGremlinDatabase"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases/{databaseName}",
-                "operationId": "DatabaseAccounts_CreateUpdateGremlinDatabase"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases/{databaseName}",
-                "operationId": "DatabaseAccounts_DeleteGremlinDatabase"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases",
-                "operationId": "DatabaseAccounts_ListGremlinDatabases"
-            }
-        },
-        "omitProperties": [
-            "properties._rid"
-        ],
-        "pickProperties": [
-            "properties._ts",
-            "properties._etag"
-        ],
-        "pickPropertiesCreate": [
-            "properties.options"
-        ]
-    },
-    {
-        "type": "DatabaseAccountGremlinDatabaseThroughput",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "database": {
-                "type": "DatabaseAccountGremlinDatabase",
-                "group": "DocumentDB",
-                "name": "databaseName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases/{databaseName}/settings/throughput",
-                "operationId": "DatabaseAccounts_GetGremlinDatabaseThroughput"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases/{databaseName}/settings/throughput",
-                "operationId": "DatabaseAccounts_UpdateGremlinDatabaseThroughput"
-            }
-        },
-        "pickProperties": [
-            "properties.throughput"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.throughput"
-        ]
-    },
-    {
-        "type": "DatabaseAccountGremlinGraph",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "database": {
-                "type": "DatabaseAccountGremlinDatabase",
-                "group": "DocumentDB",
-                "name": "databaseName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases/{databaseName}/graphs/{graphName}",
-                "operationId": "DatabaseAccounts_GetGremlinGraph"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases/{databaseName}/graphs/{graphName}",
-                "operationId": "DatabaseAccounts_CreateUpdateGremlinGraph"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases/{databaseName}/graphs/{graphName}",
-                "operationId": "DatabaseAccounts_DeleteGremlinGraph"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases/{databaseName}/graphs",
-                "operationId": "DatabaseAccounts_ListGremlinGraphs"
-            }
-        },
-        "pickProperties": [
-            "properties.indexingPolicy.automatic",
-            "properties.indexingPolicy.indexingMode",
-            "properties.indexingPolicy.includedPaths[].path",
-            "properties.indexingPolicy.includedPaths[].indexes[].dataType",
-            "properties.indexingPolicy.includedPaths[].indexes[].precision",
-            "properties.indexingPolicy.includedPaths[].indexes[].kind",
-            "properties.indexingPolicy.excludedPaths[].path",
-            "properties.partitionKey.paths",
-            "properties.partitionKey.kind",
-            "properties.defaultTtl",
-            "properties.uniqueKeyPolicy.uniqueKeys[].paths",
-            "properties.conflictResolutionPolicy.mode",
-            "properties.conflictResolutionPolicy.conflictResolutionPath",
-            "properties.conflictResolutionPolicy.conflictResolutionProcedure",
-            "properties._ts",
-            "properties._etag"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.indexingPolicy.automatic",
-            "properties.resource.indexingPolicy.indexingMode",
-            "properties.resource.indexingPolicy.includedPaths[].path",
-            "properties.resource.indexingPolicy.includedPaths[].indexes[].dataType",
-            "properties.resource.indexingPolicy.includedPaths[].indexes[].precision",
-            "properties.resource.indexingPolicy.includedPaths[].indexes[].kind",
-            "properties.resource.indexingPolicy.excludedPaths[].path",
-            "properties.resource.partitionKey.paths",
-            "properties.resource.partitionKey.kind",
-            "properties.resource.defaultTtl",
-            "properties.resource.uniqueKeyPolicy.uniqueKeys[].paths",
-            "properties.resource.conflictResolutionPolicy.mode",
-            "properties.resource.conflictResolutionPolicy.conflictResolutionPath",
-            "properties.resource.conflictResolutionPolicy.conflictResolutionProcedure",
-            "properties.options"
-        ]
-    },
-    {
-        "type": "DatabaseAccountGremlinGraphThroughput",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "database": {
-                "type": "DatabaseAccountGremlinDatabase",
-                "group": "DocumentDB",
-                "name": "databaseName",
-                "parent": true
-            },
-            "graph": {
-                "type": "DatabaseAccountGremlinGraph",
-                "group": "DocumentDB",
-                "name": "graphName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases/{databaseName}/graphs/{graphName}/settings/throughput",
-                "operationId": "DatabaseAccounts_GetGremlinGraphThroughput"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/gremlin/databases/{databaseName}/graphs/{graphName}/settings/throughput",
-                "operationId": "DatabaseAccounts_UpdateGremlinGraphThroughput"
-            }
-        },
-        "pickProperties": [
-            "properties.throughput"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.throughput"
-        ]
-    },
-    {
-        "type": "DatabaseAccountMongoDBCollection",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "database": {
-                "type": "DatabaseAccountMongoDBDatabase",
-                "group": "DocumentDB",
-                "name": "databaseName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases/{databaseName}/collections/{collectionName}",
-                "operationId": "DatabaseAccounts_GetMongoDBCollection"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases/{databaseName}/collections/{collectionName}",
-                "operationId": "DatabaseAccounts_CreateUpdateMongoDBCollection"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases/{databaseName}/collections/{collectionName}",
-                "operationId": "DatabaseAccounts_DeleteMongoDBCollection"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases/{databaseName}/collections",
-                "operationId": "DatabaseAccounts_ListMongoDBCollections"
-            }
-        },
-        "pickProperties": [
-            "properties.shardKey",
-            "properties.indexes[].key.keys",
-            "properties.indexes[].options.expireAfterSeconds",
-            "properties.indexes[].options.unique"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.shardKey",
-            "properties.resource.indexes[].key.keys",
-            "properties.resource.indexes[].options.expireAfterSeconds",
-            "properties.resource.indexes[].options.unique",
-            "properties.options"
-        ]
-    },
-    {
-        "type": "DatabaseAccountMongoDBCollectionThroughput",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "database": {
-                "type": "DatabaseAccountMongoDBDatabase",
-                "group": "DocumentDB",
-                "name": "databaseName",
-                "parent": true
-            },
-            "collection": {
-                "type": "DatabaseAccountMongoDBCollection",
-                "group": "DocumentDB",
-                "name": "collectionName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases/{databaseName}/collections/{collectionName}/settings/throughput",
-                "operationId": "DatabaseAccounts_GetMongoDBCollectionThroughput"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases/{databaseName}/collections/{collectionName}/settings/throughput",
-                "operationId": "DatabaseAccounts_UpdateMongoDBCollectionThroughput"
-            }
-        },
-        "pickProperties": [
-            "properties.throughput"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.throughput"
-        ]
-    },
-    {
-        "type": "DatabaseAccountMongoDBDatabase",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases/{databaseName}",
-                "operationId": "DatabaseAccounts_GetMongoDBDatabase"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases/{databaseName}",
-                "operationId": "DatabaseAccounts_CreateUpdateMongoDBDatabase"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases/{databaseName}",
-                "operationId": "DatabaseAccounts_DeleteMongoDBDatabase"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases",
-                "operationId": "DatabaseAccounts_ListMongoDBDatabases"
-            }
-        },
-        "pickProperties": [],
-        "pickPropertiesCreate": [
-            "properties.options"
-        ]
-    },
-    {
-        "type": "DatabaseAccountMongoDBDatabaseThroughput",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "database": {
-                "type": "DatabaseAccountMongoDBDatabase",
-                "group": "DocumentDB",
-                "name": "databaseName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases/{databaseName}/settings/throughput",
-                "operationId": "DatabaseAccounts_GetMongoDBDatabaseThroughput"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/mongodb/databases/{databaseName}/settings/throughput",
-                "operationId": "DatabaseAccounts_UpdateMongoDBDatabaseThroughput"
-            }
-        },
-        "pickProperties": [
-            "properties.throughput"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.throughput"
-        ]
-    },
-    {
-        "type": "DatabaseAccountSqlContainer",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "database": {
-                "type": "DatabaseAccountSqlDatabase",
-                "group": "DocumentDB",
-                "name": "databaseName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases/{databaseName}/containers/{containerName}",
-                "operationId": "DatabaseAccounts_GetSqlContainer"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases/{databaseName}/containers/{containerName}",
-                "operationId": "DatabaseAccounts_CreateUpdateSqlContainer"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases/{databaseName}/containers/{containerName}",
-                "operationId": "DatabaseAccounts_DeleteSqlContainer"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases/{databaseName}/containers",
-                "operationId": "DatabaseAccounts_ListSqlContainers"
-            }
-        },
-        "pickProperties": [
-            "properties.indexingPolicy.automatic",
-            "properties.indexingPolicy.indexingMode",
-            "properties.indexingPolicy.includedPaths[].path",
-            "properties.indexingPolicy.includedPaths[].indexes[].dataType",
-            "properties.indexingPolicy.includedPaths[].indexes[].precision",
-            "properties.indexingPolicy.includedPaths[].indexes[].kind",
-            "properties.indexingPolicy.excludedPaths[].path",
-            "properties.partitionKey.paths",
-            "properties.partitionKey.kind",
-            "properties.defaultTtl",
-            "properties.uniqueKeyPolicy.uniqueKeys[].paths",
-            "properties.conflictResolutionPolicy.mode",
-            "properties.conflictResolutionPolicy.conflictResolutionPath",
-            "properties.conflictResolutionPolicy.conflictResolutionProcedure",
-            "properties._ts",
-            "properties._etag"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.indexingPolicy.automatic",
-            "properties.resource.indexingPolicy.indexingMode",
-            "properties.resource.indexingPolicy.includedPaths[].path",
-            "properties.resource.indexingPolicy.includedPaths[].indexes[].dataType",
-            "properties.resource.indexingPolicy.includedPaths[].indexes[].precision",
-            "properties.resource.indexingPolicy.includedPaths[].indexes[].kind",
-            "properties.resource.indexingPolicy.excludedPaths[].path",
-            "properties.resource.partitionKey.paths",
-            "properties.resource.partitionKey.kind",
-            "properties.resource.defaultTtl",
-            "properties.resource.uniqueKeyPolicy.uniqueKeys[].paths",
-            "properties.resource.conflictResolutionPolicy.mode",
-            "properties.resource.conflictResolutionPolicy.conflictResolutionPath",
-            "properties.resource.conflictResolutionPolicy.conflictResolutionProcedure",
-            "properties.options"
-        ]
-    },
-    {
-        "type": "DatabaseAccountSqlContainerThroughput",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "database": {
-                "type": "DatabaseAccountSqlDatabase",
-                "group": "DocumentDB",
-                "name": "databaseName",
-                "parent": true
-            },
-            "container": {
-                "type": "DatabaseAccountSqlContainer",
-                "group": "DocumentDB",
-                "name": "containerName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases/{databaseName}/containers/{containerName}/settings/throughput",
-                "operationId": "DatabaseAccounts_GetSqlContainerThroughput"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases/{databaseName}/containers/{containerName}/settings/throughput",
-                "operationId": "DatabaseAccounts_UpdateSqlContainerThroughput"
-            }
-        },
-        "pickProperties": [
-            "properties.throughput"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.throughput"
-        ]
-    },
-    {
-        "type": "DatabaseAccountSqlDatabase",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases/{databaseName}",
-                "operationId": "DatabaseAccounts_GetSqlDatabase"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases/{databaseName}",
-                "operationId": "DatabaseAccounts_CreateUpdateSqlDatabase"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases/{databaseName}",
-                "operationId": "DatabaseAccounts_DeleteSqlDatabase"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases",
-                "operationId": "DatabaseAccounts_ListSqlDatabases"
-            }
-        },
-        "pickProperties": [
-            "properties._ts",
-            "properties._etag",
-            "properties._colls",
-            "properties._users"
-        ],
-        "pickPropertiesCreate": [
-            "properties.options"
-        ]
-    },
-    {
-        "type": "DatabaseAccountSqlDatabaseThroughput",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "database": {
-                "type": "DatabaseAccountSqlDatabase",
-                "group": "DocumentDB",
-                "name": "databaseName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases/{databaseName}/settings/throughput",
-                "operationId": "DatabaseAccounts_GetSqlDatabaseThroughput"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/sql/databases/{databaseName}/settings/throughput",
-                "operationId": "DatabaseAccounts_UpdateSqlDatabaseThroughput"
-            }
-        },
-        "pickProperties": [
-            "properties.throughput"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.throughput"
-        ]
-    },
-    {
-        "type": "DatabaseAccountTable",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/table/tables/{tableName}",
-                "operationId": "DatabaseAccounts_GetTable"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/table/tables/{tableName}",
-                "operationId": "DatabaseAccounts_CreateUpdateTable"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/table/tables/{tableName}",
-                "operationId": "DatabaseAccounts_DeleteTable"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/table/tables",
-                "operationId": "DatabaseAccounts_ListTables"
-            }
-        },
-        "pickProperties": [],
-        "pickPropertiesCreate": [
-            "properties.options"
-        ]
-    },
-    {
-        "type": "DatabaseAccountTableThroughput",
-        "group": "DocumentDB",
-        "apiVersion": "2016-03-31",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "account": {
-                "type": "DatabaseAccount",
-                "group": "DocumentDB",
-                "name": "accountName",
-                "parent": true
-            },
-            "table": {
-                "type": "DatabaseAccountTable",
-                "group": "DocumentDB",
-                "name": "tableName",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/table/tables/{tableName}/settings/throughput",
-                "operationId": "DatabaseAccounts_GetTableThroughput"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/apis/table/tables/{tableName}/settings/throughput",
-                "operationId": "DatabaseAccounts_UpdateTableThroughput"
-            }
-        },
-        "pickProperties": [
-            "properties.throughput"
-        ],
-        "pickPropertiesCreate": [
-            "properties.resource.throughput"
-        ]
-    },
-    {
         "type": "DataTransferJob",
         "group": "DocumentDB",
         "apiVersion": "2022-02-15-preview",
@@ -7545,10 +6683,12 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]
@@ -7590,10 +6730,12 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]
@@ -7688,6 +6830,7 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.indexingPolicy.automatic",
             "properties.resource.indexingPolicy.indexingMode",
             "properties.resource.indexingPolicy.includedPaths[].path",
@@ -7710,6 +6853,7 @@
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.indexingPolicy.automatic",
             "properties.resource.indexingPolicy.indexingMode",
             "properties.resource.indexingPolicy.includedPaths[].path",
@@ -7828,6 +6972,7 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.shardKey",
             "properties.resource.indexes[].key.keys",
             "properties.resource.indexes[].options.expireAfterSeconds",
@@ -7837,6 +6982,7 @@
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.shardKey",
             "properties.resource.indexes[].key.keys",
             "properties.resource.indexes[].options.expireAfterSeconds",
@@ -7936,10 +7082,12 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]
@@ -8296,6 +7444,7 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.encryptionAlgorithm",
             "properties.resource.wrappedDataEncryptionKey",
             "properties.resource.keyWrapMetadata.name",
@@ -8304,6 +7453,7 @@
             "properties.resource.keyWrapMetadata.algorithm"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.encryptionAlgorithm",
             "properties.resource.wrappedDataEncryptionKey",
             "properties.resource.keyWrapMetadata.name",
@@ -8355,6 +7505,7 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.indexingPolicy.automatic",
             "properties.resource.indexingPolicy.indexingMode",
             "properties.resource.indexingPolicy.includedPaths[].path",
@@ -8382,6 +7533,7 @@
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.indexingPolicy.automatic",
             "properties.resource.indexingPolicy.indexingMode",
             "properties.resource.indexingPolicy.includedPaths[].path",
@@ -8499,12 +7651,14 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource._colls",
             "properties.resource._users",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]
@@ -8709,9 +7863,11 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.body"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.body",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
@@ -8766,11 +7922,13 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.body",
             "properties.resource.triggerType",
             "properties.resource.triggerOperation"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.body",
             "properties.resource.triggerType",
             "properties.resource.triggerOperation",
@@ -8827,9 +7985,11 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.resource.body"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.resource.body",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
@@ -8872,10 +8032,12 @@
             }
         },
         "pickProperties": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ],
         "pickPropertiesCreate": [
+            "properties.resource.id",
             "properties.options.throughput",
             "properties.options.autoscaleSettings.maxThroughput"
         ]
@@ -25653,8 +24815,8 @@
                 "createOnly": true,
                 "pathId": "properties.hostingEnvironmentProfile.id"
             },
-            "serverFarm": {
-                "type": "ServerFarm",
+            "appServicePlan": {
+                "type": "AppServicePlan",
                 "group": "Web",
                 "createOnly": true,
                 "pathId": "properties.serverFarmId"
@@ -26400,2074 +25562,6 @@
         ]
     },
     {
-        "type": "ServerFarm",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "hostingEnvironment": {
-                "type": "HostingEnvironment",
-                "group": "Web",
-                "createOnly": true,
-                "pathId": "properties.hostingEnvironmentProfile.id"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}",
-                "operationId": "ServerFarms_GetServerFarm"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}",
-                "operationId": "ServerFarms_CreateOrUpdateServerFarm"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/serverfarms/{name}",
-                "operationId": "ServerFarms_DeleteServerFarm"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Web/serverfarms",
-                "operationId": "Global_GetAllServerFarms"
-            }
-        },
-        "omitProperties": [
-            "properties.status",
-            "properties.subscription",
-            "properties.hostingEnvironmentProfile.id",
-            "properties.geoRegion",
-            "properties.numberOfSites",
-            "properties.resourceGroup"
-        ],
-        "pickProperties": [
-            "properties.name",
-            "properties.workerTierName",
-            "properties.adminSiteName",
-            "properties.hostingEnvironmentProfile.name",
-            "properties.hostingEnvironmentProfile.type",
-            "properties.maximumNumberOfWorkers",
-            "properties.perSiteScaling",
-            "properties.reserved",
-            "sku.name",
-            "sku.tier",
-            "sku.size",
-            "sku.family",
-            "sku.capacity"
-        ],
-        "pickPropertiesCreate": [
-            "properties.name",
-            "properties.workerTierName",
-            "properties.adminSiteName",
-            "properties.hostingEnvironmentProfile.name",
-            "properties.hostingEnvironmentProfile.type",
-            "properties.maximumNumberOfWorkers",
-            "properties.perSiteScaling",
-            "properties.reserved",
-            "sku.name",
-            "sku.tier",
-            "sku.size",
-            "sku.family",
-            "sku.capacity"
-        ]
-    },
-    {
-        "type": "Site",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "serverFarm": {
-                "type": "ServerFarm",
-                "group": "Web",
-                "createOnly": true,
-                "pathId": "properties.serverFarmId"
-            },
-            "hostingEnvironment": {
-                "type": "HostingEnvironment",
-                "group": "Web",
-                "createOnly": true,
-                "pathId": "properties.hostingEnvironmentProfile.id"
-            },
-            "webApp": {
-                "type": "WebApp",
-                "group": "Web",
-                "createOnly": true,
-                "pathId": "properties.cloningInfo.sourceWebAppId"
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}",
-                "operationId": "Sites_GetSite"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}",
-                "operationId": "Sites_CreateOrUpdateSite"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}",
-                "operationId": "Sites_DeleteSite"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Web/sites",
-                "operationId": "Global_GetAllSites"
-            }
-        },
-        "omitProperties": [
-            "properties.state",
-            "properties.hostNames",
-            "properties.repositorySiteName",
-            "properties.usageState",
-            "properties.enabledHostNames",
-            "properties.availabilityState",
-            "properties.hostNameSslStates",
-            "properties.serverFarmId",
-            "properties.lastModifiedTimeUtc",
-            "properties.siteConfig.properties.publishingPassword",
-            "properties.siteConfig.properties.autoHealRules.triggers.statusCodes",
-            "properties.trafficManagerHostNames",
-            "properties.premiumAppDeployed",
-            "properties.targetSwapSlot",
-            "properties.hostingEnvironmentProfile.id",
-            "properties.outboundIpAddresses",
-            "properties.cloningInfo.correlationId",
-            "properties.cloningInfo.sourceWebAppId",
-            "properties.cloningInfo.trafficManagerProfileId",
-            "properties.resourceGroup",
-            "properties.isDefaultContainer",
-            "properties.defaultHostName"
-        ],
-        "pickProperties": [
-            "properties.name",
-            "properties.enabled",
-            "properties.siteConfig.name",
-            "properties.siteConfig.kind",
-            "properties.siteConfig.location",
-            "properties.siteConfig.type",
-            "properties.siteConfig.tags",
-            "properties.siteConfig.properties.numberOfWorkers",
-            "properties.siteConfig.properties.defaultDocuments",
-            "properties.siteConfig.properties.netFrameworkVersion",
-            "properties.siteConfig.properties.phpVersion",
-            "properties.siteConfig.properties.pythonVersion",
-            "properties.siteConfig.properties.nodeVersion",
-            "properties.siteConfig.properties.requestTracingEnabled",
-            "properties.siteConfig.properties.requestTracingExpirationTime",
-            "properties.siteConfig.properties.remoteDebuggingEnabled",
-            "properties.siteConfig.properties.remoteDebuggingVersion",
-            "properties.siteConfig.properties.httpLoggingEnabled",
-            "properties.siteConfig.properties.logsDirectorySizeLimit",
-            "properties.siteConfig.properties.detailedErrorLoggingEnabled",
-            "properties.siteConfig.properties.publishingUsername",
-            "properties.siteConfig.properties.appSettings[].name",
-            "properties.siteConfig.properties.appSettings[].value",
-            "properties.siteConfig.properties.metadata[].name",
-            "properties.siteConfig.properties.metadata[].value",
-            "properties.siteConfig.properties.connectionStrings[].name",
-            "properties.siteConfig.properties.connectionStrings[].connectionString",
-            "properties.siteConfig.properties.connectionStrings[].type",
-            "properties.siteConfig.properties.handlerMappings[].extension",
-            "properties.siteConfig.properties.handlerMappings[].scriptProcessor",
-            "properties.siteConfig.properties.handlerMappings[].arguments",
-            "properties.siteConfig.properties.documentRoot",
-            "properties.siteConfig.properties.scmType",
-            "properties.siteConfig.properties.use32BitWorkerProcess",
-            "properties.siteConfig.properties.webSocketsEnabled",
-            "properties.siteConfig.properties.alwaysOn",
-            "properties.siteConfig.properties.javaVersion",
-            "properties.siteConfig.properties.javaContainer",
-            "properties.siteConfig.properties.javaContainerVersion",
-            "properties.siteConfig.properties.appCommandLine",
-            "properties.siteConfig.properties.managedPipelineMode",
-            "properties.siteConfig.properties.virtualApplications[].virtualPath",
-            "properties.siteConfig.properties.virtualApplications[].physicalPath",
-            "properties.siteConfig.properties.virtualApplications[].preloadEnabled",
-            "properties.siteConfig.properties.virtualApplications[].virtualDirectories[].virtualPath",
-            "properties.siteConfig.properties.virtualApplications[].virtualDirectories[].physicalPath",
-            "properties.siteConfig.properties.loadBalancing",
-            "properties.siteConfig.properties.experiments.rampUpRules[].actionHostName",
-            "properties.siteConfig.properties.experiments.rampUpRules[].reroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeStep",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeIntervalInMinutes",
-            "properties.siteConfig.properties.experiments.rampUpRules[].minReroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].maxReroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeDecisionCallbackUrl",
-            "properties.siteConfig.properties.experiments.rampUpRules[].name",
-            "properties.siteConfig.properties.limits.maxPercentageCpu",
-            "properties.siteConfig.properties.limits.maxMemoryInMb",
-            "properties.siteConfig.properties.limits.maxDiskSizeInMb",
-            "properties.siteConfig.properties.autoHealEnabled",
-            "properties.siteConfig.properties.autoHealRules.triggers.requests.count",
-            "properties.siteConfig.properties.autoHealRules.triggers.requests.timeInterval",
-            "properties.siteConfig.properties.autoHealRules.triggers.privateBytesInKB",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.timeTaken",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.count",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.timeInterval",
-            "properties.siteConfig.properties.autoHealRules.actions.actionType",
-            "properties.siteConfig.properties.autoHealRules.actions.customAction.exe",
-            "properties.siteConfig.properties.autoHealRules.actions.customAction.parameters",
-            "properties.siteConfig.properties.autoHealRules.actions.minProcessExecutionTime",
-            "properties.siteConfig.properties.tracingOptions",
-            "properties.siteConfig.properties.vnetName",
-            "properties.siteConfig.properties.cors.allowedOrigins",
-            "properties.siteConfig.properties.apiDefinition.url",
-            "properties.siteConfig.properties.autoSwapSlotName",
-            "properties.siteConfig.properties.localMySqlEnabled",
-            "properties.siteConfig.properties.ipSecurityRestrictions[].ipAddress",
-            "properties.siteConfig.properties.ipSecurityRestrictions[].subnetMask",
-            "properties.scmSiteAlsoStopped",
-            "properties.hostingEnvironmentProfile.name",
-            "properties.hostingEnvironmentProfile.type",
-            "properties.microService",
-            "properties.gatewaySiteName",
-            "properties.clientAffinityEnabled",
-            "properties.clientCertEnabled",
-            "properties.hostNamesDisabled",
-            "properties.containerSize",
-            "properties.maxNumberOfWorkers",
-            "properties.cloningInfo.overwrite",
-            "properties.cloningInfo.cloneCustomHostNames",
-            "properties.cloningInfo.cloneSourceControl",
-            "properties.cloningInfo.hostingEnvironment",
-            "properties.cloningInfo.appSettingsOverrides",
-            "properties.cloningInfo.configureLoadBalancing",
-            "properties.cloningInfo.trafficManagerProfileName"
-        ],
-        "pickPropertiesCreate": [
-            "properties.name",
-            "properties.enabled",
-            "properties.siteConfig.name",
-            "properties.siteConfig.kind",
-            "properties.siteConfig.location",
-            "properties.siteConfig.type",
-            "properties.siteConfig.tags",
-            "properties.siteConfig.properties.numberOfWorkers",
-            "properties.siteConfig.properties.defaultDocuments",
-            "properties.siteConfig.properties.netFrameworkVersion",
-            "properties.siteConfig.properties.phpVersion",
-            "properties.siteConfig.properties.pythonVersion",
-            "properties.siteConfig.properties.nodeVersion",
-            "properties.siteConfig.properties.requestTracingEnabled",
-            "properties.siteConfig.properties.requestTracingExpirationTime",
-            "properties.siteConfig.properties.remoteDebuggingEnabled",
-            "properties.siteConfig.properties.remoteDebuggingVersion",
-            "properties.siteConfig.properties.httpLoggingEnabled",
-            "properties.siteConfig.properties.logsDirectorySizeLimit",
-            "properties.siteConfig.properties.detailedErrorLoggingEnabled",
-            "properties.siteConfig.properties.publishingUsername",
-            "properties.siteConfig.properties.appSettings[].name",
-            "properties.siteConfig.properties.appSettings[].value",
-            "properties.siteConfig.properties.metadata[].name",
-            "properties.siteConfig.properties.metadata[].value",
-            "properties.siteConfig.properties.connectionStrings[].name",
-            "properties.siteConfig.properties.connectionStrings[].connectionString",
-            "properties.siteConfig.properties.connectionStrings[].type",
-            "properties.siteConfig.properties.handlerMappings[].extension",
-            "properties.siteConfig.properties.handlerMappings[].scriptProcessor",
-            "properties.siteConfig.properties.handlerMappings[].arguments",
-            "properties.siteConfig.properties.documentRoot",
-            "properties.siteConfig.properties.scmType",
-            "properties.siteConfig.properties.use32BitWorkerProcess",
-            "properties.siteConfig.properties.webSocketsEnabled",
-            "properties.siteConfig.properties.alwaysOn",
-            "properties.siteConfig.properties.javaVersion",
-            "properties.siteConfig.properties.javaContainer",
-            "properties.siteConfig.properties.javaContainerVersion",
-            "properties.siteConfig.properties.appCommandLine",
-            "properties.siteConfig.properties.managedPipelineMode",
-            "properties.siteConfig.properties.virtualApplications[].virtualPath",
-            "properties.siteConfig.properties.virtualApplications[].physicalPath",
-            "properties.siteConfig.properties.virtualApplications[].preloadEnabled",
-            "properties.siteConfig.properties.virtualApplications[].virtualDirectories[].virtualPath",
-            "properties.siteConfig.properties.virtualApplications[].virtualDirectories[].physicalPath",
-            "properties.siteConfig.properties.loadBalancing",
-            "properties.siteConfig.properties.experiments.rampUpRules[].actionHostName",
-            "properties.siteConfig.properties.experiments.rampUpRules[].reroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeStep",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeIntervalInMinutes",
-            "properties.siteConfig.properties.experiments.rampUpRules[].minReroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].maxReroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeDecisionCallbackUrl",
-            "properties.siteConfig.properties.experiments.rampUpRules[].name",
-            "properties.siteConfig.properties.limits.maxPercentageCpu",
-            "properties.siteConfig.properties.limits.maxMemoryInMb",
-            "properties.siteConfig.properties.limits.maxDiskSizeInMb",
-            "properties.siteConfig.properties.autoHealEnabled",
-            "properties.siteConfig.properties.autoHealRules.triggers.requests.count",
-            "properties.siteConfig.properties.autoHealRules.triggers.requests.timeInterval",
-            "properties.siteConfig.properties.autoHealRules.triggers.privateBytesInKB",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.timeTaken",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.count",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.timeInterval",
-            "properties.siteConfig.properties.autoHealRules.actions.actionType",
-            "properties.siteConfig.properties.autoHealRules.actions.customAction.exe",
-            "properties.siteConfig.properties.autoHealRules.actions.customAction.parameters",
-            "properties.siteConfig.properties.autoHealRules.actions.minProcessExecutionTime",
-            "properties.siteConfig.properties.tracingOptions",
-            "properties.siteConfig.properties.vnetName",
-            "properties.siteConfig.properties.cors.allowedOrigins",
-            "properties.siteConfig.properties.apiDefinition.url",
-            "properties.siteConfig.properties.autoSwapSlotName",
-            "properties.siteConfig.properties.localMySqlEnabled",
-            "properties.siteConfig.properties.ipSecurityRestrictions[].ipAddress",
-            "properties.siteConfig.properties.ipSecurityRestrictions[].subnetMask",
-            "properties.scmSiteAlsoStopped",
-            "properties.hostingEnvironmentProfile.name",
-            "properties.hostingEnvironmentProfile.type",
-            "properties.microService",
-            "properties.gatewaySiteName",
-            "properties.clientAffinityEnabled",
-            "properties.clientCertEnabled",
-            "properties.hostNamesDisabled",
-            "properties.containerSize",
-            "properties.maxNumberOfWorkers",
-            "properties.cloningInfo.overwrite",
-            "properties.cloningInfo.cloneCustomHostNames",
-            "properties.cloningInfo.cloneSourceControl",
-            "properties.cloningInfo.hostingEnvironment",
-            "properties.cloningInfo.appSettingsOverrides",
-            "properties.cloningInfo.configureLoadBalancing",
-            "properties.cloningInfo.trafficManagerProfileName"
-        ],
-        "environmentVariables": [
-            {
-                "path": "properties.siteConfig.properties.publishingPassword",
-                "suffix": "PUBLISHING_PASSWORD"
-            }
-        ]
-    },
-    {
-        "type": "SiteBackupStatus",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/backups/{backupId}",
-                "operationId": "Sites_GetSiteBackupStatus"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/backups/{backupId}",
-                "operationId": "Sites_DeleteBackup"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/backups",
-                "operationId": "Sites_ListSiteBackups"
-            }
-        },
-        "omitProperties": [
-            "properties.id",
-            "properties.status",
-            "properties.correlationId"
-        ],
-        "pickProperties": [
-            "properties.storageAccountUrl",
-            "properties.blobName",
-            "properties.name",
-            "properties.sizeInBytes",
-            "properties.created",
-            "properties.log",
-            "properties.databases[].databaseType",
-            "properties.databases[].name",
-            "properties.databases[].connectionStringName",
-            "properties.databases[].connectionString",
-            "properties.scheduled",
-            "properties.lastRestoreTimeStamp",
-            "properties.finishedTimeStamp",
-            "properties.websiteSizeInBytes"
-        ],
-        "pickPropertiesCreate": [
-            "properties.storageAccountUrl",
-            "properties.blobName",
-            "properties.name",
-            "properties.sizeInBytes",
-            "properties.created",
-            "properties.log",
-            "properties.databases[].databaseType",
-            "properties.databases[].name",
-            "properties.databases[].connectionStringName",
-            "properties.databases[].connectionString",
-            "properties.scheduled",
-            "properties.lastRestoreTimeStamp",
-            "properties.finishedTimeStamp",
-            "properties.websiteSizeInBytes"
-        ]
-    },
-    {
-        "type": "SiteBackupStatusSlot",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/backups/{backupId}",
-                "operationId": "Sites_GetSiteBackupStatusSlot"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/backups/{backupId}",
-                "operationId": "Sites_DeleteBackupSlot"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/backups",
-                "operationId": "Sites_ListSiteBackupsSlot"
-            }
-        },
-        "omitProperties": [
-            "properties.id",
-            "properties.status",
-            "properties.correlationId"
-        ],
-        "pickProperties": [
-            "properties.storageAccountUrl",
-            "properties.blobName",
-            "properties.name",
-            "properties.sizeInBytes",
-            "properties.created",
-            "properties.log",
-            "properties.databases[].databaseType",
-            "properties.databases[].name",
-            "properties.databases[].connectionStringName",
-            "properties.databases[].connectionString",
-            "properties.scheduled",
-            "properties.lastRestoreTimeStamp",
-            "properties.finishedTimeStamp",
-            "properties.websiteSizeInBytes"
-        ],
-        "pickPropertiesCreate": [
-            "properties.storageAccountUrl",
-            "properties.blobName",
-            "properties.name",
-            "properties.sizeInBytes",
-            "properties.created",
-            "properties.log",
-            "properties.databases[].databaseType",
-            "properties.databases[].name",
-            "properties.databases[].connectionStringName",
-            "properties.databases[].connectionString",
-            "properties.scheduled",
-            "properties.lastRestoreTimeStamp",
-            "properties.finishedTimeStamp",
-            "properties.websiteSizeInBytes"
-        ]
-    },
-    {
-        "type": "SiteConfig",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web",
-                "operationId": "Sites_GetSiteConfig"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web",
-                "operationId": "Sites_CreateOrUpdateSiteConfig"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web",
-                "operationId": "Sites_UpdateSiteConfig"
-            }
-        },
-        "omitProperties": [
-            "properties.publishingPassword",
-            "properties.autoHealRules.triggers.statusCodes"
-        ],
-        "pickProperties": [
-            "properties.numberOfWorkers",
-            "properties.defaultDocuments",
-            "properties.netFrameworkVersion",
-            "properties.phpVersion",
-            "properties.pythonVersion",
-            "properties.nodeVersion",
-            "properties.requestTracingEnabled",
-            "properties.requestTracingExpirationTime",
-            "properties.remoteDebuggingEnabled",
-            "properties.remoteDebuggingVersion",
-            "properties.httpLoggingEnabled",
-            "properties.logsDirectorySizeLimit",
-            "properties.detailedErrorLoggingEnabled",
-            "properties.publishingUsername",
-            "properties.appSettings[].name",
-            "properties.appSettings[].value",
-            "properties.metadata[].name",
-            "properties.metadata[].value",
-            "properties.connectionStrings[].name",
-            "properties.connectionStrings[].connectionString",
-            "properties.connectionStrings[].type",
-            "properties.handlerMappings[].extension",
-            "properties.handlerMappings[].scriptProcessor",
-            "properties.handlerMappings[].arguments",
-            "properties.documentRoot",
-            "properties.scmType",
-            "properties.use32BitWorkerProcess",
-            "properties.webSocketsEnabled",
-            "properties.alwaysOn",
-            "properties.javaVersion",
-            "properties.javaContainer",
-            "properties.javaContainerVersion",
-            "properties.appCommandLine",
-            "properties.managedPipelineMode",
-            "properties.virtualApplications[].virtualPath",
-            "properties.virtualApplications[].physicalPath",
-            "properties.virtualApplications[].preloadEnabled",
-            "properties.virtualApplications[].virtualDirectories[].virtualPath",
-            "properties.virtualApplications[].virtualDirectories[].physicalPath",
-            "properties.loadBalancing",
-            "properties.experiments.rampUpRules[].actionHostName",
-            "properties.experiments.rampUpRules[].reroutePercentage",
-            "properties.experiments.rampUpRules[].changeStep",
-            "properties.experiments.rampUpRules[].changeIntervalInMinutes",
-            "properties.experiments.rampUpRules[].minReroutePercentage",
-            "properties.experiments.rampUpRules[].maxReroutePercentage",
-            "properties.experiments.rampUpRules[].changeDecisionCallbackUrl",
-            "properties.experiments.rampUpRules[].name",
-            "properties.limits.maxPercentageCpu",
-            "properties.limits.maxMemoryInMb",
-            "properties.limits.maxDiskSizeInMb",
-            "properties.autoHealEnabled",
-            "properties.autoHealRules.triggers.requests.count",
-            "properties.autoHealRules.triggers.requests.timeInterval",
-            "properties.autoHealRules.triggers.privateBytesInKB",
-            "properties.autoHealRules.triggers.slowRequests.timeTaken",
-            "properties.autoHealRules.triggers.slowRequests.count",
-            "properties.autoHealRules.triggers.slowRequests.timeInterval",
-            "properties.autoHealRules.actions.actionType",
-            "properties.autoHealRules.actions.customAction.exe",
-            "properties.autoHealRules.actions.customAction.parameters",
-            "properties.autoHealRules.actions.minProcessExecutionTime",
-            "properties.tracingOptions",
-            "properties.vnetName",
-            "properties.cors.allowedOrigins",
-            "properties.apiDefinition.url",
-            "properties.autoSwapSlotName",
-            "properties.localMySqlEnabled",
-            "properties.ipSecurityRestrictions[].ipAddress",
-            "properties.ipSecurityRestrictions[].subnetMask"
-        ],
-        "pickPropertiesCreate": [
-            "properties.numberOfWorkers",
-            "properties.defaultDocuments",
-            "properties.netFrameworkVersion",
-            "properties.phpVersion",
-            "properties.pythonVersion",
-            "properties.nodeVersion",
-            "properties.requestTracingEnabled",
-            "properties.requestTracingExpirationTime",
-            "properties.remoteDebuggingEnabled",
-            "properties.remoteDebuggingVersion",
-            "properties.httpLoggingEnabled",
-            "properties.logsDirectorySizeLimit",
-            "properties.detailedErrorLoggingEnabled",
-            "properties.publishingUsername",
-            "properties.appSettings[].name",
-            "properties.appSettings[].value",
-            "properties.metadata[].name",
-            "properties.metadata[].value",
-            "properties.connectionStrings[].name",
-            "properties.connectionStrings[].connectionString",
-            "properties.connectionStrings[].type",
-            "properties.handlerMappings[].extension",
-            "properties.handlerMappings[].scriptProcessor",
-            "properties.handlerMappings[].arguments",
-            "properties.documentRoot",
-            "properties.scmType",
-            "properties.use32BitWorkerProcess",
-            "properties.webSocketsEnabled",
-            "properties.alwaysOn",
-            "properties.javaVersion",
-            "properties.javaContainer",
-            "properties.javaContainerVersion",
-            "properties.appCommandLine",
-            "properties.managedPipelineMode",
-            "properties.virtualApplications[].virtualPath",
-            "properties.virtualApplications[].physicalPath",
-            "properties.virtualApplications[].preloadEnabled",
-            "properties.virtualApplications[].virtualDirectories[].virtualPath",
-            "properties.virtualApplications[].virtualDirectories[].physicalPath",
-            "properties.loadBalancing",
-            "properties.experiments.rampUpRules[].actionHostName",
-            "properties.experiments.rampUpRules[].reroutePercentage",
-            "properties.experiments.rampUpRules[].changeStep",
-            "properties.experiments.rampUpRules[].changeIntervalInMinutes",
-            "properties.experiments.rampUpRules[].minReroutePercentage",
-            "properties.experiments.rampUpRules[].maxReroutePercentage",
-            "properties.experiments.rampUpRules[].changeDecisionCallbackUrl",
-            "properties.experiments.rampUpRules[].name",
-            "properties.limits.maxPercentageCpu",
-            "properties.limits.maxMemoryInMb",
-            "properties.limits.maxDiskSizeInMb",
-            "properties.autoHealEnabled",
-            "properties.autoHealRules.triggers.requests.count",
-            "properties.autoHealRules.triggers.requests.timeInterval",
-            "properties.autoHealRules.triggers.privateBytesInKB",
-            "properties.autoHealRules.triggers.slowRequests.timeTaken",
-            "properties.autoHealRules.triggers.slowRequests.count",
-            "properties.autoHealRules.triggers.slowRequests.timeInterval",
-            "properties.autoHealRules.actions.actionType",
-            "properties.autoHealRules.actions.customAction.exe",
-            "properties.autoHealRules.actions.customAction.parameters",
-            "properties.autoHealRules.actions.minProcessExecutionTime",
-            "properties.tracingOptions",
-            "properties.vnetName",
-            "properties.cors.allowedOrigins",
-            "properties.apiDefinition.url",
-            "properties.autoSwapSlotName",
-            "properties.localMySqlEnabled",
-            "properties.ipSecurityRestrictions[].ipAddress",
-            "properties.ipSecurityRestrictions[].subnetMask"
-        ],
-        "environmentVariables": [
-            {
-                "path": "properties.publishingPassword",
-                "suffix": "PUBLISHING_PASSWORD"
-            }
-        ]
-    },
-    {
-        "type": "SiteConfigSlot",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/config/web",
-                "operationId": "Sites_GetSiteConfigSlot"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/config/web",
-                "operationId": "Sites_CreateOrUpdateSiteConfigSlot"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/config/web",
-                "operationId": "Sites_UpdateSiteConfigSlot"
-            }
-        },
-        "omitProperties": [
-            "properties.publishingPassword",
-            "properties.autoHealRules.triggers.statusCodes"
-        ],
-        "pickProperties": [
-            "properties.numberOfWorkers",
-            "properties.defaultDocuments",
-            "properties.netFrameworkVersion",
-            "properties.phpVersion",
-            "properties.pythonVersion",
-            "properties.nodeVersion",
-            "properties.requestTracingEnabled",
-            "properties.requestTracingExpirationTime",
-            "properties.remoteDebuggingEnabled",
-            "properties.remoteDebuggingVersion",
-            "properties.httpLoggingEnabled",
-            "properties.logsDirectorySizeLimit",
-            "properties.detailedErrorLoggingEnabled",
-            "properties.publishingUsername",
-            "properties.appSettings[].name",
-            "properties.appSettings[].value",
-            "properties.metadata[].name",
-            "properties.metadata[].value",
-            "properties.connectionStrings[].name",
-            "properties.connectionStrings[].connectionString",
-            "properties.connectionStrings[].type",
-            "properties.handlerMappings[].extension",
-            "properties.handlerMappings[].scriptProcessor",
-            "properties.handlerMappings[].arguments",
-            "properties.documentRoot",
-            "properties.scmType",
-            "properties.use32BitWorkerProcess",
-            "properties.webSocketsEnabled",
-            "properties.alwaysOn",
-            "properties.javaVersion",
-            "properties.javaContainer",
-            "properties.javaContainerVersion",
-            "properties.appCommandLine",
-            "properties.managedPipelineMode",
-            "properties.virtualApplications[].virtualPath",
-            "properties.virtualApplications[].physicalPath",
-            "properties.virtualApplications[].preloadEnabled",
-            "properties.virtualApplications[].virtualDirectories[].virtualPath",
-            "properties.virtualApplications[].virtualDirectories[].physicalPath",
-            "properties.loadBalancing",
-            "properties.experiments.rampUpRules[].actionHostName",
-            "properties.experiments.rampUpRules[].reroutePercentage",
-            "properties.experiments.rampUpRules[].changeStep",
-            "properties.experiments.rampUpRules[].changeIntervalInMinutes",
-            "properties.experiments.rampUpRules[].minReroutePercentage",
-            "properties.experiments.rampUpRules[].maxReroutePercentage",
-            "properties.experiments.rampUpRules[].changeDecisionCallbackUrl",
-            "properties.experiments.rampUpRules[].name",
-            "properties.limits.maxPercentageCpu",
-            "properties.limits.maxMemoryInMb",
-            "properties.limits.maxDiskSizeInMb",
-            "properties.autoHealEnabled",
-            "properties.autoHealRules.triggers.requests.count",
-            "properties.autoHealRules.triggers.requests.timeInterval",
-            "properties.autoHealRules.triggers.privateBytesInKB",
-            "properties.autoHealRules.triggers.slowRequests.timeTaken",
-            "properties.autoHealRules.triggers.slowRequests.count",
-            "properties.autoHealRules.triggers.slowRequests.timeInterval",
-            "properties.autoHealRules.actions.actionType",
-            "properties.autoHealRules.actions.customAction.exe",
-            "properties.autoHealRules.actions.customAction.parameters",
-            "properties.autoHealRules.actions.minProcessExecutionTime",
-            "properties.tracingOptions",
-            "properties.vnetName",
-            "properties.cors.allowedOrigins",
-            "properties.apiDefinition.url",
-            "properties.autoSwapSlotName",
-            "properties.localMySqlEnabled",
-            "properties.ipSecurityRestrictions[].ipAddress",
-            "properties.ipSecurityRestrictions[].subnetMask"
-        ],
-        "pickPropertiesCreate": [
-            "properties.numberOfWorkers",
-            "properties.defaultDocuments",
-            "properties.netFrameworkVersion",
-            "properties.phpVersion",
-            "properties.pythonVersion",
-            "properties.nodeVersion",
-            "properties.requestTracingEnabled",
-            "properties.requestTracingExpirationTime",
-            "properties.remoteDebuggingEnabled",
-            "properties.remoteDebuggingVersion",
-            "properties.httpLoggingEnabled",
-            "properties.logsDirectorySizeLimit",
-            "properties.detailedErrorLoggingEnabled",
-            "properties.publishingUsername",
-            "properties.appSettings[].name",
-            "properties.appSettings[].value",
-            "properties.metadata[].name",
-            "properties.metadata[].value",
-            "properties.connectionStrings[].name",
-            "properties.connectionStrings[].connectionString",
-            "properties.connectionStrings[].type",
-            "properties.handlerMappings[].extension",
-            "properties.handlerMappings[].scriptProcessor",
-            "properties.handlerMappings[].arguments",
-            "properties.documentRoot",
-            "properties.scmType",
-            "properties.use32BitWorkerProcess",
-            "properties.webSocketsEnabled",
-            "properties.alwaysOn",
-            "properties.javaVersion",
-            "properties.javaContainer",
-            "properties.javaContainerVersion",
-            "properties.appCommandLine",
-            "properties.managedPipelineMode",
-            "properties.virtualApplications[].virtualPath",
-            "properties.virtualApplications[].physicalPath",
-            "properties.virtualApplications[].preloadEnabled",
-            "properties.virtualApplications[].virtualDirectories[].virtualPath",
-            "properties.virtualApplications[].virtualDirectories[].physicalPath",
-            "properties.loadBalancing",
-            "properties.experiments.rampUpRules[].actionHostName",
-            "properties.experiments.rampUpRules[].reroutePercentage",
-            "properties.experiments.rampUpRules[].changeStep",
-            "properties.experiments.rampUpRules[].changeIntervalInMinutes",
-            "properties.experiments.rampUpRules[].minReroutePercentage",
-            "properties.experiments.rampUpRules[].maxReroutePercentage",
-            "properties.experiments.rampUpRules[].changeDecisionCallbackUrl",
-            "properties.experiments.rampUpRules[].name",
-            "properties.limits.maxPercentageCpu",
-            "properties.limits.maxMemoryInMb",
-            "properties.limits.maxDiskSizeInMb",
-            "properties.autoHealEnabled",
-            "properties.autoHealRules.triggers.requests.count",
-            "properties.autoHealRules.triggers.requests.timeInterval",
-            "properties.autoHealRules.triggers.privateBytesInKB",
-            "properties.autoHealRules.triggers.slowRequests.timeTaken",
-            "properties.autoHealRules.triggers.slowRequests.count",
-            "properties.autoHealRules.triggers.slowRequests.timeInterval",
-            "properties.autoHealRules.actions.actionType",
-            "properties.autoHealRules.actions.customAction.exe",
-            "properties.autoHealRules.actions.customAction.parameters",
-            "properties.autoHealRules.actions.minProcessExecutionTime",
-            "properties.tracingOptions",
-            "properties.vnetName",
-            "properties.cors.allowedOrigins",
-            "properties.apiDefinition.url",
-            "properties.autoSwapSlotName",
-            "properties.localMySqlEnabled",
-            "properties.ipSecurityRestrictions[].ipAddress",
-            "properties.ipSecurityRestrictions[].subnetMask"
-        ],
-        "environmentVariables": [
-            {
-                "path": "properties.publishingPassword",
-                "suffix": "PUBLISHING_PASSWORD"
-            }
-        ]
-    },
-    {
-        "type": "SiteDeployment",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/deployments/{id}",
-                "operationId": "Sites_GetDeployment"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/deployments/{id}",
-                "operationId": "Sites_CreateDeployment"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/deployments/{id}",
-                "operationId": "Sites_DeleteDeployment"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/deployments",
-                "operationId": "Sites_GetDeployments"
-            }
-        },
-        "omitProperties": [
-            "properties.id",
-            "properties.status"
-        ],
-        "pickProperties": [
-            "properties.message",
-            "properties.author",
-            "properties.deployer",
-            "properties.author_email",
-            "properties.start_time",
-            "properties.end_time",
-            "properties.active",
-            "properties.details"
-        ],
-        "pickPropertiesCreate": [
-            "properties.message",
-            "properties.author",
-            "properties.deployer",
-            "properties.author_email",
-            "properties.start_time",
-            "properties.end_time",
-            "properties.active",
-            "properties.details"
-        ]
-    },
-    {
-        "type": "SiteDeploymentSlot",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/deployments/{id}",
-                "operationId": "Sites_GetDeploymentSlot"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/deployments/{id}",
-                "operationId": "Sites_CreateDeploymentSlot"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/deployments/{id}",
-                "operationId": "Sites_DeleteDeploymentSlot"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/deployments",
-                "operationId": "Sites_GetDeploymentsSlot"
-            }
-        },
-        "omitProperties": [
-            "properties.id",
-            "properties.status"
-        ],
-        "pickProperties": [
-            "properties.message",
-            "properties.author",
-            "properties.deployer",
-            "properties.author_email",
-            "properties.start_time",
-            "properties.end_time",
-            "properties.active",
-            "properties.details"
-        ],
-        "pickPropertiesCreate": [
-            "properties.message",
-            "properties.author",
-            "properties.deployer",
-            "properties.author_email",
-            "properties.start_time",
-            "properties.end_time",
-            "properties.active",
-            "properties.details"
-        ]
-    },
-    {
-        "type": "SiteHostNameBinding",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "domain": {
-                "type": "Domain",
-                "group": "DomainRegistration",
-                "createOnly": true,
-                "pathId": "properties.domainId"
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hostNameBindings/{hostName}",
-                "operationId": "Sites_GetSiteHostNameBinding"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hostNameBindings/{hostName}",
-                "operationId": "Sites_CreateOrUpdateSiteHostNameBinding"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hostNameBindings/{hostName}",
-                "operationId": "Sites_DeleteSiteHostNameBinding"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hostNameBindings",
-                "operationId": "Sites_GetSiteHostNameBindings"
-            }
-        },
-        "omitProperties": [
-            "properties.domainId"
-        ],
-        "pickProperties": [
-            "properties.name",
-            "properties.siteName",
-            "properties.azureResourceName",
-            "properties.azureResourceType",
-            "properties.customHostNameDnsRecordType",
-            "properties.hostNameType"
-        ],
-        "pickPropertiesCreate": [
-            "properties.name",
-            "properties.siteName",
-            "properties.azureResourceName",
-            "properties.azureResourceType",
-            "properties.customHostNameDnsRecordType",
-            "properties.hostNameType"
-        ]
-    },
-    {
-        "type": "SiteHostNameBindingSlot",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "domain": {
-                "type": "Domain",
-                "group": "DomainRegistration",
-                "createOnly": true,
-                "pathId": "properties.domainId"
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hostNameBindings/{hostName}",
-                "operationId": "Sites_GetSiteHostNameBindingSlot"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hostNameBindings/{hostName}",
-                "operationId": "Sites_CreateOrUpdateSiteHostNameBindingSlot"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hostNameBindings/{hostName}",
-                "operationId": "Sites_DeleteSiteHostNameBindingSlot"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hostNameBindings",
-                "operationId": "Sites_GetSiteHostNameBindingsSlot"
-            }
-        },
-        "omitProperties": [
-            "properties.domainId"
-        ],
-        "pickProperties": [
-            "properties.name",
-            "properties.siteName",
-            "properties.azureResourceName",
-            "properties.azureResourceType",
-            "properties.customHostNameDnsRecordType",
-            "properties.hostNameType"
-        ],
-        "pickPropertiesCreate": [
-            "properties.name",
-            "properties.siteName",
-            "properties.azureResourceName",
-            "properties.azureResourceType",
-            "properties.customHostNameDnsRecordType",
-            "properties.hostNameType"
-        ]
-    },
-    {
-        "type": "SiteLogsConfig",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/logs",
-                "operationId": "Sites_GetSiteLogsConfig"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/logs",
-                "operationId": "Sites_UpdateSiteLogsConfig"
-            }
-        },
-        "pickProperties": [
-            "properties.applicationLogs.fileSystem.level",
-            "properties.applicationLogs.azureTableStorage.level",
-            "properties.applicationLogs.azureTableStorage.sasUrl",
-            "properties.applicationLogs.azureBlobStorage.level",
-            "properties.applicationLogs.azureBlobStorage.sasUrl",
-            "properties.applicationLogs.azureBlobStorage.retentionInDays",
-            "properties.httpLogs.fileSystem.retentionInMb",
-            "properties.httpLogs.fileSystem.retentionInDays",
-            "properties.httpLogs.fileSystem.enabled",
-            "properties.httpLogs.azureBlobStorage.sasUrl",
-            "properties.httpLogs.azureBlobStorage.retentionInDays",
-            "properties.httpLogs.azureBlobStorage.enabled",
-            "properties.failedRequestsTracing.enabled",
-            "properties.detailedErrorMessages.enabled"
-        ],
-        "pickPropertiesCreate": [
-            "properties.applicationLogs.fileSystem.level",
-            "properties.applicationLogs.azureTableStorage.level",
-            "properties.applicationLogs.azureTableStorage.sasUrl",
-            "properties.applicationLogs.azureBlobStorage.level",
-            "properties.applicationLogs.azureBlobStorage.sasUrl",
-            "properties.applicationLogs.azureBlobStorage.retentionInDays",
-            "properties.httpLogs.fileSystem.retentionInMb",
-            "properties.httpLogs.fileSystem.retentionInDays",
-            "properties.httpLogs.fileSystem.enabled",
-            "properties.httpLogs.azureBlobStorage.sasUrl",
-            "properties.httpLogs.azureBlobStorage.retentionInDays",
-            "properties.httpLogs.azureBlobStorage.enabled",
-            "properties.failedRequestsTracing.enabled",
-            "properties.detailedErrorMessages.enabled"
-        ]
-    },
-    {
-        "type": "SiteLogsConfigSlot",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/config/logs",
-                "operationId": "Sites_GetSiteLogsConfigSlot"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/config/logs",
-                "operationId": "Sites_UpdateSiteLogsConfigSlot"
-            }
-        },
-        "pickProperties": [
-            "properties.applicationLogs.fileSystem.level",
-            "properties.applicationLogs.azureTableStorage.level",
-            "properties.applicationLogs.azureTableStorage.sasUrl",
-            "properties.applicationLogs.azureBlobStorage.level",
-            "properties.applicationLogs.azureBlobStorage.sasUrl",
-            "properties.applicationLogs.azureBlobStorage.retentionInDays",
-            "properties.httpLogs.fileSystem.retentionInMb",
-            "properties.httpLogs.fileSystem.retentionInDays",
-            "properties.httpLogs.fileSystem.enabled",
-            "properties.httpLogs.azureBlobStorage.sasUrl",
-            "properties.httpLogs.azureBlobStorage.retentionInDays",
-            "properties.httpLogs.azureBlobStorage.enabled",
-            "properties.failedRequestsTracing.enabled",
-            "properties.detailedErrorMessages.enabled"
-        ],
-        "pickPropertiesCreate": [
-            "properties.applicationLogs.fileSystem.level",
-            "properties.applicationLogs.azureTableStorage.level",
-            "properties.applicationLogs.azureTableStorage.sasUrl",
-            "properties.applicationLogs.azureBlobStorage.level",
-            "properties.applicationLogs.azureBlobStorage.sasUrl",
-            "properties.applicationLogs.azureBlobStorage.retentionInDays",
-            "properties.httpLogs.fileSystem.retentionInMb",
-            "properties.httpLogs.fileSystem.retentionInDays",
-            "properties.httpLogs.fileSystem.enabled",
-            "properties.httpLogs.azureBlobStorage.sasUrl",
-            "properties.httpLogs.azureBlobStorage.retentionInDays",
-            "properties.httpLogs.azureBlobStorage.enabled",
-            "properties.failedRequestsTracing.enabled",
-            "properties.detailedErrorMessages.enabled"
-        ]
-    },
-    {
-        "type": "SitePremierAddOn",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/premieraddons/{premierAddOnName}",
-                "operationId": "Sites_GetSitePremierAddOn"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/premieraddons/{premierAddOnName}",
-                "operationId": "Sites_AddSitePremierAddOn"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/premieraddons/{premierAddOnName}",
-                "operationId": "Sites_DeleteSitePremierAddOn"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/premieraddons",
-                "operationId": "Sites_ListSitePremierAddOns"
-            }
-        },
-        "pickProperties": [],
-        "pickPropertiesCreate": [
-            "location",
-            "tags",
-            "plan.name",
-            "plan.publisher",
-            "plan.product",
-            "plan.promotionCode",
-            "plan.version",
-            "sku.name",
-            "sku.tier",
-            "sku.size",
-            "sku.family",
-            "sku.capacity"
-        ]
-    },
-    {
-        "type": "SitePremierAddOnSlot",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/premieraddons/{premierAddOnName}",
-                "operationId": "Sites_GetSitePremierAddOnSlot"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/premieraddons/{premierAddOnName}",
-                "operationId": "Sites_AddSitePremierAddOnSlot"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/premieraddons/{premierAddOnName}",
-                "operationId": "Sites_DeleteSitePremierAddOnSlot"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/premieraddons",
-                "operationId": "Sites_ListSitePremierAddOnsSlot"
-            }
-        },
-        "pickProperties": [],
-        "pickPropertiesCreate": [
-            "location",
-            "tags",
-            "plan.name",
-            "plan.publisher",
-            "plan.product",
-            "plan.promotionCode",
-            "plan.version",
-            "sku.name",
-            "sku.tier",
-            "sku.size",
-            "sku.family",
-            "sku.capacity"
-        ]
-    },
-    {
-        "type": "SiteRelayServiceConnection",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hybridconnection/{entityName}",
-                "operationId": "Sites_GetSiteRelayServiceConnection"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hybridconnection/{entityName}",
-                "operationId": "Sites_CreateOrUpdateSiteRelayServiceConnection"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hybridconnection/{entityName}",
-                "operationId": "Sites_DeleteSiteRelayServiceConnection"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hybridconnection/{entityName}",
-                "operationId": "Sites_UpdateSiteRelayServiceConnection"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hybridconnection",
-                "operationId": "Sites_ListSiteRelayServiceConnections"
-            }
-        },
-        "pickProperties": [
-            "properties.entityName",
-            "properties.entityConnectionString",
-            "properties.resourceType",
-            "properties.resourceConnectionString",
-            "properties.hostname",
-            "properties.port",
-            "properties.biztalkUri"
-        ],
-        "pickPropertiesCreate": [
-            "properties.entityName",
-            "properties.entityConnectionString",
-            "properties.resourceType",
-            "properties.resourceConnectionString",
-            "properties.hostname",
-            "properties.port",
-            "properties.biztalkUri"
-        ]
-    },
-    {
-        "type": "SiteRelayServiceConnectionSlot",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hybridconnection/{entityName}",
-                "operationId": "Sites_GetSiteRelayServiceConnectionSlot"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hybridconnection/{entityName}",
-                "operationId": "Sites_CreateOrUpdateSiteRelayServiceConnectionSlot"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hybridconnection/{entityName}",
-                "operationId": "Sites_DeleteSiteRelayServiceConnectionSlot"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hybridconnection/{entityName}",
-                "operationId": "Sites_UpdateSiteRelayServiceConnectionSlot"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hybridconnection",
-                "operationId": "Sites_ListSiteRelayServiceConnectionsSlot"
-            }
-        },
-        "pickProperties": [
-            "properties.entityName",
-            "properties.entityConnectionString",
-            "properties.resourceType",
-            "properties.resourceConnectionString",
-            "properties.hostname",
-            "properties.port",
-            "properties.biztalkUri"
-        ],
-        "pickPropertiesCreate": [
-            "properties.entityName",
-            "properties.entityConnectionString",
-            "properties.resourceType",
-            "properties.resourceConnectionString",
-            "properties.hostname",
-            "properties.port",
-            "properties.biztalkUri"
-        ]
-    },
-    {
-        "type": "SiteSlot",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "serverFarm": {
-                "type": "ServerFarm",
-                "group": "Web",
-                "createOnly": true,
-                "pathId": "properties.serverFarmId"
-            },
-            "hostingEnvironment": {
-                "type": "HostingEnvironment",
-                "group": "Web",
-                "createOnly": true,
-                "pathId": "properties.hostingEnvironmentProfile.id"
-            },
-            "webApp": {
-                "type": "WebApp",
-                "group": "Web",
-                "createOnly": true,
-                "pathId": "properties.cloningInfo.sourceWebAppId"
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}",
-                "operationId": "Sites_GetSiteSlot"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}",
-                "operationId": "Sites_CreateOrUpdateSiteSlot"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}",
-                "operationId": "Sites_DeleteSiteSlot"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots",
-                "operationId": "Sites_GetSiteSlots"
-            }
-        },
-        "omitProperties": [
-            "properties.state",
-            "properties.hostNames",
-            "properties.repositorySiteName",
-            "properties.usageState",
-            "properties.enabledHostNames",
-            "properties.availabilityState",
-            "properties.hostNameSslStates",
-            "properties.serverFarmId",
-            "properties.lastModifiedTimeUtc",
-            "properties.siteConfig.properties.publishingPassword",
-            "properties.siteConfig.properties.autoHealRules.triggers.statusCodes",
-            "properties.trafficManagerHostNames",
-            "properties.premiumAppDeployed",
-            "properties.targetSwapSlot",
-            "properties.hostingEnvironmentProfile.id",
-            "properties.outboundIpAddresses",
-            "properties.cloningInfo.correlationId",
-            "properties.cloningInfo.sourceWebAppId",
-            "properties.cloningInfo.trafficManagerProfileId",
-            "properties.resourceGroup",
-            "properties.isDefaultContainer",
-            "properties.defaultHostName"
-        ],
-        "pickProperties": [
-            "properties.name",
-            "properties.enabled",
-            "properties.siteConfig.name",
-            "properties.siteConfig.kind",
-            "properties.siteConfig.location",
-            "properties.siteConfig.type",
-            "properties.siteConfig.tags",
-            "properties.siteConfig.properties.numberOfWorkers",
-            "properties.siteConfig.properties.defaultDocuments",
-            "properties.siteConfig.properties.netFrameworkVersion",
-            "properties.siteConfig.properties.phpVersion",
-            "properties.siteConfig.properties.pythonVersion",
-            "properties.siteConfig.properties.nodeVersion",
-            "properties.siteConfig.properties.requestTracingEnabled",
-            "properties.siteConfig.properties.requestTracingExpirationTime",
-            "properties.siteConfig.properties.remoteDebuggingEnabled",
-            "properties.siteConfig.properties.remoteDebuggingVersion",
-            "properties.siteConfig.properties.httpLoggingEnabled",
-            "properties.siteConfig.properties.logsDirectorySizeLimit",
-            "properties.siteConfig.properties.detailedErrorLoggingEnabled",
-            "properties.siteConfig.properties.publishingUsername",
-            "properties.siteConfig.properties.appSettings[].name",
-            "properties.siteConfig.properties.appSettings[].value",
-            "properties.siteConfig.properties.metadata[].name",
-            "properties.siteConfig.properties.metadata[].value",
-            "properties.siteConfig.properties.connectionStrings[].name",
-            "properties.siteConfig.properties.connectionStrings[].connectionString",
-            "properties.siteConfig.properties.connectionStrings[].type",
-            "properties.siteConfig.properties.handlerMappings[].extension",
-            "properties.siteConfig.properties.handlerMappings[].scriptProcessor",
-            "properties.siteConfig.properties.handlerMappings[].arguments",
-            "properties.siteConfig.properties.documentRoot",
-            "properties.siteConfig.properties.scmType",
-            "properties.siteConfig.properties.use32BitWorkerProcess",
-            "properties.siteConfig.properties.webSocketsEnabled",
-            "properties.siteConfig.properties.alwaysOn",
-            "properties.siteConfig.properties.javaVersion",
-            "properties.siteConfig.properties.javaContainer",
-            "properties.siteConfig.properties.javaContainerVersion",
-            "properties.siteConfig.properties.appCommandLine",
-            "properties.siteConfig.properties.managedPipelineMode",
-            "properties.siteConfig.properties.virtualApplications[].virtualPath",
-            "properties.siteConfig.properties.virtualApplications[].physicalPath",
-            "properties.siteConfig.properties.virtualApplications[].preloadEnabled",
-            "properties.siteConfig.properties.virtualApplications[].virtualDirectories[].virtualPath",
-            "properties.siteConfig.properties.virtualApplications[].virtualDirectories[].physicalPath",
-            "properties.siteConfig.properties.loadBalancing",
-            "properties.siteConfig.properties.experiments.rampUpRules[].actionHostName",
-            "properties.siteConfig.properties.experiments.rampUpRules[].reroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeStep",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeIntervalInMinutes",
-            "properties.siteConfig.properties.experiments.rampUpRules[].minReroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].maxReroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeDecisionCallbackUrl",
-            "properties.siteConfig.properties.experiments.rampUpRules[].name",
-            "properties.siteConfig.properties.limits.maxPercentageCpu",
-            "properties.siteConfig.properties.limits.maxMemoryInMb",
-            "properties.siteConfig.properties.limits.maxDiskSizeInMb",
-            "properties.siteConfig.properties.autoHealEnabled",
-            "properties.siteConfig.properties.autoHealRules.triggers.requests.count",
-            "properties.siteConfig.properties.autoHealRules.triggers.requests.timeInterval",
-            "properties.siteConfig.properties.autoHealRules.triggers.privateBytesInKB",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.timeTaken",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.count",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.timeInterval",
-            "properties.siteConfig.properties.autoHealRules.actions.actionType",
-            "properties.siteConfig.properties.autoHealRules.actions.customAction.exe",
-            "properties.siteConfig.properties.autoHealRules.actions.customAction.parameters",
-            "properties.siteConfig.properties.autoHealRules.actions.minProcessExecutionTime",
-            "properties.siteConfig.properties.tracingOptions",
-            "properties.siteConfig.properties.vnetName",
-            "properties.siteConfig.properties.cors.allowedOrigins",
-            "properties.siteConfig.properties.apiDefinition.url",
-            "properties.siteConfig.properties.autoSwapSlotName",
-            "properties.siteConfig.properties.localMySqlEnabled",
-            "properties.siteConfig.properties.ipSecurityRestrictions[].ipAddress",
-            "properties.siteConfig.properties.ipSecurityRestrictions[].subnetMask",
-            "properties.scmSiteAlsoStopped",
-            "properties.hostingEnvironmentProfile.name",
-            "properties.hostingEnvironmentProfile.type",
-            "properties.microService",
-            "properties.gatewaySiteName",
-            "properties.clientAffinityEnabled",
-            "properties.clientCertEnabled",
-            "properties.hostNamesDisabled",
-            "properties.containerSize",
-            "properties.maxNumberOfWorkers",
-            "properties.cloningInfo.overwrite",
-            "properties.cloningInfo.cloneCustomHostNames",
-            "properties.cloningInfo.cloneSourceControl",
-            "properties.cloningInfo.hostingEnvironment",
-            "properties.cloningInfo.appSettingsOverrides",
-            "properties.cloningInfo.configureLoadBalancing",
-            "properties.cloningInfo.trafficManagerProfileName"
-        ],
-        "pickPropertiesCreate": [
-            "properties.name",
-            "properties.enabled",
-            "properties.siteConfig.name",
-            "properties.siteConfig.kind",
-            "properties.siteConfig.location",
-            "properties.siteConfig.type",
-            "properties.siteConfig.tags",
-            "properties.siteConfig.properties.numberOfWorkers",
-            "properties.siteConfig.properties.defaultDocuments",
-            "properties.siteConfig.properties.netFrameworkVersion",
-            "properties.siteConfig.properties.phpVersion",
-            "properties.siteConfig.properties.pythonVersion",
-            "properties.siteConfig.properties.nodeVersion",
-            "properties.siteConfig.properties.requestTracingEnabled",
-            "properties.siteConfig.properties.requestTracingExpirationTime",
-            "properties.siteConfig.properties.remoteDebuggingEnabled",
-            "properties.siteConfig.properties.remoteDebuggingVersion",
-            "properties.siteConfig.properties.httpLoggingEnabled",
-            "properties.siteConfig.properties.logsDirectorySizeLimit",
-            "properties.siteConfig.properties.detailedErrorLoggingEnabled",
-            "properties.siteConfig.properties.publishingUsername",
-            "properties.siteConfig.properties.appSettings[].name",
-            "properties.siteConfig.properties.appSettings[].value",
-            "properties.siteConfig.properties.metadata[].name",
-            "properties.siteConfig.properties.metadata[].value",
-            "properties.siteConfig.properties.connectionStrings[].name",
-            "properties.siteConfig.properties.connectionStrings[].connectionString",
-            "properties.siteConfig.properties.connectionStrings[].type",
-            "properties.siteConfig.properties.handlerMappings[].extension",
-            "properties.siteConfig.properties.handlerMappings[].scriptProcessor",
-            "properties.siteConfig.properties.handlerMappings[].arguments",
-            "properties.siteConfig.properties.documentRoot",
-            "properties.siteConfig.properties.scmType",
-            "properties.siteConfig.properties.use32BitWorkerProcess",
-            "properties.siteConfig.properties.webSocketsEnabled",
-            "properties.siteConfig.properties.alwaysOn",
-            "properties.siteConfig.properties.javaVersion",
-            "properties.siteConfig.properties.javaContainer",
-            "properties.siteConfig.properties.javaContainerVersion",
-            "properties.siteConfig.properties.appCommandLine",
-            "properties.siteConfig.properties.managedPipelineMode",
-            "properties.siteConfig.properties.virtualApplications[].virtualPath",
-            "properties.siteConfig.properties.virtualApplications[].physicalPath",
-            "properties.siteConfig.properties.virtualApplications[].preloadEnabled",
-            "properties.siteConfig.properties.virtualApplications[].virtualDirectories[].virtualPath",
-            "properties.siteConfig.properties.virtualApplications[].virtualDirectories[].physicalPath",
-            "properties.siteConfig.properties.loadBalancing",
-            "properties.siteConfig.properties.experiments.rampUpRules[].actionHostName",
-            "properties.siteConfig.properties.experiments.rampUpRules[].reroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeStep",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeIntervalInMinutes",
-            "properties.siteConfig.properties.experiments.rampUpRules[].minReroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].maxReroutePercentage",
-            "properties.siteConfig.properties.experiments.rampUpRules[].changeDecisionCallbackUrl",
-            "properties.siteConfig.properties.experiments.rampUpRules[].name",
-            "properties.siteConfig.properties.limits.maxPercentageCpu",
-            "properties.siteConfig.properties.limits.maxMemoryInMb",
-            "properties.siteConfig.properties.limits.maxDiskSizeInMb",
-            "properties.siteConfig.properties.autoHealEnabled",
-            "properties.siteConfig.properties.autoHealRules.triggers.requests.count",
-            "properties.siteConfig.properties.autoHealRules.triggers.requests.timeInterval",
-            "properties.siteConfig.properties.autoHealRules.triggers.privateBytesInKB",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.timeTaken",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.count",
-            "properties.siteConfig.properties.autoHealRules.triggers.slowRequests.timeInterval",
-            "properties.siteConfig.properties.autoHealRules.actions.actionType",
-            "properties.siteConfig.properties.autoHealRules.actions.customAction.exe",
-            "properties.siteConfig.properties.autoHealRules.actions.customAction.parameters",
-            "properties.siteConfig.properties.autoHealRules.actions.minProcessExecutionTime",
-            "properties.siteConfig.properties.tracingOptions",
-            "properties.siteConfig.properties.vnetName",
-            "properties.siteConfig.properties.cors.allowedOrigins",
-            "properties.siteConfig.properties.apiDefinition.url",
-            "properties.siteConfig.properties.autoSwapSlotName",
-            "properties.siteConfig.properties.localMySqlEnabled",
-            "properties.siteConfig.properties.ipSecurityRestrictions[].ipAddress",
-            "properties.siteConfig.properties.ipSecurityRestrictions[].subnetMask",
-            "properties.scmSiteAlsoStopped",
-            "properties.hostingEnvironmentProfile.name",
-            "properties.hostingEnvironmentProfile.type",
-            "properties.microService",
-            "properties.gatewaySiteName",
-            "properties.clientAffinityEnabled",
-            "properties.clientCertEnabled",
-            "properties.hostNamesDisabled",
-            "properties.containerSize",
-            "properties.maxNumberOfWorkers",
-            "properties.cloningInfo.overwrite",
-            "properties.cloningInfo.cloneCustomHostNames",
-            "properties.cloningInfo.cloneSourceControl",
-            "properties.cloningInfo.hostingEnvironment",
-            "properties.cloningInfo.appSettingsOverrides",
-            "properties.cloningInfo.configureLoadBalancing",
-            "properties.cloningInfo.trafficManagerProfileName"
-        ],
-        "environmentVariables": [
-            {
-                "path": "properties.siteConfig.properties.publishingPassword",
-                "suffix": "PUBLISHING_PASSWORD"
-            }
-        ]
-    },
-    {
-        "type": "SiteSlotConfigNames",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/slotConfigNames",
-                "operationId": "Sites_GetSlotConfigNames"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/slotConfigNames",
-                "operationId": "Sites_UpdateSlotConfigNames"
-            }
-        },
-        "pickProperties": [
-            "properties.connectionStringNames",
-            "properties.appSettingNames"
-        ],
-        "pickPropertiesCreate": [
-            "properties.connectionStringNames",
-            "properties.appSettingNames"
-        ]
-    },
-    {
-        "type": "SiteSourceControl",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/sourcecontrols/web",
-                "operationId": "Sites_GetSiteSourceControl"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/sourcecontrols/web",
-                "operationId": "Sites_CreateOrUpdateSiteSourceControl"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/sourcecontrols/web",
-                "operationId": "Sites_DeleteSiteSourceControl"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/sourcecontrols/web",
-                "operationId": "Sites_UpdateSiteSourceControl"
-            }
-        },
-        "pickProperties": [
-            "properties.repoUrl",
-            "properties.branch",
-            "properties.isManualIntegration",
-            "properties.deploymentRollbackEnabled",
-            "properties.isMercurial"
-        ],
-        "pickPropertiesCreate": [
-            "properties.repoUrl",
-            "properties.branch",
-            "properties.isManualIntegration",
-            "properties.deploymentRollbackEnabled",
-            "properties.isMercurial"
-        ]
-    },
-    {
-        "type": "SiteSourceControlSlot",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/sourcecontrols/web",
-                "operationId": "Sites_GetSiteSourceControlSlot"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/sourcecontrols/web",
-                "operationId": "Sites_CreateOrUpdateSiteSourceControlSlot"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/sourcecontrols/web",
-                "operationId": "Sites_DeleteSiteSourceControlSlot"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/sourcecontrols/web",
-                "operationId": "Sites_UpdateSiteSourceControlSlot"
-            }
-        },
-        "pickProperties": [
-            "properties.repoUrl",
-            "properties.branch",
-            "properties.isManualIntegration",
-            "properties.deploymentRollbackEnabled",
-            "properties.isMercurial"
-        ],
-        "pickPropertiesCreate": [
-            "properties.repoUrl",
-            "properties.branch",
-            "properties.isManualIntegration",
-            "properties.deploymentRollbackEnabled",
-            "properties.isMercurial"
-        ]
-    },
-    {
-        "type": "SiteVNETConnection",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/virtualNetworkConnections/{vnetName}",
-                "operationId": "Sites_GetSiteVNETConnection"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/virtualNetworkConnections/{vnetName}",
-                "operationId": "Sites_CreateOrUpdateSiteVNETConnection"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/virtualNetworkConnections/{vnetName}",
-                "operationId": "Sites_DeleteSiteVNETConnection"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/virtualNetworkConnections/{vnetName}",
-                "operationId": "Sites_UpdateSiteVNETConnection"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/virtualNetworkConnections",
-                "operationId": "Sites_GetSiteVNETConnections"
-            }
-        },
-        "omitProperties": [
-            "properties.vnetResourceId"
-        ],
-        "pickProperties": [
-            "properties.certThumbprint",
-            "properties.certBlob",
-            "properties.routes[].name",
-            "properties.routes[].kind",
-            "properties.routes[].location",
-            "properties.routes[].type",
-            "properties.routes[].tags",
-            "properties.routes[].properties.name",
-            "properties.routes[].properties.startAddress",
-            "properties.routes[].properties.endAddress",
-            "properties.routes[].properties.routeType",
-            "properties.resyncRequired",
-            "properties.dnsServers"
-        ],
-        "pickPropertiesCreate": [
-            "properties.certThumbprint",
-            "properties.certBlob",
-            "properties.routes[].name",
-            "properties.routes[].kind",
-            "properties.routes[].location",
-            "properties.routes[].type",
-            "properties.routes[].tags",
-            "properties.routes[].properties.name",
-            "properties.routes[].properties.startAddress",
-            "properties.routes[].properties.endAddress",
-            "properties.routes[].properties.routeType",
-            "properties.resyncRequired",
-            "properties.dnsServers"
-        ]
-    },
-    {
-        "type": "SiteVNETConnectionSlot",
-        "group": "Web",
-        "apiVersion": "2015-08-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            },
-            "slot": {
-                "type": "SiteSlot",
-                "group": "Web",
-                "name": "slot",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/virtualNetworkConnections/{vnetName}",
-                "operationId": "Sites_GetSiteVNETConnectionSlot"
-            },
-            "put": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/virtualNetworkConnections/{vnetName}",
-                "operationId": "Sites_CreateOrUpdateSiteVNETConnectionSlot"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/virtualNetworkConnections/{vnetName}",
-                "operationId": "Sites_DeleteSiteVNETConnectionSlot"
-            },
-            "patch": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/virtualNetworkConnections/{vnetName}",
-                "operationId": "Sites_UpdateSiteVNETConnectionSlot"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/virtualNetworkConnections",
-                "operationId": "Sites_GetSiteVNETConnectionsSlot"
-            }
-        },
-        "omitProperties": [
-            "properties.vnetResourceId"
-        ],
-        "pickProperties": [
-            "properties.certThumbprint",
-            "properties.certBlob",
-            "properties.routes[].name",
-            "properties.routes[].kind",
-            "properties.routes[].location",
-            "properties.routes[].type",
-            "properties.routes[].tags",
-            "properties.routes[].properties.name",
-            "properties.routes[].properties.startAddress",
-            "properties.routes[].properties.endAddress",
-            "properties.routes[].properties.routeType",
-            "properties.resyncRequired",
-            "properties.dnsServers"
-        ],
-        "pickPropertiesCreate": [
-            "properties.certThumbprint",
-            "properties.certBlob",
-            "properties.routes[].name",
-            "properties.routes[].kind",
-            "properties.routes[].location",
-            "properties.routes[].type",
-            "properties.routes[].tags",
-            "properties.routes[].properties.name",
-            "properties.routes[].properties.startAddress",
-            "properties.routes[].properties.endAddress",
-            "properties.routes[].properties.routeType",
-            "properties.resyncRequired",
-            "properties.dnsServers"
-        ]
-    },
-    {
         "type": "StaticSite",
         "group": "Web",
         "apiVersion": "2021-03-01",
@@ -28861,8 +25955,8 @@
                 "createOnly": true,
                 "list": true
             },
-            "serverFarm": {
-                "type": "ServerFarm",
+            "appServicePlan": {
+                "type": "AppServicePlan",
                 "group": "Web",
                 "createOnly": true,
                 "pathId": "properties.serverFarmId"
@@ -28876,7 +25970,8 @@
             "subnet": {
                 "type": "Subnet",
                 "group": "Network",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.virtualNetworkSubnetId"
             }
         },
         "methods": {
@@ -29258,7 +26353,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -29422,13 +26517,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -29592,7 +26687,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -29643,13 +26738,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -29700,7 +26795,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -29986,13 +27081,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -30278,7 +27373,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -30335,13 +27430,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -30398,7 +27493,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -30458,13 +27553,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -30524,7 +27619,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -30594,13 +27689,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -30670,7 +27765,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -30716,13 +27811,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -30768,7 +27863,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -30803,13 +27898,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -30844,7 +27939,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -30918,7 +28013,7 @@
                 "pathId": "properties.domainId"
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -30982,13 +28077,13 @@
                 "pathId": "properties.domainId"
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -31046,13 +28141,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -31120,7 +28215,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -31163,7 +28258,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -31209,13 +28304,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -31261,7 +28356,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -31316,13 +28411,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -31377,7 +28472,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -31420,13 +28515,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -31469,7 +28564,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -31515,13 +28610,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -31556,158 +28651,6 @@
         "pickPropertiesCreate": []
     },
     {
-        "type": "WebAppProcess",
-        "group": "Web",
-        "apiVersion": "2021-03-01",
-        "dependencies": {
-            "resourceGroup": {
-                "type": "ResourceGroup",
-                "group": "Resources",
-                "name": "resourceGroupName",
-                "parent": true
-            },
-            "name": {
-                "type": "Site",
-                "group": "Web",
-                "name": "name",
-                "parent": true
-            }
-        },
-        "methods": {
-            "get": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/processes/{processId}",
-                "operationId": "WebApps_GetProcess"
-            },
-            "delete": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/processes/{processId}",
-                "operationId": "WebApps_DeleteProcess"
-            },
-            "getAll": {
-                "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/processes",
-                "operationId": "WebApps_ListProcesses"
-            }
-        },
-        "omitProperties": [
-            "properties.identifier"
-        ],
-        "pickProperties": [
-            "properties.deployment_name",
-            "properties.href",
-            "properties.minidump",
-            "properties.is_profile_running",
-            "properties.is_iis_profile_running",
-            "properties.iis_profile_timeout_in_seconds",
-            "properties.parent",
-            "properties.children",
-            "properties.threads[].kind",
-            "properties.threads[].properties.href",
-            "properties.threads[].properties.process",
-            "properties.threads[].properties.start_address",
-            "properties.threads[].properties.current_priority",
-            "properties.threads[].properties.priority_level",
-            "properties.threads[].properties.base_priority",
-            "properties.threads[].properties.start_time",
-            "properties.threads[].properties.total_processor_time",
-            "properties.threads[].properties.user_processor_time",
-            "properties.threads[].properties.wait_reason",
-            "properties.open_file_handles",
-            "properties.modules[].kind",
-            "properties.modules[].properties.base_address",
-            "properties.modules[].properties.file_name",
-            "properties.modules[].properties.href",
-            "properties.modules[].properties.file_path",
-            "properties.modules[].properties.module_memory_size",
-            "properties.modules[].properties.file_version",
-            "properties.modules[].properties.file_description",
-            "properties.modules[].properties.product",
-            "properties.modules[].properties.product_version",
-            "properties.modules[].properties.is_debug",
-            "properties.modules[].properties.language",
-            "properties.file_name",
-            "properties.command_line",
-            "properties.user_name",
-            "properties.handle_count",
-            "properties.module_count",
-            "properties.thread_count",
-            "properties.start_time",
-            "properties.total_cpu_time",
-            "properties.user_cpu_time",
-            "properties.privileged_cpu_time",
-            "properties.working_set",
-            "properties.peak_working_set",
-            "properties.private_memory",
-            "properties.virtual_memory",
-            "properties.peak_virtual_memory",
-            "properties.paged_system_memory",
-            "properties.non_paged_system_memory",
-            "properties.paged_memory",
-            "properties.peak_paged_memory",
-            "properties.time_stamp",
-            "properties.environment_variables",
-            "properties.is_scm_site",
-            "properties.is_webjob",
-            "properties.description"
-        ],
-        "pickPropertiesCreate": [
-            "properties.deployment_name",
-            "properties.href",
-            "properties.minidump",
-            "properties.is_profile_running",
-            "properties.is_iis_profile_running",
-            "properties.iis_profile_timeout_in_seconds",
-            "properties.parent",
-            "properties.children",
-            "properties.threads[].kind",
-            "properties.threads[].properties.href",
-            "properties.threads[].properties.process",
-            "properties.threads[].properties.start_address",
-            "properties.threads[].properties.current_priority",
-            "properties.threads[].properties.priority_level",
-            "properties.threads[].properties.base_priority",
-            "properties.threads[].properties.start_time",
-            "properties.threads[].properties.total_processor_time",
-            "properties.threads[].properties.user_processor_time",
-            "properties.threads[].properties.wait_reason",
-            "properties.open_file_handles",
-            "properties.modules[].kind",
-            "properties.modules[].properties.base_address",
-            "properties.modules[].properties.file_name",
-            "properties.modules[].properties.href",
-            "properties.modules[].properties.file_path",
-            "properties.modules[].properties.module_memory_size",
-            "properties.modules[].properties.file_version",
-            "properties.modules[].properties.file_description",
-            "properties.modules[].properties.product",
-            "properties.modules[].properties.product_version",
-            "properties.modules[].properties.is_debug",
-            "properties.modules[].properties.language",
-            "properties.file_name",
-            "properties.command_line",
-            "properties.user_name",
-            "properties.handle_count",
-            "properties.module_count",
-            "properties.thread_count",
-            "properties.start_time",
-            "properties.total_cpu_time",
-            "properties.user_cpu_time",
-            "properties.privileged_cpu_time",
-            "properties.working_set",
-            "properties.peak_working_set",
-            "properties.private_memory",
-            "properties.virtual_memory",
-            "properties.peak_virtual_memory",
-            "properties.paged_system_memory",
-            "properties.non_paged_system_memory",
-            "properties.paged_memory",
-            "properties.peak_paged_memory",
-            "properties.time_stamp",
-            "properties.environment_variables",
-            "properties.is_scm_site",
-            "properties.is_webjob",
-            "properties.description"
-        ]
-    },
-    {
         "type": "WebAppProcessSlot",
         "group": "Web",
         "apiVersion": "2021-03-01",
@@ -31719,13 +28662,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -31877,7 +28820,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -31925,13 +28868,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -31979,7 +28922,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -32038,13 +28981,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -32103,7 +29046,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -32138,13 +29081,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -32179,7 +29122,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -32260,13 +29203,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -32352,8 +29295,8 @@
                 "createOnly": true,
                 "list": true
             },
-            "serverFarm": {
-                "type": "ServerFarm",
+            "appServicePlan": {
+                "type": "AppServicePlan",
                 "group": "Web",
                 "createOnly": true,
                 "pathId": "properties.serverFarmId"
@@ -32373,10 +29316,11 @@
             "subnet": {
                 "type": "Subnet",
                 "group": "Network",
-                "createOnly": true
+                "createOnly": true,
+                "pathId": "properties.virtualNetworkSubnetId"
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -32761,7 +29705,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -32837,13 +29781,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -32925,7 +29869,7 @@
                 "pathId": "properties.subnetResourceId"
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -32977,13 +29921,13 @@
                 "pathId": "properties.subnetResourceId"
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -33029,7 +29973,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -33106,13 +30050,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
@@ -33189,7 +30133,7 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
@@ -33246,13 +30190,13 @@
                 "parent": true
             },
             "name": {
-                "type": "Site",
+                "type": "WebApp",
                 "group": "Web",
                 "name": "name",
                 "parent": true
             },
             "slot": {
-                "type": "SiteSlot",
+                "type": "WebAppSlot",
                 "group": "Web",
                 "name": "slot",
                 "parent": true
