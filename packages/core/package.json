@@ -9,7 +9,8 @@
   },
   "homepage": "https://www.grucloud.com",
   "scripts": {
-    "test": "dotenv -e ../../secrets/default.env --  mocha  './cli/**/*.test.js'  './test/**/*.test.js'"
+    "test": "dotenv -e ../../secrets/default.env --  mocha  './cli/**/*.test.js'  './test/**/*.test.js'",
+    "coverage": "nyc npm run test"
   },
   "keywords": [
     "cloud",
@@ -22,6 +23,7 @@
     "dotenv-cli": "^5.0.0",
     "mocha": "8.2.1",
     "mocha-junit-reporter": "2.0.0",
+    "nyc": "^15.1.0",
     "sinon": "9.2.3"
   },
   "dependencies": {
@@ -67,7 +69,9 @@
       "**/*test*.js",
       "**/test/*.js",
       "**/test/config/*.js",
-      "cli/test/infra/*.js"
+      "cli/test/infra/*.js",
+      "template/*",
+      "coverage/*"
     ],
     "extension": [
       ".js"
