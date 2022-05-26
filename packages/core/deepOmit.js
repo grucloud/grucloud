@@ -29,7 +29,7 @@ const deepOmitByPath =
             isEmpty,
             // no key
             pipe([() => source]),
-            // hss key
+            // has key
             pipe([
               reduce(
                 (acc, item) =>

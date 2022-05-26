@@ -3,7 +3,7 @@ const { isDeepEqual } = require("rubico/x");
 
 const { deepOmit, deepOmitByPath } = require("../deepOmit");
 
-describe.only("deepOmit", function () {
+describe("deepOmit", function () {
   it("deepOmit simple", async function () {
     const obj = { a: 1 };
     const result = deepOmit(["a"])(obj);
@@ -76,5 +76,10 @@ describe.only("deepOmit", function () {
     const obj = { a: 1 };
     const result = deepOmitByPath(["b[]"])(obj);
     assert(isDeepEqual(result, obj));
+  });
+  it("deepOmitByPath empty all array", async function () {
+    const obj = { a: [{ b: 2 }], c: 3 };
+    const result = deepOmitByPath(["a[]", "b"])(obj);
+    assert(isDeepEqual(result, { c: 3 }));
   });
 });
