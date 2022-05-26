@@ -12,12 +12,8 @@ const {
   eq,
 } = require("rubico");
 const { defaultsDeep, when, callProp } = require("rubico/x");
-const {
-  compare,
-  omitIfEmpty,
-  shellRun,
-  deepPick,
-} = require("@grucloud/core/Common");
+const { compare, omitIfEmpty, shellRun } = require("@grucloud/core/Common");
+const { deepPick } = require("@grucloud/core/deepPick");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ContainerService" });
 
