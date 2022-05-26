@@ -36,7 +36,10 @@ const { createEC2 } = require("./EC2Common");
 
 const { appendCidrSuffix } = require("./EC2Common");
 
-const ignoreErrorCodes = ["InvalidRoute.NotFound"];
+const ignoreErrorCodes = [
+  "InvalidRoute.NotFound",
+  "InvalidVpcEndpointId.NotFound",
+];
 
 exports.EC2Route = ({ spec, config }) => {
   const ec2 = createEC2(config);

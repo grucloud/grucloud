@@ -583,6 +583,12 @@ exports.compare = ({
           // TODO
           //when(() => pickProperties, pick(pickProperties)),
           when(() => input.omitProperties, omit(input.omitProperties)),
+          //TODO implement omitDeep
+          when(
+            () => input.omitPropertiesExtra,
+            omit(input.omitPropertiesExtra)
+          ),
+
           tap((params) => {
             assert(true);
           }),

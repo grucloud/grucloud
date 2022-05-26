@@ -76,7 +76,7 @@ exports.testEnd2End = ({
             retryCall({
               name: `planQuery`,
               fn: pipe([() => ({}), cli.planQuery]),
-              config: { repeatCount: 1, retryDelay: 5e3 },
+              config: { retryCount: 2, retryDelay: 5e3 },
               isExpectedResult: isEmptyPlan,
             }),
           () =>

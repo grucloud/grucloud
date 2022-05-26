@@ -21,11 +21,11 @@ exports.createResources = () => [
     type: "SshPublicKey",
     group: "Compute",
     properties: ({}) => ({
+      name: "keypair",
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC8SzGkGNI3Ygk6VRCpozwO7xo1\r\nRW50+mHnXNwGMJUlp2GklCjrxYHmKU/1EcoJtc3A7HObBJu/7ckjK8pzl++qi479\r\n7z69qJipkWZsAI5ff6dsdJtDZLJctHfp0fost90LOWUBP+9WKBMgSCg7LM9QQC3C\r\n4A+iZKoqAmlUM6nzvfS90MxHavJR351aaTQIQg/jUHQoJ3PVeE9IpDhselTJQRDy\r\n0dVGcvjSvglw1q7s8hMCueZQNGS2e5sMS4oKhNsi9Rjawe9Iw9maeNnNiZJQwKJi\r\np/o62B48p2k+jIsr8PHE7C8JbIPuE89fRMOE8OgUBOVN0ZL4vRArjiKcFNkf5s7r\r\nl3j6SrqoUvODxedq4YG3IE3NOabqZ5JvzVIWvNhrO0f5MPty3bzucpOUvg2qjXY7\r\nZc8wsBHHWcLb1hhwOMfhqz7kY0MAsOFR6Kn1OvH0Na+R1Zke+z1YMh85FdoPOpmP\r\nboGjezMbAEQCDQJwAVfP2qBQYL1KuyULMmYUQ90= generated-by-azure\r\n",
       },
-      name: "keypair",
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vm-ad-login",
@@ -106,13 +106,13 @@ exports.createResources = () => [
     type: "VirtualMachineExtension",
     group: "Compute",
     properties: ({}) => ({
-      properties: {
-        autoUpgradeMinorVersion: true,
-        typeHandlerVersion: "1.0",
-        type: "AADSSHLoginForLinux",
-        publisher: "Microsoft.Azure.ActiveDirectory",
-      },
       name: "aadsshloginforlinux",
+      properties: {
+        publisher: "Microsoft.Azure.ActiveDirectory",
+        type: "AADSSHLoginForLinux",
+        typeHandlerVersion: "1.0",
+        autoUpgradeMinorVersion: true,
+      },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vm-ad-login",
@@ -161,6 +161,10 @@ exports.createResources = () => [
               access: "Allow",
               priority: 300,
               direction: "Inbound",
+              sourcePortRanges: [],
+              destinationPortRanges: [],
+              sourceAddressPrefixes: [],
+              destinationAddressPrefixes: [],
             },
           },
         ],
@@ -198,12 +202,12 @@ exports.createResources = () => [
     type: "VirtualNetwork",
     group: "Network",
     properties: ({}) => ({
+      name: "vnet",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],
         },
       },
-      name: "vnet",
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vm-ad-login",

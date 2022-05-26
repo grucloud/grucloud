@@ -289,8 +289,8 @@ exports.ResourceMaker = ({
       }),
       () =>
         spec.compare({
-          // DO we still need omitProperties, pick pickProperties and propertiesDefault ? let's provider spec instead
           omitProperties: spec.omitProperties,
+          omitPropertiesExtra: spec.omitPropertiesExtra,
           pickProperties: spec.pickProperties,
           pickPropertiesCreate: spec.pickPropertiesCreate,
           propertiesDefault: spec.propertiesDefault,

@@ -150,17 +150,18 @@ exports.AwsProvider = ({
       (regionFromCredentialFiles) =>
         pipe([
           () => ({}),
+          defaultsDeep({ region: regionFromCredentialFiles }),
           when(
             () => process.env.AWS_REGION,
             defaultsDeep({ region: process.env.AWS_REGION })
           ),
-          defaultsDeep({ region: regionFromCredentialFiles }),
           defaultsDeep(config),
-          //get("region", "us-east-1"),
           get("region"),
           tap((region) => {
             assert(region);
-            logger.info(`using region '${region}'`);
+            logger.info(
+              `using region '${region}', regionFromCredential: ${regionFromCredentialFiles}, AWS_REGION:${process.env.AWS_REGION}`
+            );
           }),
         ])(),
       tap((params) => {

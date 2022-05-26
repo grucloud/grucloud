@@ -322,13 +322,7 @@ const configBuildPropertiesDefault = ({
     () => properties,
     providerConfig.tranformResource({ resource }),
     switchCase([
-      and([
-        not(
-          isEmpty,
-          () => !resource.isDefault,
-          () => !hasNoProperty
-        ),
-      ]),
+      and([not(isEmpty), () => !resource.isDefault, () => !hasNoProperty]),
       pipe([
         printProperties,
         prepend("\nproperties: ({config, getId, generatePassword}) => ("),

@@ -32,7 +32,7 @@ const {
   isEmpty,
 } = require("rubico/x");
 
-const { compare, deepPick } = require("@grucloud/core/Common");
+const { compare, deepPick, omitIfEmpty } = require("@grucloud/core/Common");
 
 const AuthorizationSpec = require("./resources/AuthorizationSpec");
 const ContainerServiceSpec = require("./resources/ContainerServiceSpec");
@@ -198,6 +198,7 @@ const buildDefaultSpec = fork({
   compare: ({
     pickPropertiesCreate = [],
     omitProperties = [],
+    omitPropertiesExtra = [],
     propertiesDefault = {},
   }) =>
     compare({
@@ -216,6 +217,7 @@ const buildDefaultSpec = fork({
           deepPick(pickPropertiesCreate),
           defaultsDeep(propertiesDefault),
           omit(omitProperties),
+          omit(omitPropertiesExtra),
           omit([
             "type",
             //TODO keep the name and add inferName
@@ -224,6 +226,7 @@ const buildDefaultSpec = fork({
             "etag",
             "identity", //TODO
           ]),
+          omitIfEmpty(["properties"]),
           tap((params) => {
             assert(true);
           }),

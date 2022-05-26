@@ -13,7 +13,7 @@ exports.createResources = () => [
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxXnVXbmiV4UWi7FTpR4mWx4pp\r\nM+9t/77vpw3rwtFW/n0V/2N6+j9yuCP5Mu2Pi7c+i8UQ3bkofHOpjsk4uAu0vr8a\r\nC0/LPiHFmlvtEfKvomoNtLO5iRnTjpsPFFqvfNQJKDsOnGoBO4pAF2xdr96V2Doh\r\nggxdj5ZyGh0EbQqm/XKrW1boOYkoqxGQKO8EZj4l0qWzRmpMw2NXQtqOO+pJ2IVJ\r\nhQOwnXk4G/v9yxogwuUGp4cFu02bix72LzRgzXLfsFkQqwRSg50xlNqsoBysTPhb\r\nibQhLNbSHqJtyXgoPNuEohREjuH1EjU0tFJrv285xd7xWRnVyG2w6+WWckr84uwO\r\no3456BJWD9PoQvXTJVMhR1iR8J8FesqZP1JwrV3CLS205z6z5GLgcKulVsCal9/G\r\nvnxXM1Ob9zAEFd6QBAuK0ejbOb1tmXgwnhlFAWr7Fq1TbAfk0ga6Cm5chEmI21ZK\r\nVO9j0Reu0NAONyrPs09y7u3r38CgGTyot/VS5mU= generated-by-azure\r\n",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
     }),
   },
@@ -49,6 +49,7 @@ exports.createResources = () => [
                 ],
               },
               provisionVMAgent: true,
+              enableVMAgentPlatformUpdates: false,
             },
             allowExtensionOperations: true,
             adminPassword: process.env.RG_LOAD_BALANCER_VMSS_ADMIN_PASSWORD,
@@ -128,11 +129,11 @@ exports.createResources = () => [
         platformFaultDomainCount: 1,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
-      subnets: ["rg-load-balancer::vnet::default"],
       sshPublicKeys: ["rg-load-balancer::vmss_key"],
       networkSecurityGroups: ["rg-load-balancer::basicnsgvnet-nic01"],
+      subnets: ["rg-load-balancer::vnet::default"],
       loadBalancerBackendAddressPools: [
         "rg-load-balancer::load-balancer::backendpool",
       ],
@@ -169,7 +170,7 @@ exports.createResources = () => [
         inboundNatPools: [],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
       publicIPAddresses: ["rg-load-balancer::ip"],
     }),
@@ -181,7 +182,7 @@ exports.createResources = () => [
       name: "backendpool",
       properties: {},
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
       loadBalancer: "rg-load-balancer::load-balancer",
     }),
@@ -195,7 +196,7 @@ exports.createResources = () => [
         securityRules: [],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
     }),
   },
@@ -211,7 +212,7 @@ exports.createResources = () => [
         publicIPAllocationMethod: "Static",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
     }),
   },
@@ -224,7 +225,7 @@ exports.createResources = () => [
         addressPrefix: "10.0.0.0/16",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
       virtualNetwork: "rg-load-balancer::vnet",
     }),
@@ -240,7 +241,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
     }),
   },

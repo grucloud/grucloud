@@ -43,6 +43,7 @@ const {
   findNamespaceInTagsOrEksCluster,
   isOurMinion,
   findEksCluster,
+  compareAws,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { hasKeyInTags } = require("../AwsCommon");
@@ -54,6 +55,7 @@ const {
   fetchImageIdFromDescription,
   imageDescriptionFromId,
   assignUserDataToBase64,
+  getLaunchTemplateIdFromTags,
 } = require("./EC2Common");
 
 const ignoreErrorCodes = ["InvalidInstanceID.NotFound"];
@@ -180,14 +182,7 @@ exports.EC2Instance = ({ spec, config }) => {
     {
       type: "LaunchTemplate",
       group: "EC2",
-      ids: [
-        pipe([
-          () => live,
-          get("Tags"),
-          find(eq(get("Key"), "aws:ec2launchtemplate:id")),
-          get("Value"),
-        ])(),
-      ],
+      ids: [pipe([() => live, getLaunchTemplateIdFromTags])()],
     },
     { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
     {
@@ -492,71 +487,52 @@ exports.isOurMinionEC2Instance = (item) =>
     }),
   ])();
 
-//TODO use compareEC2
 exports.compareEC2Instance = pipe([
-  tap((xxx) => {
+  tap((params) => {
     assert(true);
   }),
-  compare({
-    //TODO remove
-    filterAll: () => pipe([omit(["Tags"])]),
-    filterTarget: () =>
+  compareAws({
+    getTargetTags: pipe([get("TagSpecifications"), first, get("Tags")]),
+    omitTargetKey: "TagSpecifications",
+  })({
+    filterAll: () =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
+        omit(["Tags"]),
         omit([
           "NetworkInterfaces",
           "TagSpecifications",
           "SubnetId",
           "SecurityGroupIds",
+          "Image",
         ]),
       ]),
-    filterLive: () =>
+    filterTarget: ({ propertiesDefault }) =>
+      pipe([defaultsDeep(propertiesDefault), omit(["LaunchTemplate"])]),
+    filterLive: ({ propertiesDefault, lives, config }) =>
       pipe([
         tap((params) => {
-          assert(true);
+          assert(propertiesDefault);
+          assert(lives);
+          assert(config);
         }),
-        omit([
-          "PlatformDetails",
-          "PrivateDnsNameOptions",
-          "UsageOperation",
-          "UsageOperationUpdateTime",
-          "EnclaveOptions",
-          "MetadataOptions",
-          "Licenses",
-          "HibernationOptions",
-          "CapacityReservationSpecification",
-          "CpuOptions",
-          "VirtualizationType",
-          "SourceDestCheck",
-          "SecurityGroups",
-          "RootDeviceType",
-          "RootDeviceName",
-          "NetworkInterfaces",
-          "ElasticInferenceAcceleratorAssociations",
-          "ElasticGpuAssociations",
-          "Hypervisor",
-          "EnaSupport",
-          "EbsOptimized",
-          "ClientToken",
-          "BlockDeviceMappings",
-          "Architecture",
-          "VpcId",
-          "SubnetId",
-          "StateTransitionReason",
-          "State",
-          "PublicIpAddress",
-          "PublicDnsName",
-          "ProductCodes",
-          "PrivateIpAddress",
-          "PrivateDnsName",
-          "Monitoring",
-          "LaunchTime",
-          "InstanceId",
-          "AmiLaunchIndex",
-          "IamInstanceProfile.Id",
-        ]),
+        defaultsDeep(propertiesDefault),
+        when(getLaunchTemplateIdFromTags, (live) =>
+          pipe([
+            () => live,
+            getLaunchTemplateIdFromTags,
+            (id) =>
+              lives.getById({
+                id,
+                type: "LaunchTemplate",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            get("live.LaunchTemplateData"),
+            pick(["InstanceType", "UserData", "KeyName", "ImageId"]),
+            keys,
+            (omitProps) => pipe([() => live, omit(omitProps)])(),
+          ])()
+        ),
         omitIfEmpty(["UserData"]),
         tap((params) => {
           assert(true);
@@ -579,6 +555,6 @@ exports.compareEC2Instance = pipe([
     ]),
   }),
   tap((diff) => {
-    //logger.debug(`compareEC2Instance ${tos(diff)}`);
+    assert(true);
   }),
 ]);

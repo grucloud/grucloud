@@ -21,14 +21,14 @@ exports.createResources = () => [
     type: "HostedZone",
     group: "Route53",
     name: "grucloud.org.",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       domain: "grucloud.org",
     }),
   },
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       certificate: "grucloud.org",
     }),
