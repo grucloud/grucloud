@@ -32,7 +32,8 @@ const {
   isEmpty,
 } = require("rubico/x");
 
-const { compare, deepPick, omitIfEmpty } = require("@grucloud/core/Common");
+const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const { deepPick } = require("@grucloud/core/deepPick");
 
 const AuthorizationSpec = require("./resources/AuthorizationSpec");
 const ContainerServiceSpec = require("./resources/ContainerServiceSpec");
