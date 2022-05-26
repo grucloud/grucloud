@@ -188,6 +188,7 @@ const buildProperties = ({
       assert(filterLive);
       assert(pickPropertiesCreate);
       assert(resource);
+      assert(propertiesDefault);
       //assert(spec);
     }),
     () => resource,
@@ -205,9 +206,7 @@ const buildProperties = ({
     tap((params) => {
       assert(Array.isArray(omitProperties));
     }),
-    //TODO
-    //when(() => pickProperties, pick(pickProperties)),
-    unless(() => pickPropertiesCreate, omit(omitProperties)),
+    when(() => isEmpty(pickPropertiesCreate), omit(omitProperties)),
     differenceObject(propertiesDefault),
     tap((params) => {
       assert(true);
@@ -323,18 +322,13 @@ const configBuildPropertiesDefault = ({
     () => properties,
     providerConfig.tranformResource({ resource }),
     switchCase([
-      and([
-        not(
-          isEmpty,
-          () => !resource.isDefault,
-          () => !hasNoProperty
-        ),
-      ]),
+      and([not(isEmpty), () => !resource.isDefault, () => !hasNoProperty]),
       pipe([
         printProperties,
         prepend("\nproperties: ({config, getId, generatePassword}) => ("),
         append("),"),
       ]),
+      pipe([() => ""]),
     ]),
     tap((params) => {
       assert(true);

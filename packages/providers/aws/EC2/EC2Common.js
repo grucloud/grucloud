@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, tap, pipe, get, pick, assign, switchCase } = require("rubico");
+const { map, tap, pipe, get, pick, assign, switchCase, eq } = require("rubico");
 const {
   pluck,
   unless,
@@ -8,6 +8,7 @@ const {
   when,
   append,
   identity,
+  find,
 } = require("rubico/x");
 const { createEndpoint } = require("../AwsCommon");
 
@@ -108,3 +109,12 @@ exports.untagResource =
       (Tags) => ({ Resources: [id], Tags }),
       endpoint().deleteTags,
     ]);
+
+exports.getLaunchTemplateIdFromTags = pipe([
+  tap((live) => {
+    assert(live);
+  }),
+  get("Tags"),
+  find(eq(get("Key"), "aws:ec2launchtemplate:id")),
+  get("Value"),
+]);

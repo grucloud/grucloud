@@ -81,7 +81,7 @@ exports.createResources = () => [
   {
     type: "NatGateway",
     group: "EC2",
-    name: ({ config }) => `${config.region}-prod-main-vpc-us-east-1b`,
+    name: ({ config }) => `${config.region}-prod-main-vpc-${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
@@ -99,14 +99,14 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({ config }) => ({
-      subnet: `${config.region}-prod-main-vpc-public-subnet-us-east-1b`,
+      subnet: `${config.region}-prod-main-vpc-public-subnet-${config.region}b`,
       eip: "eipalloc-01f3ef2de812a076d",
     }),
   },
   {
     type: "NatGateway",
     group: "EC2",
-    name: ({ config }) => `${config.region}-prod-main-vpc-us-east-1c`,
+    name: ({ config }) => `${config.region}-prod-main-vpc-${config.region}c`,
     properties: ({}) => ({
       Tags: [
         {
@@ -124,14 +124,14 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({ config }) => ({
-      subnet: `${config.region}-prod-main-vpc-public-subnet-us-east-1c`,
+      subnet: `${config.region}-prod-main-vpc-public-subnet-${config.region}c`,
       eip: "eipalloc-01aed1ed9e377f3c7",
     }),
   },
   {
     type: "NatGateway",
     group: "EC2",
-    name: ({ config }) => `${config.region}-prod-main-vpc-us-east-1d`,
+    name: ({ config }) => `${config.region}-prod-main-vpc-${config.region}d`,
     properties: ({}) => ({
       Tags: [
         {
@@ -149,7 +149,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({ config }) => ({
-      subnet: `${config.region}-prod-main-vpc-public-subnet-us-east-1d`,
+      subnet: `${config.region}-prod-main-vpc-public-subnet-${config.region}d`,
       eip: "eipalloc-05f4da88ea7bc755e",
     }),
   },
@@ -157,7 +157,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc-private-subnet-us-east-1b`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.101.128.0/20",
@@ -184,7 +184,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc-private-subnet-us-east-1c`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.101.144.0/20",
@@ -211,7 +211,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc-private-subnet-us-east-1d`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       CidrBlock: "10.101.160.0/20",
@@ -238,7 +238,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc-public-subnet-us-east-1b`,
+      `${config.region}-prod-main-vpc-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.101.0.0/20",
@@ -266,7 +266,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc-public-subnet-us-east-1c`,
+      `${config.region}-prod-main-vpc-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.101.16.0/20",
@@ -294,7 +294,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc-public-subnet-us-east-1d`,
+      `${config.region}-prod-main-vpc-public-subnet-${config.region}d`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       CidrBlock: "10.101.32.0/20",
@@ -322,7 +322,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc-private-subnet-us-east-1b`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
@@ -347,7 +347,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc-private-subnet-us-east-1c`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
     properties: ({}) => ({
       Tags: [
         {
@@ -372,7 +372,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc-private-subnet-us-east-1d`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
     properties: ({}) => ({
       Tags: [
         {
@@ -421,32 +421,24 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc-private-subnet-us-east-1b`,
-      subnet: `${config.region}-prod-main-vpc-private-subnet-us-east-1b`,
+      routeTable: `${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
+      subnet: `${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc-private-subnet-us-east-1c`,
-      subnet: `${config.region}-prod-main-vpc-private-subnet-us-east-1c`,
+      routeTable: `${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
+      subnet: `${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc-private-subnet-us-east-1d`,
-      subnet: `${config.region}-prod-main-vpc-private-subnet-us-east-1d`,
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc-public-subnet`,
-      subnet: `${config.region}-prod-main-vpc-public-subnet-us-east-1b`,
+      routeTable: `${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
+      subnet: `${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
     }),
   },
   {
@@ -454,7 +446,7 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({ config }) => ({
       routeTable: `${config.region}-prod-main-vpc-public-subnet`,
-      subnet: `${config.region}-prod-main-vpc-public-subnet-us-east-1c`,
+      subnet: `${config.region}-prod-main-vpc-public-subnet-${config.region}b`,
     }),
   },
   {
@@ -462,7 +454,15 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({ config }) => ({
       routeTable: `${config.region}-prod-main-vpc-public-subnet`,
-      subnet: `${config.region}-prod-main-vpc-public-subnet-us-east-1d`,
+      subnet: `${config.region}-prod-main-vpc-public-subnet-${config.region}c`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `${config.region}-prod-main-vpc-public-subnet`,
+      subnet: `${config.region}-prod-main-vpc-public-subnet-${config.region}d`,
     }),
   },
   {
@@ -472,15 +472,15 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc-private-subnet-us-east-1b`,
-      natGateway: `${config.region}-prod-main-vpc-us-east-1b`,
+      routeTable: `${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
+      natGateway: `${config.region}-prod-main-vpc-${config.region}b`,
     }),
   },
   {
     type: "Route",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc-private-subnet-us-east-1b`,
+      routeTable: `${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
       vpcEndpoint: `${config.region}-prod-main-vpc-endpoint-gw`,
     }),
   },
@@ -491,15 +491,15 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc-private-subnet-us-east-1c`,
-      natGateway: `${config.region}-prod-main-vpc-us-east-1c`,
+      routeTable: `${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
+      natGateway: `${config.region}-prod-main-vpc-${config.region}c`,
     }),
   },
   {
     type: "Route",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc-private-subnet-us-east-1c`,
+      routeTable: `${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
       vpcEndpoint: `${config.region}-prod-main-vpc-endpoint-gw`,
     }),
   },
@@ -510,15 +510,15 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc-private-subnet-us-east-1d`,
-      natGateway: `${config.region}-prod-main-vpc-us-east-1d`,
+      routeTable: `${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
+      natGateway: `${config.region}-prod-main-vpc-${config.region}d`,
     }),
   },
   {
     type: "Route",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc-private-subnet-us-east-1d`,
+      routeTable: `${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
       vpcEndpoint: `${config.region}-prod-main-vpc-endpoint-gw`,
     }),
   },
@@ -586,9 +586,9 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
       routeTables: [
-        `${config.region}-prod-main-vpc-private-subnet-us-east-1b`,
-        `${config.region}-prod-main-vpc-private-subnet-us-east-1c`,
-        `${config.region}-prod-main-vpc-private-subnet-us-east-1d`,
+        `${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
+        `${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
+        `${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
       ],
     }),
   },

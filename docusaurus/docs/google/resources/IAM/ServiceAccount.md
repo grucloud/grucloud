@@ -25,5 +25,5 @@ const sa = provider.iam.makeServiceAccount({
 
 ### Used By
 
-- [Vm Instance](../compute/VmInstance.md)
+- [Vm Instance](../Compute/VmInstance.md)
 - [IamMember](./Member.md)

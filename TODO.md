@@ -65,6 +65,7 @@ omit AWSLogs S3 Objects
 - AWS::ApiGateway::UsagePlan
 - AWS::CloudWatch::Alarm
 - AWS::CloudWatch::Dashboard
+- AWS::Events::Endpoint
 
 - apprunner example npm test
 - inferName Lambda layer

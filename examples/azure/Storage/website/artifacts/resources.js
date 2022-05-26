@@ -69,8 +69,26 @@ exports.createResources = () => [
     group: "Storage",
     properties: ({}) => ({
       name: "gcstorageweb",
+      kind: "StorageV2",
+      sku: {
+        name: "Standard_RAGRS",
+      },
       location: "uksouth",
       properties: {
+        encryption: {
+          services: {
+            blob: {
+              enabled: true,
+              keyType: "Account",
+            },
+            file: {
+              enabled: true,
+              keyType: "Account",
+            },
+          },
+          requireInfrastructureEncryption: false,
+        },
+        accessTier: "Hot",
         supportsHttpsTrafficOnly: true,
         allowBlobPublicAccess: true,
         minimumTlsVersion: "TLS1_2",

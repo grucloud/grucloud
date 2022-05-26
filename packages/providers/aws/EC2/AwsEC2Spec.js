@@ -51,7 +51,10 @@ const {
   isOurMinionEC2Instance,
   compareEC2Instance,
 } = require("./EC2Instance");
-const { appendCidrSuffix } = require("./EC2Common");
+const {
+  appendCidrSuffix,
+  getLaunchTemplateIdFromTags,
+} = require("./EC2Common");
 const {
   inferNameRouteTableArm,
   transitGatewayAttachmentDependencies,
@@ -305,13 +308,7 @@ const assingIpamRegion = ({ providerConfig }) =>
 
 const omitLocaleNone = when(eq(get("Locale"), "None"), omit(["Locale"]));
 
-const getLaunchTemplateIdFromTags = pipe([
-  get("Tags"),
-  find(eq(get("Key"), "aws:ec2launchtemplate:id")),
-  get("Value"),
-]);
-
-const getByIdfromLives =
+const getByIdFromLives =
   ({ lives, groupType }) =>
   (id) =>
     pipe([
@@ -333,7 +330,7 @@ const omitNetworkInterfacesForDefaultSubnetAndSecurityGroup = ({ lives }) =>
           // default subnet ?
           pipe([
             get("SubnetId"),
-            getByIdfromLives({ lives, groupType: "EC2::Subnet" }),
+            getByIdFromLives({ lives, groupType: "EC2::Subnet" }),
             tap((params) => {
               assert(true);
             }),
@@ -347,7 +344,7 @@ const omitNetworkInterfacesForDefaultSubnetAndSecurityGroup = ({ lives }) =>
               pipe([
                 first,
                 get("GroupId"),
-                getByIdfromLives({ lives, groupType: "EC2::SecurityGroup" }),
+                getByIdFromLives({ lives, groupType: "EC2::SecurityGroup" }),
                 get("isDefault"),
               ]),
             ]),
@@ -1149,7 +1146,7 @@ module.exports = pipe([
               pipe([
                 () => live,
                 getLaunchTemplateIdFromTags,
-                getByIdfromLives({ lives, groupType: "EC2::LaunchTemplate" }),
+                getByIdFromLives({ lives, groupType: "EC2::LaunchTemplate" }),
                 get("live.LaunchTemplateData"),
               ])()
             ),
@@ -1160,7 +1157,7 @@ module.exports = pipe([
               or([
                 pipe([
                   getLaunchTemplateIdFromTags,
-                  getByIdfromLives({ lives, groupType: "EC2::LaunchTemplate" }),
+                  getByIdFromLives({ lives, groupType: "EC2::LaunchTemplate" }),
                   get("live.LaunchTemplateData.SecurityGroupIds"),
                 ]),
                 omitNetworkInterfacesForDefaultSubnetAndSecurityGroup({

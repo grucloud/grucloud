@@ -576,7 +576,7 @@ exports.fnSpecs = ({ config }) => {
             list: true,
           },
         },
-        pickProperties: [],
+        omitPropertiesExtra: ["properties.loadBalancerBackendAddresses"],
         // findDependencies: ({ live, lives }) => [
         //   findDependenciesResourceGroup({ live, lives, config }),
         //   {
@@ -707,6 +707,34 @@ exports.fnSpecs = ({ config }) => {
           //   createOnly: true,
           // },
         },
+        compare: compare({
+          filterLive: () =>
+            pipe([
+              omit(["id", "type"]),
+              assign({
+                properties: pipe([
+                  get("properties"),
+                  assign({
+                    securityRules: pipe([
+                      get("securityRules"),
+                      map(
+                        pipe([
+                          assign({
+                            properties: pipe([
+                              get("properties"),
+                              omit(["provisioningState"]),
+                            ]),
+                          }),
+                          omit(["id", "etag", "type"]),
+                        ])
+                      ),
+                    ]),
+                  }),
+                ]),
+              }),
+            ]),
+        }),
+        omitPropertiesExtra: ["properties.securityRules[].type"],
         filterLive: () =>
           pipe([
             pick(["name", "tags", "properties"]),
@@ -724,12 +752,12 @@ exports.fnSpecs = ({ config }) => {
                           properties: pipe([
                             get("properties"),
                             omit(["provisioningState"]),
-                            omitIfEmpty([
-                              "destinationAddressPrefixes",
-                              "destinationPortRanges",
-                              "sourceAddressPrefixes",
-                              "sourcePortRanges",
-                            ]),
+                            // omitIfEmpty([
+                            //   "destinationAddressPrefixes",
+                            //   "destinationPortRanges",
+                            //   "sourceAddressPrefixes",
+                            //   "sourcePortRanges",
+                            // ]),
                           ]),
                         }),
                       ])
@@ -973,6 +1001,10 @@ exports.fnSpecs = ({ config }) => {
           },
         },
         pickProperties: [
+          "properties.enableAcceleratedNetworking",
+          "properties.enableIPForwarding",
+        ],
+        pickPropertiesCreate: [
           "properties.enableAcceleratedNetworking",
           "properties.enableIPForwarding",
         ],

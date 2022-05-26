@@ -121,6 +121,9 @@ module.exports = pipe([
             omit(["network", "creationTimestamp"]),
           ]),
       }),
+      propertiesDefault: {
+        sourceRanges: ["0.0.0.0/0"],
+      },
       filterLive: () =>
         pipe([
           pick([
@@ -131,10 +134,6 @@ module.exports = pipe([
             "direction",
             "logConfig",
           ]),
-          when(
-            eq(pipe([get("sourceRanges"), first]), "0.0.0.0/0"),
-            omit(["sourceRanges"])
-          ),
         ]),
     },
     {
