@@ -32,7 +32,6 @@ exports.createResources = () => [
 
 - [Route53 Hosted Zone](../Route53/HostedZone.md)
 - [CloudFront Distribution](../CloudFront/Distribution.md)
-- [APIGateway Domain Name](../APIGateway/DomainName.md)
 - [ApiGatewayV2 Domain Name](../ApiGatewayV2/DomainName.md)
 
 ## List

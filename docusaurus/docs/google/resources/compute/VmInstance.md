@@ -202,6 +202,6 @@ const server = provider.compute.makeVmInstance({
 ## Dependencies
 
 - [Address](./Address.md)
-- [Service Account](../IAM/ServiceAccount.md)
+- [Service Account](../iam/ServiceAccount.md)
 - [SubNetwork](./SubNetwork.md)
 - [Disk](./Disk.md)
