@@ -53,6 +53,14 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 const { isSubstituable } = require("../AzureCommon");
 const { writeDoc } = require("./AzureDoc");
 const { ResourcesExcludes } = require("../AzureResourcesExcludes");
+const { buildPickProperties } = require("./buildPickProperties");
+const { buildOmitPropertiesObject } = require("./buildOmitProperties");
+
+const {
+  isSecret,
+  isPreviousProperties,
+  isOmit,
+} = require("./AzureRestApiCommon");
 
 const PreDefinedDependenciesMap = {
   virtualNetworkSubnetResourceId: {
@@ -1005,36 +1013,6 @@ const addDependencies = ({ resources }) =>
       ])(),
   });
 
-const isOmit = ({ key, obj }) =>
-  pipe([
-    tap((params) => {
-      assert(key);
-    }),
-    or([
-      get("readOnly"),
-      and([
-        () => key.match(new RegExp("Id$", "gi")),
-        not(
-          pipe([
-            () => obj,
-            get("description", ""),
-            callProp("startsWith", "Name"),
-          ])
-        ),
-      ]),
-      () => key.match(new RegExp("status", "gi")),
-      () => key.match(new RegExp("state", "gi")),
-      //get("x-ms-mutability"),
-      isSecret(key),
-    ]),
-  ]);
-
-const isSecret = (key) =>
-  or([() => key.match(new RegExp("password$", "gi")), get("x-ms-secret")]);
-
-const isPreviousProperties = ({ parentPath, key }) =>
-  and([not(eq(key, "properties")), pipe([() => parentPath, includes(key)])]);
-
 const buildOmitReadOnly =
   ({ parentPath = [], accumulator = [] }) =>
   (properties = {}) =>
@@ -1064,210 +1042,6 @@ const buildOmitReadOnly =
       flatten,
       (results) => [...accumulator, ...results],
     ])();
-
-const findTypesByDiscriminator =
-  ({ swagger }) =>
-  (typedef) =>
-    pipe([
-      tap((params) => {
-        assert(swagger);
-        assert(typedef);
-      }),
-      () => typedef,
-      get("properties"),
-      get(typedef.discriminator),
-      get("enum", []),
-      flatMap((enumValue) =>
-        pipe([
-          () => swagger,
-          get("definitions"),
-          filter(pipe([eq(get("x-ms-discriminator-value"), enumValue)])),
-        ])()
-      ),
-    ])();
-
-const buildPickPropertiesEnum = ({ key, swagger, parentPath, accumulator }) =>
-  pipe([
-    fork({
-      fromBase: pipe([
-        pipe([
-          get("properties"),
-          tap((properties) => {
-            assert(properties);
-          }),
-          buildPickProperties({
-            swagger,
-            parentPath: [...parentPath, key],
-            accumulator,
-          }),
-        ]),
-      ]),
-      fromEnums: pipe([
-        findTypesByDiscriminator({ swagger }),
-        flatMap(
-          pipe([
-            get("properties"),
-            tap((properties) => {
-              assert(properties);
-            }),
-            buildPickProperties({
-              swagger,
-              parentPath: [...parentPath, key],
-              accumulator,
-            }),
-          ])
-        ),
-      ]),
-    }),
-    ({ fromBase, fromEnums }) => [...fromBase, ...fromEnums],
-  ]);
-
-const buildPickPropertiesObject = ({ key, swagger, parentPath, accumulator }) =>
-  pipe([
-    tap((params) => {
-      assert(params);
-    }),
-    fork({
-      fromAllOf: pipe([
-        get("allOf", []),
-        map(
-          pipe([
-            get("properties"),
-            tap((properties) => {
-              assert(properties);
-            }),
-            buildPickProperties({
-              swagger,
-              parentPath: [...parentPath, key],
-              accumulator,
-            }),
-          ])
-        ),
-        tap.if(not(isEmpty), () => {
-          assert(true);
-        }),
-        flatten,
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-      fromProperties: pipe([
-        get("properties"),
-        tap((params) => {
-          assert(true);
-        }),
-        buildPickProperties({
-          swagger,
-          parentPath: [...parentPath, key],
-          accumulator,
-        }),
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-      fromAditionalProperties: switchCase([
-        get("additionalProperties"),
-        pipe([
-          get("additionalProperties"),
-          tap((properties) => {
-            assert(true);
-          }),
-          () => [[...parentPath, key]],
-        ]),
-        () => [],
-      ]),
-    }),
-    tap((params) => {
-      assert(true);
-    }),
-    ({ fromAllOf = [], fromProperties = [], fromAditionalProperties = [] }) => [
-      ...fromAllOf,
-      ...fromProperties,
-      ...fromAditionalProperties,
-    ],
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
-
-const isSwaggerObject = pipe([
-  or([get("properties"), get("allOf"), get("additionalProperties")]),
-]);
-
-const buildPickPropertiesArray = ({ key, swagger, parentPath, accumulator }) =>
-  pipe([
-    get("items"),
-    tap((items) => {
-      assert(items);
-    }),
-    switchCase([
-      isSwaggerObject,
-      // array of objects
-      buildPickPropertiesObject({
-        key: `${key}[]`,
-        swagger,
-        parentPath,
-        accumulator,
-      }),
-      // array of simple types
-      pipe([() => [[...parentPath, key]]]),
-    ]),
-  ]);
-
-const buildPickProperties =
-  ({ swagger, parentPath = [], accumulator = [] }) =>
-  (properties = {}) =>
-    pipe([
-      tap((params) => {
-        assert(swagger);
-      }),
-      () => properties,
-      map.entries(([key, obj]) => [
-        key,
-        pipe([
-          () => obj,
-          switchCase([
-            // loop detection
-            isPreviousProperties({ parentPath, key }),
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              () => undefined,
-            ]),
-            // omit ?
-            or([isOmit({ key, obj }) /*, get("x-ms-mutability")*/]),
-            () => undefined,
-            // is Array ?
-            pipe([get("items")]),
-            buildPickPropertiesArray({ key, swagger, parentPath, accumulator }),
-            //discriminator
-            pipe([get("discriminator")]),
-            buildPickPropertiesEnum({ key, swagger, parentPath, accumulator }),
-            // is Object
-            isSwaggerObject,
-            buildPickPropertiesObject({
-              key,
-              swagger,
-              parentPath,
-              accumulator,
-            }),
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              () => [[...parentPath, key]],
-            ]),
-          ]),
-        ])(),
-      ]),
-      values,
-      filter(not(isEmpty)),
-      flatten,
-      (results) => [...accumulator, ...results],
-    ])();
-
-exports.buildPickProperties = buildPickProperties;
 
 const buildEnvironmentVariables =
   ({ parentPath = [], accumulator = [] }) =>
@@ -1579,8 +1353,24 @@ const pickResourceInfo = ({ swagger, ...other }) =>
     pick(["type", "group", "apiVersion", "dependencies", "methods"]),
     assign({
       omitProperties: pipe([
-        getSchemaFromMethods({ method: "get" }),
-        buildOmitReadOnly({}),
+        get("methods"),
+        tap((methods) => {
+          assert(methods);
+        }),
+        //TODO get or put
+        get("get"),
+        tap((method) => {
+          assert(method);
+        }),
+        get("responses.200.schema"),
+        tap((schema) => {
+          assert(schema);
+        }),
+        buildOmitPropertiesObject({
+          swagger,
+          parentPath: [],
+          accumulator: [],
+        }),
         map(callProp("join", ".")),
       ]),
       pickProperties: pickPropertiesGet({ swagger }),
@@ -1601,14 +1391,6 @@ const pickResourceInfo = ({ swagger, ...other }) =>
               (schema) =>
                 pipe([
                   () => schema,
-                  tap.if(
-                    () =>
-                      schema.description ===
-                      "Parameters to create and update Cosmos DB SQL database.",
-                    (params) => {
-                      assert(true);
-                    }
-                  ),
                   get("properties"),
                   when(isEmpty, () => get("allOf[1].properties")(schema)),
                   when(isEmpty, () => get("allOf[0].properties")(schema)),

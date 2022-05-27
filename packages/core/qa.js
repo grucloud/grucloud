@@ -4,6 +4,12 @@ const { isEmpty, first, callProp } = require("rubico/x");
 const util = require("util");
 const logger = require("./logger")({ prefix: "ProviderGru" });
 
+process.on("uncaughtException", function (err) {
+  console.error("ERROR: uncaughtException");
+  console.error(err);
+  console.error(err.stack);
+});
+
 const { Cli } = require("./cli/cliCommands");
 const { retryCall } = require("./Retry");
 const isEmptyPlan = pipe([
@@ -13,6 +19,7 @@ const isEmptyPlan = pipe([
     pipe([get("resultDestroy"), isEmpty]),
   ]),
 ]);
+
 exports.testEnd2End = ({
   programOptions,
   title,
@@ -162,8 +169,8 @@ exports.testEnd2End = ({
         ])(),
     ]),
     (error) => {
-      logger.error("Error running tests:");
-      logger.error(util.inspect(error));
+      logger.error(`Error running tests '${title}':`);
+      logger.error(util.inspect(error, { depth: 8 }));
       logger.error(error.stack);
       throw error;
     }

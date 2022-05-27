@@ -96,6 +96,7 @@ omit AWSLogs S3 Objects
 
 ## Azure
 
+- remove WebAppProcessSlot
 - storage location
 
 - App:ContainerAppsAuthConfig getAll
