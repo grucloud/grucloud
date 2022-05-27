@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/aws2resource",
-  "version": "7.2.1",
+  "version": "7.3.0",
   "description": "Generate GruCloud reosurce code from the AWS API Specification",
   "main": "k8s-manifest2code.js",
   "bin": {

@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-google-empty-template",
-  "version": "7.2.2",
+  "version": "7.3.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.2.2",
-    "@grucloud/provider-google": "^7.2.2",
+    "@grucloud/core": "^7.3.0",
+    "@grucloud/provider-google": "^7.3.0",
     "rubico": "^1.6.29"
   },
   "devDependencies": {

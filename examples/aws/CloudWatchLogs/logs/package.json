@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-cloudwatchlogs",
-  "version": "7.2.2",
+  "version": "7.3.0",
   "description": "Cloud Watch logs GruCloud example",
   "private": true,
   "main": "iac.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.2.2",
-    "@grucloud/provider-aws": "^7.2.2",
+    "@grucloud/core": "^7.3.0",
+    "@grucloud/provider-aws": "^7.3.0",
     "rubico": "^1.6.26"
   },
   "devDependencies": {

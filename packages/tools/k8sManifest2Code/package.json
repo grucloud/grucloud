@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/k8s-manifest2code",
-  "version": "7.2.1",
+  "version": "7.3.0",
   "description": "Generate Grucloud Code from kubernetes YAML manifest",
   "main": "k8s-manifest2code.js",
   "bin": {
