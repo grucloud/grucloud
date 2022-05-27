@@ -5,6 +5,11 @@ process.on("unhandledRejection", (reason, p) => {
   console.log("Unhandled Rejection at: Promise", p, "reason:", reason);
 });
 
+process.on("uncaughtException", function (err) {
+  console.error("uncaughtException");
+  console.error(err.stack);
+});
+
 process.on("exit", function (code) {
   //console.log("grucloud exit", code);
 });
