@@ -11,7 +11,7 @@ describe("deepOmit", function () {
   });
   it("deepOmit ok", async function () {
     const obj = { a: [{ b: 1, c: 2 }, { b: 2 }] };
-    const expectedResult = { a: [{ c: 2 }] };
+    const expectedResult = { a: [{ c: 2 }, {}] };
     const result = deepOmit(["a[].b"])(obj);
     assert(isDeepEqual(result, expectedResult));
   });
@@ -57,13 +57,13 @@ describe("deepOmit", function () {
   });
   it("deepOmitByPath deep no array, remove undefined", async function () {
     const obj = { a: { b: 2 }, c: 1 };
-    const expectedResult = { c: 1 };
+    const expectedResult = { a: {}, c: 1 };
     const result = deepOmitByPath(["a", "b"])(obj);
     assert(isDeepEqual(result, expectedResult));
   });
   it("deepOmitByPath with array", async function () {
     const obj = { a: [{ b: 1, c: 2 }, { b: 2 }] };
-    const expectedResult = { a: [{ c: 2 }] };
+    const expectedResult = { a: [{ c: 2 }, {}] };
     const result = deepOmitByPath(["a[]", "b"])(obj);
     assert(isDeepEqual(result, expectedResult));
   });
@@ -77,9 +77,21 @@ describe("deepOmit", function () {
     const result = deepOmitByPath(["b[]"])(obj);
     assert(isDeepEqual(result, obj));
   });
+  it("deepOmitByPath with array deep", async function () {
+    const obj = {};
+    const result = deepOmitByPath(["a", "b[]", "c"])(obj);
+    assert(isDeepEqual(result, obj));
+  });
   it("deepOmitByPath empty all array", async function () {
     const obj = { a: [{ b: 2 }], c: 3 };
     const result = deepOmitByPath(["a[]", "b"])(obj);
-    assert(isDeepEqual(result, { c: 3 }));
+    assert(isDeepEqual(result, { a: [{}], c: 3 }));
+  });
+  it("deepOmitByPath BillingModeSummary", async function () {
+    const obj = {
+      a: 1,
+    };
+    const result = deepOmit(["b.c"])(obj);
+    assert(isDeepEqual(result, { a: 1 }));
   });
 });

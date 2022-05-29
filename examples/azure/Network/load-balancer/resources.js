@@ -8,6 +8,7 @@ exports.createResources = () => [
     group: "Compute",
     properties: ({}) => ({
       name: "vmss_key",
+      location: "uksouth",
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxXnVXbmiV4UWi7FTpR4mWx4pp\r\nM+9t/77vpw3rwtFW/n0V/2N6+j9yuCP5Mu2Pi7c+i8UQ3bkofHOpjsk4uAu0vr8a\r\nC0/LPiHFmlvtEfKvomoNtLO5iRnTjpsPFFqvfNQJKDsOnGoBO4pAF2xdr96V2Doh\r\nggxdj5ZyGh0EbQqm/XKrW1boOYkoqxGQKO8EZj4l0qWzRmpMw2NXQtqOO+pJ2IVJ\r\nhQOwnXk4G/v9yxogwuUGp4cFu02bix72LzRgzXLfsFkQqwRSg50xlNqsoBysTPhb\r\nibQhLNbSHqJtyXgoPNuEohREjuH1EjU0tFJrv285xd7xWRnVyG2w6+WWckr84uwO\r\no3456BJWD9PoQvXTJVMhR1iR8J8FesqZP1JwrV3CLS205z6z5GLgcKulVsCal9/G\r\nvnxXM1Ob9zAEFd6QBAuK0ejbOb1tmXgwnhlFAWr7Fq1TbAfk0ga6Cm5chEmI21ZK\r\nVO9j0Reu0NAONyrPs09y7u3r38CgGTyot/VS5mU= generated-by-azure\r\n",

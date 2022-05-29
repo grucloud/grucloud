@@ -20,7 +20,6 @@ module.exports = pipe([
       Client: SecretsManagerSecret,
       dependencies: { kmsKey: { type: "Key", group: "KMS" } },
       ignoreResource: () => pipe([get("live.OwningService")]),
-      propertiesDefault: {},
       omitProperties: [
         "Name",
         "ARN",
@@ -62,7 +61,6 @@ module.exports = pipe([
     //   type: "ResourcePolicy",
     //   Client: SecretsManagerResourcePolicy,
     //   dependencies: { secret: { type: "Secret", group: GROUP, parent: true } },
-    //   propertiesDefault: {},
     //   omitProperties: ["Name", "ARN"],
     //   filterLive: ({ providerConfig }) =>
     //     pipe([

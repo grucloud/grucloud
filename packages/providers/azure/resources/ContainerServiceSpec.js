@@ -153,44 +153,10 @@ exports.fnSpecs = ({ config }) =>
         },
         postCreate: () => kubeConfigUpdate,
         postDestroy: () => kubeConfigRemove,
-        compare: compare({
-          filterAll: () =>
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              pick(["properties"]),
-              assign({
-                properties: pipe([
-                  get("properties"),
-                  //TODO
-                  omit([
-                    "networkProfile",
-                    "provisioningState",
-                    "powerState",
-                    "currentKubernetesVersion",
-                    "fqdn",
-                    "azurePortalFQDN",
-                    "identityProfile",
-                    "nodeResourceGroup",
-                    "windowsProfile",
-                    "addonProfiles.httpApplicationRouting.identity",
-                    "addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName",
-                    "addonProfiles.azureKeyvaultSecretsProvider.identity",
-                    "diskEncryptionSetID",
-                  ]),
-                  omitIfEmpty([
-                    "addonProfiles.httpApplicationRouting.config",
-                    "securityProfile",
-                  ]),
-                  assignContainerProp,
-                ]),
-              }),
-              tap((params) => {
-                assert(true);
-              }),
-            ]),
-        }),
+        omitPropertiesExtra: [
+          "properties.identityProfile",
+          "properties.nodeResourceGroup",
+        ],
         filterLive: ({ pickPropertiesCreate, lives }) =>
           pipe([
             tap((params) => {

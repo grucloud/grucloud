@@ -17,7 +17,6 @@ module.exports = pipe([
     {
       type: "FileSystem",
       Client: EFSFileSystem,
-      propertiesDefault: {},
       omitProperties: [
         "FileSystemArn",
         "CreationTime",
@@ -43,7 +42,6 @@ module.exports = pipe([
       type: "AccessPoint",
       Client: EFSAccessPoint,
       dependencies: { fileSystem: { type: "FileSystem", group: "EFS" } },
-      propertiesDefault: {},
       omitProperties: [
         "ClientToken",
         "AccessPointId",
@@ -86,7 +84,6 @@ module.exports = pipe([
         subnet: { type: "Subnet", group: "EC2" },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
       },
-      propertiesDefault: {},
       omitProperties: [
         "ClientToken",
         "AccessPointId",

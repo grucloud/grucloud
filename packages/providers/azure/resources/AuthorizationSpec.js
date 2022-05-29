@@ -113,6 +113,13 @@ exports.fnSpecs = ({ config }) =>
               not(get("live.properties.principalName")),
             ]),
             pipe([
+              // dependency scope starting with mc_ , mamaged by the aks cluster
+              tap((params) => {
+                assert(true);
+              }),
+              () => false,
+            ]),
+            pipe([
               get("live.properties.scope"),
               callProp("toUpperCase"),
               (scope) =>

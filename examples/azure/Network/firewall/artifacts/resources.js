@@ -60,6 +60,7 @@ exports.createResources = () => [
     group: "Network",
     properties: ({}) => ({
       name: "firewall-policy",
+      location: "uksouth",
       properties: {
         threatIntelMode: "Alert",
         sku: {

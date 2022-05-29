@@ -164,6 +164,7 @@ exports.fnSpecs = ({ config }) =>
       },
       {
         type: "Secret",
+        // TODO remove
         omitProperties: [
           "properties.secretUri",
           "properties.secretUriWithVersion",
@@ -240,6 +241,7 @@ exports.fnSpecs = ({ config }) =>
               configDefaultGeneric({ properties, dependencies, config, spec })
             ),
           ])(),
+        //TODO remove
         omitProperties: [
           "id",
           "type",

@@ -23,7 +23,6 @@ module.exports = pipe([
       type: "Topic",
       Client: SNSTopic,
       dependencies: { key: { type: "Key", group: "KMS" } },
-      propertiesDefault: {},
       omitProperties: [
         "Name",
         "Attributes.TopicArn",
@@ -71,7 +70,6 @@ module.exports = pipe([
           }),
           eq(get("live.SubscriptionArn"), "PendingConfirmation"),
         ]),
-      propertiesDefault: {},
       omitProperties: ["Name", "TopicArn", "SubscriptionArn", "Owner"],
       inferName: ({
         properties,

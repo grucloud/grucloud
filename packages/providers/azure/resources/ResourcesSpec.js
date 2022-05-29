@@ -15,6 +15,7 @@ exports.fnSpecs = ({ config }) => {
         group: "Resources",
         type: "ResourceGroup",
         dependencies: {},
+        //TODO remove
         pickPropertiesCreate: ["tags"],
         ignoreResource: () =>
           pipe([

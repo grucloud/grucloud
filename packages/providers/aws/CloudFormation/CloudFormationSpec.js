@@ -16,7 +16,6 @@ module.exports = pipe([
       dependencies: { role: { type: "Role", group: "IAM" } },
       Client: CloudFormationStack,
       isOurMinion,
-      propertiesDefault: {},
       ignoreResource: () => () => true,
       compare: compareCloudFormation({
         filterTarget: () =>

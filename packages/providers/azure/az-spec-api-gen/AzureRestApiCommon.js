@@ -1,6 +1,19 @@
 const assert = require("assert");
 const { pipe, eq, or, get, not, and, tap, flatMap, filter } = require("rubico");
-const { includes, callProp, append, unless, isEmpty } = require("rubico/x");
+const {
+  includes,
+  callProp,
+  append,
+  unless,
+  isEmpty,
+  find,
+} = require("rubico/x");
+
+exports.isKeyExcluded = ({ key }) =>
+  pipe([
+    () => ["linkedPublicIPAddress", "servicePublicIPAddress"],
+    includes(key),
+  ]);
 
 const isSecret = (key) =>
   or([() => key.match(new RegExp("password$", "gi")), get("x-ms-secret")]);
@@ -15,7 +28,17 @@ exports.isSwaggerObject = pipe([
 ]);
 
 exports.isPreviousProperties = ({ parentPath, key }) =>
-  and([not(eq(key, "properties")), pipe([() => parentPath, includes(key)])]);
+  pipe([
+    tap((params) => {
+      //console.log("isPreviousProperties", key, parentPath);
+    }),
+    or([
+      and([
+        () => key != "properties",
+        pipe([() => parentPath, find(includes(key))]),
+      ]),
+    ]),
+  ]);
 
 exports.isOmit = ({ key, obj }) =>
   pipe([
@@ -36,6 +59,8 @@ exports.isOmit = ({ key, obj }) =>
       ]),
       () => key.match(new RegExp("status", "gi")),
       () => key.match(new RegExp("state", "gi")),
+      () => key === "keyUrl",
+      () => key === "secretUrl",
       //get("x-ms-mutability"),
       isSecret(key),
     ]),

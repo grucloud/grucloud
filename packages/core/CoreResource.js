@@ -17,6 +17,7 @@ const {
   or,
   transform,
   fork,
+  set,
 } = require("rubico");
 
 const {
@@ -29,7 +30,7 @@ const {
   pluck,
   forEach,
   find,
-  defaultsDeep,
+
   isDeepEqual,
   size,
   identity,
@@ -45,6 +46,7 @@ const { tos } = require("./tos");
 const { retryCall } = require("./Retry");
 const { convertError } = require("./Common");
 const { decorateLive } = require("./Client");
+const { deepDefaults } = require("./deepDefault");
 
 exports.ResourceMaker = ({
   name: resourceName,
@@ -286,14 +288,12 @@ exports.ResourceMaker = ({
         // );
         assert(targetResources);
         assert(spec.compare, `no compare for ${spec.groupType}`);
+        assert(Array.isArray(spec.omitProperties));
+        assert(Array.isArray(spec.omitPropertiesExtra));
       }),
       () =>
         spec.compare({
-          omitProperties: spec.omitProperties,
-          omitPropertiesExtra: spec.omitPropertiesExtra,
-          pickProperties: spec.pickProperties,
-          pickPropertiesCreate: spec.pickPropertiesCreate,
-          propertiesDefault: spec.propertiesDefault,
+          ...spec,
           target,
           live,
           dependencies: resource.dependencies(),
@@ -568,7 +568,6 @@ exports.ResourceMaker = ({
           assert(true);
         }
         assert(getClient().configDefault);
-        assert(spec.propertiesDefault);
       }),
       switchCase([
         () => !deep,
@@ -628,6 +627,10 @@ exports.ResourceMaker = ({
                 properties: pipe([
                   () => properties,
                   mergeWith(customizerMergeArray, spec.propertiesDefault),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  deepDefaults(spec.propertiesDefaultArray),
                   tap((params) => {
                     assert(true);
                   }),

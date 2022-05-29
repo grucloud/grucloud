@@ -8,6 +8,7 @@ exports.createResources = () => [
     group: "Compute",
     properties: ({}) => ({
       name: "admingrucloud",
+      location: "uksouth",
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDJIm/qoOB61JXbMH7c9jcaVdBJ\r\nQ8NwwIyWfOIklNQG80JFQKQlc/pO1wS30+WlNhjLFXCokZdrJmDzry68BAz92lJ4\r\nTQHRZoZmzsjs40bIQ1xTw72w+LT/eMj2YJIMvKcokIOY/ZziKYwEhGjJCv7Gg2Da\r\nyHN8mbxMs6IL35Q80lJJBrc91AZ/ZplZFu07GySY78+JuNFI+WqO5ltNHduf+u1u\r\nrHrT7NbwDAhTsV7PaP9/q9u8iWJyglH8QfTyNMjciMxTHxjgDFV9xPfsyaMaB8tf\r\nkcSNx9rAmtH62D3FWup8gvGs4PHUoSIihvogtEWyLquQqP4CJUUcLjE7xSIDdZ5R\r\nuqo5Xf1nfBQXdB7atwT8rSEm9CdpSlcWbJ4yzeki9IUMR8iPnHB27lxuBlyHiYPL\r\n8vSXe1ofbl7J0NErjjoyDn1x75hDZGHX9VLh1BMz03DkJ5+zKRtwWYHozQvi7AA8\r\nIRDzslT6+u/ZwpkfbPlwyh8pQFBOTn2l3SlupLk= generated-by-azure\r\n",

@@ -11,7 +11,6 @@ exports.fnSpecs = ({ config }) =>
         type: "Configuration",
         ignoreResource: () =>
           pipe([eq(get("live.properties.source"), "system-default")]),
-        pickProperties: ["properties.value"],
       },
       {
         type: "Database",

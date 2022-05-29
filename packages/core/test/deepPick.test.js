@@ -55,4 +55,9 @@ describe("deepPick", function () {
     const result = deepPickByPath(["b[]"])(obj);
     assert(isDeepEqual(result, {}));
   });
+  it("deepPick empty paths", async function () {
+    const obj = { a: 1 };
+    const result = deepPick()(obj);
+    assert(isDeepEqual(result, obj));
+  });
 });

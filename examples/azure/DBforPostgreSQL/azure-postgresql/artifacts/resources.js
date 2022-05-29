@@ -38,6 +38,7 @@ exports.createResources = () => [
     group: "DBforPostgreSQL",
     properties: ({}) => ({
       name: "gc-server",
+      location: "UK South",
       sku: {
         name: "Standard_B1ms",
         tier: "Burstable",

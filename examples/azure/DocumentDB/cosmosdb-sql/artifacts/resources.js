@@ -8,6 +8,7 @@ exports.createResources = () => [
     group: "DocumentDB",
     properties: ({ config }) => ({
       name: `myorg-${config.stage}-grucloud`,
+      location: "East US",
       identity: {
         type: "None",
       },
@@ -69,7 +70,6 @@ exports.createResources = () => [
           id: "Items",
           indexingPolicy: {
             automatic: true,
-            indexingMode: "consistent",
             includedPaths: [
               {
                 path: "/*",
@@ -83,10 +83,8 @@ exports.createResources = () => [
           },
           partitionKey: {
             paths: ["/partitionKey"],
-            kind: "Hash",
           },
           conflictResolutionPolicy: {
-            mode: "LastWriterWins",
             conflictResolutionPath: "/_ts",
             conflictResolutionProcedure: "",
           },

@@ -12,7 +12,7 @@ const {
   fork,
   switchCase,
 } = require("rubico");
-const { isEmpty, flatten, values, unless, append } = require("rubico/x");
+const { isEmpty, flatten, values } = require("rubico/x");
 
 const {
   isPreviousProperties,

@@ -31,28 +31,24 @@ const deepOmitByPath =
             pipe([() => source]),
             // has key
             pipe([
+              // TODO back to map
               reduce(
                 (acc, item) =>
                   pipe([
                     () => item,
                     deepOmitByPath(remainingKeys),
-                    switchCase([
-                      isEmpty,
-                      () => acc,
-                      (newItem) => [...acc, newItem],
-                    ]),
+                    (newItem) => [...acc, newItem],
                   ])(),
                 []
               ),
-              switchCase([
-                isEmpty,
-                pipe([() => source, omit([removeKeyBracket(firstKey)])]),
-                (objNested) =>
-                  pipe([
-                    () => source,
-                    set(removeKeyBracket(firstKey), objNested),
-                  ])(),
-              ]),
+              (objNested) =>
+                pipe([
+                  () => source,
+                  unless(
+                    () => isEmpty(objNested),
+                    set(removeKeyBracket(firstKey), objNested)
+                  ),
+                ])(),
             ]),
           ]),
         ]),
@@ -66,11 +62,11 @@ const deepOmitByPath =
             pipe([
               get(firstKey),
               deepOmitByPath(remainingKeys),
-              switchCase([
-                isEmpty,
-                pipe([() => source, omit([firstKey])]),
-                (objNested) => pipe([() => source, set(firstKey, objNested)])(),
-              ]),
+              (objNested) =>
+                pipe([
+                  () => source,
+                  unless(() => isEmpty(objNested), set(firstKey, objNested)),
+                ])(),
             ]),
           ]),
         ]),

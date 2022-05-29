@@ -2042,6 +2042,15 @@ exports.createResources = () => [
                       modelAsString: true
                     }
                   },
+                  priority: {
+                    type: 'integer',
+                    format: 'int32',
+                    minimum: 1,
+                    exclusiveMinimum: false,
+                    maximum: 20000,
+                    exclusiveMaximum: false,
+                    description: 'Priority of the routing rule.'
+                  },
                   backendAddressPool: {
                     description: 'Backend address pool resource of the application gateway.',
                     properties: {
@@ -2070,7 +2079,8 @@ exports.createResources = () => [
                     enum: [ 'Succeeded', 'Updating', 'Deleting', 'Failed' ],
                     'x-ms-enum': { name: 'ProvisioningState', modelAsString: true }
                   }
-                }
+                },
+                required: [ 'priority' ]
               },
               name: {
                 type: 'string',

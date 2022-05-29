@@ -102,6 +102,8 @@ const buildPickPropertiesObject = ({ key, swagger, parentPath, accumulator }) =>
     }),
   ]);
 
+exports.buildPickPropertiesObject = buildPickPropertiesObject;
+
 const buildPickPropertiesArray = ({ key, swagger, parentPath, accumulator }) =>
   pipe([
     get("items"),

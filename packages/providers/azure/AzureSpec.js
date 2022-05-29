@@ -34,6 +34,7 @@ const {
 
 const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { deepPick } = require("@grucloud/core/deepPick");
+const { deepDefaults } = require("@grucloud/core/deepDefault");
 
 const AuthorizationSpec = require("./resources/AuthorizationSpec");
 const ContainerServiceSpec = require("./resources/ContainerServiceSpec");
@@ -200,7 +201,7 @@ const buildDefaultSpec = fork({
     pickPropertiesCreate = [],
     omitProperties = [],
     omitPropertiesExtra = [],
-    propertiesDefault = {},
+    propertiesDefaultArray,
   }) =>
     compare({
       filterTarget: (input) =>
@@ -213,10 +214,15 @@ const buildDefaultSpec = fork({
         pipe([
           tap((params) => {
             assert(pickPropertiesCreate);
-            assert(propertiesDefault);
           }),
           deepPick(pickPropertiesCreate),
-          defaultsDeep(propertiesDefault),
+          tap((params) => {
+            assert(true);
+          }),
+          deepDefaults(propertiesDefaultArray),
+          tap((params) => {
+            assert(true);
+          }),
           omit(omitProperties),
           omit(omitPropertiesExtra),
           omit([
@@ -225,6 +231,7 @@ const buildDefaultSpec = fork({
             "name",
             "properties.provisioningState",
             "etag",
+            "location", // feed 'uksouth' in, get 'UK South' out.
             "identity", //TODO
           ]),
           omitIfEmpty(["properties"]),

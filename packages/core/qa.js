@@ -172,6 +172,6 @@ exports.testEnd2End = ({
       logger.error(`Error running tests '${title}':`);
       logger.error(util.inspect(error, { depth: 8 }));
       logger.error(error.stack);
-      throw error;
+      throw Error(error.stack);
     }
   )();
