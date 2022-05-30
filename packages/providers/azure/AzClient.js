@@ -54,7 +54,7 @@ const listExpectedExceptionMessages = [
   "We are unable to serve this request due to an internal error", // ContainerService::TrustedAccessRoleBinding
 ];
 
-const shouldRetryOnExceptionCreate = pipe([
+const shouldRetryOnExceptionAzure = pipe([
   fork({
     status: get("error.response.status"),
     code: get("error.response.data.error.code"),
@@ -524,7 +524,8 @@ module.exports = AzClient = ({
           ])(),
       ]),
     ]),
-    shouldRetryOnExceptionCreate,
+    shouldRetryOnExceptionList: shouldRetryOnExceptionAzure,
+    shouldRetryOnExceptionCreate: shouldRetryOnExceptionAzure,
     findTargetId,
     verbCreate: verbCreateFromMethods(methods),
     verbUpdate: verbUpdateFromMethods(methods),

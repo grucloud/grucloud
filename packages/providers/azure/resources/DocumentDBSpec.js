@@ -17,6 +17,8 @@ exports.fnSpecs = ({ config }) =>
         cannotBeDeleted: SqlResourceSqlRoleDefinitionManagedByOther,
         managedByOther: SqlResourceSqlRoleDefinitionManagedByOther,
       },
+      //TODO not working with the defaults
+      { type: "SqlResourceSqlContainer", propertiesDefaultArray: [] },
     ],
     map(defaultsDeep({ group })),
   ])();

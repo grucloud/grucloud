@@ -134,7 +134,6 @@ exports.fnSpecs = ({ config }) =>
             parent: true,
           },
         },
-        //TODO remove
         propertiesDefault: {
           properties: { serverEncrypted: true, accessTier: "Hot" },
         },
