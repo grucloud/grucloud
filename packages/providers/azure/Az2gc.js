@@ -1,6 +1,16 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, and, map, fork, filter } = require("rubico");
-const { find, callProp } = require("rubico/x");
+const {
+  pipe,
+  tap,
+  get,
+  eq,
+  and,
+  map,
+  fork,
+  filter,
+  assign,
+} = require("rubico");
+const { find, callProp, when } = require("rubico/x");
 const path = require("path");
 
 const {
@@ -75,6 +85,41 @@ const downloadAssets = ({ specs, commandOptions, programOptions }) =>
       pipe([() => downloadBlobs({ lives, commandOptions, programOptions })])(),
   ])();
 
+const replaceLocation = (providerConfig) =>
+  pipe([
+    tap((params) => {
+      assert(providerConfig);
+    }),
+    when(
+      get("location"),
+      assign({
+        location: pipe([
+          get("location"),
+          // "UK West" => "ukwest"
+          callProp("toLowerCase"),
+          callProp("replaceAll", " ", ""),
+          callProp("replaceAll", providerConfig.location, "config.location"),
+          (resource) => () => resource,
+        ]),
+      })
+    ),
+  ]);
+
+const azFilterModel = ({ providerConfig }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    filterModel({ field: "tags" }),
+    tap((params) => {
+      assert(true);
+    }),
+    map(assign({ live: pipe([get("live"), replaceLocation(providerConfig)]) })),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
 exports.generateCode = ({
   specs,
   providers,
@@ -99,7 +144,7 @@ exports.generateCode = ({
         commandOptions,
         programOptions,
         configTpl,
-        filterModel: filterModel({ field: "tags" }),
+        filterModel: azFilterModel({ providerConfig }),
       }),
     () =>
       downloadAssets({

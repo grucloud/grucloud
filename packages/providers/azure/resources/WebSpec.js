@@ -13,7 +13,7 @@ exports.fnSpecs = ({ config }) =>
       },
       {
         type: "AppServicePlan",
-        omitPropertiesExtra: ["properties.reserved", "location"],
+        omitPropertiesDiff: ["properties.reserved"],
         filterLive: ({ pickPropertiesCreate }) =>
           pipe([
             assign({

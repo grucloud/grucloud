@@ -36,9 +36,9 @@ exports.createResources = () => [
   {
     type: "FlexibleServer",
     group: "DBforPostgreSQL",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       name: "gc-server",
-      location: "UK South",
+      location: config.location,
       sku: {
         name: "Standard_B1ms",
         tier: "Burstable",

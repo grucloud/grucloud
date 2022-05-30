@@ -493,6 +493,9 @@ exports.compare = ({
     assign({
       target: (input) =>
         pipe([
+          tap((params) => {
+            assert(true);
+          }),
           () => input,
           get("target", {}),
           removeOurTags,
@@ -500,6 +503,7 @@ exports.compare = ({
           filterAll(input),
           filterTargetDefault,
           deepOmit(input.omitProperties),
+          deepOmit(input.omitPropertiesDiff),
           tap((params) => {
             assert(true);
           }),
@@ -516,6 +520,7 @@ exports.compare = ({
           deepPick(input.pickPropertiesCreate),
           deepOmit(input.omitProperties),
           deepOmit(input.omitPropertiesExtra),
+          deepOmit(input.omitPropertiesDiff),
           tap((params) => {
             assert(true);
           }),
