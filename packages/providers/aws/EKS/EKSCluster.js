@@ -77,7 +77,11 @@ exports.EKSCluster = ({ spec, config }) => {
       }),
       tap.if(
         () => !process.env.CONTINUOUS_INTEGRATION,
-        pipe([() => `aws eks update-kubeconfig --name ${name}`, shellRun])
+        pipe([
+          () =>
+            `aws eks --region ${config.region} update-kubeconfig --name ${name}`,
+          shellRun,
+        ])
       ),
     ])();
 
@@ -106,6 +110,8 @@ exports.EKSCluster = ({ spec, config }) => {
       ({ payload }) =>
       () =>
         payload,
+    //TODO isInstanceError
+    // isInstanceError: eq(get("status"), "TODOERROR")
     isInstanceUp: eq(get("status"), "ACTIVE"),
     shouldRetryOnExceptionMessages: [
       "The KeyArn in encryptionConfig provider",
