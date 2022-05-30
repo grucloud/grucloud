@@ -308,6 +308,7 @@ const createClient = ({
       isOurMinion: ({ uri, resource, live, lives }) => !!getResource(resource),
       configDefault: get("properties"),
       isInstanceUp: not(isEmpty),
+      isInstanceError: () => false,
       providerName,
     }),
     assign({
