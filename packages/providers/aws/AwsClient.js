@@ -314,6 +314,7 @@ const AwsClient =
         pickId,
         getById,
         isInstanceUp = not(isEmpty),
+        isInstanceError = () => false,
         shouldRetryOnExceptionCodes = [],
         shouldRetryOnExceptionMessages = [],
         shouldRetryOnException = () => false,
@@ -383,7 +384,21 @@ const AwsClient =
                 (params) =>
                   retryCall({
                     name: `isUpById: ${name}`,
-                    fn: pipe([() => params, getById, isInstanceUp]),
+                    fn: pipe([
+                      () => params,
+                      getById,
+                      switchCase([
+                        isInstanceUp,
+                        identity,
+                        isInstanceError,
+                        (live) => {
+                          const ex = new Error("instance is in error state");
+                          ex.live = live;
+                          throw ex;
+                        },
+                        () => false,
+                      ]),
+                    ]),
                     config: configIsUp,
                   })
               ),
@@ -553,6 +568,7 @@ const AwsClient =
         method,
         getById,
         isInstanceDown = isEmpty,
+        isInstanceError = () => false,
         ignoreError = () => false,
         ignoreErrorCodes = [],
         ignoreErrorMessages = [],
@@ -575,7 +591,6 @@ const AwsClient =
         ]),
         isExpectedResult,
         config,
-        isInstanceError = (live) => false,
       }) =>
       ({ name, live, lives }) =>
         pipe([

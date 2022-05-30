@@ -13,16 +13,7 @@ exports.fnSpecs = ({ config }) =>
       },
       {
         type: "AppServicePlan",
-        compare: compare({
-          filterAll: ({ pickProperties }) =>
-            pipe([
-              pick(pickProperties),
-              omit(["properties.reserved"]),
-              tap((params) => {
-                assert(true);
-              }),
-            ]),
-        }),
+        omitPropertiesExtra: ["properties.reserved", "location"],
         filterLive: ({ pickPropertiesCreate }) =>
           pipe([
             assign({
@@ -35,7 +26,7 @@ exports.fnSpecs = ({ config }) =>
                 ),
               ]),
             }),
-            pick(["name", "kind", ...pickPropertiesCreate]),
+            pick(["name", ...pickPropertiesCreate]),
           ]),
       },
 

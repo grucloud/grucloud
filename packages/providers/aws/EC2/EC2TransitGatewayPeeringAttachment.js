@@ -68,6 +68,8 @@ const createModel = ({ config }) => ({
     pickCreated: ({ payload }) =>
       pipe([get("TransitGatewayPeeringAttachment")]),
     configIsUp: { retryCount: 20 * 10, retryDelay: 5e3 },
+    //TODO isInstanceError
+    // isInstanceError: eq(get("State"), "TODOERROR")
     isInstanceUp: pipe([
       tap(({ State }) => {
         logger.debug(`TransitGatewayPeeringAttachment State: ${State}`);

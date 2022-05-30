@@ -8,6 +8,7 @@ exports.createResources = () => [
     group: "ContainerService",
     properties: ({}) => ({
       name: "cluster",
+      location: "uksouth",
       sku: {
         name: "Basic",
         tier: "Free",
@@ -52,17 +53,12 @@ exports.createResources = () => [
         },
         enableRBAC: true,
         networkProfile: {
-          networkPlugin: "kubenet",
-          podCidr: "10.244.0.0/16",
-          serviceCidr: "10.0.0.0/16",
-          dnsServiceIP: "10.0.0.10",
-          dockerBridgeCidr: "172.17.0.1/16",
-          outboundType: "loadBalancer",
           loadBalancerSku: "Standard",
           loadBalancerProfile: {
-            managedOutboundIPs: {
-              count: 1,
-            },
+            managedOutboundIPs: {},
+          },
+          natGatewayProfile: {
+            managedOutboundIPProfile: {},
           },
           podCidrs: ["10.244.0.0/16"],
           serviceCidrs: ["10.0.0.0/16"],

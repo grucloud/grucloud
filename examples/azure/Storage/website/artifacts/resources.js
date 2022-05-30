@@ -86,7 +86,12 @@ exports.createResources = () => [
               keyType: "Account",
             },
           },
+          keySource: "Microsoft.Storage",
           requireInfrastructureEncryption: false,
+        },
+        networkAcls: {
+          bypass: "AzureServices",
+          defaultAction: "Allow",
         },
         accessTier: "Hot",
         supportsHttpsTrafficOnly: true,

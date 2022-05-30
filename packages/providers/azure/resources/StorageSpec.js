@@ -66,7 +66,7 @@ exports.fnSpecs = ({ config }) =>
             },
           },
         },
-        pickProperties: ["properties"],
+        //TODO
         pickPropertiesCreate: ["properties"],
         filterLive: ({ pickPropertiesCreate }) =>
           pipe([pick(pickPropertiesCreate)]),
@@ -137,11 +137,6 @@ exports.fnSpecs = ({ config }) =>
         propertiesDefault: {
           properties: { serverEncrypted: true, accessTier: "Hot" },
         },
-        pickProperties: [
-          "properties.contentType",
-          "properties.contentEncoding",
-          "properties.contentLanguage",
-        ],
         pickPropertiesCreate: [
           "name",
           "properties.contentType",

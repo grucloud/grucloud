@@ -1,4 +1,4 @@
-const { pipe, tap, get, map, pick, reduce, switchCase } = require("rubico");
+const { pipe, or, tap, get, map, pick, reduce, switchCase } = require("rubico");
 const {
   callProp,
   when,
@@ -59,7 +59,7 @@ const deepPick = (paths) => (source) =>
   pipe([
     () => source,
     unless(
-      isEmpty,
+      or([isEmpty, () => paths == undefined]),
       pipe([
         () => paths,
         reduce(

@@ -95,7 +95,6 @@ module.exports = pipe([
       Client: Deployment,
       ignoreResource: () => () => true,
       omitProperties: ["createdDate", "id", "restApiId", "restApiName"],
-      propertiesDefault: {},
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
       },

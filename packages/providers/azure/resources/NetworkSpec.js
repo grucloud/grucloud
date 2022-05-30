@@ -124,19 +124,12 @@ exports.fnSpecs = ({ config }) => {
             ])(),
           },
         ],
-        // propertiesDefault: {
-        //   sslCertificates: [],
-        //   trustedRootCertificates: [],
-        //   trustedClientCertificates: [],
-        //   sslProfiles: [],
-        //   loadDistributionPolicies: [],
-        //   urlPathMaps: [],
-        //   probes: [],
-        //   rewriteRuleSets: [],
-        //   redirectConfigurations: [],
-        //   privateLinkConfigurations: [],
-        //   privateEndpointConnections: [],
-        // },
+        propertiesDefaultArray: [
+          [
+            "properties.frontendIPConfigurations[].properties.privateIPAllocationMethod",
+            "Dynamic",
+          ],
+        ],
         filterLive: ({ lives }) =>
           pipe([
             pick(["name", "sku", "tags", "properties"]),
@@ -310,38 +303,6 @@ exports.fnSpecs = ({ config }) => {
               ]),
             }),
           ]),
-        compare: compare({
-          filterAll: () =>
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              pick(["properties"]),
-              assign({
-                properties: pipe([
-                  get("properties"),
-                  omit([
-                    "provisioningState",
-                    "resourceGuid",
-                    "operationalState",
-                  ]),
-                  applicationGatewayOmitIfEmpty,
-                  assign({
-                    gatewayIPConfigurations: pickSubProps,
-                    frontendIPConfigurations: pickSubProps,
-                    frontendPorts: pickSubProps,
-                    backendAddressPools: pickSubProps,
-                    backendHttpSettingsCollection: pickSubProps,
-                    httpListeners: pickSubProps,
-                    requestRoutingRules: pickSubProps,
-                  }),
-                ]),
-              }),
-              tap((params) => {
-                assert(true);
-              }),
-            ]),
-        }),
       },
       {
         type: "RouteTable",
@@ -376,6 +337,14 @@ exports.fnSpecs = ({ config }) => {
             list: true,
           },
         },
+        //TODO remove
+        omitPropertiesExtra: ["properties.backendAddressPools"],
+        propertiesDefaultArray: [
+          [
+            "properties.frontendIPConfigurations[].properties.privateIPAllocationMethod",
+            "Dynamic",
+          ],
+        ],
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {
@@ -390,44 +359,6 @@ exports.fnSpecs = ({ config }) => {
             ])(),
           },
         ],
-        //TODO
-        // omitProperties: [
-        //   "properties.frontendIPConfigurations",
-        //   "properties.backendAddressPools",
-        // ],
-        compare: compare({
-          filterAll: () =>
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              omit([
-                "properties.frontendIPConfigurations",
-                "properties.backendAddressPools",
-              ]),
-              pick(["properties"]),
-              assign({
-                properties: pipe([
-                  get("properties"),
-                  omit(["provisioningState", "resourceGuid"]),
-                  assign({
-                    outboundRules: pipe([
-                      get("outboundRules"),
-                      map(
-                        pipe([
-                          omit(["properties.provisioningState"]),
-                          pick(["properties"]),
-                        ])
-                      ),
-                    ]),
-                  }),
-                ]),
-              }),
-              tap((params) => {
-                assert(true);
-              }),
-            ]),
-        }),
         filterLive: ({ lives }) =>
           pipe([
             pick(["name", "sku", "tags", "properties"]),
@@ -664,16 +595,8 @@ exports.fnSpecs = ({ config }) => {
           //     "createOnly": true
           // }
         },
+        // TODO remove
         pickPropertiesCreate: [
-          "properties.addressSpace.addressPrefixes",
-          "properties.flowTimeoutInMinutes",
-          "properties.enableDdosProtection",
-          "properties.enableVmProtection",
-          "properties.bgpCommunities.virtualNetworkCommunity",
-          "properties.encryption.enabled",
-          "properties.encryption.enforcement",
-        ],
-        pickProperties: [
           "properties.addressSpace.addressPrefixes",
           "properties.flowTimeoutInMinutes",
           "properties.enableDdosProtection",
@@ -707,33 +630,6 @@ exports.fnSpecs = ({ config }) => {
           //   createOnly: true,
           // },
         },
-        compare: compare({
-          filterLive: () =>
-            pipe([
-              omit(["id", "type"]),
-              assign({
-                properties: pipe([
-                  get("properties"),
-                  assign({
-                    securityRules: pipe([
-                      get("securityRules"),
-                      map(
-                        pipe([
-                          assign({
-                            properties: pipe([
-                              get("properties"),
-                              omit(["provisioningState"]),
-                            ]),
-                          }),
-                          omit(["id", "etag", "type"]),
-                        ])
-                      ),
-                    ]),
-                  }),
-                ]),
-              }),
-            ]),
-        }),
         omitPropertiesExtra: ["properties.securityRules[].type"],
         filterLive: () =>
           pipe([
@@ -806,10 +702,8 @@ exports.fnSpecs = ({ config }) => {
           properties: {
             publicIPAddressVersion: "IPv4",
             publicIPAllocationMethod: "Dynamic",
-            idleTimeoutInMinutes: 4,
           },
         },
-        pickProperties: [],
         pickPropertiesCreate: [
           "sku.name",
           "sku.tier",
@@ -1000,10 +894,6 @@ exports.fnSpecs = ({ config }) => {
             enableIPForwarding: false,
           },
         },
-        pickProperties: [
-          "properties.enableAcceleratedNetworking",
-          "properties.enableIPForwarding",
-        ],
         pickPropertiesCreate: [
           "properties.enableAcceleratedNetworking",
           "properties.enableIPForwarding",
@@ -1167,14 +1057,6 @@ exports.fnSpecs = ({ config }) => {
           "properties.routeTable",
           "properties.networkSecurityGroup",
           "properties.applicationGatewayIPConfigurations",
-        ],
-        pickProperties: [
-          "properties.addressPrefix",
-          "properties.addressPrefixes",
-          "properties.serviceEndpoints",
-          "properties.serviceEndpointPolicies",
-          "properties.privateEndpointNetworkPolicies",
-          "properties.privateLinkServiceNetworkPolicies",
         ],
         pickPropertiesCreate: [
           "properties.addressPrefix",

@@ -5,6 +5,7 @@ const { snakeCase } = require("change-case");
 const prettier = require("prettier");
 const prompts = require("prompts");
 const { ESLint } = require("eslint");
+const { deepOmit } = require("./deepOmit");
 
 const { differenceObject, omitIfEmpty } = require("./Common");
 const {
@@ -177,10 +178,14 @@ const buildProperties = ({
   commandOptions,
   programOptions,
   filterLive = () => identity,
-  propertiesDefault = {},
-  omitProperties = [],
-  pickPropertiesCreate = [],
-  spec: { tagsKey = "Tags", pickProperties },
+  spec: {
+    tagsKey = "Tags",
+    propertiesDefault,
+    propertiesDefaultArray = [],
+    omitProperties = [],
+    omitPropertiesExtra = [],
+    pickPropertiesCreate = [],
+  },
 }) =>
   pipe([
     tap(() => {
@@ -188,7 +193,7 @@ const buildProperties = ({
       assert(filterLive);
       assert(pickPropertiesCreate);
       assert(resource);
-      assert(propertiesDefault);
+      //assert(propertiesDefault);
       //assert(spec);
     }),
     () => resource,
@@ -206,8 +211,26 @@ const buildProperties = ({
     tap((params) => {
       assert(Array.isArray(omitProperties));
     }),
-    when(() => isEmpty(pickPropertiesCreate), omit(omitProperties)),
+    when(
+      () => isEmpty(pickPropertiesCreate),
+      pipe([deepOmit(omitProperties), deepOmit(omitPropertiesExtra)])
+    ),
+    tap((params) => {
+      assert(true);
+    }),
     differenceObject(propertiesDefault),
+    (live) =>
+      pipe([
+        () => propertiesDefaultArray,
+        reduce(
+          (acc, [path, defaultValue]) =>
+            pipe([
+              () => acc,
+              when(eq(get(path), defaultValue), omit([path])),
+            ])(),
+          live
+        ),
+      ])(),
     tap((params) => {
       assert(true);
     }),
@@ -480,13 +503,7 @@ const buildPrefix = switchCase([
   () => "",
 ]);
 
-const buildName = ({
-  inferName,
-  resourceName,
-  resource,
-  providerConfig,
-  mapping,
-}) =>
+const buildName = ({ inferName, resourceName, resource, providerConfig }) =>
   pipe([
     tap((params) => {
       assert(providerConfig);
@@ -1297,9 +1314,7 @@ const writeResource =
     resourceName = identity,
     filterLive,
     propertiesDefault,
-    omitProperties,
     tagsKey,
-    pickPropertiesCreate,
     codeBuildProperties,
     hasNoProperty,
     inferName,
@@ -1342,8 +1357,6 @@ const writeResource =
                   lives,
                   resource,
                   filterLive,
-                  omitProperties,
-                  pickPropertiesCreate,
                   tagsKey,
                   propertiesDefault,
                   dependencies,
@@ -1412,10 +1425,7 @@ const writeResources =
     providerName,
     providerType,
     filterLive,
-    propertiesDefault,
-    omitProperties,
     tagsKey,
-    pickPropertiesCreate,
     properties,
     dependencies,
     environmentVariables,
@@ -1461,9 +1471,6 @@ const writeResources =
                 providerName,
                 properties,
                 filterLive,
-                omitProperties,
-                propertiesDefault,
-                pickPropertiesCreate,
                 inferName,
                 dependencies,
                 ignoreResource,

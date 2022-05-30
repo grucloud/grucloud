@@ -51,9 +51,10 @@ const listExpectedExceptionMessages = [
   "Mongo Role Defination is not enabled for the account",
   "Mongo User Defination is not enabled for the account",
   "This runtime stack is not yet supported on Linux", // Web::WebAppProcess
+  "We are unable to serve this request due to an internal error", // ContainerService::TrustedAccessRoleBinding
 ];
 
-const shouldRetryOnExceptionCreate = pipe([
+const shouldRetryOnExceptionAzure = pipe([
   fork({
     status: get("error.response.status"),
     code: get("error.response.data.error.code"),
@@ -523,7 +524,8 @@ module.exports = AzClient = ({
           ])(),
       ]),
     ]),
-    shouldRetryOnExceptionCreate,
+    shouldRetryOnExceptionList: shouldRetryOnExceptionAzure,
+    shouldRetryOnExceptionCreate: shouldRetryOnExceptionAzure,
     findTargetId,
     verbCreate: verbCreateFromMethods(methods),
     verbUpdate: verbUpdateFromMethods(methods),

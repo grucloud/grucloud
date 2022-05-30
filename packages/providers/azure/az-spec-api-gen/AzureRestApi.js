@@ -44,17 +44,20 @@ const {
 } = require("rubico/x");
 const path = require("path");
 const fs = require("fs").promises;
-const { camelCase } = require("change-case");
+const { camelCase, snakeCase } = require("change-case");
 const pluralize = require("pluralize");
-const { snakeCase } = require("change-case");
 const SwaggerParser = require("@apidevtools/swagger-parser");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { isSubstituable } = require("../AzureCommon");
 const { writeDoc } = require("./AzureDoc");
 const { ResourcesExcludes } = require("../AzureResourcesExcludes");
-const { buildPickProperties } = require("./buildPickProperties");
+const {
+  buildPickPropertiesObject,
+  buildPickProperties,
+} = require("./buildPickProperties");
 const { buildOmitPropertiesObject } = require("./buildOmitProperties");
+const { buildDefaultPropertiesObject } = require("./buildDefaultProperties");
 
 const {
   isSecret,
@@ -808,13 +811,14 @@ const findDependenciesDepMatchesResource = ({ depName, group, type }) =>
       ])()
     ),
     tap.if(gte(size, 2), (results) => {
-      console.log(
-        "findDependenciesDepMatchesResource Mutiple dependencies ",
-        depName,
-        group,
-        type,
-        results
-      );
+      //TODO
+      // console.log(
+      //   "findDependenciesDepMatchesResource Mutiple dependencies ",
+      //   depName,
+      //   group,
+      //   type,
+      //   results
+      // );
     }),
     switchCase([eq(size, 1), first, () => undefined]),
   ]);
@@ -830,13 +834,14 @@ const findDependenciesSameGroup = ({ depName, group, type }) =>
       ])()
     ),
     tap.if(gte(size, 2), (results) => {
-      console.log(
-        "findDependenciesSameGroup Mutiple dependencies ",
-        depName,
-        group,
-        type,
-        results
-      );
+      //TODO
+      // console.log(
+      //   "findDependenciesSameGroup Mutiple dependencies ",
+      //   depName,
+      //   group,
+      //   type,
+      //   results
+      // );
     }),
     switchCase([eq(size, 1), first, () => undefined]),
   ]);
@@ -847,7 +852,8 @@ const findDependenciesAllGroup = ({ depName }) =>
       pipe([() => depName.match(new RegExp(`^${resource.type}$`, "ig"))])()
     ),
     tap.if(gte(size, 2), (results) => {
-      console.log("findDependenciesAllGroup Mutiple dependencies ", results);
+      //TODO
+      //console.log("findDependenciesAllGroup Mutiple dependencies ", results);
     }),
     first,
   ]);
@@ -907,7 +913,15 @@ const findPreDefinedDependencies = ({ depId, pathId }) =>
     tap((params) => {
       assert(true);
     }),
-    unless(isEmpty, defaultsDeep({ pathId })),
+    unless(
+      isEmpty,
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        defaultsDeep({ pathId }),
+      ])
+    ),
   ])();
 
 const addDependencyFromBody = ({ resources, type, group, method }) =>
@@ -1071,44 +1085,6 @@ const buildEnvironmentVariables =
       filter(not(isEmpty)),
       flatten,
       (results) => [...accumulator, ...results],
-    ])();
-
-//TODO remove readOnly props
-const buildPropertiesDefault =
-  ({ parentPath = [], accumulator = {} }) =>
-  (properties = {}) =>
-    pipe([
-      () => properties,
-      map.entries(([key, obj]) => [
-        key,
-        pipe([
-          tap((params) => {
-            assert(obj);
-            assert(key);
-          }),
-          () => obj,
-          switchCase([
-            isPreviousProperties({ parentPath, key }),
-            pipe([() => undefined]),
-            callProp("hasOwnProperty", "default"),
-            pipe([
-              get("default"),
-              tap((params) => {
-                assert(true);
-              }),
-            ]),
-            pipe([
-              get("properties"),
-              buildPropertiesDefault({
-                parentPath: [...parentPath, key],
-                accumulator,
-              }),
-            ]),
-          ]),
-        ])(),
-      ]),
-      filter(not(isEmpty)),
-      when(isEmpty, () => undefined),
     ])();
 
 const getParentPath = ({ obj, key, parentPath }) =>
@@ -1373,7 +1349,7 @@ const pickResourceInfo = ({ swagger, ...other }) =>
         }),
         map(callProp("join", ".")),
       ]),
-      pickProperties: pickPropertiesGet({ swagger }),
+      //pickProperties: pickPropertiesGet({ swagger }),
       pickPropertiesCreate: (resource) =>
         pipe([
           () => resource,
@@ -1388,26 +1364,12 @@ const pickResourceInfo = ({ swagger, ...other }) =>
               tap((schema) => {
                 assert(schema);
               }),
-              (schema) =>
-                pipe([
-                  () => schema,
-                  get("properties"),
-                  when(isEmpty, () => get("allOf[1].properties")(schema)),
-                  when(isEmpty, () => get("allOf[0].properties")(schema)),
-                  tap.if(isEmpty, (properties) => {
-                    assert(
-                      properties,
-                      `no properties in ${
-                        resource.methods.put.operationId
-                      }, schema: ${JSON.stringify(schema, null, 4)}`
-                    );
-                  }),
-                  buildPickProperties({ swagger }),
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  map(callProp("join", ".")),
-                ])(),
+              buildPickPropertiesObject({
+                swagger,
+                parentPath: [],
+                accumulator: [],
+              }),
+              map(callProp("join", ".")),
             ]),
           ]),
         ])(),
@@ -1421,9 +1383,42 @@ const pickResourceInfo = ({ swagger, ...other }) =>
           })
         ),
       ]),
-      propertiesDefault: pipe([
-        getSchemaFromMethods({ method: "get" }),
-        buildPropertiesDefault({}),
+      propertiesDefaultArray: pipe([
+        get("methods"),
+        tap((methods) => {
+          assert(methods);
+        }),
+        //TODO get or put
+        get("get"),
+        tap((method) => {
+          assert(method);
+        }),
+        get("responses.200.schema"),
+        tap((schema) => {
+          assert(schema);
+        }),
+        buildDefaultPropertiesObject({
+          swagger,
+          parentPath: [],
+          accumulator: [],
+        }),
+        tap((params) => {
+          assert(true);
+        }),
+        filter(([keys, defaultValue]) => defaultValue != null),
+        map(([keys, defaultValue]) =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => keys,
+            callProp("join", "."),
+            (path) => [path, defaultValue],
+          ])()
+        ),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
       methods: pipe([
         get("methods"),
@@ -1445,7 +1440,7 @@ const pickResourceInfo = ({ swagger, ...other }) =>
     omitIfEmpty([
       "environmentVariables",
       "omitProperties",
-      "propertiesDefault",
+      "propertiesDefaultArray",
     ]),
     tap((params) => {
       assert(true);
@@ -1477,9 +1472,10 @@ const filterGetAll = ({ name, dependencies, methods }) =>
     ({ dependenciesCountComputed, dependenciesCountInPath }) =>
       dependenciesCountComputed >= dependenciesCountInPath,
     tap.if(eq(identity, false), () => {
-      console.log(
-        `filterGetAll mismatch deps ${methods.get.operationId}, ${methods.get.path} `
-      );
+      //TODO
+      // console.log(
+      //   `filterGetAll mismatch deps ${methods.get.operationId}, ${methods.get.path} `
+      // );
     }),
   ])();
 

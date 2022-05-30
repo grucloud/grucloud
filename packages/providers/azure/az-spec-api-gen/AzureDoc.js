@@ -21,7 +21,7 @@ const buildDocResourceFilename =
     pipe([
       () => path.resolve(directoryDoc, group, `${type}.md`),
       tap((filename) => {
-        console.log(`Writing markdown: ${filename}`);
+        //console.log(`Writing markdown: ${filename}`);
       }),
     ])();
 

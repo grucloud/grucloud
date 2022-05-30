@@ -46,6 +46,9 @@ const util = require("util");
 const { detailedDiff } = require("deep-object-diff");
 const Diff = require("diff");
 const shell = require("shelljs");
+const { deepOmit } = require("./deepOmit");
+const { deepPick } = require("./deepPick");
+const { deepDefaults } = require("./deepDefault");
 
 const logger = require("./logger")({ prefix: "Common" });
 const { tos } = require("./tos");
@@ -481,7 +484,7 @@ exports.compare = ({
 } = {}) =>
   pipe([
     tap((params) => {
-      assert(filterTarget);
+      assert(true);
     }),
     assign({
       targetIn: get("target"),
@@ -490,48 +493,33 @@ exports.compare = ({
     assign({
       target: (input) =>
         pipe([
-          tap((params) => {
-            assert(input.propertiesDefault);
-          }),
           () => input,
           get("target", {}),
-          defaultsDeep(input.propertiesDefault),
           removeOurTags,
           filterTarget(input),
           filterAll(input),
           filterTargetDefault,
-          //TODO
-          //when(() => pickProperties, pick(pickProperties)),
-          when(() => input.omitProperties, omit(input.omitProperties)),
+          deepOmit(input.omitProperties),
           tap((params) => {
             assert(true);
           }),
         ])(),
-      live: (input) =>
+      live: ({ live = {}, ...input }) =>
         pipe([
-          () => input,
-          get("live", {}),
+          () => live,
           removeOurTags,
           defaultsDeep(input.propertiesDefault),
+          deepDefaults(input.propertiesDefaultArray),
           filterLive(input),
           filterAll(input),
           filterLiveDefault,
-          // TODO
-          //when(() => pickProperties, pick(pickProperties)),
-          when(() => input.omitProperties, omit(input.omitProperties)),
-          //TODO implement omitDeep
-          when(
-            () => input.omitPropertiesExtra,
-            omit(input.omitPropertiesExtra)
-          ),
-
+          deepPick(input.pickPropertiesCreate),
+          deepOmit(input.omitProperties),
+          deepOmit(input.omitPropertiesExtra),
           tap((params) => {
             assert(true);
           }),
         ])(),
-    }),
-    tap((params) => {
-      assert(true);
     }),
     assign({
       targetDiff: pipe([

@@ -20,14 +20,14 @@ module.exports = pipe([
     {
       type: "LogGroup",
       Client: CloudWatchLogsGroup,
-      pickProperties: ["retentionInDays"],
+      pickPropertiesCreate: ["retentionInDays"],
       // ignoreResource: () =>
       //   pipe([get("name"), callProp("startsWith", "/aws/")]),
       //TODO
-
       compare: compareCloudWatchLog({
         filterAll: () => pipe([pick(["retentionInDays"])]),
       }),
+      // TODO use propertiesCreate ?
       filterLive: () => pipe([pick(["retentionInDays"])]),
       dependencies: {
         kmsKey: { type: "Key", group: "KMS" },

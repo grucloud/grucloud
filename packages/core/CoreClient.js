@@ -74,6 +74,7 @@ module.exports = CoreClient = ({
   isDefault,
   managedByOther = () => false,
   cannotBeDeleted,
+  shouldRetryOnExceptionList = shouldRetryOnExceptionCreateDefault,
   shouldRetryOnExceptionCreate = shouldRetryOnExceptionCreateDefault,
   shouldRetryOnExceptionDelete = shouldRetryOnExceptionDeleteDefault,
   onCreateFilterPayload = identity,
@@ -181,6 +182,7 @@ module.exports = CoreClient = ({
                       method: verbList,
                     }),
                   isExpectedException: listIsExpectedException,
+                  shouldRetryOnException: shouldRetryOnExceptionList,
                   config,
                 }),
               tap((params) => {

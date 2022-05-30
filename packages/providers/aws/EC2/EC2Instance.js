@@ -506,6 +506,7 @@ exports.compareEC2Instance = pipe([
           "Image",
         ]),
       ]),
+    //TODO
     filterTarget: ({ propertiesDefault }) =>
       pipe([defaultsDeep(propertiesDefault), omit(["LaunchTemplate"])]),
     filterLive: ({ propertiesDefault, lives, config }) =>
@@ -515,6 +516,7 @@ exports.compareEC2Instance = pipe([
           assert(lives);
           assert(config);
         }),
+        //TODO
         defaultsDeep(propertiesDefault),
         when(getLaunchTemplateIdFromTags, (live) =>
           pipe([

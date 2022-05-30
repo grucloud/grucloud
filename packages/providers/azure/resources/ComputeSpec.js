@@ -20,6 +20,7 @@ const {
   includes,
   first,
   when,
+  unless,
   flatten,
   callProp,
 } = require("rubico/x");
@@ -109,8 +110,8 @@ const filterVirtualMachineProperties =
         assert(true);
       }),
       omit([
-        "osProfile.requireGuestProvisionSignal",
         "storageProfile.imageReference.exactVersion",
+        "osProfile.requireGuestProvisionSignal",
       ]),
       assign({
         storageProfile: pipe([
@@ -321,6 +322,7 @@ const filterVirtualMachineProperties =
           ),
         ]),
       }),
+      omitIfEmpty(["networkProfile.networkInterfaces"]),
       omitIfEmpty([
         "osProfile.secrets",
         "storageProfile.dataDisks",
@@ -464,10 +466,7 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
           },
         },
-        pickProperties: [
-          "properties.encryptionType",
-          "properties.rotationToLatestKeyVersionEnabled",
-        ],
+        //TODO remove
         pickPropertiesCreate: [
           "name",
           "properties.encryptionType",
@@ -572,39 +571,15 @@ exports.fnSpecs = ({ config }) =>
             list: true,
           },
         },
+        omitPropertiesExtra: [
+          "properties.virtualMachineProfile.osProfile.requireGuestProvisionSignal",
+        ],
         environmentVariables: [
           {
             path: "properties.virtualMachineProfile.osProfile.adminPassword",
             suffix: "ADMIN_PASSWORD",
           },
         ],
-        omitProperties: [
-          "properties.virtualMachineProfile.osProfile.adminPassword",
-          "properties.virtualMachineProfile.osProfile.secrets",
-        ],
-        compare: compare({
-          filterAll: () =>
-            pipe([
-              pick(["properties"]),
-              assign({
-                properties: pipe([
-                  get("properties"),
-                  pick(["virtualMachineProfile"]),
-                  assign({
-                    virtualMachineProfile: pipe([
-                      get("virtualMachineProfile"),
-                      // TODO
-                      omit(["extensionProfile", "osProfile"]),
-                      omitIfEmpty(["networkProfile"]),
-                    ]),
-                  }),
-                ]),
-              }),
-              tap((params) => {
-                assert(true);
-              }),
-            ]),
-        }),
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives }),
           findDependenciesUserAssignedIdentity({ live }),
@@ -795,6 +770,9 @@ exports.fnSpecs = ({ config }) =>
             },
           },
         },
+        omitPropertiesExtra: [
+          "properties.osProfile.requireGuestProvisionSignal",
+        ],
         filterLive: (context) =>
           pipe([
             pick(["name", "tags", "properties", "identity.type"]),
@@ -805,10 +783,6 @@ exports.fnSpecs = ({ config }) =>
               ]),
             }),
           ]),
-        omitProperties: [
-          "properties.osProfile.adminPassword",
-          "properties.osProfile.requireGuestProvisionSignal",
-        ],
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           findDependenciesUserAssignedIdentity({ live }),
@@ -868,19 +842,22 @@ exports.fnSpecs = ({ config }) =>
                 },
               })
             ),
-            defaultsDeep({
-              properties: {
-                networkProfile: {
-                  networkInterfaces: pipe([
-                    () => dependencies,
-                    get("networkInterfaces", []),
-                    map((networkInterface) => ({
-                      id: getField(networkInterface, "id"),
-                    })),
-                  ])(),
+            unless(
+              () => isEmpty(dependencies.networkInterfaces),
+              defaultsDeep({
+                properties: {
+                  networkProfile: {
+                    networkInterfaces: pipe([
+                      () => dependencies,
+                      get("networkInterfaces", []),
+                      map((networkInterface) => ({
+                        id: getField(networkInterface, "id"),
+                      })),
+                    ])(),
+                  },
                 },
-              },
-            }),
+              })
+            ),
             defaultsDeep(
               configDefaultGeneric({ properties, dependencies, config, spec })
             ),

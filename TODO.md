@@ -96,6 +96,13 @@ omit AWSLogs S3 Objects
 
 ## Azure
 
+- Disk vault dep vanished
+- gc d -a
+  Compute::VirtualMachineScaleSetExtension 0/3 Request failed with status code 400 On resource 'aks-agentpool-16833683-vmss',
+  extension 'AKSLinuxExtension' specifies 'vmssCSE' in its provisionAfterExtensions property, but the extension 'vmssCSE' will no
+  longer exist. First, remove the extension 'AKSLinuxExtension' or remove 'vmssCSE' from the provisionAfterExtensions property of '
+  AKSLinuxExtension'
+
 - remove WebAppProcessSlot
 - storage location
 
@@ -151,9 +158,6 @@ remove aks-managed-createOperationID from tags
   WebAppInstanceProcess missing dependency
 
 az::Storage::FileShare pickProperties: "properties.metadata",
-
-- delete NSG : failed with status code 429 A retry
-- cat ../my-beautiful-diagram.puml | curl -v -H "Content-Type: text/plain" --data-binary @- http://localhost:8080/png/ --output - > /tmp/out.png
 
 ## Aws2gc
 

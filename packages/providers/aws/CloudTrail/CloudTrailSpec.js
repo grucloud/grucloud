@@ -36,7 +36,6 @@ module.exports = pipe([
         "HasCustomEventSelectors",
         "LogFileValidationEnabled",
       ],
-      //propertiesDefault: { EventBusName: "default" },
       compare: compareCloudTrail({
         filterLive: () => pipe([filterEventSelector]),
       }),
@@ -53,7 +52,6 @@ module.exports = pipe([
       type: "EventDataStore",
       Client: CloudTrailEventDataStore,
       omitProperties: [],
-      //propertiesDefault: { EventBusName: "default" },
       // compare: compareCloudTrail({
       //   filterTarget: () => pipe([defaultsDeep({ EventBusName: "default" })]),
       //   filterLive: () => pipe([omit(["Arn", "CreatedBy", "Targets"])]),

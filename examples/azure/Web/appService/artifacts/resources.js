@@ -16,6 +16,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       name: "app-service-plan-linux-cheap",
       kind: "linux",
+      location: "UK West",
       properties: {
         reserved: true,
       },
@@ -37,6 +38,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       name: "grucloud-test",
       kind: "app,linux",
+      location: "UK West",
       properties: {
         enabled: true,
         reserved: true,
