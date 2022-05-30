@@ -719,7 +719,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         assert(Bucket, `destroy invalid s3`);
         logger.debug(`destroy bucket ${tos({ Bucket })}`);
       }),
-      async () => {
+      tryCatch(async () => {
         do {
           var isTruncated = await pipe([
             () => ({ Bucket }),
@@ -737,6 +737,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                       Bucket,
                       Key,
                     }),
+                    //TODO
                     s3().deleteObject,
                   ]),
                   (error) => ({ error })
@@ -746,8 +747,8 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             get("IsTruncated"),
           ])();
         } while (isTruncated);
-      },
-      async () => {
+      }, throwIfNotAwsError("NoSuchBucket")),
+      tryCatch(async () => {
         do {
           var isTruncated = await pipe([
             () => ({ Bucket }),
@@ -797,7 +798,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             }),
           ])();
         } while (isTruncated);
-      },
+      }, throwIfNotAwsError("NoSuchBucket")),
       tryCatch(
         () => s3().deleteBucket({ Bucket }),
         throwIfNotAwsError("NoSuchBucket")
