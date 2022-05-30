@@ -39,6 +39,7 @@ module.exports = pipe([
       compare: compareCloudTrail({
         filterLive: () => pipe([filterEventSelector]),
       }),
+      //TODO home region
       filterLive: () => pipe([filterEventSelector]),
       dependencies: {
         bucket: { type: "Bucket", group: "S3" },
