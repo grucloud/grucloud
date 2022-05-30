@@ -70,6 +70,7 @@ exports.createResources = () => [
           id: "Items",
           indexingPolicy: {
             automatic: true,
+            indexingMode: "consistent",
             includedPaths: [
               {
                 path: "/*",
@@ -82,9 +83,11 @@ exports.createResources = () => [
             ],
           },
           partitionKey: {
-            paths: ["/partitionKey"],
+            paths: ["/id"],
+            kind: "Hash",
           },
           conflictResolutionPolicy: {
+            mode: "LastWriterWins",
             conflictResolutionPath: "/_ts",
             conflictResolutionProcedure: "",
           },
