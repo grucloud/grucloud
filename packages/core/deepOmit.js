@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, omit, reduce, switchCase, set } = require("rubico");
+const { pipe, tap, get, omit, reduce, switchCase, set, or } = require("rubico");
 const {
   when,
   callProp,
@@ -79,7 +79,7 @@ const deepOmit = (paths) => (source) =>
   pipe([
     () => source,
     unless(
-      isEmpty,
+      or([isEmpty, () => paths === undefined]),
       pipe([
         () => paths,
         reduce(

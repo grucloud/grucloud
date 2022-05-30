@@ -6,8 +6,9 @@ exports.createResources = () => [
   {
     type: "SshPublicKey",
     group: "Compute",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       name: "my-key-pair",
+      location: config.location,
       publicKeyFile: "keys/my-key-pair.pub",
       properties: {},
     }),

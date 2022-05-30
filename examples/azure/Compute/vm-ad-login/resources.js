@@ -20,9 +20,9 @@ exports.createResources = () => [
   {
     type: "SshPublicKey",
     group: "Compute",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       name: "keypair",
-      location: "uksouth",
+      location: config.location,
       properties: {
         publicKey:
           "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC8SzGkGNI3Ygk6VRCpozwO7xo1\r\nRW50+mHnXNwGMJUlp2GklCjrxYHmKU/1EcoJtc3A7HObBJu/7ckjK8pzl++qi479\r\n7z69qJipkWZsAI5ff6dsdJtDZLJctHfp0fost90LOWUBP+9WKBMgSCg7LM9QQC3C\r\n4A+iZKoqAmlUM6nzvfS90MxHavJR351aaTQIQg/jUHQoJ3PVeE9IpDhselTJQRDy\r\n0dVGcvjSvglw1q7s8hMCueZQNGS2e5sMS4oKhNsi9Rjawe9Iw9maeNnNiZJQwKJi\r\np/o62B48p2k+jIsr8PHE7C8JbIPuE89fRMOE8OgUBOVN0ZL4vRArjiKcFNkf5s7r\r\nl3j6SrqoUvODxedq4YG3IE3NOabqZ5JvzVIWvNhrO0f5MPty3bzucpOUvg2qjXY7\r\nZc8wsBHHWcLb1hhwOMfhqz7kY0MAsOFR6Kn1OvH0Na+R1Zke+z1YMh85FdoPOpmP\r\nboGjezMbAEQCDQJwAVfP2qBQYL1KuyULMmYUQ90= generated-by-azure\r\n",
@@ -106,9 +106,9 @@ exports.createResources = () => [
   {
     type: "VirtualMachineExtension",
     group: "Compute",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       name: "aadsshloginforlinux",
-      location: "uksouth",
+      location: config.location,
       properties: {
         publisher: "Microsoft.Azure.ActiveDirectory",
         type: "AADSSHLoginForLinux",

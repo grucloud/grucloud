@@ -211,10 +211,8 @@ const buildProperties = ({
     tap((params) => {
       assert(Array.isArray(omitProperties));
     }),
-    when(
-      () => isEmpty(pickPropertiesCreate),
-      pipe([deepOmit(omitProperties), deepOmit(omitPropertiesExtra)])
-    ),
+    when(() => isEmpty(pickPropertiesCreate), pipe([deepOmit(omitProperties)])),
+    deepOmit(omitPropertiesExtra),
     tap((params) => {
       assert(true);
     }),

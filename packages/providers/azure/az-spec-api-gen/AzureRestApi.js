@@ -1383,43 +1383,57 @@ const pickResourceInfo = ({ swagger, ...other }) =>
           })
         ),
       ]),
-      propertiesDefaultArray: pipe([
-        get("methods"),
-        tap((methods) => {
-          assert(methods);
-        }),
-        //TODO get or put
-        get("get"),
-        tap((method) => {
-          assert(method);
-        }),
-        get("responses.200.schema"),
-        tap((schema) => {
-          assert(schema);
-        }),
-        buildDefaultPropertiesObject({
-          swagger,
-          parentPath: [],
-          accumulator: [],
-        }),
-        tap((params) => {
-          assert(true);
-        }),
-        filter(([keys, defaultValue]) => defaultValue != null),
-        map(([keys, defaultValue]) =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            () => keys,
-            callProp("join", "."),
-            (path) => [path, defaultValue],
-          ])()
-        ),
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
+      propertiesDefaultArray: (resource) =>
+        pipe([
+          () => resource,
+          get("methods.put"),
+          get("parameters"),
+          find(eq(get("in"), "body")),
+          tap((params) => {
+            assert(true);
+          }),
+          get("schema"),
+          when(
+            isEmpty,
+            pipe([
+              () => resource,
+              get("methods"),
+              tap((methods) => {
+                assert(methods);
+              }),
+              get("get"),
+              tap((method) => {
+                assert(method);
+              }),
+              get("responses.200.schema"),
+              tap((schema) => {
+                assert(schema);
+              }),
+            ])
+          ),
+          buildDefaultPropertiesObject({
+            swagger,
+            parentPath: [],
+            accumulator: [],
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+          filter(([keys, defaultValue]) => defaultValue != null),
+          map(([keys, defaultValue]) =>
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => keys,
+              callProp("join", "."),
+              (path) => [path, defaultValue],
+            ])()
+          ),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
       methods: pipe([
         get("methods"),
         map.entries(([key, value]) => [

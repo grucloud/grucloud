@@ -94,4 +94,11 @@ describe("deepOmit", function () {
     const result = deepOmit(["b.c"])(obj);
     assert(isDeepEqual(result, { a: 1 }));
   });
+  it("deepOmitByPath paths undefined", async function () {
+    const obj = {
+      a: 1,
+    };
+    const result = deepOmit()(obj);
+    assert(isDeepEqual(result, obj));
+  });
 });

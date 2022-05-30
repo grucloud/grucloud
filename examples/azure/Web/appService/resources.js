@@ -13,10 +13,10 @@ exports.createResources = () => [
   {
     type: "AppServicePlan",
     group: "Web",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       name: "app-service-plan-linux-cheap",
       kind: "linux",
-      location: "UK West",
+      location: config.location,
       properties: {
         reserved: true,
       },
@@ -35,10 +35,10 @@ exports.createResources = () => [
   {
     type: "WebApp",
     group: "Web",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       name: "grucloud-test",
       kind: "app,linux",
-      location: "UK West",
+      location: config.location,
       properties: {
         enabled: true,
         reserved: true,

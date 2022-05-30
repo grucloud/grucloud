@@ -20,7 +20,7 @@ exports.createResources = () => [
       },
       source: "assets/index.html",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-storage-web",
       container: "rg-storage-web::gcstorageweb::$web",
     }),
@@ -39,7 +39,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-storage-web",
       account: "rg-storage-web::gcstorageweb",
     }),
@@ -59,7 +59,7 @@ exports.createResources = () => [
         },
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-storage-web",
       account: "rg-storage-web::gcstorageweb",
     }),
@@ -67,13 +67,13 @@ exports.createResources = () => [
   {
     type: "StorageAccount",
     group: "Storage",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       name: "gcstorageweb",
+      kind: "StorageV2",
       sku: {
         name: "Standard_RAGRS",
       },
-      kind: "StorageV2",
-      location: "uksouth",
+      location: config.location,
       properties: {
         encryption: {
           services: {
@@ -88,10 +88,7 @@ exports.createResources = () => [
           },
           requireInfrastructureEncryption: false,
         },
-        networkAcls: {
-          virtualNetworkRules: [],
-          ipRules: [],
-        },
+        networkAcls: {},
         accessTier: "Hot",
         supportsHttpsTrafficOnly: true,
         allowBlobPublicAccess: true,
@@ -101,7 +98,7 @@ exports.createResources = () => [
         defaultToOAuthAuthentication: false,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-storage-web",
     }),
   },

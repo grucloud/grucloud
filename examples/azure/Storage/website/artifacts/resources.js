@@ -67,13 +67,13 @@ exports.createResources = () => [
   {
     type: "StorageAccount",
     group: "Storage",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       name: "gcstorageweb",
       kind: "StorageV2",
       sku: {
         name: "Standard_RAGRS",
       },
-      location: "uksouth",
+      location: config.location,
       properties: {
         encryption: {
           services: {

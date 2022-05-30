@@ -20977,6 +20977,32 @@
             "properties.immutableStorageWithVersioning.immutabilityPolicy.immutabilityPeriodSinceCreationInDays",
             "properties.immutableStorageWithVersioning.immutabilityPolicy.allowProtectedAppendWrites",
             "properties.dnsEndpointType"
+        ],
+        "propertiesDefaultArray": [
+            [
+                "properties.sasPolicy.expirationAction",
+                "Log"
+            ],
+            [
+                "properties.encryption.keySource",
+                "Microsoft.Storage"
+            ],
+            [
+                "properties.networkAcls.bypass",
+                "AzureServices"
+            ],
+            [
+                "properties.networkAcls.virtualNetworkRules[].action",
+                "Allow"
+            ],
+            [
+                "properties.networkAcls.ipRules[].action",
+                "Allow"
+            ],
+            [
+                "properties.networkAcls.defaultAction",
+                "Allow"
+            ]
         ]
     },
     {
@@ -22611,6 +22637,12 @@
         "pickPropertiesCreate": [
             "kind",
             "properties.validationMethod"
+        ],
+        "propertiesDefaultArray": [
+            [
+                "properties.validationMethod",
+                "cname-delegation"
+            ]
         ]
     },
     {

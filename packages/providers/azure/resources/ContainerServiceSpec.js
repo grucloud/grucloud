@@ -157,32 +157,6 @@ exports.fnSpecs = ({ config }) =>
           "properties.identityProfile",
           "properties.nodeResourceGroup",
         ],
-        filterLive: ({ pickPropertiesCreate, lives }) =>
-          pipe([
-            tap((params) => {
-              assert(pickPropertiesCreate);
-            }),
-            deepPick([
-              "name",
-              ...pickPropertiesCreate,
-              "properties.servicePrincipalProfile.clientId",
-              "identity.type",
-            ]),
-            tap((params) => {
-              assert(true);
-            }),
-            assign({
-              properties: pipe([
-                get("properties"),
-                omit([
-                  "identityProfile",
-                  "nodeResourceGroup",
-                  "windowsProfile", // For now no windows need to add the password as env var
-                ]),
-                //assignContainerProp,
-              ]),
-            }),
-          ]),
       },
     ],
     map(defaultsDeep({ group })),

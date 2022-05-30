@@ -6,9 +6,9 @@ exports.createResources = () => [
   {
     type: "ManagedCluster",
     group: "ContainerService",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       name: "cluster",
-      location: "uksouth",
+      location: config.location,
       sku: {
         name: "Basic",
         tier: "Free",
@@ -74,9 +74,6 @@ exports.createResources = () => [
           snapshotController: {
             enabled: true,
           },
-        },
-        servicePrincipalProfile: {
-          clientId: "msi",
         },
       },
     }),

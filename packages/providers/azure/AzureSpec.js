@@ -180,11 +180,11 @@ const buildDefaultSpec = fork({
       }),
   filterLive:
     ({ pickPropertiesCreate = [] }) =>
-    () =>
+    ({ providerConfig }) =>
       //TODO
       pipe([
         tap((params) => {
-          assert(true);
+          assert(providerConfig);
         }),
         deepPick(["name", "kind", ...pickPropertiesCreate]),
         omit([
