@@ -75,6 +75,7 @@ exports.createResources = () => [
       },
       location: config.location,
       properties: {
+        sasPolicy: {},
         encryption: {
           services: {
             blob: {
@@ -86,13 +87,9 @@ exports.createResources = () => [
               keyType: "Account",
             },
           },
-          keySource: "Microsoft.Storage",
           requireInfrastructureEncryption: false,
         },
-        networkAcls: {
-          bypass: "AzureServices",
-          defaultAction: "Allow",
-        },
+        networkAcls: {},
         accessTier: "Hot",
         supportsHttpsTrafficOnly: true,
         allowBlobPublicAccess: true,

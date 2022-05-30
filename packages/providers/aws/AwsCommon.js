@@ -71,6 +71,24 @@ const throwIfNotAwsError = (code) =>
 
 exports.throwIfNotAwsError = throwIfNotAwsError;
 
+exports.replaceRegionAll =
+  ({ providerConfig }) =>
+  (region) =>
+    pipe([
+      tap((params) => {
+        assert(providerConfig);
+      }),
+      () => providerConfig,
+      Object.entries,
+      find(eq(last, region)),
+      first,
+      switchCase([
+        isEmpty,
+        () => region,
+        pipe([(key) => `config.${key}`, (resource) => () => resource]),
+      ]),
+    ])();
+
 exports.replaceRegion = ({ providerConfig }) =>
   pipe([
     tap((params) => {

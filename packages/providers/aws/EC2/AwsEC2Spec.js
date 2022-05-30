@@ -39,6 +39,7 @@ const {
   isOurMinion,
   assignPolicyDocumentAccountAndRegion,
   replaceRegion,
+  replaceRegionAll,
   replaceOwner,
 } = require("../AwsCommon");
 
@@ -365,7 +366,7 @@ const replaceTgwInfo = ({ tgwType, providerConfig }) =>
     get(tgwType),
     assign({
       OwnerId: pipe([get("OwnerId"), replaceOwner({ providerConfig })]),
-      Region: pipe([get("Region"), replaceRegion({ providerConfig })]),
+      Region: pipe([get("Region"), replaceRegionAll({ providerConfig })]),
     }),
   ]);
 
