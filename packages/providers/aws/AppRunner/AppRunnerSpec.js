@@ -64,17 +64,16 @@ module.exports = pipe([
                   when(
                     get("ImageIdentifier"),
                     assign({
-                      ImageIdentifier: ({ ImageIdentifier }) =>
-                        pipe([
-                          () => ({ Id: ImageIdentifier }),
-                          replaceWithName({
-                            groupType: "ECR::Repository",
-                            pathLive: "live.repositoryUri",
-                            path: "live.repositoryUri",
-                            providerConfig,
-                            lives,
-                          }),
-                        ])(),
+                      ImageIdentifier: pipe([
+                        get("ImageIdentifier"),
+                        replaceWithName({
+                          groupType: "ECR::Repository",
+                          pathLive: "live.repositoryUri",
+                          path: "live.repositoryUri",
+                          providerConfig,
+                          lives,
+                        }),
+                      ]),
                     })
                   ),
                 ]),

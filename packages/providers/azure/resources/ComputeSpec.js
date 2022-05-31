@@ -93,7 +93,7 @@ const virtualMachineDependenciesCommon = {
 
 const filterVirtualMachineProperties =
   ({ config }) =>
-  ({ lives }) =>
+  ({ lives, providerConfig }) =>
     pipe([
       tap(() => {
         assert(lives);
@@ -156,6 +156,7 @@ const filterVirtualMachineProperties =
                         assignDependenciesId({
                           group: "Compute",
                           type: "DiskEncryptionSet",
+                          providerConfig,
                           lives,
                         }),
                       ]),
@@ -173,6 +174,7 @@ const filterVirtualMachineProperties =
                     assignDependenciesId({
                       group: "Compute",
                       type: "Disk",
+                      providerConfig,
                       lives,
                     }),
                   ]),
@@ -194,6 +196,7 @@ const filterVirtualMachineProperties =
                   assignDependenciesId({
                     group: "Network",
                     type: "NetworkInterface",
+                    providerConfig,
                     lives,
                   })
                 ),
@@ -217,6 +220,7 @@ const filterVirtualMachineProperties =
                             assignDependenciesId({
                               group: "Network",
                               type: "NetworkSecurityGroup",
+                              providerConfig,
                               lives,
                             }),
                           ]),
@@ -239,6 +243,7 @@ const filterVirtualMachineProperties =
                                           assignDependenciesId({
                                             group: "Network",
                                             type: "LoadBalancerBackendAddressPool",
+                                            providerConfig,
                                             lives,
                                           })
                                         ),
@@ -259,6 +264,7 @@ const filterVirtualMachineProperties =
                                             assignDependenciesId({
                                               group: "Network",
                                               type: "ApplicationGateway",
+                                              providerConfig,
                                               lives,
                                             })
                                           ),
@@ -282,6 +288,7 @@ const filterVirtualMachineProperties =
                                       assignDependenciesId({
                                         group: "Network",
                                         type: "Subnet",
+                                        providerConfig,
                                         lives,
                                       }),
                                     ]),

@@ -190,14 +190,11 @@ module.exports = pipe([
                           switchCase([
                             eq(identity, providerConfig.region),
                             replaceRegion({ providerConfig }),
-                            pipe([
-                              (Id) => ({ Id }),
-                              replaceWithName({
-                                path: "id",
-                                providerConfig,
-                                lives,
-                              }),
-                            ]),
+                            replaceWithName({
+                              path: "id",
+                              providerConfig,
+                              lives,
+                            }),
                           ]),
                         ]),
                       })
@@ -252,16 +249,15 @@ module.exports = pipe([
               map(
                 pipe([
                   assign({
-                    targetGroupArn: ({ targetGroupArn }) =>
-                      pipe([
-                        () => ({ Id: targetGroupArn }),
-                        replaceWithName({
-                          groupType: "ELBv2::TargetGroup",
-                          path: "id",
-                          providerConfig,
-                          lives,
-                        }),
-                      ])(),
+                    targetGroupArn: pipe([
+                      get("targetGroupArn"),
+                      replaceWithName({
+                        groupType: "ELBv2::TargetGroup",
+                        path: "id",
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
                   }),
                 ])
               ),

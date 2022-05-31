@@ -151,11 +151,10 @@ module.exports = () =>
                 ]),
               }),
             ]),
-            Comment: ({ Comment }) =>
-              replaceWithBucketName({ providerConfig, lives })({
-                lives,
-                Id: Comment,
-              }),
+            Comment: pipe([
+              get("Comment"),
+              replaceWithBucketName({ providerConfig, lives }),
+            ]),
             DefaultCacheBehavior: pipe([
               get("DefaultCacheBehavior"),
               when(
@@ -169,19 +168,18 @@ module.exports = () =>
                         map(
                           pipe([
                             assign({
-                              FunctionARN: ({ FunctionARN }) =>
-                                pipe([
-                                  () => ({ Id: FunctionARN }),
-                                  replaceWithName({
-                                    groupType: "CloudFront::Function",
-                                    path: "id",
-                                    providerConfig,
-                                    lives,
-                                  }),
-                                  tap((params) => {
-                                    assert(true);
-                                  }),
-                                ])(),
+                              FunctionARN: pipe([
+                                get("FunctionARN"),
+                                replaceWithName({
+                                  groupType: "CloudFront::Function",
+                                  path: "id",
+                                  providerConfig,
+                                  lives,
+                                }),
+                                tap((params) => {
+                                  assert(true);
+                                }),
+                              ]),
                             }),
                           ])
                         ),
@@ -222,22 +220,15 @@ module.exports = () =>
                           when(
                             get("OriginAccessIdentity"),
                             assign({
-                              OriginAccessIdentity: ({
-                                OriginAccessIdentity,
-                              }) =>
-                                pipe([
-                                  () => ({ Id: OriginAccessIdentity }),
-                                  tap((params) => {
-                                    assert(true);
-                                  }),
-                                  replaceWithName({
-                                    groupType:
-                                      "CloudFront::OriginAccessIdentity",
-                                    path: "id",
-                                    providerConfig,
-                                    lives,
-                                  }),
-                                ])(),
+                              OriginAccessIdentity: pipe([
+                                get("OriginAccessIdentity"),
+                                replaceWithName({
+                                  groupType: "CloudFront::OriginAccessIdentity",
+                                  path: "id",
+                                  providerConfig,
+                                  lives,
+                                }),
+                              ]),
                             })
                           ),
                         ]),

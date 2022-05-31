@@ -616,7 +616,7 @@ exports.buildGetId = buildGetId;
 
 exports.replaceWithName =
   ({ groupType, pathLive = "id", path = "name", providerConfig, lives }) =>
-  ({ Id }) =>
+  (Id) =>
     pipe([
       tap(() => {
         //assert(groupType);

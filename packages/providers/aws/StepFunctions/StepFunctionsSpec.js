@@ -78,16 +78,15 @@ module.exports = pipe([
                         cloudWatchLogsLogGroup: pipe([
                           get("cloudWatchLogsLogGroup"),
                           assign({
-                            logGroupArn: ({ logGroupArn }) =>
-                              pipe([
-                                () => ({ Id: logGroupArn }),
-                                replaceWithName({
-                                  groupType: "CloudWatchLogs::LogGroup",
-                                  path: "id",
-                                  providerConfig,
-                                  lives,
-                                }),
-                              ])(),
+                            logGroupArn: pipe([
+                              get("logGroupArn"),
+                              replaceWithName({
+                                groupType: "CloudWatchLogs::LogGroup",
+                                path: "id",
+                                providerConfig,
+                                lives,
+                              }),
+                            ]),
                           }),
                         ]),
                       })

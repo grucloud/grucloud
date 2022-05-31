@@ -173,16 +173,15 @@ module.exports = pipe([
                       get("FileSystemConfigs"),
                       map(
                         assign({
-                          Arn: ({ Arn }) =>
-                            pipe([
-                              () => ({ Id: Arn }),
-                              replaceWithName({
-                                groupType: "EFS::AccessPoint",
-                                path: "id",
-                                providerConfig,
-                                lives,
-                              }),
-                            ])(),
+                          Arn: pipe([
+                            get("Arn"),
+                            replaceWithName({
+                              groupType: "EFS::AccessPoint",
+                              path: "id",
+                              providerConfig,
+                              lives,
+                            }),
+                          ]),
                         })
                       ),
                     ]),
@@ -198,7 +197,7 @@ module.exports = pipe([
                           get("Variables"),
                           map((value) =>
                             pipe([
-                              () => ({ Id: value }),
+                              () => value,
                               switchCase([
                                 () => value.endsWith(".amazonaws.com/graphql"),
                                 pipe([

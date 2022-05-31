@@ -24,8 +24,6 @@ omit AWSLogs S3 Objects
 
 - substitute zone, not ${region}/b
 
-- remove hard coded region from generate code
-
 - aws_route53_resolver_endpoint
 - aws_route53_resolver_rule
 - aws_route53_resolver_rule_association

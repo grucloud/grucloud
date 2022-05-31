@@ -223,17 +223,13 @@ module.exports = pipe([
                                       "CloudFront Origin Access Identity"
                                     ),
                                     pipe([
-                                      (Principal) =>
-                                        pipe([
-                                          () => ({ Id: Principal }),
-                                          replaceWithName({
-                                            groupType:
-                                              "CloudFront::OriginAccessIdentity",
-                                            path: "id",
-                                            providerConfig,
-                                            lives,
-                                          }),
-                                        ])(),
+                                      replaceWithName({
+                                        groupType:
+                                          "CloudFront::OriginAccessIdentity",
+                                        path: "id",
+                                        providerConfig,
+                                        lives,
+                                      }),
                                     ])
                                   ),
                                 ]),

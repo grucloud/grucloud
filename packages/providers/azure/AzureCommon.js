@@ -98,6 +98,7 @@ exports.assignDependenciesId = ({
       assert(group);
       assert(type);
       assert(lives);
+      assert(providerConfig);
     }),
     assign({
       [propertyName]: pipe([

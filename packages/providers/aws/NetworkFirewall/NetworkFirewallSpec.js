@@ -78,16 +78,15 @@ module.exports = pipe([
                   map(
                     pipe([
                       assign({
-                        ResourceArn: ({ ResourceArn }) =>
-                          pipe([
-                            () => ({ Id: ResourceArn }),
-                            replaceWithName({
-                              groupType: "NetworkFirewall::RuleGroup",
-                              path: "id",
-                              providerConfig,
-                              lives,
-                            }),
-                          ])(),
+                        ResourceArn: pipe([
+                          get("ResourceArn"),
+                          replaceWithName({
+                            groupType: "NetworkFirewall::RuleGroup",
+                            path: "id",
+                            providerConfig,
+                            lives,
+                          }),
+                        ]),
                       }),
                     ])
                   ),
@@ -97,16 +96,15 @@ module.exports = pipe([
                   map(
                     pipe([
                       assign({
-                        ResourceArn: ({ ResourceArn }) =>
-                          pipe([
-                            () => ({ Id: ResourceArn }),
-                            replaceWithName({
-                              groupType: "NetworkFirewall::RuleGroup",
-                              path: "id",
-                              providerConfig,
-                              lives,
-                            }),
-                          ])(),
+                        ResourceArn: pipe([
+                          get("ResourceArn"),
+                          replaceWithName({
+                            groupType: "NetworkFirewall::RuleGroup",
+                            path: "id",
+                            providerConfig,
+                            lives,
+                          }),
+                        ]),
                       }),
                     ])
                   ),

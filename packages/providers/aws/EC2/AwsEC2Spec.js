@@ -451,10 +451,6 @@ module.exports = pipe([
               assign({
                 LogDestination: pipe([
                   get("LogDestination"),
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  (LogDestination) => ({ Id: LogDestination }),
                   replaceWithName({
                     groupType: "S3::Bucket",
                     path: "id",
@@ -1208,28 +1204,27 @@ module.exports = pipe([
                         DeviceIndex: get("Attachment.DeviceIndex"),
                         Groups: pipe([
                           get("Groups"),
-                          map(({ GroupId }) =>
+                          map(
                             pipe([
-                              () => ({ Id: GroupId }),
+                              get("GroupId"),
                               replaceWithName({
                                 groupType: "EC2::SecurityGroup",
                                 path: "id",
                                 providerConfig,
                                 lives,
                               }),
-                            ])()
+                            ])
                           ),
                         ]),
-                        SubnetId: ({ SubnetId }) =>
-                          pipe([
-                            () => ({ Id: SubnetId }),
-                            replaceWithName({
-                              groupType: "EC2::Subnet",
-                              path: "id",
-                              providerConfig,
-                              lives,
-                            }),
-                          ])(),
+                        SubnetId: pipe([
+                          get("SubnetId"),
+                          replaceWithName({
+                            groupType: "EC2::Subnet",
+                            path: "id",
+                            providerConfig,
+                            lives,
+                          }),
+                        ]),
                       }),
                     ])()
                   ),
@@ -1243,7 +1238,6 @@ module.exports = pipe([
                   fork({
                     LaunchTemplateId: pipe([
                       getLaunchTemplateIdFromTags,
-                      (Id) => ({ Id }),
                       replaceWithName({
                         groupType: "EC2::LaunchTemplate",
                         path: "id",
@@ -1326,28 +1320,26 @@ module.exports = pipe([
                         assign({
                           Groups: pipe([
                             get("Groups"),
-                            map((GroupId) =>
+                            map(
                               pipe([
-                                () => ({ Id: GroupId }),
                                 replaceWithName({
                                   groupType: "EC2::SecurityGroup",
                                   path: "id",
                                   providerConfig,
                                   lives,
                                 }),
-                              ])()
+                              ])
                             ),
                           ]),
-                          SubnetId: ({ SubnetId }) =>
-                            pipe([
-                              () => ({ Id: SubnetId }),
-                              replaceWithName({
-                                groupType: "EC2::Subnet",
-                                path: "id",
-                                providerConfig,
-                                lives,
-                              }),
-                            ])(),
+                          SubnetId: pipe([
+                            get("SubnetId"),
+                            replaceWithName({
+                              groupType: "EC2::Subnet",
+                              path: "id",
+                              providerConfig,
+                              lives,
+                            }),
+                          ]),
                         }),
                       ])
                     ),

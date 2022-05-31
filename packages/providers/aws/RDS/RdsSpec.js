@@ -88,7 +88,6 @@ module.exports = pipe([
                     assign({
                       SecretArn: pipe([
                         get("SecretArn"),
-                        (SecretArn) => ({ Id: SecretArn }),
                         replaceWithName({
                           groupType: "SecretsManager::Secret",
                           pathLive: "id",

@@ -971,7 +971,7 @@ const replaceAccountAndRegion =
           tap((params) => {
             assert(true);
           }),
-          () => ({ Id }),
+          () => Id,
           replaceWithName({ path: "id", providerConfig, lives }),
         ]),
         pipe([
@@ -1106,7 +1106,6 @@ const replaceStatement = ({ providerConfig, lives }) =>
                       tap((params) => {
                         assert(true);
                       }),
-                      (Id) => ({ Id }),
                       replaceWithName({
                         groupType: "EFS::AccessPoint",
                         path: "id",
