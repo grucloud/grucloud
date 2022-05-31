@@ -75,7 +75,7 @@ const shouldRetryOnExceptionDefault = ({
 const AwsClient =
   ({ spec, config }) =>
   (endpoint) => {
-    const { type, group } = spec;
+    const { type, group, groupType } = spec;
     assert(config);
     assert(endpoint);
 
@@ -142,7 +142,7 @@ const AwsClient =
             // logger.debug(
             //   `getById ${type} result: ${JSON.stringify(result, null, 4)}`
             // );
-            logger.debug(`getById ${type} done`);
+            logger.debug(`getById ${groupType} done`);
           }),
         ])();
 
@@ -161,7 +161,7 @@ const AwsClient =
       ({ lives, params = {} } = {}) =>
         pipe([
           tap(() => {
-            logger.info(`getList ${type}, method: ${method}`);
+            logger.info(`getList ${groupType}, method: ${method}`);
             assert(method);
             assert(getParam);
             //assert(isFunction(endpoint()[method]));
@@ -170,7 +170,9 @@ const AwsClient =
           defaultsDeep(extraParam),
           defaultsDeep(enhanceParams()()),
           tap((params) => {
-            logger.debug(`getList ${type}, params: ${JSON.stringify(params)}`);
+            logger.debug(
+              `getList ${groupType}, params: ${JSON.stringify(params)}`
+            );
           }),
           async (params) => {
             let NextToken;
@@ -204,12 +206,12 @@ const AwsClient =
           map(assignTagsSort),
           tap((items) => {
             assert(Array.isArray(items));
-            logger.info(`getList ${type} #items ${size(items)}`);
+            logger.info(`getList ${groupType} #items ${size(items)}`);
           }),
           filter(not(isEmpty)),
           tap((items) => {
             assert(Array.isArray(items));
-            logger.info(`getList ${type} final #items ${size(items)}`);
+            logger.info(`getList ${groupType} final #items ${size(items)}`);
           }),
         ])();
 
@@ -332,7 +334,7 @@ const AwsClient =
         pipe([
           tap(() => {
             logger.info(
-              `create ${type}, ${name}, configIsUp: ${JSON.stringify(
+              `create ${groupType}, ${name}, configIsUp: ${JSON.stringify(
                 configIsUp
               )}`
             );
@@ -341,7 +343,7 @@ const AwsClient =
           }),
           () =>
             retryCall({
-              name: `create ${type} ${name}`,
+              name: `create ${groupType} ${name}`,
               fn: pipe([
                 () => payload,
                 filterPayload,
@@ -351,7 +353,9 @@ const AwsClient =
                 endpoint()[method],
                 tap((params) => {
                   logger.debug(
-                    `create ${name}, response: ${JSON.stringify(params)}`
+                    `create ${groupType}, name: ${name}, response: ${JSON.stringify(
+                      params
+                    )}`
                   );
                 }),
               ]),
@@ -377,7 +381,7 @@ const AwsClient =
                 // logger.debug(
                 //   `create isUpById: ${name}, ${JSON.stringify(params)}`
                 // );
-                logger.debug(`create isUpById: ${name}`);
+                logger.debug(`create ${groupType} isUpById: ${name}`);
               }),
               tap.if(
                 () => isFunction(getById),
@@ -413,7 +417,7 @@ const AwsClient =
                 endpoint,
               }),
               tap(() => {
-                logger.info(`created ${type}, ${name}`);
+                logger.info(`created ${groupType}, ${name}`);
               }),
             ])(),
         ])();

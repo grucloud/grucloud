@@ -12,7 +12,7 @@ exports.createResources = () => [
       Description: "",
       OperatingRegions: [
         {
-          RegionName: "us-east-1",
+          RegionName: `${config.region}`,
         },
       ],
     }),
@@ -38,7 +38,7 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       IpamScopeType: "private",
       IpamRegion: `${config.region}`,
-      Locale: "us-east-1",
+      Locale: `${config.region}`,
       Description: "",
       AutoImport: false,
       AddressFamily: "ipv4",

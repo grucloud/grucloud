@@ -7,7 +7,7 @@ exports.createResources = () => [
   {
     type: "Distribution",
     group: "CloudFront",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       PriceClass: "PriceClass_100",
       Aliases: {
         Quantity: 1,
@@ -22,12 +22,7 @@ exports.createResources = () => [
       },
       DefaultRootObject: "index.html",
       DefaultCacheBehavior: {
-        TargetOriginId: `${getId({
-          type: "Bucket",
-          group: "S3",
-          name: "cloudfront-demo.grucloud.org",
-          path: "name",
-        })}.s3.us-east-1.amazonaws.com`,
+        TargetOriginId: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
         TrustedSigners: {
           Enabled: false,
         },
@@ -52,13 +47,8 @@ exports.createResources = () => [
         Quantity: 1,
         Items: [
           {
-            Id: `cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com`,
-            DomainName: `${getId({
-              type: "Bucket",
-              group: "S3",
-              name: "cloudfront-demo.grucloud.org",
-              path: "name",
-            })}.s3.us-east-1.amazonaws.com`,
+            Id: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
+            DomainName: `cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
             OriginPath: "",
             CustomHeaders: {
               Quantity: 0,
@@ -67,7 +57,7 @@ exports.createResources = () => [
               OriginAccessIdentity: `origin-access-identity/cloudfront/${getId({
                 type: "OriginAccessIdentity",
                 group: "CloudFront",
-                name: "access-identity-cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com",
+                name: `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
               })}`,
             },
             ConnectionAttempts: 3,
@@ -90,6 +80,12 @@ exports.createResources = () => [
         Bucket: "",
         Prefix: "",
       },
+      ViewerCertificate: {
+        CloudFrontDefaultCertificate: false,
+        SSLSupportMethod: "sni-only",
+        MinimumProtocolVersion: "TLSv1.2_2019",
+        CertificateSource: "acm",
+      },
       Tags: [
         {
           Key: "mykey",
@@ -97,31 +93,32 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       buckets: ["cloudfront-demo.grucloud.org"],
       certificate: "cloudfront-demo.grucloud.org",
       originAccessIdentities: [
-        "access-identity-cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com",
+        `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
       ],
     }),
   },
   {
     type: "OriginAccessIdentity",
     group: "CloudFront",
-    name: "access-identity-cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com",
+    name: ({ config }) =>
+      `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
   },
   {
     type: "HostedZone",
     group: "Route53",
     name: "grucloud.org.",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       domain: "grucloud.org",
     }),
   },
   {
     type: "Record",
     group: "Route53",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       certificate: "cloudfront-demo.grucloud.org",
     }),
@@ -136,7 +133,7 @@ exports.createResources = () => [
     type: "Bucket",
     group: "S3",
     name: "cloudfront-demo.grucloud.org",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       Policy: {
         Version: "2008-10-17",
         Id: "PolicyForCloudFrontPrivateContent",
@@ -149,19 +146,19 @@ exports.createResources = () => [
                 {
                   type: "OriginAccessIdentity",
                   group: "CloudFront",
-                  name: "access-identity-cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com",
+                  name: `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
                 }
               )}`,
             },
             Action: "s3:GetObject",
-            Resource: "arn:aws:s3:::cloudfront-demo.grucloud.org/*",
+            Resource: `arn:aws:s3:::cloudfront-demo.grucloud.org/*`,
           },
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       originAccessIdentities: [
-        "access-identity-cloudfront-demo.grucloud.org.s3.us-east-1.amazonaws.com",
+        `access-identity-cloudfront-demo.grucloud.org.s3.${config.region}.amazonaws.com`,
       ],
     }),
   },

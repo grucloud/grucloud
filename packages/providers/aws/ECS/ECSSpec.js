@@ -1,6 +1,16 @@
 const assert = require("assert");
-const { assign, map, pipe, get, omit, pick, eq, tap } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const {
+  assign,
+  map,
+  pipe,
+  get,
+  omit,
+  pick,
+  eq,
+  tap,
+  switchCase,
+} = require("rubico");
+const { defaultsDeep, when, includes, identity } = require("rubico/x");
 const {
   compareAws,
   isOurMinionFactory,
@@ -131,6 +141,18 @@ module.exports = pipe([
               map(
                 pipe([
                   when(
+                    get("image"),
+                    assign({
+                      image: pipe([
+                        get("image"),
+                        tap((params) => {
+                          assert(true);
+                        }),
+                        replaceRegion({ providerConfig }),
+                      ]),
+                    })
+                  ),
+                  when(
                     get("logConfiguration"),
                     assign({
                       logConfiguration: pipe([
@@ -159,17 +181,25 @@ module.exports = pipe([
               ),
               map(
                 assign({
-                  //TODO replace region and account for image
                   environment: pipe([
                     get("environment"),
-                    //TODO replace region
                     map(
                       assign({
-                        value: ({ value }) =>
-                          pipe([
-                            () => ({ Id: value, lives }),
-                            replaceWithName({ path: "id" }),
-                          ])(),
+                        value: pipe([
+                          get("value"),
+                          switchCase([
+                            eq(identity, providerConfig.region),
+                            replaceRegion({ providerConfig }),
+                            pipe([
+                              (Id) => ({ Id }),
+                              replaceWithName({
+                                path: "id",
+                                providerConfig,
+                                lives,
+                              }),
+                            ]),
+                          ]),
+                        ]),
                       })
                     ),
                   ]),
@@ -214,7 +244,7 @@ module.exports = pipe([
             omitIfEmpty(["loadBalancers", "serviceRegistries"]),
           ]),
       }),
-      filterLive: ({ lives }) =>
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
           assign({
             loadBalancers: pipe([
@@ -224,10 +254,12 @@ module.exports = pipe([
                   assign({
                     targetGroupArn: ({ targetGroupArn }) =>
                       pipe([
-                        () => ({ Id: targetGroupArn, lives }),
+                        () => ({ Id: targetGroupArn }),
                         replaceWithName({
                           groupType: "ELBv2::TargetGroup",
                           path: "id",
+                          providerConfig,
+                          lives,
                         }),
                       ])(),
                   }),

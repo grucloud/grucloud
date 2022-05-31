@@ -1876,7 +1876,7 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: "spoke-vpc-1-private-subnet-us-east-1a",
+            name: `spoke-vpc-1-private-subnet-${config.region}a`,
           })}`,
         },
       ],
@@ -1913,7 +1913,7 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: "spoke-vpc-2-private-subnet-us-east-1a",
+            name: `spoke-vpc-2-private-subnet-${config.region}a`,
           })}`,
         },
       ],

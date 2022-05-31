@@ -22,7 +22,7 @@ const logger = require("@grucloud/core/logger")({
   prefix: "CloudFrontDistribution",
 });
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { isOurMinion, compareAws, replaceRegion } = require("../AwsCommon");
 const { CloudFrontDistribution } = require("./CloudFrontDistribution");
 const {
   CloudFrontOriginAccessIdentity,
@@ -33,7 +33,12 @@ const { CloudFrontFunction } = require("./CloudFrontFunction");
 const GROUP = "CloudFront";
 const compareCloudFront = compareAws({});
 
-const replaceWithBucketName = replaceWithName({ groupType: "S3::Bucket" });
+const replaceWithBucketName = ({ providerConfig, lives }) =>
+  replaceWithName({
+    groupType: "S3::Bucket",
+    providerConfig,
+    lives,
+  });
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
@@ -137,7 +142,7 @@ module.exports = () =>
                         (resource) =>
                           pipe([
                             () => resource,
-                            buildGetId({ path: "name" }),
+                            buildGetId({ path: "name", providerConfig }),
                             (getId) => () => getId,
                           ])(),
                       ]),
@@ -147,7 +152,7 @@ module.exports = () =>
               }),
             ]),
             Comment: ({ Comment }) =>
-              replaceWithBucketName({
+              replaceWithBucketName({ providerConfig, lives })({
                 lives,
                 Id: Comment,
               }),
@@ -166,10 +171,12 @@ module.exports = () =>
                             assign({
                               FunctionARN: ({ FunctionARN }) =>
                                 pipe([
-                                  () => ({ Id: FunctionARN, lives }),
+                                  () => ({ Id: FunctionARN }),
                                   replaceWithName({
                                     groupType: "CloudFront::Function",
                                     path: "id",
+                                    providerConfig,
+                                    lives,
                                   }),
                                   tap((params) => {
                                     assert(true);
@@ -184,11 +191,10 @@ module.exports = () =>
                 })
               ),
               assign({
-                TargetOriginId: ({ TargetOriginId }) =>
-                  replaceWithBucketName({
-                    lives,
-                    Id: TargetOriginId,
-                  }),
+                TargetOriginId: pipe([
+                  get("TargetOriginId"),
+                  replaceRegion({ providerConfig }),
+                ]),
               }),
             ]),
             Origins: pipe([
@@ -199,20 +205,18 @@ module.exports = () =>
                   map(
                     pipe([
                       assign({
+                        Id: pipe([
+                          get("Id"),
+                          replaceRegion({ providerConfig }),
+                        ]),
                         CustomHeaders: pipe([
                           get("CustomHeaders"),
                           omitIfEmpty(["Items"]),
                         ]),
-                        DomainName: ({ DomainName }) =>
-                          replaceWithBucketName({
-                            lives,
-                            Id: DomainName,
-                          }),
-                        // Id: ({ Id }) =>
-                        //   replaceWithBucketName({
-                        //     lives,
-                        //     Id,
-                        //   }),
+                        DomainName: pipe([
+                          get("DomainName"),
+                          replaceRegion({ providerConfig }),
+                        ]),
                         S3OriginConfig: pipe([
                           get("S3OriginConfig"),
                           when(
@@ -222,7 +226,7 @@ module.exports = () =>
                                 OriginAccessIdentity,
                               }) =>
                                 pipe([
-                                  () => ({ Id: OriginAccessIdentity, lives }),
+                                  () => ({ Id: OriginAccessIdentity }),
                                   tap((params) => {
                                     assert(true);
                                   }),
@@ -230,6 +234,8 @@ module.exports = () =>
                                     groupType:
                                       "CloudFront::OriginAccessIdentity",
                                     path: "id",
+                                    providerConfig,
+                                    lives,
                                   }),
                                 ])(),
                             })

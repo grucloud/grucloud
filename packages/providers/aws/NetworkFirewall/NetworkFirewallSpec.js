@@ -66,7 +66,7 @@ module.exports = pipe([
         "LastModifiedTime",
         "NumberOfAssociations",
       ],
-      filterLive: ({ lives }) =>
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
           omitEncryptionConfiguration,
           assign({
@@ -80,10 +80,12 @@ module.exports = pipe([
                       assign({
                         ResourceArn: ({ ResourceArn }) =>
                           pipe([
-                            () => ({ Id: ResourceArn, lives }),
+                            () => ({ Id: ResourceArn }),
                             replaceWithName({
                               groupType: "NetworkFirewall::RuleGroup",
                               path: "id",
+                              providerConfig,
+                              lives,
                             }),
                           ])(),
                       }),
@@ -97,10 +99,12 @@ module.exports = pipe([
                       assign({
                         ResourceArn: ({ ResourceArn }) =>
                           pipe([
-                            () => ({ Id: ResourceArn, lives }),
+                            () => ({ Id: ResourceArn }),
                             replaceWithName({
                               groupType: "NetworkFirewall::RuleGroup",
                               path: "id",
+                              providerConfig,
+                              lives,
                             }),
                           ])(),
                       }),

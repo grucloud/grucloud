@@ -1,8 +1,8 @@
 const assert = require("assert");
-const { pipe, get, map, omit, lte, and } = require("rubico");
+const { tap, pipe, get, map, omit, lte, and, assign } = require("rubico");
 const { defaultsDeep, isEmpty, first, size, when } = require("rubico/x");
 
-const { compareAws, isOurMinion } = require("../AwsCommon");
+const { compareAws, isOurMinion, replaceRegionAll } = require("../AwsCommon");
 
 const { CloudTrail } = require("./CloudTrail");
 const { CloudTrailEventDataStore } = require("./CloudTrailEventDataStore");
@@ -39,8 +39,16 @@ module.exports = pipe([
       compare: compareCloudTrail({
         filterLive: () => pipe([filterEventSelector]),
       }),
-      //TODO home region
-      filterLive: () => pipe([filterEventSelector]),
+      filterLive: ({ providerConfig }) =>
+        pipe([
+          filterEventSelector,
+          assign({
+            HomeRegion: pipe([
+              get("HomeRegion"),
+              replaceRegionAll({ providerConfig }),
+            ]),
+          }),
+        ]),
       dependencies: {
         bucket: { type: "Bucket", group: "S3" },
         logGroup: { type: "LogsGroup", group: "CloudWatchLogs" },

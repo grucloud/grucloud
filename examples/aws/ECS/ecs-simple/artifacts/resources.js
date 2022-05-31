@@ -216,7 +216,7 @@ exports.createResources = () => [
           cpu: 0,
           environment: [],
           essential: true,
-          image: "nginx",
+          image: `nginx`,
           memory: 512,
           mountPoints: [],
           name: "nginx",

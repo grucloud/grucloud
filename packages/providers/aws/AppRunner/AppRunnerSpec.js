@@ -47,7 +47,7 @@ module.exports = pipe([
         //TODO
         "AutoScalingConfigurationSummary",
       ],
-      filterLive: ({ lives }) =>
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
           pick([
             "SourceConfiguration",
@@ -66,11 +66,13 @@ module.exports = pipe([
                     assign({
                       ImageIdentifier: ({ ImageIdentifier }) =>
                         pipe([
-                          () => ({ Id: ImageIdentifier, lives }),
+                          () => ({ Id: ImageIdentifier }),
                           replaceWithName({
                             groupType: "ECR::Repository",
                             pathLive: "live.repositoryUri",
                             path: "live.repositoryUri",
+                            providerConfig,
+                            lives,
                           }),
                         ])(),
                     })

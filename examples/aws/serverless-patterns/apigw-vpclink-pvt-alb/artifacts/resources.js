@@ -239,7 +239,7 @@ exports.createResources = () => [
           environmentFiles: [],
           essential: true,
           extraHosts: [],
-          image: "nginx",
+          image: `nginx`,
           links: [],
           mountPoints: [],
           name: "web",

@@ -400,7 +400,7 @@ exports.createResources = () => [
           environment: [
             {
               name: "region",
-              value: "us-east-1",
+              value: `${config.region}`,
             },
             {
               name: "eventBusName",
@@ -410,8 +410,7 @@ exports.createResources = () => [
           environmentFiles: [],
           essential: true,
           extraHosts: [],
-          image:
-            "840541460064.dkr.ecr.us-east-1.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-us-east-1:a2ee93c23f547d6744410d73d5a2b81dc046717e7569d4e3f278f4d31e2f15bc",
+          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-${config.region}:a2ee93c23f547d6744410d73d5a2b81dc046717e7569d4e3f278f4d31e2f15bc`,
           links: [],
           logConfiguration: {
             logDriver: "awslogs",

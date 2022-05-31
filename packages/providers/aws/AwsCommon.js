@@ -94,8 +94,13 @@ exports.replaceRegion = ({ providerConfig }) =>
     tap((params) => {
       assert(providerConfig.region);
     }),
-    callProp("replace", providerConfig.region, "${config.region}"),
-    (resource) => () => "`" + resource + "`",
+    when(
+      includes(providerConfig.region),
+      pipe([
+        callProp("replaceAll", providerConfig.region, "${config.region}"),
+        (resource) => () => "`" + resource + "`",
+      ])
+    ),
   ]);
 
 exports.replaceOwner = ({ providerConfig }) =>
@@ -966,8 +971,8 @@ const replaceAccountAndRegion =
           tap((params) => {
             assert(true);
           }),
-          () => ({ Id, lives }),
-          replaceWithName({ path: "id" }),
+          () => ({ Id }),
+          replaceWithName({ path: "id", providerConfig, lives }),
         ]),
         pipe([
           tap((params) => {
@@ -1012,6 +1017,7 @@ const assignPolicyResource = ({ providerConfig, lives }) =>
   pipe([
     tap((params) => {
       assert(lives);
+      assert(providerConfig);
     }),
     when(
       get("Resource"),
@@ -1100,10 +1106,12 @@ const replaceStatement = ({ providerConfig, lives }) =>
                       tap((params) => {
                         assert(true);
                       }),
-                      (Id) => ({ Id, lives }),
+                      (Id) => ({ Id }),
                       replaceWithName({
                         groupType: "EFS::AccessPoint",
                         path: "id",
+                        providerConfig,
+                        lives,
                       }),
                     ]),
                   })

@@ -35,10 +35,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "sam-app-prv-sub-1",
     properties: ({ config }) => ({
-      CidrBlock: "172.31.0.0/24",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "172.31.0.0/24",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "sam-app-vpc",
     }),
   },
@@ -47,10 +47,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "sam-app-prv-sub-2",
     properties: ({ config }) => ({
-      CidrBlock: "172.31.1.0/24",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "172.31.1.0/24",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "sam-app-vpc",
     }),
   },
@@ -59,10 +59,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "sam-app-prv-sub-3",
     properties: ({ config }) => ({
-      CidrBlock: "172.31.2.0/24",
       AvailabilityZone: `${config.region}c`,
+      CidrBlock: "172.31.2.0/24",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "sam-app-vpc",
     }),
   },
@@ -73,7 +73,7 @@ exports.createResources = () => [
       GroupName: "lambda-sg",
       Description: "Security Groups for the AWS Lambda for accessing RDS/Proxy",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "sam-app-vpc",
     }),
   },
@@ -84,7 +84,7 @@ exports.createResources = () => [
       GroupName: "sam-app-database-sg",
       Description: "security group (firewall)",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "sam-app-vpc",
     }),
   },
@@ -103,7 +103,7 @@ exports.createResources = () => [
         ToPort: 65535,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::sam-app-vpc::lambda-sg",
     }),
   },
@@ -115,7 +115,7 @@ exports.createResources = () => [
         IpProtocol: "-1",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::sam-app-vpc::sam-app-database-sg",
       securityGroupFrom: ["sg::sam-app-vpc::sam-app-database-sg"],
     }),
@@ -130,7 +130,7 @@ exports.createResources = () => [
         ToPort: 3306,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::sam-app-vpc::sam-app-database-sg",
       securityGroupFrom: ["sg::sam-app-vpc::lambda-sg"],
     }),
@@ -150,7 +150,7 @@ exports.createResources = () => [
         ToPort: 65535,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::sam-app-vpc::lambda-sg",
     }),
   },
@@ -195,7 +195,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-monitor-us-east-1",
+    name: ({ config }) => `sam-app-monitor-${config.region}`,
     properties: ({}) => ({
       Description:
         "Allows your Aurora DB cluster to deliver Enhanced Monitoring metrics.",
@@ -241,7 +241,7 @@ exports.createResources = () => [
       IdleClientTimeout: 120,
       DebugLogging: false,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["sam-app-prv-sub-1", "sam-app-prv-sub-2", "sam-app-prv-sub-3"],
       securityGroups: ["sg::sam-app-vpc::sam-app-database-sg"],
       secret: ["sam-app-cluster-secret"],
@@ -255,7 +255,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DBSubnetGroupDescription: "subnets allowed for deploying DB instances",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: ["sam-app-prv-sub-1", "sam-app-prv-sub-2", "sam-app-prv-sub-3"],
     }),
   },
@@ -280,7 +280,7 @@ exports.createResources = () => [
       MasterUserPassword:
         process.env.SAM_APP_MYSQL_CLUSTER_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       dbSubnetGroup: "sam-app-db-subnet-group",
       securityGroups: ["sg::sam-app-vpc::sam-app-database-sg"],
       secret: "sam-app-cluster-secret",
@@ -308,12 +308,12 @@ exports.createResources = () => [
       MasterUsername: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USERNAME,
       MasterUserPassword: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({ config }) => ({
       dbSubnetGroup: "sam-app-db-subnet-group",
       securityGroups: ["sg::sam-app-vpc::sam-app-database-sg"],
       secret: "sam-app-cluster-secret",
       dbCluster: "sam-app-mysql-cluster",
-      monitoringRole: "sam-app-monitor-us-east-1",
+      monitoringRole: `sam-app-monitor-${config.region}`,
     }),
   },
   {

@@ -143,6 +143,21 @@ exports.typeFromResources = typeFromResources;
 const groupFromResources = pipe([first, get("group")]);
 exports.groupFromResources = groupFromResources;
 
+const replaceRegion = ({ providerConfig }) =>
+  pipe([
+    tap((params) => {
+      //assert(providerConfig.region);
+    }),
+    switchCase([
+      includes(providerConfig.region),
+      pipe([
+        callProp("replace", providerConfig.region, "${config.region}"),
+        (resource) => "`" + resource + "`",
+      ]),
+      (resource) => "'" + resource + "'",
+    ]),
+  ]);
+
 exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
   pipe([
     tap(() => {
@@ -558,22 +573,24 @@ exports.compare = ({
 const replaceId = (idResource) => callProp("replace", idResource, "");
 
 const buildGetId =
-  ({ id = "", path = "id" } = {}) =>
+  ({ id = "", path = "id", providerConfig } = {}) =>
   ({ type, group, name, id: idResource }) =>
     pipe([
       tap(() => {
         assert(type);
         assert(name);
         assert(idResource);
+        assert(providerConfig);
       }),
       () => "",
       append("getId({ type:'"),
       append(type),
       append("', group:'"),
       append(group),
-      append("', name:'"),
-      append(name),
-      append("'"),
+      append("', name:"),
+      (str) => `${str}${replaceRegion({ providerConfig })(name)}`,
+      //append(replaceRegion({ providerConfig })(name)),
+      append(""),
       unless(
         // TODO rubico breaking change
         () => path === "id",
@@ -591,16 +608,19 @@ const buildGetId =
         ])
       ),
       append("})"),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 exports.buildGetId = buildGetId;
 
 exports.replaceWithName =
-  ({ groupType, pathLive = "id", path = "name" }) =>
-  ({ lives, Id }) =>
+  ({ groupType, pathLive = "id", path = "name", providerConfig, lives }) =>
+  ({ Id }) =>
     pipe([
       tap(() => {
         //assert(groupType);
-        //assert(Id);
+        assert(lives);
       }),
       () => lives,
       when(() => groupType, filter(eq(get("groupType"), groupType))),
@@ -627,7 +647,7 @@ exports.replaceWithName =
         (resource) =>
           pipe([
             () => resource,
-            buildGetId({ path }),
+            buildGetId({ path, providerConfig }),
             tap((params) => {
               assert(true);
             }),

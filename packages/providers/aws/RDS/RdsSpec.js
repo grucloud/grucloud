@@ -72,7 +72,7 @@ module.exports = pipe([
         "Status",
         "Endpoint",
       ],
-      filterLive: ({ lives }) =>
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
           tap((params) => {
             assert(true);
@@ -88,11 +88,13 @@ module.exports = pipe([
                     assign({
                       SecretArn: pipe([
                         get("SecretArn"),
-                        (SecretArn) => ({ Id: SecretArn, lives }),
+                        (SecretArn) => ({ Id: SecretArn }),
                         replaceWithName({
                           groupType: "SecretsManager::Secret",
                           pathLive: "id",
                           path: "id",
+                          providerConfig,
+                          lives,
                         }),
                       ]),
                     })
@@ -115,7 +117,12 @@ module.exports = pipe([
     {
       type: "DBProxyTargetGroup",
       Client: DBProxyTargetGroup,
-      omitProperties: ["DBClusterIdentifiers"],
+      omitProperties: [
+        "DBClusterIdentifiers",
+        "TargetGroupArn",
+        "Status",
+        "CreatedDate",
+      ],
       filterLive: ({ lives }) =>
         pipe([
           tap((params) => {

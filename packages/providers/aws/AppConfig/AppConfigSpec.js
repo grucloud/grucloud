@@ -2,8 +2,7 @@ const assert = require("assert");
 const { pipe, assign, map, omit, tap, pick, get } = require("rubico");
 const { when, defaultsDeep } = require("rubico/x");
 
-const { compareAws, isOurMinion } = require("../AwsCommon");
-const { replaceWithName } = require("@grucloud/core/Common");
+const { compareAws } = require("../AwsCommon");
 
 //const { AppConfigApplication } = require("./AppConfigApplication");
 

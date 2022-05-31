@@ -175,10 +175,12 @@ module.exports = pipe([
                         assign({
                           Arn: ({ Arn }) =>
                             pipe([
-                              () => ({ Id: Arn, lives }),
+                              () => ({ Id: Arn }),
                               replaceWithName({
                                 groupType: "EFS::AccessPoint",
                                 path: "id",
+                                providerConfig,
+                                lives,
                               }),
                             ])(),
                         })
@@ -196,7 +198,7 @@ module.exports = pipe([
                           get("Variables"),
                           map((value) =>
                             pipe([
-                              () => ({ Id: value, lives }),
+                              () => ({ Id: value }),
                               switchCase([
                                 () => value.endsWith(".amazonaws.com/graphql"),
                                 pipe([
@@ -204,6 +206,8 @@ module.exports = pipe([
                                     groupType: "AppSync::GraphqlApi",
                                     pathLive: "live.uris.GRAPHQL",
                                     path: "live.uris.GRAPHQL",
+                                    providerConfig,
+                                    lives,
                                   }),
                                 ]),
                                 hasIdInLive({
@@ -215,6 +219,8 @@ module.exports = pipe([
                                   replaceWithName({
                                     groupType: "SecretsManager::Secret",
                                     path: "id",
+                                    providerConfig,
+                                    lives,
                                   }),
                                 ]),
                                 hasIdInLive({
@@ -226,6 +232,8 @@ module.exports = pipe([
                                   replaceWithName({
                                     groupType: "SNS::Topic",
                                     path: "id",
+                                    providerConfig,
+                                    lives,
                                   }),
                                 ]),
                                 pipe([

@@ -93,7 +93,10 @@ exports.EC2NetworkInterface = ({ spec, config }) => {
               group: "EC2",
               id,
             }),
-          get("name"),
+          get("id"),
+          tap((params) => {
+            assert(true);
+          }),
         ])(),
       ],
     },

@@ -124,9 +124,8 @@ exports.createLives = () => {
             assert(groupType);
           }
           logger.info(
-            `live addResource ${JSON.stringify({
+            `live addResource ${groupType}, ${JSON.stringify({
               providerName: resource.providerName,
-              groupType,
               mapPerTypeSize: mapPerType.size,
             })}`
           );
