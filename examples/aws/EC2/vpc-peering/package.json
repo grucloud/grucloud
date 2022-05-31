@@ -1,5 +1,5 @@
 {
-  "name": "transit-gateway-peering",
+  "name": "vpc-peering",
   "version": "7.3.0",
   "private": true,
   "description": "",

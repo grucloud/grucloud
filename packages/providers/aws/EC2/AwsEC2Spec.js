@@ -17,6 +17,7 @@ const {
   fork,
 } = require("rubico");
 const {
+  includes,
   first,
   size,
   unless,
@@ -103,6 +104,10 @@ const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
 const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { EC2NetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
+const { EC2VpcPeeringConnection } = require("./EC2VpcPeeringConnection");
+const {
+  EC2VpcPeeringConnectionAccepter,
+} = require("./EC2VpcPeeringConnectionAccepter");
 
 const { EC2TransitGateway } = require("./EC2TransitGateway");
 const {
@@ -368,9 +373,9 @@ const getLaunchTemplateVersionFromTags = pipe([
   get("Value"),
 ]);
 
-const replaceTgwInfo = ({ tgwType, providerConfig }) =>
+const replacePeeringInfo = ({ resourceType, providerConfig }) =>
   pipe([
-    get(tgwType),
+    get(resourceType),
     assign({
       OwnerId: pipe([get("OwnerId"), replaceOwner({ providerConfig })]),
       Region: pipe([get("Region"), replaceRegionAll({ providerConfig })]),
@@ -1418,6 +1423,110 @@ module.exports = pipe([
         ])(),
     },
     {
+      type: "VpcPeeringConnection",
+      Client: EC2VpcPeeringConnection,
+      ignoreResource: () =>
+        pipe([
+          get("live.Status.Code"),
+          (code) => pipe([() => ["deleted", "failed"], includes(code)])(),
+        ]),
+
+      inferName: ({ properties, dependenciesSpec: { vpc, vpcPeer } }) =>
+        pipe([
+          tap((params) => {
+            assert(properties);
+          }),
+          () => `vpc-peering::${vpc}::${vpcPeer}`,
+        ])(),
+      omitProperties: [
+        "Status",
+        "ExpirationTime",
+        "VpcPeeringConnectionId",
+        "AccepterVpcInfo.VpcId",
+        "RequesterVpcInfo.CidrBlock",
+        "RequesterVpcInfo.CidrBlockSet",
+        "RequesterVpcInfo.PeeringOptions",
+        "RequesterVpcInfo.VpcId",
+      ],
+      filterLive: ({ providerConfig }) =>
+        pipe([
+          assign({
+            RequesterVpcInfo: replacePeeringInfo({
+              resourceType: "RequesterVpcInfo",
+              providerConfig,
+            }),
+            AccepterVpcInfo: replacePeeringInfo({
+              resourceType: "AccepterVpcInfo",
+              providerConfig,
+            }),
+          }),
+        ]),
+      compare: compareEC2({
+        filterTarget: () => pipe([pick([])]),
+        filterLive: () => pipe([pick([])]),
+      }),
+      dependencies: {
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                () => resource,
+                eq(get("live.RequesterVpcInfo.VpcId"), dependency.live.VpcId),
+              ])(),
+        },
+        vpcPeer: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                () => resource,
+                eq(get("live.AccepterVpcInfo.VpcId"), dependency.live.VpcId),
+              ])(),
+        },
+      },
+    },
+    {
+      type: "VpcPeeringConnectionAccepter",
+      Client: EC2VpcPeeringConnectionAccepter,
+      inferName: ({ dependenciesSpec: { vpcPeeringConnection } }) =>
+        pipe([
+          tap((params) => {
+            assert(vpcPeeringConnection);
+          }),
+          () => `vpc-peering-accepter::${vpcPeeringConnection}`,
+        ])(),
+      omitProperties: [
+        "Status",
+        "VpcPeeringConnectionId",
+        "AccepterVpcInfo",
+        "RequesterVpcInfo",
+      ],
+      ignoreResource: () =>
+        pipe([
+          get("live.Status.Code"),
+          (code) => pipe([() => ["deleted", "failed"], includes(code)])(),
+        ]),
+      filterLive: ({ providerConfig }) => pipe([pick([])]),
+      compare: compareEC2({
+        filterTarget: () => pipe([pick([])]),
+        filterLive: () => pipe([pick([])]),
+      }),
+      dependencies: {
+        vpcPeeringConnection: {
+          type: "VpcPeeringConnection",
+          group: "EC2",
+          parent: true,
+        },
+      },
+    },
+    {
       type: "TransitGateway",
       Client: EC2TransitGateway,
       omitProperties: [
@@ -1429,7 +1538,6 @@ module.exports = pipe([
         "Options.AssociationDefaultRouteTableId",
         "Options.PropagationDefaultRouteTableId",
       ],
-      propertiesDefault: {},
     },
     {
       type: "TransitGatewayRoute",
@@ -1442,7 +1550,6 @@ module.exports = pipe([
         "State",
         "CreationTime",
       ],
-      propertiesDefault: {},
       dependencies: {
         transitGatewayRouteTable: {
           type: "TransitGatewayRouteTable",
@@ -1467,7 +1574,6 @@ module.exports = pipe([
         "CreationTime",
         "State",
       ],
-      propertiesDefault: {},
       dependencies: {
         transitGateway: { type: "TransitGateway", group: "EC2" },
       },
@@ -1499,7 +1605,6 @@ module.exports = pipe([
         "State",
         "CreationTime",
       ],
-      propertiesDefault: {},
       dependencies: {
         transitGateway: {
           type: "TransitGateway",
@@ -1545,12 +1650,12 @@ module.exports = pipe([
             assert(true);
           }),
           assign({
-            RequesterTgwInfo: replaceTgwInfo({
-              tgwType: "RequesterTgwInfo",
+            RequesterTgwInfo: replacePeeringInfo({
+              resourceType: "RequesterTgwInfo",
               providerConfig,
             }),
-            AccepterTgwInfo: replaceTgwInfo({
-              tgwType: "AccepterTgwInfo",
+            AccepterTgwInfo: replacePeeringInfo({
+              resourceType: "AccepterTgwInfo",
               providerConfig,
             }),
           }),
@@ -1571,7 +1676,6 @@ module.exports = pipe([
         "CreationTime",
         "State",
       ],
-      propertiesDefault: {},
       dependencies: {
         transitGateway: {
           type: "TransitGateway",
