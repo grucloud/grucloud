@@ -33,6 +33,9 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description: "",
     }),
+    dependencies: ({}) => ({
+      instance: "machine",
+    }),
   },
   {
     type: "Vpc",
@@ -122,7 +125,7 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: "project-subnet-public1-us-east-1a",
+            name: `project-subnet-public1-${config.region}a`,
           })}`,
         },
       ],

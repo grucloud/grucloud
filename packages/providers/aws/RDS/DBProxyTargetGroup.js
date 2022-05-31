@@ -17,12 +17,17 @@ const model = {
   destroy: { method: "deregisterDBProxyTargets" },
 };
 
+const managedByOther = pipe([get("live.IsDefault")]);
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html
 exports.DBProxyTargetGroup = ({ spec, config }) =>
   createAwsResource({
     model,
     spec,
     config,
+    managedByOther,
+    isDefault: managedByOther,
+    cannotBeDeleted: managedByOther,
     findName: get("live.TargetGroupName"),
     findId: get("live.TargetGroupArn"),
     pickId: pick(["DBProxyName", "TargetGroupName"]),

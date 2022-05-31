@@ -398,7 +398,7 @@ exports.createResources = () => [
           environmentFiles: [],
           essential: true,
           extraHosts: [],
-          image: "amazon/amazon-ecs-sample",
+          image: `amazon/amazon-ecs-sample`,
           links: [],
           logConfiguration: {
             logDriver: "awslogs",

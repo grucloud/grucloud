@@ -19,7 +19,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       AutoDeploy: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "ApigwFargate",
     }),
   },
@@ -34,7 +34,7 @@ exports.createResources = () => [
       PayloadFormatVersion: "1.0",
       RequestTemplates: {},
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "ApigwFargate",
       listener: "listener::CdkSt-MyFar-RZX6AW5H3B08::HTTP::80",
       vpcLink: "V2 VPC Link",
@@ -46,7 +46,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       RouteKey: "GET /",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "ApigwFargate",
       integration:
         "integration::ApigwFargate::listener::CdkSt-MyFar-RZX6AW5H3B08::HTTP::80",
@@ -60,7 +60,7 @@ exports.createResources = () => [
         "Automatic deployment triggered by changes to the Api configuration",
       AutoDeployed: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "ApigwFargate",
       stage: "$default",
     }),
@@ -69,7 +69,7 @@ exports.createResources = () => [
     type: "VpcLink",
     group: "ApiGatewayV2",
     name: "V2 VPC Link",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: [
         "CdkStack/MyVpc/PrivateSubnet1",
         "CdkStack/MyVpc/PrivateSubnet2",
@@ -90,11 +90,7 @@ exports.createResources = () => [
       DnsHostnames: true,
     }),
   },
-  {
-    type: "InternetGateway",
-    group: "EC2",
-    name: "CdkStack/MyVpc",
-  },
+  { type: "InternetGateway", group: "EC2", name: "CdkStack/MyVpc" },
   {
     type: "InternetGatewayAttachment",
     group: "EC2",
@@ -107,7 +103,7 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "CdkStack/MyVpc/PublicSubnet1",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnet: "CdkStack/MyVpc/PublicSubnet1",
       eip: "CdkStack/MyVpc/PublicSubnet1",
     }),
@@ -116,7 +112,7 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: "CdkStack/MyVpc/PublicSubnet2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnet: "CdkStack/MyVpc/PublicSubnet2",
       eip: "CdkStack/MyVpc/PublicSubnet2",
     }),
@@ -126,10 +122,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/MyVpc/PrivateSubnet1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.128.0/18",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.128.0/18",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
     }),
   },
@@ -138,10 +134,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/MyVpc/PrivateSubnet2",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.192.0/18",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.192.0/18",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
     }),
   },
@@ -150,11 +146,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/MyVpc/PublicSubnet1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/18",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/18",
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
     }),
   },
@@ -163,11 +159,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "CdkStack/MyVpc/PublicSubnet2",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.64.0/18",
       AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.64.0/18",
       MapPublicIpOnLaunch: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
     }),
   },
@@ -175,7 +171,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "CdkStack/MyVpc/PrivateSubnet1",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
     }),
   },
@@ -183,7 +179,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "CdkStack/MyVpc/PrivateSubnet2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
     }),
   },
@@ -191,7 +187,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "CdkStack/MyVpc/PublicSubnet1",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
     }),
   },
@@ -199,14 +195,14 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "CdkStack/MyVpc/PublicSubnet2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/MyVpc/PrivateSubnet1",
       subnet: "CdkStack/MyVpc/PrivateSubnet1",
     }),
@@ -214,7 +210,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/MyVpc/PrivateSubnet2",
       subnet: "CdkStack/MyVpc/PrivateSubnet2",
     }),
@@ -222,7 +218,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/MyVpc/PublicSubnet1",
       subnet: "CdkStack/MyVpc/PublicSubnet1",
     }),
@@ -230,7 +226,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/MyVpc/PublicSubnet2",
       subnet: "CdkStack/MyVpc/PublicSubnet2",
     }),
@@ -241,7 +237,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/MyVpc/PrivateSubnet1",
       natGateway: "CdkStack/MyVpc/PublicSubnet1",
     }),
@@ -252,7 +248,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/MyVpc/PrivateSubnet2",
       natGateway: "CdkStack/MyVpc/PublicSubnet2",
     }),
@@ -263,7 +259,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/MyVpc/PublicSubnet1",
       ig: "CdkStack/MyVpc",
     }),
@@ -274,7 +270,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "CdkStack/MyVpc/PublicSubnet2",
       ig: "CdkStack/MyVpc",
     }),
@@ -288,7 +284,7 @@ exports.createResources = () => [
       Description:
         "Automatically created Security Group for ELB CdkStackMyFargateServiceLBE7D87832",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
     }),
   },
@@ -299,7 +295,7 @@ exports.createResources = () => [
       GroupName: "CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
       Description: "CdkStack/MyFargateService/Service/SecurityGroup",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
     }),
   },
@@ -319,7 +315,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
     }),
@@ -334,7 +330,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceSecurityGroup7016792A-VTFXV0IBDK1Z",
       securityGroupFrom: [
@@ -352,7 +348,7 @@ exports.createResources = () => [
         ToPort: 80,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::CdkStack/MyVpc::CdkStack-MyFargateServiceLBSecurityGroup6FBF16F1-ADIRE45C9XJE",
       securityGroupFrom: [
@@ -401,8 +397,7 @@ exports.createResources = () => [
           environmentFiles: [],
           essential: true,
           extraHosts: [],
-          image:
-            "840541460064.dkr.ecr.us-east-1.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-us-east-1:c92a96870c09f92be4993ff173af782a6532353f176ae3a033f1b0a1c6bab043",
+          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-${config.region}:c92a96870c09f92be4993ff173af782a6532353f176ae3a033f1b0a1c6bab043`,
           links: [],
           logConfiguration: {
             logDriver: "awslogs",
@@ -464,7 +459,7 @@ exports.createResources = () => [
       ],
       requiresCompatibilities: ["FARGATE"],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       taskRole:
         "CdkStack-MyFargateServiceTaskDefTaskRole62C7D397-1ESH968PSU9BX",
       executionRole:
@@ -512,7 +507,7 @@ exports.createResources = () => [
       schedulingStrategy: "REPLICA",
       serviceName: "CdkStack-MyFargateServiceF490C034-ChqvqbMg0Rkx",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       cluster: "CdkStack-MyCluster4C1BA579-fZi4x9tf2fSV",
       taskDefinition: "CdkStackMyFargateServiceTaskDef846A07DE",
       subnets: [
@@ -534,7 +529,7 @@ exports.createResources = () => [
       Type: "application",
       IpAddressType: "ipv4",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: [
         "CdkStack/MyVpc/PrivateSubnet1",
         "CdkStack/MyVpc/PrivateSubnet2",
@@ -554,7 +549,7 @@ exports.createResources = () => [
       HealthCheckProtocol: "HTTP",
       TargetType: "ip",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
     }),
   },
@@ -565,7 +560,7 @@ exports.createResources = () => [
       Port: 80,
       Protocol: "HTTP",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       loadBalancer: "CdkSt-MyFar-RZX6AW5H3B08",
       targetGroup: "CdkSt-MyFar-JZPHMT1E0V5K",
     }),
@@ -626,7 +621,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       logGroups: [
         "CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-0cga6xIMrwPR",
       ],

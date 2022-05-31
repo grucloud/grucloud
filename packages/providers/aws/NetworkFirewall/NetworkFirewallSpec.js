@@ -66,7 +66,7 @@ module.exports = pipe([
         "LastModifiedTime",
         "NumberOfAssociations",
       ],
-      filterLive: ({ lives }) =>
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
           omitEncryptionConfiguration,
           assign({
@@ -78,14 +78,15 @@ module.exports = pipe([
                   map(
                     pipe([
                       assign({
-                        ResourceArn: ({ ResourceArn }) =>
-                          pipe([
-                            () => ({ Id: ResourceArn, lives }),
-                            replaceWithName({
-                              groupType: "NetworkFirewall::RuleGroup",
-                              path: "id",
-                            }),
-                          ])(),
+                        ResourceArn: pipe([
+                          get("ResourceArn"),
+                          replaceWithName({
+                            groupType: "NetworkFirewall::RuleGroup",
+                            path: "id",
+                            providerConfig,
+                            lives,
+                          }),
+                        ]),
                       }),
                     ])
                   ),
@@ -95,14 +96,15 @@ module.exports = pipe([
                   map(
                     pipe([
                       assign({
-                        ResourceArn: ({ ResourceArn }) =>
-                          pipe([
-                            () => ({ Id: ResourceArn, lives }),
-                            replaceWithName({
-                              groupType: "NetworkFirewall::RuleGroup",
-                              path: "id",
-                            }),
-                          ])(),
+                        ResourceArn: pipe([
+                          get("ResourceArn"),
+                          replaceWithName({
+                            groupType: "NetworkFirewall::RuleGroup",
+                            path: "id",
+                            providerConfig,
+                            lives,
+                          }),
+                        ]),
                       }),
                     ])
                   ),

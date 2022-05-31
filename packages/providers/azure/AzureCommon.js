@@ -86,12 +86,19 @@ const findResourceById =
       ),
     ])();
 
-exports.assignDependenciesId = ({ group, type, lives, propertyName = "id" }) =>
+exports.assignDependenciesId = ({
+  group,
+  type,
+  lives,
+  propertyName = "id",
+  providerConfig,
+}) =>
   pipe([
     tap((params) => {
       assert(group);
       assert(type);
       assert(lives);
+      assert(providerConfig);
     }),
     assign({
       [propertyName]: pipe([
@@ -111,7 +118,7 @@ exports.assignDependenciesId = ({ group, type, lives, propertyName = "id" }) =>
             tap((resource) => {
               assert(resource);
             }),
-            buildGetId({ id }),
+            buildGetId({ id, providerConfig }),
             (result) => () => result,
           ])(),
       ]),

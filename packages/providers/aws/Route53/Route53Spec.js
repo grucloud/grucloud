@@ -96,7 +96,7 @@ module.exports = pipe([
             assert(true);
           }),
         ])(),
-      filterLive: ({ lives }) =>
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
           pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
           assign({
@@ -119,6 +119,7 @@ module.exports = pipe([
                             buildGetId({
                               id: IPAddress.id,
                               path: "live.PublicIp",
+                              providerConfig,
                             }),
                             (result) => () => result,
                           ]),

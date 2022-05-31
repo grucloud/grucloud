@@ -389,8 +389,7 @@ exports.createResources = () => [
           environmentFiles: [],
           essential: true,
           extraHosts: [],
-          image:
-            "840541460064.dkr.ecr.us-east-1.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-us-east-1:ad758bca7c4674905c156fb09c1cdc499a660e8bd2f563b4a0987f2385ecaf90",
+          image: `840541460064.dkr.ecr.${config.region}.amazonaws.com/cdk-hnb659fds-container-assets-840541460064-${config.region}:ad758bca7c4674905c156fb09c1cdc499a660e8bd2f563b4a0987f2385ecaf90`,
           links: [],
           logConfiguration: {
             logDriver: "awslogs",

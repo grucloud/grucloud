@@ -121,7 +121,7 @@ const findResourceByPrincipalId =
     ])();
 
 const assignObjectId =
-  ({ lives }) =>
+  ({ lives, providerConfig }) =>
   (policy) =>
     pipe([
       tap(() => {
@@ -140,6 +140,7 @@ const assignObjectId =
                 buildGetId({
                   id: resource.id,
                   path: "live.identity.principalId",
+                  providerConfig,
                 }),
                 (result) => () => result,
               ]),
@@ -255,7 +256,12 @@ exports.fnSpecs = ({ config }) =>
           "properties.privateEndpointConnections",
           "properties.networkAcls.virtualNetworkRules",
         ],
-        filterLive: ({ pickPropertiesCreate, omitProperties, lives }) =>
+        filterLive: ({
+          pickPropertiesCreate,
+          omitProperties,
+          lives,
+          providerConfig,
+        }) =>
           pipe([
             tap((params) => {
               assert(pickPropertiesCreate);
@@ -273,7 +279,7 @@ exports.fnSpecs = ({ config }) =>
                     get("accessPolicies"),
                     map(
                       pipe([
-                        assignObjectId({ lives }),
+                        assignObjectId({ lives, providerConfig }),
                         when(
                           eq(get("tenantId"), config.tenantId),
                           assign({

@@ -302,11 +302,18 @@ const filterPermissions = pipe([
   sortByFromPort,
 ]);
 
-const assingIpamRegion = ({ providerConfig }) =>
+const assignIpamRegion = ({ providerConfig }) =>
   assign({
     IpamRegion: pipe([get("IpamRegion"), replaceRegion({ providerConfig })]),
   });
 
+const assignLocale = ({ providerConfig }) =>
+  when(
+    get("Locale"),
+    assign({
+      Locale: pipe([get("Locale"), replaceRegion({ providerConfig })]),
+    })
+  );
 const omitLocaleNone = when(eq(get("Locale"), "None"), omit(["Locale"]));
 
 const getByIdFromLives =
@@ -433,7 +440,7 @@ module.exports = pipe([
       compare: compareEC2({
         filterTarget: () => pipe([omit(["ResourceIds", "ResourceType"])]),
       }),
-      filterLive: () =>
+      filterLive: ({ providerConfig, lives }) =>
         pipe([
           tap((params) => {
             assert(true);
@@ -444,13 +451,11 @@ module.exports = pipe([
               assign({
                 LogDestination: pipe([
                   get("LogDestination"),
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  (LogDestination) => ({ Id: LogDestination, lives }),
                   replaceWithName({
                     groupType: "S3::Bucket",
                     path: "id",
+                    providerConfig,
+                    lives,
                   }),
                 ]),
               }),
@@ -471,7 +476,22 @@ module.exports = pipe([
         "State",
       ],
       filterLive: ({ providerConfig }) =>
-        pipe([assingIpamRegion({ providerConfig })]),
+        pipe([
+          assignIpamRegion({ providerConfig }),
+          assign({
+            OperatingRegions: pipe([
+              get("OperatingRegions"),
+              map(
+                assign({
+                  RegionName: pipe([
+                    get("RegionName"),
+                    replaceRegion({ providerConfig }),
+                  ]),
+                })
+              ),
+            ]),
+          }),
+        ]),
     },
     {
       type: "IpamScope",
@@ -490,7 +510,7 @@ module.exports = pipe([
           tap((params) => {
             assert(true);
           }),
-          assingIpamRegion({ providerConfig }),
+          assignIpamRegion({ providerConfig }),
         ]),
       dependencies: {
         ipam: { type: "Ipam", group: "EC2" },
@@ -515,7 +535,11 @@ module.exports = pipe([
         filterLive: () => pipe([omitLocaleNone]),
       }),
       filterLive: ({ providerConfig }) =>
-        pipe([assingIpamRegion({ providerConfig }), omitLocaleNone]),
+        pipe([
+          assignIpamRegion({ providerConfig }),
+          omitLocaleNone,
+          assignLocale({ providerConfig }),
+        ]),
       dependencies: {
         ipamPoolSource: { type: "IpamPool", group: "EC2" },
         ipamScope: { type: "IpamScope", group: "EC2" },
@@ -1139,7 +1163,7 @@ module.exports = pipe([
         "CpuOptions",
       ],
       filterLive:
-        ({ lives }) =>
+        ({ lives, providerConfig }) =>
         (live) =>
           pipe([
             () => live,
@@ -1180,24 +1204,27 @@ module.exports = pipe([
                         DeviceIndex: get("Attachment.DeviceIndex"),
                         Groups: pipe([
                           get("Groups"),
-                          map(({ GroupId }) =>
+                          map(
                             pipe([
-                              () => ({ Id: GroupId, lives }),
+                              get("GroupId"),
                               replaceWithName({
                                 groupType: "EC2::SecurityGroup",
                                 path: "id",
+                                providerConfig,
+                                lives,
                               }),
-                            ])()
+                            ])
                           ),
                         ]),
-                        SubnetId: ({ SubnetId }) =>
-                          pipe([
-                            () => ({ Id: SubnetId, lives }),
-                            replaceWithName({
-                              groupType: "EC2::Subnet",
-                              path: "id",
-                            }),
-                          ])(),
+                        SubnetId: pipe([
+                          get("SubnetId"),
+                          replaceWithName({
+                            groupType: "EC2::Subnet",
+                            path: "id",
+                            providerConfig,
+                            lives,
+                          }),
+                        ]),
                       }),
                     ])()
                   ),
@@ -1211,10 +1238,11 @@ module.exports = pipe([
                   fork({
                     LaunchTemplateId: pipe([
                       getLaunchTemplateIdFromTags,
-                      (Id) => ({ Id, lives }),
                       replaceWithName({
                         groupType: "EC2::LaunchTemplate",
                         path: "id",
+                        providerConfig,
+                        lives,
                       }),
                     ]),
                     Version: getLaunchTemplateVersionFromTags,
@@ -1262,7 +1290,7 @@ module.exports = pipe([
       propertiesDefault: {
         LaunchTemplateData: { EbsOptimized: false },
       },
-      filterLive: ({ lives }) =>
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
           pick(["LaunchTemplateData"]),
           assign({
@@ -1292,24 +1320,26 @@ module.exports = pipe([
                         assign({
                           Groups: pipe([
                             get("Groups"),
-                            map((GroupId) =>
+                            map(
                               pipe([
-                                () => ({ Id: GroupId, lives }),
                                 replaceWithName({
                                   groupType: "EC2::SecurityGroup",
                                   path: "id",
+                                  providerConfig,
+                                  lives,
                                 }),
-                              ])()
+                              ])
                             ),
                           ]),
-                          SubnetId: ({ SubnetId }) =>
-                            pipe([
-                              () => ({ Id: SubnetId, lives }),
-                              replaceWithName({
-                                groupType: "EC2::Subnet",
-                                path: "id",
-                              }),
-                            ])(),
+                          SubnetId: pipe([
+                            get("SubnetId"),
+                            replaceWithName({
+                              groupType: "EC2::Subnet",
+                              path: "id",
+                              providerConfig,
+                              lives,
+                            }),
+                          ]),
                         }),
                       ])
                     ),

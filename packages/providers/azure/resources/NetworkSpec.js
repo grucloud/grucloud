@@ -130,7 +130,7 @@ exports.fnSpecs = ({ config }) => {
             "Dynamic",
           ],
         ],
-        filterLive: ({ lives }) =>
+        filterLive: ({ lives, providerConfig }) =>
           pipe([
             pick(["name", "sku", "tags", "properties"]),
             assign({
@@ -154,6 +154,7 @@ exports.fnSpecs = ({ config }) => {
                                 assignDependenciesId({
                                   group: "Network",
                                   type: "Subnet",
+                                  providerConfig,
                                   lives,
                                 }),
                               ]),
@@ -178,6 +179,7 @@ exports.fnSpecs = ({ config }) => {
                                 assignDependenciesId({
                                   group: "Network",
                                   type: "PublicIPAddress",
+                                  providerConfig,
                                   lives,
                                 }),
                               ]),
@@ -359,7 +361,7 @@ exports.fnSpecs = ({ config }) => {
             ])(),
           },
         ],
-        filterLive: ({ lives }) =>
+        filterLive: ({ lives, providerConfig }) =>
           pipe([
             pick(["name", "sku", "tags", "properties"]),
             assign({
@@ -386,6 +388,7 @@ exports.fnSpecs = ({ config }) => {
                                 assignDependenciesId({
                                   group: "Network",
                                   type: "PublicIPAddress",
+                                  providerConfig,
                                   lives,
                                 }),
                               ]),
@@ -411,6 +414,7 @@ exports.fnSpecs = ({ config }) => {
                                   assignDependenciesId({
                                     group: "Network",
                                     type: "LoadBalancerBackendAddressPool",
+                                    providerConfig,
                                     lives,
                                   })
                                 ),
@@ -463,6 +467,7 @@ exports.fnSpecs = ({ config }) => {
                                 assignDependenciesId({
                                   group: "Network",
                                   type: "LoadBalancerBackendAddressPool",
+                                  providerConfig,
                                   lives,
                                 }),
                               ]),
@@ -784,7 +789,7 @@ exports.fnSpecs = ({ config }) => {
           },
         ],
         omitProperties: [],
-        filterLive: ({ lives }) =>
+        filterLive: ({ lives, providerConfig }) =>
           pipe([
             pick(["name", "sku", "tags", "properties"]),
             assign({
@@ -797,6 +802,7 @@ exports.fnSpecs = ({ config }) => {
                     assignDependenciesId({
                       group: "Network",
                       type: "FirewallPolicy",
+                      providerConfig,
                       lives,
                     }),
                   ]),
@@ -815,6 +821,7 @@ exports.fnSpecs = ({ config }) => {
                                 assignDependenciesId({
                                   group: "Network",
                                   type: "Subnet",
+                                  providerConfig,
                                   lives,
                                 }),
                               ]),
@@ -823,6 +830,7 @@ exports.fnSpecs = ({ config }) => {
                                 assignDependenciesId({
                                   group: "Network",
                                   type: "PublicIPAddress",
+                                  providerConfig,
                                   lives,
                                 }),
                               ]),
