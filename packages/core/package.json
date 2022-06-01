@@ -14,7 +14,10 @@
   },
   "keywords": [
     "cloud",
-    "infrastructure as code"
+    "infrastructure as code",
+    "AWS",
+    "Azure",
+    "GCP"
   ],
   "author": "Frederic Heem",
   "license": "ISC",
