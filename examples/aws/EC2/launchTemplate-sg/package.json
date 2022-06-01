@@ -1,6 +1,6 @@
 {
   "name": "launchTemplate-sg",
-  "version": "7.3.0",
+  "version": "7.4.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.3.0",
-    "@grucloud/provider-aws": "^7.3.0",
+    "@grucloud/core": "^7.4.0",
+    "@grucloud/provider-aws": "^7.4.0",
     "rubico": "^1.8.11"
   },
   "devDependencies": {

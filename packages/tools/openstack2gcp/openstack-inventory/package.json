@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/openstack-inventory",
-  "version": "7.3.0",
+  "version": "7.4.0",
   "private": true,
   "description": "List the live inventory of a OpenStack cloud provider infrastructure",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.3.0",
-    "@grucloud/provider-openstack": "^7.3.0"
+    "@grucloud/core": "^7.4.0",
+    "@grucloud/provider-openstack": "^7.4.0"
   }
 }
