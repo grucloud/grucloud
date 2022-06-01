@@ -1,6 +1,6 @@
 {
   "name": "managed-identity-basic",
-  "version": "7.4.1",
+  "version": "7.4.2",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,8 +21,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.4.1",
-    "@grucloud/provider-azure": "^7.4.1",
+    "@grucloud/core": "^7.4.2",
+    "@grucloud/provider-azure": "^7.4.2",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
