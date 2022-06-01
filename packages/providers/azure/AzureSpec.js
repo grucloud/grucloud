@@ -36,6 +36,7 @@ const { compare, omitIfEmpty } = require("@grucloud/core/Common");
 const { deepPick } = require("@grucloud/core/deepPick");
 const { deepDefaults } = require("@grucloud/core/deepDefault");
 
+const AppSpec = require("./resources/AppSpec");
 const AuthorizationSpec = require("./resources/AuthorizationSpec");
 const ContainerServiceSpec = require("./resources/ContainerServiceSpec");
 const ComputeSpec = require("./resources/ComputeSpec");
@@ -60,6 +61,7 @@ const { isSubstituable } = require("./AzureCommon");
 const createSpecsOveride = (config) =>
   pipe([
     () => [
+      AppSpec,
       AuthorizationSpec,
       ComputeSpec,
       ContainerServiceSpec,
