@@ -6,7 +6,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DatabaseName: "dev",
       Engine: "aurora-postgresql",
-      EngineVersion: "10.14",
+      EngineVersion: "10.18",
       EngineMode: "serverless",
       Port: 5432,
       PreferredBackupWindow: "01:39-02:09",

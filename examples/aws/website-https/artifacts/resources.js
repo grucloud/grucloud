@@ -26,12 +26,7 @@ exports.createResources = () => [
       },
       DefaultRootObject: "index.html",
       DefaultCacheBehavior: {
-        TargetOriginId: `S3-${getId({
-          type: "Bucket",
-          group: "S3",
-          name: "cloudfront.aws.test.grucloud.org",
-          path: "name",
-        })}`,
+        TargetOriginId: "S3-cloudfront.aws.test.grucloud.org",
         TrustedSigners: {
           Enabled: false,
         },
@@ -71,12 +66,7 @@ exports.createResources = () => [
         Items: [
           {
             Id: "S3-cloudfront.aws.test.grucloud.org",
-            DomainName: `${getId({
-              type: "Bucket",
-              group: "S3",
-              name: "cloudfront.aws.test.grucloud.org",
-              path: "name",
-            })}.s3.amazonaws.com`,
+            DomainName: "cloudfront.aws.test.grucloud.org.s3.amazonaws.com",
             OriginPath: "",
             CustomHeaders: {
               Quantity: 0,
