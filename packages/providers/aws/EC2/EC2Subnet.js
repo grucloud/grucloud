@@ -53,6 +53,14 @@ const SubnetAttributes = [
   "AssignIpv6AddressOnCreation",
 ];
 
+const omitAssignIpv6AddressOnCreationIfIpv6Native = when(
+  get("Ipv6Native"),
+  omit(["AssignIpv6AddressOnCreation"])
+);
+
+exports.omitAssignIpv6AddressOnCreationIfIpv6Native =
+  omitAssignIpv6AddressOnCreationIfIpv6Native;
+
 const getFirstIpv6CidrBlock = pipe([
   get("Ipv6CidrBlockAssociationSet"),
   first,
@@ -209,7 +217,6 @@ exports.EC2Subnet = ({ spec, config }) => {
       () => otherProps,
       defaultsDeep({
         VpcId: getField(vpc, "VpcId"),
-
         TagSpecifications: [
           {
             ResourceType: "subnet",
@@ -217,6 +224,7 @@ exports.EC2Subnet = ({ spec, config }) => {
           },
         ],
       }),
+      omitAssignIpv6AddressOnCreationIfIpv6Native,
       when(
         () => Ipv6SubnetPrefix,
         assign({

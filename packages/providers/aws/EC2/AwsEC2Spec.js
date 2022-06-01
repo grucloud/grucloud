@@ -84,7 +84,11 @@ const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
 const { EC2RouteTable } = require("./EC2RouteTable");
 const { EC2RouteTableAssociation } = require("./EC2RouteTableAssociation");
 const { EC2Route } = require("./EC2Route");
-const { EC2Subnet, filterLiveSubnet } = require("./EC2Subnet");
+const {
+  EC2Subnet,
+  filterLiveSubnet,
+  omitAssignIpv6AddressOnCreationIfIpv6Native,
+} = require("./EC2Subnet");
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
 const {
   AwsSecurityGroupRuleIngress,
@@ -770,8 +774,8 @@ module.exports = pipe([
       ],
       propertiesDefault: {
         MapPublicIpOnLaunch: false,
-        AssignIpv6AddressOnCreation: false,
         MapCustomerOwnedIpOnLaunch: false,
+        AssignIpv6AddressOnCreation: false,
         EnableDns64: false,
         Ipv6Native: false,
         PrivateDnsNameOptionsOnLaunch: {
@@ -781,6 +785,7 @@ module.exports = pipe([
         },
       },
       compare: compareEC2({
+        filterAll: () => pipe([omitAssignIpv6AddressOnCreationIfIpv6Native]),
         filterLive: () =>
           pipe([
             when(
@@ -800,6 +805,7 @@ module.exports = pipe([
       }),
       filterLive: () =>
         pipe([
+          omitAssignIpv6AddressOnCreationIfIpv6Native,
           filterLiveSubnet,
           assign({
             AvailabilityZone: buildAvailabilityZone,
