@@ -68,9 +68,37 @@ exports.createResources = () => [
 ];
 ```
 
+### Ipv6 only Subnet
+
+```js
+exports.createResources = () => [
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "subnet-public",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}d`,
+      Ipv6Native: true,
+      PrivateDnsNameOptionsOnLaunch: {
+        HostnameType: "resource-name",
+        EnableResourceNameDnsAAAARecord: true,
+      },
+      Ipv6SubnetPrefix: "01",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-ipv6",
+    }),
+  },
+];
+```
+
 ## Code Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
+
+- [dual ipv4/ipv6](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/subnet-ipv4-ipv6)
+
+- [ipv6 only](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/subnet-ipv6)
 
 ## Properties
 
