@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project vpc-peering
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ EC2
+++++ Vpc (1)
+++++ VpcPeeringConnection (1)
+-- aws-secondary
+--- EC2
+---- Vpc (1)
+---- VpcPeeringConnectionAccepter (1)
+@endmindmap

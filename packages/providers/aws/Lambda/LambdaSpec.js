@@ -236,7 +236,6 @@ module.exports = pipe([
                                   }),
                                 ]),
                                 pipe([
-                                  get("Id"),
                                   replaceAccountAndRegion({
                                     providerConfig,
                                     lives,

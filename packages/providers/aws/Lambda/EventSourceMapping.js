@@ -98,6 +98,7 @@ Apache Kafka
     getById,
     shouldRetryOnExceptionMessages: [
       "The provided execution role does not have permissions to call ReceiveMessage on SQS",
+      "Please add Lambda as a Trusted Entity",
     ],
   });
 

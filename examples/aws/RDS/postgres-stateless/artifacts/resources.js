@@ -308,7 +308,7 @@ exports.createResources = () => [
       BackupRetentionPeriod: 1,
       DatabaseName: "dev",
       Engine: "aurora-postgresql",
-      EngineVersion: "10.14",
+      EngineVersion: "10.18",
       MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,
       PreferredBackupWindow: "01:39-02:09",
       PreferredMaintenanceWindow: "sun:00:47-sun:01:17",
