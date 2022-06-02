@@ -598,19 +598,19 @@ exports.createGetResource = ({ mapGloblalNameToResource }) =>
   pipe([
     tap(({ type, group, name }) => {
       assert(type);
-      assert(group);
+      //assert(group);
       assert(name);
     }),
     ({ type, group, name }) => `${group}::${type}::${name}`,
     (uri) =>
       pipe([
         () => mapGloblalNameToResource.get(uri),
-        tap.if(isEmpty, () => {
-          logger.info(
-            `no resource for ${uri}, available resources:\n${[
-              ...mapGloblalNameToResource.keys(),
-            ].join("\n")} )}`
-          );
-        }),
+        // tap.if(isEmpty, () => {
+        //   logger.info(
+        //     `no resource for ${uri}, available resources:\n${[
+        //       ...mapGloblalNameToResource.keys(),
+        //     ].join("\n")} )}`
+        //   );
+        // }),
       ])(),
   ]);

@@ -129,9 +129,9 @@ const decorateLive =
           return client.isDefault({ live, lives, config });
         },
         get namespace() {
-          logger.debug(`findNamespace ${client.spec.groupType}`);
+          //logger.debug(`findNamespace ${client.spec.groupType}`);
           //TODO
-          //return client.findNamespace({ live, lives, config });
+          return client.findNamespace({ live, lives, config });
         },
         displayResource() {
           return client.spec.displayResource({ lives, config })(live);

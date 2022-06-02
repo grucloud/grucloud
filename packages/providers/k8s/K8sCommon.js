@@ -34,6 +34,7 @@ const {
   isOurMinionObject,
   omitIfEmpty,
   compare,
+  assignHasDiff,
 } = require("@grucloud/core/Common");
 
 exports.inferNameNamespace = ({ properties }) =>
@@ -119,14 +120,22 @@ exports.compareK8s = ({ filterAll, filterTarget, filterLive } = {}) =>
         ]),
       ]),
     }),
-    omit(["targetDiff.added", "targetDiff.deleted"]),
-    omitIfEmpty(["targetDiff.updated"]),
-    omit(["liveDiff.deleted"]),
-    omitIfEmpty([
-      "liveDiff.added",
-      "liveDiff.updated",
-      "liveDiff.updated.data",
-    ]),
+    tap((params) => {
+      assert(true);
+    }),
+    assign({
+      targetDiff: pipe([
+        get("targetDiff"),
+        omit(["added", "deleted"]),
+        omitIfEmpty(["updated"]),
+      ]),
+      liveDiff: pipe([
+        get("liveDiff"),
+        omit(["deleted"]),
+        omitIfEmpty(["added", "updated", "updated.data"]),
+      ]),
+    }),
+    assignHasDiff,
   ]);
 
 exports.displayNameResourceDefault = ({ name }) => name;
