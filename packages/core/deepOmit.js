@@ -8,6 +8,7 @@ const {
   isEmpty,
   includes,
   unless,
+  isString,
 } = require("rubico/x");
 
 const removeKeyBracket = pipe([callProp("replace", "[]", "")]);
@@ -17,60 +18,81 @@ const deepOmitByPath =
   ([firstKey, ...remainingKeys]) =>
   (source) =>
     pipe([
-      () => source,
-      switchCase([
-        isEmpty,
-        identity,
-        () => hasKeyBracket(firstKey),
-        // Deal with array
+      () => firstKey,
+      (firstKey) => [firstKey],
+      (firstKeyArray) =>
         pipe([
-          get(removeKeyBracket(firstKey)),
+          () => source,
+          tap((params) => {
+            assert(true);
+          }),
           switchCase([
             isEmpty,
-            // no key
-            pipe([() => source]),
-            // has key
+            identity,
+            () => hasKeyBracket(firstKey),
+            // Deal with array
             pipe([
-              // TODO back to map
-              reduce(
-                (acc, item) =>
-                  pipe([
-                    () => item,
-                    deepOmitByPath(remainingKeys),
-                    (newItem) => [...acc, newItem],
-                  ])(),
-                []
-              ),
-              (objNested) =>
+              get(removeKeyBracket(firstKey)),
+              switchCase([
+                isEmpty,
+                // no key
+                pipe([() => source]),
+                // has key
                 pipe([
-                  () => source,
-                  unless(
-                    () => isEmpty(objNested),
-                    set(removeKeyBracket(firstKey), objNested)
+                  // TODO back to map
+                  reduce(
+                    (acc, item) =>
+                      pipe([
+                        () => item,
+                        deepOmitByPath(remainingKeys),
+                        (newItem) => [...acc, newItem],
+                      ])(),
+                    []
                   ),
-                ])(),
+                  (objNested) =>
+                    pipe([
+                      () => source,
+                      when(
+                        get(removeKeyBracket(firstKey)),
+                        set(removeKeyBracket(firstKey), objNested)
+                      ),
+                    ])(),
+                ]),
+              ]),
             ]),
-          ]),
-        ]),
-        // No array
-        pipe([
-          switchCase([
-            () => isEmpty(remainingKeys),
-            // no remaining keys
-            pipe([when(isObject, omit([firstKey]))]),
-            // has remaining keys
+            // No array
             pipe([
-              get(firstKey),
-              deepOmitByPath(remainingKeys),
-              (objNested) =>
+              switchCase([
+                () => isEmpty(remainingKeys),
+                // no remaining keys
                 pipe([
-                  () => source,
-                  unless(() => isEmpty(objNested), set(firstKey, objNested)),
-                ])(),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  when(
+                    isObject,
+                    pipe([
+                      omit([firstKeyArray]),
+                      tap((params) => {
+                        assert(true);
+                      }),
+                    ])
+                  ),
+                ]),
+                // has remaining keys
+                pipe([
+                  get(firstKeyArray),
+                  deepOmitByPath(remainingKeys),
+                  (objNested) =>
+                    pipe([
+                      () => source,
+                      when(get(firstKeyArray), set(firstKeyArray, objNested)),
+                    ])(),
+                ]),
+              ]),
             ]),
           ]),
-        ]),
-      ]),
+        ])(),
     ])();
 
 exports.deepOmitByPath = deepOmitByPath;
@@ -86,7 +108,15 @@ const deepOmit = (paths) => (source) =>
           (acc, path) =>
             pipe([
               () => acc,
-              deepOmitByPath(pipe([() => path, callProp("split", ".")])()),
+              deepOmitByPath(
+                pipe([
+                  () => path,
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  when(isString, callProp("split", ".")),
+                ])()
+              ),
             ])(),
           source
         ),

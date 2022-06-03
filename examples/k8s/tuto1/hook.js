@@ -7,20 +7,6 @@ const shell = require("shelljs");
 
 module.exports = ({ provider }) => {
   const localPort = 8081;
-  const url = `http://localhost:${localPort}`;
-  const resources = provider.resources();
-  const serviceName = "nginx-service";
-  const service = resources.Service[`myapp::${serviceName}`];
-  assert(service);
-  const servicePort = pipe([
-    () => service.properties({}),
-    get("spec.ports"),
-    first,
-    get("port"),
-  ])();
-  assert(servicePort);
-
-  const kubectlPortForwardCommand = `kubectl --namespace ${resources.Namespace.myapp.name} port-forward svc/${serviceName} ${localPort}:${servicePort}`;
 
   const axios = Axios.create({
     timeout: 15e3,
@@ -30,12 +16,27 @@ module.exports = ({ provider }) => {
   return {
     onDeployed: {
       init: async () => {
-        return {};
+        const url = `http://localhost:${localPort}`;
+        const resources = provider.resources();
+        const serviceName = "nginx-service";
+        const service = resources.Service[`myapp::${serviceName}`];
+        assert(service);
+        const servicePort = pipe([
+          () => service.properties({}),
+          get("spec.ports"),
+          first,
+          get("port"),
+        ])();
+        assert(servicePort);
+
+        const kubectlPortForwardCommand = `kubectl --namespace ${resources.Namespace.myapp.name} port-forward svc/${serviceName} ${localPort}:${servicePort}`;
+
+        return { kubectlPortForwardCommand, url };
       },
       actions: [
         {
-          name: `exec: '${kubectlPortForwardCommand}', check web server at ${url}`,
-          command: async () => {
+          name: `exec: check web server at`,
+          command: async ({ kubectlPortForwardCommand, url }) => {
             // start kubectl port-forward
             var child = shell.exec(kubectlPortForwardCommand, { async: true });
             child.stdout.on("data", function (data) {

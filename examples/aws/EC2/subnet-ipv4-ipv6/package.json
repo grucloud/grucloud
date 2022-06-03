@@ -1,9 +1,9 @@
 {
-  "name": "@grucloud/example-k8s-tuto1",
+  "name": "subnet-ipv4-ipv6",
   "version": "7.4.2",
-  "description": "GruCloud Kubernetes Tutorial Part 1",
-  "main": "iac.js",
   "private": true,
+  "description": "",
+  "main": "index.js",
   "scripts": {
     "tree": "gc tree",
     "graph": "gc graph",
@@ -13,21 +13,19 @@
     "plan": "gc plan",
     "apply": "gc apply -f",
     "destroy": "gc destroy -f",
-    "destroy-all": "gc destroy -f -a",
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
-    "test": "mocha --exit"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^7.4.2",
-    "@grucloud/provider-k8s": "^7.4.2",
-    "axios": "^0.21.1",
-    "rubico": "^1.6.27",
-    "shelljs": "^0.8.5"
+    "@grucloud/provider-aws": "^7.4.2",
+    "rubico": "1.8.10"
   },
   "devDependencies": {
-    "mocha": "^9.0.3"
+    "mocha": "^9.2.2",
+    "mocha-junit-reporter": "^2.0.2"
   }
 }

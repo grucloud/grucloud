@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project helloword
+skinparam monochrome true
++ Infra
+++ azure
++++ App
+++++ ContainerApp (1)
+++++ ManagedEnvironment (1)
++++ OperationalInsights
+++++ Workspace (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

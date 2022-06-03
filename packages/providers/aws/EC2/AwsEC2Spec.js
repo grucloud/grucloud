@@ -84,7 +84,11 @@ const { EC2DhcpOptionsAssociation } = require("./EC2DhcpOptionsAssociation");
 const { EC2RouteTable } = require("./EC2RouteTable");
 const { EC2RouteTableAssociation } = require("./EC2RouteTableAssociation");
 const { EC2Route } = require("./EC2Route");
-const { AwsSubnet } = require("./AwsSubnet");
+const {
+  EC2Subnet,
+  filterLiveSubnet,
+  omitAssignIpv6AddressOnCreationIfIpv6Native,
+} = require("./EC2Subnet");
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
 const {
   AwsSecurityGroupRuleIngress,
@@ -754,7 +758,7 @@ module.exports = pipe([
     },
     {
       type: "Subnet",
-      Client: AwsSubnet,
+      Client: EC2Subnet,
       includeDefaultDependencies: true,
       omitProperties: [
         "VpcId",
@@ -764,13 +768,14 @@ module.exports = pipe([
         "State",
         "SubnetId",
         "OwnerId",
-        "AssignIpv6AddressOnCreation",
         "Ipv6CidrBlockAssociationSet",
         "SubnetArn",
+        "OutpostArn",
       ],
       propertiesDefault: {
         MapPublicIpOnLaunch: false,
         MapCustomerOwnedIpOnLaunch: false,
+        AssignIpv6AddressOnCreation: false,
         EnableDns64: false,
         Ipv6Native: false,
         PrivateDnsNameOptionsOnLaunch: {
@@ -779,8 +784,29 @@ module.exports = pipe([
           EnableResourceNameDnsAAAARecord: false,
         },
       },
+      compare: compareEC2({
+        filterAll: () => pipe([omitAssignIpv6AddressOnCreationIfIpv6Native]),
+        filterLive: () =>
+          pipe([
+            when(
+              get("Ipv6CidrBlockAssociationSet"),
+              assign({
+                Ipv6CidrBlock: pipe([
+                  get("Ipv6CidrBlockAssociationSet"),
+                  first,
+                  get("Ipv6CidrBlock"),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                ]),
+              })
+            ),
+          ]),
+      }),
       filterLive: () =>
         pipe([
+          omitAssignIpv6AddressOnCreationIfIpv6Native,
+          filterLiveSubnet,
           assign({
             AvailabilityZone: buildAvailabilityZone,
           }),

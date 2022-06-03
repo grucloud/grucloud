@@ -11,13 +11,26 @@ const {
   omit,
   pick,
   filter,
+  assign,
 } = require("rubico");
-const { defaultsDeep, last, identity, prepend } = require("rubico/x");
+const {
+  callProp,
+  defaultsDeep,
+  last,
+  identity,
+  prepend,
+  first,
+  when,
+  unless,
+  isEmpty,
+} = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSubnet" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { cidrSubnet } = require("@grucloud/core/ipUtils");
+
 const {
   findNameInTagsOrId,
   findNamespaceInTags,
@@ -37,9 +50,43 @@ const SubnetAttributes = [
   "CustomerOwnedIpv4Pool",
   "MapCustomerOwnedIpOnLaunch",
   "MapPublicIpOnLaunch",
+  "AssignIpv6AddressOnCreation",
 ];
 
-exports.AwsSubnet = ({ spec, config }) => {
+const omitAssignIpv6AddressOnCreationIfIpv6Native = when(
+  get("Ipv6Native"),
+  omit(["AssignIpv6AddressOnCreation"])
+);
+
+exports.omitAssignIpv6AddressOnCreationIfIpv6Native =
+  omitAssignIpv6AddressOnCreationIfIpv6Native;
+
+const getFirstIpv6CidrBlock = pipe([
+  get("Ipv6CidrBlockAssociationSet"),
+  first,
+  get("Ipv6CidrBlock"),
+]);
+
+exports.filterLiveSubnet = when(
+  getFirstIpv6CidrBlock,
+  assign({
+    Ipv6SubnetPrefix: pipe([
+      getFirstIpv6CidrBlock,
+      tap((params) => {
+        assert(true);
+      }),
+      callProp("split", "/"),
+      first,
+      callProp("replaceAll", "::", ""),
+      callProp("slice", -2),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
+  })
+);
+
+exports.EC2Subnet = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
@@ -163,13 +210,13 @@ exports.AwsSubnet = ({ spec, config }) => {
   const configDefault = async ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { Tags, Ipv6SubnetPrefix, ...otherProps },
     dependencies: { vpc },
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
-        ...(vpc && { VpcId: getField(vpc, "VpcId") }),
+        VpcId: getField(vpc, "VpcId"),
         TagSpecifications: [
           {
             ResourceType: "subnet",
@@ -177,6 +224,33 @@ exports.AwsSubnet = ({ spec, config }) => {
           },
         ],
       }),
+      omitAssignIpv6AddressOnCreationIfIpv6Native,
+      when(
+        () => Ipv6SubnetPrefix,
+        assign({
+          Ipv6CidrBlock: pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => vpc,
+            get("live.Ipv6CidrBlockAssociationSet"),
+            unless(
+              isEmpty,
+              pipe([
+                first,
+                get("Ipv6CidrBlock"),
+                cidrSubnet({
+                  subnetPrefix: Ipv6SubnetPrefix,
+                  prefixLength: "64",
+                }),
+                tap((params) => {
+                  assert(true);
+                }),
+              ])
+            ),
+          ]),
+        })
+      ),
     ])();
 
   return {

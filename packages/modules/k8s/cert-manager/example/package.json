@@ -5,9 +5,18 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
-    "test": "mocha",
-    "graph-target": "gc graph --title 'Cert Manager'",
-    "graph-live": "gc list --graph --title 'Cert Manager'"
+    "graph": "gc graph --title 'Cert Manager'",
+    "graph-live": "gc list --graph --title 'Cert Manager'",
+    "tree": "gc tree",
+    "gencode": "gc gencode",
+    "list": "gc list",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "destroy-all": "gc destroy -f -a",
+    "onDeployed": "gc run --onDeployed",
+    "onDestroyed": "gc run --onDestroyed",
+    "test": "mocha --exit"
   },
   "repository": {
     "type": "git",

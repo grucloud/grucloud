@@ -94,6 +94,28 @@ describe("deepOmit", function () {
     const result = deepOmit(["b.c"])(obj);
     assert(isDeepEqual(result, { a: 1 }));
   });
+  it("deepOmit path contains array, no omit", async function () {
+    const obj = {
+      a: 1,
+    };
+    const result = deepOmit([["b", "c"]])(obj);
+    assert(isDeepEqual(result, { a: 1 }));
+  });
+  it("deepOmit path contains array deep", async function () {
+    const obj = {
+      "deployment.kubernetes.io/revision": "1",
+    };
+    const result = deepOmit([["deployment.kubernetes.io/revision"]])(obj);
+    assert(isDeepEqual(result, {}));
+  });
+  it("deepOmit path contains array", async function () {
+    const obj = {
+      b: { c: 1 },
+    };
+    const result = deepOmit([["b", "c"]])(obj);
+    assert(isDeepEqual(result, { b: {} }));
+  });
+
   it("deepOmitByPath paths undefined", async function () {
     const obj = {
       a: 1,

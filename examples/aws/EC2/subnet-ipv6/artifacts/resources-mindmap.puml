@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project subnet-ipv6
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (1)
+@endmindmap

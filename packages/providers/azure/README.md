@@ -8,4 +8,4 @@ The list of Azure resources implemented can be found [here](https://grucloud.com
 
 ### Examples
 
-Explore the numerous AWS examples [here](https://github.com/grucloud/grucloud/tree/main/examples/azure)
+Explore the numerous Azure examples [here](https://github.com/grucloud/grucloud/tree/main/examples/azure)
