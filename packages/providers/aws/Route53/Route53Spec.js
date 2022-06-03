@@ -11,12 +11,15 @@ const {
   switchCase,
   filter,
 } = require("rubico");
-const { prepend, isEmpty, find } = require("rubico/x");
+const { prepend, isEmpty, find, when } = require("rubico/x");
 const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { isOurMinion, compareAws, replaceRegionAll } = require("../AwsCommon");
 const { Route53HostedZone } = require("./Route53HostedZone");
+const {
+  Route53HostedZoneVpcAssociation,
+} = require("./Route53HostedZoneVpcAssociation");
 const { Route53Record, compareRoute53Record } = require("./Route53Record");
 const defaultsDeep = require("rubico/x/defaultsDeep");
 
@@ -35,14 +38,68 @@ module.exports = pipe([
           group: "Route53",
           ignoreOnDestroy: true,
         },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+        },
       },
       Client: Route53HostedZone,
       compare: compareRoute53({
         filterTarget: () => pipe([() => ({})]),
         filterLive: () => pipe([() => ({})]),
       }),
-      filterLive: () => pick([]),
+      filterLive: ({ providerConfig }) =>
+        pipe([
+          pick(["Config.Comment"]),
+          omitIfEmpty(["Config.Comment"]),
+          omitIfEmpty(["Config"]),
+          // when(
+          //   get("VpcAssociations"),
+          //   assign({
+          //     VpcAssociations: pipe([
+          //       get("VpcAssociations"),
+          //       tap((params) => {
+          //         assert(true);
+          //       }),
+          //       map(
+          //         assign({
+          //           VPCRegion: pipe([
+          //             get("VPCRegion"),
+          //             replaceRegionAll({ providerConfig }),
+          //           ]),
+          //         })
+          //       ),
+          //     ]),
+          //   })
+          // ),
+        ]),
       includeDefaultDependencies: true,
+    },
+    {
+      type: "HostedZoneVpcAssociation",
+      Client: Route53HostedZoneVpcAssociation,
+      dependencies: {
+        hostedZone: {
+          type: "HostedZone",
+          group: "Route53",
+          parent: true,
+        },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+        },
+      },
+      omitProperties: ["HostedZoneId", "Name", "Owner", "VPC"],
+      inferName: ({ properties, dependenciesSpec: { hostedZone, vpc } }) =>
+        pipe([() => `zone-assoc::${hostedZone}::${vpc}`])(),
+      compare: compareRoute53({
+        filterTarget: () => pipe([() => ({})]),
+        filterLive: () => pipe([() => ({})]),
+      }),
+      // TODO region
+      //filterLive: () => pick([]),
     },
     {
       type: "Record",
@@ -57,6 +114,7 @@ module.exports = pipe([
           group: "CognitoIdentityServiceProvider",
         },
         apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
+        //TODO vpc endpoint
       },
       Client: Route53Record,
       isOurMinion: () => true,

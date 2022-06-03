@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project hostedzone-private
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
++++ Route53
+++++ HostedZone (1)
++++ Route53Domains
+++++ Domain (1)
+@endmindmap

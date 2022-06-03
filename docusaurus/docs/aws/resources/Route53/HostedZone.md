@@ -33,10 +33,37 @@ exports.createResources = () => [
 ];
 ```
 
+### Private HostedZone
+
+Create a private HostedZone associated to a VPC
+
+```js
+exports.createResources = () => [
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-hostedzone",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+    }),
+  },
+  {
+    type: "HostedZone",
+    group: "Route53",
+    name: "test.grucloud.org.",
+    dependencies: ({}) => ({
+      domain: "grucloud.org",
+      vpc: "vpc-hostedzone",
+    }),
+  },
+];
+```
+
 ## Source Code Examples
 
 - [https static website ](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https)
 - [A record and hosted zone ](https://github.com/grucloud/grucloud/blob/main/examples/aws/Route53/dns-validation-record-txt)
+- [private hosted zone associated with one VPC](https://github.com/grucloud/grucloud/blob/main/examples/aws/Route53/hostedzone-private)
 
 ## Properties
 
@@ -45,6 +72,7 @@ exports.createResources = () => [
 ## Dependencies
 
 - [Route53 Domain](../Route53Domains/Domain.md)
+- [Vpc](../EC2/Vpc.md)
 
 ## Used By
 
@@ -52,51 +80,46 @@ exports.createResources = () => [
 
 ## List
 
+list the hosted zones with the **Route53::HostedZone** filter:
+
+```sh
+gc list -t Route53::HostedZone
+```
+
 ```txt
-┌────────────────────────────────────────────────────────────────────────────┐
-│ 1 route53::HostedZone from aws                                             │
-├───────────────┬─────────────────────────────────────────────────────┬──────┤
-│ Name          │ Data                                                │ Our  │
-├───────────────┼─────────────────────────────────────────────────────┼──────┤
-│ grucloud.org. │ Id: /hostedzone/Z0064831PNCGMBFQ0H7Y                │ Yes  │
-│               │ Name: grucloud.org.                                 │      │
-│               │ CallerReference: grucloud-Sun Jul 11 2021 23:25:48… │      │
-│               │ Config:                                             │      │
-│               │   PrivateZone: false                                │      │
-│               │ ResourceRecordSetCount: 3                           │      │
-│               │ RecordSet:                                          │      │
-│               │   - Name: grucloud.org.                             │      │
-│               │     Type: NS                                        │      │
-│               │     TTL: 172800                                     │      │
-│               │     ResourceRecords:                                │      │
-│               │       - Value: ns-1907.awsdns-46.co.uk.             │      │
-│               │       - Value: ns-15.awsdns-01.com.                 │      │
-│               │       - Value: ns-1423.awsdns-49.org.               │      │
-│               │       - Value: ns-514.awsdns-00.net.                │      │
-│               │   - Name: grucloud.org.                             │      │
-│               │     Type: SOA                                       │      │
-│               │     TTL: 900                                        │      │
-│               │     ResourceRecords:                                │      │
-│               │       - Value: ns-1907.awsdns-46.co.uk. awsdns-hos… │      │
-│               │   - Name: grucloud.org.                             │      │
-│               │     Type: TXT                                       │      │
-│               │     TTL: 60                                         │      │
-│               │     ResourceRecords:                                │      │
-│               │       - Value: "google-site-verification=q_tZuuK8O… │      │
-│               │ Tags:                                               │      │
-│               │   - Key: gc-managed-by                              │      │
-│               │     Value: grucloud                                 │      │
-│               │   - Key: gc-project-name                            │      │
-│               │     Value: @grucloud/example-aws-route53-dns-valid… │      │
-│               │   - Key: gc-stage                                   │      │
-│               │     Value: dev                                      │      │
-│               │   - Key: gc-record-txt.grucloud.org.                │      │
-│               │     Value: grucloud.org.::TXT                       │      │
-│               │   - Key: gc-created-by-provider                     │      │
-│               │     Value: aws                                      │      │
-│               │   - Key: Name                                       │      │
-│               │     Value: grucloud.org.                            │      │
-│               │                                                     │      │
-└───────────────┴─────────────────────────────────────────────────────┴──────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 1 Route53::HostedZone from aws                                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│ name: test.grucloud.org.                                                │
+│ managedByUs: Yes                                                        │
+│ live:                                                                   │
+│   Id: /hostedzone/Z096960312EGF3ADWBJ12                                 │
+│   Name: test.grucloud.org.                                              │
+│   CallerReference: 64229059-7c56-488e-a785-924222770bfd                 │
+│   Config:                                                               │
+│     Comment:                                                            │
+│     PrivateZone: true                                                   │
+│   ResourceRecordSetCount: 2                                             │
+│   Tags: []                                                              │
+│   RecordSet:                                                            │
+│     - Name: test.grucloud.org.                                          │
+│       Type: NS                                                          │
+│       TTL: 172800                                                       │
+│       ResourceRecords:                                                  │
+│         - Value: ns-1536.awsdns-00.co.uk.                               │
+│         - Value: ns-0.awsdns-00.com.                                    │
+│         - Value: ns-1024.awsdns-00.org.                                 │
+│         - Value: ns-512.awsdns-00.net.                                  │
+│     - Name: test.grucloud.org.                                          │
+│       Type: SOA                                                         │
+│       TTL: 900                                                          │
+│       ResourceRecords:                                                  │
+│         - Value: ns-1536.awsdns-00.co.uk. awsdns-hostmaster.amazon.com… │
+│   VpcAssociations:                                                      │
+│     - VPCId: vpc-09d82ceb6fcd32e22                                      │
+│       Owner:                                                            │
+│         OwningAccount: 840541460064                                     │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
 
 ```

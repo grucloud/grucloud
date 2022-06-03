@@ -53,7 +53,7 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeTransitGateways",
     getParam: "TransitGateways",
-    transformListPre: pipe([filter(not(isInstanceDown))]),
+    transformListPre: () => pipe([filter(not(isInstanceDown))]),
     decorate: ({ endpoint, getById }) =>
       pipe([
         tap((params) => {

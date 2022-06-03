@@ -11,6 +11,7 @@
             "appconfig",
             "appconfigdata",
             "appflow",
+            "appintegrations",
             "application-autoscaling",
             "application-insights",
             "appmesh",
@@ -314,7 +315,9 @@
     {
         "region": "ap-northeast-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
+            "account",
             "acm",
             "acm-pca",
             "aiq",
@@ -446,7 +449,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotfleethub",
             "iotsecuretunneling",
             "iotsitewise",
@@ -585,6 +587,7 @@
     {
         "region": "ap-northeast-2",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "acm",
             "acm-pca",
@@ -598,6 +601,7 @@
             "appconfig",
             "appconfigdata",
             "appflow",
+            "appintegrations",
             "application-autoscaling",
             "application-insights",
             "appmesh",
@@ -697,7 +701,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotfleethub",
             "iotsecuretunneling",
             "iotsitewise",
@@ -931,6 +934,8 @@
             "sns",
             "sqs",
             "ssm",
+            "sso",
+            "sso-oidc",
             "stepfunctions",
             "storagegateway",
             "sts",
@@ -951,6 +956,7 @@
     {
         "region": "ap-south-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "acm",
             "acm-pca",
@@ -1059,7 +1065,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotfleethub",
             "iotsecuretunneling",
             "iotsitewise",
@@ -1176,6 +1181,7 @@
     {
         "region": "ap-southeast-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "acm",
             "acm-pca",
@@ -1302,7 +1308,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotfleethub",
             "iotsecuretunneling",
             "iotsitewise",
@@ -1433,6 +1438,7 @@
     {
         "region": "ap-southeast-2",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "acm",
             "acm-pca",
@@ -1564,7 +1570,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotfleethub",
             "iotsecuretunneling",
             "iotsitewise",
@@ -1714,6 +1719,7 @@
             "aurora",
             "autoscaling",
             "backup",
+            "batch",
             "chatbot",
             "cloudformation",
             "cloudfront",
@@ -1767,6 +1773,7 @@
             "secretsmanager",
             "service-quotas",
             "servicecatalog-appregistry",
+            "shield",
             "sns",
             "sqs",
             "ssm",
@@ -1789,6 +1796,7 @@
         "region": "ca-central-1",
         "services": [
             "accessanalyzer",
+            "account",
             "acm",
             "acm-pca",
             "aiq",
@@ -1898,6 +1906,7 @@
             "iotdevicemanagement",
             "iotfleethub",
             "iotsecuretunneling",
+            "iotsitewise",
             "kafka",
             "kafkaconnect",
             "kendra",
@@ -2008,6 +2017,7 @@
     {
         "region": "cn-north-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "acm",
             "apigateway",
@@ -2083,7 +2093,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotsecuretunneling",
             "iotsitewise",
             "kafka",
@@ -2285,6 +2294,7 @@
     {
         "region": "eu-central-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "acm",
             "acm-pca",
@@ -2418,7 +2428,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotfleethub",
             "iotsecuretunneling",
             "iotsitewise",
@@ -2904,6 +2913,7 @@
     {
         "region": "eu-west-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "acm",
             "acm-pca",
@@ -3036,7 +3046,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotfleethub",
             "iotsecuretunneling",
             "iotsitewise",
@@ -3187,6 +3196,7 @@
     {
         "region": "eu-west-2",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "acm",
             "acm-pca",
@@ -3307,7 +3317,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotfleethub",
             "iotsecuretunneling",
             "kafka",
@@ -3983,6 +3992,7 @@
     {
         "region": "us-east-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "account",
             "acm",
@@ -4139,7 +4149,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotfleethub",
             "iotsecuretunneling",
             "iotsitewise",
@@ -4301,6 +4310,7 @@
     {
         "region": "us-east-2",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "acm",
             "acm-pca",
@@ -4428,9 +4438,9 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotfleethub",
             "iotsecuretunneling",
+            "iotsitewise",
             "kafka",
             "kafkaconnect",
             "kendra",
@@ -4684,6 +4694,7 @@
     {
         "region": "us-gov-west-1",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "acm",
             "acm-pca",
@@ -4767,7 +4778,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotsecuretunneling",
             "iotsitewise",
             "kafka",
@@ -5051,6 +5061,7 @@
     {
         "region": "us-west-2",
         "services": [
+            "__DELETE_FLAG__",
             "accessanalyzer",
             "acm",
             "acm-pca",
@@ -5196,7 +5207,6 @@
             "iotdevicedefender",
             "iotdevicemanagement",
             "iotevents",
-            "iotevents-data",
             "iotfleethub",
             "iotsecuretunneling",
             "iotsitewise",

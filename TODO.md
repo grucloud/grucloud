@@ -24,9 +24,6 @@ omit AWSLogs S3 Objects
 
 - substitute zone, not ${region}/b
 
-- aws_route53_resolver_endpoint
-- aws_route53_resolver_rule
-- aws_route53_resolver_rule_association
 - aws_route53_vpc_association_authorization
 - aws_route53_zone_association
 
@@ -39,7 +36,6 @@ omit AWSLogs S3 Objects
 - aws_route53_record alias aws_vpc_endpoint
 
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
-- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html
   inferName DhcpOptionAssociation
 
 - https://github.com/arpcefxl/aws-networking-terraform

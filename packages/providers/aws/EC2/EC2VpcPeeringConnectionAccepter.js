@@ -19,14 +19,15 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeVpcPeeringConnections",
     getParam: "VpcPeeringConnections",
-    transformListPre: pipe([
-      filter(
-        and([
-          eq(get("AccepterVpcInfo.Region"), config.region),
-          not(isInstanceDown),
-        ])
-      ),
-    ]),
+    transformListPre: () =>
+      pipe([
+        filter(
+          and([
+            eq(get("AccepterVpcInfo.Region"), config.region),
+            not(isInstanceDown),
+          ])
+        ),
+      ]),
     decorate: ({ endpoint }) =>
       pipe([
         tap((params) => {

@@ -98,11 +98,12 @@ exports.KmsKey = ({ spec, config }) => {
   const getList = client.getList({
     method: "listKeys",
     getParam: "Keys",
-    transformListPost: pipe([
-      callProp("sort", (a, b) => {
-        return moment(b.CreationDate).isAfter(a.CreationDate) ? 1 : -1;
-      }),
-    ]),
+    transformListPost: () =>
+      pipe([
+        callProp("sort", (a, b) => {
+          return moment(b.CreationDate).isAfter(a.CreationDate) ? 1 : -1;
+        }),
+      ]),
     decorate: () => getById,
   });
 

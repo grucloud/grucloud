@@ -33,6 +33,8 @@ const {
   isDeepEqual,
   includes,
 } = require("rubico/x");
+const util = require("util");
+
 const { logError, convertError } = require("./Common");
 const STATES = {
   WAITING: "WAITING",
@@ -51,6 +53,9 @@ exports.mapToGraph = (mapResource) =>
           assert(isFunction(resource.dependencies));
         }),
         () => resource.dependencies(),
+        tap((params) => {
+          assert(true);
+        }),
         transform(
           flatMap(
             switchCase([
@@ -69,7 +74,19 @@ exports.mapToGraph = (mapResource) =>
               },
               (resource) => [resource.toJSON()],
               transform(
-                map((dep) => dep.toJSON()),
+                map(
+                  pipe([
+                    tap((dep) => {
+                      assert(
+                        dep.toJSON,
+                        `dependency has no toJSON function: ${util.inspect(
+                          dep
+                        )}`
+                      );
+                    }),
+                    (dep) => dep.toJSON(),
+                  ])
+                ),
                 () => []
               ),
             ])

@@ -304,7 +304,7 @@ exports.ProviderGru = ({
                 lives,
                 target: input,
                 config: getProviderConfig(engine),
-                targetResources: mapGloblalNameToResource,
+                targetResources: [...mapGloblalNameToResource.values()],
                 programOptions,
               }),
               resolvedDependencies,
