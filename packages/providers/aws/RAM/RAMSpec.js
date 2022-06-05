@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { tap, pipe, map, get } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { tap, pipe, map, get, switchCase } = require("rubico");
+const { defaultsDeep, append } = require("rubico/x");
 
 const {
   isOurMinion,
@@ -9,6 +9,10 @@ const {
 } = require("../AwsCommon");
 const { RAMResourceShare } = require("./RAMResourceShare");
 const { RAMPrincipalAssociation } = require("./RAMPrincipalAssociation");
+const {
+  RAMResourceAssociation,
+  RamResourceDependencies,
+} = require("./RAMResourceAssociation");
 
 const GROUP = "RAM";
 
@@ -56,6 +60,46 @@ module.exports = pipe([
         pipe([
           assignValueFromConfig({ providerConfig, key: "associatedEntity" }),
         ]),
+    },
+    {
+      type: "ResourceAssociation",
+      dependencies: {
+        resourceShare: {
+          type: "ResourceShare",
+          group: "RAM",
+        },
+        ...RamResourceDependencies,
+      },
+      Client: RAMResourceAssociation,
+      inferName: ({
+        dependenciesSpec: { resourceShare, subnet, ipamPool, resolverRule },
+      }) =>
+        pipe([
+          tap((params) => {
+            assert(resourceShare);
+          }),
+          () => `ram-resource-assoc::${resourceShare}::`,
+          switchCase([
+            () => subnet,
+            append(subnet),
+            () => ipamPool,
+            append(ipamPool),
+            () => resolverRule,
+            append(resolverRule),
+            () => {
+              assert(false, "missing RAMResourceAssociation dependencies");
+            },
+          ]),
+        ])(),
+      omitProperties: [
+        "associatedEntity",
+        "creationTime",
+        "lastUpdatedTime",
+        "associationType",
+        "resourceShareName",
+        "resourceShareArn",
+        "status",
+      ],
     },
   ],
   map(defaultsDeep({ group: GROUP, isOurMinion, compare: compareRAM({}) })),

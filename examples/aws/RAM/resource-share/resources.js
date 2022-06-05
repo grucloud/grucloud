@@ -4,12 +4,102 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Vpc",
+    group: "EC2",
+    name: "project-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  { type: "InternetGateway", group: "EC2", name: "project-igw" },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+      internetGateway: "project-igw",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `project-subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/20",
+    }),
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "project-rtb-public",
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "project-rtb-public",
+      subnet: `project-subnet-public1-${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "project-rtb-public",
+      ig: "project-igw",
+    }),
+  },
+  {
     type: "ResourceShare",
     group: "RAM",
     properties: ({}) => ({
       allowExternalPrincipals: false,
       featureSet: "STANDARD",
       name: "my-share",
+      tags: [
+        {
+          key: "gc-created-by-provider",
+          value: "aws",
+        },
+        {
+          key: "gc-managed-by",
+          value: "grucloud",
+        },
+        {
+          key: "gc-project-name",
+          value: "resource-share",
+        },
+        {
+          key: "gc-stage",
+          value: "dev",
+        },
+        {
+          key: "Name",
+          value: "my-share",
+        },
+      ],
+    }),
+  },
+  {
+    type: "PrincipalAssociation",
+    group: "RAM",
+    properties: ({}) => ({
+      associatedEntity: "161408406883",
+      external: false,
+    }),
+    dependencies: ({}) => ({
+      resourceShare: "my-share",
     }),
   },
   {
@@ -24,14 +114,14 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "PrincipalAssociation",
+    type: "ResourceAssociation",
     group: "RAM",
-    properties: ({ config }) => ({
-      associatedEntity: "161408406883",
+    properties: ({}) => ({
       external: false,
     }),
-    dependencies: ({}) => ({
+    dependencies: ({ config }) => ({
       resourceShare: "my-share",
+      subnet: `project-subnet-public1-${config.region}a`,
     }),
   },
 ];

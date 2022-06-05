@@ -4,6 +4,63 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Vpc",
+    group: "EC2",
+    name: "project-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  { type: "InternetGateway", group: "EC2", name: "project-igw" },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+      internetGateway: "project-igw",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `project-subnet-public1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.0.0/20",
+    }),
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "project-rtb-public",
+    dependencies: ({}) => ({
+      vpc: "project-vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: "project-rtb-public",
+      subnet: `project-subnet-public1-${config.region}a`,
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "project-rtb-public",
+      ig: "project-igw",
+    }),
+  },
+  {
     type: "ResourceShare",
     group: "RAM",
     properties: ({}) => ({
@@ -54,6 +111,17 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceShare: "my-share",
+    }),
+  },
+  {
+    type: "ResourceAssociation",
+    group: "RAM",
+    properties: ({}) => ({
+      external: false,
+    }),
+    dependencies: ({ config }) => ({
+      resourceShare: "my-share",
+      subnet: `project-subnet-public1-${config.region}a`,
     }),
   },
 ];
