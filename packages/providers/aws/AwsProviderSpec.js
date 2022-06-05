@@ -27,7 +27,7 @@ const GROUPS = [
   ["Lambda", "lambda"],
   ["NetworkFirewall", "network-firewall"],
   ["RDS", "rds"],
-  // TODO RAM
+  ["RAM", "ram"],
   ["Route53", "route53"],
   ["Route53Resolver", "route53resolver"],
   ["S3", "s3"],

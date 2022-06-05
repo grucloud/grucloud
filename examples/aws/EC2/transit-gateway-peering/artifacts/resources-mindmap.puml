@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project tgw-requester
+title Resources for project transit-gateway-peering
 skinparam monochrome true
 + Infra
 ++ aws-primary

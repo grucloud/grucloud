@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project resource-share
+skinparam monochrome true
++ Infra
+++ aws
++++ RAM
+++++ ResourceShare (1)
+++++ PrincipalAssociation (2)
+@endmindmap
