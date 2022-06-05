@@ -53,7 +53,7 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeTransitGatewayPeeringAttachments",
     getParam: "TransitGatewayPeeringAttachments",
-    transformListPre: pipe([filter(not(isInstanceDown))]),
+    transformListPre: () => pipe([filter(not(isInstanceDown))]),
     decorate: ({ endpoint, getById }) =>
       pipe([
         tap((params) => {

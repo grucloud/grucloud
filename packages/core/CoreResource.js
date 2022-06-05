@@ -286,7 +286,7 @@ exports.ResourceMaker = ({
         //     target
         //   )}, live: ${tos(live)}`
         // );
-        assert(targetResources);
+        assert(Array.isArray(targetResources));
         assert(spec.compare, `no compare for ${spec.groupType}`);
         assert(Array.isArray(spec.omitProperties));
         assert(Array.isArray(spec.omitPropertiesExtra));

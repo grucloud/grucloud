@@ -208,6 +208,29 @@ exports.Route53Record = ({ spec, config }) => {
         map(pick(["id", "name"])),
       ])(),
     },
+    //TODO
+    // {
+    //   type: "VpcEndpoint",
+    //   group: "EC2",
+    //   ids: pipe([
+    //     () =>
+    //       lives.getByType({
+    //         type: "VpcEndpoint",
+    //         group: "EC2",
+    //         providerName,
+    //       }),
+    //     filter(
+    //       and([
+    //         eq(
+    //           get("live.DomainValidationOptions[0].ResourceRecord.Name"),
+    //           get("Name")(live)
+    //         ),
+    //         () => eq(get("Type"), "CNAME")(live),
+    //       ])
+    //     ),
+    //     map(pick(["id", "name"])),
+    //   ])(),
+    // },
   ];
 
   const findNameInDependencies = ({ live, lives }) =>

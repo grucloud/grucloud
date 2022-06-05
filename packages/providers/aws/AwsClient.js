@@ -150,8 +150,8 @@ const AwsClient =
       ({
         method,
         getParam,
-        transformListPre = identity,
-        transformListPost = identity,
+        transformListPre = () => identity,
+        transformListPost = () => identity,
         decorate = () => identity,
         filterResource = () => true,
         extraParam = {},
@@ -193,13 +193,13 @@ const AwsClient =
           tap((params) => {
             assert(true);
           }),
-          transformListPre,
+          transformListPre({ lives, endpoint }),
           filter(filterResource),
           tap((params) => {
             assert(true);
           }),
           map(decorate({ lives, endpoint, getById })),
-          transformListPost,
+          transformListPost({ lives, endpoint }),
           tap((params) => {
             assert(true);
           }),

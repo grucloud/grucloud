@@ -33,7 +33,7 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeTransitGatewayVpcAttachments",
     getParam: "TransitGatewayVpcAttachments",
-    transformListPre: pipe([filter(not(isInstanceDown))]),
+    transformListPre: () => pipe([filter(not(isInstanceDown))]),
     decorate: ({ endpoint, getById }) =>
       pipe([
         tap((params) => {

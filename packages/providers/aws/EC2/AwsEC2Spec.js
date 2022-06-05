@@ -250,6 +250,9 @@ const getIpPermissions =
         assert(config);
       }),
       () => targetResources,
+      tap((params) => {
+        assert(Array.isArray(targetResources));
+      }),
       filter(eq(get("type"), type)),
       filter(
         eq(

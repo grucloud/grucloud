@@ -8,14 +8,16 @@ const {
   switchCase,
   filter,
   assign,
-  fork,
+  flatMap,
   or,
   not,
   eq,
   and,
   pick,
+  any,
 } = require("rubico");
 const {
+  groupBy,
   first,
   find,
   pluck,
@@ -24,6 +26,7 @@ const {
   includes,
   differenceWith,
   isDeepEqual,
+  when,
 } = require("rubico/x");
 
 const { AwsClient } = require("../AwsClient");
@@ -53,6 +56,7 @@ const {
 const {
   createRoute53Domains,
 } = require("../Route53Domain/Route53DomainCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 //Check for the final dot
 const findName = get("live.Name");
@@ -133,6 +137,11 @@ exports.Route53HostedZone = ({ spec, config }) => {
         pluck("id"),
       ])(),
     },
+    {
+      type: "Vpc",
+      group: "EC2",
+      ids: [pipe([() => live, get("VpcAssociations"), first, get("VPCId")])()],
+    },
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
@@ -159,6 +168,62 @@ exports.Route53HostedZone = ({ spec, config }) => {
           ]),
         }),
       ]),
+    // When at least one of the hosted zone is private:
+    //   Get the list of VPCs
+    //   For each VPCs, call listHostedZonesByVPC to get the hosted zones associated to the VPC
+    //   Group the list by hosted zones
+    //   Assign the hosted zones with the vpc associations
+    transformListPost:
+      ({ lives, endpoint }) =>
+      (hostedZones) =>
+        pipe([
+          () => hostedZones,
+          when(
+            any(get("Config.PrivateZone")),
+            pipe([
+              () =>
+                lives.getByType({
+                  type: "Vpc",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              pluck("live"),
+              flatMap(({ VpcId /*Region */ }) =>
+                pipe([
+                  //TODO add region to the VPC, then
+                  () => ({
+                    VPCId: VpcId,
+                    VPCRegion: config.region, // /*Region */
+                  }),
+                  endpoint().listHostedZonesByVPC,
+                  get("HostedZoneSummaries"),
+
+                  map(
+                    defaultsDeep({
+                      VPCId: VpcId /*, VPCRegion: config.region*/,
+                    })
+                  ),
+                ])()
+              ),
+              groupBy("HostedZoneId"),
+              (mapZone) =>
+                pipe([
+                  () => hostedZones,
+                  map(
+                    assign({
+                      VpcAssociations: ({ Id }) =>
+                        pipe([
+                          () => Id,
+                          hostedZoneIdToResourceId,
+                          (id) => mapZone.get(id),
+                          map(pick(["VPCId", "VPCRegion", "Owner"])),
+                        ])(),
+                    })
+                  ),
+                ])(),
+            ])
+          ),
+        ])(),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -393,6 +458,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
     name,
     properties: { Tags, ...otherProp },
     namespace,
+    dependencies: { vpc },
   }) =>
     pipe([
       () => otherProp,
@@ -405,6 +471,12 @@ exports.Route53HostedZone = ({ spec, config }) => {
           UserTags: Tags,
         }),
       }),
+      when(
+        () => vpc,
+        defaultsDeep({
+          VPC: { VPCId: getField(vpc, "VpcId"), VPCRegion: config.region },
+        })
+      ),
       tap((params) => {
         assert(true);
       }),
