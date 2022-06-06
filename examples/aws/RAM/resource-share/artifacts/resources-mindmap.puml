@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project resource-share
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ Subnet (1)
+++++ RouteTable (1)
+++++ RouteTableAssociation (1)
+++++ Route (1)
++++ RAM
+++++ ResourceShare (1)
+++++ PrincipalAssociation (2)
+++++ ResourceAssociation (1)
+@endmindmap

@@ -274,7 +274,15 @@ exports.AwsProvider = ({
     ...other,
     type: "aws",
     name,
-    displayName: () => `${name} ${region}`,
+    displayName: pipe([
+      () => ({
+        config,
+        configs,
+      }),
+      mergeConfig,
+      get("credentials.profile", ""),
+      (profile) => `${name} ${region} ${profile}`,
+    ]),
     programOptions,
     makeConfig,
     fnSpecs,

@@ -271,7 +271,13 @@ const AwsClient =
                             assert(true);
                           }),
                           decorate({ name, parent: live, lives, endpoint }),
-                          (result) => [result],
+                          tap((params) => {
+                            assert(true);
+                          }),
+                          unless(Array.isArray, (result) => [result]),
+                          tap((params) => {
+                            assert(true);
+                          }),
                         ]),
                       ]),
                     ]),

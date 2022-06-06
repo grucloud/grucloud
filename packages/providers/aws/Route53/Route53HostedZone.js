@@ -197,7 +197,6 @@ exports.Route53HostedZone = ({ spec, config }) => {
                   }),
                   endpoint().listHostedZonesByVPC,
                   get("HostedZoneSummaries"),
-
                   map(
                     defaultsDeep({
                       VPCId: VpcId /*, VPCRegion: config.region*/,
@@ -248,11 +247,8 @@ exports.Route53HostedZone = ({ spec, config }) => {
         assert(payload);
         logger.info(`create hosted zone: ${name}, ${tos(payload)}`);
       }),
-      () => ({
-        Name: payload.Name,
-        //TODO other param ?
-        CallerReference: getNewCallerReference(),
-      }),
+      () => payload,
+      defaultsDeep({ CallerReference: getNewCallerReference() }),
       route53().createHostedZone,
       tap((result) => {
         logger.debug(`created hosted zone: ${name}, result: ${tos(result)}`);
@@ -292,6 +288,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
       tap.if(
         ({ DelegationSet }) =>
           domain &&
+          DelegationSet &&
           !isEmpty(
             differenceWith(
               isDeepEqual,

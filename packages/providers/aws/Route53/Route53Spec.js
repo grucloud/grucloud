@@ -17,10 +17,11 @@ const { hasDependency } = require("@grucloud/core/generatorUtils");
 
 const { isOurMinion, compareAws, replaceRegionAll } = require("../AwsCommon");
 const { Route53HostedZone } = require("./Route53HostedZone");
-const {
-  Route53HostedZoneVpcAssociation,
-} = require("./Route53HostedZoneVpcAssociation");
+const { Route53ZoneVpcAssociation } = require("./Route53ZoneVpcAssociation");
 const { Route53Record, compareRoute53Record } = require("./Route53Record");
+const {
+  Route53VpcAssociationAuthorization,
+} = require("./Route53VpcAssociationAuthorization");
 const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "Route53";
@@ -77,8 +78,8 @@ module.exports = pipe([
       includeDefaultDependencies: true,
     },
     {
-      type: "HostedZoneVpcAssociation",
-      Client: Route53HostedZoneVpcAssociation,
+      type: "ZoneVpcAssociation",
+      Client: Route53ZoneVpcAssociation,
       dependencies: {
         hostedZone: {
           type: "HostedZone",
@@ -94,6 +95,31 @@ module.exports = pipe([
       omitProperties: ["HostedZoneId", "Name", "Owner", "VPC"],
       inferName: ({ properties, dependenciesSpec: { hostedZone, vpc } }) =>
         pipe([() => `zone-assoc::${hostedZone}::${vpc}`])(),
+      compare: compareRoute53({
+        filterTarget: () => pipe([() => ({})]),
+        filterLive: () => pipe([() => ({})]),
+      }),
+      // TODO region
+      //filterLive: () => pick([]),
+    },
+    {
+      type: "VpcAssociationAuthorization",
+      Client: Route53VpcAssociationAuthorization,
+      dependencies: {
+        hostedZone: {
+          type: "HostedZone",
+          group: "Route53",
+          parent: true,
+        },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+        },
+      },
+      omitProperties: ["HostedZoneId", "VPC"],
+      inferName: ({ properties, dependenciesSpec: { hostedZone, vpc } }) =>
+        pipe([() => `vpc-assoc-auth::${hostedZone}::${vpc}`])(),
       compare: compareRoute53({
         filterTarget: () => pipe([() => ({})]),
         filterLive: () => pipe([() => ({})]),
