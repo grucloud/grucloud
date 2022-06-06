@@ -25,13 +25,17 @@ exports.createResources = () => [
         zoneRedundant: true,
       },
     }),
-    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      workspace: "myWorkspace",
+    }),
   },
 ];
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Workspace](../OperationalInsights/Workspace.md)
 ## Swagger Schema
 ```js
 {
@@ -161,7 +165,7 @@ exports.createResources = () => [
           properties: {
             internal: {
               type: 'boolean',
-              description: 'Boolean indicating the environment only has an internal load balancer. These environments do not have a public static IP resource, must provide ControlPlaneSubnetResourceId and AppSubnetResourceId if enabling this property',
+              description: 'Boolean indicating the environment only has an internal load balancer. These environments do not have a public static IP resource. They must provide runtimeSubnetId and infrastructureSubnetId if enabling this property',
               'x-ms-mutability': [ 'create', 'read' ]
             },
             infrastructureSubnetId: {

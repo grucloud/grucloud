@@ -163,6 +163,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2022-04-02-preview`.
+The resource version is `2022-05-02-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-04-02-preview/managedClusters.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-05-02-preview/managedClusters.json).

@@ -1077,10 +1077,10 @@ exports.createResources = () => [
           loadBalancerProfile: { managedOutboundIPs: { count: 2 } },
         },
         securityProfile: {
-          azureDefender: {
-            enabled: true,
+          defender: {
             logAnalyticsWorkspaceResourceId:
               "/subscriptions/SUB_ID/resourcegroups/RG_NAME/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME",
+            securityMonitoring: { enabled: true },
           },
         },
       },
@@ -2134,6 +2134,7 @@ exports.createResources = () => [
                     description: 'Both patch version <major.minor.patch> and <major.minor> are supported. When <major.minor> is specified, the latest supported patch version is chosen automatically. Updating the agent pool with the same <major.minor> once it has been created will not trigger an upgrade, even if a newer patch version is available. As a best practice, you should upgrade all node pools in an AKS cluster to the same Kubernetes version. The node pool version must have the same major version as the control plane. The node pool minor version must be within two minor versions of the control plane version. The node pool version cannot be greater than the control plane version. For more information see [upgrading a node pool](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#upgrade-a-node-pool).'
                   },
                   currentOrchestratorVersion: {
+                    readOnly: true,
                     type: 'string',
                     title: 'The version of Kubernetes running on the Agent Pool.',
                     description: 'If orchestratorVersion was a fully specified version <major.minor.patch>, this field will be exactly equal to it. If orchestratorVersion was <major.minor>, this field will contain the full <major.minor.patch> version being used.'
@@ -3525,17 +3526,23 @@ exports.createResources = () => [
           description: 'Security profile for the managed cluster.',
           type: 'object',
           properties: {
-            azureDefender: {
-              description: 'Azure Defender settings for the security profile.',
+            defender: {
+              description: 'Microsoft Defender settings for the security profile.',
               type: 'object',
               properties: {
-                enabled: {
-                  type: 'boolean',
-                  description: 'Whether to enable Azure Defender'
-                },
                 logAnalyticsWorkspaceResourceId: {
                   type: 'string',
-                  description: 'Resource ID of the Log Analytics workspace to be associated with Azure Defender.  When Azure Defender is enabled, this field is required and must be a valid workspace resource ID. When Azure Defender is disabled, leave the field empty.'
+                  description: 'Resource ID of the Log Analytics workspace to be associated with Microsoft Defender. When Microsoft Defender is enabled, this field is required and must be a valid workspace resource ID. When Microsoft Defender is disabled, leave the field empty.'
+                },
+                securityMonitoring: {
+                  description: 'Microsoft Defender threat detection for Cloud settings for the security profile.',
+                  type: 'object',
+                  properties: {
+                    enabled: {
+                      type: 'boolean',
+                      description: 'Whether to enable Defender threat detection'
+                    }
+                  }
                 }
               }
             },
@@ -3550,6 +3557,21 @@ exports.createResources = () => [
                 keyId: {
                   type: 'string',
                   description: 'Identifier of Azure Key Vault key. See [key identifier format](https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates#vault-name-and-object-name) for more details. When Azure Key Vault key management service is enabled, this field is required and must be a valid key identifier. When Azure Key Vault key management service is disabled, leave the field empty.'
+                },
+                keyVaultNetworkAccess: {
+                  type: 'string',
+                  enum: [ 'Public', 'Private' ],
+                  default: 'Public',
+                  'x-ms-enum': {
+                    name: 'KeyVaultNetworkAccessTypes',
+                    modelAsString: true
+                  },
+                  title: 'Network access of the key vault',
+                  description: 'Network access of key vault. The possible values are `Public` and `Private`. `Public` means the key vault allows public access from all networks. `Private` means the key vault disables public access and enables private link. The default value is `Public`.'
+                },
+                keyVaultResourceId: {
+                  type: 'string',
+                  description: 'Resource ID of key vault. When keyVaultNetworkAccess is `Private`, this field is required and must be a valid resource ID. When keyVaultNetworkAccess is `Public`, leave the field empty.'
                 }
               }
             },
@@ -3602,6 +3624,16 @@ exports.createResources = () => [
                   description: 'Whether to enable Snapshot Controller. The default value is true.'
                 }
               }
+            },
+            blobCSIDriver: {
+              description: 'AzureBlob CSI Driver settings for the storage profile.',
+              type: 'object',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  description: 'Whether to enable AzureBlob CSI Driver. The default value is false.'
+                }
+              }
             }
           }
         },
@@ -3631,6 +3663,23 @@ exports.createResources = () => [
           'x-ms-enum': { name: 'PublicNetworkAccess', modelAsString: true },
           title: 'PublicNetworkAccess of the managedCluster',
           description: 'Allow or deny public network access for AKS'
+        },
+        workloadAutoScalerProfile: {
+          type: 'object',
+          description: 'Workload Auto-scaler profile for the container service cluster.',
+          properties: {
+            keda: {
+              type: 'object',
+              description: 'KEDA (Kubernetes Event-driven Autoscaling) settings for the workload auto-scaler profile.',
+              properties: {
+                enabled: {
+                  type: 'boolean',
+                  description: 'Whether to enable KEDA.'
+                }
+              },
+              required: [ 'enabled' ]
+            }
+          }
         }
       }
     }
@@ -3722,6 +3771,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2022-04-02-preview`.
+The resource version is `2022-05-02-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-04-02-preview/managedClusters.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-05-02-preview/managedClusters.json).
