@@ -1,9 +1,10 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick, fork, flatMap, map } = require("rubico");
+const { pipe, tap, get, eq, pick, fork, flatMap, map, and } = require("rubico");
 const { defaultsDeep, find, unless, isEmpty, first } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
+const { hostedZoneIdToResourceId } = require("./Route53Common");
 
 const pickId = pipe([
   tap((params) => {
@@ -16,8 +17,6 @@ const createModel = ({ config }) => ({
   ignoreErrorCodes: ["AccessDenied"],
   package: "route-53",
   client: "Route53",
-  // TODO You can't disassociate the last Amazon VPC from a private hosted zone.
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#associateVPCWithHostedZone-property
   create: { method: "associateVPCWithHostedZone" },
   destroy: {
@@ -26,21 +25,44 @@ const createModel = ({ config }) => ({
   },
 });
 
-// do not manage the first vpc association with this hosted zone
+// Do not manage the first vpc association with this hosted zone,
 const managedByOther =
   ({ config }) =>
   ({ live, lives }) =>
     pipe([
+      tap((params) => {
+        assert(config);
+      }),
       () =>
         lives.getById({
           id: live.HostedZoneId,
           type: "HostedZone",
           group: "Route53",
-          providerName: config.providerName,
         }),
-      get("VpcAssociations"),
+      get("live.VpcAssociations"),
       first,
-      eq(get("VPCId"), live.VPCId),
+      and([
+        eq(get("VPCId"), live.VPC.VPCId),
+        eq(get("Owner.OwningAccount"), config.accountId()),
+      ]),
+    ])();
+
+const cannotBeDeleted =
+  ({ config }) =>
+  ({ live, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(config);
+      }),
+      () =>
+        lives.getById({
+          id: live.HostedZoneId,
+          type: "HostedZone",
+          group: "Route53",
+        }),
+      get("live.VpcAssociations"),
+      first,
+      and([eq(get("VPCId"), live.VPC.VPCId)]),
     ])();
 
 const findId = pipe([
@@ -52,12 +74,13 @@ const findId = pipe([
 ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html
-exports.Route53HostedZoneVpcAssociation = ({ spec, config }) =>
+exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
   createAwsResource({
     model: createModel({ config }),
     spec,
     config,
     managedByOther: managedByOther({ config }),
+    cannotBeDeleted: cannotBeDeleted({ config }),
     findDependencies: ({ live }) => [
       {
         type: "Vpc",
@@ -72,26 +95,29 @@ exports.Route53HostedZoneVpcAssociation = ({ spec, config }) =>
     ],
     findName: ({ live, lives }) =>
       pipe([
+        () => live,
         fork({
           vpc: pipe([
-            () => live,
             get("VPC.VPCId"),
+            tap((id) => {
+              assert(id);
+            }),
             (id) =>
               lives.getById({
                 id,
                 type: "Vpc",
                 group: "EC2",
-                providerName: config.providerName,
               }),
             get("name"),
           ]),
           hostedZone: pipe([
-            tap((params) => {
-              assert(live.HostedZoneId);
+            get("HostedZoneId"),
+            tap((id) => {
+              assert(id);
             }),
-            () =>
+            (id) =>
               lives.getById({
-                id: live.HostedZoneId,
+                id,
                 type: "HostedZone",
                 group: "Route53",
                 providerName: config.providerName,
@@ -132,28 +158,48 @@ exports.Route53HostedZoneVpcAssociation = ({ spec, config }) =>
               tap((params) => {
                 assert(true);
               }),
-              map(defaultsDeep({ VPC: { VPCId: id } })),
+              map(
+                defaultsDeep({ VPC: { VPCId: id, VPCRegion: config.region } })
+              ),
             ])()
           ),
         ])(),
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZonesByVPC-property
     getByName:
       ({ endpoint }) =>
       ({ resolvedDependencies: { vpc, hostedZone } }) =>
         pipe([
           tap((params) => {
             assert(vpc);
-            assert(vpc.id);
             assert(hostedZone);
-            assert(hostedZone.id);
           }),
           () => ({
-            VPCId: vpc.id,
-            VPCRegion: config.region,
+            VPCId: getField(vpc, "VpcId"),
+            VPCRegion: get("resource.provider.config.region")(vpc),
+          }),
+          tap((params) => {
+            assert(true);
           }),
           endpoint().listHostedZonesByVPC,
           get("HostedZoneSummaries"),
-          find(eq(get("HostedZoneId"), hostedZone.id)),
+          tap((params) => {
+            assert(true);
+          }),
+          find(
+            eq(
+              get("HostedZoneId"),
+              hostedZoneIdToResourceId(getField(hostedZone, "Id"))
+            )
+          ),
+          tap((params) => {
+            assert(true);
+          }),
+          defaultsDeep({
+            VPC: {
+              VPCId: getField(vpc, "VpcId"),
+              VPCRegion: get("resource.provider.config.region")(vpc),
+            },
+          }),
         ])(),
     configDefault: ({ properties, dependencies: { vpc, hostedZone } }) =>
       pipe([
@@ -165,10 +211,9 @@ exports.Route53HostedZoneVpcAssociation = ({ spec, config }) =>
         defaultsDeep({
           VPC: {
             VPCId: getField(vpc, "VpcId"),
-            //TODO get region from vpc
-            VPCRegion: config.region,
+            VPCRegion: get("resource.provider.config.region")(vpc),
           },
-          HostedZoneId: getField(hostedZone, "Id"),
+          HostedZoneId: hostedZoneIdToResourceId(getField(hostedZone, "Id")),
         }),
         tap((params) => {
           assert(true);

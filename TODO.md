@@ -24,15 +24,6 @@ omit AWSLogs S3 Objects
 
 - substitute zone, not ${region}/b
 
-- aws_route53_vpc_association_authorization
-- aws_route53_zone_association
-
-- aws_ram_resource_share
-- aws_ram_principal_association
-- aws_ram_resource_association
-
-- aws_ec2_transit_gateway_route_table_propagation
-
 - aws_route53_record alias aws_vpc_endpoint
 
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html

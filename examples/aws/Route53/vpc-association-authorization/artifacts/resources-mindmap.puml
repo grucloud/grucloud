@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project route53-zone-vpc-association-authorization
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ EC2
+++++ Vpc (1)
++++ Route53
+++++ HostedZone (1)
+++++ VpcAssociationAuthorization (1)
++++ Route53Domains
+++++ Domain (1)
+-- aws-secondary
+--- EC2
+---- Vpc (1)
+--- Route53
+---- ZoneVpcAssociation (1)
+@endmindmap
