@@ -67,6 +67,7 @@ exports.createResources = () => [
         storageProfile: {
           diskCSIDriver: {
             enabled: true,
+            version: "v1",
           },
           fileCSIDriver: {
             enabled: true,

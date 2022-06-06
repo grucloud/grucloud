@@ -4228,7 +4228,7 @@
     {
         "type": "AgentPool",
         "group": "ContainerService",
-        "apiVersion": "2022-04-02-preview",
+        "apiVersion": "2022-05-02-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -4279,6 +4279,7 @@
             "type",
             "properties.vnetSubnetID",
             "properties.podSubnetID",
+            "properties.currentOrchestratorVersion",
             "properties.nodeImageVersion",
             "properties.provisioningState",
             "properties.powerState",
@@ -4306,7 +4307,6 @@
             "properties.type",
             "properties.mode",
             "properties.orchestratorVersion",
-            "properties.currentOrchestratorVersion",
             "properties.upgradeSettings.maxSurge",
             "properties.availabilityZones",
             "properties.enableNodePublicIP",
@@ -4489,7 +4489,7 @@
     {
         "type": "MaintenanceConfiguration",
         "group": "ContainerService",
-        "apiVersion": "2022-04-02-preview",
+        "apiVersion": "2022-05-02-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -4538,7 +4538,7 @@
     {
         "type": "ManagedCluster",
         "group": "ContainerService",
-        "apiVersion": "2022-04-02-preview",
+        "apiVersion": "2022-05-02-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -4606,6 +4606,7 @@
             "properties.azurePortalFQDN",
             "properties.agentPoolProfiles[].vnetSubnetID",
             "properties.agentPoolProfiles[].podSubnetID",
+            "properties.agentPoolProfiles[].currentOrchestratorVersion",
             "properties.agentPoolProfiles[].nodeImageVersion",
             "properties.agentPoolProfiles[].provisioningState",
             "properties.agentPoolProfiles[].powerState",
@@ -4635,8 +4636,9 @@
             "properties.privateLinkResources[].groupId",
             "properties.privateLinkResources[].privateLinkServiceID",
             "properties.httpProxyConfig.effectiveNoProxy",
-            "properties.securityProfile.azureDefender.logAnalyticsWorkspaceResourceId",
+            "properties.securityProfile.defender.logAnalyticsWorkspaceResourceId",
             "properties.securityProfile.azureKeyVaultKms.keyId",
+            "properties.securityProfile.azureKeyVaultKms.keyVaultResourceId",
             "properties.ingressProfile.webAppRouting.dnsZoneResourceId"
         ],
         "pickPropertiesCreate": [
@@ -4668,7 +4670,6 @@
             "properties.agentPoolProfiles[].type",
             "properties.agentPoolProfiles[].mode",
             "properties.agentPoolProfiles[].orchestratorVersion",
-            "properties.agentPoolProfiles[].currentOrchestratorVersion",
             "properties.agentPoolProfiles[].upgradeSettings.maxSurge",
             "properties.agentPoolProfiles[].availabilityZones",
             "properties.agentPoolProfiles[].enableNodePublicIP",
@@ -4805,15 +4806,18 @@
             "properties.httpProxyConfig.httpsProxy",
             "properties.httpProxyConfig.noProxy",
             "properties.httpProxyConfig.trustedCa",
-            "properties.securityProfile.azureDefender.enabled",
+            "properties.securityProfile.defender.securityMonitoring.enabled",
             "properties.securityProfile.azureKeyVaultKms.enabled",
+            "properties.securityProfile.azureKeyVaultKms.keyVaultNetworkAccess",
             "properties.securityProfile.workloadIdentity.enabled",
             "properties.storageProfile.diskCSIDriver.enabled",
             "properties.storageProfile.diskCSIDriver.version",
             "properties.storageProfile.fileCSIDriver.enabled",
             "properties.storageProfile.snapshotController.enabled",
+            "properties.storageProfile.blobCSIDriver.enabled",
             "properties.ingressProfile.webAppRouting.enabled",
-            "properties.publicNetworkAccess"
+            "properties.publicNetworkAccess",
+            "properties.workloadAutoScalerProfile.keda.enabled"
         ],
         "environmentVariables": [
             {
@@ -4885,13 +4889,17 @@
             [
                 "properties.networkProfile.natGatewayProfile.idleTimeoutInMinutes",
                 4
+            ],
+            [
+                "properties.securityProfile.azureKeyVaultKms.keyVaultNetworkAccess",
+                "Public"
             ]
         ]
     },
     {
         "type": "ManagedClusterSnapshot",
         "group": "ContainerService",
-        "apiVersion": "2022-04-02-preview",
+        "apiVersion": "2022-05-02-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -4941,7 +4949,7 @@
     {
         "type": "Snapshot",
         "group": "ContainerService",
-        "apiVersion": "2022-04-02-preview",
+        "apiVersion": "2022-05-02-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -4996,7 +5004,7 @@
     {
         "type": "TrustedAccessRoleBinding",
         "group": "ContainerService",
-        "apiVersion": "2022-04-02-preview",
+        "apiVersion": "2022-05-02-preview",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
