@@ -1,7 +1,11 @@
 const assert = require("assert");
 const { assign, map, pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
-const { isOurMinion, replaceAccount, compareAws } = require("../AwsCommon");
+const {
+  isOurMinion,
+  replaceAccountAndRegion,
+  compareAws,
+} = require("../AwsCommon");
 
 const { SSMParameter } = require("./SSMParameter");
 const { SSMDocument } = require("./SSMDocument");
@@ -43,7 +47,7 @@ module.exports = pipe([
           assign({
             Name: pipe([
               get("Name"),
-              replaceAccount({
+              replaceAccountAndRegion({
                 providerConfig,
                 lives,
               }),

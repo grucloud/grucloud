@@ -8,7 +8,7 @@ const { replaceWithName } = require("@grucloud/core/Common");
 const {
   isOurMinion,
   compareAws,
-  replaceAccountAndRegion,
+  replaceArnWithAccountAndRegion,
 } = require("../AwsCommon");
 const { StepFunctionsStateMachine } = require("./StepFunctionsStateMachine");
 
@@ -58,7 +58,9 @@ module.exports = pipe([
                         callProp("endsWith", ".amazonaws.com"),
                       ]),
                     ]),
-                    pipe([replaceAccountAndRegion({ providerConfig, lives })]),
+                    pipe([
+                      replaceArnWithAccountAndRegion({ providerConfig, lives }),
+                    ]),
                     () => undefined,
                   ]),
                 ])

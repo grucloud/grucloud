@@ -44,13 +44,16 @@ exports.Route53VpcAssociationAuthorization = ({ spec, config }) =>
               assert(id);
             }),
             (id) =>
-              lives.getById({
-                id,
-                type: "Vpc",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
+              pipe([
+                () =>
+                  lives.getById({
+                    id,
+                    type: "Vpc",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
+                get("name", id),
+              ])(),
           ]),
           hostedZoneName: pipe([
             get("HostedZoneId"),

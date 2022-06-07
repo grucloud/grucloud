@@ -17,7 +17,7 @@ const { AwsS3Object, compareS3Object } = require("./AwsS3Object");
 const {
   compareAws,
   isOurMinion,
-  replaceAccountAndRegion,
+  replaceArnWithAccountAndRegion,
   assignPolicyResource,
 } = require("../AwsCommon");
 
@@ -162,7 +162,7 @@ module.exports = pipe([
                           assign({
                             LambdaFunctionArn: pipe([
                               get("LambdaFunctionArn"),
-                              replaceAccountAndRegion({
+                              replaceArnWithAccountAndRegion({
                                 providerConfig,
                                 lives,
                               }),
@@ -184,7 +184,7 @@ module.exports = pipe([
                           assign({
                             TopicArn: pipe([
                               get("TopicArn"),
-                              replaceAccountAndRegion({
+                              replaceArnWithAccountAndRegion({
                                 providerConfig,
                                 lives,
                               }),
