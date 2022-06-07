@@ -58,35 +58,16 @@ const {
 } = require("./buildPickProperties");
 const { buildOmitPropertiesObject } = require("./buildOmitProperties");
 const { buildDefaultPropertiesObject } = require("./buildDefaultProperties");
+const {
+  buildDependenciesFromBodyObject,
+  PreDefinedDependenciesMap,
+} = require("./buildDependenciesFromBody");
 
 const {
   isSecret,
   isPreviousProperties,
   isOmit,
 } = require("./AzureRestApiCommon");
-
-const PreDefinedDependenciesMap = {
-  virtualNetworkSubnetResourceId: {
-    type: "Subnet",
-    group: "Network",
-  },
-  virtualNetworkSubnetId: {
-    type: "Subnet",
-    group: "Network",
-  },
-  sourceVault: {
-    type: "Vault",
-    group: "KeyVault",
-  },
-  keyUrl: {
-    type: "Key",
-    group: "KeyVault",
-  },
-  serverFarmId: {
-    type: "AppServicePlan",
-    group: "Web",
-  },
-};
 
 const OpertionIdReplaceMap = {
   Servers_Get: "FlexibleServers_Get",
@@ -857,6 +838,7 @@ const findDependenciesAllGroup = ({ depName }) =>
     }),
     first,
   ]);
+
 const findDependenciesFromResources = ({
   resources,
   type,
@@ -924,11 +906,12 @@ const findPreDefinedDependencies = ({ depId, pathId }) =>
     ),
   ])();
 
-const addDependencyFromBody = ({ resources, type, group, method }) =>
+const addDependencyFromBody = ({ resources, type, group, method, swagger }) =>
   pipe([
     tap(() => {
       assert(resources);
       assert(group);
+      assert(swagger);
     }),
     () => method,
     get("parameters"),
@@ -940,11 +923,7 @@ const addDependencyFromBody = ({ resources, type, group, method }) =>
     (schema) =>
       pipe([
         () => schema,
-        get("properties", get("allOf[1].properties")(schema)),
-        tap((params) => {
-          assert(true);
-        }),
-        buildDependenciesFromBody({}),
+        buildDependenciesFromBodyObject({ swagger }),
         tap((deps) => {
           assert(true);
         }),
@@ -982,12 +961,18 @@ const addDependencyFromBody = ({ resources, type, group, method }) =>
               camelCase,
               (varName) => ({
                 ...acc,
-                [varName]: {
-                  type,
-                  group,
-                  createOnly: true,
-                  pathId,
-                },
+                [varName]: pipe([
+                  () => ({
+                    type,
+                    group,
+                    createOnly: true,
+                    pathId,
+                  }),
+                  when(
+                    pipe([() => pathId, includes("[]")]),
+                    defaultsDeep({ list: true })
+                  ),
+                ])(),
               }),
             ])(),
           {}
@@ -1000,15 +985,17 @@ const addDependencyFromBody = ({ resources, type, group, method }) =>
 
 const addDependencies = ({ resources }) =>
   assign({
-    dependencies: ({ methods, type, group }) =>
+    dependencies: ({ methods, type, group, swagger }) =>
       pipe([
         tap(() => {
           assert(resources);
+          assert(swagger);
         }),
         () => ({
           ...addResourceGroupDependency(methods),
           ...addManagedIdentityDependency(methods),
           ...addDependencyFromBody({
+            swagger,
             resources,
             method: methods.put,
             type,
@@ -1102,161 +1089,6 @@ const getParentPath = ({ obj, key, parentPath }) =>
       () => [...parentPath, key],
     ]),
   ])();
-
-const buildDependenciesFromBody =
-  ({ parentPath = [], accumulator = [] }) =>
-  (properties = {}) =>
-    pipe([
-      () => properties,
-      switchCase([
-        get("readOnly"),
-        () => undefined,
-        pipe([
-          tap((params) => {
-            assert(properties);
-            // console.log(
-            //   "buildDependenciesFromBody",
-            //   parentPath,
-            //   util.inspect(properties)
-            // );
-          }),
-          map.entries(([key, obj]) => [
-            key,
-            pipe([
-              tap((params) => {
-                //assert(obj);
-                assert(key);
-                //console.log("key:", key, "value:", obj);
-              }),
-              () => key,
-              switchCase([
-                // Avoid cycling properties
-                isPreviousProperties({ parentPath, key }),
-                pipe([() => undefined]),
-                // Predefined
-                pipe([() => PreDefinedDependenciesMap[key]]),
-                pipe([
-                  () => [...parentPath, key],
-                  callProp("join", "."),
-                  (pathId) => [
-                    {
-                      pathId,
-                      depId: key,
-                    },
-                  ],
-                ]),
-                // Find properties.id
-                pipe([
-                  () => obj,
-                  and([
-                    get("properties.id"),
-                    //not(get("id.readOnly")),
-                    //not(eq(key, "properties")),
-                  ]),
-                ]),
-                pipe([
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  () => [...parentPath, key, "id"],
-                  callProp("join", "."),
-                  (pathId) => [
-                    {
-                      pathId,
-                      depId: key,
-                    },
-                  ],
-                ]),
-                // Find MyPropId
-                and([isString, callProp("match", new RegExp("Id$", "gi"))]),
-                pipe([
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  (id) => [...parentPath, id],
-                  callProp("join", "."),
-                  (pathId) => [
-                    {
-                      pathId,
-                      depId: key,
-                    },
-                  ],
-                ]),
-                // Else
-                //TODO
-                () => obj?.type === "array",
-                pipe([
-                  tap((params) => {
-                    assert(obj);
-                    assert(obj.items);
-                  }),
-                  () => obj,
-                  buildDependenciesFromBody({
-                    parentPath: getParentPath({
-                      parentPath,
-                      key,
-                      obj: pipe([() => obj, get("items")])(),
-                    }),
-                    accumulator,
-                  }),
-                  tap((params) => {
-                    assert(true);
-                  }),
-                ]),
-                () => isObject(obj) && !Array.isArray(obj),
-                pipe([
-                  tap((params) => {
-                    assert(key);
-                  }),
-                  () => obj,
-                  switchCase([
-                    get("properties"),
-                    (properties) =>
-                      pipe([
-                        () => properties,
-                        tap((params) => {
-                          assert(obj);
-                          assert(properties);
-                          //console.log("key", key);
-                          //console.log(util.inspect(properties));
-                        }),
-                        buildDependenciesFromBody({
-                          parentPath: getParentPath({
-                            parentPath,
-                            key,
-                            obj: properties,
-                          }),
-                          accumulator,
-                        }),
-                      ])(),
-                    buildDependenciesFromBody({
-                      parentPath: getParentPath({
-                        parentPath,
-                        key,
-                        obj,
-                      }),
-                      accumulator,
-                    }),
-                  ]),
-                ]),
-                (params) => {
-                  assert(true);
-                },
-              ]),
-            ])(),
-          ]),
-          values,
-          filter(not(isEmpty)),
-          flatten,
-          tap((params) => {
-            assert(true);
-          }),
-          (results) => [...accumulator, ...results],
-        ]),
-      ]),
-    ])();
-
-exports.buildDependenciesFromBody = buildDependenciesFromBody;
 
 const getSchemaFromMethods = ({ method }) =>
   pipe([

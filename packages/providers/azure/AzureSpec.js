@@ -117,7 +117,7 @@ const buildDefaultSpec = fork({
                     }),
                     when(
                       pipe([
-                        () => ["resourceGroup", "networkSecurityGroup"],
+                        () => ["resourceGroup"],
                         any((type) => pipe([() => value, includes(type)])()),
                       ]),
                       callProp("toLowerCase")

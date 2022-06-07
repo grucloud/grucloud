@@ -437,10 +437,12 @@ exports.createResources = () => [
       resourceGroup: "myResourceGroup",
       cloudServiceRoleInstance: "myCloudServiceRoleInstance",
       galleryImage: "myGalleryImage",
-      vault: "myVault",
+      vault: ["myVault"],
       key: "myKey",
-      networkSecurityGroup: "myNetworkSecurityGroup",
-      dscpConfiguration: "myDscpConfiguration",
+      networkSecurityGroup: ["myNetworkSecurityGroup"],
+      subnet: ["mySubnet"],
+      publicIpPrefix: ["myPublicIPPrefix"],
+      dscpConfiguration: ["myDscpConfiguration"],
       availabilitySet: "myAvailabilitySet",
       vmScaleSet: "myVirtualMachineScaleSet",
     }),
@@ -461,10 +463,12 @@ exports.createResources = () => [
       resourceGroup: "myResourceGroup",
       cloudServiceRoleInstance: "myCloudServiceRoleInstance",
       galleryImage: "myGalleryImage",
-      vault: "myVault",
+      vault: ["myVault"],
       key: "myKey",
-      networkSecurityGroup: "myNetworkSecurityGroup",
-      dscpConfiguration: "myDscpConfiguration",
+      networkSecurityGroup: ["myNetworkSecurityGroup"],
+      subnet: ["mySubnet"],
+      publicIpPrefix: ["myPublicIPPrefix"],
+      dscpConfiguration: ["myDscpConfiguration"],
       availabilitySet: "myAvailabilitySet",
       vmScaleSet: "myVirtualMachineScaleSet",
     }),
@@ -479,6 +483,8 @@ exports.createResources = () => [
 - [Vault](../KeyVault/Vault.md)
 - [Key](../KeyVault/Key.md)
 - [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
+- [Subnet](../Network/Subnet.md)
+- [PublicIPPrefix](../Network/PublicIPPrefix.md)
 - [DscpConfiguration](../Network/DscpConfiguration.md)
 - [AvailabilitySet](../Compute/AvailabilitySet.md)
 - [VirtualMachineScaleSet](../Compute/VirtualMachineScaleSet.md)

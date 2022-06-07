@@ -15,7 +15,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       natGateway: "myNatGateway",
-      privateLinkService: "myPrivateLinkService",
+      privateLinkService: ["myPrivateLinkService"],
     }),
   },
 ];
@@ -61,7 +61,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       natGateway: "myNatGateway",
-      privateLinkService: "myPrivateLinkService",
+      privateLinkService: ["myPrivateLinkService"],
     }),
   },
 ];
@@ -79,7 +79,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       natGateway: "myNatGateway",
-      privateLinkService: "myPrivateLinkService",
+      privateLinkService: ["myPrivateLinkService"],
     }),
   },
 ];

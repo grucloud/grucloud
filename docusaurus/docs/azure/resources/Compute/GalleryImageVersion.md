@@ -72,6 +72,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      diskEncryptionSet: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -150,6 +151,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      diskEncryptionSet: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -226,6 +228,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      diskEncryptionSet: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -302,6 +305,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      diskEncryptionSet: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -380,6 +384,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      diskEncryptionSet: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -447,6 +452,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      diskEncryptionSet: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -478,6 +484,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      diskEncryptionSet: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -554,6 +561,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      diskEncryptionSet: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -563,6 +571,7 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
 - [Gallery](../Compute/Gallery.md)
 - [GalleryImage](../Compute/GalleryImage.md)
 ## Swagger Schema

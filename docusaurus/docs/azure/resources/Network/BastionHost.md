@@ -14,8 +14,8 @@ exports.createResources = () => [
     properties: () => ({ name: "Standard" }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnet: "mySubnet",
-      publicIpAddress: "myPublicIPAddress",
+      subnet: ["mySubnet"],
+      publicIpAddress: ["myPublicIPAddress"],
     }),
   },
 ];

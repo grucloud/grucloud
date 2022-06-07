@@ -33,13 +33,17 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      natGateway: ["myNatGateway"],
+    }),
   },
 ];
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [NatGateway](../Network/NatGateway.md)
 ## Swagger Schema
 ```js
 {

@@ -14,10 +14,10 @@ exports.createResources = () => [
     properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      natGateway: "myNatGateway",
-      ddosCustomPolicy: "myDdosCustomPolicy",
-      publicIpPrefix: "myPublicIPPrefix",
-      loadBalancer: "myLoadBalancer",
+      natGateway: ["myNatGateway"],
+      ddosCustomPolicy: ["myDdosCustomPolicy"],
+      publicIpPrefix: ["myPublicIPPrefix"],
+      loadBalancer: ["myLoadBalancer"],
     }),
   },
 ];

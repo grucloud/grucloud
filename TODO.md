@@ -4,6 +4,7 @@
 
 ## Aws
 
+- createVpcLink isInstanceUp
 - add isInstanceError for aws create, for instance in transit gateway
 - SecretsManagerResourcePolicy
 
@@ -15,10 +16,7 @@ omit AWSLogs S3 Objects
 
 - aws_route53_record alias aws_vpc_endpoint
 
-- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html
   inferName DhcpOptionAssociation
-
-- https://github.com/arpcefxl/aws-networking-terraform
 
 - gc gencode lambda with java.
 
@@ -133,11 +131,7 @@ remove aks-managed-createOperationID from tags
 
 az::Storage::FileShare pickProperties: "properties.metadata",
 
-## Aws2gc
-
-- ec2 image
-
-## TODO Goggle
+## Goggle
 
 - discover API: https://www.googleapis.com/discovery/v1/apis/compute/v1/rest
 

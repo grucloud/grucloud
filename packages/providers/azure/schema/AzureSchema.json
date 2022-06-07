@@ -93,7 +93,8 @@
                 "type": "Certificate",
                 "group": "App",
                 "createOnly": true,
-                "pathId": "properties.configuration.ingress.customDomains.items.certificateId"
+                "pathId": "properties.configuration.ingress.customDomains[].certificateId",
+                "list": true
             },
             "containerAppsSourceControl": {
                 "type": "ContainerAppsSourceControl",
@@ -743,7 +744,22 @@
                 "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true,
-                "pathId": "properties.extensionProfile.extensions.items.protectedSettingsFromKeyVault.sourceVault"
+                "pathId": "properties.extensionProfile.extensions[].properties.protectedSettingsFromKeyVault.sourceVault",
+                "list": true
+            },
+            "publicIpAddress": {
+                "type": "PublicIPAddress",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.networkProfile.loadBalancerConfigurations[].properties.frontendIPConfigurations[].properties.publicIPAddress.id",
+                "list": true
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.networkProfile.loadBalancerConfigurations[].properties.frontendIPConfigurations[].properties.subnet.id",
+                "list": true
             }
         },
         "methods": {
@@ -1428,6 +1444,13 @@
                 "name": "resourceGroupName",
                 "parent": true
             },
+            "diskEncryptionSet": {
+                "type": "DiskEncryptionSet",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.publishingProfile.targetExtendedLocations[].encryption.dataDiskImages[].diskEncryptionSetId",
+                "list": true
+            },
             "gallery": {
                 "type": "Gallery",
                 "group": "Compute",
@@ -1589,6 +1612,13 @@
                 "name": "resourceGroupName",
                 "parent": true
             },
+            "diskEncryptionSet": {
+                "type": "DiskEncryptionSet",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.publishingProfile.targetExtendedLocations[].encryption.dataDiskImages[].diskEncryptionSetId",
+                "list": true
+            },
             "gallery": {
                 "type": "Gallery",
                 "group": "Compute",
@@ -1687,6 +1717,20 @@
                 "group": "Compute",
                 "createOnly": true,
                 "pathId": "properties.sourceVirtualMachine.id"
+            },
+            "snapshot": {
+                "type": "Snapshot",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.storageProfile.dataDisks[].snapshot.id",
+                "list": true
+            },
+            "disk": {
+                "type": "Disk",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.storageProfile.dataDisks[].managedDisk.id",
+                "list": true
             }
         },
         "methods": {
@@ -2032,7 +2076,8 @@
                 "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true,
-                "pathId": "properties.osProfile.secrets.items.sourceVault"
+                "pathId": "properties.osProfile.secrets[].sourceVault",
+                "list": true
             },
             "key": {
                 "type": "Key",
@@ -2044,13 +2089,29 @@
                 "type": "NetworkSecurityGroup",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.networkProfile.networkInterfaceConfigurations.items.networkSecurityGroup.id"
+                "pathId": "properties.networkProfile.networkInterfaceConfigurations[].properties.networkSecurityGroup.id",
+                "list": true
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.subnet.id",
+                "list": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPPrefix.id",
+                "list": true
             },
             "dscpConfiguration": {
                 "type": "DscpConfiguration",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.networkProfile.networkInterfaceConfigurations.items.dscpConfiguration.id"
+                "pathId": "properties.networkProfile.networkInterfaceConfigurations[].properties.dscpConfiguration.id",
+                "list": true
             },
             "availabilitySet": {
                 "type": "AvailabilitySet",
@@ -2442,7 +2503,8 @@
                 "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true,
-                "pathId": "properties.virtualMachineProfile.osProfile.secrets.items.sourceVault"
+                "pathId": "properties.virtualMachineProfile.osProfile.secrets[].sourceVault",
+                "list": true
             },
             "galleryImage": {
                 "type": "GalleryImage",
@@ -2454,7 +2516,22 @@
                 "type": "NetworkSecurityGroup",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations.items.networkSecurityGroup.id"
+                "pathId": "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.networkSecurityGroup.id",
+                "list": true
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.subnet.id",
+                "list": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPPrefix.id",
+                "list": true
             },
             "capacityReservationGroup": {
                 "type": "CapacityReservationGroup",
@@ -2769,7 +2846,8 @@
                 "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true,
-                "pathId": "properties.osProfile.secrets.items.sourceVault"
+                "pathId": "properties.osProfile.secrets[].sourceVault",
+                "list": true
             },
             "key": {
                 "type": "Key",
@@ -2781,13 +2859,29 @@
                 "type": "NetworkSecurityGroup",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.networkProfileConfiguration.networkInterfaceConfigurations.items.networkSecurityGroup.id"
+                "pathId": "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.networkSecurityGroup.id",
+                "list": true
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.subnet.id",
+                "list": true
+            },
+            "publicIpPrefix": {
+                "type": "PublicIPPrefix",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.networkProfileConfiguration.networkInterfaceConfigurations[].properties.ipConfigurations[].properties.publicIPAddressConfiguration.properties.publicIPPrefix.id",
+                "list": true
             },
             "dscpConfiguration": {
                 "type": "DscpConfiguration",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.networkProfile.networkInterfaceConfigurations.items.dscpConfiguration.id"
+                "pathId": "properties.networkProfile.networkInterfaceConfigurations[].properties.dscpConfiguration.id",
+                "list": true
             },
             "availabilitySet": {
                 "type": "AvailabilitySet",
@@ -4552,6 +4646,20 @@
                 "createOnly": true,
                 "list": true
             },
+            "proximityPlacementGroup": {
+                "type": "ProximityPlacementGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.agentPoolProfiles[].proximityPlacementGroupID",
+                "list": true
+            },
+            "capacityReservationGroup": {
+                "type": "CapacityReservationGroup",
+                "group": "Compute",
+                "createOnly": true,
+                "pathId": "properties.agentPoolProfiles[].capacityReservationGroupID",
+                "list": true
+            },
             "subnet": {
                 "type": "Subnet",
                 "group": "Network",
@@ -4563,6 +4671,13 @@
                 "group": "Compute",
                 "createOnly": true,
                 "pathId": "properties.diskEncryptionSetID"
+            },
+            "privateLinkService": {
+                "type": "PrivateLinkService",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.privateLinkResources[].privateLinkServiceID",
+                "list": true
             },
             "key": {
                 "type": "Key",
@@ -5582,12 +5697,6 @@
                 "group": "ManagedIdentity",
                 "createOnly": true,
                 "list": true
-            },
-            "sqlResourceClientEncryptionKey": {
-                "type": "SqlResourceClientEncryptionKey",
-                "group": "DocumentDB",
-                "createOnly": true,
-                "pathId": "identity.userAssignedIdentities.additionalProperties.clientId"
             }
         },
         "methods": {
@@ -7794,13 +7903,15 @@
                 "type": "Subnet",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.frontendIPConfigurations.items.subnet.id"
+                "pathId": "properties.privateLinkConfigurations[].properties.ipConfigurations[].properties.subnet.id",
+                "list": true
             },
             "publicIpAddress": {
                 "type": "PublicIPAddress",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.frontendIPConfigurations.items.publicIPAddress.id"
+                "pathId": "properties.frontendIPConfigurations[].properties.publicIPAddress.id",
+                "list": true
             },
             "firewallPolicy": {
                 "type": "FirewallPolicy",
@@ -7812,7 +7923,8 @@
                 "type": "LoadBalancerBackendAddressPool",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.routingRules.items.backendAddressPool.id"
+                "pathId": "properties.loadDistributionPolicies[].properties.loadDistributionTargets[].properties.backendAddressPool.id",
+                "list": true
             }
         },
         "methods": {
@@ -8246,13 +8358,13 @@
                 "type": "Subnet",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.managementIpConfiguration.subnet.id"
+                "pathId": "properties.managementIpConfiguration.properties.subnet.id"
             },
             "publicIpAddress": {
                 "type": "PublicIPAddress",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.managementIpConfiguration.publicIPAddress.id"
+                "pathId": "properties.managementIpConfiguration.properties.publicIPAddress.id"
             },
             "virtualHub": {
                 "type": "VirtualHub",
@@ -8387,13 +8499,15 @@
                 "type": "Subnet",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.ipConfigurations.items.subnet.id"
+                "pathId": "properties.ipConfigurations[].properties.subnet.id",
+                "list": true
             },
             "publicIpAddress": {
                 "type": "PublicIPAddress",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.ipConfigurations.items.publicIPAddress.id"
+                "pathId": "properties.ipConfigurations[].properties.publicIPAddress.id",
+                "list": true
             }
         },
         "methods": {
@@ -8539,7 +8653,8 @@
                 "type": "Workspace",
                 "group": "OperationalInsights",
                 "createOnly": true,
-                "pathId": "properties.outputs.items.workspaceSettings.workspaceResourceId"
+                "pathId": "properties.outputs[].workspaceSettings.workspaceResourceId",
+                "list": true
             },
             "networkWatcher": {
                 "type": "NetworkWatcher",
@@ -8823,13 +8938,22 @@
                 "type": "RouteFilter",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.peerings.items.ipv6PeeringConfig.routeFilter.id"
+                "pathId": "properties.peerings[].properties.ipv6PeeringConfig.routeFilter.id",
+                "list": true
             },
             "expressRouteConnection": {
                 "type": "ExpressRouteConnection",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.peerings.items.expressRouteConnection.id"
+                "pathId": "properties.peerings[].properties.expressRouteConnection.id",
+                "list": true
+            },
+            "expressRouteCircuitPeering": {
+                "type": "ExpressRouteCircuitPeering",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.peerings[].properties.connections[].properties.peerExpressRouteCircuitPeering.id",
+                "list": true
             },
             "route": {
                 "type": "Route",
@@ -9248,13 +9372,15 @@
                 "type": "ExpressRouteCircuitPeering",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.expressRouteConnections.items.expressRouteCircuitPeering.id"
+                "pathId": "properties.expressRouteConnections[].properties.expressRouteCircuitPeering.id",
+                "list": true
             },
             "routeTable": {
                 "type": "RouteTable",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.expressRouteConnections.items.routingConfiguration.associatedRouteTable.id"
+                "pathId": "properties.expressRouteConnections[].properties.routingConfiguration.associatedRouteTable.id",
+                "list": true
             },
             "virtualHub": {
                 "type": "VirtualHub",
@@ -9384,7 +9510,8 @@
                 "type": "Workspace",
                 "group": "OperationalInsights",
                 "createOnly": true,
-                "pathId": "properties.insights.logAnalyticsResources.workspaces.items.workspaceId.id"
+                "pathId": "properties.insights.logAnalyticsResources.workspaces[].workspaceId.id",
+                "list": true
             }
         },
         "methods": {
@@ -9965,25 +10092,50 @@
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.frontendIPConfigurations.items.subnet.natGateway.id"
+                "pathId": "properties.frontendIPConfigurations[].properties.subnet.properties.natGateway.id",
+                "list": true
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.frontendIPConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
+                "pathId": "properties.frontendIPConfigurations[].properties.publicIPAddress.properties.linkedPublicIPAddress.properties.servicePublicIPAddress.properties.ddosSettings.ddosCustomPolicy.id",
+                "list": true
             },
             "publicIpPrefix": {
                 "type": "PublicIPPrefix",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.frontendIPConfigurations.items.publicIPPrefix.id"
+                "pathId": "properties.frontendIPConfigurations[].properties.publicIPPrefix.id",
+                "list": true
+            },
+            "virtualNetwork": {
+                "type": "VirtualNetwork",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.backendAddressPools[].properties.loadBalancerBackendAddresses[].properties.virtualNetwork.id",
+                "list": true
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.backendAddressPools[].properties.loadBalancerBackendAddresses[].properties.subnet.id",
+                "list": true
+            },
+            "networkInterface": {
+                "type": "NetworkInterface",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.backendAddressPools[].properties.loadBalancerBackendAddresses[].properties.networkInterfaceIPConfiguration.id",
+                "list": true
             },
             "loadBalancerBackendAddressPool": {
                 "type": "LoadBalancerBackendAddressPool",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.outboundRules.items.backendAddressPool.id"
+                "pathId": "properties.outboundRules[].properties.backendAddressPool.id",
+                "list": true
             }
         },
         "methods": {
@@ -10487,19 +10639,22 @@
                 "type": "VirtualNetwork",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.loadBalancerBackendAddresses.items.virtualNetwork.id"
+                "pathId": "properties.loadBalancerBackendAddresses[].properties.virtualNetwork.id",
+                "list": true
             },
             "subnet": {
                 "type": "Subnet",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.loadBalancerBackendAddresses.items.subnet.id"
+                "pathId": "properties.loadBalancerBackendAddresses[].properties.subnet.id",
+                "list": true
             },
             "networkInterface": {
                 "type": "NetworkInterface",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.loadBalancerBackendAddresses.items.networkInterfaceIPConfiguration.id"
+                "pathId": "properties.loadBalancerBackendAddresses[].properties.networkInterfaceIPConfiguration.id",
+                "list": true
             },
             "loadBalancer": {
                 "type": "LoadBalancer",
@@ -10570,7 +10725,8 @@
                 "type": "VirtualHubIpConfiguration",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.bgpSettings.bgpPeeringAddresses.items.ipconfigurationId"
+                "pathId": "properties.bgpSettings.bgpPeeringAddresses[].ipconfigurationId",
+                "list": true
             }
         },
         "methods": {
@@ -10753,25 +10909,50 @@
                 "type": "LoadBalancer",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.privateLinkService.loadBalancerFrontendIpConfigurations.items.gatewayLoadBalancer.id"
+                "pathId": "properties.privateLinkService.properties.loadBalancerFrontendIpConfigurations[].properties.gatewayLoadBalancer.id",
+                "list": true
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.ipConfigurations[].properties.loadBalancerBackendAddressPools[].properties.loadBalancerBackendAddresses[].properties.subnet.id",
+                "list": true
+            },
+            "loadBalancerBackendAddressPool": {
+                "type": "LoadBalancerBackendAddressPool",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.ipConfigurations[].properties.loadBalancerInboundNatRules[].properties.backendAddressPool.id",
+                "list": true
             },
             "natGateway": {
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.privateLinkService.ipConfigurations.items.subnet.natGateway.id"
+                "pathId": "properties.privateLinkService.properties.ipConfigurations[].properties.subnet.properties.natGateway.id",
+                "list": true
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.privateLinkService.loadBalancerFrontendIpConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
+                "pathId": "properties.privateLinkService.properties.loadBalancerFrontendIpConfigurations[].properties.publicIPAddress.properties.linkedPublicIPAddress.properties.servicePublicIPAddress.properties.ddosSettings.ddosCustomPolicy.id",
+                "list": true
             },
             "publicIpPrefix": {
                 "type": "PublicIPPrefix",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.privateLinkService.loadBalancerFrontendIpConfigurations.items.publicIPPrefix.id"
+                "pathId": "properties.privateLinkService.properties.loadBalancerFrontendIpConfigurations[].properties.publicIPPrefix.id",
+                "list": true
+            },
+            "virtualNetwork": {
+                "type": "VirtualNetwork",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.ipConfigurations[].properties.loadBalancerBackendAddressPools[].properties.loadBalancerBackendAddresses[].properties.virtualNetwork.id",
+                "list": true
             },
             "dscpConfiguration": {
                 "type": "DscpConfiguration",
@@ -12553,37 +12734,45 @@
                 "type": "LoadBalancer",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.virtualNetworkTap.destinationLoadBalancerFrontEndIPConfiguration.gatewayLoadBalancer.id"
+                "pathId": "properties.virtualNetworkTap.properties.destinationLoadBalancerFrontEndIPConfiguration.properties.gatewayLoadBalancer.id"
             },
             "natGateway": {
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.virtualNetworkTap.destinationLoadBalancerFrontEndIPConfiguration.subnet.natGateway.id"
+                "pathId": "properties.virtualNetworkTap.properties.destinationLoadBalancerFrontEndIPConfiguration.properties.subnet.properties.natGateway.id"
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.virtualNetworkTap.destinationLoadBalancerFrontEndIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
+                "pathId": "properties.virtualNetworkTap.properties.destinationLoadBalancerFrontEndIPConfiguration.properties.publicIPAddress.properties.linkedPublicIPAddress.properties.servicePublicIPAddress.properties.ddosSettings.ddosCustomPolicy.id"
             },
             "publicIpPrefix": {
                 "type": "PublicIPPrefix",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.virtualNetworkTap.destinationLoadBalancerFrontEndIPConfiguration.publicIPPrefix.id"
+                "pathId": "properties.virtualNetworkTap.properties.destinationLoadBalancerFrontEndIPConfiguration.properties.publicIPPrefix.id"
             },
-            "loadBalancerBackendAddressPool": {
-                "type": "LoadBalancerBackendAddressPool",
+            "subnet": {
+                "type": "Subnet",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.virtualNetworkTap.destinationNetworkInterfaceIPConfiguration.loadBalancerInboundNatRules.items.backendAddressPool.id"
+                "pathId": "properties.virtualNetworkTap.properties.destinationNetworkInterfaceIPConfiguration.properties.loadBalancerBackendAddressPools[].properties.loadBalancerBackendAddresses[].properties.subnet.id",
+                "list": true
             },
             "networkInterface": {
                 "type": "NetworkInterface",
                 "group": "Network",
                 "name": "networkInterfaceName",
                 "parent": true
+            },
+            "loadBalancerBackendAddressPool": {
+                "type": "LoadBalancerBackendAddressPool",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.virtualNetworkTap.properties.destinationNetworkInterfaceIPConfiguration.properties.loadBalancerInboundNatRules[].properties.backendAddressPool.id",
+                "list": true
             }
         },
         "methods": {
@@ -13756,6 +13945,13 @@
                 "group": "Resources",
                 "name": "resourceGroupName",
                 "parent": true
+            },
+            "natGateway": {
+                "type": "NatGateway",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.containerNetworkInterfaceConfigurations[].properties.ipConfigurations[].properties.subnet.properties.natGateway.id",
+                "list": true
             }
         },
         "methods": {
@@ -14156,7 +14352,8 @@
                 "type": "RouteTable",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.p2SConnectionConfigurations.items.routingConfiguration.associatedRouteTable.id"
+                "pathId": "properties.p2SConnectionConfigurations[].properties.routingConfiguration.associatedRouteTable.id",
+                "list": true
             },
             "vpnServerConfiguration": {
                 "type": "VpnServerConfiguration",
@@ -14436,13 +14633,14 @@
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.subnet.natGateway.id"
+                "pathId": "properties.subnet.properties.natGateway.id"
             },
             "privateLinkService": {
                 "type": "PrivateLinkService",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.manualPrivateLinkServiceConnections.items.privateLinkServiceId"
+                "pathId": "properties.manualPrivateLinkServiceConnections[].properties.privateLinkServiceId",
+                "list": true
             }
         },
         "methods": {
@@ -14653,25 +14851,29 @@
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.ipConfigurations.items.subnet.natGateway.id"
+                "pathId": "properties.ipConfigurations[].properties.subnet.properties.natGateway.id",
+                "list": true
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.loadBalancerFrontendIpConfigurations.items.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
+                "pathId": "properties.loadBalancerFrontendIpConfigurations[].properties.publicIPAddress.properties.linkedPublicIPAddress.properties.servicePublicIPAddress.properties.ddosSettings.ddosCustomPolicy.id",
+                "list": true
             },
             "publicIpPrefix": {
                 "type": "PublicIPPrefix",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.loadBalancerFrontendIpConfigurations.items.publicIPPrefix.id"
+                "pathId": "properties.loadBalancerFrontendIpConfigurations[].properties.publicIPPrefix.id",
+                "list": true
             },
             "loadBalancer": {
                 "type": "LoadBalancer",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.loadBalancerFrontendIpConfigurations.items.gatewayLoadBalancer.id"
+                "pathId": "properties.loadBalancerFrontendIpConfigurations[].properties.gatewayLoadBalancer.id",
+                "list": true
             }
         },
         "methods": {
@@ -15263,13 +15465,13 @@
                 "type": "DdosCustomPolicy",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
+                "pathId": "properties.linkedPublicIPAddress.properties.servicePublicIPAddress.properties.ddosSettings.ddosCustomPolicy.id"
             },
             "publicIpPrefix": {
                 "type": "PublicIPPrefix",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.linkedPublicIPAddress.servicePublicIPAddress.publicIPPrefix.id"
+                "pathId": "properties.linkedPublicIPAddress.properties.servicePublicIPAddress.properties.publicIPPrefix.id"
             }
         },
         "methods": {
@@ -16428,19 +16630,19 @@
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.subnet.natGateway.id"
+                "pathId": "properties.subnet.properties.natGateway.id"
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
+                "pathId": "properties.publicIPAddress.properties.linkedPublicIPAddress.properties.servicePublicIPAddress.properties.ddosSettings.ddosCustomPolicy.id"
             },
             "publicIpPrefix": {
                 "type": "PublicIPPrefix",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.publicIPPrefix.id"
+                "pathId": "properties.publicIPAddress.properties.linkedPublicIPAddress.properties.servicePublicIPAddress.properties.publicIPPrefix.id"
             },
             "virtualHub": {
                 "type": "VirtualHub",
@@ -16884,7 +17086,8 @@
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.subnets.items.natGateway.id"
+                "pathId": "properties.subnets[].properties.natGateway.id",
+                "list": true
             },
             "ddosProtectionPlan": {
                 "type": "DdosProtectionPlan",
@@ -17105,19 +17308,22 @@
                 "type": "Subnet",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.ipConfigurations.items.subnet.id"
+                "pathId": "properties.ipConfigurations[].properties.subnet.id",
+                "list": true
             },
             "publicIpAddress": {
                 "type": "PublicIPAddress",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.ipConfigurations.items.publicIPAddress.id"
+                "pathId": "properties.ipConfigurations[].properties.publicIPAddress.id",
+                "list": true
             },
             "virtualHubIpConfiguration": {
                 "type": "VirtualHubIpConfiguration",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.natRules.items.ipConfigurationId"
+                "pathId": "properties.natRules[].properties.ipConfigurationId",
+                "list": true
             }
         },
         "methods": {
@@ -17244,19 +17450,22 @@
                 "type": "Subnet",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.virtualNetworkGateway2.ipConfigurations.items.subnet.id"
+                "pathId": "properties.virtualNetworkGateway2.properties.ipConfigurations[].properties.subnet.id",
+                "list": true
             },
             "publicIpAddress": {
                 "type": "PublicIPAddress",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.virtualNetworkGateway2.ipConfigurations.items.publicIPAddress.id"
+                "pathId": "properties.virtualNetworkGateway2.properties.ipConfigurations[].properties.publicIPAddress.id",
+                "list": true
             },
             "virtualHubIpConfiguration": {
                 "type": "VirtualHubIpConfiguration",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.gatewayCustomBgpIpAddresses.items.ipConfigurationId"
+                "pathId": "properties.gatewayCustomBgpIpAddresses[].ipConfigurationId",
+                "list": true
             }
         },
         "methods": {
@@ -17675,31 +17884,53 @@
                 "type": "LoadBalancer",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.gatewayLoadBalancer.id"
+                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.properties.gatewayLoadBalancer.id"
             },
             "natGateway": {
                 "type": "NatGateway",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.subnet.natGateway.id"
+                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.properties.subnet.properties.natGateway.id"
             },
             "ddosCustomPolicy": {
                 "type": "DdosCustomPolicy",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.publicIPAddress.linkedPublicIPAddress.servicePublicIPAddress.ddosSettings.ddosCustomPolicy.id"
+                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.properties.publicIPAddress.properties.linkedPublicIPAddress.properties.servicePublicIPAddress.properties.ddosSettings.ddosCustomPolicy.id"
             },
             "publicIpPrefix": {
                 "type": "PublicIPPrefix",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.publicIPPrefix.id"
+                "pathId": "properties.destinationLoadBalancerFrontEndIPConfiguration.properties.publicIPPrefix.id"
+            },
+            "virtualNetwork": {
+                "type": "VirtualNetwork",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.destinationNetworkInterfaceIPConfiguration.properties.loadBalancerBackendAddressPools[].properties.loadBalancerBackendAddresses[].properties.virtualNetwork.id",
+                "list": true
+            },
+            "subnet": {
+                "type": "Subnet",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.destinationNetworkInterfaceIPConfiguration.properties.loadBalancerBackendAddressPools[].properties.loadBalancerBackendAddresses[].properties.subnet.id",
+                "list": true
+            },
+            "networkInterface": {
+                "type": "NetworkInterface",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.destinationNetworkInterfaceIPConfiguration.properties.loadBalancerBackendAddressPools[].properties.loadBalancerBackendAddresses[].properties.networkInterfaceIPConfiguration.id",
+                "list": true
             },
             "loadBalancerBackendAddressPool": {
                 "type": "LoadBalancerBackendAddressPool",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.destinationNetworkInterfaceIPConfiguration.loadBalancerInboundNatRules.items.backendAddressPool.id"
+                "pathId": "properties.destinationNetworkInterfaceIPConfiguration.properties.loadBalancerInboundNatRules[].properties.backendAddressPool.id",
+                "list": true
             }
         },
         "methods": {
@@ -19031,7 +19262,15 @@
                 "type": "VpnSite",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.vpnLinkConnections.items.vpnSiteLink.id"
+                "pathId": "properties.vpnLinkConnections[].properties.vpnSiteLink.id",
+                "list": true
+            },
+            "virtualHubIpConfiguration": {
+                "type": "VirtualHubIpConfiguration",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.vpnLinkConnections[].properties.vpnGatewayCustomBgpAddresses[].ipConfigurationId",
+                "list": true
             },
             "routeTable": {
                 "type": "RouteTable",
@@ -19154,19 +19393,22 @@
                 "type": "VpnSite",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.connections.items.remoteVpnSite.id"
-            },
-            "routeTable": {
-                "type": "RouteTable",
-                "group": "Network",
-                "createOnly": true,
-                "pathId": "properties.connections.items.routingConfiguration.associatedRouteTable.id"
+                "pathId": "properties.connections[].properties.vpnLinkConnections[].properties.vpnSiteLink.id",
+                "list": true
             },
             "virtualHubIpConfiguration": {
                 "type": "VirtualHubIpConfiguration",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.natRules.items.ipConfigurationId"
+                "pathId": "properties.natRules[].properties.ipConfigurationId",
+                "list": true
+            },
+            "routeTable": {
+                "type": "RouteTable",
+                "group": "Network",
+                "createOnly": true,
+                "pathId": "properties.connections[].properties.routingConfiguration.associatedRouteTable.id",
+                "list": true
             }
         },
         "methods": {
@@ -19401,7 +19643,8 @@
                 "type": "VirtualHubIpConfiguration",
                 "group": "Network",
                 "createOnly": true,
-                "pathId": "properties.bgpProperties.bgpPeeringAddresses.items.ipconfigurationId"
+                "pathId": "properties.bgpProperties.bgpPeeringAddresses[].ipconfigurationId",
+                "list": true
             }
         },
         "methods": {
@@ -19562,7 +19805,8 @@
                 "type": "Workspace",
                 "group": "OperationalInsights",
                 "createOnly": true,
-                "pathId": "properties.associatedWorkspaces.items.workspaceId"
+                "pathId": "properties.associatedWorkspaces[].workspaceId",
+                "list": true
             }
         },
         "methods": {

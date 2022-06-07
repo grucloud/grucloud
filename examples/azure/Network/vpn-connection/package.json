@@ -1,5 +1,5 @@
 {
-  "name": "aws-network-hub-for-terraform",
+  "name": "vpn-connection",
   "version": "7.4.2",
   "private": true,
   "description": "",
@@ -8,7 +8,6 @@
     "tree": "gc tree",
     "graph": "gc graph",
     "gencode": "gc gencode",
-    "gencode-no-fetch": "gc gencode --no-inventory-fetch",
     "list": "gc list",
     "list-graph": "gc list -g",
     "plan": "gc plan",
@@ -22,8 +21,8 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^7.4.2",
-    "@grucloud/provider-aws": "^7.4.2",
-    "rubico": "^1.8.11"
+    "@grucloud/provider-azure": "^7.4.2",
+    "rubico": "1.8.10"
   },
   "devDependencies": {
     "mocha": "^9.2.2",
