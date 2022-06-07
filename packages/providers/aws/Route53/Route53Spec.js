@@ -192,9 +192,6 @@ module.exports = pipe([
           pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
           assign({
             Name: pipe([
-              tap((params) => {
-                assert(true);
-              }),
               get("Name"),
               replaceAccountAndRegion({ lives, providerConfig }),
             ]),

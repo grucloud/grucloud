@@ -23,7 +23,7 @@ const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const {
   compareAws,
   isOurMinionObject,
-  replaceAccountAndRegion,
+  replaceArnWithAccountAndRegion,
   assignPolicyAccountAndRegion,
 } = require("../AwsCommon");
 
@@ -236,7 +236,7 @@ module.exports = pipe([
                                   }),
                                 ]),
                                 pipe([
-                                  replaceAccountAndRegion({
+                                  replaceArnWithAccountAndRegion({
                                     providerConfig,
                                     lives,
                                   }),

@@ -970,7 +970,7 @@ exports.destroyAutoScalingGroupById = ({ autoScalingGroup, lives, config }) =>
 exports.ignoreResourceCdk = () =>
   pipe([get("name"), callProp("startsWith", "cdk-")]);
 
-const replaceAccountAndRegion =
+const replaceArnWithAccountAndRegion =
   ({ providerConfig, lives }) =>
   (Id) =>
     pipe([
@@ -1017,24 +1017,31 @@ const replaceAccountAndRegion =
       ]),
     ])();
 
+exports.replaceArnWithAccountAndRegion = replaceArnWithAccountAndRegion;
+
+const replaceAccountAndRegion =
+  ({ providerConfig }) =>
+  (prop) =>
+    pipe([
+      () => prop,
+      callProp(
+        "replace",
+        new RegExp(providerConfig.accountId(), "g"),
+        "${config.accountId()}"
+      ),
+      callProp(
+        "replace",
+        new RegExp(providerConfig.region, "g"),
+        "${config.region}"
+      ),
+      switchCase([
+        eq(identity, prop),
+        identity,
+        (resource) => () => "`" + resource + "`",
+      ]),
+    ])();
+
 exports.replaceAccountAndRegion = replaceAccountAndRegion;
-
-const replaceAccount = ({ providerConfig }) =>
-  pipe([
-    callProp(
-      "replace",
-      new RegExp(providerConfig.accountId(), "g"),
-      "${config.accountId()}"
-    ),
-    callProp(
-      "replace",
-      new RegExp(providerConfig.region, "g"),
-      "${config.region}"
-    ),
-    (resource) => () => "`" + resource + "`",
-  ]);
-
-exports.replaceAccount = replaceAccount;
 
 const assignPolicyResource = ({ providerConfig, lives }) =>
   pipe([
@@ -1049,8 +1056,8 @@ const assignPolicyResource = ({ providerConfig, lives }) =>
           get("Resource"),
           switchCase([
             Array.isArray,
-            map(replaceAccountAndRegion({ providerConfig, lives })),
-            replaceAccountAndRegion({ providerConfig, lives }),
+            map(replaceArnWithAccountAndRegion({ providerConfig, lives })),
+            replaceArnWithAccountAndRegion({ providerConfig, lives }),
           ]),
         ]),
       })
@@ -1068,8 +1075,8 @@ const replacePrincipal = ({ providerConfig, lives, principalKind }) =>
           get(principalKind),
           switchCase([
             Array.isArray,
-            map(replaceAccountAndRegion({ providerConfig, lives })),
-            replaceAccountAndRegion({ providerConfig, lives }),
+            map(replaceArnWithAccountAndRegion({ providerConfig, lives })),
+            replaceArnWithAccountAndRegion({ providerConfig, lives }),
           ]),
         ]),
       })
@@ -1106,7 +1113,7 @@ const replaceStatement = ({ providerConfig, lives }) =>
                   assign({
                     "AWS:SourceArn": pipe([
                       get("AWS:SourceArn"),
-                      replaceAccountAndRegion({
+                      replaceArnWithAccountAndRegion({
                         providerConfig,
                         lives,
                       }),
@@ -1144,7 +1151,7 @@ const replaceStatement = ({ providerConfig, lives }) =>
                   assign({
                     "aws:SourceAccount": pipe([
                       get("aws:SourceAccount"),
-                      replaceAccountAndRegion({
+                      replaceArnWithAccountAndRegion({
                         providerConfig,
                         lives,
                       }),
@@ -1156,7 +1163,7 @@ const replaceStatement = ({ providerConfig, lives }) =>
                   assign({
                     "AWS:SourceAccount": pipe([
                       get("AWS:SourceAccount"),
-                      replaceAccountAndRegion({
+                      replaceArnWithAccountAndRegion({
                         providerConfig,
                         lives,
                       }),
@@ -1168,7 +1175,7 @@ const replaceStatement = ({ providerConfig, lives }) =>
                   assign({
                     "AWS:SourceOwner": pipe([
                       get("AWS:SourceOwner"),
-                      replaceAccount({ providerConfig }),
+                      replaceAccountAndRegion({ providerConfig }),
                     ]),
                   })
                 ),
@@ -1185,7 +1192,7 @@ const replaceStatement = ({ providerConfig, lives }) =>
                   assign({
                     "aws:PrincipalArn": pipe([
                       get("aws:PrincipalArn"),
-                      replaceAccountAndRegion({
+                      replaceArnWithAccountAndRegion({
                         providerConfig,
                         lives,
                       }),
@@ -1197,7 +1204,7 @@ const replaceStatement = ({ providerConfig, lives }) =>
                   assign({
                     "aws:SourceArn": pipe([
                       get("aws:SourceArn"),
-                      replaceAccountAndRegion({
+                      replaceArnWithAccountAndRegion({
                         providerConfig,
                         lives,
                       }),

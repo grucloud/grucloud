@@ -16,7 +16,6 @@ const {
   isOurMinionObject,
   compareAws,
   replaceAccountAndRegion,
-  replaceAccount,
 } = require("../AwsCommon");
 
 const { RestApi } = require("./RestApi");
@@ -282,7 +281,7 @@ module.exports = pipe([
                                     assign({
                                       uri: pipe([
                                         get("uri"),
-                                        replaceAccount({
+                                        replaceAccountAndRegion({
                                           providerConfig,
                                           lives,
                                         }),
