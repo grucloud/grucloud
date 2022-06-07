@@ -44,6 +44,7 @@ exports.EC2Vpc = ({ spec, config }) => {
 
   const pickId = pick(["VpcId"]);
 
+  // TODO findDependencies
   const decorate = () =>
     pipe([
       assign({

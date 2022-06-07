@@ -28,7 +28,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
-      sqlResourceClientEncryptionKey: "mySqlResourceClientEncryptionKey",
     }),
   },
 ];
@@ -111,7 +110,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
-      sqlResourceClientEncryptionKey: "mySqlResourceClientEncryptionKey",
     }),
   },
 ];
@@ -174,7 +172,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
-      sqlResourceClientEncryptionKey: "mySqlResourceClientEncryptionKey",
     }),
   },
 ];
@@ -183,7 +180,6 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
-- [SqlResourceClientEncryptionKey](../DocumentDB/SqlResourceClientEncryptionKey.md)
 ## Swagger Schema
 ```js
 {

@@ -61,16 +61,20 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
           findNameInTagsOrId({
             findId: () =>
               pipe([
-                () =>
+                () => live.VpcId,
+                tap(() => {
+                  assert(live.VpcId);
+                }),
+                (id) =>
                   lives.getById({
-                    id: live.VpcId,
+                    id,
                     type: "Vpc",
                     group: "EC2",
                     providerName: config.providerName,
                   }),
-                get("name"),
+                get("name", live.VpcId),
                 tap((name) => {
-                  assert(name);
+                  assert(name, `no Vpc name for '${live.VpcId}'`);
                 }),
                 prepend("vpce::"),
                 append(`::${live.ServiceName}`),

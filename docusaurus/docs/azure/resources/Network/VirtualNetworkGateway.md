@@ -82,9 +82,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnet: "mySubnet",
-      publicIpAddress: "myPublicIPAddress",
-      virtualHubIpConfiguration: "myVirtualHubIpConfiguration",
+      subnet: ["mySubnet"],
+      publicIpAddress: ["myPublicIPAddress"],
+      virtualHubIpConfiguration: ["myVirtualHubIpConfiguration"],
     }),
   },
 ];

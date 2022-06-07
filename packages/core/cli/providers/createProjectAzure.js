@@ -29,6 +29,7 @@ const NamespacesDefault = [
   "Microsoft.ContainerService",
   "Microsoft.DocumentDB",
   "Microsoft.DBforPostgreSQL",
+  "Microsoft.Insights",
   "Microsoft.Network",
   "Microsoft.Storage",
 ];

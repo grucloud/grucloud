@@ -39,6 +39,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      diskEncryptionSet: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryApplication: "myGalleryApplication",
     }),
@@ -48,6 +49,7 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
 - [Gallery](../Compute/Gallery.md)
 - [GalleryApplication](../Compute/GalleryApplication.md)
 ## Swagger Schema

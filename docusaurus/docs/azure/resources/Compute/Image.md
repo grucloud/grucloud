@@ -28,6 +28,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
+      snapshot: ["mySnapshot"],
+      disk: ["myDisk"],
     }),
   },
 ];
@@ -59,6 +61,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
+      snapshot: ["mySnapshot"],
+      disk: ["myDisk"],
     }),
   },
 ];
@@ -90,6 +94,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
+      snapshot: ["mySnapshot"],
+      disk: ["myDisk"],
     }),
   },
 ];
@@ -114,6 +120,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
+      snapshot: ["mySnapshot"],
+      disk: ["myDisk"],
     }),
   },
 ];
@@ -151,6 +159,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
+      snapshot: ["mySnapshot"],
+      disk: ["myDisk"],
     }),
   },
 ];
@@ -190,6 +200,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
+      snapshot: ["mySnapshot"],
+      disk: ["myDisk"],
     }),
   },
 ];
@@ -229,6 +241,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
+      snapshot: ["mySnapshot"],
+      disk: ["myDisk"],
     }),
   },
 ];
@@ -261,6 +275,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
+      snapshot: ["mySnapshot"],
+      disk: ["myDisk"],
     }),
   },
 ];
@@ -294,6 +310,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
+      snapshot: ["mySnapshot"],
+      disk: ["myDisk"],
     }),
   },
 ];
@@ -327,6 +345,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
+      snapshot: ["mySnapshot"],
+      disk: ["myDisk"],
     }),
   },
 ];
@@ -335,6 +355,8 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualMachine](../Compute/VirtualMachine.md)
+- [Snapshot](../Compute/Snapshot.md)
+- [Disk](../Compute/Disk.md)
 ## Swagger Schema
 ```js
 {

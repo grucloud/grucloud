@@ -319,7 +319,7 @@ const filterVirtualMachineProperties =
                     assign({
                       publicKeys: pipe([
                         get("publicKeys", []),
-                        map(omit(["keyData"])),
+                        //map(omit(["keyData"])),
                       ]),
                     }),
                   ]),

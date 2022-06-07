@@ -58,7 +58,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualHub: "myVirtualHub",
-      routeTable: "myRouteTable",
+      routeTable: ["myRouteTable"],
       vpnServerConfiguration: "myVpnServerConfiguration",
     }),
   },

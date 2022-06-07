@@ -48,7 +48,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      vault: "myVault",
+      vault: ["myVault"],
+      publicIpAddress: ["myPublicIPAddress"],
+      subnet: ["mySubnet"],
     }),
   },
 ];
@@ -116,7 +118,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      vault: "myVault",
+      vault: ["myVault"],
+      publicIpAddress: ["myPublicIPAddress"],
+      subnet: ["mySubnet"],
     }),
   },
 ];
@@ -171,7 +175,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      vault: "myVault",
+      vault: ["myVault"],
+      publicIpAddress: ["myPublicIPAddress"],
+      subnet: ["mySubnet"],
     }),
   },
 ];
@@ -237,7 +243,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      vault: "myVault",
+      vault: ["myVault"],
+      publicIpAddress: ["myPublicIPAddress"],
+      subnet: ["mySubnet"],
     }),
   },
 ];
@@ -246,6 +254,8 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Vault](../KeyVault/Vault.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
+- [Subnet](../Network/Subnet.md)
 ## Swagger Schema
 ```js
 {

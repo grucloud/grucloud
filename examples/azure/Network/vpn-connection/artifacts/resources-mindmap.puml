@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project vpn-connection
+skinparam monochrome true
++ Infra
+++ azure
++++ Compute
+++++ VirtualMachine (1)
++++ Network
+++++ NetworkInterface (1)
+++++ NetworkSecurityGroup (1)
+++++ PublicIPAddress (4)
+++++ Subnet (2)
+++++ VirtualNetwork (1)
+++++ VirtualNetworkGateway (1)
++++ OperationalInsights
+++++ Workspace (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

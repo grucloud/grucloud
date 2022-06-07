@@ -42,7 +42,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      workspace: "myWorkspace",
+      workspace: ["myWorkspace"],
       networkWatcher: "myNetworkWatcher",
     }),
   },
@@ -99,7 +99,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      workspace: "myWorkspace",
+      workspace: ["myWorkspace"],
       networkWatcher: "myNetworkWatcher",
     }),
   },

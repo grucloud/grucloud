@@ -16,7 +16,7 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     name: "PetStore",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["REGIONAL"],
@@ -114,7 +114,7 @@ exports.createResources = () => [
                     "method.request.querystring.type",
                 },
                 type: "HTTP",
-                uri: `http://petstore.execute-api.eu-west-2.amazonaws.com/petstore/pets`,
+                uri: `http://petstore.execute-api.${config.region}.amazonaws.com/petstore/pets`,
                 responses: {
                   default: {
                     responseParameters: {
@@ -212,7 +212,7 @@ exports.createResources = () => [
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_MATCH",
                 type: "HTTP",
-                uri: `http://petstore.execute-api.eu-west-2.amazonaws.com/petstore/pets`,
+                uri: `http://petstore.execute-api.${config.region}.amazonaws.com/petstore/pets`,
                 responses: {
                   default: {
                     responseParameters: {
@@ -264,7 +264,7 @@ exports.createResources = () => [
                   "integration.request.path.petId": "method.request.path.petId",
                 },
                 type: "HTTP",
-                uri: `http://petstore.execute-api.eu-west-2.amazonaws.com/petstore/pets/{petId}`,
+                uri: `http://petstore.execute-api.${config.region}.amazonaws.com/petstore/pets/{petId}`,
                 responses: {
                   default: {
                     responseParameters: {

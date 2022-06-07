@@ -25,7 +25,10 @@ exports.createResources = () => [
       natGateway: "myNatGateway",
       ddosCustomPolicy: "myDdosCustomPolicy",
       publicIpPrefix: "myPublicIPPrefix",
-      loadBalancerBackendAddressPool: "myLoadBalancerBackendAddressPool",
+      virtualNetwork: ["myVirtualNetwork"],
+      subnet: ["mySubnet"],
+      networkInterface: ["myNetworkInterface"],
+      loadBalancerBackendAddressPool: ["myLoadBalancerBackendAddressPool"],
     }),
   },
 ];
@@ -37,6 +40,9 @@ exports.createResources = () => [
 - [NatGateway](../Network/NatGateway.md)
 - [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
 - [PublicIPPrefix](../Network/PublicIPPrefix.md)
+- [VirtualNetwork](../Network/VirtualNetwork.md)
+- [Subnet](../Network/Subnet.md)
+- [NetworkInterface](../Network/NetworkInterface.md)
 - [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
 ## Swagger Schema
 ```js
