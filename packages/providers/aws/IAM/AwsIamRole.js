@@ -16,6 +16,8 @@ const {
   any,
 } = require("rubico");
 const {
+  callProp,
+  when,
   flatten,
   defaultsDeep,
   isEmpty,
@@ -175,6 +177,32 @@ exports.AwsIamRole = ({ spec, config }) => {
       ),
     ])();
 
+  const sortStatement = pipe([
+    assign({
+      Principal: pipe([
+        get("Principal"),
+        assign({
+          Service: pipe([
+            get("Service"),
+            when(
+              Array.isArray,
+              pipe([callProp("sort", (a, b) => a.localeCompare(b))])
+            ),
+          ]),
+        }),
+      ]),
+    }),
+  ]);
+
+  const sortStatements = pipe([
+    assign({
+      Statement: pipe([
+        get("Statement"),
+        switchCase([Array.isArray, map(sortStatement), sortStatement]),
+      ]),
+    }),
+  ]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listRoles-property
   const getList = client.getList({
     method: "listRoles",
@@ -195,9 +223,10 @@ exports.AwsIamRole = ({ spec, config }) => {
       pipe([
         assign({
           AssumeRolePolicyDocument: pipe([
-            ({ AssumeRolePolicyDocument }) =>
-              querystring.unescape(AssumeRolePolicyDocument),
+            get("AssumeRolePolicyDocument"),
+            querystring.unescape,
             JSON.parse,
+            sortStatements,
           ]),
           Policies: listInlinePolicies,
           AttachedPolicies: listAttachedRolePolicies,
