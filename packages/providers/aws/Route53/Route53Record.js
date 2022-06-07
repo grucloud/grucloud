@@ -23,7 +23,6 @@ const {
   isEmpty,
   isDeepEqual,
   callProp,
-  size,
   includes,
   unless,
 } = require("rubico/x");
@@ -76,6 +75,33 @@ exports.Route53Record = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives }) => [
     { type: "HostedZone", group: "Route53", ids: [live.HostedZoneId] },
+    {
+      type: "VpcEndpoint",
+      group: "EC2",
+      ids: pipe([
+        () => live,
+        get("AliasTarget.DNSName", ""),
+        removeLastCharacter,
+        (DNSName) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "VpcEndpoint",
+                group: "EC2",
+                providerName,
+              }),
+            filter(({ live: endpointLive }) =>
+              pipe([
+                () => DNSName,
+                includes(
+                  pipe([() => endpointLive, get("DnsEntries[0].DnsName")])()
+                ),
+              ])()
+            ),
+            map(pick(["id", "name"])),
+          ])(),
+      ])(),
+    },
     {
       type: "ElasticIpAddress",
       group: "EC2",
@@ -556,6 +582,19 @@ exports.Route53Record = ({ spec, config }) => {
       })),
     ])();
 
+  const vpcEndpointRecord = ({ vpcEndpoint, hostedZone }) =>
+    pipe([
+      () => vpcEndpoint,
+      unless(isEmpty, () => ({
+        Type: "A",
+        AliasTarget: {
+          DNSName: `${getField(vpcEndpoint, "DnsEntries[0].DnsName")}.`,
+          HostedZoneId: getField(vpcEndpoint, "DnsEntries[0].HostedZoneId"),
+          EvaluateTargetHealth: false,
+        },
+      })),
+    ])();
+
   const configDefault = ({
     name,
     properties = {},
@@ -566,6 +605,7 @@ exports.Route53Record = ({ spec, config }) => {
       apiGatewayV2DomainName,
       distribution,
       userPoolDomain,
+      vpcEndpoint,
     },
   }) =>
     pipe([
@@ -578,6 +618,7 @@ exports.Route53Record = ({ spec, config }) => {
       defaultsDeep(apiGatewayV2Record({ apiGatewayV2DomainName, hostedZone })),
       defaultsDeep(distributionRecord({ distribution, hostedZone })),
       defaultsDeep(userPoolDomainRecord({ userPoolDomain, hostedZone })),
+      defaultsDeep(vpcEndpointRecord({ vpcEndpoint })),
       defaultsDeep({ Name: name }),
     ])();
 

@@ -3,9 +3,43 @@ title Resources for project aws-network-hub-for-terraform
 skinparam monochrome true
 + Infra
 ++ aws
++++ CloudWatchLogs
+++++ LogGroup (5)
++++ EC2
+++++ DhcpOptions (3)
+++++ DhcpOptionsAssociation (3)
+++++ Ipam (1)
+++++ IpamScope (1)
+++++ IpamPool (1)
+++++ IpamPoolCidr (1)
+++++ Vpc (3)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ EgressOnlyInternetGateway (1)
+++++ NatGateway (3)
+++++ Subnet (21)
+++++ RouteTable (11)
+++++ RouteTableAssociation (21)
+++++ Route (31)
+++++ SecurityGroup (2)
+++++ SecurityGroupRuleIngress (3)
+++++ ElasticIpAddress (3)
+++++ VpcEndpoint (14)
+++++ TransitGateway (1)
+++++ TransitGatewayRouteTable (3)
+++++ TransitGatewayVpcAttachment (3)
+++++ TransitGatewayRouteTableAssociation (3)
 +++ IAM
 ++++ Role (2)
 ++++ Policy (1)
++++ NetworkFirewall
+++++ Firewall (1)
+++++ Policy (1)
+++++ RuleGroup (1)
+++++ LoggingConfiguration (1)
 +++ Route53
 ++++ HostedZone (12)
+++++ Record (11)
++++ SSM
+++++ Parameter (1)
 @endmindmap

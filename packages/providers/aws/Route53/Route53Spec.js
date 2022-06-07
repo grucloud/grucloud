@@ -15,7 +15,11 @@ const { prepend, isEmpty, find, when } = require("rubico/x");
 const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
-const { isOurMinion, compareAws, replaceRegionAll } = require("../AwsCommon");
+const {
+  isOurMinion,
+  compareAws,
+  replaceAccountAndRegion,
+} = require("../AwsCommon");
 const { Route53HostedZone } = require("./Route53HostedZone");
 const { Route53ZoneVpcAssociation } = require("./Route53ZoneVpcAssociation");
 const { Route53Record, compareRoute53Record } = require("./Route53Record");
@@ -140,11 +144,12 @@ module.exports = pipe([
           group: "CognitoIdentityServiceProvider",
         },
         apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
-        //TODO vpc endpoint
+        vpcEndpoint: { type: "VpcEndpoint", group: "EC2" },
       },
       Client: Route53Record,
       isOurMinion: () => true,
       compare: compareRoute53Record,
+      omitProperties: ["AliasTarget.HostedZoneId", "AliasTarget.DNSName"],
       inferName: ({ properties, dependenciesSpec }) =>
         pipe([
           () => dependenciesSpec,
@@ -152,6 +157,8 @@ module.exports = pipe([
             assert(dependenciesSpec);
           }),
           switchCase([
+            get("vpcEndpoint"),
+            pipe([get("vpcEndpoint"), prepend("EC2::VpcEndpoint::")]),
             get("elasticIpAddress"),
             pipe([
               get("elasticIpAddress", "noName"),
@@ -184,6 +191,13 @@ module.exports = pipe([
         pipe([
           pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
           assign({
+            Name: pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              get("Name"),
+              replaceAccountAndRegion({ lives, providerConfig }),
+            ]),
             ResourceRecords: pipe([
               get("ResourceRecords"),
               map((resourceRecord) =>

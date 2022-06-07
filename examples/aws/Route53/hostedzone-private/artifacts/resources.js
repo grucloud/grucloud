@@ -17,6 +17,7 @@ exports.createResources = () => [
     name: "test.grucloud.org.",
     dependencies: ({}) => ({
       domain: "grucloud.org",
+      vpc: "vpc-hostedzone",
     }),
   },
   {

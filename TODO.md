@@ -7,17 +7,6 @@
 - add isInstanceError for aws create, for instance in transit gateway
 - SecretsManagerResourcePolicy
 
-sort Service in:
-AssumeRolePolicyDocument: {
-Version: "2012-10-17",
-Statement: [
-{
-Sid: "",
-Effect: "Allow",
-Principal: {
-Service: [`states.amazonaws.com`, `events.amazonaws.com`],
-},
-
 omit AWSLogs S3 Objects
 
 - s3-eventbridge: missing cloudtrail EventDataStore

@@ -1,5 +1,16 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick, fork, flatMap, map, and } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  eq,
+  pick,
+  fork,
+  flatMap,
+  map,
+  and,
+  or,
+} = require("rubico");
 const { defaultsDeep, find, unless, isEmpty, first } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -30,20 +41,23 @@ const managedByOther =
   ({ config }) =>
   ({ live, lives }) =>
     pipe([
-      tap((params) => {
-        assert(config);
-      }),
-      () =>
-        lives.getById({
-          id: live.HostedZoneId,
-          type: "HostedZone",
-          group: "Route53",
-        }),
-      get("live.VpcAssociations"),
-      first,
-      and([
-        eq(get("VPCId"), live.VPC.VPCId),
-        eq(get("Owner.OwningAccount"), config.accountId()),
+      () => live,
+      or([
+        get("Owner.OwningService"),
+        pipe([
+          () =>
+            lives.getById({
+              id: live.HostedZoneId,
+              type: "HostedZone",
+              group: "Route53",
+            }),
+          get("live.VpcAssociations"),
+          first,
+          and([
+            eq(get("VPCId"), live.VPC.VPCId),
+            eq(get("Owner.OwningAccount"), config.accountId()),
+          ]),
+        ]),
       ]),
     ])();
 
@@ -51,18 +65,21 @@ const cannotBeDeleted =
   ({ config }) =>
   ({ live, lives }) =>
     pipe([
-      tap((params) => {
-        assert(config);
-      }),
-      () =>
-        lives.getById({
-          id: live.HostedZoneId,
-          type: "HostedZone",
-          group: "Route53",
-        }),
-      get("live.VpcAssociations"),
-      first,
-      and([eq(get("VPCId"), live.VPC.VPCId)]),
+      () => live,
+      or([
+        get("Owner.OwningService"),
+        pipe([
+          () =>
+            lives.getById({
+              id: live.HostedZoneId,
+              type: "HostedZone",
+              group: "Route53",
+            }),
+          get("live.VpcAssociations"),
+          first,
+          and([eq(get("VPCId"), live.VPC.VPCId)]),
+        ]),
+      ]),
     ])();
 
 const findId = pipe([
@@ -116,13 +133,16 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
               assert(id);
             }),
             (id) =>
-              lives.getById({
-                id,
-                type: "HostedZone",
-                group: "Route53",
-                providerName: config.providerName,
-              }),
-            get("name"),
+              pipe([
+                () =>
+                  lives.getById({
+                    id,
+                    type: "HostedZone",
+                    group: "Route53",
+                    providerName: config.providerName,
+                  }),
+                get("name", id),
+              ])(),
           ]),
         }),
         tap(({ vpc, hostedZone }) => {
