@@ -92,7 +92,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpc-in-pool",
     properties: ({}) => ({
-      CidrBlock: "10.0.0.0/28",
+      Ipv4NetmaskLength: "26",
+    }),
+    dependencies: ({}) => ({
+      ipamPoolIpv4: "pool-regional",
     }),
   },
 ];

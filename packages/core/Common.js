@@ -41,6 +41,7 @@ const {
   differenceWith,
   isDeepEqual,
   includes,
+  last,
 } = require("rubico/x");
 const util = require("util");
 const { detailedDiff } = require("deep-object-diff");
@@ -713,3 +714,16 @@ const flattenObject =
     ])();
 
 exports.flattenObject = flattenObject;
+
+const cidrToSubnetMaskLength = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  callProp("split", "/"),
+  last,
+  tap((subnetMaskLength) => {
+    assert(Number.isInteger(Number(subnetMaskLength)));
+  }),
+]);
+
+exports.cidrToSubnetMaskLength = cidrToSubnetMaskLength;

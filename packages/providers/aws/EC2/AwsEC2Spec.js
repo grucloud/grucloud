@@ -34,6 +34,7 @@ const {
   omitIfEmpty,
   replaceWithName,
   differenceObject,
+  cidrToSubnetMaskLength,
 } = require("@grucloud/core/Common");
 const {
   compareAws,
@@ -674,22 +675,80 @@ module.exports = pipe([
         "CidrBlockAssociationSet",
         "IsDefault",
         "VpcId",
+        "Ipv4IpamPoolId",
       ],
+      dependencies: {
+        ipamPoolIpv4: {
+          type: "IpamPool",
+          group: "EC2",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([() => resource, get("live.CidrBlock")])(),
+        },
+        ipamPoolIpv6: {
+          type: "IpamPool",
+          group: "EC2",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                () => resource,
+                get("live.Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock"),
+              ])(),
+        },
+      },
       propertiesDefault: { DnsSupport: true, DnsHostnames: false },
       compare: compareEC2({
+        filterAll: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            omit(["CidrBlock"]),
+          ]),
         filterTarget: () =>
           pipe([
             tap((params) => {
               assert(true);
             }),
-            omit(["AmazonProvidedIpv6CidrBlock"]),
+            omit([
+              "AmazonProvidedIpv6CidrBlock",
+              "Ipv4NetmaskLength",
+              // TODO
+              "Ipv6NetmaskLength",
+            ]),
           ]),
       }),
-      filterLive: () =>
+      filterLive: ({ resource }) =>
         pipe([
           tap((params) => {
             assert(true);
           }),
+          when(
+            pipe([
+              () => resource.dependencies,
+              find(eq(get("groupType"), "EC2::IpamPool")),
+              get("ids"),
+              not(isEmpty),
+            ]),
+            pipe([
+              when(
+                get("CidrBlock"),
+                assign({
+                  Ipv4NetmaskLength: pipe([
+                    get("CidrBlock"),
+                    cidrToSubnetMaskLength,
+                  ]),
+                })
+              ),
+              omit(["CidrBlock"]),
+              tap((params) => {
+                assert(true);
+              }),
+            ])
+          ),
+          // TODO ipv6
           when(
             pipe([
               get("Ipv6CidrBlockAssociationSet"),

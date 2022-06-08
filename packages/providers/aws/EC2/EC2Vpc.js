@@ -8,15 +8,30 @@ const {
   switchCase,
   eq,
   not,
+  or,
   tryCatch,
   assign,
   pick,
   omit,
+  and,
 } = require("rubico");
-const { isEmpty, defaultsDeep, size } = require("rubico/x");
+const {
+  isEmpty,
+  defaultsDeep,
+  size,
+  when,
+  last,
+  pluck,
+  callProp,
+} = require("rubico/x");
+const cidrTools = require("cidr-tools");
 const logger = require("@grucloud/core/logger")({ prefix: "Vpc" });
 const { tos } = require("@grucloud/core/tos");
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
+const {
+  getByNameCore,
+  cidrToSubnetMaskLength,
+} = require("@grucloud/core/Common");
 const {
   getByIdCore,
   buildTags,
@@ -44,7 +59,56 @@ exports.EC2Vpc = ({ spec, config }) => {
 
   const pickId = pick(["VpcId"]);
 
-  // TODO findDependencies
+  const getFirstIpv6Cidr = pipe([
+    get("Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock"),
+  ]);
+
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "IpamPool",
+      group: "EC2",
+      ids: [
+        pipe([
+          () =>
+            lives.getByType({
+              type: "IpamPoolCidr",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          filter(
+            pipe([
+              get("live"),
+              ({ Cidr }) =>
+                switchCase([
+                  or([
+                    // Ipv4
+                    and([
+                      () => live.CidrBlock,
+                      () => cidrTools.contains(Cidr, live.CidrBlock),
+                    ]),
+                    // IpV6
+                    and([
+                      () => getFirstIpv6Cidr(live),
+                      () => cidrTools.contains(Cidr, getFirstIpv6Cidr(live)),
+                    ]),
+                  ]),
+                  () => true,
+                  () => false,
+                ])(),
+            ])
+          ),
+          pluck("live"),
+          callProp("sort", (a, b) =>
+            cidrToSubnetMaskLength(a.Cidr) > cidrToSubnetMaskLength(b.Cidr)
+              ? 1
+              : -1
+          ),
+          last,
+          get("IpamPoolId"),
+        ])(),
+      ],
+    },
+  ];
   const decorate = () =>
     pipe([
       assign({
@@ -285,15 +349,45 @@ exports.EC2Vpc = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
+    dependencies: { ipamPoolIpv4, ipamPoolIpv6 },
   }) =>
-    defaultsDeep({
-      TagSpecifications: [
-        {
-          ResourceType: "vpc",
-          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-        },
-      ],
-    })(otherProps);
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        TagSpecifications: [
+          {
+            ResourceType: "vpc",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+      when(
+        () => ipamPoolIpv4,
+        pipe([
+          tap((params) => {
+            assert(otherProps.Ipv4NetmaskLength, "missing Ipv4NetmaskLength");
+            assert(
+              !otherProps.CidrBlock,
+              "The parameter 'ipv4NetmaskLength' may not be used in combination with 'cidrBlock'"
+            );
+          }),
+          defaultsDeep({
+            Ipv4IpamPoolId: getField(ipamPoolIpv4, "IpamPoolId"),
+          }),
+        ])
+      ),
+      when(
+        () => ipamPoolIpv6,
+        pipe([
+          tap((params) => {
+            assert(otherProps.Ipv6NetmaskLength, "missing Ipv6NetmaskLength");
+          }),
+          defaultsDeep({
+            Ipv6IpamPoolId: getField(ipamPoolIpv6, "IpamPoolId"),
+          }),
+        ])
+      ),
+    ])();
 
   return {
     spec,
@@ -301,6 +395,7 @@ exports.EC2Vpc = ({ spec, config }) => {
     managedByOther,
     cannotBeDeleted,
     findId,
+    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
     findName,

@@ -63,6 +63,7 @@
     "axios": "0.26.1",
     "chance": "1.1.8",
     "change-case": "4.1.2",
+    "cidr-tools": "^4.3.0",
     "deep-object-diff": "1.1.7",
     "lodash": "4.17.21",
     "mime-types": "2.1.35",
