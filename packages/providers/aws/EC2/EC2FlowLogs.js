@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, switchCase, map } = require("rubico");
-const { defaultsDeep, first } = require("rubico/x");
+const { pipe, tap, get, switchCase, map, not } = require("rubico");
+const { defaultsDeep, first, prepend, find, isEmpty } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -51,14 +51,17 @@ const createModel = ({ config }) => ({
   },
 });
 
+const FlowLogsDependencies = [
+  { type: "Vpc", group: "EC2" },
+  { type: "Subnet", group: "EC2" },
+  { type: "NetworkInterface", group: "EC2" },
+];
+
 const findDependenciesFlowLog = ({ live, lives, config, type, group }) => ({
   type,
   group,
   ids: [
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       () =>
         lives.getById({
           id: live.ResourceId,
@@ -67,19 +70,54 @@ const findDependenciesFlowLog = ({ live, lives, config, type, group }) => ({
           providerName: config.providerName,
         }),
       get("id"),
-      tap((params) => {
-        assert(true);
-      }),
     ])(),
   ],
 });
+
+const findNameInDependency =
+  ({ live, lives, config }) =>
+  ({ type, group }) =>
+    pipe([
+      () =>
+        lives.getById({
+          id: live.ResourceId,
+          type,
+          group,
+          providerName: config.providerName,
+        }),
+      get("name"),
+    ])();
+
+const findNameInDependencies = ({ live, lives, config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+      assert(live);
+    }),
+    () => FlowLogsDependencies,
+    map(findNameInDependency({ live, lives, config })),
+    find(not(isEmpty)),
+    tap((name) => {
+      assert(name, `cannot find flowlog dependency name`);
+    }),
+    prepend("flowlog::"),
+  ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2FlowLogs = ({ spec, config }) =>
   createAwsResource({
     model: createModel({ config }),
     spec,
     config,
-    findName: pipe([findNameInTagsOrId({ findId })]),
+    findName: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      findNameInTagsOrId({ findId: findNameInDependencies }),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
     findId,
     findDependencies: pipe([
       ({ live, lives }) => [
