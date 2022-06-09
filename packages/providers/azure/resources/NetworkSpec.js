@@ -1226,35 +1226,6 @@ exports.fnSpecs = ({ config }) => {
       //TODO
       {
         type: "VirtualNetworkGateway",
-        dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            name: "resourceGroupName",
-            parent: true,
-          },
-          subnet: {
-            type: "Subnet",
-            group: "Network",
-            createOnly: true,
-            list: true,
-            pathId: "properties.ipConfigurations.items.subnet.id",
-          },
-          publicIpAddress: {
-            type: "PublicIPAddress",
-            group: "Network",
-            createOnly: true,
-            list: true,
-            pathId: "properties.ipConfigurations.items.publicIPAddress.id",
-          },
-          virtualHubIpConfiguration: {
-            type: "VirtualHubIpConfiguration",
-            group: "Network",
-            createOnly: true,
-            list: true,
-            pathId: "properties.natRules.items.ipConfigurationId",
-          },
-        },
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {
@@ -1263,9 +1234,7 @@ exports.fnSpecs = ({ config }) => {
             ids: pipe([
               () => live,
               get("properties.ipConfigurations"),
-              pluck("publicIPAddress"),
-              pluck("id"),
-              flatten,
+              map(get("properties.publicIPAddress.id")),
             ])(),
           },
         ],
@@ -1280,17 +1249,6 @@ exports.fnSpecs = ({ config }) => {
                 spec,
               })
             ),
-            // when(
-            //   () => dependencies.publicIpAddresses,
-            //   defaultsDeep({
-            //     properties: {
-            //       publicIpAddresses: pipe([
-            //         () => dependencies.publicIpAddresses,
-            //         map((ipAddress) => ({ id: getField(ipAddress, "id") })),
-            //       ])(),
-            //     },
-            //   })
-            // ),
           ])(),
       },
     ],

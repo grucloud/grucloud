@@ -8,14 +8,25 @@ const {
   switchCase,
   eq,
   not,
+  or,
   tryCatch,
   assign,
   pick,
   omit,
+  and,
 } = require("rubico");
-const { isEmpty, defaultsDeep, size } = require("rubico/x");
+const {
+  isEmpty,
+  defaultsDeep,
+  size,
+  when,
+  last,
+  pluck,
+  find,
+} = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "Vpc" });
 const { tos } = require("@grucloud/core/tos");
+const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const {
   getByIdCore,
@@ -44,7 +55,33 @@ exports.EC2Vpc = ({ spec, config }) => {
 
   const pickId = pick(["VpcId"]);
 
-  // TODO findDependencies
+  const getFirstIpv6Cidr = pipe([
+    get("Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock"),
+  ]);
+
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "IpamPool",
+      group: "EC2",
+      ids: [
+        pipe([
+          () =>
+            lives.getByType({
+              type: "IpamPool",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          find(
+            pipe([
+              get("live.Allocations"),
+              find(eq(get("ResourceId"), live.VpcId)),
+            ])
+          ),
+          get("live.IpamPoolId"),
+        ])(),
+      ],
+    },
+  ];
   const decorate = () =>
     pipe([
       assign({
@@ -93,6 +130,10 @@ exports.EC2Vpc = ({ spec, config }) => {
     filterPayload: omit(["DnsHostnames", "DnsSupport"]),
     pickCreated: () => get("Vpc"),
     getById,
+    // IPAM error
+    shouldRetryOnExceptionMessages: [
+      "The allocation size is too big for the pool",
+    ],
     postCreate:
       ({ payload }) =>
       ({ VpcId }) =>
@@ -285,15 +326,45 @@ exports.EC2Vpc = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
+    dependencies: { ipamPoolIpv4, ipamPoolIpv6 },
   }) =>
-    defaultsDeep({
-      TagSpecifications: [
-        {
-          ResourceType: "vpc",
-          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-        },
-      ],
-    })(otherProps);
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        TagSpecifications: [
+          {
+            ResourceType: "vpc",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+      when(
+        () => ipamPoolIpv4,
+        pipe([
+          tap((params) => {
+            assert(otherProps.Ipv4NetmaskLength, "missing Ipv4NetmaskLength");
+            assert(
+              !otherProps.CidrBlock,
+              "The parameter 'ipv4NetmaskLength' may not be used in combination with 'cidrBlock'"
+            );
+          }),
+          defaultsDeep({
+            Ipv4IpamPoolId: getField(ipamPoolIpv4, "IpamPoolId"),
+          }),
+        ])
+      ),
+      when(
+        () => ipamPoolIpv6,
+        pipe([
+          tap((params) => {
+            assert(otherProps.Ipv6NetmaskLength, "missing Ipv6NetmaskLength");
+          }),
+          defaultsDeep({
+            Ipv6IpamPoolId: getField(ipamPoolIpv6, "IpamPoolId"),
+          }),
+        ])
+      ),
+    ])();
 
   return {
     spec,
@@ -301,6 +372,7 @@ exports.EC2Vpc = ({ spec, config }) => {
     managedByOther,
     cannotBeDeleted,
     findId,
+    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
     findName,

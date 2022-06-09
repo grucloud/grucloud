@@ -72,7 +72,13 @@ module.exports = pipe([
       },
       Client: RAMResourceAssociation,
       inferName: ({
-        dependenciesSpec: { resourceShare, subnet, ipamPool, resolverRule },
+        dependenciesSpec: {
+          resourceShare,
+          subnet,
+          ipamPool,
+          resolverRule,
+          transitGateway,
+        },
       }) =>
         pipe([
           tap((params) => {
@@ -86,6 +92,8 @@ module.exports = pipe([
             append(ipamPool),
             () => resolverRule,
             append(resolverRule),
+            () => transitGateway,
+            append(transitGateway),
             () => {
               assert(false, "missing RAMResourceAssociation dependencies");
             },

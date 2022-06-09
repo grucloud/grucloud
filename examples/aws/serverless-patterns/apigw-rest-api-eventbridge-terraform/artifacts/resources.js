@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "RestApi",
     group: "APIGateway",
     name: "rest-api-eb-fOaf",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
@@ -54,11 +54,7 @@ exports.createResources = () => [
                 },
               },
               "x-amazon-apigateway-integration": {
-                credentials: `${getId({
-                  type: "Role",
-                  group: "IAM",
-                  name: "ApiGatewayEventBridgeRole",
-                })}`,
+                credentials: `arn:aws:iam::${config.accountId()}:role/ApiGatewayEventBridgeRole`,
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_TEMPLATES",
                 requestTemplates: {

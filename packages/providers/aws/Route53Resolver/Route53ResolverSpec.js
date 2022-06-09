@@ -144,7 +144,14 @@ module.exports = pipe([
         resolverRule: { type: "Rule", group: "Route53Resolver", parent: true },
         vpc: { type: "Vpc", group: "EC2", parent: true },
       },
-      inferName: pipe([get("properties.Name")]),
+      inferName: ({ properties, dependenciesSpec: { resolverRule, vpc } }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => properties,
+          get("Name", `rule-assoc::${vpc}::${resolverRule}`),
+        ])(),
       omitProperties: [
         "Id",
         "Status",

@@ -77,15 +77,18 @@ exports.Route53ResolverRuleAssociation = ({ spec, config }) =>
     config,
     cannotBeDeleted: cannotBeDeleted({ config }),
     managedByOther: cannotBeDeleted({ config }),
-    findName: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      get("live.Name"),
-      tap((Name) => {
-        assert(Name);
-      }),
-    ]),
+    findName: ({ live }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        //TODO match inferName
+        () => live,
+        get("Name", live.Id),
+        tap((Name) => {
+          assert(Name);
+        }),
+      ])(),
     findId: pipe([
       get("live.Id"),
       tap((Id) => {

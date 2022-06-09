@@ -7,7 +7,7 @@ const { createAwsResource } = require("../AwsClient");
 
 const RamResourceDependencies = {
   subnet: { type: "Subnet", group: "EC2", arnKey: "SubnetArn" },
-  ipamPool: { type: "IpamPool", group: "IPAM", arnKey: "IpamPoolArn" },
+  ipamPool: { type: "IpamPool", group: "EC2", arnKey: "IpamPoolArn" },
   resolverRule: { type: "Rule", group: "Route53Resolver", arnKey: "Arn" },
   transitGateway: {
     type: "TransitGateway",

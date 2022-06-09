@@ -39,7 +39,7 @@ exports.createResources = () => [
           },
           osDisk: {
             osType: "Linux",
-            name: "testvm_OsDisk_1_789464e5ed484165bc2b95a27b4d069b",
+            name: "testvm_OsDisk_1_728e049ab26f46529721367245ce949e",
             createOption: "FromImage",
             caching: "ReadWrite",
             managedDisk: {
@@ -265,13 +265,14 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "multicloud",
+      publicIpAddress: ["multicloud::vpngw-a-pip", "multicloud::vpngw-b-pip"],
     }),
   },
   {
     type: "Workspace",
     group: "OperationalInsights",
     properties: ({ config }) => ({
-      name: "log21789",
+      name: "log23745",
       location: config.location,
       properties: {
         sku: {
