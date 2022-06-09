@@ -781,7 +781,7 @@ exports.findNameInTags = findNameInTags;
 
 exports.findNameInTagsOrId =
   ({ findId, tags }) =>
-  ({ live }) =>
+  ({ live, lives, config }) =>
     pipe([
       tap(() => {
         //TODO move assert up
@@ -792,7 +792,7 @@ exports.findNameInTagsOrId =
       }),
       () => ({ live }),
       findNameInTags({ tags }),
-      when(isEmpty, pipe([() => findId({ live })])),
+      when(isEmpty, pipe([() => findId({ live, lives, config })])),
       tap((name) => {
         if (!name) {
           assert(name, `cannot find name or id for ${tos(live)}`);

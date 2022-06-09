@@ -441,6 +441,7 @@ module.exports = pipe([
         "FlowLogId",
         "FlowLogStatus",
         "LogDestinationType",
+        "LogDestination",
       ],
       dependencies: {
         vpc: { type: "Vpc", group: "EC2" },
