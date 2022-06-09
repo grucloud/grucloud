@@ -256,7 +256,7 @@ exports.convertError = ({ error, name, procedure, params }) => {
 
 exports.getByNameCore =
   ({ findName, getList, deep = true }) =>
-  ({ name, resources, lives }) =>
+  ({ name, resources, lives, config }) =>
     pipe([
       tap(() => {
         logger.info(`getByNameCore ${name}`);
@@ -274,7 +274,7 @@ exports.getByNameCore =
       }),
       find(
         pipe([
-          (live) => findName({ live, lives }),
+          (live) => findName({ live, lives, config }),
           tap((currentName) => {
             logger.debug(`getByNameCore ${name}: findName: ${currentName}`);
           }),
