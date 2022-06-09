@@ -1,12 +1,27 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, omit, assign } = require("rubico");
-const { defaultsDeep, find, when } = require("rubico/x");
+const { pipe, tap, get, pick, eq, omit, assign, map, not } = require("rubico");
+const { defaultsDeep, find, when, isEmpty } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
+const { buildTags, findNameInTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
+
+const findName = ({ live, lives, config }) =>
+  pipe([
+    () => [
+      findNameInTags({}),
+      get("live.Description"),
+      // TODO add locale ?
+      pipe([({ live }) => "ipam-pool"]),
+    ],
+    map((fn) => fn({ live, lives, config })),
+    find(not(isEmpty)),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -79,7 +94,7 @@ exports.EC2IpamPool = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: findNameInTagsOrId({ findId }),
+    findName,
     findId,
     findDependencies: ({ live, lives }) => [
       {

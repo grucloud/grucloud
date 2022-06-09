@@ -13,7 +13,6 @@ Substitute tag value with region/account /other
   ipamPoolIpv6: "ipam-pool-025afc9c9d7afbe93",
 
 - Route53ResolverRuleAssociation findName
-- IpamScope Name or Description
 
 - createVpcLink isInstanceUp
 - add isInstanceError for aws create, for instance in transit gateway
