@@ -45,6 +45,12 @@ module.exports = pipe([
         "IpAddresses[].Status",
         "IpAddresses[].StatusMessage",
       ],
+      inferName: pipe([
+        get("properties.Name"),
+        tap((Name) => {
+          assert(Name);
+        }),
+      ]),
       dependencies: {
         securityGroups: {
           type: "SecurityGroup",
