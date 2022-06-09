@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project appServiceContainer
+skinparam monochrome true
++ Infra
+++ azure
++++ Resources
+++++ ResourceGroup (1)
++++ Web
+++++ AppServicePlan (1)
+++++ WebApp (1)
+@endmindmap

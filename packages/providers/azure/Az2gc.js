@@ -10,7 +10,7 @@ const {
   filter,
   assign,
 } = require("rubico");
-const { find, callProp, when } = require("rubico/x");
+const { find, callProp, when, includes } = require("rubico/x");
 const path = require("path");
 
 const {
@@ -93,14 +93,24 @@ const replaceLocation = (providerConfig) =>
     when(
       get("location"),
       assign({
-        location: pipe([
-          get("location"),
-          // "UK West" => "ukwest"
-          callProp("toLowerCase"),
-          callProp("replaceAll", " ", ""),
-          callProp("replaceAll", providerConfig.location, "config.location"),
-          (resource) => () => resource,
-        ]),
+        location: ({ location }) =>
+          pipe([
+            () => location,
+            // "UK West" => "ukwest"
+            callProp("toLowerCase"),
+            callProp("replaceAll", " ", ""),
+            when(
+              includes(providerConfig.location),
+              pipe([
+                callProp(
+                  "replaceAll",
+                  providerConfig.location,
+                  "config.location"
+                ),
+                (resource) => () => resource,
+              ])
+            ),
+          ])(),
       })
     ),
   ]);
