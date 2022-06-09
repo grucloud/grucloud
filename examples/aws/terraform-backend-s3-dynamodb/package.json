@@ -1,6 +1,6 @@
 {
   "name": "terraform-backend-s3-dynamodb",
-  "version": "7.4.2",
+  "version": "7.5.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.4.2",
-    "@grucloud/provider-aws": "^7.4.2",
+    "@grucloud/core": "^7.5.0",
+    "@grucloud/provider-aws": "^7.5.0",
     "rubico": "1.8.10"
   },
   "devDependencies": {
