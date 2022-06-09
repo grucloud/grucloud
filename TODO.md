@@ -6,7 +6,6 @@
 
 Substitute tag value with region/account /other
 
-- Route53Resolver inferName
 - PrincipalAssociation replace associatedEntity from config
 - TransitGatewayVpcAttachment name based on dependencies
   EIP name based on dependencies
@@ -14,15 +13,7 @@ Substitute tag value with region/account /other
   ipamPoolIpv6: "ipam-pool-025afc9c9d7afbe93",
 
 - Route53ResolverRuleAssociation findName
-- FlowLogs name from vpc
 - IpamScope Name or Description
-
-- 23:43:10.482 error: CliUtils spinnies: uri: aws::Destroying::Route53Resolver::Endpoint ERROR: {
-  "name": "InvalidRequestException",
-  "message": "[RSLVR-00600] Cannot delete resolver endpoint unless its related resolver rules are deleted. The following rules still exist for this resolver endpoint: \"rslvr-rr-ccd3e9a6ecb94e2b9\"",
-  "stack": "InvalidRequestException: [RSLVR-00600] Cannot delete resolver endpoint unless its related resolver rules are deleted. The following rules still exist for this resolver endpoint: \"rslvr-rr-ccd3e9a6ecb94e2b9\"\n
-
-}
 
 - createVpcLink isInstanceUp
 - add isInstanceError for aws create, for instance in transit gateway
