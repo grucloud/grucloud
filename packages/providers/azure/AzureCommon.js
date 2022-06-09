@@ -190,13 +190,29 @@ const configDefaultDependenciesId = ({ dependencies, spec }) =>
     () => spec,
     get("dependencies"),
     filter(get("pathId")),
-    map.entries(([varName, { pathId }]) => [
+    map.entries(([varName, { list, pathId }]) => [
       varName,
       pipe([
+        tap((params) => {
+          assert(pathId);
+        }),
         () => ({}),
         when(
           () => dependencies[varName],
-          set(pathId, getField(dependencies[varName], "id"))
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            switchCase([
+              () => list,
+              pipe([
+                tap((params) => {
+                  assert(true);
+                }),
+              ]),
+              pipe([set(pathId, getField(dependencies[varName], "id"))]),
+            ]),
+          ])
         ),
       ])(),
     ]),

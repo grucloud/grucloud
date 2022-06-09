@@ -27,7 +27,6 @@ exports.createResources = () => [
   {
     type: "DhcpOptionsAssociation",
     group: "EC2",
-    name: "dhcp-options-assoc::endpoint_dhcp_options::vpc-4-dhcp-option",
     dependencies: ({}) => ({
       vpc: "vpc-4-dhcp-option",
       dhcpOptions: "endpoint_dhcp_options",

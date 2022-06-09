@@ -418,7 +418,8 @@ module.exports = pipe([
       type: "DhcpOptionsAssociation",
       Client: EC2DhcpOptionsAssociation,
       omitProperties: ["DhcpOptionsId", "VpcId"],
-      //TODO infername
+      inferName: ({ dependenciesSpec: { vpc, dhcpOptions } }) =>
+        pipe([() => `dhcp-options-assoc::${vpc}::${dhcpOptions}`])(),
       dependencies: {
         vpc: { type: "Vpc", group: "EC2", parent: true },
         dhcpOptions: { type: "DhcpOptions", group: "EC2", parent: true },
@@ -543,6 +544,7 @@ module.exports = pipe([
         "PoolDepth",
         "OwnerId",
         "State",
+        "Allocations",
       ],
       compare: compareEC2({
         filterLive: () => pipe([omitLocaleNone]),

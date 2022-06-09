@@ -16,6 +16,9 @@ exports.createResources = () => [
         Project_ID: "12345",
       },
     }),
+    dependencies: ({}) => ({
+      kmsKey: "vpc-flow-logs-dev",
+    }),
   },
   {
     type: "LogGroup",
@@ -29,6 +32,9 @@ exports.createResources = () => [
         Product: "Network_Automation",
         Project_ID: "12345",
       },
+    }),
+    dependencies: ({}) => ({
+      kmsKey: "vpc-flow-logs-dev",
     }),
   },
   {
@@ -44,6 +50,9 @@ exports.createResources = () => [
         Project_ID: "12345",
       },
     }),
+    dependencies: ({}) => ({
+      kmsKey: "vpc-flow-logs-dev",
+    }),
   },
   {
     type: "LogGroup",
@@ -58,6 +67,9 @@ exports.createResources = () => [
         Project_ID: "12345",
       },
     }),
+    dependencies: ({}) => ({
+      kmsKey: "vpc-flow-logs-dev",
+    }),
   },
   {
     type: "LogGroup",
@@ -71,6 +83,9 @@ exports.createResources = () => [
         Product: "Network_Automation",
         Project_ID: "12345",
       },
+    }),
+    dependencies: ({}) => ({
+      kmsKey: "vpc-flow-logs-dev",
     }),
   },
   {
@@ -181,7 +196,6 @@ exports.createResources = () => [
   {
     type: "DhcpOptionsAssociation",
     group: "EC2",
-    name: "dhcp-options-assoc::dns_dhcp_options::dns_vpc",
     dependencies: ({}) => ({
       vpc: "dns_vpc",
       dhcpOptions: "dns_dhcp_options",
@@ -190,7 +204,6 @@ exports.createResources = () => [
   {
     type: "DhcpOptionsAssociation",
     group: "EC2",
-    name: "dhcp-options-assoc::endpoint_dhcp_options::endpoint_vpc",
     dependencies: ({}) => ({
       vpc: "endpoint_vpc",
       dhcpOptions: "endpoint_dhcp_options",
@@ -199,16 +212,116 @@ exports.createResources = () => [
   {
     type: "DhcpOptionsAssociation",
     group: "EC2",
-    name: "dhcp-options-assoc::inspection_dhcp_options::inspection_vpc",
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
       dhcpOptions: "inspection_dhcp_options",
     }),
   },
   {
+    type: "FlowLogs",
+    group: "EC2",
+    name: "fl-038d09c41c7869d47",
+    properties: ({}) => ({
+      TrafficType: "ALL",
+      LogDestination: "arn:aws:logs:us-east-1:840541460064:log-group:dns_vpc",
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+      MaxAggregationInterval: 600,
+    }),
+    dependencies: ({}) => ({
+      vpc: "dns_vpc",
+      iamRole: "dev_endpoint_vpc_flow_logs",
+      cloudWatchLogGroup: "dns_vpc",
+    }),
+  },
+  {
+    type: "FlowLogs",
+    group: "EC2",
+    name: "fl-0981e7f9f92b9c66e",
+    properties: ({}) => ({
+      TrafficType: "ALL",
+      LogDestination:
+        "arn:aws:logs:us-east-1:840541460064:log-group:inspection_vpc",
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+      MaxAggregationInterval: 600,
+    }),
+    dependencies: ({}) => ({
+      vpc: "inspection_vpc",
+      iamRole: "dev_endpoint_vpc_flow_logs",
+      cloudWatchLogGroup: "inspection_vpc",
+    }),
+  },
+  {
+    type: "FlowLogs",
+    group: "EC2",
+    name: "fl-0f8adc058b7ecc9e1",
+    properties: ({}) => ({
+      TrafficType: "ALL",
+      LogDestination:
+        "arn:aws:logs:us-east-1:840541460064:log-group:endpoint_vpc",
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+      MaxAggregationInterval: 600,
+    }),
+    dependencies: ({}) => ({
+      vpc: "endpoint_vpc",
+      iamRole: "dev_endpoint_vpc_flow_logs",
+      cloudWatchLogGroup: "endpoint_vpc",
+    }),
+  },
+  {
     type: "Ipam",
     group: "EC2",
-    name: "ipam-0c6fc81efa9af837f",
+    name: "ipam-0ca4ef19d1dbeee24",
     properties: ({ config }) => ({
       IpamRegion: `${config.region}`,
       OperatingRegions: [
@@ -239,7 +352,7 @@ exports.createResources = () => [
   {
     type: "IpamScope",
     group: "EC2",
-    name: "ipam-scope-0db89919b84e0011d",
+    name: "ipam-scope-0b1e45df134fe6851",
     properties: ({ config }) => ({
       IpamRegion: `${config.region}`,
       IpamScopeType: "private",
@@ -265,13 +378,13 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      ipam: "ipam-0c6fc81efa9af837f",
+      ipam: "ipam-0ca4ef19d1dbeee24",
     }),
   },
   {
     type: "IpamPool",
     group: "EC2",
-    name: "ipam-pool-094141011f729c18f",
+    name: "ipam-pool-025afc9c9d7afbe93",
     properties: ({ config }) => ({
       IpamScopeType: "private",
       IpamRegion: `${config.region}`,
@@ -298,7 +411,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      ipamScope: "ipam-scope-0db89919b84e0011d",
+      ipamScope: "ipam-scope-0b1e45df134fe6851",
     }),
   },
   {
@@ -308,7 +421,7 @@ exports.createResources = () => [
       Cidr: "10.0.0.0/10",
     }),
     dependencies: ({}) => ({
-      ipamPool: "ipam-pool-094141011f729c18f",
+      ipamPool: "ipam-pool-025afc9c9d7afbe93",
     }),
   },
   {
@@ -316,7 +429,6 @@ exports.createResources = () => [
     group: "EC2",
     name: "dns_vpc",
     properties: ({}) => ({
-      CidrBlock: "10.0.8.0/22",
       Tags: [
         {
           Key: "Env",
@@ -336,7 +448,12 @@ exports.createResources = () => [
         },
       ],
       DnsHostnames: true,
+      Ipv4NetmaskLength: "22",
       AmazonProvidedIpv6CidrBlock: true,
+    }),
+    dependencies: ({}) => ({
+      ipamPoolIpv4: "ipam-pool-025afc9c9d7afbe93",
+      ipamPoolIpv6: "ipam-pool-025afc9c9d7afbe93",
     }),
   },
   {
@@ -344,7 +461,6 @@ exports.createResources = () => [
     group: "EC2",
     name: "endpoint_vpc",
     properties: ({}) => ({
-      CidrBlock: "10.0.4.0/22",
       Tags: [
         {
           Key: "Env",
@@ -364,7 +480,12 @@ exports.createResources = () => [
         },
       ],
       DnsHostnames: true,
+      Ipv4NetmaskLength: "22",
       AmazonProvidedIpv6CidrBlock: true,
+    }),
+    dependencies: ({}) => ({
+      ipamPoolIpv4: "ipam-pool-025afc9c9d7afbe93",
+      ipamPoolIpv6: "ipam-pool-025afc9c9d7afbe93",
     }),
   },
   {
@@ -372,7 +493,6 @@ exports.createResources = () => [
     group: "EC2",
     name: "inspection_vpc",
     properties: ({}) => ({
-      CidrBlock: "10.0.0.0/22",
       Tags: [
         {
           Key: "Env",
@@ -392,7 +512,12 @@ exports.createResources = () => [
         },
       ],
       DnsHostnames: true,
+      Ipv4NetmaskLength: "22",
       AmazonProvidedIpv6CidrBlock: true,
+    }),
+    dependencies: ({}) => ({
+      ipamPoolIpv4: "ipam-pool-025afc9c9d7afbe93",
+      ipamPoolIpv6: "ipam-pool-025afc9c9d7afbe93",
     }),
   },
   {
@@ -490,7 +615,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_internet_${config.region}a`,
-      eip: "eipalloc-034ff295e44627b87",
+      eip: "eipalloc-06d698757286c5e5c",
     }),
   },
   {
@@ -527,7 +652,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_internet_${config.region}b`,
-      eip: "eipalloc-03e16fbea637365cc",
+      eip: "eipalloc-0d30f560cbb53473e",
     }),
   },
   {
@@ -564,7 +689,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       subnet: `inspection_internet_${config.region}c`,
-      eip: "eipalloc-0d85ec30aad96e651",
+      eip: "eipalloc-0ec0d452aa870dc6c",
     }),
   },
   {
@@ -2530,17 +2655,77 @@ exports.createResources = () => [
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "eipalloc-034ff295e44627b87",
+    name: "eipalloc-06d698757286c5e5c",
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+    }),
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "eipalloc-03e16fbea637365cc",
+    name: "eipalloc-0d30f560cbb53473e",
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+    }),
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "eipalloc-0d85ec30aad96e651",
+    name: "eipalloc-0ec0d452aa870dc6c",
+    properties: ({}) => ({
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+    }),
   },
   {
     type: "VpcEndpoint",
@@ -2572,7 +2757,7 @@ exports.createResources = () => [
         },
         {
           Key: "PHZ",
-          Value: "athena.eu-west-2.amazonaws.com",
+          Value: "athena.us-east-1.amazonaws.com",
         },
         {
           Key: "Product",
@@ -2623,7 +2808,7 @@ exports.createResources = () => [
         },
         {
           Key: "PHZ",
-          Value: "autoscaling.eu-west-2.amazonaws.com",
+          Value: "autoscaling.us-east-1.amazonaws.com",
         },
         {
           Key: "Product",
@@ -2674,7 +2859,7 @@ exports.createResources = () => [
         },
         {
           Key: "PHZ",
-          Value: "ec2.eu-west-2.amazonaws.com",
+          Value: "ec2.us-east-1.amazonaws.com",
         },
         {
           Key: "Product",
@@ -2725,7 +2910,7 @@ exports.createResources = () => [
         },
         {
           Key: "PHZ",
-          Value: "ec2messages.eu-west-2.amazonaws.com",
+          Value: "ec2messages.us-east-1.amazonaws.com",
         },
         {
           Key: "Product",
@@ -2776,7 +2961,7 @@ exports.createResources = () => [
         },
         {
           Key: "PHZ",
-          Value: "ecs.eu-west-2.amazonaws.com",
+          Value: "ecs.us-east-1.amazonaws.com",
         },
         {
           Key: "Product",
@@ -2827,7 +3012,7 @@ exports.createResources = () => [
         },
         {
           Key: "PHZ",
-          Value: "logs.eu-west-2.amazonaws.com",
+          Value: "logs.us-east-1.amazonaws.com",
         },
         {
           Key: "Product",
@@ -2878,7 +3063,7 @@ exports.createResources = () => [
         },
         {
           Key: "PHZ",
-          Value: "rds.eu-west-2.amazonaws.com",
+          Value: "rds.us-east-1.amazonaws.com",
         },
         {
           Key: "Product",
@@ -2929,7 +3114,7 @@ exports.createResources = () => [
         },
         {
           Key: "PHZ",
-          Value: "sns.eu-west-2.amazonaws.com",
+          Value: "sns.us-east-1.amazonaws.com",
         },
         {
           Key: "Product",
@@ -2980,7 +3165,7 @@ exports.createResources = () => [
         },
         {
           Key: "PHZ",
-          Value: "sqs.eu-west-2.amazonaws.com",
+          Value: "sqs.us-east-1.amazonaws.com",
         },
         {
           Key: "Product",
@@ -3031,7 +3216,7 @@ exports.createResources = () => [
         },
         {
           Key: "PHZ",
-          Value: "ssm.eu-west-2.amazonaws.com",
+          Value: "ssm.us-east-1.amazonaws.com",
         },
         {
           Key: "Product",
@@ -3082,7 +3267,7 @@ exports.createResources = () => [
         },
         {
           Key: "PHZ",
-          Value: "ssmmessages.eu-west-2.amazonaws.com",
+          Value: "ssmmessages.us-east-1.amazonaws.com",
         },
         {
           Key: "Product",
@@ -3173,6 +3358,72 @@ exports.createResources = () => [
           Value: "12345",
         },
       ],
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0:0:0:0:0:0:0:0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment: "tgw-attach-0a01161ec5da9dc3c",
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment: "tgw-attach-0a01161ec5da9dc3c",
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0:0:0:0:0:0:0:0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment: "tgw-attach-0a01161ec5da9dc3c",
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment: "tgw-attach-0a01161ec5da9dc3c",
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0:0:0:0:0:0:0:0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-attach-0a01161ec5da9dc3c",
+    }),
+  },
+  {
+    type: "TransitGatewayRoute",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-attach-0a01161ec5da9dc3c",
     }),
   },
   {
@@ -3268,46 +3519,7 @@ exports.createResources = () => [
   {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
-    name: "tgw-attach-087da9ab576324a16",
-    properties: ({}) => ({
-      Options: {
-        DnsSupport: "enable",
-        Ipv6Support: "enable",
-        ApplianceModeSupport: "enable",
-      },
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
-    }),
-    dependencies: ({ config }) => ({
-      transitGateway: "Org_TGW_dev",
-      vpc: "inspection_vpc",
-      subnets: [
-        `inspection_attachment_${config.region}a`,
-        `inspection_attachment_${config.region}b`,
-        `inspection_attachment_${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "TransitGatewayVpcAttachment",
-    group: "EC2",
-    name: "tgw-attach-0d5a6e688909c0232",
+    name: "tgw-attach-09dc0d611d6ff8890",
     properties: ({}) => ({
       Options: {
         DnsSupport: "enable",
@@ -3346,7 +3558,7 @@ exports.createResources = () => [
   {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
-    name: "tgw-attach-0fdb10be2e54c2725",
+    name: "tgw-attach-09f511530dd0228b8",
     properties: ({}) => ({
       Options: {
         DnsSupport: "enable",
@@ -3383,11 +3595,42 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "TransitGatewayRouteTableAssociation",
+    type: "TransitGatewayVpcAttachment",
     group: "EC2",
-    dependencies: ({}) => ({
-      transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment: "tgw-attach-087da9ab576324a16",
+    name: "tgw-attach-0a01161ec5da9dc3c",
+    properties: ({}) => ({
+      Options: {
+        DnsSupport: "enable",
+        Ipv6Support: "enable",
+        ApplianceModeSupport: "enable",
+      },
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+    }),
+    dependencies: ({ config }) => ({
+      transitGateway: "Org_TGW_dev",
+      vpc: "inspection_vpc",
+      subnets: [
+        `inspection_attachment_${config.region}a`,
+        `inspection_attachment_${config.region}b`,
+        `inspection_attachment_${config.region}c`,
+      ],
     }),
   },
   {
@@ -3395,7 +3638,7 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({}) => ({
       transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment: "tgw-attach-0d5a6e688909c0232",
+      transitGatewayVpcAttachment: "tgw-attach-09dc0d611d6ff8890",
     }),
   },
   {
@@ -3403,7 +3646,87 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({}) => ({
       transitGatewayRouteTable: "shared",
-      transitGatewayVpcAttachment: "tgw-attach-0fdb10be2e54c2725",
+      transitGatewayVpcAttachment: "tgw-attach-09f511530dd0228b8",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-attach-0a01161ec5da9dc3c",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment: "tgw-attach-09dc0d611d6ff8890",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment: "tgw-attach-09dc0d611d6ff8890",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-attach-09dc0d611d6ff8890",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment: "tgw-attach-09f511530dd0228b8",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment: "tgw-attach-09f511530dd0228b8",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-attach-09f511530dd0228b8",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "dev",
+      transitGatewayVpcAttachment: "tgw-attach-0a01161ec5da9dc3c",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "prod",
+      transitGatewayVpcAttachment: "tgw-attach-0a01161ec5da9dc3c",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "shared",
+      transitGatewayVpcAttachment: "tgw-attach-0a01161ec5da9dc3c",
     }),
   },
   {
@@ -3591,6 +3914,61 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Key",
+    group: "KMS",
+    name: "vpc-flow-logs-dev",
+    properties: ({ config }) => ({
+      Description: "KMS Logs Key",
+      Policy: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "Enable IAM User Permissions",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${config.accountId()}:root`,
+            },
+            Action: "kms:*",
+            Resource: `*`,
+          },
+          {
+            Sid: "Enable KMS to be used by CloudWatch Logs",
+            Effect: "Allow",
+            Principal: {
+              Service: `logs.${config.region}.amazonaws.com`,
+            },
+            Action: [
+              "kms:ReEncrypt*",
+              "kms:GenerateDataKey*",
+              "kms:Encrypt*",
+              "kms:Describe*",
+              "kms:Decrypt*",
+            ],
+            Resource: `*`,
+          },
+        ],
+      },
+      Tags: [
+        {
+          TagKey: "Env",
+          TagValue: "dev",
+        },
+        {
+          TagKey: "Owner",
+          TagValue: "WWPS",
+        },
+        {
+          TagKey: "Product",
+          TagValue: "Network_Automation",
+        },
+        {
+          TagKey: "Project_ID",
+          TagValue: "12345",
+        },
+      ],
+    }),
+  },
+  {
     type: "Firewall",
     group: "NetworkFirewall",
     properties: ({}) => ({
@@ -3742,6 +4120,167 @@ exports.createResources = () => [
         "/aws/network-firewall/alerts",
         "/aws/network-firewall/flows",
       ],
+    }),
+  },
+  {
+    type: "ResourceShare",
+    group: "RAM",
+    properties: ({}) => ({
+      allowExternalPrincipals: false,
+      featureSet: "STANDARD",
+      name: "ipam-org-share",
+      tags: [
+        {
+          key: "Env",
+          value: "dev",
+        },
+        {
+          key: "Name",
+          value: "org-ipam-ram-share",
+        },
+        {
+          key: "Owner",
+          value: "WWPS",
+        },
+        {
+          key: "Product",
+          value: "Network_Automation",
+        },
+        {
+          key: "Project_ID",
+          value: "12345",
+        },
+      ],
+    }),
+  },
+  {
+    type: "ResourceShare",
+    group: "RAM",
+    properties: ({}) => ({
+      allowExternalPrincipals: false,
+      featureSet: "STANDARD",
+      name: "r53r-org-share",
+      tags: [
+        {
+          key: "Env",
+          value: "dev",
+        },
+        {
+          key: "Name",
+          value: "org-r53r-ram-share",
+        },
+        {
+          key: "Owner",
+          value: "WWPS",
+        },
+        {
+          key: "Product",
+          value: "Network_Automation",
+        },
+        {
+          key: "Project_ID",
+          value: "12345",
+        },
+      ],
+    }),
+  },
+  {
+    type: "ResourceShare",
+    group: "RAM",
+    properties: ({}) => ({
+      allowExternalPrincipals: false,
+      featureSet: "STANDARD",
+      name: "tgw-org-share",
+      tags: [
+        {
+          key: "Env",
+          value: "dev",
+        },
+        {
+          key: "Name",
+          value: "org-tgw-ram-share",
+        },
+        {
+          key: "Owner",
+          value: "WWPS",
+        },
+        {
+          key: "Product",
+          value: "Network_Automation",
+        },
+        {
+          key: "Project_ID",
+          value: "12345",
+        },
+      ],
+    }),
+  },
+  {
+    type: "PrincipalAssociation",
+    group: "RAM",
+    properties: ({}) => ({
+      associatedEntity:
+        "arn:aws:organizations::840541460064:organization/o-xs8pjirjbw",
+      external: false,
+    }),
+    dependencies: ({}) => ({
+      resourceShare: "ipam-org-share",
+    }),
+  },
+  {
+    type: "PrincipalAssociation",
+    group: "RAM",
+    properties: ({}) => ({
+      associatedEntity:
+        "arn:aws:organizations::840541460064:organization/o-xs8pjirjbw",
+      external: false,
+    }),
+    dependencies: ({}) => ({
+      resourceShare: "r53r-org-share",
+    }),
+  },
+  {
+    type: "PrincipalAssociation",
+    group: "RAM",
+    properties: ({}) => ({
+      associatedEntity:
+        "arn:aws:organizations::840541460064:organization/o-xs8pjirjbw",
+      external: false,
+    }),
+    dependencies: ({}) => ({
+      resourceShare: "tgw-org-share",
+    }),
+  },
+  // {
+  //   type: "ResourceAssociation",
+  //   group: "RAM",
+  //   properties: ({}) => ({
+  //     external: false,
+  //   }),
+  //   dependencies: ({}) => ({
+  //     resourceShare: "ipam-org-share",
+  //   }),
+  // },
+  {
+    type: "ResourceAssociation",
+    group: "RAM",
+    properties: ({}) => ({
+      external: false,
+    }),
+    dependencies: ({}) => ({
+      resourceShare: "r53r-org-share",
+      resolverRule: "root-env",
+    }),
+  },
+  {
+    type: "ResourceAssociation",
+    group: "RAM",
+    properties: ({}) => ({
+      external: false,
+    }),
+    dependencies: ({}) => ({
+      resourceShare: "tgw-org-share",
+      transitGateway: "Org_TGW_dev",
     }),
   },
   {
@@ -4326,13 +4865,180 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Endpoint",
+    group: "Route53Resolver",
+    name: "Org-Inbound-Resolver-Endpoint",
+    properties: ({ config, getId }) => ({
+      Direction: "INBOUND",
+      Name: "Org-Inbound-Resolver-Endpoint",
+      IpAddresses: [
+        {
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `dns_endpoint_${config.region}b`,
+          })}`,
+        },
+        {
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `dns_endpoint_${config.region}a`,
+          })}`,
+        },
+        {
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `dns_endpoint_${config.region}c`,
+          })}`,
+        },
+      ],
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Environment",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+    }),
+    dependencies: ({ config }) => ({
+      securityGroups: ["sg::dns_vpc::Network-DNS-Traffic-SG"],
+      subnets: [
+        `dns_endpoint_${config.region}a`,
+        `dns_endpoint_${config.region}b`,
+        `dns_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "Endpoint",
+    group: "Route53Resolver",
+    name: "Org-Inbound-Resolver-Endpoint",
+    properties: ({ config, getId }) => ({
+      Direction: "OUTBOUND",
+      Name: "Org-Inbound-Resolver-Endpoint",
+      IpAddresses: [
+        {
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `dns_endpoint_${config.region}a`,
+          })}`,
+        },
+        {
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `dns_endpoint_${config.region}b`,
+          })}`,
+        },
+        {
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `dns_endpoint_${config.region}c`,
+          })}`,
+        },
+      ],
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Environment",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+    }),
+    dependencies: ({ config }) => ({
+      securityGroups: ["sg::dns_vpc::Network-DNS-Traffic-SG"],
+      subnets: [
+        `dns_endpoint_${config.region}a`,
+        `dns_endpoint_${config.region}b`,
+        `dns_endpoint_${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "Rule",
+    group: "Route53Resolver",
+    name: "root-env",
+    properties: ({}) => ({
+      DomainName: "network-dev.internal.",
+      Name: "root-env",
+      RuleType: "FORWARD",
+      Tags: [
+        {
+          Key: "Env",
+          Value: "dev",
+        },
+        {
+          Key: "Environment",
+          Value: "dev",
+        },
+        {
+          Key: "Owner",
+          Value: "WWPS",
+        },
+        {
+          Key: "Product",
+          Value: "Network_Automation",
+        },
+        {
+          Key: "Project_ID",
+          Value: "12345",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      resolverEndpoint: "Org-Inbound-Resolver-Endpoint",
+    }),
+  },
+  {
+    type: "RuleAssociation",
+    group: "Route53Resolver",
+    dependencies: ({}) => ({
+      resolverRule: "root-env",
+      vpc: "dns_vpc",
+    }),
+  },
+  {
     type: "Parameter",
     group: "SSM",
     name: "/ipam/pool/id",
     properties: ({}) => ({
       Type: "SecureString",
       Value:
-        "AQICAHheTvfm+Q+xQjyXsaWLALoUqglKZPk0qRhRU4JfrpVo1wEi88PZN4GH8jLf79LeliOVAAAAeTB3BgkqhkiG9w0BBwagajBoAgEAMGMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM5ltIescseNifZPwsAgEQgDbnJodq0GnrWZoKIPof5OLxYPsr3OAK/Tfz8k2UFxOKOGfTmpmSIFfzgH4HYnHIM+SCUIqOikI=",
+        "AQICAHhJJMncH+TIYM7GK7Cq/fhSOk3Vbs7m3Qyu22OfOmlMigE5fVw45c+IZoP0NaRbTJgaAAAAeTB3BgkqhkiG9w0BBwagajBoAgEAMGMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMUUq848UIRQLOui48AgEQgDZcN0cfXJGVKWFJyFyNLH0SbBQa0UhR9NI/RYZTn+c5sbeq+BZBkhVxROzXZdtCjn9HtfKskPU=",
       DataType: "text",
       Tags: [
         {

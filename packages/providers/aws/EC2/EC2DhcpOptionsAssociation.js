@@ -61,7 +61,7 @@ exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
                 group: "EC2",
                 providerName: config.providerName,
               }),
-            get("name"),
+            get("name", live.VpcId),
           ]),
           dhcpOptions: pipe([
             () =>
@@ -71,14 +71,14 @@ exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
                 group: "EC2",
                 providerName: config.providerName,
               }),
-            get("name"),
+            get("name", live.DhcpOptionsId),
           ]),
         }),
         tap(({ dhcpOptions, vpc }) => {
           assert(dhcpOptions);
           assert(vpc);
         }),
-        ({ vpc, dhcpOptions }) => `dhcp-options-assoc::${dhcpOptions}::${vpc}`,
+        ({ vpc, dhcpOptions }) => `dhcp-options-assoc::${vpc}::${dhcpOptions}`,
       ])(),
     findId,
     getList:

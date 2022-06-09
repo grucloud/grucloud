@@ -33,8 +33,12 @@ const createModel = ({ config }) => ({
     getParam: "IpamPools",
     decorate: ({ endpoint, getById }) =>
       pipe([
-        tap((params) => {
-          assert(true);
+        assign({
+          Allocations: pipe([
+            pick(["IpamPoolId"]),
+            endpoint().getIpamPoolAllocations,
+            get("IpamPoolAllocations"),
+          ]),
         }),
       ]),
   },

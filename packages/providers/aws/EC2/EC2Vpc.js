@@ -22,16 +22,12 @@ const {
   when,
   last,
   pluck,
-  callProp,
+  find,
 } = require("rubico/x");
-const cidrTools = require("cidr-tools");
 const logger = require("@grucloud/core/logger")({ prefix: "Vpc" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const {
-  getByNameCore,
-  cidrToSubnetMaskLength,
-} = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const {
   getByIdCore,
   buildTags,
@@ -71,40 +67,17 @@ exports.EC2Vpc = ({ spec, config }) => {
         pipe([
           () =>
             lives.getByType({
-              type: "IpamPoolCidr",
+              type: "IpamPool",
               group: "EC2",
               providerName: config.providerName,
             }),
-          filter(
+          find(
             pipe([
-              get("live"),
-              ({ Cidr }) =>
-                switchCase([
-                  or([
-                    // Ipv4
-                    and([
-                      () => live.CidrBlock,
-                      () => cidrTools.contains(Cidr, live.CidrBlock),
-                    ]),
-                    // IpV6
-                    and([
-                      () => getFirstIpv6Cidr(live),
-                      () => cidrTools.contains(Cidr, getFirstIpv6Cidr(live)),
-                    ]),
-                  ]),
-                  () => true,
-                  () => false,
-                ])(),
+              get("live.Allocations"),
+              find(eq(get("ResourceId"), live.VpcId)),
             ])
           ),
-          pluck("live"),
-          callProp("sort", (a, b) =>
-            cidrToSubnetMaskLength(a.Cidr) > cidrToSubnetMaskLength(b.Cidr)
-              ? 1
-              : -1
-          ),
-          last,
-          get("IpamPoolId"),
+          get("live.IpamPoolId"),
         ])(),
       ],
     },
@@ -157,6 +130,10 @@ exports.EC2Vpc = ({ spec, config }) => {
     filterPayload: omit(["DnsHostnames", "DnsSupport"]),
     pickCreated: () => get("Vpc"),
     getById,
+    // IPAM error
+    shouldRetryOnExceptionMessages: [
+      "The allocation size is too big for the pool",
+    ],
     postCreate:
       ({ payload }) =>
       ({ VpcId }) =>
