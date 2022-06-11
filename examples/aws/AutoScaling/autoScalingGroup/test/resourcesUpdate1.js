@@ -13,7 +13,7 @@ exports.createResources = () => [
       DesiredCapacity: 1,
     }),
     dependencies: () => ({
-      subnets: ["PubSubnetAz1", "PubSubnetAz2"],
+      subnets: ["Vpc::PubSubnetAz1", "Vpc::PubSubnetAz2"],
       launchTemplate: "lt-ec2-micro",
     }),
   },

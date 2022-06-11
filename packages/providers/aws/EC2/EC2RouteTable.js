@@ -10,8 +10,9 @@ const {
   tryCatch,
   switchCase,
   pick,
+  fork,
 } = require("rubico");
-const { defaultsDeep, prepend } = require("rubico/x");
+const { defaultsDeep, prepend, callProp, last } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EC2RouteTable" });
 const { tos } = require("@grucloud/core/tos");
@@ -28,6 +29,8 @@ const {
   untagResource,
 } = require("./EC2Common");
 
+const extractRouteTableName = pipe([callProp("split", "::"), last]);
+
 exports.EC2RouteTable = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
@@ -39,34 +42,29 @@ exports.EC2RouteTable = ({ spec, config }) => {
   const isDefault = ({ live, lives }) =>
     pipe([() => live, get("Associations"), any(get("Main"))])();
 
-  const findDefaultName = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(live.VpcId);
-        assert(lives);
-      }),
-      () =>
-        lives.getById({
-          type: "Vpc",
-          group: "EC2",
-          providerName,
-          id: live.VpcId,
-        }),
-      tap((vpc) => {
-        assert(vpc);
-      }),
-      get("name"),
-      tap((name) => {
-        assert(name);
-      }),
-      prepend("rt-default-"),
-    ])();
-
   const findName = pipe([
-    switchCase([isDefault, findDefaultName, findNameInTagsOrId({ findId })]),
-    tap((name) => {
-      assert(name);
+    fork({
+      vpcName: ({ live, lives, config }) =>
+        pipe([
+          () =>
+            lives.getById({
+              id: live.VpcId,
+              type: "Vpc",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("name"),
+          tap((name) => {
+            assert(name, "no vpc name in route table");
+          }),
+        ])(),
+      rtbName: switchCase([
+        isDefault,
+        pipe([() => "rt-default"]),
+        findNameInTagsOrId({ findId }),
+      ]),
     }),
+    ({ vpcName, rtbName }) => `${vpcName}::${rtbName}`,
   ]);
 
   const findDependencies = ({ live }) => [
@@ -156,7 +154,12 @@ exports.EC2RouteTable = ({ spec, config }) => {
         TagSpecifications: [
           {
             ResourceType: "route-table",
-            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+            Tags: buildTags({
+              config,
+              namespace,
+              name: extractRouteTableName(name),
+              UserTags: Tags,
+            }),
           },
         ],
       }),

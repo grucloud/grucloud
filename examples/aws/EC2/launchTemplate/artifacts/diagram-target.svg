@@ -36,18 +36,18 @@
 <text text-anchor="start" x="809.5" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
 <text text-anchor="start" x="809.5" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Vpc</text>
 </g>
-<!-- Subnet::subnet&#45;public -->
+<!-- Subnet::Vpc::subnet&#45;public -->
 <g id="node3" class="node">
-<title>Subnet::subnet&#45;public</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="710.5,-205 589.5,-205 589.5,-147 710.5,-147 710.5,-205"/>
-<text text-anchor="start" x="602" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="602" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">subnet&#45;public</text>
+<title>Subnet::Vpc::subnet&#45;public</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="729,-205 571,-205 571,-147 729,-147 729,-205"/>
+<text text-anchor="start" x="583" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="583" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Vpc::subnet&#45;public</text>
 </g>
-<!-- Subnet::subnet&#45;public&#45;&gt;Vpc::Vpc -->
+<!-- Subnet::Vpc::subnet&#45;public&#45;&gt;Vpc::Vpc -->
 <g id="edge1" class="edge">
-<title>Subnet::subnet&#45;public&#45;&gt;Vpc::Vpc</title>
-<path fill="none" stroke="#707070" d="M710.59,-164.24C734.84,-159.45 762.74,-153.94 786.7,-149.21"/>
-<polygon fill="#707070" stroke="#707070" points="787.57,-152.61 796.7,-147.24 786.22,-145.74 787.57,-152.61"/>
+<title>Subnet::Vpc::subnet&#45;public&#45;&gt;Vpc::Vpc</title>
+<path fill="none" stroke="#707070" d="M729.02,-160.6C748.45,-156.76 768.92,-152.72 787.08,-149.14"/>
+<polygon fill="#707070" stroke="#707070" points="787.78,-152.57 796.92,-147.2 786.43,-145.7 787.78,-152.57"/>
 </g>
 <!-- SecurityGroup::sg::Vpc::EcsSecurityGroup -->
 <g id="node4" class="node">
@@ -88,11 +88,11 @@
 <path fill="none" stroke="#707070" d="M175.65,-253.01C193.6,-260.14 213.31,-267.12 232,-272 350.73,-303.02 493.2,-317.44 577.13,-323.69"/>
 <polygon fill="#707070" stroke="#707070" points="577.09,-327.2 587.32,-324.43 577.6,-320.22 577.09,-327.2"/>
 </g>
-<!-- Instance::ec2&#45;template&#45;subnet&#45;&gt;Subnet::subnet&#45;public -->
+<!-- Instance::ec2&#45;template&#45;subnet&#45;&gt;Subnet::Vpc::subnet&#45;public -->
 <g id="edge4" class="edge">
-<title>Instance::ec2&#45;template&#45;subnet&#45;&gt;Subnet::subnet&#45;public</title>
-<path fill="none" stroke="#707070" d="M192.58,-194.99C205.62,-191.34 219.08,-188.14 232,-186 352.88,-165.98 496.12,-168.05 579.37,-171.76"/>
-<polygon fill="#707070" stroke="#707070" points="579.32,-175.26 589.47,-172.23 579.64,-168.27 579.32,-175.26"/>
+<title>Instance::ec2&#45;template&#45;subnet&#45;&gt;Subnet::Vpc::subnet&#45;public</title>
+<path fill="none" stroke="#707070" d="M192.58,-194.99C205.62,-191.34 219.08,-188.14 232,-186 344.25,-167.41 475.78,-167.87 560.65,-171"/>
+<polygon fill="#707070" stroke="#707070" points="560.64,-174.5 570.77,-171.4 560.91,-167.51 560.64,-174.5"/>
 </g>
 <!-- Instance::ec2&#45;template&#45;subnet&#45;&gt;SecurityGroup::sg::Vpc::EcsSecurityGroup -->
 <g id="edge7" class="edge">
@@ -132,11 +132,11 @@
 <path fill="none" stroke="#707070" d="M443.61,-253.06C473.75,-264.74 508.97,-278.2 541,-290 552.85,-294.36 565.47,-298.9 577.74,-303.26"/>
 <polygon fill="#707070" stroke="#707070" points="576.9,-306.67 587.49,-306.71 579.23,-300.07 576.9,-306.67"/>
 </g>
-<!-- LaunchTemplate::lt&#45;ec2&#45;micro&#45;&gt;Subnet::subnet&#45;public -->
+<!-- LaunchTemplate::lt&#45;ec2&#45;micro&#45;&gt;Subnet::Vpc::subnet&#45;public -->
 <g id="edge9" class="edge">
-<title>LaunchTemplate::lt&#45;ec2&#45;micro&#45;&gt;Subnet::subnet&#45;public</title>
-<path fill="none" stroke="#707070" d="M464.52,-207.68C502.11,-201.23 544.53,-193.94 579.21,-187.99"/>
-<polygon fill="#707070" stroke="#707070" points="579.98,-191.4 589.24,-186.26 578.79,-184.51 579.98,-191.4"/>
+<title>LaunchTemplate::lt&#45;ec2&#45;micro&#45;&gt;Subnet::Vpc::subnet&#45;public</title>
+<path fill="none" stroke="#707070" d="M464.52,-207.68C495.65,-202.33 530.1,-196.42 560.72,-191.16"/>
+<polygon fill="#707070" stroke="#707070" points="561.69,-194.55 570.95,-189.4 560.5,-187.65 561.69,-194.55"/>
 </g>
 <!-- LaunchTemplate::lt&#45;ec2&#45;micro&#45;&gt;SecurityGroup::sg::Vpc::EcsSecurityGroup -->
 <g id="edge12" class="edge">

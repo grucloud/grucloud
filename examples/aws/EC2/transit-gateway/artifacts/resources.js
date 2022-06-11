@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "Vpc",
     group: "EC2",
-    name: "skope-A-vpc",
+    name: "spoke-A-vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
       DnsHostnames: true,
@@ -16,31 +16,31 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `skope-A-subnet-private1-${config.region}a`,
+    name: ({ config }) => `spoke-A-vpc::subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.128.0/20",
     }),
     dependencies: ({}) => ({
-      vpc: "skope-A-vpc",
+      vpc: "spoke-A-vpc",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `skope-A-subnet-private2-${config.region}b`,
+    name: ({ config }) => `spoke-A-vpc::subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.144.0/20",
     }),
     dependencies: ({}) => ({
-      vpc: "skope-A-vpc",
+      vpc: "spoke-A-vpc",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-default-a",
+    name: "vpc-default::subnet-default-a",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",
@@ -49,7 +49,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-default-b",
+    name: "vpc-default::subnet-default-b",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",
@@ -58,42 +58,42 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "rt-default-vpc-default",
+    name: ({ config }) => `spoke-A-vpc::rtb-private1-${config.region}a`,
+    dependencies: ({}) => ({
+      vpc: "spoke-A-vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `spoke-A-vpc::rtb-private2-${config.region}b`,
+    dependencies: ({}) => ({
+      vpc: "spoke-A-vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "vpc-default::rt-default",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `skope-A-rtb-private1-${config.region}a`,
-    dependencies: ({}) => ({
-      vpc: "skope-A-vpc",
-    }),
-  },
-  {
-    type: "RouteTable",
-    group: "EC2",
-    name: ({ config }) => `skope-A-rtb-private2-${config.region}b`,
-    dependencies: ({}) => ({
-      vpc: "skope-A-vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `skope-A-rtb-private1-${config.region}a`,
-      subnet: `skope-A-subnet-private1-${config.region}a`,
+      routeTable: `spoke-A-vpc::rtb-private1-${config.region}a`,
+      subnet: `spoke-A-vpc::subnet-private1-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `skope-A-rtb-private2-${config.region}b`,
-      subnet: `skope-A-subnet-private2-${config.region}b`,
+      routeTable: `spoke-A-vpc::rtb-private2-${config.region}b`,
+      subnet: `spoke-A-vpc::subnet-private2-${config.region}b`,
     }),
   },
   {
@@ -103,7 +103,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "rt-default-vpc-default",
+      routeTable: "vpc-default::rt-default",
       transitGateway: "transit-gateway",
     }),
   },
@@ -162,13 +162,16 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       transitGateway: "transit-gateway",
       vpc: "vpc-default",
-      subnets: ["subnet-default-a", "subnet-default-b"],
+      subnets: [
+        "vpc-default::subnet-default-a",
+        "vpc-default::subnet-default-b",
+      ],
     }),
   },
   {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
-    name: "tgw-vpc-attach::transit-gateway::skope-A-vpc",
+    name: "tgw-vpc-attach::transit-gateway::spoke-A-vpc",
     properties: ({}) => ({
       Options: {
         DnsSupport: "enable",
@@ -178,10 +181,10 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       transitGateway: "transit-gateway",
-      vpc: "skope-A-vpc",
+      vpc: "spoke-A-vpc",
       subnets: [
-        `skope-A-subnet-private1-${config.region}a`,
-        `skope-A-subnet-private2-${config.region}b`,
+        `spoke-A-vpc::subnet-private1-${config.region}a`,
+        `spoke-A-vpc::subnet-private2-${config.region}b`,
       ],
     }),
   },
@@ -199,7 +202,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
       transitGatewayVpcAttachment:
-        "tgw-vpc-attach::transit-gateway::skope-A-vpc",
+        "tgw-vpc-attach::transit-gateway::spoke-A-vpc",
     }),
   },
   {
@@ -216,7 +219,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
       transitGatewayVpcAttachment:
-        "tgw-vpc-attach::transit-gateway::skope-A-vpc",
+        "tgw-vpc-attach::transit-gateway::spoke-A-vpc",
     }),
   },
 ];

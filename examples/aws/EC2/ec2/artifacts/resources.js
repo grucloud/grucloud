@@ -8,7 +8,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-default-a",
+    name: "vpc-default::subnet-default-a",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",
@@ -46,7 +46,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      subnets: ["subnet-default-a"],
+      subnets: ["vpc-default::subnet-default-a"],
       keyPair: "kp-ec2-example",
       securityGroups: ["sg::vpc-default::default"],
     }),

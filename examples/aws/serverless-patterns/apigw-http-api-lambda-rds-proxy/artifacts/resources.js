@@ -33,7 +33,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "sam-app-prv-sub-1",
+    name: "sam-app-vpc::sam-app-prv-sub-1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "172.31.0.0/24",
@@ -45,7 +45,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "sam-app-prv-sub-2",
+    name: "sam-app-vpc::sam-app-prv-sub-2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "172.31.1.0/24",
@@ -57,7 +57,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "sam-app-prv-sub-3",
+    name: "sam-app-vpc::sam-app-prv-sub-3",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "172.31.2.0/24",
@@ -242,7 +242,11 @@ exports.createResources = () => [
       DebugLogging: false,
     }),
     dependencies: ({}) => ({
-      subnets: ["sam-app-prv-sub-1", "sam-app-prv-sub-2", "sam-app-prv-sub-3"],
+      subnets: [
+        "sam-app-vpc::sam-app-prv-sub-1",
+        "sam-app-vpc::sam-app-prv-sub-2",
+        "sam-app-vpc::sam-app-prv-sub-3",
+      ],
       securityGroups: ["sg::sam-app-vpc::sam-app-database-sg"],
       secret: ["sam-app-cluster-secret"],
       role: "sam-app-dbProxyRole-1BMIN3H39UUK3",
@@ -256,7 +260,11 @@ exports.createResources = () => [
       DBSubnetGroupDescription: "subnets allowed for deploying DB instances",
     }),
     dependencies: ({}) => ({
-      subnets: ["sam-app-prv-sub-1", "sam-app-prv-sub-2", "sam-app-prv-sub-3"],
+      subnets: [
+        "sam-app-vpc::sam-app-prv-sub-1",
+        "sam-app-vpc::sam-app-prv-sub-2",
+        "sam-app-vpc::sam-app-prv-sub-3",
+      ],
     }),
   },
   {

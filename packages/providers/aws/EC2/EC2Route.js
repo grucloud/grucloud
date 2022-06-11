@@ -196,6 +196,9 @@ exports.EC2Route = ({ spec, config }) => {
     EgressOnlyInternetGatewayId,
   }) =>
     pipe([
+      tap((rt) => {
+        assert(rt);
+      }),
       get("Routes"),
       tap((Routes) => {
         assert(Routes);
@@ -239,7 +242,13 @@ exports.EC2Route = ({ spec, config }) => {
     ]),
     method: "describeRouteTables",
     getField: "RouteTables",
-    decorate: pipe([get("live"), findRoute]),
+    decorate: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      get("live"),
+      findRoute,
+    ]),
     ignoreErrorCodes,
   });
 
@@ -360,6 +369,9 @@ exports.EC2Route = ({ spec, config }) => {
                 name: `create route ${name}, is up ? `,
                 fn: pipe([
                   () => dependencies().routeTable.getLive({ lives }),
+                  tap((params) => {
+                    assert(true);
+                  }),
                   findRoute(payload),
                 ]),
                 config: { retryCount: 12 * 5, retryDelay: 5e3 },

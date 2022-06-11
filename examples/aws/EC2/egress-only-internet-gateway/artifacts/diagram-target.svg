@@ -68,152 +68,152 @@
 <path fill="none" stroke="#707070" d="M605.42,-129.08C610.16,-131.79 614.71,-134.76 619,-138 652.52,-163.31 675.42,-206.33 688.64,-237.62"/>
 <polygon fill="#707070" stroke="#707070" points="685.42,-238.99 692.44,-246.93 691.9,-236.34 685.42,-238.99"/>
 </g>
-<!-- Subnet::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="node5" class="node">
-<title>Subnet::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
+<title>Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="618.5,-281 339.5,-281 339.5,-223 618.5,-223 618.5,-281"/>
 <text text-anchor="start" x="352" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="352" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a...</text>
+<text text-anchor="start" x="352" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;vpc::eoigw&#45;subnet&#45;private1...</text>
 </g>
-<!-- Subnet::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc -->
+<!-- Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc -->
 <g id="edge4" class="edge">
-<title>Subnet::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc</title>
+<title>Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc</title>
 <path fill="none" stroke="#707070" d="M618.7,-266.96C627.74,-267.94 636.53,-268.88 644.8,-269.78"/>
 <polygon fill="#707070" stroke="#707070" points="644.66,-273.28 654.98,-270.87 645.41,-266.32 644.66,-273.28"/>
 </g>
-<!-- Subnet::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a -->
+<!-- Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a -->
 <g id="node6" class="node">
-<title>Subnet::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="608.5,-377 349.5,-377 349.5,-319 608.5,-319 608.5,-377"/>
-<text text-anchor="start" x="362" y="-357.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="362" y="-332.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a</text>
+<title>Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="618,-377 340,-377 340,-319 618,-319 618,-377"/>
+<text text-anchor="start" x="352" y="-357.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="352" y="-332.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;...</text>
 </g>
-<!-- Subnet::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc -->
+<!-- Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc -->
 <g id="edge5" class="edge">
-<title>Subnet::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc</title>
+<title>Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc</title>
 <path fill="none" stroke="#707070" d="M575.47,-318.94C590.08,-314.36 604.96,-309.61 619,-305 627.57,-302.19 636.6,-299.14 645.43,-296.11"/>
 <polygon fill="#707070" stroke="#707070" points="646.59,-299.41 654.91,-292.85 644.31,-292.8 646.59,-299.41"/>
 </g>
-<!-- RouteTable::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="node7" class="node">
-<title>RouteTable::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="596.5,-205 361.5,-205 361.5,-147 596.5,-147 596.5,-205"/>
-<text text-anchor="start" x="374" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
-<text text-anchor="start" x="374" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</text>
+<title>RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="614.5,-205 343.5,-205 343.5,-147 614.5,-147 614.5,-205"/>
+<text text-anchor="start" x="356" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
+<text text-anchor="start" x="356" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us...</text>
 </g>
-<!-- RouteTable::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc -->
+<!-- RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc -->
 <g id="edge6" class="edge">
-<title>RouteTable::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M596.85,-204.46C604.47,-207.38 611.91,-210.55 619,-214 633.65,-221.13 648.35,-230.93 661.24,-240.64"/>
+<title>RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::eoigw&#45;vpc</title>
+<path fill="none" stroke="#707070" d="M598.3,-205.02C605.41,-207.78 612.36,-210.77 619,-214 633.65,-221.13 648.35,-230.93 661.24,-240.64"/>
 <polygon fill="#707070" stroke="#707070" points="659.38,-243.63 669.43,-246.98 663.66,-238.09 659.38,-243.63"/>
 </g>
-<!-- RouteTable::eoigw&#45;rtb&#45;public -->
+<!-- RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;public -->
 <g id="node8" class="node">
-<title>RouteTable::eoigw&#45;rtb&#45;public</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="554.5,-529 403.5,-529 403.5,-471 554.5,-471 554.5,-529"/>
-<text text-anchor="start" x="416" y="-509.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
-<text text-anchor="start" x="416" y="-484.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;rtb&#45;public</text>
+<title>RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;public</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="589,-529 369,-529 369,-471 589,-471 589,-529"/>
+<text text-anchor="start" x="381" y="-509.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
+<text text-anchor="start" x="381" y="-484.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;vpc::eoigw&#45;rtb&#45;public</text>
 </g>
-<!-- RouteTable::eoigw&#45;rtb&#45;public&#45;&gt;Vpc::eoigw&#45;vpc -->
+<!-- RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;&gt;Vpc::eoigw&#45;vpc -->
 <g id="edge7" class="edge">
-<title>RouteTable::eoigw&#45;rtb&#45;public&#45;&gt;Vpc::eoigw&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M554.72,-492.06C577.4,-486.57 601.04,-477.37 619,-462 663.47,-423.94 685.33,-357.44 695.23,-315.12"/>
+<title>RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;&gt;Vpc::eoigw&#45;vpc</title>
+<path fill="none" stroke="#707070" d="M589.15,-480.5C599.95,-475.63 610.16,-469.56 619,-462 663.47,-423.94 685.33,-357.44 695.23,-315.12"/>
 <polygon fill="#707070" stroke="#707070" points="698.69,-315.7 697.45,-305.18 691.86,-314.18 698.69,-315.7"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="node9" class="node">
-<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="294.5,-215 32.5,-215 32.5,-157 294.5,-157 294.5,-215"/>
-<text text-anchor="start" x="44.5" y="-195.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
-<text text-anchor="start" x="44.5" y="-170.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::eoigw&#45;rtb&#45;private1&#45;us&#45;...</text>
+<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="297,-215 30,-215 30,-157 297,-157 297,-215"/>
+<text text-anchor="start" x="42.5" y="-195.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
+<text text-anchor="start" x="42.5" y="-170.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;p...</text>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="edge9" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
-<path fill="none" stroke="#707070" d="M294.73,-213.42C306.43,-215.88 318.33,-218.38 330.16,-220.88"/>
+<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
+<path fill="none" stroke="#707070" d="M297.45,-213.99C308.25,-216.26 319.2,-218.57 330.09,-220.86"/>
 <polygon fill="#707070" stroke="#707070" points="329.57,-224.33 340.08,-222.96 331.01,-217.48 329.57,-224.33"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="edge8" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</title>
-<path fill="none" stroke="#707070" d="M294.73,-181.85C313.32,-181.25 332.43,-180.64 350.96,-180.05"/>
-<polygon fill="#707070" stroke="#707070" points="351.31,-183.54 361.19,-179.73 351.09,-176.55 351.31,-183.54"/>
+<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::eoigw&#45;vpc::eoigw&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</title>
+<path fill="none" stroke="#707070" d="M297.45,-181.76C309.32,-181.38 321.37,-181 333.32,-180.61"/>
+<polygon fill="#707070" stroke="#707070" points="333.46,-184.11 343.34,-180.3 333.23,-177.12 333.46,-184.11"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;public::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a -->
+<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;public::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a -->
 <g id="node10" class="node">
-<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;public::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="293,-377 34,-377 34,-319 293,-319 293,-377"/>
-<text text-anchor="start" x="46.5" y="-357.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
-<text text-anchor="start" x="46.5" y="-332.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::eoigw&#45;rtb&#45;public::eoig...</text>
+<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;public::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="297,-377 30,-377 30,-319 297,-319 297,-377"/>
+<text text-anchor="start" x="42.5" y="-357.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
+<text text-anchor="start" x="42.5" y="-332.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;p...</text>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;public::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a -->
+<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;public::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a -->
 <g id="edge11" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;public::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a</title>
-<path fill="none" stroke="#707070" d="M293.37,-348C308.54,-348 324.07,-348 339.37,-348"/>
-<polygon fill="#707070" stroke="#707070" points="339.38,-351.5 349.38,-348 339.38,-344.5 339.38,-351.5"/>
+<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;public::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a</title>
+<path fill="none" stroke="#707070" d="M297.45,-348C308.08,-348 318.85,-348 329.57,-348"/>
+<polygon fill="#707070" stroke="#707070" points="329.82,-351.5 339.82,-348 329.82,-344.5 329.82,-351.5"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;public::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::eoigw&#45;rtb&#45;public -->
+<!-- RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;public::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;public -->
 <g id="edge10" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;rtb&#45;public::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::eoigw&#45;rtb&#45;public</title>
-<path fill="none" stroke="#707070" d="M290.86,-377.17C295.11,-379.86 299.18,-382.79 303,-386 331.63,-410.02 310.36,-437.99 339,-462 354.5,-474.99 374.07,-483.57 393.6,-489.22"/>
-<polygon fill="#707070" stroke="#707070" points="392.91,-492.66 403.47,-491.84 394.7,-485.89 392.91,-492.66"/>
+<title>RouteTableAssociation::rt&#45;assoc::eoigw&#45;vpc::eoigw&#45;rtb&#45;public::eoigw&#45;vpc::eoigw&#45;subnet&#45;public1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;public</title>
+<path fill="none" stroke="#707070" d="M290.86,-377.17C295.11,-379.86 299.18,-382.79 303,-386 331.63,-410.02 310.36,-437.99 339,-462 345.2,-467.2 352.05,-471.69 359.3,-475.57"/>
+<polygon fill="#707070" stroke="#707070" points="358.14,-478.9 368.65,-480.16 361.22,-472.62 358.14,-478.9"/>
 </g>
-<!-- Route::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eigw&#45;::/0 -->
+<!-- Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eogw&#45;::/0 -->
 <g id="node11" class="node">
-<title>Route::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eigw&#45;::/0</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="297,-139 30,-139 30,-81 297,-81 297,-139"/>
-<text text-anchor="start" x="42.5" y="-119.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
-<text text-anchor="start" x="42.5" y="-94.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;ei...</text>
+<title>Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eogw&#45;::/0</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="299,-139 28,-139 28,-81 299,-81 299,-139"/>
+<text text-anchor="start" x="40.5" y="-119.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
+<text text-anchor="start" x="40.5" y="-94.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us...</text>
 </g>
-<!-- Route::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eigw&#45;::/0&#45;&gt;EgressOnlyInternetGateway::my&#45;eigw -->
+<!-- Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eogw&#45;::/0&#45;&gt;EgressOnlyInternetGateway::my&#45;eigw -->
 <g id="edge13" class="edge">
-<title>Route::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eigw&#45;::/0&#45;&gt;EgressOnlyInternetGateway::my&#45;eigw</title>
-<path fill="none" stroke="#707070" d="M297.45,-105.76C307.82,-105.43 318.34,-105.09 328.8,-104.76"/>
-<polygon fill="#707070" stroke="#707070" points="328.94,-108.26 338.82,-104.44 328.71,-101.26 328.94,-108.26"/>
+<title>Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eogw&#45;::/0&#45;&gt;EgressOnlyInternetGateway::my&#45;eigw</title>
+<path fill="none" stroke="#707070" d="M299.27,-105.7C309,-105.39 318.85,-105.08 328.65,-104.76"/>
+<polygon fill="#707070" stroke="#707070" points="328.97,-108.26 338.85,-104.44 328.75,-101.26 328.97,-108.26"/>
 </g>
-<!-- Route::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eigw&#45;::/0&#45;&gt;RouteTable::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eogw&#45;::/0&#45;&gt;RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="edge12" class="edge">
-<title>Route::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eigw&#45;::/0&#45;&gt;RouteTable::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</title>
-<path fill="none" stroke="#707070" d="M297.45,-137.99C315.33,-141.75 333.64,-145.61 351.41,-149.35"/>
-<polygon fill="#707070" stroke="#707070" points="350.71,-152.78 361.22,-151.41 352.15,-145.93 350.71,-152.78"/>
+<title>Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;eogw&#45;::/0&#45;&gt;RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</title>
+<path fill="none" stroke="#707070" d="M299.27,-138.37C310.57,-140.75 322.02,-143.16 333.38,-145.55"/>
+<polygon fill="#707070" stroke="#707070" points="332.84,-149.02 343.34,-147.65 334.28,-142.17 332.84,-149.02"/>
 </g>
-<!-- Route::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0 -->
+<!-- Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0 -->
 <g id="node12" class="node">
-<title>Route::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="261.5,-529 65.5,-529 65.5,-471 261.5,-471 261.5,-529"/>
-<text text-anchor="start" x="77.5" y="-509.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
-<text text-anchor="start" x="77.5" y="-484.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;rtb&#45;public&#45;igw&#45;::/0</text>
+<title>Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="297.5,-529 29.5,-529 29.5,-471 297.5,-471 297.5,-529"/>
+<text text-anchor="start" x="41.5" y="-509.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
+<text text-anchor="start" x="41.5" y="-484.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;...</text>
 </g>
-<!-- Route::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0&#45;&gt;InternetGateway::eoigw&#45;igw -->
+<!-- Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0&#45;&gt;InternetGateway::eoigw&#45;igw -->
 <g id="edge15" class="edge">
-<title>Route::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0&#45;&gt;InternetGateway::eoigw&#45;igw</title>
-<path fill="none" stroke="#707070" d="M261.55,-476.47C296.97,-467.89 337.17,-458.14 373.24,-449.4"/>
-<polygon fill="#707070" stroke="#707070" points="374.4,-452.72 383.29,-446.96 372.75,-445.91 374.4,-452.72"/>
+<title>Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0&#45;&gt;InternetGateway::eoigw&#45;igw</title>
+<path fill="none" stroke="#707070" d="M284.36,-470.94C313.59,-463.86 344.62,-456.33 373.09,-449.43"/>
+<polygon fill="#707070" stroke="#707070" points="374.15,-452.78 383.05,-447.02 372.5,-445.97 374.15,-452.78"/>
 </g>
-<!-- Route::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0&#45;&gt;RouteTable::eoigw&#45;rtb&#45;public -->
+<!-- Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0&#45;&gt;RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;public -->
 <g id="edge14" class="edge">
-<title>Route::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0&#45;&gt;RouteTable::eoigw&#45;rtb&#45;public</title>
-<path fill="none" stroke="#707070" d="M261.55,-500C303.65,-500 352.52,-500 393.15,-500"/>
-<polygon fill="#707070" stroke="#707070" points="393.3,-503.5 403.3,-500 393.3,-496.5 393.3,-503.5"/>
+<title>Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;::/0&#45;&gt;RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;public</title>
+<path fill="none" stroke="#707070" d="M297.91,-500C318.15,-500 338.93,-500 358.84,-500"/>
+<polygon fill="#707070" stroke="#707070" points="358.86,-503.5 368.86,-500 358.86,-496.5 358.86,-503.5"/>
 </g>
-<!-- Route::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0 -->
+<!-- Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0 -->
 <g id="node13" class="node">
-<title>Route::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="281.5,-453 45.5,-453 45.5,-395 281.5,-395 281.5,-453"/>
-<text text-anchor="start" x="57.5" y="-433.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
-<text text-anchor="start" x="57.5" y="-408.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0</text>
+<title>Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="297.5,-453 29.5,-453 29.5,-395 297.5,-395 297.5,-453"/>
+<text text-anchor="start" x="41.5" y="-433.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
+<text text-anchor="start" x="41.5" y="-408.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;...</text>
 </g>
-<!-- Route::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0&#45;&gt;InternetGateway::eoigw&#45;igw -->
+<!-- Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0&#45;&gt;InternetGateway::eoigw&#45;igw -->
 <g id="edge17" class="edge">
-<title>Route::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0&#45;&gt;InternetGateway::eoigw&#45;igw</title>
-<path fill="none" stroke="#707070" d="M281.68,-424C311.71,-424 343.81,-424 373.16,-424"/>
-<polygon fill="#707070" stroke="#707070" points="373.43,-427.5 383.43,-424 373.43,-420.5 373.43,-427.5"/>
+<title>Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0&#45;&gt;InternetGateway::eoigw&#45;igw</title>
+<path fill="none" stroke="#707070" d="M297.91,-424C322.99,-424 348.89,-424 372.95,-424"/>
+<polygon fill="#707070" stroke="#707070" points="373.15,-427.5 383.15,-424 373.15,-420.5 373.15,-427.5"/>
 </g>
-<!-- Route::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0&#45;&gt;RouteTable::eoigw&#45;rtb&#45;public -->
+<!-- Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0&#45;&gt;RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;public -->
 <g id="edge16" class="edge">
-<title>Route::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0&#45;&gt;RouteTable::eoigw&#45;rtb&#45;public</title>
-<path fill="none" stroke="#707070" d="M281.68,-452.41C318.72,-461.39 358.92,-471.13 393.23,-479.45"/>
-<polygon fill="#707070" stroke="#707070" points="392.67,-482.92 403.21,-481.87 394.32,-476.11 392.67,-482.92"/>
+<title>Route::eoigw&#45;vpc::eoigw&#45;rtb&#45;public&#45;igw&#45;0.0.0.0/0&#45;&gt;RouteTable::eoigw&#45;vpc::eoigw&#45;rtb&#45;public</title>
+<path fill="none" stroke="#707070" d="M284.36,-453.06C308.75,-458.97 334.39,-465.19 358.76,-471.09"/>
+<polygon fill="#707070" stroke="#707070" points="358.2,-474.56 368.75,-473.51 359.85,-467.76 358.2,-474.56"/>
 </g>
 </g>
 </svg>

@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Account",
     group: "APIGateway",
     name: "default",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       cloudwatchRole: "roleApiGatewayCloudWatch",
     }),
   },
@@ -427,7 +427,7 @@ exports.createResources = () => [
         mykey: "myvalue3",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       restApi: "PetStore",
     }),
   },
@@ -438,7 +438,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       description: "prod",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       restApi: "PetStore",
     }),
   },
@@ -448,7 +448,6 @@ exports.createResources = () => [
     group: "IAM",
     name: "roleApiGatewayCloudWatch",
     properties: ({}) => ({
-      Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -456,7 +455,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: "apigateway.amazonaws.com",
+              Service: `apigateway.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },

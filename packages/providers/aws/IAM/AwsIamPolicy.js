@@ -195,7 +195,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         )
       ),
       tap((policies) => {
-        logger.debug(`getList policy managed: ${tos(policies)}`);
+        //logger.debug(`getList policy managed: ${tos(policies)}`);
       }),
       (policies) => addTargets({ policies, resources }),
     ])();

@@ -11,7 +11,7 @@ const {
   and,
   or,
 } = require("rubico");
-const { defaultsDeep, find, unless, isEmpty, first } = require("rubico/x");
+const { defaultsDeep, find, first, identity } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
@@ -51,12 +51,11 @@ const managedByOther =
               type: "HostedZone",
               group: "Route53",
             }),
-          get("live.VpcAssociations"),
+          get("dependencies"),
+          find(eq(get("type"), "Vpc")),
+          get("ids"),
           first,
-          and([
-            eq(get("VPCId"), live.VPC.VPCId),
-            eq(get("Owner.OwningAccount"), config.accountId()),
-          ]),
+          eq(identity, live.VPC.VPCId),
         ]),
       ]),
     ])();
@@ -84,10 +83,12 @@ const cannotBeDeleted =
 
 const findId = pipe([
   get("live"),
-  unless(
-    isEmpty,
-    ({ HostedZoneId, VPCId }) => `zone-assoc::${HostedZoneId}::${VPCId}`
-  ),
+  tap(({ HostedZoneId, VPC }) => {
+    assert(VPC);
+    assert(VPC.VPCId);
+    assert(HostedZoneId);
+  }),
+  ({ HostedZoneId, VPC: { VPCId } }) => `zone-assoc::${HostedZoneId}::${VPCId}`,
 ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html

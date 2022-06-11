@@ -86,7 +86,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "SubnetPrivateUSEAST1D",
+    name: "VPC::SubnetPrivateUSEAST1D",
     properties: ({ config }) => ({
       CidrBlock: "192.168.96.0/19",
       AvailabilityZone: `${config.region}d`,
@@ -104,7 +104,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "SubnetPrivateUSEAST1F",
+    name: "VPC::SubnetPrivateUSEAST1F",
     properties: ({ config }) => ({
       CidrBlock: "192.168.64.0/19",
       AvailabilityZone: `${config.region}f`,
@@ -160,7 +160,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "PrivateRouteTableUSEAST1D",
+    name: "VPC::PrivateRouteTableUSEAST1D",
     dependencies: ({}) => ({
       vpc: "VPC",
     }),
@@ -168,7 +168,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "PrivateRouteTableUSEAST1F",
+    name: "VPC::PrivateRouteTableUSEAST1F",
     dependencies: ({}) => ({
       vpc: "VPC",
     }),
@@ -185,16 +185,16 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1D",
-      subnet: "SubnetPrivateUSEAST1D",
+      routeTable: "VPC::PrivateRouteTableUSEAST1D",
+      subnet: "VPC::SubnetPrivateUSEAST1D",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1F",
-      subnet: "SubnetPrivateUSEAST1F",
+      routeTable: "VPC::PrivateRouteTableUSEAST1F",
+      subnet: "VPC::SubnetPrivateUSEAST1F",
     }),
   },
   {
@@ -220,7 +220,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1D",
+      routeTable: "VPC::PrivateRouteTableUSEAST1D",
       natGateway: "NATGateway",
     }),
   },
@@ -231,7 +231,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1F",
+      routeTable: "VPC::PrivateRouteTableUSEAST1F",
       natGateway: "NATGateway",
     }),
   },
@@ -387,8 +387,8 @@ exports.createResources = () => [
     name: "my-cluster",
     dependencies: ({}) => ({
       subnets: [
-        "SubnetPrivateUSEAST1D",
-        "SubnetPrivateUSEAST1F",
+        "VPC::SubnetPrivateUSEAST1D",
+        "VPC::SubnetPrivateUSEAST1F",
         "SubnetPublicUSEAST1D",
         "SubnetPublicUSEAST1F",
       ],

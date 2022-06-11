@@ -32,7 +32,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-1",
+    name: "vpc-postgres::subnet-1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "192.168.0.0/19",
@@ -44,7 +44,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-2",
+    name: "vpc-postgres::subnet-2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "192.168.32.0/19",
@@ -56,7 +56,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "route-table-public",
+    name: "vpc-postgres::route-table-public",
     dependencies: ({}) => ({
       vpc: "vpc-postgres",
     }),
@@ -65,16 +65,16 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "route-table-public",
-      subnet: "subnet-1",
+      routeTable: "vpc-postgres::route-table-public",
+      subnet: "vpc-postgres::subnet-1",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "route-table-public",
-      subnet: "subnet-2",
+      routeTable: "vpc-postgres::route-table-public",
+      subnet: "vpc-postgres::subnet-2",
     }),
   },
   {
@@ -84,7 +84,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "route-table-public",
+      routeTable: "vpc-postgres::route-table-public",
       ig: "ig-postgres",
     }),
   },
@@ -161,7 +161,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      subnets: ["subnet-1", "subnet-2"],
+      subnets: ["vpc-postgres::subnet-1", "vpc-postgres::subnet-2"],
     }),
   },
   {

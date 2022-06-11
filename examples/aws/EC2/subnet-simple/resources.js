@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "Vpc",
     group: "EC2",
-    name: "vpb-subnet",
+    name: "vpc",
     properties: ({}) => ({
       CidrBlock: "192.168.0.0/16",
     }),
@@ -14,7 +14,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-a",
+    name: "vpc::subnet-a",
     properties: ({ config }) => ({
       CidrBlock: "192.168.0.0/16",
       AvailabilityZone: `${config.region}a`,
@@ -26,7 +26,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: () => ({
-      vpc: "vpb-subnet",
+      vpc: "vpc",
     }),
   },
 ];

@@ -55,101 +55,101 @@
 <path fill="none" stroke="#707070" d="M303.33,-336.23C311.83,-335.69 320.3,-335.15 328.61,-334.63"/>
 <polygon fill="#707070" stroke="#707070" points="328.9,-338.12 338.66,-333.99 328.46,-331.13 328.9,-338.12"/>
 </g>
-<!-- Subnet::subnet&#45;a -->
+<!-- Subnet::vpc::subnet&#45;a -->
 <g id="node4" class="node">
-<title>Subnet::subnet&#45;a</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="494.5,-129 374.5,-129 374.5,-71 494.5,-71 494.5,-129"/>
-<text text-anchor="start" x="386.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="386.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">subnet&#45;a</text>
+<title>Subnet::vpc::subnet&#45;a</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="495.5,-129 373.5,-129 373.5,-71 495.5,-71 495.5,-129"/>
+<text text-anchor="start" x="385.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="385.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc::subnet&#45;a</text>
 </g>
-<!-- Subnet::subnet&#45;a&#45;&gt;Vpc::vpc -->
+<!-- Subnet::vpc::subnet&#45;a&#45;&gt;Vpc::vpc -->
 <g id="edge3" class="edge">
-<title>Subnet::subnet&#45;a&#45;&gt;Vpc::vpc</title>
-<path fill="none" stroke="#707070" d="M494.6,-119.92C506.71,-125.05 519.09,-131.11 530,-138 547.53,-149.07 564.74,-164.07 578.87,-177.83"/>
+<title>Subnet::vpc::subnet&#45;a&#45;&gt;Vpc::vpc</title>
+<path fill="none" stroke="#707070" d="M495.6,-120.35C507.39,-125.39 519.39,-131.3 530,-138 547.53,-149.07 564.74,-164.07 578.87,-177.83"/>
 <polygon fill="#707070" stroke="#707070" points="576.41,-180.31 585.97,-184.88 581.34,-175.35 576.41,-180.31"/>
 </g>
-<!-- Subnet::subnet&#45;b -->
+<!-- Subnet::vpc::subnet&#45;b -->
 <g id="node5" class="node">
-<title>Subnet::subnet&#45;b</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="494.5,-205 374.5,-205 374.5,-147 494.5,-147 494.5,-205"/>
-<text text-anchor="start" x="386.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="386.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">subnet&#45;b</text>
+<title>Subnet::vpc::subnet&#45;b</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="495.5,-205 373.5,-205 373.5,-147 495.5,-147 495.5,-205"/>
+<text text-anchor="start" x="385.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="385.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc::subnet&#45;b</text>
 </g>
-<!-- Subnet::subnet&#45;b&#45;&gt;Vpc::vpc -->
+<!-- Subnet::vpc::subnet&#45;b&#45;&gt;Vpc::vpc -->
 <g id="edge4" class="edge">
-<title>Subnet::subnet&#45;b&#45;&gt;Vpc::vpc</title>
-<path fill="none" stroke="#707070" d="M494.93,-188.76C514.6,-192.98 536.43,-197.67 555.88,-201.84"/>
-<polygon fill="#707070" stroke="#707070" points="555.3,-205.3 565.81,-203.98 556.77,-198.46 555.3,-205.3"/>
+<title>Subnet::vpc::subnet&#45;b&#45;&gt;Vpc::vpc</title>
+<path fill="none" stroke="#707070" d="M495.92,-188.97C515.36,-193.15 536.82,-197.75 555.98,-201.87"/>
+<polygon fill="#707070" stroke="#707070" points="555.25,-205.29 565.76,-203.97 556.72,-198.44 555.25,-205.29"/>
 </g>
-<!-- RouteTable::rt&#45;default&#45;vpc -->
+<!-- RouteTable::vpc::rt&#45;default -->
 <g id="node6" class="node">
-<title>RouteTable::rt&#45;default&#45;vpc</title>
+<title>RouteTable::vpc::rt&#45;default</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="510,-281 359,-281 359,-223 510,-223 510,-281"/>
 <text text-anchor="start" x="371.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
-<text text-anchor="start" x="371.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;default&#45;vpc</text>
+<text text-anchor="start" x="371.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc::rt&#45;default</text>
 </g>
-<!-- RouteTable::rt&#45;default&#45;vpc&#45;&gt;Vpc::vpc -->
+<!-- RouteTable::vpc::rt&#45;default&#45;&gt;Vpc::vpc -->
 <g id="edge5" class="edge">
-<title>RouteTable::rt&#45;default&#45;vpc&#45;&gt;Vpc::vpc</title>
+<title>RouteTable::vpc::rt&#45;default&#45;&gt;Vpc::vpc</title>
 <path fill="none" stroke="#707070" d="M510.05,-235.99C525.4,-232.7 541.33,-229.28 555.92,-226.15"/>
 <polygon fill="#707070" stroke="#707070" points="556.74,-229.55 565.79,-224.03 555.27,-222.71 556.74,-229.55"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;a -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;a -->
 <g id="node7" class="node">
-<title>RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;a</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="292,-131 35,-131 35,-73 292,-73 292,-131"/>
-<text text-anchor="start" x="47.5" y="-111.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
-<text text-anchor="start" x="47.5" y="-86.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::rt&#45;default&#45;vpc::subnet...</text>
+<title>RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;a</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="287,-131 40,-131 40,-73 287,-73 287,-131"/>
+<text text-anchor="start" x="52.5" y="-111.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
+<text text-anchor="start" x="52.5" y="-86.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::vpc::rt&#45;default::vpc::...</text>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;a&#45;&gt;Subnet::subnet&#45;a -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;a&#45;&gt;Subnet::vpc::subnet&#45;a -->
 <g id="edge7" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;a&#45;&gt;Subnet::subnet&#45;a</title>
-<path fill="none" stroke="#707070" d="M292.3,-101.05C317.11,-100.87 342.23,-100.68 364.26,-100.51"/>
-<polygon fill="#707070" stroke="#707070" points="364.51,-104.01 374.48,-100.44 364.45,-97.01 364.51,-104.01"/>
+<title>RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;a&#45;&gt;Subnet::vpc::subnet&#45;a</title>
+<path fill="none" stroke="#707070" d="M287.19,-101.09C313.26,-100.89 339.93,-100.7 363.24,-100.52"/>
+<polygon fill="#707070" stroke="#707070" points="363.38,-104.02 373.35,-100.45 363.33,-97.02 363.38,-104.02"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;a&#45;&gt;RouteTable::rt&#45;default&#45;vpc -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;a&#45;&gt;RouteTable::vpc::rt&#45;default -->
 <g id="edge6" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;a&#45;&gt;RouteTable::rt&#45;default&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M290.49,-131.02C294.88,-133.75 299.07,-136.73 303,-140 331.14,-163.36 312.24,-189.06 339,-214 342.37,-217.14 346.02,-220.03 349.88,-222.69"/>
+<title>RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;a&#45;&gt;RouteTable::vpc::rt&#45;default</title>
+<path fill="none" stroke="#707070" d="M287.25,-129.07C292.82,-132.31 298.11,-135.94 303,-140 331.14,-163.36 312.24,-189.06 339,-214 342.37,-217.14 346.02,-220.03 349.88,-222.69"/>
 <polygon fill="#707070" stroke="#707070" points="348.27,-225.81 358.6,-228.17 351.99,-219.88 348.27,-225.81"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;b -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;b -->
 <g id="node8" class="node">
-<title>RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;b</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="292,-207 35,-207 35,-149 292,-149 292,-207"/>
-<text text-anchor="start" x="47.5" y="-187.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
-<text text-anchor="start" x="47.5" y="-162.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::rt&#45;default&#45;vpc::subnet...</text>
+<title>RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;b</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="287,-207 40,-207 40,-149 287,-149 287,-207"/>
+<text text-anchor="start" x="52.5" y="-187.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
+<text text-anchor="start" x="52.5" y="-162.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::vpc::rt&#45;default::vpc::...</text>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;b&#45;&gt;Subnet::subnet&#45;b -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;b&#45;&gt;Subnet::vpc::subnet&#45;b -->
 <g id="edge9" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;b&#45;&gt;Subnet::subnet&#45;b</title>
-<path fill="none" stroke="#707070" d="M292.3,-177.05C317.11,-176.87 342.23,-176.68 364.26,-176.51"/>
-<polygon fill="#707070" stroke="#707070" points="364.51,-180.01 374.48,-176.44 364.45,-173.01 364.51,-180.01"/>
+<title>RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;b&#45;&gt;Subnet::vpc::subnet&#45;b</title>
+<path fill="none" stroke="#707070" d="M287.19,-177.09C313.26,-176.89 339.93,-176.7 363.24,-176.52"/>
+<polygon fill="#707070" stroke="#707070" points="363.38,-180.02 373.35,-176.45 363.33,-173.02 363.38,-180.02"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;b&#45;&gt;RouteTable::rt&#45;default&#45;vpc -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;b&#45;&gt;RouteTable::vpc::rt&#45;default -->
 <g id="edge8" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::rt&#45;default&#45;vpc::subnet&#45;b&#45;&gt;RouteTable::rt&#45;default&#45;vpc</title>
+<title>RouteTableAssociation::rt&#45;assoc::vpc::rt&#45;default::vpc::subnet&#45;b&#45;&gt;RouteTable::vpc::rt&#45;default</title>
 <path fill="none" stroke="#707070" d="M270.04,-207.03C296.29,-214.26 324.09,-221.9 349.16,-228.8"/>
 <polygon fill="#707070" stroke="#707070" points="348.43,-232.23 359,-231.5 350.28,-225.48 348.43,-232.23"/>
 </g>
-<!-- Route::rt&#45;default&#45;vpc&#45;igw -->
+<!-- Route::vpc::rt&#45;default&#45;igw&#45;0.0.0.0/0 -->
 <g id="node9" class="node">
-<title>Route::rt&#45;default&#45;vpc&#45;igw</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="237.5,-293 89.5,-293 89.5,-235 237.5,-235 237.5,-293"/>
-<text text-anchor="start" x="101.5" y="-273.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
-<text text-anchor="start" x="101.5" y="-248.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;default&#45;vpc&#45;igw</text>
+<title>Route::vpc::rt&#45;default&#45;igw&#45;0.0.0.0/0</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="273.5,-293 53.5,-293 53.5,-235 273.5,-235 273.5,-293"/>
+<text text-anchor="start" x="65.5" y="-273.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
+<text text-anchor="start" x="65.5" y="-248.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc::rt&#45;default&#45;igw&#45;0.0.0.0/0</text>
 </g>
-<!-- Route::rt&#45;default&#45;vpc&#45;igw&#45;&gt;InternetGateway::internet&#45;gateway -->
+<!-- Route::vpc::rt&#45;default&#45;igw&#45;0.0.0.0/0&#45;&gt;InternetGateway::internet&#45;gateway -->
 <g id="edge11" class="edge">
-<title>Route::rt&#45;default&#45;vpc&#45;igw&#45;&gt;InternetGateway::internet&#45;gateway</title>
-<path fill="none" stroke="#707070" d="M237.65,-281.4C265.73,-288.08 298.34,-295.84 328.81,-303.09"/>
-<polygon fill="#707070" stroke="#707070" points="328.08,-306.52 338.62,-305.43 329.7,-299.71 328.08,-306.52"/>
+<title>Route::vpc::rt&#45;default&#45;igw&#45;0.0.0.0/0&#45;&gt;InternetGateway::internet&#45;gateway</title>
+<path fill="none" stroke="#707070" d="M273.52,-289.94C291.71,-294.27 310.54,-298.75 328.62,-303.05"/>
+<polygon fill="#707070" stroke="#707070" points="328.04,-306.51 338.58,-305.42 329.66,-299.7 328.04,-306.51"/>
 </g>
-<!-- Route::rt&#45;default&#45;vpc&#45;igw&#45;&gt;RouteTable::rt&#45;default&#45;vpc -->
+<!-- Route::vpc::rt&#45;default&#45;igw&#45;0.0.0.0/0&#45;&gt;RouteTable::vpc::rt&#45;default -->
 <g id="edge10" class="edge">
-<title>Route::rt&#45;default&#45;vpc&#45;igw&#45;&gt;RouteTable::rt&#45;default&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M237.65,-260.74C271.92,-259.21 312.95,-257.38 348.58,-255.79"/>
-<polygon fill="#707070" stroke="#707070" points="349.13,-259.27 358.96,-255.33 348.81,-252.27 349.13,-259.27"/>
+<title>Route::vpc::rt&#45;default&#45;igw&#45;0.0.0.0/0&#45;&gt;RouteTable::vpc::rt&#45;default</title>
+<path fill="none" stroke="#707070" d="M273.52,-259.14C298.63,-258.02 324.96,-256.84 348.85,-255.78"/>
+<polygon fill="#707070" stroke="#707070" points="349.1,-259.27 358.93,-255.33 348.78,-252.28 349.1,-259.27"/>
 </g>
 </g>
 </svg>

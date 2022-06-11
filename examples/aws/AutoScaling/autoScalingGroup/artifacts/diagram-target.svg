@@ -29,31 +29,31 @@
 <text text-anchor="start" x="38.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">AutoScaling::AutoScalingGroup</text>
 <text text-anchor="start" x="38.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">asg</text>
 </g>
-<!-- Subnet::PubSubnetAz1 -->
+<!-- Subnet::Vpc::PubSubnetAz1 -->
 <g id="node4" class="node">
-<title>Subnet::PubSubnetAz1</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="508,-205 376,-205 376,-147 508,-147 508,-205"/>
-<text text-anchor="start" x="388" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="388" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">PubSubnetAz1</text>
+<title>Subnet::Vpc::PubSubnetAz1</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="526.5,-205 357.5,-205 357.5,-147 526.5,-147 526.5,-205"/>
+<text text-anchor="start" x="370" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="370" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Vpc::PubSubnetAz1</text>
 </g>
-<!-- AutoScalingGroup::asg&#45;&gt;Subnet::PubSubnetAz1 -->
+<!-- AutoScalingGroup::asg&#45;&gt;Subnet::Vpc::PubSubnetAz1 -->
 <g id="edge1" class="edge">
-<title>AutoScalingGroup::asg&#45;&gt;Subnet::PubSubnetAz1</title>
-<path fill="none" stroke="#707070" d="M268.36,-222.94C300.9,-214.09 335.96,-204.56 365.93,-196.41"/>
-<polygon fill="#707070" stroke="#707070" points="367.15,-199.71 375.89,-193.71 365.32,-192.95 367.15,-199.71"/>
+<title>AutoScalingGroup::asg&#45;&gt;Subnet::Vpc::PubSubnetAz1</title>
+<path fill="none" stroke="#707070" d="M268.36,-222.94C294.35,-215.88 321.94,-208.37 347.27,-201.49"/>
+<polygon fill="#707070" stroke="#707070" points="348.49,-204.78 357.22,-198.78 346.65,-198.03 348.49,-204.78"/>
 </g>
-<!-- Subnet::PubSubnetAz2 -->
+<!-- Subnet::Vpc::PubSubnetAz2 -->
 <g id="node5" class="node">
-<title>Subnet::PubSubnetAz2</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="508,-281 376,-281 376,-223 508,-223 508,-281"/>
-<text text-anchor="start" x="388" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="388" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">PubSubnetAz2</text>
+<title>Subnet::Vpc::PubSubnetAz2</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="526.5,-281 357.5,-281 357.5,-223 526.5,-223 526.5,-281"/>
+<text text-anchor="start" x="370" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="370" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Vpc::PubSubnetAz2</text>
 </g>
-<!-- AutoScalingGroup::asg&#45;&gt;Subnet::PubSubnetAz2 -->
+<!-- AutoScalingGroup::asg&#45;&gt;Subnet::Vpc::PubSubnetAz2 -->
 <g id="edge2" class="edge">
-<title>AutoScalingGroup::asg&#45;&gt;Subnet::PubSubnetAz2</title>
-<path fill="none" stroke="#707070" d="M295.11,-252C319.34,-252 343.82,-252 365.63,-252"/>
-<polygon fill="#707070" stroke="#707070" points="365.77,-255.5 375.77,-252 365.77,-248.5 365.77,-255.5"/>
+<title>AutoScalingGroup::asg&#45;&gt;Subnet::Vpc::PubSubnetAz2</title>
+<path fill="none" stroke="#707070" d="M295.11,-252C312.66,-252 330.34,-252 347.04,-252"/>
+<polygon fill="#707070" stroke="#707070" points="347.3,-255.5 357.3,-252 347.3,-248.5 347.3,-255.5"/>
 </g>
 <!-- LaunchTemplate::lt&#45;ec2&#45;micro -->
 <g id="node8" class="node">
@@ -82,17 +82,17 @@
 <text text-anchor="start" x="641.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
 <text text-anchor="start" x="641.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">Vpc</text>
 </g>
-<!-- Subnet::PubSubnetAz1&#45;&gt;Vpc::Vpc -->
+<!-- Subnet::Vpc::PubSubnetAz1&#45;&gt;Vpc::Vpc -->
 <g id="edge4" class="edge">
-<title>Subnet::PubSubnetAz1&#45;&gt;Vpc::Vpc</title>
-<path fill="none" stroke="#707070" d="M508.07,-176C542.89,-176 585.36,-176 618.82,-176"/>
-<polygon fill="#707070" stroke="#707070" points="618.89,-179.5 628.89,-176 618.89,-172.5 618.89,-179.5"/>
+<title>Subnet::Vpc::PubSubnetAz1&#45;&gt;Vpc::Vpc</title>
+<path fill="none" stroke="#707070" d="M526.61,-176C557.09,-176 590.82,-176 618.46,-176"/>
+<polygon fill="#707070" stroke="#707070" points="618.73,-179.5 628.73,-176 618.73,-172.5 618.73,-179.5"/>
 </g>
-<!-- Subnet::PubSubnetAz2&#45;&gt;Vpc::Vpc -->
+<!-- Subnet::Vpc::PubSubnetAz2&#45;&gt;Vpc::Vpc -->
 <g id="edge5" class="edge">
-<title>Subnet::PubSubnetAz2&#45;&gt;Vpc::Vpc</title>
-<path fill="none" stroke="#707070" d="M508.07,-230.73C543.04,-219.3 585.73,-205.34 619.25,-194.39"/>
-<polygon fill="#707070" stroke="#707070" points="620.47,-197.67 628.89,-191.24 618.3,-191.02 620.47,-197.67"/>
+<title>Subnet::Vpc::PubSubnetAz2&#45;&gt;Vpc::Vpc</title>
+<path fill="none" stroke="#707070" d="M526.61,-224.67C557.35,-214.62 591.41,-203.49 619.19,-194.41"/>
+<polygon fill="#707070" stroke="#707070" points="620.32,-197.72 628.73,-191.29 618.14,-191.07 620.32,-197.72"/>
 </g>
 <!-- SecurityGroup::sg::Vpc::EcsSecurityGroup -->
 <g id="node6" class="node">

@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 637)">
 <title>graphname</title>
 <polygon fill="#fafafa" stroke="transparent" points="-4,4 -4,-637 1373,-637 1373,4 -4,4"/>
-<text text-anchor="start" x="615.5" y="-608.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project auth0</text>
-<text text-anchor="start" x="681" y="-592.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
-<text text-anchor="start" x="615.5" y="-571.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
+<text text-anchor="start" x="496.5" y="-608.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project ApiGateway Auth0 Autorizer</text>
+<text text-anchor="start" x="680.5" y="-592.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
+<text text-anchor="start" x="496.5" y="-571.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_aws</title>
 <polygon fill="#f5f5f5" stroke="#f5f5f5" points="8,-8 8,-549 1361,-549 1361,-8 8,-8"/>
@@ -235,41 +235,41 @@
 <path fill="none" stroke="#707070" d="M875.51,-138.8C896.32,-142.96 918.65,-147.43 940.36,-151.77"/>
 <polygon fill="#707070" stroke="#707070" points="939.79,-155.23 950.28,-153.76 941.16,-148.36 939.79,-155.23"/>
 </g>
-<!-- Record::record::ACM::Certificate::grucloud.org -->
+<!-- Record::record::ACM::Certificate::CNAME::grucloud.org -->
 <g id="node15" class="node">
-<title>Record::record::ACM::Certificate::grucloud.org</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="598,-129 335,-129 335,-71 598,-71 598,-129"/>
-<text text-anchor="start" x="347.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
-<text text-anchor="start" x="347.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">record::ACM::Certificate::gruclo...</text>
+<title>Record::record::ACM::Certificate::CNAME::grucloud.org</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="606.5,-129 326.5,-129 326.5,-71 606.5,-71 606.5,-129"/>
+<text text-anchor="start" x="338.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
+<text text-anchor="start" x="338.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">record::ACM::Certificate::CNAME:...</text>
 </g>
-<!-- Record::record::ACM::Certificate::grucloud.org&#45;&gt;Certificate::grucloud.org -->
+<!-- Record::record::ACM::Certificate::CNAME::grucloud.org&#45;&gt;Certificate::grucloud.org -->
 <g id="edge20" class="edge">
-<title>Record::record::ACM::Certificate::grucloud.org&#45;&gt;Certificate::grucloud.org</title>
-<path fill="none" stroke="#707070" d="M598.2,-85.9C617.56,-84.28 637.28,-82.89 656,-82 766.54,-76.73 794.51,-75.67 905,-82 928.55,-83.35 953.99,-85.83 977.38,-88.53"/>
+<title>Record::record::ACM::Certificate::CNAME::grucloud.org&#45;&gt;Certificate::grucloud.org</title>
+<path fill="none" stroke="#707070" d="M606.62,-85.21C623.24,-83.89 639.99,-82.76 656,-82 766.54,-76.73 794.51,-75.67 905,-82 928.55,-83.35 953.99,-85.83 977.38,-88.53"/>
 <polygon fill="#707070" stroke="#707070" points="977.27,-92.04 987.61,-89.74 978.09,-85.09 977.27,-92.04"/>
 </g>
-<!-- Record::record::ACM::Certificate::grucloud.org&#45;&gt;HostedZone::grucloud.org. -->
+<!-- Record::record::ACM::Certificate::CNAME::grucloud.org&#45;&gt;HostedZone::grucloud.org. -->
 <g id="edge19" class="edge">
-<title>Record::record::ACM::Certificate::grucloud.org&#45;&gt;HostedZone::grucloud.org.</title>
-<path fill="none" stroke="#707070" d="M598.01,-108.37C623.69,-110.01 650.32,-111.72 675.01,-113.3"/>
-<polygon fill="#707070" stroke="#707070" points="674.9,-116.8 685.1,-113.95 675.35,-109.82 674.9,-116.8"/>
+<title>Record::record::ACM::Certificate::CNAME::grucloud.org&#45;&gt;HostedZone::grucloud.org.</title>
+<path fill="none" stroke="#707070" d="M606.62,-108.92C629.73,-110.4 653.34,-111.91 675.39,-113.33"/>
+<polygon fill="#707070" stroke="#707070" points="675.2,-116.82 685.4,-113.97 675.65,-109.84 675.2,-116.82"/>
 </g>
-<!-- Record::record::ApiGatewayV2::DomainName::grucloud.org -->
+<!-- Record::record::ApiGatewayV2::DomainName::A::grucloud.org -->
 <g id="node16" class="node">
-<title>Record::record::ApiGatewayV2::DomainName::grucloud.org</title>
+<title>Record::record::ApiGatewayV2::DomainName::A::grucloud.org</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="620,-205 313,-205 313,-147 620,-147 620,-205"/>
 <text text-anchor="start" x="325.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
 <text text-anchor="start" x="325.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">record::ApiGatewayV2::DomainName...</text>
 </g>
-<!-- Record::record::ApiGatewayV2::DomainName::grucloud.org&#45;&gt;DomainName::grucloud.org -->
+<!-- Record::record::ApiGatewayV2::DomainName::A::grucloud.org&#45;&gt;DomainName::grucloud.org -->
 <g id="edge22" class="edge">
-<title>Record::record::ApiGatewayV2::DomainName::grucloud.org&#45;&gt;DomainName::grucloud.org</title>
+<title>Record::record::ApiGatewayV2::DomainName::A::grucloud.org&#45;&gt;DomainName::grucloud.org</title>
 <path fill="none" stroke="#707070" d="M620.3,-185.79C628.75,-186.34 637.22,-186.88 645.6,-187.42"/>
 <polygon fill="#707070" stroke="#707070" points="645.56,-190.92 655.76,-188.07 646.01,-183.94 645.56,-190.92"/>
 </g>
-<!-- Record::record::ApiGatewayV2::DomainName::grucloud.org&#45;&gt;HostedZone::grucloud.org. -->
+<!-- Record::record::ApiGatewayV2::DomainName::A::grucloud.org&#45;&gt;HostedZone::grucloud.org. -->
 <g id="edge21" class="edge">
-<title>Record::record::ApiGatewayV2::DomainName::grucloud.org&#45;&gt;HostedZone::grucloud.org.</title>
+<title>Record::record::ApiGatewayV2::DomainName::A::grucloud.org&#45;&gt;HostedZone::grucloud.org.</title>
 <path fill="none" stroke="#707070" d="M620.3,-148.57C638.89,-145.24 657.53,-141.89 675.18,-138.72"/>
 <polygon fill="#707070" stroke="#707070" points="676.23,-142.09 685.45,-136.88 674.99,-135.2 676.23,-142.09"/>
 </g>

@@ -14,7 +14,7 @@ exports.createResources = () => [
       HealthCheckGracePeriod: 0,
     }),
     dependencies: ({}) => ({
-      subnets: ["PubSubnetAz1", "PubSubnetAz2"],
+      subnets: ["Vpc::PubSubnetAz1", "Vpc::PubSubnetAz2"],
       launchConfiguration:
         "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-HWVeTO3QcmK1",
     }),
@@ -85,7 +85,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "PubSubnetAz1",
+    name: "Vpc::PubSubnetAz1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.0.0/24",
@@ -103,7 +103,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "PubSubnetAz2",
+    name: "Vpc::PubSubnetAz2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.1.0/24",
@@ -121,7 +121,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "RouteViaIgw",
+    name: "Vpc::RouteViaIgw",
     properties: ({}) => ({
       Tags: [
         {
@@ -138,16 +138,16 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "RouteViaIgw",
-      subnet: "PubSubnetAz1",
+      routeTable: "Vpc::RouteViaIgw",
+      subnet: "Vpc::PubSubnetAz1",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "RouteViaIgw",
-      subnet: "PubSubnetAz2",
+      routeTable: "Vpc::RouteViaIgw",
+      subnet: "Vpc::PubSubnetAz2",
     }),
   },
   {
@@ -157,7 +157,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "RouteViaIgw",
+      routeTable: "Vpc::RouteViaIgw",
       ig: "InternetGateway",
     }),
   },

@@ -58,7 +58,8 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `project-subnet-public1-${config.region}a`,
+    name: ({ config }) =>
+      `project-vpc::project-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.0.0/20",
@@ -70,7 +71,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "project-rtb-public",
+    name: "project-vpc::project-rtb-public",
     dependencies: ({}) => ({
       vpc: "project-vpc",
     }),
@@ -79,8 +80,8 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "project-rtb-public",
-      subnet: `project-subnet-public1-${config.region}a`,
+      routeTable: "project-vpc::project-rtb-public",
+      subnet: `project-vpc::project-subnet-public1-${config.region}a`,
     }),
   },
   {
@@ -90,7 +91,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "project-rtb-public",
+      routeTable: "project-vpc::project-rtb-public",
       ig: "project-igw",
     }),
   },
@@ -125,7 +126,7 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `project-subnet-public1-${config.region}a`,
+            name: `project-vpc::project-subnet-public1-${config.region}a`,
           })}`,
         },
       ],
@@ -135,7 +136,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({ config }) => ({
-      subnets: [`project-subnet-public1-${config.region}a`],
+      subnets: [`project-vpc::project-subnet-public1-${config.region}a`],
       securityGroups: ["sg::project-vpc::default"],
     }),
   },

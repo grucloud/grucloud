@@ -6,6 +6,7 @@
 
 Substitute tag value with region/account /other
 
+- user tags for ec2 instance
 - aws_organizations_organization
 - PrincipalAssociation replace associatedEntity from config
   EIP name based on dependencies
@@ -23,10 +24,6 @@ omit AWSLogs S3 Objects
 - s3-eventbridge: missing cloudtrail EventDataStore
 
 - substitute zone, not ${region}/b
-
-- aws_route53_record alias aws_vpc_endpoint
-
-  inferName DhcpOptionAssociation
 
 - gc gencode lambda with java.
 
@@ -52,7 +49,6 @@ omit AWSLogs S3 Objects
 - apprunner example npm test
 - inferName Lambda layer
 - inferName OpenIDConnectProvider
-- example vpc-use still using make and use
 - RDS DBCluster AvailabilityZones
 - inferName Route Table
 - Nat gateway handle deleting

@@ -223,24 +223,24 @@
 <path fill="none" stroke="#707070" d="M927.22,-463C951.92,-459.71 977.23,-456.34 1000.14,-453.29"/>
 <polygon fill="#707070" stroke="#707070" points="1000.7,-456.75 1010.15,-451.96 999.77,-449.81 1000.7,-456.75"/>
 </g>
-<!-- Route::rt&#45;default&#45;vpc&#45;igw -->
+<!-- Route::rt&#45;default&#45;vpc&#45;igw&#45;0.0.0.0/0 -->
 <g id="node13" class="node">
-<title>Route::rt&#45;default&#45;vpc&#45;igw</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="872.5,-433 724.5,-433 724.5,-375 872.5,-375 872.5,-433"/>
-<text text-anchor="start" x="736.5" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
-<text text-anchor="start" x="736.5" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;default&#45;vpc&#45;igw</text>
+<title>Route::rt&#45;default&#45;vpc&#45;igw&#45;0.0.0.0/0</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="907,-433 690,-433 690,-375 907,-375 907,-433"/>
+<text text-anchor="start" x="702.5" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
+<text text-anchor="start" x="702.5" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;default&#45;vpc&#45;igw&#45;0.0.0.0/0</text>
 </g>
-<!-- Route::rt&#45;default&#45;vpc&#45;igw&#45;&gt;InternetGateway::internet&#45;gateway -->
+<!-- Route::rt&#45;default&#45;vpc&#45;igw&#45;0.0.0.0/0&#45;&gt;InternetGateway::internet&#45;gateway -->
 <g id="edge18" class="edge">
-<title>Route::rt&#45;default&#45;vpc&#45;igw&#45;&gt;InternetGateway::internet&#45;gateway</title>
-<path fill="none" stroke="#707070" d="M872.65,-394.26C905.42,-389.9 944.67,-384.68 980.46,-379.91"/>
-<polygon fill="#707070" stroke="#707070" points="981.01,-383.37 990.46,-378.58 980.08,-376.43 981.01,-383.37"/>
+<title>Route::rt&#45;default&#45;vpc&#45;igw&#45;0.0.0.0/0&#45;&gt;InternetGateway::internet&#45;gateway</title>
+<path fill="none" stroke="#707070" d="M907.03,-389.69C930.96,-386.5 956.29,-383.13 980.11,-379.96"/>
+<polygon fill="#707070" stroke="#707070" points="980.77,-383.4 990.22,-378.62 979.84,-376.47 980.77,-383.4"/>
 </g>
-<!-- Route::rt&#45;default&#45;vpc&#45;igw&#45;&gt;RouteTable::rt&#45;default&#45;vpc -->
+<!-- Route::rt&#45;default&#45;vpc&#45;igw&#45;0.0.0.0/0&#45;&gt;RouteTable::rt&#45;default&#45;vpc -->
 <g id="edge17" class="edge">
-<title>Route::rt&#45;default&#45;vpc&#45;igw&#45;&gt;RouteTable::rt&#45;default&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M872.65,-413.74C911.49,-418.91 959.43,-425.29 999.92,-430.68"/>
-<polygon fill="#707070" stroke="#707070" points="999.67,-434.17 1010.05,-432.02 1000.6,-427.24 999.67,-434.17"/>
+<title>Route::rt&#45;default&#45;vpc&#45;igw&#45;0.0.0.0/0&#45;&gt;RouteTable::rt&#45;default&#45;vpc</title>
+<path fill="none" stroke="#707070" d="M907.03,-418.31C937.85,-422.41 971.01,-426.83 1000.26,-430.72"/>
+<polygon fill="#707070" stroke="#707070" points="1000.06,-434.23 1010.43,-432.08 1000.98,-427.29 1000.06,-434.23"/>
 </g>
 <!-- SecurityGroup::sg::vpc::default -->
 <g id="node14" class="node">

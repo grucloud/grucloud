@@ -16,10 +16,10 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-private",
+    name: "Vpc::subnet-private",
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/24",
-      AvailabilityZone: `${config.region}e`,
+      AvailabilityZone: `${config.region}a`,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",
@@ -61,7 +61,7 @@ exports.createResources = () => [
     name: "ec2-template-sg",
     properties: ({ config, getId }) => ({
       Placement: {
-        AvailabilityZone: `${config.region}e`,
+        AvailabilityZone: `${config.region}a`,
       },
       LaunchTemplate: {
         LaunchTemplateId: `${getId({
@@ -73,7 +73,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      subnets: ["subnet-private"],
+      subnets: ["Vpc::subnet-private"],
       keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
       securityGroups: ["sg::Vpc::EcsSecurityGroup"],

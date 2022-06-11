@@ -651,6 +651,9 @@ const AwsClient =
                       }),
                       getById,
                       tap.if(isInstanceError, (live) => {
+                        logger.error(
+                          `isInstanceError: ${JSON.stringify(live, null, 4)}`
+                        );
                         const error = new Error(
                           `error destroying resource ${name}`
                         );

@@ -28,7 +28,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       type: "AWS_LAMBDA",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "cdk-notes-appsync-api",
       serviceRole:
         "AppsyncCdkAppStack-ApilambdaDatasourceServiceRole2-1BX1MTO4H3KAG",
@@ -43,7 +43,7 @@ exports.createResources = () => [
       fieldName: "createNote",
       kind: "UNIT",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
@@ -56,7 +56,7 @@ exports.createResources = () => [
       fieldName: "deleteNote",
       kind: "UNIT",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
@@ -69,7 +69,7 @@ exports.createResources = () => [
       fieldName: "updateNote",
       kind: "UNIT",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
@@ -82,7 +82,7 @@ exports.createResources = () => [
       fieldName: "getNoteById",
       kind: "UNIT",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
@@ -95,7 +95,7 @@ exports.createResources = () => [
       fieldName: "listNotes",
       kind: "UNIT",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "cdk-notes-appsync-api",
       dataSource: "lambdaDatasource",
     }),
@@ -131,7 +131,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "appsync.amazonaws.com",
+              Service: `appsync.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -160,14 +160,14 @@ exports.createResources = () => [
     type: "Role",
     group: "IAM",
     name: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
-    properties: ({ config }) => ({
+    properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
             Effect: "Allow",
             Principal: {
-              Service: "lambda.amazonaws.com",
+              Service: `lambda.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -181,9 +181,11 @@ exports.createResources = () => [
               {
                 Action: "dynamodb:*",
                 Resource: [
-                  `arn:aws:dynamodb:${
-                    config.region
-                  }:${config.accountId()}:table/AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R`,
+                  `${getId({
+                    type: "Table",
+                    group: "DynamoDB",
+                    name: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
+                  })}`,
                 ],
                 Effect: "Allow",
               },
@@ -200,7 +202,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
     }),
   },
@@ -212,8 +214,7 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            NOTES_TABLE:
-              "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
+            NOTES_TABLE: `AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R`,
           },
         },
         Handler: "main.handler",
@@ -221,7 +222,7 @@ exports.createResources = () => [
         Runtime: "nodejs12.x",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
       dynamoDbTable: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
     }),

@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, map } = require("rubico");
-const { defaultsDeep, first, pluck, identity, when } = require("rubico/x");
+const { pipe, tap, get, eq, assign, map } = require("rubico");
+const { defaultsDeep, first, pluck, callProp, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
@@ -41,6 +41,9 @@ const model = ({ config }) => ({
               () => ({ ResolverEndpointId: Id }),
               endpoint().listResolverEndpointIpAddresses,
               get("IpAddresses"),
+              callProp("sort", (a, b) =>
+                a.CreationTime.localeCompare(b.CreationTime)
+              ),
             ])(),
         }),
         assignTags({ endpoint }),

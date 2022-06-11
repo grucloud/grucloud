@@ -813,7 +813,7 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
       //get("items"),
       first,
       tap((item) => {
-        logger.debug(`getById  ${fieldIds} result: ${tos(item)}`);
+        //logger.debug(`getById  ${fieldIds} result: ${tos(item)}`);
       }),
     ]),
     (error) => {

@@ -15,7 +15,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-dual",
+    name: "vpc-dual::subnet-dual",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       CidrBlock: "10.0.0.0/24",

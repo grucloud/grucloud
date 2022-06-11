@@ -42,18 +42,18 @@
 <path fill="none" stroke="#707070" d="M223.68,-159.7C256.38,-151.45 297.2,-141.16 335.7,-131.46"/>
 <polygon fill="#707070" stroke="#707070" points="336.59,-134.84 345.43,-129.01 334.88,-128.06 336.59,-134.84"/>
 </g>
-<!-- Subnet::::subnet&#45;default&#45;d -->
+<!-- Subnet::::vpc&#45;default::subnet&#45;default&#45;d -->
 <g id="node4" class="node">
-<title>Subnet::::subnet&#45;default&#45;d</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="532.5,-205 390.5,-205 390.5,-147 532.5,-147 532.5,-205"/>
-<text text-anchor="start" x="402.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="402.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">subnet&#45;default&#45;d</text>
+<title>Subnet::::vpc&#45;default::subnet&#45;default&#45;d</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="576.5,-205 346.5,-205 346.5,-147 576.5,-147 576.5,-205"/>
+<text text-anchor="start" x="358.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="358.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc&#45;default::subnet&#45;default&#45;d</text>
 </g>
-<!-- Instance::::ec&#45;credit&#45;&gt;Subnet::::subnet&#45;default&#45;d -->
+<!-- Instance::::ec&#45;credit&#45;&gt;Subnet::::vpc&#45;default::subnet&#45;default&#45;d -->
 <g id="edge2" class="edge">
-<title>Instance::::ec&#45;credit&#45;&gt;Subnet::::subnet&#45;default&#45;d</title>
-<path fill="none" stroke="#707070" d="M223.68,-176C269.48,-176 331.21,-176 380.16,-176"/>
-<polygon fill="#707070" stroke="#707070" points="380.41,-179.5 390.41,-176 380.41,-172.5 380.41,-179.5"/>
+<title>Instance::::ec&#45;credit&#45;&gt;Subnet::::vpc&#45;default::subnet&#45;default&#45;d</title>
+<path fill="none" stroke="#707070" d="M223.68,-176C256.48,-176 297.45,-176 336.05,-176"/>
+<polygon fill="#707070" stroke="#707070" points="336.34,-179.5 346.34,-176 336.34,-172.5 336.34,-179.5"/>
 </g>
 <!-- Vpc::::vpc&#45;default -->
 <g id="node5" class="node">
@@ -87,11 +87,11 @@
 <path fill="none" stroke="#707070" d="M292.12,-100C300.62,-100 309.2,-100 317.75,-100"/>
 <polygon fill="#707070" stroke="#707070" points="317.76,-103.5 327.76,-100 317.76,-96.5 317.76,-103.5"/>
 </g>
-<!-- Subnet::::subnet&#45;default&#45;d&#45;&gt;Vpc::::vpc&#45;default -->
+<!-- Subnet::::vpc&#45;default::subnet&#45;default&#45;d&#45;&gt;Vpc::::vpc&#45;default -->
 <g id="edge6" class="edge">
-<title>Subnet::::subnet&#45;default&#45;d&#45;&gt;Vpc::::vpc&#45;default</title>
-<path fill="none" stroke="#707070" d="M532.55,-176C560.81,-176 593.13,-176 620.46,-176"/>
-<polygon fill="#707070" stroke="#707070" points="620.68,-179.5 630.68,-176 620.68,-172.5 620.68,-179.5"/>
+<title>Subnet::::vpc&#45;default::subnet&#45;default&#45;d&#45;&gt;Vpc::::vpc&#45;default</title>
+<path fill="none" stroke="#707070" d="M576.75,-176C591.86,-176 606.85,-176 620.58,-176"/>
+<polygon fill="#707070" stroke="#707070" points="620.82,-179.5 630.82,-176 620.82,-172.5 620.82,-179.5"/>
 </g>
 </g>
 </svg>

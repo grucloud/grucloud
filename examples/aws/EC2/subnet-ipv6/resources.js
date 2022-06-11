@@ -15,9 +15,9 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-071157b43415b2480",
+    name: "vpc-ipv6::subnet-a",
     properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}d`,
+      AvailabilityZone: `${config.region}a`,
       Ipv6Native: true,
       PrivateDnsNameOptionsOnLaunch: {
         HostnameType: "resource-name",

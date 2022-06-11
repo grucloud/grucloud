@@ -13,7 +13,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "rt-default-vpc-default",
+    name: "vpc-default::rt-default",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",
@@ -26,7 +26,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "rt-default-vpc-default",
+      routeTable: "vpc-default::rt-default",
       ig: "ig-default",
     }),
   },

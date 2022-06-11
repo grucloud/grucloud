@@ -32,7 +32,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcPublicSubnet1NATGateway4D7517AA",
     dependencies: ({}) => ({
-      subnet: "VpcPublicSubnet1Subnet5C2D37C4",
+      subnet: "Vpc8378EB38::VpcPublicSubnet1Subnet5C2D37C4",
       eip: "VpcPublicSubnet1EIPD7E02669",
     }),
   },
@@ -41,14 +41,14 @@ exports.createResources = () => [
     group: "EC2",
     name: "VpcPublicSubnet2NATGateway9182C01D",
     dependencies: ({}) => ({
-      subnet: "VpcPublicSubnet2Subnet691E08A3",
+      subnet: "Vpc8378EB38::VpcPublicSubnet2Subnet691E08A3",
       eip: "VpcPublicSubnet2EIP3C605A87",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "VpcPrivateSubnet1Subnet536B997A",
+    name: "Vpc8378EB38::VpcPrivateSubnet1Subnet536B997A",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.128.0/18",
@@ -60,7 +60,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "VpcPrivateSubnet2Subnet3788AAA1",
+    name: "Vpc8378EB38::VpcPrivateSubnet2Subnet3788AAA1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.192.0/18",
@@ -72,7 +72,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "VpcPublicSubnet1Subnet5C2D37C4",
+    name: "Vpc8378EB38::VpcPublicSubnet1Subnet5C2D37C4",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.0.0/18",
@@ -85,7 +85,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "VpcPublicSubnet2Subnet691E08A3",
+    name: "Vpc8378EB38::VpcPublicSubnet2Subnet691E08A3",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.64.0/18",
@@ -98,7 +98,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "VpcPrivateSubnet1RouteTableB2C5B500",
+    name: "Vpc8378EB38::VpcPrivateSubnet1RouteTableB2C5B500",
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
@@ -106,7 +106,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "VpcPrivateSubnet2RouteTableA678073B",
+    name: "Vpc8378EB38::VpcPrivateSubnet2RouteTableA678073B",
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
@@ -114,7 +114,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "VpcPublicSubnet1RouteTable6C95E38E",
+    name: "Vpc8378EB38::VpcPublicSubnet1RouteTable6C95E38E",
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
@@ -122,7 +122,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "VpcPublicSubnet2RouteTable94F7E489",
+    name: "Vpc8378EB38::VpcPublicSubnet2RouteTable94F7E489",
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
@@ -131,32 +131,32 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "VpcPrivateSubnet1RouteTableB2C5B500",
-      subnet: "VpcPrivateSubnet1Subnet536B997A",
+      routeTable: "Vpc8378EB38::VpcPrivateSubnet1RouteTableB2C5B500",
+      subnet: "Vpc8378EB38::VpcPrivateSubnet1Subnet536B997A",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "VpcPrivateSubnet2RouteTableA678073B",
-      subnet: "VpcPrivateSubnet2Subnet3788AAA1",
+      routeTable: "Vpc8378EB38::VpcPrivateSubnet2RouteTableA678073B",
+      subnet: "Vpc8378EB38::VpcPrivateSubnet2Subnet3788AAA1",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "VpcPublicSubnet1RouteTable6C95E38E",
-      subnet: "VpcPublicSubnet1Subnet5C2D37C4",
+      routeTable: "Vpc8378EB38::VpcPublicSubnet1RouteTable6C95E38E",
+      subnet: "Vpc8378EB38::VpcPublicSubnet1Subnet5C2D37C4",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "VpcPublicSubnet2RouteTable94F7E489",
-      subnet: "VpcPublicSubnet2Subnet691E08A3",
+      routeTable: "Vpc8378EB38::VpcPublicSubnet2RouteTable94F7E489",
+      subnet: "Vpc8378EB38::VpcPublicSubnet2Subnet691E08A3",
     }),
   },
   {
@@ -166,7 +166,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "VpcPrivateSubnet1RouteTableB2C5B500",
+      routeTable: "Vpc8378EB38::VpcPrivateSubnet1RouteTableB2C5B500",
       natGateway: "VpcPublicSubnet1NATGateway4D7517AA",
     }),
   },
@@ -177,7 +177,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "VpcPrivateSubnet2RouteTableA678073B",
+      routeTable: "Vpc8378EB38::VpcPrivateSubnet2RouteTableA678073B",
       natGateway: "VpcPublicSubnet2NATGateway9182C01D",
     }),
   },
@@ -188,7 +188,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "VpcPublicSubnet1RouteTable6C95E38E",
+      routeTable: "Vpc8378EB38::VpcPublicSubnet1RouteTable6C95E38E",
       ig: "VpcIGWD7BA715C",
     }),
   },
@@ -199,7 +199,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "VpcPublicSubnet2RouteTable94F7E489",
+      routeTable: "Vpc8378EB38::VpcPublicSubnet2RouteTable94F7E489",
       ig: "VpcIGWD7BA715C",
     }),
   },
@@ -364,8 +364,8 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
       subnets: [
-        "VpcPrivateSubnet1Subnet536B997A",
-        "VpcPrivateSubnet2Subnet3788AAA1",
+        "Vpc8378EB38::VpcPrivateSubnet1Subnet536B997A",
+        "Vpc8378EB38::VpcPrivateSubnet2Subnet3788AAA1",
       ],
       iamRoles: ["CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL"],
     }),
@@ -523,8 +523,8 @@ exports.createResources = () => [
       cluster: "CdkStack-ClusterEB0386A7-gyqzhZkvCS5B",
       taskDefinition: "CdkStackFargateServiceTaskDef2C533A52",
       subnets: [
-        "VpcPrivateSubnet1Subnet536B997A",
-        "VpcPrivateSubnet2Subnet3788AAA1",
+        "Vpc8378EB38::VpcPrivateSubnet1Subnet536B997A",
+        "Vpc8378EB38::VpcPrivateSubnet2Subnet3788AAA1",
       ],
       securityGroups: [
         "sg::Vpc8378EB38::CdkStack-FargateServiceSecurityGroup262B61DD-1VXQH2HSL89F2",
@@ -543,8 +543,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       subnets: [
-        "VpcPublicSubnet1Subnet5C2D37C4",
-        "VpcPublicSubnet2Subnet691E08A3",
+        "Vpc8378EB38::VpcPublicSubnet1Subnet5C2D37C4",
+        "Vpc8378EB38::VpcPublicSubnet2Subnet691E08A3",
       ],
       securityGroups: [
         "sg::Vpc8378EB38::CdkStack-FargateServiceLBSecurityGroup5F444C78-1QV2YOS62F1B5",

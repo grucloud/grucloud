@@ -20,7 +20,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "VpcauroraisolatedSubnet1Subnet5370B90B",
+    name: "Vpc8378EB38::VpcauroraisolatedSubnet1Subnet5370B90B",
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/17",
       AvailabilityZone: `${config.region}a`,
@@ -32,7 +32,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "VpcauroraisolatedSubnet2SubnetCB56E2A8",
+    name: "Vpc8378EB38::VpcauroraisolatedSubnet2SubnetCB56E2A8",
     properties: ({ config }) => ({
       CidrBlock: "10.0.128.0/17",
       AvailabilityZone: `${config.region}b`,
@@ -44,7 +44,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "VpcauroraisolatedSubnet1RouteTableA8F6E99C",
+    name: "Vpc8378EB38::VpcauroraisolatedSubnet1RouteTableA8F6E99C",
     dependencies: () => ({
       vpc: "Vpc8378EB38",
     }),
@@ -52,7 +52,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "VpcauroraisolatedSubnet2RouteTableBF363B67",
+    name: "Vpc8378EB38::VpcauroraisolatedSubnet2RouteTableBF363B67",
     dependencies: () => ({
       vpc: "Vpc8378EB38",
     }),
@@ -61,16 +61,16 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: () => ({
-      routeTable: "VpcauroraisolatedSubnet1RouteTableA8F6E99C",
-      subnet: "VpcauroraisolatedSubnet1Subnet5370B90B",
+      routeTable: "Vpc8378EB38::VpcauroraisolatedSubnet1RouteTableA8F6E99C",
+      subnet: "Vpc8378EB38::VpcauroraisolatedSubnet1Subnet5370B90B",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: () => ({
-      routeTable: "VpcauroraisolatedSubnet2RouteTableBF363B67",
-      subnet: "VpcauroraisolatedSubnet2SubnetCB56E2A8",
+      routeTable: "Vpc8378EB38::VpcauroraisolatedSubnet2RouteTableBF363B67",
+      subnet: "Vpc8378EB38::VpcauroraisolatedSubnet2SubnetCB56E2A8",
     }),
   },
   {
@@ -82,8 +82,8 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       subnets: [
-        "VpcauroraisolatedSubnet1Subnet5370B90B",
-        "VpcauroraisolatedSubnet2SubnetCB56E2A8",
+        "Vpc8378EB38::VpcauroraisolatedSubnet1Subnet5370B90B",
+        "Vpc8378EB38::VpcauroraisolatedSubnet2SubnetCB56E2A8",
       ],
     }),
   },

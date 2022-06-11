@@ -43,7 +43,7 @@
 <polygon fill="#707070" stroke="#707070" points="688.33,-440.8 698.84,-439.48 689.8,-433.96 688.33,-440.8"/>
 </g>
 <!-- Instance::::web&#45;server&#45;ec2&#45;vpc -->
-<g id="node3" class="node">
+<g id="node12" class="node">
 <title>Instance::::web&#45;server&#45;ec2&#45;vpc</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="568.5,-376 402.5,-376 402.5,-318 568.5,-318 568.5,-376"/>
 <text text-anchor="start" x="414.5" y="-356.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Instance</text>
@@ -55,83 +55,19 @@
 <path fill="none" stroke="#707070" d="M310.05,-377.32C337.9,-372.47 366.43,-367.52 392.14,-363.05"/>
 <polygon fill="#707070" stroke="#707070" points="392.97,-366.46 402.22,-361.3 391.77,-359.56 392.97,-366.46"/>
 </g>
-<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;ElasticIpAddress::::myip -->
-<g id="edge7" class="edge">
-<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;ElasticIpAddress::::myip</title>
-<path fill="none" stroke="#707070" d="M563.31,-376.09C583.66,-384.47 605.41,-394.06 625,-404 641.72,-412.48 643.81,-418.5 661,-426 670.04,-429.94 679.6,-433.59 689.28,-436.94"/>
-<polygon fill="#707070" stroke="#707070" points="688.4,-440.33 699,-440.18 690.62,-433.69 688.4,-440.33"/>
-</g>
-<!-- KeyPair::::kp&#45;ec2&#45;vpc -->
-<g id="node6" class="node">
-<title>KeyPair::::kp&#45;ec2&#45;vpc</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="859.5,-417 734.5,-417 734.5,-359 859.5,-359 859.5,-417"/>
-<text text-anchor="start" x="747" y="-397.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::KeyPair</text>
-<text text-anchor="start" x="747" y="-372.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">kp&#45;ec2&#45;vpc</text>
-</g>
-<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;KeyPair::::kp&#45;ec2&#45;vpc -->
-<g id="edge4" class="edge">
-<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;KeyPair::::kp&#45;ec2&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M568.63,-357.88C617.01,-364.29 677.65,-372.32 724.13,-378.48"/>
-<polygon fill="#707070" stroke="#707070" points="723.75,-381.96 734.12,-379.8 724.67,-375.02 723.75,-381.96"/>
-</g>
-<!-- SecurityGroup::::sg::vpc&#45;ec2&#45;example::security&#45;group -->
-<g id="node10" class="node">
-<title>SecurityGroup::::sg::vpc&#45;ec2&#45;example::security&#45;group</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="933,-569 661,-569 661,-511 933,-511 933,-569"/>
-<text text-anchor="start" x="673" y="-549.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
-<text text-anchor="start" x="673" y="-524.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::vpc&#45;ec2&#45;example::security&#45;gr...</text>
-</g>
-<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;SecurityGroup::::sg::vpc&#45;ec2&#45;example::security&#45;group -->
-<g id="edge8" class="edge">
-<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;SecurityGroup::::sg::vpc&#45;ec2&#45;example::security&#45;group</title>
-<path fill="none" stroke="#707070" d="M556.08,-376.07C580.18,-388.71 605.9,-405.39 625,-426 650.41,-453.41 632.45,-477.88 661,-502 662.19,-503.01 663.41,-503.99 664.65,-504.94"/>
-<polygon fill="#707070" stroke="#707070" points="662.94,-508.01 673.14,-510.87 666.94,-502.27 662.94,-508.01"/>
-</g>
-<!-- Subnet::::subnet -->
-<g id="node13" class="node">
-<title>Subnet::::subnet</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="857,-245 737,-245 737,-187 857,-187 857,-245"/>
-<text text-anchor="start" x="749" y="-225.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="749" y="-200.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">subnet</text>
-</g>
-<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Subnet::::subnet -->
-<g id="edge5" class="edge">
-<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Subnet::::subnet</title>
-<path fill="none" stroke="#707070" d="M534.42,-317.84C568.74,-297.86 616.56,-271.85 661,-254 682.06,-245.54 705.69,-238.2 727.21,-232.29"/>
-<polygon fill="#707070" stroke="#707070" points="728.19,-235.65 736.94,-229.68 726.37,-228.89 728.19,-235.65"/>
-</g>
-<!-- Volume::::volume -->
-<g id="node14" class="node">
-<title>Volume::::volume</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="858,-321 736,-321 736,-263 858,-263 858,-321"/>
-<text text-anchor="start" x="748" y="-301.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Volume</text>
-<text text-anchor="start" x="748" y="-276.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">volume</text>
-</g>
-<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Volume::::volume -->
-<g id="edge6" class="edge">
-<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Volume::::volume</title>
-<path fill="none" stroke="#707070" d="M568.63,-332.41C617.51,-323.72 678.9,-312.81 725.57,-304.52"/>
-<polygon fill="#707070" stroke="#707070" points="726.36,-307.93 735.59,-302.74 725.13,-301.04 726.36,-307.93"/>
-</g>
-<!-- Vpc::::vpc&#45;ec2&#45;example -->
-<g id="node16" class="node">
-<title>Vpc::::vpc&#45;ec2&#45;example</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1117,-221 969,-221 969,-163 1117,-163 1117,-221"/>
-<text text-anchor="start" x="981" y="-201.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
-<text text-anchor="start" x="981" y="-176.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc&#45;ec2&#45;example</text>
-</g>
-<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Vpc::::vpc&#45;ec2&#45;example -->
-<g id="edge3" class="edge">
-<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Vpc::::vpc&#45;ec2&#45;example</title>
-<path fill="none" stroke="#707070" d="M568.97,-347.57C689.13,-347.84 901.53,-345.99 933,-330 974.92,-308.7 1005.85,-263.08 1023.85,-230.11"/>
-<polygon fill="#707070" stroke="#707070" points="1026.99,-231.65 1028.58,-221.18 1020.8,-228.38 1026.99,-231.65"/>
-</g>
 <!-- InternetGateway::::ig -->
-<g id="node4" class="node">
+<g id="node3" class="node">
 <title>InternetGateway::::ig</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="892.5,-129 701.5,-129 701.5,-71 892.5,-71 892.5,-129"/>
 <text text-anchor="start" x="714" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::InternetGateway</text>
 <text text-anchor="start" x="714" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ig</text>
+</g>
+<!-- Vpc::::vpc&#45;ec2&#45;example -->
+<g id="node11" class="node">
+<title>Vpc::::vpc&#45;ec2&#45;example</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1117,-221 969,-221 969,-163 1117,-163 1117,-221"/>
+<text text-anchor="start" x="981" y="-201.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
+<text text-anchor="start" x="981" y="-176.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc&#45;ec2&#45;example</text>
 </g>
 <!-- InternetGateway::::ig&#45;&gt;Vpc::::vpc&#45;ec2&#45;example -->
 <g id="edge9" class="edge">
@@ -140,7 +76,7 @@
 <polygon fill="#707070" stroke="#707070" points="969.99,-162.06 980.55,-162.9 972.82,-155.66 969.99,-162.06"/>
 </g>
 <!-- InternetGatewayAttachment::::ig&#45;attach::ig::vpc&#45;ec2&#45;example -->
-<g id="node5" class="node">
+<g id="node4" class="node">
 <title>InternetGatewayAttachment::::ig&#45;attach::ig::vpc&#45;ec2&#45;example</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="625,-159 346,-159 346,-101 625,-101 625,-159"/>
 <text text-anchor="start" x="358.5" y="-139.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::InternetGatewayAttachment</text>
@@ -158,62 +94,151 @@
 <path fill="none" stroke="#707070" d="M625.33,-137.09C713.75,-142.77 830.51,-152.43 933,-168 941.49,-169.29 950.31,-170.85 959.09,-172.56"/>
 <polygon fill="#707070" stroke="#707070" points="958.47,-176 968.96,-174.53 959.84,-169.14 958.47,-176"/>
 </g>
-<!-- Route::::route&#45;table&#45;igw -->
-<g id="node7" class="node">
-<title>Route::::route&#45;table&#45;igw</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="232.5,-155 101.5,-155 101.5,-97 232.5,-97 232.5,-155"/>
-<text text-anchor="start" x="114" y="-135.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
-<text text-anchor="start" x="114" y="-110.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">route&#45;table&#45;igw</text>
+<!-- KeyPair::::kp&#45;ec2&#45;vpc -->
+<g id="node5" class="node">
+<title>KeyPair::::kp&#45;ec2&#45;vpc</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="859.5,-417 734.5,-417 734.5,-359 859.5,-359 859.5,-417"/>
+<text text-anchor="start" x="747" y="-397.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::KeyPair</text>
+<text text-anchor="start" x="747" y="-372.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">kp&#45;ec2&#45;vpc</text>
 </g>
-<!-- Route::::route&#45;table&#45;igw&#45;&gt;InternetGateway::::ig -->
+<!-- Route::::vpc&#45;ec2&#45;example::route&#45;table&#45;igw&#45;0.0.0.0/0 -->
+<g id="node6" class="node">
+<title>Route::::vpc&#45;ec2&#45;example::route&#45;table&#45;igw&#45;0.0.0.0/0</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="305.5,-155 28.5,-155 28.5,-97 305.5,-97 305.5,-155"/>
+<text text-anchor="start" x="41" y="-135.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Route</text>
+<text text-anchor="start" x="41" y="-110.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc&#45;ec2&#45;example::route&#45;table&#45;igw...</text>
+</g>
+<!-- Route::::vpc&#45;ec2&#45;example::route&#45;table&#45;igw&#45;0.0.0.0/0&#45;&gt;InternetGateway::::ig -->
 <g id="edge13" class="edge">
-<title>Route::::route&#45;table&#45;igw&#45;&gt;InternetGateway::::ig</title>
-<path fill="none" stroke="#707070" d="M232.68,-110.6C266.26,-103.38 308.1,-95.59 346,-92 463.9,-80.84 599.94,-85.7 691.3,-91.52"/>
+<title>Route::::vpc&#45;ec2&#45;example::route&#45;table&#45;igw&#45;0.0.0.0/0&#45;&gt;InternetGateway::::ig</title>
+<path fill="none" stroke="#707070" d="M305.62,-97.06C319.22,-95 332.84,-93.25 346,-92 463.9,-80.84 599.94,-85.7 691.3,-91.52"/>
 <polygon fill="#707070" stroke="#707070" points="691.18,-95.02 701.39,-92.18 691.64,-88.04 691.18,-95.02"/>
 </g>
-<!-- RouteTable::::route&#45;table -->
-<g id="node8" class="node">
-<title>RouteTable::::route&#45;table</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="561,-235 410,-235 410,-177 561,-177 561,-235"/>
-<text text-anchor="start" x="422.5" y="-215.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
-<text text-anchor="start" x="422.5" y="-190.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">route&#45;table</text>
+<!-- RouteTable::::vpc&#45;ec2&#45;example::route&#45;table -->
+<g id="node7" class="node">
+<title>RouteTable::::vpc&#45;ec2&#45;example::route&#45;table</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="603,-235 368,-235 368,-177 603,-177 603,-235"/>
+<text text-anchor="start" x="380.5" y="-215.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
+<text text-anchor="start" x="380.5" y="-190.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc&#45;ec2&#45;example::route&#45;table</text>
 </g>
-<!-- Route::::route&#45;table&#45;igw&#45;&gt;RouteTable::::route&#45;table -->
+<!-- Route::::vpc&#45;ec2&#45;example::route&#45;table&#45;igw&#45;0.0.0.0/0&#45;&gt;RouteTable::::vpc&#45;ec2&#45;example::route&#45;table -->
 <g id="edge12" class="edge">
-<title>Route::::route&#45;table&#45;igw&#45;&gt;RouteTable::::route&#45;table</title>
-<path fill="none" stroke="#707070" d="M232.81,-142.38C281.06,-154.58 347.37,-171.34 399.82,-184.6"/>
-<polygon fill="#707070" stroke="#707070" points="399.22,-188.05 409.78,-187.11 400.94,-181.27 399.22,-188.05"/>
+<title>Route::::vpc&#45;ec2&#45;example::route&#45;table&#45;igw&#45;0.0.0.0/0&#45;&gt;RouteTable::::vpc&#45;ec2&#45;example::route&#45;table</title>
+<path fill="none" stroke="#707070" d="M283.16,-155.11C308.05,-161.4 334.47,-168.08 359.71,-174.46"/>
+<polygon fill="#707070" stroke="#707070" points="359.14,-177.92 369.69,-176.98 360.85,-171.14 359.14,-177.92"/>
 </g>
-<!-- RouteTable::::route&#45;table&#45;&gt;Subnet::::subnet -->
+<!-- Subnet::::vpc&#45;ec2&#45;example::subnet -->
+<g id="node9" class="node">
+<title>Subnet::::vpc&#45;ec2&#45;example::subnet</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="900,-245 694,-245 694,-187 900,-187 900,-245"/>
+<text text-anchor="start" x="706" y="-225.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="706" y="-200.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc&#45;ec2&#45;example::subnet</text>
+</g>
+<!-- RouteTable::::vpc&#45;ec2&#45;example::route&#45;table&#45;&gt;Subnet::::vpc&#45;ec2&#45;example::subnet -->
 <g id="edge15" class="edge">
-<title>RouteTable::::route&#45;table&#45;&gt;Subnet::::subnet</title>
-<path fill="none" stroke="#707070" d="M561.03,-208.41C611.29,-210.03 677.16,-212.16 726.37,-213.75"/>
-<polygon fill="#707070" stroke="#707070" points="726.5,-217.26 736.6,-214.08 726.72,-210.26 726.5,-217.26"/>
+<title>RouteTable::::vpc&#45;ec2&#45;example::route&#45;table&#45;&gt;Subnet::::vpc&#45;ec2&#45;example::subnet</title>
+<path fill="none" stroke="#707070" d="M603.07,-209.77C629.39,-210.62 657.28,-211.52 683.44,-212.36"/>
+<polygon fill="#707070" stroke="#707070" points="683.64,-215.87 693.75,-212.7 683.87,-208.88 683.64,-215.87"/>
 </g>
-<!-- RouteTable::::route&#45;table&#45;&gt;Vpc::::vpc&#45;ec2&#45;example -->
+<!-- RouteTable::::vpc&#45;ec2&#45;example::route&#45;table&#45;&gt;Vpc::::vpc&#45;ec2&#45;example -->
 <g id="edge14" class="edge">
-<title>RouteTable::::route&#45;table&#45;&gt;Vpc::::vpc&#45;ec2&#45;example</title>
-<path fill="none" stroke="#707070" d="M561.34,-191.31C592.08,-185.98 628.12,-180.62 661,-178 781.51,-168.39 812.36,-170.28 933,-178 941.35,-178.53 950.03,-179.3 958.7,-180.19"/>
+<title>RouteTable::::vpc&#45;ec2&#45;example::route&#45;table&#45;&gt;Vpc::::vpc&#45;ec2&#45;example</title>
+<path fill="none" stroke="#707070" d="M603.05,-184.67C622.35,-181.89 642.19,-179.5 661,-178 781.51,-168.39 812.36,-170.28 933,-178 941.35,-178.53 950.03,-179.3 958.7,-180.19"/>
 <polygon fill="#707070" stroke="#707070" points="958.51,-183.69 968.83,-181.3 959.27,-176.73 958.51,-183.69"/>
 </g>
-<!-- RouteTableAssociation::::rt&#45;assoc::route&#45;table::subnet -->
-<g id="node9" class="node">
-<title>RouteTableAssociation::::rt&#45;assoc::route&#45;table::subnet</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="288,-241 46,-241 46,-183 288,-183 288,-241"/>
-<text text-anchor="start" x="58" y="-221.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
-<text text-anchor="start" x="58" y="-196.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::route&#45;table::subnet</text>
+<!-- RouteTableAssociation::::rt&#45;assoc::vpc&#45;ec2&#45;example::route&#45;table::vpc&#45;ec2&#45;example::subnet -->
+<g id="node8" class="node">
+<title>RouteTableAssociation::::rt&#45;assoc::vpc&#45;ec2&#45;example::route&#45;table::vpc&#45;ec2&#45;example::subnet</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="304,-241 30,-241 30,-183 304,-183 304,-241"/>
+<text text-anchor="start" x="42" y="-221.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
+<text text-anchor="start" x="42" y="-196.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::vpc&#45;ec2&#45;example::route...</text>
 </g>
-<!-- RouteTableAssociation::::rt&#45;assoc::route&#45;table::subnet&#45;&gt;RouteTable::::route&#45;table -->
+<!-- RouteTableAssociation::::rt&#45;assoc::vpc&#45;ec2&#45;example::route&#45;table::vpc&#45;ec2&#45;example::subnet&#45;&gt;RouteTable::::vpc&#45;ec2&#45;example::route&#45;table -->
 <g id="edge16" class="edge">
-<title>RouteTableAssociation::::rt&#45;assoc::route&#45;table::subnet&#45;&gt;RouteTable::::route&#45;table</title>
-<path fill="none" stroke="#707070" d="M288.11,-209.72C325.19,-209.02 365.25,-208.26 399.45,-207.61"/>
-<polygon fill="#707070" stroke="#707070" points="399.94,-211.1 409.87,-207.41 399.8,-204.11 399.94,-211.1"/>
+<title>RouteTableAssociation::::rt&#45;assoc::vpc&#45;ec2&#45;example::route&#45;table::vpc&#45;ec2&#45;example::subnet&#45;&gt;RouteTable::::vpc&#45;ec2&#45;example::route&#45;table</title>
+<path fill="none" stroke="#707070" d="M304.06,-209.42C321.85,-209.08 340.02,-208.74 357.64,-208.4"/>
+<polygon fill="#707070" stroke="#707070" points="358.02,-211.9 367.95,-208.21 357.89,-204.9 358.02,-211.9"/>
 </g>
-<!-- RouteTableAssociation::::rt&#45;assoc::route&#45;table::subnet&#45;&gt;Subnet::::subnet -->
+<!-- RouteTableAssociation::::rt&#45;assoc::vpc&#45;ec2&#45;example::route&#45;table::vpc&#45;ec2&#45;example::subnet&#45;&gt;Subnet::::vpc&#45;ec2&#45;example::subnet -->
 <g id="edge17" class="edge">
-<title>RouteTableAssociation::::rt&#45;assoc::route&#45;table::subnet&#45;&gt;Subnet::::subnet</title>
-<path fill="none" stroke="#707070" d="M288.25,-236.61C307.49,-239.68 327.24,-242.33 346,-244 469.51,-255.01 501.41,-254.05 625,-244 658.82,-241.25 696.03,-235.49 727.08,-229.9"/>
-<polygon fill="#707070" stroke="#707070" points="727.73,-233.34 736.94,-228.1 726.47,-226.46 727.73,-233.34"/>
+<title>RouteTableAssociation::::rt&#45;assoc::vpc&#45;ec2&#45;example::route&#45;table::vpc&#45;ec2&#45;example::subnet&#45;&gt;Subnet::::vpc&#45;ec2&#45;example::subnet</title>
+<path fill="none" stroke="#707070" d="M304.21,-239.03C318.28,-241.06 332.4,-242.79 346,-244 469.51,-255.01 501.41,-254.05 625,-244 644.02,-242.45 664.12,-239.95 683.59,-237.07"/>
+<polygon fill="#707070" stroke="#707070" points="684.34,-240.49 693.7,-235.53 683.29,-233.57 684.34,-240.49"/>
+</g>
+<!-- Subnet::::vpc&#45;ec2&#45;example::subnet&#45;&gt;Vpc::::vpc&#45;ec2&#45;example -->
+<g id="edge21" class="edge">
+<title>Subnet::::vpc&#45;ec2&#45;example::subnet&#45;&gt;Vpc::::vpc&#45;ec2&#45;example</title>
+<path fill="none" stroke="#707070" d="M900.06,-205.96C919.66,-204.03 939.96,-202.04 958.86,-200.18"/>
+<polygon fill="#707070" stroke="#707070" points="959.3,-203.65 968.91,-199.19 958.62,-196.68 959.3,-203.65"/>
+</g>
+<!-- VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc -->
+<g id="node10" class="node">
+<title>VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="306.5,-331 27.5,-331 27.5,-273 306.5,-273 306.5,-331"/>
+<text text-anchor="start" x="40" y="-311.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::VolumeAttachment</text>
+<text text-anchor="start" x="40" y="-286.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vol&#45;attachment::volume::web&#45;serv...</text>
+</g>
+<!-- VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Instance::::web&#45;server&#45;ec2&#45;vpc -->
+<g id="edge23" class="edge">
+<title>VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Instance::::web&#45;server&#45;ec2&#45;vpc</title>
+<path fill="none" stroke="#707070" d="M306.82,-321.74C335.69,-325.84 365.43,-330.07 392.13,-333.87"/>
+<polygon fill="#707070" stroke="#707070" points="391.81,-337.36 402.2,-335.3 392.79,-330.43 391.81,-337.36"/>
+</g>
+<!-- Volume::::volume -->
+<g id="node16" class="node">
+<title>Volume::::volume</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="858,-321 736,-321 736,-263 858,-263 858,-321"/>
+<text text-anchor="start" x="748" y="-301.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Volume</text>
+<text text-anchor="start" x="748" y="-276.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">volume</text>
+</g>
+<!-- VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Volume::::volume -->
+<g id="edge22" class="edge">
+<title>VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Volume::::volume</title>
+<path fill="none" stroke="#707070" d="M306.59,-299.79C436.33,-297.73 624.88,-294.72 725.89,-293.12"/>
+<polygon fill="#707070" stroke="#707070" points="726.04,-296.61 735.98,-292.96 725.93,-289.62 726.04,-296.61"/>
+</g>
+<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;ElasticIpAddress::::myip -->
+<g id="edge7" class="edge">
+<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;ElasticIpAddress::::myip</title>
+<path fill="none" stroke="#707070" d="M563.31,-376.09C583.66,-384.47 605.41,-394.06 625,-404 641.72,-412.48 643.81,-418.5 661,-426 670.04,-429.94 679.6,-433.59 689.28,-436.94"/>
+<polygon fill="#707070" stroke="#707070" points="688.4,-440.33 699,-440.18 690.62,-433.69 688.4,-440.33"/>
+</g>
+<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;KeyPair::::kp&#45;ec2&#45;vpc -->
+<g id="edge4" class="edge">
+<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;KeyPair::::kp&#45;ec2&#45;vpc</title>
+<path fill="none" stroke="#707070" d="M568.63,-357.88C617.01,-364.29 677.65,-372.32 724.13,-378.48"/>
+<polygon fill="#707070" stroke="#707070" points="723.75,-381.96 734.12,-379.8 724.67,-375.02 723.75,-381.96"/>
+</g>
+<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Subnet::::vpc&#45;ec2&#45;example::subnet -->
+<g id="edge5" class="edge">
+<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Subnet::::vpc&#45;ec2&#45;example::subnet</title>
+<path fill="none" stroke="#707070" d="M534.42,-317.84C568.74,-297.86 616.56,-271.85 661,-254 668.47,-251 676.26,-248.14 684.17,-245.44"/>
+<polygon fill="#707070" stroke="#707070" points="685.47,-248.69 693.85,-242.21 683.26,-242.05 685.47,-248.69"/>
+</g>
+<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Vpc::::vpc&#45;ec2&#45;example -->
+<g id="edge3" class="edge">
+<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Vpc::::vpc&#45;ec2&#45;example</title>
+<path fill="none" stroke="#707070" d="M568.97,-347.57C689.13,-347.84 901.53,-345.99 933,-330 974.92,-308.7 1005.85,-263.08 1023.85,-230.11"/>
+<polygon fill="#707070" stroke="#707070" points="1026.99,-231.65 1028.58,-221.18 1020.8,-228.38 1026.99,-231.65"/>
+</g>
+<!-- SecurityGroup::::sg::vpc&#45;ec2&#45;example::security&#45;group -->
+<g id="node13" class="node">
+<title>SecurityGroup::::sg::vpc&#45;ec2&#45;example::security&#45;group</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="933,-569 661,-569 661,-511 933,-511 933,-569"/>
+<text text-anchor="start" x="673" y="-549.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroup</text>
+<text text-anchor="start" x="673" y="-524.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sg::vpc&#45;ec2&#45;example::security&#45;gr...</text>
+</g>
+<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;SecurityGroup::::sg::vpc&#45;ec2&#45;example::security&#45;group -->
+<g id="edge8" class="edge">
+<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;SecurityGroup::::sg::vpc&#45;ec2&#45;example::security&#45;group</title>
+<path fill="none" stroke="#707070" d="M556.08,-376.07C580.18,-388.71 605.9,-405.39 625,-426 650.41,-453.41 632.45,-477.88 661,-502 662.19,-503.01 663.41,-503.99 664.65,-504.94"/>
+<polygon fill="#707070" stroke="#707070" points="662.94,-508.01 673.14,-510.87 666.94,-502.27 662.94,-508.01"/>
+</g>
+<!-- Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Volume::::volume -->
+<g id="edge6" class="edge">
+<title>Instance::::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Volume::::volume</title>
+<path fill="none" stroke="#707070" d="M568.63,-332.41C617.51,-323.72 678.9,-312.81 725.57,-304.52"/>
+<polygon fill="#707070" stroke="#707070" points="726.36,-307.93 735.59,-302.74 725.13,-301.04 726.36,-307.93"/>
 </g>
 <!-- SecurityGroup::::sg::vpc&#45;ec2&#45;example::security&#45;group&#45;&gt;Vpc::::vpc&#45;ec2&#45;example -->
 <g id="edge18" class="edge">
@@ -222,7 +247,7 @@
 <polygon fill="#707070" stroke="#707070" points="1043,-231.36 1040.4,-221.09 1036.02,-230.74 1043,-231.36"/>
 </g>
 <!-- SecurityGroupRuleIngress::::sg::vpc&#45;ec2&#45;example::security&#45;group&#45;rule&#45;ingress&#45;icmp -->
-<g id="node11" class="node">
+<g id="node14" class="node">
 <title>SecurityGroupRuleIngress::::sg::vpc&#45;ec2&#45;example::security&#45;group&#45;rule&#45;ingress&#45;icmp</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="621.5,-493 349.5,-493 349.5,-435 621.5,-435 621.5,-493"/>
 <text text-anchor="start" x="361.5" y="-473.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
@@ -235,7 +260,7 @@
 <polygon fill="#707070" stroke="#707070" points="667.19,-511.97 677.73,-510.96 668.86,-505.17 667.19,-511.97"/>
 </g>
 <!-- SecurityGroupRuleIngress::::sg::vpc&#45;ec2&#45;example::security&#45;group&#45;rule&#45;ingress&#45;tcp&#45;22 -->
-<g id="node12" class="node">
+<g id="node15" class="node">
 <title>SecurityGroupRuleIngress::::sg::vpc&#45;ec2&#45;example::security&#45;group&#45;rule&#45;ingress&#45;tcp&#45;22</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="621.5,-569 349.5,-569 349.5,-511 621.5,-511 621.5,-569"/>
 <text text-anchor="start" x="361.5" y="-549.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::SecurityGroupRuleIngress</text>
@@ -246,31 +271,6 @@
 <title>SecurityGroupRuleIngress::::sg::vpc&#45;ec2&#45;example::security&#45;group&#45;rule&#45;ingress&#45;tcp&#45;22&#45;&gt;SecurityGroup::::sg::vpc&#45;ec2&#45;example::security&#45;group</title>
 <path fill="none" stroke="#707070" d="M621.8,-540C631.24,-540 640.77,-540 650.26,-540"/>
 <polygon fill="#707070" stroke="#707070" points="650.53,-543.5 660.53,-540 650.53,-536.5 650.53,-543.5"/>
-</g>
-<!-- Subnet::::subnet&#45;&gt;Vpc::::vpc&#45;ec2&#45;example -->
-<g id="edge21" class="edge">
-<title>Subnet::::subnet&#45;&gt;Vpc::::vpc&#45;ec2&#45;example</title>
-<path fill="none" stroke="#707070" d="M857.07,-210.19C887.49,-207.2 925.1,-203.5 958.44,-200.22"/>
-<polygon fill="#707070" stroke="#707070" points="959.03,-203.68 968.64,-199.22 958.34,-196.71 959.03,-203.68"/>
-</g>
-<!-- VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc -->
-<g id="node15" class="node">
-<title>VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="306.5,-331 27.5,-331 27.5,-273 306.5,-273 306.5,-331"/>
-<text text-anchor="start" x="40" y="-311.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::VolumeAttachment</text>
-<text text-anchor="start" x="40" y="-286.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vol&#45;attachment::volume::web&#45;serv...</text>
-</g>
-<!-- VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Instance::::web&#45;server&#45;ec2&#45;vpc -->
-<g id="edge23" class="edge">
-<title>VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Instance::::web&#45;server&#45;ec2&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M306.82,-321.74C335.69,-325.84 365.43,-330.07 392.13,-333.87"/>
-<polygon fill="#707070" stroke="#707070" points="391.81,-337.36 402.2,-335.3 392.79,-330.43 391.81,-337.36"/>
-</g>
-<!-- VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Volume::::volume -->
-<g id="edge22" class="edge">
-<title>VolumeAttachment::::vol&#45;attachment::volume::web&#45;server&#45;ec2&#45;vpc&#45;&gt;Volume::::volume</title>
-<path fill="none" stroke="#707070" d="M306.59,-299.79C436.33,-297.73 624.88,-294.72 725.89,-293.12"/>
-<polygon fill="#707070" stroke="#707070" points="726.04,-296.61 735.98,-292.96 725.93,-289.62 726.04,-296.61"/>
 </g>
 </g>
 </svg>

@@ -26,14 +26,14 @@ exports.createResources = () => [
     group: "EC2",
     name: "NATGateway",
     dependencies: ({}) => ({
-      subnet: "SubnetPublicUSEAST1F",
+      subnet: "Vpc::SubnetPublicUSEAST1F",
       eip: "NATIP",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "SubnetPrivateUSEAST1D",
+    name: "Vpc::SubnetPrivateUSEAST1D",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       CidrBlock: "192.168.96.0/19",
@@ -51,7 +51,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "SubnetPrivateUSEAST1F",
+    name: "Vpc::SubnetPrivateUSEAST1F",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}f`,
       CidrBlock: "192.168.64.0/19",
@@ -69,7 +69,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "SubnetPublicUSEAST1D",
+    name: "Vpc::SubnetPublicUSEAST1D",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       CidrBlock: "192.168.32.0/19",
@@ -88,7 +88,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "SubnetPublicUSEAST1F",
+    name: "Vpc::SubnetPublicUSEAST1F",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}f`,
       CidrBlock: "192.168.0.0/19",
@@ -107,7 +107,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "PrivateRouteTableUSEAST1D",
+    name: "Vpc::PrivateRouteTableUSEAST1D",
     dependencies: ({}) => ({
       vpc: "VPC",
     }),
@@ -115,7 +115,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "PrivateRouteTableUSEAST1F",
+    name: "Vpc::PrivateRouteTableUSEAST1F",
     dependencies: ({}) => ({
       vpc: "VPC",
     }),
@@ -132,24 +132,16 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1D",
-      subnet: "SubnetPrivateUSEAST1D",
+      routeTable: "Vpc::PrivateRouteTableUSEAST1D",
+      subnet: "Vpc::SubnetPrivateUSEAST1D",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1F",
-      subnet: "SubnetPrivateUSEAST1F",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "PublicRouteTable",
-      subnet: "SubnetPublicUSEAST1D",
+      routeTable: "Vpc::PrivateRouteTableUSEAST1F",
+      subnet: "Vpc::SubnetPrivateUSEAST1F",
     }),
   },
   {
@@ -157,7 +149,15 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({}) => ({
       routeTable: "PublicRouteTable",
-      subnet: "SubnetPublicUSEAST1F",
+      subnet: "Vpc::SubnetPublicUSEAST1D",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "PublicRouteTable",
+      subnet: "Vpc::SubnetPublicUSEAST1F",
     }),
   },
   {
@@ -167,7 +167,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1D",
+      routeTable: "Vpc::PrivateRouteTableUSEAST1D",
       natGateway: "NATGateway",
     }),
   },
@@ -178,7 +178,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1F",
+      routeTable: "Vpc::PrivateRouteTableUSEAST1F",
       natGateway: "NATGateway",
     }),
   },
@@ -293,10 +293,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       subnets: [
-        "SubnetPrivateUSEAST1D",
-        "SubnetPrivateUSEAST1F",
-        "SubnetPublicUSEAST1D",
-        "SubnetPublicUSEAST1F",
+        "Vpc::SubnetPrivateUSEAST1D",
+        "Vpc::SubnetPrivateUSEAST1F",
+        "Vpc::SubnetPublicUSEAST1D",
+        "Vpc::SubnetPublicUSEAST1F",
       ],
       securityGroups: ["sg::VPC::ControlPlaneSecurityGroup"],
       role: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
@@ -323,7 +323,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       cluster: "my-cluster",
-      subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
+      subnets: ["Vpc::SubnetPublicUSEAST1D", "Vpc::SubnetPublicUSEAST1F"],
       role: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
       launchTemplate: "eksctl-my-cluster-nodegroup-ng-1",
     }),
