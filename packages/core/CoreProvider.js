@@ -1348,12 +1348,10 @@ function CoreProvider({
         );
         assert(livesData);
       }),
-      //TODO use livesData, not getByProvider
-
-      () => getLives().getByProvider({ providerName }),
-      tap((livesPerProvider) => {
-        assert(livesPerProvider);
-      }),
+      () => livesData,
+      get("results"),
+      find(eq(get("providerName"), providerName)),
+      get("results"),
       filter(not(get("error"))),
       flatMap(({ groupType, resources }) =>
         pipe([
