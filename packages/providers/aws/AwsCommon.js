@@ -37,6 +37,7 @@ const {
   differenceWith,
   isObject,
 } = require("rubico/x");
+const { v4: uuidv4 } = require("uuid");
 const util = require("util");
 const Diff = require("diff");
 const { fromIni } = require("@aws-sdk/credential-providers");
@@ -135,7 +136,7 @@ exports.replaceOwner = ({ providerConfig }) =>
     (resource) => () => "`" + resource + "`",
   ]);
 
-exports.getNewCallerReference = () => `grucloud-${new Date()}`;
+exports.getNewCallerReference = () => `grucloud-${new Date()}-${uuidv4()}`;
 
 const extractKeys = ({ key }) =>
   switchCase([Array.isArray, pipe([pluck(key)]), keys]);
@@ -1110,17 +1111,13 @@ const replaceStatement = ({ providerConfig, lives }) =>
             assign({
               ArnLike: pipe([
                 get("ArnLike"),
-                when(
-                  get("AWS:SourceArn"),
-                  assign({
-                    "AWS:SourceArn": pipe([
-                      get("AWS:SourceArn"),
-                      replaceArnWithAccountAndRegion({
-                        providerConfig,
-                        lives,
-                      }),
-                    ]),
-                  })
+                map(
+                  pipe([
+                    replaceArnWithAccountAndRegion({
+                      providerConfig,
+                      lives,
+                    }),
+                  ])
                 ),
               ]),
             })

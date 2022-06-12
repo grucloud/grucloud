@@ -235,22 +235,29 @@ const buildProperties = ({
     assign({
       [tagsKey]: pipe([
         () => resource,
+        tap((params) => {
+          assert(tagsKey);
+        }),
         get("live"),
         get(tagsKey, []),
         switchCase([
           Array.isArray,
-          filter((tag) =>
-            pipe([
-              () => ["Key", "key", "TagKey"],
-              all(pipe([(key) => get(key, "")(tag), isNotOurTagKey])),
-            ])()
-          ),
           pipe([
-            map.entries(([key, value]) => [
-              key,
-              isNotOurTagKey(key) ? value : undefined,
-            ]),
-            filter(not(isEmpty)),
+            filter((tag) =>
+              pipe([
+                () => ["Key", "key", "TagKey"],
+                all(pipe([(key) => get(key, "")(tag), isNotOurTagKey])),
+              ])()
+            ),
+            filter(providerConfig.filterTags),
+            map(pipe([map(pipe([replaceRegion({ providerConfig })]))])),
+          ]),
+          // tags as objects
+          pipe([
+            Object.entries,
+            filter(([key, value]) => isNotOurTagKey(key)),
+            filter(([Key, Value]) => providerConfig.filterTags({ Key, Value })),
+            Object.fromEntries,
           ]),
         ]),
       ]),
@@ -341,7 +348,7 @@ const configBuildPropertiesDefault = ({
       assert(providerConfig);
     }),
     () => properties,
-    providerConfig.tranformResource({ resource }),
+    providerConfig.transformResource({ resource }),
     switchCase([
       and([not(isEmpty), () => !resource.isDefault, () => !hasNoProperty]),
       pipe([
@@ -375,18 +382,24 @@ const envTpl = ({ resource, environmentVariables = [] }) =>
     callProp("join", ""),
   ])();
 
-const replaceRegion = ({ providerConfig }) =>
+const replaceRegion = ({ providerConfig, asFunction = true }) =>
   switchCase([
     pipe([
       tap((resource) => {
-        assert(isString(resource));
+        if (!isString(resource)) {
+          assert(isString(resource));
+        }
         assert(resource.length > 1);
       }),
       includes(providerConfig.region),
     ]),
     pipe([
       callProp("replaceAll", providerConfig.region, "${config.region}"),
-      (resource) => "`" + resource + "`",
+      switchCase([
+        () => asFunction,
+        (resource) => () => "`" + resource + "`",
+        (resource) => "`" + resource + "`",
+      ]),
     ]),
     pipe([
       tap((params) => {
@@ -413,8 +426,8 @@ const dependencyValue = ({ key, list, resource, providerConfig }) =>
     callProp("sort"),
     map(
       pipe([
-        replaceRegion({ providerConfig }),
-        providerConfig.tranformResourceName({ resource }),
+        replaceRegion({ providerConfig, asFunction: false }),
+        providerConfig.transformResourceName({ resource }),
         unless(includes("`"), pipe([prepend('"'), append('"')])),
       ])
     ),
@@ -511,11 +524,11 @@ const buildName = ({ inferName, resourceName, resource, providerConfig }) =>
       () => "",
       pipe([
         () => resourceName,
-        providerConfig.tranformResourceName({ resource }),
+        providerConfig.transformResourceName({ resource }),
         switchCase([
           pipe([includes(providerConfig.region)]),
           pipe([
-            replaceRegion({ providerConfig }),
+            replaceRegion({ providerConfig, asFunction: false }),
             prepend("name: ({config}) => "),
             append(","),
           ]),
@@ -1337,7 +1350,7 @@ const writeResource =
         or([ignoreResource({ lives }), ignoreDefault({ lives })]),
         (resource) => {
           assert(true);
-          //console.log(" Ignore", resource.name);
+          // console.log(" Ignore", resource.name);
         },
         pipe([
           tap((params) => {
@@ -1530,8 +1543,9 @@ exports.generatorMain = ({
         providerConfig: pipe([
           () => providerConfig,
           defaultsDeep({
-            tranformResourceName: ({ resource }) => identity,
-            tranformResource: ({ resource }) => identity,
+            transformResourceName: ({ resource }) => identity,
+            transformResource: ({ resource }) => identity,
+            filterTags: (tags) => identity,
           }),
         ]),
       }),

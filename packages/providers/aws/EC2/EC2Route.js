@@ -50,7 +50,7 @@ exports.EC2Route = ({ spec, config }) => {
       tap(() => {
         assert(live.RouteTableId);
         assert(lives);
-        logger.debug(`route findId ${JSON.stringify(live)}`);
+        //logger.debug(`route findId ${JSON.stringify(live)}`);
       }),
       () =>
         lives.getById({

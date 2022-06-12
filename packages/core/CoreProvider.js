@@ -1682,7 +1682,7 @@ function CoreProvider({
         assert(Array.isArray(plans), "plans must be an array");
         assert(planAll);
         logger.info(`planDestroy #plans ${plans.length}`);
-        logger.debug(`planDestroy ${tos({ plans, direction })}`);
+        //logger.debug(`planDestroy ${tos({ plans, direction })}`);
       }),
       providerRunning({ onStateChange, providerName }),
       tap(() =>

@@ -77,15 +77,15 @@ exports.createLives = () => {
       getMapByIdByGroupType,
       (mapById) => [...mapById.values()],
       when(() => providerName, filter(eq(get("providerName"), providerName))),
-      tap((resources) => {
-        logger.debug(
-          `getByType ${JSON.stringify({
-            type,
-            group,
-            count: size(resources),
-          })}`
-        );
-      }),
+      // tap((resources) => {
+      //   logger.debug(
+      //     `getByType ${JSON.stringify({
+      //       type,
+      //       group,
+      //       count: size(resources),
+      //     })}`
+      //   );
+      // }),
     ])();
 
   const getById = ({ providerName, type, group, id = "" }) =>
@@ -95,21 +95,22 @@ exports.createLives = () => {
           assert(isString(id));
         }
       }),
+      // tap(() => {
+      //   logger.debug(`getById ${group}::${type}, id: ${id}`);
+      // }),
       // no providerName for cross account dependencies
       () => getByType({ type, group }),
+      //TODO map.get
       find(pipe([get("id"), eq(callProp("toUpperCase"), id.toUpperCase())])),
-      tap((result) => {
-        assert(true);
-      }),
     ])();
 
   const getByName = ({ providerName, type, group, name }) =>
     pipe([
+      // tap(() => {
+      //   logger.debug(`getByName ${group}::${type}, name: ${name}`);
+      // }),
       () => getByType({ providerName, type, group }),
       find(eq(get("name"), name)),
-      tap((result) => {
-        assert(true);
-      }),
     ])();
 
   return {

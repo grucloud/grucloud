@@ -14,7 +14,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "EfsLambdaSubnetA",
+    name: "EfsLambdaVpc::EfsLambdaSubnetA",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.0.0/24",
@@ -26,7 +26,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "EfsLambdaSubnetB",
+    name: "EfsLambdaVpc::EfsLambdaSubnetB",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.1.0/24",
@@ -127,7 +127,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       fileSystem: "fs-0c95a09faadb73087",
-      subnet: "EfsLambdaSubnetA",
+      subnet: "EfsLambdaVpc::EfsLambdaSubnetA",
       securityGroups: [
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
       ],
@@ -141,7 +141,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       fileSystem: "fs-0c95a09faadb73087",
-      subnet: "EfsLambdaSubnetB",
+      subnet: "EfsLambdaVpc::EfsLambdaSubnetB",
       securityGroups: [
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
       ],
@@ -244,7 +244,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sam-app-HelloEfsFunctionRole-15LXBM09R2ILE",
-      subnets: ["EfsLambdaSubnetA", "EfsLambdaSubnetB"],
+      subnets: [
+        "EfsLambdaVpc::EfsLambdaSubnetA",
+        "EfsLambdaVpc::EfsLambdaSubnetB",
+      ],
       securityGroups: [
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
       ],

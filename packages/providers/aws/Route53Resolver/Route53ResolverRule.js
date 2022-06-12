@@ -2,15 +2,15 @@ const assert = require("assert");
 const { pipe, tap, get, eq, not, assign, map, pick } = require("rubico");
 const { defaultsDeep, first, find, when, unless } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
-const { buildTags } = require("../AwsCommon");
+const { buildTags, getNewCallerReference } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const {
   tagResource,
   untagResource,
   assignTags,
 } = require("./Route53ResolverCommon");
-const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const cannotBeDeleted = ({ config }) =>
   pipe([not(eq(get("live.OwnerId"), config.accountId()))]);
@@ -111,7 +111,7 @@ exports.Route53ResolverRule = ({ spec, config }) =>
         () => otherProps,
         defaultsDeep({
           Name: name,
-          CreatorRequestId: `${new Date()}`,
+          CreatorRequestId: getNewCallerReference(),
           Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
         when(
@@ -123,22 +123,11 @@ exports.Route53ResolverRule = ({ spec, config }) =>
             unless(
               get("TargetIps"),
               pipe([
-                tap((params) => {
-                  assert(true);
-                }),
                 assign({
                   TargetIps: pipe([
                     () => resolverEndpoint,
                     get("live.IpAddresses", []),
-                    map(
-                      pipe([
-                        pick(["Ip"]),
-                        tap((params) => {
-                          assert(true);
-                        }),
-                        defaultsDeep({ Port: 53 }),
-                      ])
-                    ),
+                    map(pipe([pick(["Ip"]), defaultsDeep({ Port: 53 })])),
                   ]),
                 }),
               ])

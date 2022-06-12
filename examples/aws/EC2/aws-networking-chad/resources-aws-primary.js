@@ -4,6 +4,11 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "spoke-vpc-1-vpc-flow-logs-20220609203327160500000008",
+  },
+  {
     type: "Table",
     group: "DynamoDB",
     name: "terraform-state-locking",
@@ -32,20 +37,6 @@ exports.createResources = () => [
     name: ({ config }) => `${config.region}-prod-main-vpc`,
     properties: ({}) => ({
       CidrBlock: "10.101.0.0/16",
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
       DnsHostnames: true,
     }),
   },
@@ -53,22 +44,6 @@ exports.createResources = () => [
     type: "InternetGateway",
     group: "EC2",
     name: ({ config }) => `${config.region}-prod-main-vpc`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
-    }),
   },
   {
     type: "InternetGatewayAttachment",
@@ -82,75 +57,27 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: ({ config }) => `${config.region}-prod-main-vpc-${config.region}b`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
-    }),
     dependencies: ({ config }) => ({
       subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}b`,
-      eip: "eipalloc-01f3ef2de812a076d",
+      eip: "eipalloc-07215ec254b042c43",
     }),
   },
   {
     type: "NatGateway",
     group: "EC2",
     name: ({ config }) => `${config.region}-prod-main-vpc-${config.region}c`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
-    }),
     dependencies: ({ config }) => ({
       subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}c`,
-      eip: "eipalloc-01aed1ed9e377f3c7",
+      eip: "eipalloc-0d6a81d53afa01aaf",
     }),
   },
   {
     type: "NatGateway",
     group: "EC2",
     name: ({ config }) => `${config.region}-prod-main-vpc-${config.region}d`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
-    }),
     dependencies: ({ config }) => ({
       subnet: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}d`,
-      eip: "eipalloc-05f4da88ea7bc755e",
+      eip: "eipalloc-09cfdc6821b875944",
     }),
   },
   {
@@ -161,20 +88,6 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.101.128.0/20",
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -188,20 +101,6 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.101.144.0/20",
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -215,20 +114,6 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       CidrBlock: "10.101.160.0/20",
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -243,20 +128,6 @@ exports.createResources = () => [
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.101.0.0/20",
       MapPublicIpOnLaunch: true,
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -271,20 +142,6 @@ exports.createResources = () => [
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.101.16.0/20",
       MapPublicIpOnLaunch: true,
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -299,20 +156,6 @@ exports.createResources = () => [
       AvailabilityZone: `${config.region}d`,
       CidrBlock: "10.101.32.0/20",
       MapPublicIpOnLaunch: true,
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -323,22 +166,6 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) =>
       `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
-    }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
     }),
@@ -348,22 +175,6 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) =>
       `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
-    }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
     }),
@@ -373,22 +184,6 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) =>
       `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
-    }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
     }),
@@ -396,23 +191,8 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `${config.region}-prod-main-vpc-public-subnet`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
-    }),
+    name: ({ config }) =>
+      `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
     }),
@@ -529,24 +309,24 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc-public-subnet`,
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
       ig: `${config.region}-prod-main-vpc`,
     }),
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "eipalloc-01aed1ed9e377f3c7",
+    name: "eipalloc-07215ec254b042c43",
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "eipalloc-01f3ef2de812a076d",
+    name: "eipalloc-09cfdc6821b875944",
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
-    name: "eipalloc-05f4da88ea7bc755e",
+    name: "eipalloc-0d6a81d53afa01aaf",
   },
   {
     type: "VpcEndpoint",
@@ -568,20 +348,6 @@ exports.createResources = () => [
       RequesterManaged: false,
       VpcEndpointType: "Gateway",
       ServiceName: `com.amazonaws.${config.region}.s3`,
-      Tags: [
-        {
-          Key: "costcenter",
-          Value: "demo",
-        },
-        {
-          Key: "environment",
-          Value: "prod",
-        },
-        {
-          Key: "ManagedBy",
-          Value: "Terraform",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -592,7 +358,6 @@ exports.createResources = () => [
       ],
     }),
   },
-  { type: "Bucket", group: "S3", name: "grucloud-simple-bucket" },
   {
     type: "Bucket",
     group: "S3",

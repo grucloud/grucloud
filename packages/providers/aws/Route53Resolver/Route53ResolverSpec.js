@@ -109,6 +109,12 @@ module.exports = pipe([
         "CreationTime",
         "ModificationTime",
       ],
+      inferName: pipe([
+        get("properties.Name"),
+        tap((Name) => {
+          assert(Name);
+        }),
+      ]),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
           tap((params) => {

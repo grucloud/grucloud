@@ -71,6 +71,7 @@
     "prettier": "2.6.2",
     "rubico": "1.8.11",
     "shelljs": "0.8.5",
+    "uuid": "^8.3.2",
     "zip-dir": "2.0.0"
   },
   "devDependencies": {

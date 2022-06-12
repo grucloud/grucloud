@@ -133,8 +133,13 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
             get("IpPermissions"),
             callProp(
               "sort",
-              ({ FromPort: FromPortA = -1 }, { FromPort: FromPortB = -1 }) =>
-                FromPortA > FromPortB ? 1 : -1
+              (
+                { FromPort: FromPortA = "-1", IpProtocol: IpProtocolA },
+                { FromPort: FromPortB = "-1", IpProtocol: IpProtocolB }
+              ) =>
+                `${FromPortA}${IpProtocolA}`.localeCompare(
+                  `${FromPortB}${IpProtocolB}`
+                )
             ),
           ]),
         }),

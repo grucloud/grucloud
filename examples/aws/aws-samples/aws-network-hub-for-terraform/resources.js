@@ -9,12 +9,6 @@ exports.createResources = () => [
     name: "/aws/network-firewall/alerts",
     properties: ({}) => ({
       retentionInDays: 7,
-      tags: {
-        Env: "dev",
-        Owner: "WWPS",
-        Product: "Network_Automation",
-        Project_ID: "12345",
-      },
     }),
     dependencies: ({}) => ({
       kmsKey: "vpc-flow-logs-dev",
@@ -26,12 +20,6 @@ exports.createResources = () => [
     name: "/aws/network-firewall/flows",
     properties: ({}) => ({
       retentionInDays: 7,
-      tags: {
-        Env: "dev",
-        Owner: "WWPS",
-        Product: "Network_Automation",
-        Project_ID: "12345",
-      },
     }),
     dependencies: ({}) => ({
       kmsKey: "vpc-flow-logs-dev",
@@ -43,12 +31,6 @@ exports.createResources = () => [
     name: "dns_vpc",
     properties: ({}) => ({
       retentionInDays: 7,
-      tags: {
-        Env: "dev",
-        Owner: "WWPS",
-        Product: "Network_Automation",
-        Project_ID: "12345",
-      },
     }),
     dependencies: ({}) => ({
       kmsKey: "vpc-flow-logs-dev",
@@ -60,12 +42,6 @@ exports.createResources = () => [
     name: "endpoint_vpc",
     properties: ({}) => ({
       retentionInDays: 7,
-      tags: {
-        Env: "dev",
-        Owner: "WWPS",
-        Product: "Network_Automation",
-        Project_ID: "12345",
-      },
     }),
     dependencies: ({}) => ({
       kmsKey: "vpc-flow-logs-dev",
@@ -77,12 +53,6 @@ exports.createResources = () => [
     name: "inspection_vpc",
     properties: ({}) => ({
       retentionInDays: 7,
-      tags: {
-        Env: "dev",
-        Owner: "WWPS",
-        Product: "Network_Automation",
-        Project_ID: "12345",
-      },
     }),
     dependencies: ({}) => ({
       kmsKey: "vpc-flow-logs-dev",
@@ -103,24 +73,6 @@ exports.createResources = () => [
           Values: ["169.254.169.123", "fd00:ec2::123"],
         },
       ],
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
   },
   {
@@ -138,24 +90,6 @@ exports.createResources = () => [
           Values: ["169.254.169.123", "fd00:ec2::123"],
         },
       ],
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
   },
   {
@@ -171,24 +105,6 @@ exports.createResources = () => [
         {
           Key: "ntp-servers",
           Values: ["169.254.169.123", "fd00:ec2::123"],
-        },
-      ],
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
       ],
     }),
@@ -223,24 +139,6 @@ exports.createResources = () => [
     name: "flowlog::dns_vpc",
     properties: ({}) => ({
       TrafficType: "ALL",
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
       MaxAggregationInterval: 600,
     }),
     dependencies: ({}) => ({
@@ -255,24 +153,6 @@ exports.createResources = () => [
     name: "flowlog::endpoint_vpc",
     properties: ({}) => ({
       TrafficType: "ALL",
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
       MaxAggregationInterval: 600,
     }),
     dependencies: ({}) => ({
@@ -287,24 +167,6 @@ exports.createResources = () => [
     name: "flowlog::inspection_vpc",
     properties: ({}) => ({
       TrafficType: "ALL",
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
       MaxAggregationInterval: 600,
     }),
     dependencies: ({}) => ({
@@ -324,24 +186,6 @@ exports.createResources = () => [
           RegionName: `${config.region}`,
         },
       ],
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
   },
   {
@@ -353,24 +197,6 @@ exports.createResources = () => [
       IpamScopeType: "private",
       IsDefault: false,
       Description: "Org Scope",
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       ipam: "org_ipam",
@@ -386,24 +212,6 @@ exports.createResources = () => [
       Locale: `${config.region}`,
       AutoImport: false,
       AddressFamily: "ipv4",
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       ipamScope: "private_org_ipam_scope",
@@ -424,31 +232,12 @@ exports.createResources = () => [
     group: "EC2",
     name: "dns_vpc",
     properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
       DnsHostnames: true,
       Ipv4NetmaskLength: "22",
       AmazonProvidedIpv6CidrBlock: true,
     }),
     dependencies: ({}) => ({
       ipamPoolIpv4: "private_org_ipam_scope",
-      ipamPoolIpv6: "private_org_ipam_scope",
     }),
   },
   {
@@ -456,31 +245,12 @@ exports.createResources = () => [
     group: "EC2",
     name: "endpoint_vpc",
     properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
       DnsHostnames: true,
       Ipv4NetmaskLength: "22",
       AmazonProvidedIpv6CidrBlock: true,
     }),
     dependencies: ({}) => ({
       ipamPoolIpv4: "private_org_ipam_scope",
-      ipamPoolIpv6: "private_org_ipam_scope",
     }),
   },
   {
@@ -488,58 +258,15 @@ exports.createResources = () => [
     group: "EC2",
     name: "inspection_vpc",
     properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
       DnsHostnames: true,
       Ipv4NetmaskLength: "22",
       AmazonProvidedIpv6CidrBlock: true,
     }),
     dependencies: ({}) => ({
       ipamPoolIpv4: "private_org_ipam_scope",
-      ipamPoolIpv6: "private_org_ipam_scope",
     }),
   },
-  {
-    type: "InternetGateway",
-    group: "EC2",
-    name: "inspection_igw",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
-    }),
-  },
+  { type: "InternetGateway", group: "EC2", name: "inspection_igw" },
   {
     type: "InternetGatewayAttachment",
     group: "EC2",
@@ -552,26 +279,6 @@ exports.createResources = () => [
     type: "EgressOnlyInternetGateway",
     group: "EC2",
     name: "inspection_eigw",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
-    }),
     dependencies: ({}) => ({
       vpc: "inspection_vpc",
     }),
@@ -583,24 +290,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "public",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -609,7 +300,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({ config }) => ({
-      subnet: `inspection_internet_${config.region}a`,
+      subnet: `inspection_vpc::inspection_internet_${config.region}a`,
       eip: `internet_vpc_nat-${config.region}a`,
     }),
   },
@@ -620,24 +311,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "public",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -646,7 +321,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({ config }) => ({
-      subnet: `inspection_internet_${config.region}b`,
+      subnet: `inspection_vpc::inspection_internet_${config.region}b`,
       eip: `internet_vpc_nat-${config.region}b`,
     }),
   },
@@ -657,24 +332,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "public",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -683,38 +342,22 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({ config }) => ({
-      subnet: `inspection_internet_${config.region}c`,
+      subnet: `inspection_vpc::inspection_internet_${config.region}c`,
       eip: `internet_vpc_nat-${config.region}c`,
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `dns_attachment_${config.region}a`,
+    name: ({ config }) => `dns_vpc::dns_attachment_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.8.0/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -735,31 +378,15 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `dns_attachment_${config.region}b`,
+    name: ({ config }) => `dns_vpc::dns_attachment_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.8.32/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -780,31 +407,15 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `dns_attachment_${config.region}c`,
+    name: ({ config }) => `dns_vpc::dns_attachment_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.0.8.64/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -825,31 +436,15 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `dns_endpoint_${config.region}a`,
+    name: ({ config }) => `dns_vpc::dns_endpoint_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.8.128/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -870,31 +465,15 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `dns_endpoint_${config.region}b`,
+    name: ({ config }) => `dns_vpc::dns_endpoint_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.8.192/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -915,31 +494,15 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `dns_endpoint_${config.region}c`,
+    name: ({ config }) => `dns_vpc::dns_endpoint_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.0.9.0/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -960,31 +523,15 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `endpoint_attachment_${config.region}a`,
+    name: ({ config }) => `endpoint_vpc::endpoint_attachment_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.4.0/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1005,31 +552,15 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `endpoint_attachment_${config.region}b`,
+    name: ({ config }) => `endpoint_vpc::endpoint_attachment_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.4.32/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1050,31 +581,15 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `endpoint_attachment_${config.region}c`,
+    name: ({ config }) => `endpoint_vpc::endpoint_attachment_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.0.4.64/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1095,31 +610,15 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `endpoint_endpoint_${config.region}a`,
+    name: ({ config }) => `endpoint_vpc::endpoint_endpoint_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.4.128/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1140,31 +639,15 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `endpoint_endpoint_${config.region}b`,
+    name: ({ config }) => `endpoint_vpc::endpoint_endpoint_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.4.192/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1185,31 +668,15 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `endpoint_endpoint_${config.region}c`,
+    name: ({ config }) => `endpoint_vpc::endpoint_endpoint_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.0.5.0/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1230,31 +697,16 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}a`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_attachment_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.0.0/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1275,31 +727,16 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}b`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_attachment_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.0.32/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1320,31 +757,16 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}c`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_attachment_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.0.0.64/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1365,31 +787,16 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}a`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_inspection_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.0.128/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1410,31 +817,16 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}b`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_inspection_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.0.160/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1455,31 +847,16 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}c`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_inspection_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.0.0.192/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1500,31 +877,16 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}a`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_internet_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.0.224/27",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "public",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1545,31 +907,16 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}b`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_internet_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.1.0/27",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "public",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1590,31 +937,16 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}c`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_internet_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.0.1.32/27",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "public",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1635,28 +967,12 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "dns_route_table",
+    name: "dns_vpc::dns_route_table",
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1671,27 +987,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "endpoint_route_table",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
-    }),
+    name: "endpoint_vpc::endpoint_route_table",
     dependencies: ({}) => ({
       vpc: "endpoint_vpc",
     }),
@@ -1699,28 +995,13 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}a`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_attachment_${config.region}a`,
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1735,28 +1016,13 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}b`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_attachment_${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1771,28 +1037,13 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `inspection_attachment_${config.region}c`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_attachment_${config.region}c`,
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1807,28 +1058,13 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}a`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_inspection_${config.region}a`,
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1843,28 +1079,13 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}b`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_inspection_${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1879,28 +1100,13 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `inspection_inspection_${config.region}c`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_inspection_${config.region}c`,
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "private",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1915,28 +1121,13 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}a`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_internet_${config.region}a`,
     properties: ({}) => ({
       Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
         {
           Key: "Network",
           Value: "public",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1951,28 +1142,13 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}b`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_internet_${config.region}b`,
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "public",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -1987,28 +1163,13 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `inspection_internet_${config.region}c`,
+    name: ({ config }) =>
+      `inspection_vpc::inspection_internet_${config.region}c`,
     properties: ({}) => ({
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
           Key: "Network",
           Value: "public",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
         {
           Key: "Type",
@@ -2024,168 +1185,168 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "dns_route_table",
-      subnet: `dns_attachment_${config.region}a`,
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_attachment_${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "dns_route_table",
-      subnet: `dns_attachment_${config.region}b`,
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_attachment_${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "dns_route_table",
-      subnet: `dns_attachment_${config.region}c`,
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_attachment_${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "dns_route_table",
-      subnet: `dns_endpoint_${config.region}a`,
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_endpoint_${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "dns_route_table",
-      subnet: `dns_endpoint_${config.region}b`,
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_endpoint_${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "dns_route_table",
-      subnet: `dns_endpoint_${config.region}c`,
+      routeTable: "dns_vpc::dns_route_table",
+      subnet: `dns_vpc::dns_endpoint_${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "endpoint_route_table",
-      subnet: `endpoint_attachment_${config.region}a`,
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_attachment_${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "endpoint_route_table",
-      subnet: `endpoint_attachment_${config.region}b`,
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_attachment_${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "endpoint_route_table",
-      subnet: `endpoint_attachment_${config.region}c`,
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_attachment_${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "endpoint_route_table",
-      subnet: `endpoint_endpoint_${config.region}a`,
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_endpoint_${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "endpoint_route_table",
-      subnet: `endpoint_endpoint_${config.region}b`,
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_endpoint_${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "endpoint_route_table",
-      subnet: `endpoint_endpoint_${config.region}c`,
+      routeTable: "endpoint_vpc::endpoint_route_table",
+      subnet: `endpoint_vpc::endpoint_endpoint_${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `inspection_attachment_${config.region}a`,
-      subnet: `inspection_attachment_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
+      subnet: `inspection_vpc::inspection_attachment_${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `inspection_attachment_${config.region}b`,
-      subnet: `inspection_attachment_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
+      subnet: `inspection_vpc::inspection_attachment_${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `inspection_attachment_${config.region}c`,
-      subnet: `inspection_attachment_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
+      subnet: `inspection_vpc::inspection_attachment_${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}a`,
-      subnet: `inspection_inspection_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
+      subnet: `inspection_vpc::inspection_inspection_${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}b`,
-      subnet: `inspection_inspection_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
+      subnet: `inspection_vpc::inspection_inspection_${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}c`,
-      subnet: `inspection_inspection_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
+      subnet: `inspection_vpc::inspection_inspection_${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}a`,
-      subnet: `inspection_internet_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
+      subnet: `inspection_vpc::inspection_internet_${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}b`,
-      subnet: `inspection_internet_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
+      subnet: `inspection_vpc::inspection_internet_${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}c`,
-      subnet: `inspection_internet_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
+      subnet: `inspection_vpc::inspection_internet_${config.region}c`,
     }),
   },
   {
@@ -2195,7 +1356,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "dns_route_table",
+      routeTable: "dns_vpc::dns_route_table",
       transitGateway: "Org_TGW_dev",
     }),
   },
@@ -2206,7 +1367,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "dns_route_table",
+      routeTable: "dns_vpc::dns_route_table",
       transitGateway: "Org_TGW_dev",
     }),
   },
@@ -2217,7 +1378,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "endpoint_route_table",
+      routeTable: "endpoint_vpc::endpoint_route_table",
       transitGateway: "Org_TGW_dev",
     }),
   },
@@ -2228,7 +1389,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "endpoint_route_table",
+      routeTable: "endpoint_vpc::endpoint_route_table",
       transitGateway: "Org_TGW_dev",
     }),
   },
@@ -2239,7 +1400,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_attachment_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
       egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
@@ -2250,8 +1411,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_attachment_${config.region}a`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_inspection_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
     }),
   },
   {
@@ -2261,7 +1422,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_attachment_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
       egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
@@ -2272,8 +1433,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_attachment_${config.region}b`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_inspection_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
     }),
   },
   {
@@ -2283,7 +1444,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_attachment_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
       egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
@@ -2294,8 +1455,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_attachment_${config.region}c`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_inspection_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
     }),
   },
   {
@@ -2305,7 +1466,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
       egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
@@ -2316,7 +1477,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
       natGateway: `inspection_natgw_${config.region}a`,
     }),
   },
@@ -2327,7 +1488,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "64:ff9b::/96",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
       natGateway: `inspection_natgw_${config.region}a`,
     }),
   },
@@ -2338,7 +1499,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "10.0.0.0/10",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
       transitGateway: "Org_TGW_dev",
     }),
   },
@@ -2349,7 +1510,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
       egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
@@ -2360,7 +1521,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
       natGateway: `inspection_natgw_${config.region}b`,
     }),
   },
@@ -2371,7 +1532,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "64:ff9b::/96",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
       natGateway: `inspection_natgw_${config.region}b`,
     }),
   },
@@ -2382,7 +1543,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "10.0.0.0/10",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
       transitGateway: "Org_TGW_dev",
     }),
   },
@@ -2393,7 +1554,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
       egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
@@ -2404,7 +1565,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
       natGateway: `inspection_natgw_${config.region}c`,
     }),
   },
@@ -2415,7 +1576,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "64:ff9b::/96",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
       natGateway: `inspection_natgw_${config.region}c`,
     }),
   },
@@ -2426,7 +1587,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "10.0.0.0/10",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_inspection_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
       transitGateway: "Org_TGW_dev",
     }),
   },
@@ -2437,7 +1598,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
       egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
@@ -2448,7 +1609,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
       ig: "inspection_igw",
     }),
   },
@@ -2459,8 +1620,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "10.0.0.0/10",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}a`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_inspection_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
     }),
   },
   {
@@ -2470,7 +1631,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
       egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
@@ -2481,7 +1642,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
       ig: "inspection_igw",
     }),
   },
@@ -2492,8 +1653,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "10.0.0.0/10",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}b`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_inspection_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
     }),
   },
   {
@@ -2503,7 +1664,7 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
       egressOnlyInternetGateway: "inspection_eigw",
     }),
   },
@@ -2514,7 +1675,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
       ig: "inspection_igw",
     }),
   },
@@ -2525,8 +1686,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "10.0.0.0/10",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_internet_${config.region}c`,
-      vpcEndpoint: `vpce::NetworkFirewall::inspection_inspection_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
+      vpcEndpoint: `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
     }),
   },
   {
@@ -2535,24 +1696,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       GroupName: "Network-DNS-Traffic-SG",
       Description: "Allow traffic across org to dns endpoints",
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "dns_vpc",
@@ -2564,24 +1707,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       GroupName: "MGMT-VPC-Endpoints-Traffic-SG",
       Description: "Allow traffic across org to vpc endpoints",
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "endpoint_vpc",
@@ -2651,76 +1776,16 @@ exports.createResources = () => [
     type: "ElasticIpAddress",
     group: "EC2",
     name: ({ config }) => `internet_vpc_nat-${config.region}a`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
-    }),
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
     name: ({ config }) => `internet_vpc_nat-${config.region}b`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
-    }),
   },
   {
     type: "ElasticIpAddress",
     group: "EC2",
     name: ({ config }) => `internet_vpc_nat-${config.region}c`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
-    }),
   },
   {
     type: "VpcEndpoint",
@@ -2743,33 +1808,17 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.athena`,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
           Key: "PHZ",
-          Value: "athena.us-east-1.amazonaws.com",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
+          Value: `athena.${config.region}.amazonaws.com`,
         },
       ],
     }),
     dependencies: ({ config }) => ({
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_endpoint_${config.region}a`,
-        `endpoint_endpoint_${config.region}b`,
-        `endpoint_endpoint_${config.region}c`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -2794,33 +1843,17 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.autoscaling`,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
           Key: "PHZ",
-          Value: "autoscaling.us-east-1.amazonaws.com",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
+          Value: `autoscaling.${config.region}.amazonaws.com`,
         },
       ],
     }),
     dependencies: ({ config }) => ({
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_endpoint_${config.region}a`,
-        `endpoint_endpoint_${config.region}b`,
-        `endpoint_endpoint_${config.region}c`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -2845,33 +1878,17 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.ec2`,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
           Key: "PHZ",
-          Value: "ec2.us-east-1.amazonaws.com",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
+          Value: `ec2.${config.region}.amazonaws.com`,
         },
       ],
     }),
     dependencies: ({ config }) => ({
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_endpoint_${config.region}a`,
-        `endpoint_endpoint_${config.region}b`,
-        `endpoint_endpoint_${config.region}c`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -2896,33 +1913,17 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
           Key: "PHZ",
-          Value: "ec2messages.us-east-1.amazonaws.com",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
+          Value: `ec2messages.${config.region}.amazonaws.com`,
         },
       ],
     }),
     dependencies: ({ config }) => ({
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_endpoint_${config.region}a`,
-        `endpoint_endpoint_${config.region}b`,
-        `endpoint_endpoint_${config.region}c`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -2947,33 +1948,17 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.ecs`,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
           Key: "PHZ",
-          Value: "ecs.us-east-1.amazonaws.com",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
+          Value: `ecs.${config.region}.amazonaws.com`,
         },
       ],
     }),
     dependencies: ({ config }) => ({
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_endpoint_${config.region}a`,
-        `endpoint_endpoint_${config.region}b`,
-        `endpoint_endpoint_${config.region}c`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -2998,33 +1983,17 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.logs`,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
           Key: "PHZ",
-          Value: "logs.us-east-1.amazonaws.com",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
+          Value: `logs.${config.region}.amazonaws.com`,
         },
       ],
     }),
     dependencies: ({ config }) => ({
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_endpoint_${config.region}a`,
-        `endpoint_endpoint_${config.region}b`,
-        `endpoint_endpoint_${config.region}c`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -3049,33 +2018,17 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.rds`,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
           Key: "PHZ",
-          Value: "rds.us-east-1.amazonaws.com",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
+          Value: `rds.${config.region}.amazonaws.com`,
         },
       ],
     }),
     dependencies: ({ config }) => ({
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_endpoint_${config.region}a`,
-        `endpoint_endpoint_${config.region}b`,
-        `endpoint_endpoint_${config.region}c`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -3100,33 +2053,17 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.sns`,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
           Key: "PHZ",
-          Value: "sns.us-east-1.amazonaws.com",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
+          Value: `sns.${config.region}.amazonaws.com`,
         },
       ],
     }),
     dependencies: ({ config }) => ({
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_endpoint_${config.region}a`,
-        `endpoint_endpoint_${config.region}b`,
-        `endpoint_endpoint_${config.region}c`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -3151,33 +2088,17 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.sqs`,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
           Key: "PHZ",
-          Value: "sqs.us-east-1.amazonaws.com",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
+          Value: `sqs.${config.region}.amazonaws.com`,
         },
       ],
     }),
     dependencies: ({ config }) => ({
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_endpoint_${config.region}a`,
-        `endpoint_endpoint_${config.region}b`,
-        `endpoint_endpoint_${config.region}c`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -3202,33 +2123,17 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.ssm`,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
           Key: "PHZ",
-          Value: "ssm.us-east-1.amazonaws.com",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
+          Value: `ssm.${config.region}.amazonaws.com`,
         },
       ],
     }),
     dependencies: ({ config }) => ({
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_endpoint_${config.region}a`,
-        `endpoint_endpoint_${config.region}b`,
-        `endpoint_endpoint_${config.region}c`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -3253,33 +2158,17 @@ exports.createResources = () => [
       ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
           Key: "PHZ",
-          Value: "ssmmessages.us-east-1.amazonaws.com",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
+          Value: `ssmmessages.${config.region}.amazonaws.com`,
         },
       ],
     }),
     dependencies: ({ config }) => ({
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_endpoint_${config.region}a`,
-        `endpoint_endpoint_${config.region}b`,
-        `endpoint_endpoint_${config.region}c`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}a`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}b`,
+        `endpoint_vpc::endpoint_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -3287,11 +2176,11 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     name: ({ config }) =>
-      `vpce::NetworkFirewall::inspection_inspection_${config.region}a`,
+      `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
     readOnly: true,
     dependencies: ({ config }) => ({
       vpc: "inspection_vpc",
-      subnets: [`inspection_inspection_${config.region}a`],
+      subnets: [`inspection_vpc::inspection_inspection_${config.region}a`],
       firewall: "NetworkFirewall",
     }),
   },
@@ -3299,11 +2188,11 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     name: ({ config }) =>
-      `vpce::NetworkFirewall::inspection_inspection_${config.region}b`,
+      `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
     readOnly: true,
     dependencies: ({ config }) => ({
       vpc: "inspection_vpc",
-      subnets: [`inspection_inspection_${config.region}b`],
+      subnets: [`inspection_vpc::inspection_inspection_${config.region}b`],
       firewall: "NetworkFirewall",
     }),
   },
@@ -3311,11 +2200,11 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     name: ({ config }) =>
-      `vpce::NetworkFirewall::inspection_inspection_${config.region}c`,
+      `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
     readOnly: true,
     dependencies: ({ config }) => ({
       vpc: "inspection_vpc",
-      subnets: [`inspection_inspection_${config.region}c`],
+      subnets: [`inspection_vpc::inspection_inspection_${config.region}c`],
       firewall: "NetworkFirewall",
     }),
   },
@@ -3335,24 +2224,6 @@ exports.createResources = () => [
         DnsSupport: "enable",
         MulticastSupport: "disable",
       },
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
   },
   {
@@ -3434,24 +2305,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       DefaultAssociationRouteTable: false,
       DefaultPropagationRouteTable: false,
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       transitGateway: "Org_TGW_dev",
@@ -3464,24 +2317,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       DefaultAssociationRouteTable: false,
       DefaultPropagationRouteTable: false,
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       transitGateway: "Org_TGW_dev",
@@ -3494,24 +2329,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       DefaultAssociationRouteTable: false,
       DefaultPropagationRouteTable: false,
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       transitGateway: "Org_TGW_dev",
@@ -3527,32 +2344,14 @@ exports.createResources = () => [
         Ipv6Support: "enable",
         ApplianceModeSupport: "disable",
       },
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       transitGateway: "Org_TGW_dev",
       vpc: "dns_vpc",
       subnets: [
-        `dns_attachment_${config.region}a`,
-        `dns_attachment_${config.region}b`,
-        `dns_attachment_${config.region}c`,
+        `dns_vpc::dns_attachment_${config.region}a`,
+        `dns_vpc::dns_attachment_${config.region}b`,
+        `dns_vpc::dns_attachment_${config.region}c`,
       ],
     }),
   },
@@ -3566,32 +2365,14 @@ exports.createResources = () => [
         Ipv6Support: "enable",
         ApplianceModeSupport: "disable",
       },
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       transitGateway: "Org_TGW_dev",
       vpc: "endpoint_vpc",
       subnets: [
-        `endpoint_attachment_${config.region}a`,
-        `endpoint_attachment_${config.region}b`,
-        `endpoint_attachment_${config.region}c`,
+        `endpoint_vpc::endpoint_attachment_${config.region}a`,
+        `endpoint_vpc::endpoint_attachment_${config.region}b`,
+        `endpoint_vpc::endpoint_attachment_${config.region}c`,
       ],
     }),
   },
@@ -3605,32 +2386,14 @@ exports.createResources = () => [
         Ipv6Support: "enable",
         ApplianceModeSupport: "enable",
       },
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       transitGateway: "Org_TGW_dev",
       vpc: "inspection_vpc",
       subnets: [
-        `inspection_attachment_${config.region}a`,
-        `inspection_attachment_${config.region}b`,
-        `inspection_attachment_${config.region}c`,
+        `inspection_vpc::inspection_attachment_${config.region}a`,
+        `inspection_vpc::inspection_attachment_${config.region}b`,
+        `inspection_vpc::inspection_attachment_${config.region}c`,
       ],
     }),
   },
@@ -3773,24 +2536,6 @@ exports.createResources = () => [
           PolicyName: "endpoint_vpc_flow_logs",
         },
       ],
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
   },
   {
@@ -3818,28 +2563,6 @@ exports.createResources = () => [
           },
         ],
       },
-      Tags: [
-        {
-          Key: "automation",
-          Value: "true",
-        },
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       policies: ["dev_central_network_automation_policy"],
@@ -3898,24 +2621,6 @@ exports.createResources = () => [
       Path: "/",
       Description:
         "dev Central network automation policy to allow TGW association, propagation and route53 private hosted zone association",
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
   },
   {
@@ -3981,31 +2686,13 @@ exports.createResources = () => [
       FirewallName: "NetworkFirewall",
       FirewallPolicyChangeProtection: false,
       SubnetChangeProtection: false,
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       vpc: "inspection_vpc",
       subnets: [
-        `inspection_inspection_${config.region}a`,
-        `inspection_inspection_${config.region}b`,
-        `inspection_inspection_${config.region}c`,
+        `inspection_vpc::inspection_inspection_${config.region}a`,
+        `inspection_vpc::inspection_inspection_${config.region}b`,
+        `inspection_vpc::inspection_inspection_${config.region}c`,
       ],
       firewallPolicy: "firewall-policy",
     }),
@@ -4029,24 +2716,6 @@ exports.createResources = () => [
         StatelessRuleGroupReferences: undefined,
       },
       FirewallPolicyName: "firewall-policy",
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       ruleGroups: ["block-domains"],
@@ -4074,24 +2743,6 @@ exports.createResources = () => [
       },
       Capacity: 100,
       RuleGroupName: "block-domains",
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
       Type: "STATEFUL",
     }),
   },
@@ -4296,22 +2947,6 @@ exports.createResources = () => [
       },
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-        {
           Key: "vpce",
           Value: "true",
         },
@@ -4330,22 +2965,6 @@ exports.createResources = () => [
         Comment: "Managed by Terraform",
       },
       Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
         {
           Key: "vpce",
           Value: "true",
@@ -4366,22 +2985,6 @@ exports.createResources = () => [
       },
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-        {
           Key: "vpce",
           Value: "true",
         },
@@ -4400,22 +3003,6 @@ exports.createResources = () => [
         Comment: "Managed by Terraform",
       },
       Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
         {
           Key: "vpce",
           Value: "true",
@@ -4436,22 +3023,6 @@ exports.createResources = () => [
       },
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-        {
           Key: "vpce",
           Value: "true",
         },
@@ -4471,22 +3042,6 @@ exports.createResources = () => [
       },
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-        {
           Key: "vpce",
           Value: "true",
         },
@@ -4504,24 +3059,6 @@ exports.createResources = () => [
       Config: {
         Comment: "Managed by Terraform",
       },
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "dns_vpc",
@@ -4536,22 +3073,6 @@ exports.createResources = () => [
         Comment: "Managed by Terraform",
       },
       Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
         {
           Key: "vpce",
           Value: "true",
@@ -4572,22 +3093,6 @@ exports.createResources = () => [
       },
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-        {
           Key: "vpce",
           Value: "true",
         },
@@ -4606,22 +3111,6 @@ exports.createResources = () => [
         Comment: "Managed by Terraform",
       },
       Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
         {
           Key: "vpce",
           Value: "true",
@@ -4642,22 +3131,6 @@ exports.createResources = () => [
       },
       Tags: [
         {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-        {
           Key: "vpce",
           Value: "true",
         },
@@ -4676,22 +3149,6 @@ exports.createResources = () => [
         Comment: "Managed by Terraform",
       },
       Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
         {
           Key: "vpce",
           Value: "true",
@@ -4878,53 +3335,31 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `dns_endpoint_${config.region}b`,
+            name: `dns_vpc::dns_endpoint_${config.region}b`,
           })}`,
         },
         {
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `dns_endpoint_${config.region}a`,
+            name: `dns_vpc::dns_endpoint_${config.region}a`,
           })}`,
         },
         {
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `dns_endpoint_${config.region}c`,
+            name: `dns_vpc::dns_endpoint_${config.region}c`,
           })}`,
-        },
-      ],
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Environment",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
       ],
     }),
     dependencies: ({ config }) => ({
       securityGroups: ["sg::dns_vpc::Network-DNS-Traffic-SG"],
       subnets: [
-        `dns_endpoint_${config.region}a`,
-        `dns_endpoint_${config.region}b`,
-        `dns_endpoint_${config.region}c`,
+        `dns_vpc::dns_endpoint_${config.region}a`,
+        `dns_vpc::dns_endpoint_${config.region}b`,
+        `dns_vpc::dns_endpoint_${config.region}c`,
       ],
     }),
   },
@@ -4939,86 +3374,41 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `dns_endpoint_${config.region}a`,
+            name: `dns_vpc::dns_endpoint_${config.region}b`,
           })}`,
         },
         {
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `dns_endpoint_${config.region}b`,
+            name: `dns_vpc::dns_endpoint_${config.region}a`,
           })}`,
         },
         {
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `dns_endpoint_${config.region}c`,
+            name: `dns_vpc::dns_endpoint_${config.region}c`,
           })}`,
-        },
-      ],
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Environment",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
         },
       ],
     }),
     dependencies: ({ config }) => ({
       securityGroups: ["sg::dns_vpc::Network-DNS-Traffic-SG"],
       subnets: [
-        `dns_endpoint_${config.region}a`,
-        `dns_endpoint_${config.region}b`,
-        `dns_endpoint_${config.region}c`,
+        `dns_vpc::dns_endpoint_${config.region}a`,
+        `dns_vpc::dns_endpoint_${config.region}b`,
+        `dns_vpc::dns_endpoint_${config.region}c`,
       ],
     }),
   },
   {
     type: "Rule",
     group: "Route53Resolver",
-    name: "root-env",
     properties: ({}) => ({
       DomainName: "network-dev.internal.",
       Name: "root-env",
       RuleType: "FORWARD",
-      Tags: [
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Environment",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       resolverEndpoint: "Org-Inbound-Resolver-Endpoint",
@@ -5039,30 +3429,8 @@ exports.createResources = () => [
     properties: ({}) => ({
       Type: "SecureString",
       Value:
-        "AQICAHhJJMncH+TIYM7GK7Cq/fhSOk3Vbs7m3Qyu22OfOmlMigH9w+uWYx+VvTGY0W31LHwhAAAAeTB3BgkqhkiG9w0BBwagajBoAgEAMGMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMbrZfrzi94ajMSo04AgEQgDa3V7NL5PMxJu7gSQa/UKFpuy4DsvdG/63kvjtAQwlj/VtcVPur5/oqg4ij12i8w4hNJFl1k5A=",
+        "AQICAHhJJMncH+TIYM7GK7Cq/fhSOk3Vbs7m3Qyu22OfOmlMigFvNsioZoVPfnWq4lBvXHisAAAAeTB3BgkqhkiG9w0BBwagajBoAgEAMGMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMW6rdNxHXlzSYbQZLAgEQgDbFhcPJEtdHAyCPEzht/X0KvXI76RQxkMjKdwl6Qalfrw+za/ppq1rpc2Cqb3XzGny5H4mmeuc=",
       DataType: "text",
-      Tags: [
-        {
-          Key: "automation",
-          Value: "true",
-        },
-        {
-          Key: "Env",
-          Value: "dev",
-        },
-        {
-          Key: "Owner",
-          Value: "WWPS",
-        },
-        {
-          Key: "Product",
-          Value: "Network_Automation",
-        },
-        {
-          Key: "Project_ID",
-          Value: "12345",
-        },
-      ],
     }),
   },
 ];

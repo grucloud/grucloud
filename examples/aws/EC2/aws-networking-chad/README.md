@@ -1,3 +1,11 @@
-# AWS Networking
+# Hub and spoke with inspection vpc
 
-reverse engineer https://github.com/arpcefxl/aws-networking-terraform
+This example originates from [arpcefxl/aws-networking-terraform](https://github.com/arpcefxl/aws-networking-terraform)
+
+## Resources mind map
+
+![resource mind map](./artifacts/resources-mindmap.svg)
+
+## Target Graph
+
+![diagram-target](./artifacts/diagram-target.svg)
