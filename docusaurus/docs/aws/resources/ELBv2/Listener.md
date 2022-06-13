@@ -55,7 +55,7 @@ The list of properties are defined in [CreateListenerCommandInput](https://docs.
 
 ## Used By
 
-- [Api Gateway V2 Integration](../ELBv2/Integration.md)
+- [Api Gateway V2 Integration](../ApiGatewayV2/Integration.md)
 
 ## List
 
