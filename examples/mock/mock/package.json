@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-mock",
-  "version": "7.5.0",
+  "version": "7.6.0",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.5.0",
-    "@grucloud/provider-mock": "^7.5.0",
+    "@grucloud/core": "^7.6.0",
+    "@grucloud/provider-mock": "^7.6.0",
     "bluebird": "^3.7.2",
     "ping": "^0.4.1",
     "rubico": "^1.6.27",
