@@ -11,7 +11,7 @@ const {
   switchCase,
   filter,
 } = require("rubico");
-const { prepend, isEmpty, find, when } = require("rubico/x");
+const { prepend, isEmpty, find } = require("rubico/x");
 const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
@@ -158,29 +158,34 @@ module.exports = pipe([
           }),
           switchCase([
             get("vpcEndpoint"),
-            pipe([get("vpcEndpoint"), prepend("EC2::VpcEndpoint::")]),
+            pipe([
+              () => `EC2::VpcEndpoint::${properties.Type}::${properties.Name}`,
+            ]),
             get("elasticIpAddress"),
             pipe([
               get("elasticIpAddress", "noName"),
-              prepend("EC2::ElasticIpAddress::"),
+              prepend("EC2::ElasticIpAddress::A"),
             ]),
             get("certificate"),
-            pipe([get("certificate"), prepend("ACM::Certificate::")]),
+            pipe([get("certificate"), prepend(`ACM::Certificate::CNAME::`)]),
             get("userPoolDomain"),
             pipe([
               get("userPoolDomain"),
-              prepend("CognitoIdentityServiceProvider::UserPoolDomain::"),
+              prepend("CognitoIdentityServiceProvider::UserPoolDomain::A::"),
             ]),
             get("loadBalancer"),
-            pipe([get("loadBalancer"), prepend("ELBv2::LoadBalancer::")]),
+            pipe([get("loadBalancer"), prepend("ELBv2::LoadBalancer::A::")]),
             get("distribution"),
-            pipe([get("distribution"), prepend("CloudFront::Distribution::")]),
+            pipe([
+              get("distribution"),
+              prepend("CloudFront::Distribution::A::"),
+            ]),
             get("apiGatewayV2DomainName"),
             pipe([
               get("apiGatewayV2DomainName"),
-              prepend("ApiGatewayV2::DomainName::"),
+              prepend("ApiGatewayV2::DomainName::A::"),
             ]),
-            () => `${properties.Name}::${properties.Type}`,
+            () => `${properties.Type}::${properties.Name}`,
           ]),
           prepend(`record::`),
           tap((params) => {

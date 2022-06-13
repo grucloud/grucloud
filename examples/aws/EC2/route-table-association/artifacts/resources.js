@@ -23,7 +23,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-a",
+    name: "vpc::subnet-a",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "192.168.0.0/19",
@@ -35,7 +35,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-b",
+    name: "vpc::subnet-b",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "192.168.32.0/19",
@@ -47,7 +47,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "rt-default-vpc",
+    name: "vpc::rt-default",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -57,16 +57,16 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "rt-default-vpc",
-      subnet: "subnet-a",
+      routeTable: "vpc::rt-default",
+      subnet: "vpc::subnet-a",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "rt-default-vpc",
-      subnet: "subnet-b",
+      routeTable: "vpc::rt-default",
+      subnet: "vpc::subnet-b",
     }),
   },
   {
@@ -76,7 +76,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "rt-default-vpc",
+      routeTable: "vpc::rt-default",
       ig: "internet-gateway",
     }),
   },

@@ -19,7 +19,7 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      subnets: ["PubSubnetAz1", "PubSubnetAz2"],
+      subnets: ["Vpc::PubSubnetAz1", "Vpc::PubSubnetAz2"],
       launchTemplate: "lt-ec2-micro",
     }),
   },
@@ -36,7 +36,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "PubSubnetAz1",
+    name: "Vpc::PubSubnetAz1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.0.0/24",
@@ -48,7 +48,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "PubSubnetAz2",
+    name: "Vpc::PubSubnetAz2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.1.0/24",

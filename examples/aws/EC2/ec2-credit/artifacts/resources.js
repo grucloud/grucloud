@@ -7,7 +7,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-default-d",
+    name: "vpc-default::subnet-default-d",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",
@@ -65,7 +65,7 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: "subnet-default-d",
+            name: "vpc-default::subnet-default-d",
           })}`,
         },
       ],
@@ -78,7 +78,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      subnets: ["subnet-default-d"],
+      subnets: ["vpc-default::subnet-default-d"],
       securityGroups: ["sg::vpc-default::launch-wizard-1"],
     }),
   },

@@ -12,6 +12,7 @@ const {
   pick,
   filter,
   assign,
+  fork,
 } = require("rubico");
 const {
   callProp,
@@ -86,6 +87,8 @@ exports.filterLiveSubnet = when(
   })
 );
 
+const extractSubnetName = pipe([callProp("split", "::"), last]);
+
 exports.EC2Subnet = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
@@ -97,10 +100,33 @@ exports.EC2Subnet = ({ spec, config }) => {
   const findId = get("live.SubnetId");
   const pickId = pick(["SubnetId"]);
 
-  const findName = switchCase([
-    get("live.DefaultForAz"),
-    pipe([get("live.AvailabilityZone", ""), last, prepend("subnet-default-")]),
-    findNameInTagsOrId({ findId }),
+  const findName = pipe([
+    fork({
+      vpcName: ({ live, lives, config }) =>
+        pipe([
+          () =>
+            lives.getById({
+              id: live.VpcId,
+              type: "Vpc",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("name"),
+          tap((name) => {
+            assert(name, "no vpc name in subnet");
+          }),
+        ])(),
+      subnetName: switchCase([
+        get("live.DefaultForAz"),
+        pipe([
+          get("live.AvailabilityZone", ""),
+          last,
+          prepend("subnet-default-"),
+        ]),
+        findNameInTagsOrId({ findId }),
+      ]),
+    }),
+    ({ vpcName, subnetName }) => `${vpcName}::${subnetName}`,
   ]);
 
   const findDependencies = ({ live }) => [findDependenciesVpc({ live })];
@@ -220,7 +246,12 @@ exports.EC2Subnet = ({ spec, config }) => {
         TagSpecifications: [
           {
             ResourceType: "subnet",
-            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+            Tags: buildTags({
+              config,
+              namespace,
+              name: extractSubnetName(name),
+              UserTags: Tags,
+            }),
           },
         ],
       }),

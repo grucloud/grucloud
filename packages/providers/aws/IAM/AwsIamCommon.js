@@ -108,13 +108,14 @@ exports.tagResourceIam =
     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagUser-property
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#untagPolicy-property
 exports.untagResourceIam =
-  ({ field, method }) =>
+  ({ propertyName, field, method }) =>
   ({ iam }) =>
   ({ live }) =>
     pipe([
       (TagKeys) => ({
-        [field]: live[field],
+        [propertyName || field]: live[field],
         TagKeys,
       }),
       iam()[method],

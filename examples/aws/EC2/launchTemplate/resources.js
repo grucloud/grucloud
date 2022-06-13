@@ -16,10 +16,10 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-public",
+    name: "Vpc::subnet-public",
     properties: ({ config }) => ({
       CidrBlock: "10.0.0.0/24",
-      AvailabilityZone: `${config.region}e`,
+      AvailabilityZone: `${config.region}a`,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",
@@ -61,7 +61,7 @@ exports.createResources = () => [
     name: "ec2-template-subnet",
     properties: ({ config, getId }) => ({
       Placement: {
-        AvailabilityZone: `${config.region}e`,
+        AvailabilityZone: `${config.region}a`,
       },
       NetworkInterfaces: [
         {
@@ -76,7 +76,7 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: "subnet-public",
+            name: "Vpc::subnet-public",
           })}`,
         },
       ],
@@ -90,7 +90,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      subnets: ["subnet-public"],
+      subnets: ["Vpc::subnet-public"],
       keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
       securityGroups: ["sg::Vpc::EcsSecurityGroup"],
@@ -116,7 +116,7 @@ exports.createResources = () => [
             SubnetId: `${getId({
               type: "Subnet",
               group: "EC2",
-              name: "subnet-public",
+              name: "Vpc::subnet-public",
             })}`,
           },
         ],
@@ -129,7 +129,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      subnets: ["subnet-public"],
+      subnets: ["Vpc::subnet-public"],
       keyPair: "kp-ecs",
       iamInstanceProfile: "role-ecs",
       securityGroups: ["sg::Vpc::EcsSecurityGroup"],

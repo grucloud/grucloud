@@ -17,6 +17,7 @@ const {
   any,
 } = require("rubico");
 const {
+  callProp,
   groupBy,
   first,
   find,
@@ -57,6 +58,13 @@ const {
   createRoute53Domains,
 } = require("../Route53Domain/Route53DomainCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+
+// https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/DomainNameFormat.html
+// TODO make it generic
+// parseInt("052",8) => 42
+// String.fromCharCode(42) => *
+
+const octalReplace = pipe([callProp("replaceAll", "\\052", "*")]);
 
 //Check for the final dot
 const findName = get("live.Name");
@@ -157,6 +165,24 @@ exports.Route53HostedZone = ({ spec, config }) => {
             }),
             route53().listResourceRecordSets,
             get("ResourceRecordSets"),
+            map(
+              pipe([
+                assign({
+                  Name: pipe([get("Name"), octalReplace]),
+                }),
+                when(
+                  get("AliasTarget"),
+                  assign({
+                    AliasTarget: pipe([
+                      get("AliasTarget"),
+                      assign({
+                        DNSName: pipe([get("DNSName"), octalReplace]),
+                      }),
+                    ]),
+                  })
+                ),
+              ])
+            ),
           ]),
           Tags: pipe([
             (hostedZone) => ({

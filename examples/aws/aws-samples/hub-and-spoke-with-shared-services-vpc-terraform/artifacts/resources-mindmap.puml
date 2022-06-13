@@ -1,0 +1,37 @@
+@startmindmap
+title Resources for project hub-and-spoke-with-shared-services-vpc-terraform
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (3)
++++ EC2
+++++ FlowLogs (3)
+++++ Vpc (3)
+++++ Subnet (8)
+++++ RouteTable (8)
+++++ RouteTableAssociation (8)
+++++ Route (4)
+++++ SecurityGroup (5)
+++++ SecurityGroupRuleIngress (9)
+++++ Instance (2)
+++++ VpcEndpoint (4)
+++++ TransitGateway (1)
+++++ TransitGatewayRouteTable (2)
+++++ TransitGatewayVpcAttachment (3)
+++++ TransitGatewayRouteTableAssociation (3)
+++++ TransitGatewayRouteTablePropagation (3)
++++ IAM
+++++ Role (5)
+++++ Policy (3)
+++++ InstanceProfile (1)
++++ KMS
+++++ Key (1)
++++ Route53
+++++ HostedZone (4)
+++++ ZoneVpcAssociation (8)
+++++ Record (5)
++++ Route53Resolver
+++++ Endpoint (2)
+++++ Rule (2)
+@endmindmap

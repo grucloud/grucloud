@@ -1,9 +1,16 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, map } = require("rubico");
-const { defaultsDeep, first, pluck, identity, when } = require("rubico/x");
+const { pipe, tap, get, eq, assign, map, and, not } = require("rubico");
+const {
+  defaultsDeep,
+  first,
+  pluck,
+  callProp,
+  when,
+  isEmpty,
+} = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const { buildTags } = require("../AwsCommon");
+const { buildTags, getNewCallerReference } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const {
   tagResource,
@@ -18,6 +25,23 @@ const pickId = pipe([
   ({ Id }) => ({ ResolverEndpointId: Id }),
 ]);
 
+const decorate = ({ endpoint }) =>
+  pipe([
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#listResolverEndpointIpAddresses-property
+    assign({
+      IpAddresses: ({ Id }) =>
+        pipe([
+          () => ({ ResolverEndpointId: Id }),
+          endpoint().listResolverEndpointIpAddresses,
+          get("IpAddresses"),
+          callProp("sort", (a, b) =>
+            a.CreationTime.localeCompare(b.CreationTime)
+          ),
+        ])(),
+    }),
+    assignTags({ endpoint }),
+  ]);
+
 const model = ({ config }) => ({
   package: "route53resolver",
   client: "Route53Resolver",
@@ -27,30 +51,24 @@ const model = ({ config }) => ({
     method: "getResolverEndpoint",
     getField: "ResolverEndpoint",
     pickId,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#listResolverEndpoints-property
   getList: {
     method: "listResolverEndpoints",
     getParam: "ResolverEndpoints",
-    decorate: ({ endpoint }) =>
-      pipe([
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#listResolverEndpointIpAddresses-property
-        assign({
-          IpAddresses: ({ Id }) =>
-            pipe([
-              () => ({ ResolverEndpointId: Id }),
-              endpoint().listResolverEndpointIpAddresses,
-              get("IpAddresses"),
-            ])(),
-        }),
-        assignTags({ endpoint }),
-      ]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#createResolverEndpoint-property
   create: {
     method: "createResolverEndpoint",
     pickCreated: ({ payload }) => pipe([get("ResolverEndpoint")]),
-    isInstanceUp: pipe([eq(get("Status"), "OPERATIONAL")]),
+    isInstanceUp: pipe([
+      and([
+        eq(get("Status"), "OPERATIONAL"),
+        pipe([get("IpAddresses"), pluck("Ip"), not(isEmpty)]),
+      ]),
+    ]),
     isInstanceError: pipe([eq(get("Status"), "ACTION_NEEDED")]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#updateResolverEndpoint-property
@@ -85,7 +103,9 @@ exports.Route53ResolverEndpoint = ({ spec, config }) =>
     getByName: ({ getList, endpoint }) =>
       pipe([
         ({ name }) => ({ Filters: [{ Name: "Name", Values: [name] }] }),
-        getList,
+        endpoint().listResolverEndpoints,
+        get("ResolverEndpoints"),
+        //TODO getList,
         first,
       ]),
     tagResource: tagResource,
@@ -100,7 +120,7 @@ exports.Route53ResolverEndpoint = ({ spec, config }) =>
         () => otherProps,
         defaultsDeep({
           Name: name,
-          CreatorRequestId: `${new Date()}`,
+          CreatorRequestId: getNewCallerReference(),
           Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
         when(

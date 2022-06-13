@@ -334,11 +334,12 @@ const createClient = ({
           tryCatch(
             ({ lives, options }) =>
               pipe([
-                () =>
+                (params) =>
                   client.getList({
                     options,
                     lives,
                     deep: true,
+                    params,
                     // resources: provider.getResourcesByType(client.spec),
                     resources: getResourcesByType(client.spec),
                   }),

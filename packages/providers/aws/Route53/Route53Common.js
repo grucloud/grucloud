@@ -12,7 +12,7 @@ exports.buildRecordName = pipe([
     assert(Name);
     assert(Type);
   }),
-  ({ Name, Type }) => `record::${Name}::${Type}`,
+  ({ Name, Type }) => `record::${Type}::${Name}`,
 ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property

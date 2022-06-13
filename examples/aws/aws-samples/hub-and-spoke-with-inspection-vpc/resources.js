@@ -25,39 +25,13 @@ exports.createResources = () => [
       kmsKey: "kms-key-aws-hub-and-spoke-demo",
     }),
   },
-  {
-    type: "KeyPair",
-    group: "EC2",
-    name: "large-badger",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Provisioner",
-          Value: "Terraform",
-        },
-      ],
-    }),
-  },
+  { type: "KeyPair", group: "EC2", name: "large-badger" },
   {
     type: "Vpc",
     group: "EC2",
     name: "inspection-vpc",
     properties: ({}) => ({
       CidrBlock: "10.129.0.0/16",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
       DnsHostnames: true,
     }),
   },
@@ -67,20 +41,6 @@ exports.createResources = () => [
     name: "spoke-vpc-1",
     properties: ({}) => ({
       CidrBlock: "10.11.0.0/16",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
       DnsHostnames: true,
     }),
   },
@@ -90,44 +50,10 @@ exports.createResources = () => [
     name: "spoke-vpc-2",
     properties: ({}) => ({
       CidrBlock: "10.12.0.0/16",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
       DnsHostnames: true,
     }),
   },
-  {
-    type: "InternetGateway",
-    group: "EC2",
-    name: "inspection-vpc",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
-  },
+  { type: "InternetGateway", group: "EC2", name: "inspection-vpc" },
   {
     type: "InternetGatewayAttachment",
     group: "EC2",
@@ -140,48 +66,19 @@ exports.createResources = () => [
     type: "NatGateway",
     group: "EC2",
     name: ({ config }) => `inspection-vpc-${config.region}a`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
     dependencies: ({ config }) => ({
-      subnet: `inspection-vpc-public-subnet-${config.region}a`,
+      subnet: `inspection-vpc::inspection-vpc-public-subnet-${config.region}a`,
       eip: `inspection-vpc-${config.region}a`,
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}a`,
+    name: ({ config }) =>
+      `inspection-vpc::inspection-vpc-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.129.200.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -190,24 +87,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}b`,
+    name: ({ config }) =>
+      `inspection-vpc::inspection-vpc-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.129.201.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -216,24 +100,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}c`,
+    name: ({ config }) =>
+      `inspection-vpc::inspection-vpc-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.129.202.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -242,24 +113,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}a`,
+    name: ({ config }) =>
+      `inspection-vpc::inspection-vpc-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.129.1.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -268,24 +126,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}b`,
+    name: ({ config }) =>
+      `inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.129.2.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -294,24 +139,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}c`,
+    name: ({ config }) =>
+      `inspection-vpc::inspection-vpc-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.129.3.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -320,24 +152,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}a`,
+    name: ({ config }) =>
+      `inspection-vpc::inspection-vpc-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.129.129.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -346,24 +165,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}b`,
+    name: ({ config }) =>
+      `inspection-vpc::inspection-vpc-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.129.130.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -372,24 +178,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}c`,
+    name: ({ config }) =>
+      `inspection-vpc::inspection-vpc-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.129.131.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -398,24 +191,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}a`,
+    name: ({ config }) =>
+      `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.11.200.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -424,24 +204,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}b`,
+    name: ({ config }) =>
+      `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.11.201.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -450,24 +217,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}c`,
+    name: ({ config }) =>
+      `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.11.202.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -476,24 +230,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}a`,
+    name: ({ config }) =>
+      `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.11.1.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -502,24 +243,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}b`,
+    name: ({ config }) =>
+      `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.11.2.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -528,24 +256,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}c`,
+    name: ({ config }) =>
+      `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.11.3.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -554,24 +269,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}a`,
+    name: ({ config }) =>
+      `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.11.129.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -580,24 +282,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}b`,
+    name: ({ config }) =>
+      `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.11.130.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -606,24 +295,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}c`,
+    name: ({ config }) =>
+      `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.11.131.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -632,24 +308,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}a`,
+    name: ({ config }) =>
+      `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.12.200.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -658,24 +321,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}b`,
+    name: ({ config }) =>
+      `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.12.201.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -684,24 +334,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}c`,
+    name: ({ config }) =>
+      `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.12.202.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -710,24 +347,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}a`,
+    name: ({ config }) =>
+      `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.12.1.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -736,24 +360,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}b`,
+    name: ({ config }) =>
+      `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.12.2.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -762,24 +373,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}c`,
+    name: ({ config }) =>
+      `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.12.3.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -788,24 +386,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}a`,
+    name: ({ config }) =>
+      `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.12.129.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -814,24 +399,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}b`,
+    name: ({ config }) =>
+      `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.12.130.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -840,24 +412,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}c`,
+    name: ({ config }) =>
+      `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       CidrBlock: "10.12.131.0/24",
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -866,23 +425,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "inspection-vpc-intra-subnet",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
+    name: "inspection-vpc::inspection-vpc-intra-subnet",
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
     }),
@@ -890,23 +433,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "inspection-vpc-private-subnet",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
+    name: "inspection-vpc::inspection-vpc-private-subnet",
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
     }),
@@ -914,23 +441,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "inspection-vpc-public-subnet",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
+    name: "inspection-vpc::inspection-vpc-public-subnet",
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
     }),
@@ -938,23 +449,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-1-intra-subnet",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
+    name: "spoke-vpc-1::spoke-vpc-1-intra-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
     }),
@@ -962,23 +457,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-1-private-subnet",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
+    name: "spoke-vpc-1::spoke-vpc-1-private-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
     }),
@@ -986,23 +465,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-1-public-subnet",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
+    name: "spoke-vpc-1::spoke-vpc-1-public-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
     }),
@@ -1010,23 +473,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-2-intra-subnet",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
+    name: "spoke-vpc-2::spoke-vpc-1-private-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
     }),
@@ -1034,23 +481,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-2-private-subnet",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
+    name: "spoke-vpc-2::spoke-vpc-2-intra-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
     }),
@@ -1058,23 +489,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-2-public-subnet",
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
+    name: "spoke-vpc-2::spoke-vpc-2-public-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
     }),
@@ -1083,216 +498,216 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-intra-subnet",
-      subnet: `inspection-vpc-intra-subnet-${config.region}a`,
+      routeTable: "inspection-vpc::inspection-vpc-intra-subnet",
+      subnet: `inspection-vpc::inspection-vpc-intra-subnet-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-intra-subnet",
-      subnet: `inspection-vpc-intra-subnet-${config.region}b`,
+      routeTable: "inspection-vpc::inspection-vpc-intra-subnet",
+      subnet: `inspection-vpc::inspection-vpc-intra-subnet-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-intra-subnet",
-      subnet: `inspection-vpc-intra-subnet-${config.region}c`,
+      routeTable: "inspection-vpc::inspection-vpc-intra-subnet",
+      subnet: `inspection-vpc::inspection-vpc-intra-subnet-${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-private-subnet",
-      subnet: `inspection-vpc-private-subnet-${config.region}a`,
+      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
+      subnet: `inspection-vpc::inspection-vpc-private-subnet-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-private-subnet",
-      subnet: `inspection-vpc-private-subnet-${config.region}b`,
+      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
+      subnet: `inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-private-subnet",
-      subnet: `inspection-vpc-private-subnet-${config.region}c`,
+      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
+      subnet: `inspection-vpc::inspection-vpc-private-subnet-${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-public-subnet",
-      subnet: `inspection-vpc-public-subnet-${config.region}a`,
+      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
+      subnet: `inspection-vpc::inspection-vpc-public-subnet-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-public-subnet",
-      subnet: `inspection-vpc-public-subnet-${config.region}b`,
+      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
+      subnet: `inspection-vpc::inspection-vpc-public-subnet-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-public-subnet",
-      subnet: `inspection-vpc-public-subnet-${config.region}c`,
+      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
+      subnet: `inspection-vpc::inspection-vpc-public-subnet-${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-1-intra-subnet",
-      subnet: `spoke-vpc-1-intra-subnet-${config.region}a`,
+      routeTable: "spoke-vpc-1::spoke-vpc-1-intra-subnet",
+      subnet: `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-1-intra-subnet",
-      subnet: `spoke-vpc-1-intra-subnet-${config.region}b`,
+      routeTable: "spoke-vpc-1::spoke-vpc-1-intra-subnet",
+      subnet: `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-1-intra-subnet",
-      subnet: `spoke-vpc-1-intra-subnet-${config.region}c`,
+      routeTable: "spoke-vpc-1::spoke-vpc-1-intra-subnet",
+      subnet: `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-1-private-subnet",
-      subnet: `spoke-vpc-1-private-subnet-${config.region}a`,
+      routeTable: "spoke-vpc-1::spoke-vpc-1-private-subnet",
+      subnet: `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-1-private-subnet",
-      subnet: `spoke-vpc-1-private-subnet-${config.region}b`,
+      routeTable: "spoke-vpc-1::spoke-vpc-1-private-subnet",
+      subnet: `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-1-private-subnet",
-      subnet: `spoke-vpc-1-private-subnet-${config.region}c`,
+      routeTable: "spoke-vpc-1::spoke-vpc-1-private-subnet",
+      subnet: `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-1-public-subnet",
-      subnet: `spoke-vpc-1-public-subnet-${config.region}a`,
+      routeTable: "spoke-vpc-1::spoke-vpc-1-public-subnet",
+      subnet: `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-1-public-subnet",
-      subnet: `spoke-vpc-1-public-subnet-${config.region}b`,
+      routeTable: "spoke-vpc-1::spoke-vpc-1-public-subnet",
+      subnet: `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-1-public-subnet",
-      subnet: `spoke-vpc-1-public-subnet-${config.region}c`,
+      routeTable: "spoke-vpc-1::spoke-vpc-1-public-subnet",
+      subnet: `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-2-intra-subnet",
-      subnet: `spoke-vpc-2-intra-subnet-${config.region}a`,
+      routeTable: "spoke-vpc-2::spoke-vpc-1-private-subnet",
+      subnet: `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-2-intra-subnet",
-      subnet: `spoke-vpc-2-intra-subnet-${config.region}b`,
+      routeTable: "spoke-vpc-2::spoke-vpc-1-private-subnet",
+      subnet: `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-2-intra-subnet",
-      subnet: `spoke-vpc-2-intra-subnet-${config.region}c`,
+      routeTable: "spoke-vpc-2::spoke-vpc-1-private-subnet",
+      subnet: `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-2-private-subnet",
-      subnet: `spoke-vpc-2-private-subnet-${config.region}a`,
+      routeTable: "spoke-vpc-2::spoke-vpc-2-intra-subnet",
+      subnet: `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-2-private-subnet",
-      subnet: `spoke-vpc-2-private-subnet-${config.region}b`,
+      routeTable: "spoke-vpc-2::spoke-vpc-2-intra-subnet",
+      subnet: `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-2-private-subnet",
-      subnet: `spoke-vpc-2-private-subnet-${config.region}c`,
+      routeTable: "spoke-vpc-2::spoke-vpc-2-intra-subnet",
+      subnet: `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}c`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-2-public-subnet",
-      subnet: `spoke-vpc-2-public-subnet-${config.region}a`,
+      routeTable: "spoke-vpc-2::spoke-vpc-2-public-subnet",
+      subnet: `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-2-public-subnet",
-      subnet: `spoke-vpc-2-public-subnet-${config.region}b`,
+      routeTable: "spoke-vpc-2::spoke-vpc-2-public-subnet",
+      subnet: `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "spoke-vpc-2-public-subnet",
-      subnet: `spoke-vpc-2-public-subnet-${config.region}c`,
+      routeTable: "spoke-vpc-2::spoke-vpc-2-public-subnet",
+      subnet: `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}c`,
     }),
   },
   {
@@ -1302,8 +717,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-intra-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
+      routeTable: "inspection-vpc::inspection-vpc-intra-subnet",
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
@@ -1313,7 +728,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-private-subnet",
+      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
       natGateway: `inspection-vpc-${config.region}a`,
     }),
   },
@@ -1324,7 +739,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "10.11.0.0/16",
     }),
     dependencies: ({}) => ({
-      routeTable: "inspection-vpc-private-subnet",
+      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
       transitGateway: "terraform-transit-gateway",
     }),
   },
@@ -1335,7 +750,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "10.12.0.0/16",
     }),
     dependencies: ({}) => ({
-      routeTable: "inspection-vpc-private-subnet",
+      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
       transitGateway: "terraform-transit-gateway",
     }),
   },
@@ -1346,7 +761,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "inspection-vpc-public-subnet",
+      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
       ig: "inspection-vpc",
     }),
   },
@@ -1357,8 +772,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "10.11.0.0/16",
     }),
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-public-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
+      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
@@ -1368,8 +783,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "10.12.0.0/16",
     }),
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc-public-subnet",
-      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
+      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
+      vpcEndpoint: `vpce::NetworkFirewall::inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
@@ -1379,7 +794,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "spoke-vpc-1-intra-subnet",
+      routeTable: "spoke-vpc-1::spoke-vpc-1-intra-subnet",
       transitGateway: "terraform-transit-gateway",
     }),
   },
@@ -1390,7 +805,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "spoke-vpc-1-private-subnet",
+      routeTable: "spoke-vpc-1::spoke-vpc-1-private-subnet",
       transitGateway: "terraform-transit-gateway",
     }),
   },
@@ -1401,7 +816,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "spoke-vpc-1-public-subnet",
+      routeTable: "spoke-vpc-1::spoke-vpc-1-public-subnet",
       transitGateway: "terraform-transit-gateway",
     }),
   },
@@ -1412,7 +827,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "spoke-vpc-2-intra-subnet",
+      routeTable: "spoke-vpc-2::spoke-vpc-1-private-subnet",
       transitGateway: "terraform-transit-gateway",
     }),
   },
@@ -1423,7 +838,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "spoke-vpc-2-private-subnet",
+      routeTable: "spoke-vpc-2::spoke-vpc-2-intra-subnet",
       transitGateway: "terraform-transit-gateway",
     }),
   },
@@ -1434,7 +849,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "spoke-vpc-2-public-subnet",
+      routeTable: "spoke-vpc-2::spoke-vpc-2-public-subnet",
       transitGateway: "terraform-transit-gateway",
     }),
   },
@@ -1837,22 +1252,6 @@ exports.createResources = () => [
     type: "ElasticIpAddress",
     group: "EC2",
     name: ({ config }) => `inspection-vpc-${config.region}a`,
-    properties: ({}) => ({
-      Tags: [
-        {
-          Key: "Environment",
-          Value: "development",
-        },
-        {
-          Key: "Owner",
-          Value: "user",
-        },
-        {
-          Key: "Provisioner",
-          Value: "terraform",
-        },
-      ],
-    }),
   },
   {
     type: "Instance",
@@ -1876,7 +1275,7 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `spoke-vpc-1-private-subnet-${config.region}a`,
+            name: `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
           })}`,
         },
       ],
@@ -1885,7 +1284,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({ config }) => ({
-      subnets: [`spoke-vpc-1-private-subnet-${config.region}a`],
+      subnets: [`spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`],
       keyPair: "large-badger",
       iamInstanceProfile: "terraform-ssm-ec2",
       securityGroups: ["sg::spoke-vpc-1::public_instance_security_group"],
@@ -1913,7 +1312,7 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `spoke-vpc-2-private-subnet-${config.region}a`,
+            name: `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
           })}`,
         },
       ],
@@ -1922,7 +1321,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({ config }) => ({
-      subnets: [`spoke-vpc-2-private-subnet-${config.region}a`],
+      subnets: [`spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`],
       keyPair: "large-badger",
       iamInstanceProfile: "terraform-ssm-ec2",
       securityGroups: ["sg::spoke-vpc-2::public_instance_security_group"],
@@ -1932,11 +1331,13 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     name: ({ config }) =>
-      `vpce::NetworkFirewall::inspection-vpc-private-subnet-${config.region}b`,
+      `vpce::NetworkFirewall::inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
     readOnly: true,
     dependencies: ({ config }) => ({
       vpc: "inspection-vpc",
-      subnets: [`inspection-vpc-private-subnet-${config.region}b`],
+      subnets: [
+        `inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
+      ],
       firewall: "NetworkFirewall",
     }),
   },
@@ -1964,9 +1365,9 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-1",
       subnets: [
-        `spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1-private-subnet-${config.region}c`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
       ],
     }),
   },
@@ -1994,9 +1395,9 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-1",
       subnets: [
-        `spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1-private-subnet-${config.region}c`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
       ],
     }),
   },
@@ -2024,9 +1425,9 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-1",
       subnets: [
-        `spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1-private-subnet-${config.region}c`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
       ],
     }),
   },
@@ -2054,9 +1455,9 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-1",
       subnets: [
-        `spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1-private-subnet-${config.region}c`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
       ],
     }),
   },
@@ -2084,9 +1485,9 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-2",
       subnets: [
-        `spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2-private-subnet-${config.region}c`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
       ],
     }),
   },
@@ -2114,9 +1515,9 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-2",
       subnets: [
-        `spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2-private-subnet-${config.region}c`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
       ],
     }),
   },
@@ -2144,9 +1545,9 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-2",
       subnets: [
-        `spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2-private-subnet-${config.region}c`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
       ],
     }),
   },
@@ -2174,9 +1575,9 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-2",
       subnets: [
-        `spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2-private-subnet-${config.region}c`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
       ],
     }),
   },
@@ -2247,9 +1648,9 @@ exports.createResources = () => [
       transitGateway: "terraform-transit-gateway",
       vpc: "inspection-vpc",
       subnets: [
-        `inspection-vpc-intra-subnet-${config.region}a`,
-        `inspection-vpc-intra-subnet-${config.region}b`,
-        `inspection-vpc-intra-subnet-${config.region}c`,
+        `inspection-vpc::inspection-vpc-intra-subnet-${config.region}a`,
+        `inspection-vpc::inspection-vpc-intra-subnet-${config.region}b`,
+        `inspection-vpc::inspection-vpc-intra-subnet-${config.region}c`,
       ],
     }),
   },
@@ -2268,9 +1669,9 @@ exports.createResources = () => [
       transitGateway: "terraform-transit-gateway",
       vpc: "spoke-vpc-1",
       subnets: [
-        `spoke-vpc-1-intra-subnet-${config.region}a`,
-        `spoke-vpc-1-intra-subnet-${config.region}b`,
-        `spoke-vpc-1-intra-subnet-${config.region}c`,
+        `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}c`,
       ],
     }),
   },
@@ -2289,9 +1690,9 @@ exports.createResources = () => [
       transitGateway: "terraform-transit-gateway",
       vpc: "spoke-vpc-2",
       subnets: [
-        `spoke-vpc-2-intra-subnet-${config.region}a`,
-        `spoke-vpc-2-intra-subnet-${config.region}b`,
-        `spoke-vpc-2-intra-subnet-${config.region}c`,
+        `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}c`,
       ],
     }),
   },
@@ -2371,24 +1772,6 @@ exports.createResources = () => [
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
         },
       ],
-      Tags: [
-        {
-          Key: "createdBy",
-          Value: "taylaand",
-        },
-        {
-          Key: "environment",
-          Value: "test",
-        },
-        {
-          Key: "Owner",
-          Value: "Terraform",
-        },
-        {
-          Key: "Project",
-          Value: "terraform-hub-and-spoke",
-        },
-      ],
     }),
   },
   {
@@ -2448,9 +1831,9 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       vpc: "inspection-vpc",
       subnets: [
-        `inspection-vpc-private-subnet-${config.region}a`,
-        `inspection-vpc-private-subnet-${config.region}b`,
-        `inspection-vpc-private-subnet-${config.region}c`,
+        `inspection-vpc::inspection-vpc-private-subnet-${config.region}a`,
+        `inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
+        `inspection-vpc::inspection-vpc-private-subnet-${config.region}c`,
       ],
       firewallPolicy: "firewall-policy",
     }),

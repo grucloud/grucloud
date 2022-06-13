@@ -310,7 +310,7 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
           ]),
         })),
         tap((graph) => {
-          logger.info(`DependencyTree down: ${tos(graph)}`);
+          //logger.info(`DependencyTree down: ${tos(graph)}`);
         }),
       ])(),
     // UP
@@ -337,7 +337,7 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
           ]),
         })),
         tap((graph) => {
-          logger.info(`DependencyTree up: ${tos(graph)}`);
+          //logger.info(`DependencyTree up: ${tos(graph)}`);
         }),
       ])(),
   ])();

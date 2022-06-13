@@ -17,6 +17,9 @@ const cannotBeDeleted =
         }),
       find(eq(get("live.Id"), live.ResolverRuleId)),
       get("cannotBeDeleted"),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
 const model = ({ config }) => ({

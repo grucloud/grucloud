@@ -437,6 +437,7 @@ module.exports = pipe([
         "CreationTime",
         "DeliverLogsPermissionArn",
         "DeliverLogsStatus",
+        "DeliverLogsErrorMessage",
         "LogGroupName",
         "FlowLogId",
         "FlowLogStatus",
@@ -689,17 +690,18 @@ module.exports = pipe([
             (dependency) =>
               pipe([() => resource, get("live.CidrBlock")])(),
         },
-        ipamPoolIpv6: {
-          type: "IpamPool",
-          group: "EC2",
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                () => resource,
-                get("live.Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock"),
-              ])(),
-        },
+        // TODO ipamPoolIpv6
+        // ipamPoolIpv6: {
+        //   type: "IpamPool",
+        //   group: "EC2",
+        //   filterDependency:
+        //     ({ resource }) =>
+        //     (dependency) =>
+        //       pipe([
+        //         () => resource,
+        //         get("live.Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock"),
+        //       ])(),
+        //},
       },
       propertiesDefault: { DnsSupport: true, DnsHostnames: false },
       compare: compareEC2({

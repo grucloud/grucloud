@@ -234,29 +234,6 @@ exports.Route53Record = ({ spec, config }) => {
         map(pick(["id", "name"])),
       ])(),
     },
-    //TODO
-    // {
-    //   type: "VpcEndpoint",
-    //   group: "EC2",
-    //   ids: pipe([
-    //     () =>
-    //       lives.getByType({
-    //         type: "VpcEndpoint",
-    //         group: "EC2",
-    //         providerName,
-    //       }),
-    //     filter(
-    //       and([
-    //         eq(
-    //           get("live.DomainValidationOptions[0].ResourceRecord.Name"),
-    //           get("Name")(live)
-    //         ),
-    //         () => eq(get("Type"), "CNAME")(live),
-    //       ])
-    //     ),
-    //     map(pick(["id", "name"])),
-    //   ])(),
-    // },
   ];
 
   const findNameInDependencies = ({ live, lives }) =>
@@ -276,7 +253,13 @@ exports.Route53Record = ({ spec, config }) => {
               assert(ids[0].name);
             }
           }),
-          ({ group, type, ids }) => `record::${group}::${type}::${ids[0].name}`,
+          switchCase([
+            eq(get("type"), "VpcEndpoint"),
+            ({ group, type }) =>
+              `record::${group}::${type}::${live.Type}::${live.Name}`,
+            ({ group, type, ids }) =>
+              `record::${group}::${type}::${live.Type}::${ids[0].name}`,
+          ]),
         ])
       ),
     ])();
@@ -331,7 +314,7 @@ exports.Route53Record = ({ spec, config }) => {
       () =>
         configDefault({
           name,
-          properties: properties({ getId: () => undefined }),
+          properties: properties({ getId: () => undefined, config }),
           dependencies: resolvedDependencies,
         }),
       tap((params) => {
@@ -677,6 +660,6 @@ exports.compareRoute53Record = pipe([
     filterLive: () => pipe([omitFieldRecord]),
   }),
   tap((diff) => {
-    logger.debug(`compareRoute53Record ${tos(diff)}`);
+    //logger.debug(`compareRoute53Record ${tos(diff)}`);
   }),
 ]);

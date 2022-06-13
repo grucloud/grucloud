@@ -14,23 +14,7 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-8KbSnk7Cuzfy",
-    properties: ({}) => ({
-      retentionInDays: 365,
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-gsrOrJO5GcFM",
-    properties: ({}) => ({
-      retentionInDays: 365,
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-lQ7R3SDZmRBi",
+    name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
     properties: ({}) => ({
       retentionInDays: 365,
     }),
@@ -62,14 +46,15 @@ exports.createResources = () => [
     group: "EC2",
     name: "ECSServiceStack/SkeletonVpc/publicSubnet1",
     dependencies: ({}) => ({
-      subnet: "ECSServiceStack/SkeletonVpc/publicSubnet1",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
       eip: "ECSServiceStack/SkeletonVpc/publicSubnet1",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/applicationSubnet1",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "172.31.32.0/20",
@@ -81,7 +66,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/applicationSubnet2",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "172.31.48.0/20",
@@ -93,7 +78,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/dataSubnet1",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "172.31.64.0/20",
@@ -105,7 +90,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/dataSubnet2",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "172.31.80.0/20",
@@ -117,7 +102,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/publicSubnet1",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "172.31.0.0/20",
@@ -130,7 +115,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/publicSubnet2",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "172.31.16.0/20",
@@ -143,7 +128,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/applicationSubnet1",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),
@@ -151,7 +136,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/applicationSubnet2",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),
@@ -159,7 +144,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/dataSubnet1",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),
@@ -167,7 +152,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/dataSubnet2",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),
@@ -175,7 +160,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/publicSubnet1",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),
@@ -183,7 +168,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc/publicSubnet2",
+    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),
@@ -192,48 +177,60 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "ECSServiceStack/SkeletonVpc/applicationSubnet1",
-      subnet: "ECSServiceStack/SkeletonVpc/applicationSubnet1",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "ECSServiceStack/SkeletonVpc/applicationSubnet2",
-      subnet: "ECSServiceStack/SkeletonVpc/applicationSubnet2",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "ECSServiceStack/SkeletonVpc/dataSubnet1",
-      subnet: "ECSServiceStack/SkeletonVpc/dataSubnet1",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "ECSServiceStack/SkeletonVpc/dataSubnet2",
-      subnet: "ECSServiceStack/SkeletonVpc/dataSubnet2",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "ECSServiceStack/SkeletonVpc/publicSubnet1",
-      subnet: "ECSServiceStack/SkeletonVpc/publicSubnet1",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "ECSServiceStack/SkeletonVpc/publicSubnet2",
-      subnet: "ECSServiceStack/SkeletonVpc/publicSubnet2",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
+      subnet:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
     }),
   },
   {
@@ -243,7 +240,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "ECSServiceStack/SkeletonVpc/applicationSubnet1",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
       natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
     }),
   },
@@ -254,7 +252,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "ECSServiceStack/SkeletonVpc/applicationSubnet2",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
       natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
     }),
   },
@@ -265,7 +264,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "ECSServiceStack/SkeletonVpc/publicSubnet1",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
       ig: "ECSServiceStack/SkeletonVpc",
     }),
   },
@@ -276,7 +276,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "ECSServiceStack/SkeletonVpc/publicSubnet2",
+      routeTable:
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
       ig: "ECSServiceStack/SkeletonVpc",
     }),
   },
@@ -285,7 +286,7 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       GroupName:
-        "ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
+        "ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
       Description:
         "Automatically created Security Group for ELB ECSServiceStackamazonecssampleLB36F3E7CB",
     }),
@@ -298,7 +299,7 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({}) => ({
       GroupName:
-        "ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
+        "ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-WFLIEAOYUPIO",
       Description: "ECSServiceStack/amazon-ecs-sample/Service/SecurityGroup",
     }),
     dependencies: ({}) => ({
@@ -323,7 +324,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
     }),
   },
   {
@@ -338,9 +339,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-WFLIEAOYUPIO",
       securityGroupFrom: [
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
       ],
     }),
   },
@@ -356,9 +357,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup:
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
       securityGroupFrom: [
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-WFLIEAOYUPIO",
       ],
     }),
   },
@@ -404,7 +405,7 @@ exports.createResources = () => [
             logDriver: "awslogs",
             options: {
               "awslogs-group":
-                "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-gsrOrJO5GcFM",
+                "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
               "awslogs-region": `${config.region}`,
               "awslogs-stream-prefix": "ECSServiceStack",
             },
@@ -456,15 +457,15 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       taskRole:
-        "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1FZO0WSBRCE32",
+        "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1JLMLL2357T0V",
       executionRole:
-        "ECSServiceStack-amazonecssampleTaskDefExecutionRol-J2QX8M2WSOJS",
+        "ECSServiceStack-amazonecssampleTaskDefExecutionRol-1391KZSJLULK2",
     }),
   },
   {
     type: "Service",
     group: "ECS",
-    name: "ECSServiceStack-amazonecssampleService537E3215-Bnagarx67tDZ",
+    name: "ECSServiceStack-amazonecssampleService537E3215-6H3vkrpqYP3l",
     properties: ({ getId }) => ({
       deploymentConfiguration: {
         deploymentCircuitBreaker: {
@@ -486,7 +487,7 @@ exports.createResources = () => [
           targetGroupArn: `${getId({
             type: "TargetGroup",
             group: "ELBv2",
-            name: "ECSSe-amazo-319L9ODON698",
+            name: "ECSSe-amazo-1HU1HZ8BFKNTJ",
           })}`,
         },
       ],
@@ -501,25 +502,25 @@ exports.createResources = () => [
       platformVersion: "LATEST",
       schedulingStrategy: "REPLICA",
       serviceName:
-        "ECSServiceStack-amazonecssampleService537E3215-Bnagarx67tDZ",
+        "ECSServiceStack-amazonecssampleService537E3215-6H3vkrpqYP3l",
     }),
     dependencies: ({}) => ({
       cluster: "service-cluster",
       taskDefinition: "ECSServiceStackamazonecssampleTaskDef499685C5",
       subnets: [
-        "ECSServiceStack/SkeletonVpc/applicationSubnet1",
-        "ECSServiceStack/SkeletonVpc/applicationSubnet2",
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
       ],
       securityGroups: [
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-19GF52TMRSNVC",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleServiceSecurityGroup120A1640-WFLIEAOYUPIO",
       ],
-      targetGroups: ["ECSSe-amazo-319L9ODON698"],
+      targetGroups: ["ECSSe-amazo-1HU1HZ8BFKNTJ"],
     }),
   },
   {
     type: "LoadBalancer",
     group: "ELBv2",
-    name: "ECSSe-amazo-39P7SGVM3CD7",
+    name: "ECSSe-amazo-NBIYVNWJ9TTY",
     properties: ({}) => ({
       Scheme: "internet-facing",
       Type: "application",
@@ -527,18 +528,18 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       subnets: [
-        "ECSServiceStack/SkeletonVpc/publicSubnet1",
-        "ECSServiceStack/SkeletonVpc/publicSubnet2",
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
+        "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
       ],
       securityGroups: [
-        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-DF8OON2J64PM",
+        "sg::ECSServiceStack/SkeletonVpc::ECSServiceStack-amazonecssampleLBSecurityGroup55736652-JJ7IOCR1OO4S",
       ],
     }),
   },
   {
     type: "TargetGroup",
     group: "ELBv2",
-    name: "ECSSe-amazo-319L9ODON698",
+    name: "ECSSe-amazo-1HU1HZ8BFKNTJ",
     properties: ({}) => ({
       Protocol: "HTTP",
       Port: 80,
@@ -557,14 +558,14 @@ exports.createResources = () => [
       Protocol: "HTTP",
     }),
     dependencies: ({}) => ({
-      loadBalancer: "ECSSe-amazo-39P7SGVM3CD7",
-      targetGroup: "ECSSe-amazo-319L9ODON698",
+      loadBalancer: "ECSSe-amazo-NBIYVNWJ9TTY",
+      targetGroup: "ECSSe-amazo-1HU1HZ8BFKNTJ",
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "ECSServiceStack-amazonecssampleTaskDefExecutionRol-J2QX8M2WSOJS",
+    name: "ECSServiceStack-amazonecssampleTaskDefExecutionRol-1391KZSJLULK2",
     properties: ({ getId }) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -588,7 +589,7 @@ exports.createResources = () => [
                 Resource: `${getId({
                   type: "LogGroup",
                   group: "CloudWatchLogs",
-                  name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-gsrOrJO5GcFM",
+                  name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
                 })}:*`,
                 Effect: "Allow",
               },
@@ -601,14 +602,14 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       logGroups: [
-        "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-gsrOrJO5GcFM",
+        "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
       ],
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1FZO0WSBRCE32",
+    name: "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1JLMLL2357T0V",
     properties: ({}) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",

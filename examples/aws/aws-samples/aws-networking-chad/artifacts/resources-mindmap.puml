@@ -3,6 +3,8 @@ title Resources for project aws-networking-chad
 skinparam monochrome true
 + Infra
 ++ aws-primary
++++ CloudWatchLogs
+++++ LogGroup (1)
 +++ DynamoDB
 ++++ Table (1)
 +++ EC2
@@ -17,7 +19,7 @@ skinparam monochrome true
 ++++ ElasticIpAddress (3)
 ++++ VpcEndpoint (1)
 +++ S3
-++++ Bucket (2)
+++++ Bucket (1)
 -- aws-secondary
 
 @endmindmap

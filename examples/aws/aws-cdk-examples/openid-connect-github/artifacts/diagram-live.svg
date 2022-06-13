@@ -29,19 +29,19 @@
 <text text-anchor="start" x="51" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">CloudWatchLogs::LogGroup</text>
 <text text-anchor="start" x="51" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">/aws/lambda/GitHubOpenIDConnect&#45;...</text>
 </g>
-<!-- OpenIDConnectProvider::::oidp::token.actions.githubusercontent.com -->
-<g id="node2" class="node">
-<title>OpenIDConnectProvider::::oidp::token.actions.githubusercontent.com</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="665,-205 394,-205 394,-147 665,-147 665,-205"/>
-<text text-anchor="start" x="406.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::OpenIDConnectProvider</text>
-<text text-anchor="start" x="406.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">oidp::token.actions.githubuserco...</text>
-</g>
 <!-- Role::::exampleGitHubDeployRole -->
-<g id="node3" class="node">
+<g id="node2" class="node">
 <title>Role::::exampleGitHubDeployRole</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="301,-205 81,-205 81,-147 301,-147 301,-205"/>
 <text text-anchor="start" x="93" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>
 <text text-anchor="start" x="93" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">exampleGitHubDeployRole</text>
+</g>
+<!-- OpenIDConnectProvider::::oidp::token.actions.githubusercontent.com -->
+<g id="node4" class="node">
+<title>OpenIDConnectProvider::::oidp::token.actions.githubusercontent.com</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="665,-205 394,-205 394,-147 665,-147 665,-205"/>
+<text text-anchor="start" x="406.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::OpenIDConnectProvider</text>
+<text text-anchor="start" x="406.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">oidp::token.actions.githubuserco...</text>
 </g>
 <!-- Role::::exampleGitHubDeployRole&#45;&gt;OpenIDConnectProvider::::oidp::token.actions.githubusercontent.com -->
 <g id="edge1" class="edge">
@@ -50,7 +50,7 @@
 <polygon fill="#707070" stroke="#707070" points="383.91,-179.5 393.91,-176 383.91,-172.5 383.91,-179.5"/>
 </g>
 <!-- Role::::GitHubOpenIDConnect&#45;CustomAWSCDKOpenIdConnectProvi&#45;ZLQBGMP1PWSP -->
-<g id="node4" class="node">
+<g id="node3" class="node">
 <title>Role::::GitHubOpenIDConnect&#45;CustomAWSCDKOpenIdConnectProvi&#45;ZLQBGMP1PWSP</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="358,-129 24,-129 24,-71 358,-71 358,-129"/>
 <text text-anchor="start" x="36" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">IAM::Role</text>

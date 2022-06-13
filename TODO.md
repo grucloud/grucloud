@@ -4,13 +4,14 @@
 
 ## Aws
 
-Substitute tag value with region/account /other
-
+- getById use map instead of find
+- HostedZone Config Comment
+- user tags for ec2 instance
 - aws_organizations_organization
 - PrincipalAssociation replace associatedEntity from config
   EIP name based on dependencies
-  -ipamPoolIpv4: "ipam-pool-025afc9c9d7afbe93",
-  ipamPoolIpv6: "ipam-pool-025afc9c9d7afbe93",
+
+  - ipamPoolIpv6
 
 - Route53ResolverRuleAssociation findName
 
@@ -23,10 +24,6 @@ omit AWSLogs S3 Objects
 - s3-eventbridge: missing cloudtrail EventDataStore
 
 - substitute zone, not ${region}/b
-
-- aws_route53_record alias aws_vpc_endpoint
-
-  inferName DhcpOptionAssociation
 
 - gc gencode lambda with java.
 
@@ -48,11 +45,11 @@ omit AWSLogs S3 Objects
 - AWS::CloudWatch::Alarm
 - AWS::CloudWatch::Dashboard
 - AWS::Events::Endpoint
+- aws_route53_delegation_set
 
 - apprunner example npm test
 - inferName Lambda layer
 - inferName OpenIDConnectProvider
-- example vpc-use still using make and use
 - RDS DBCluster AvailabilityZones
 - inferName Route Table
 - Nat gateway handle deleting
@@ -60,13 +57,10 @@ omit AWSLogs S3 Objects
 - resource schema
 - document create key pair
 - UserData: ec2 update and displayResource
-- aws_route53_delegation_set
 - s3 analytics configuration
 - s3 object gencode is missing ACL:public-read
 
 ## Refactoring
-
-- remove getLives().getByProvider
 
 ## Common:
 

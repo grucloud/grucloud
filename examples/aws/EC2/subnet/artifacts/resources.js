@@ -25,14 +25,15 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `project-nat-public1-${config.region}a`,
     dependencies: ({ config }) => ({
-      subnet: `project-subnet-public1-${config.region}a`,
+      subnet: `project-vpc::project-subnet-public1-${config.region}a`,
       eip: `project-eip-${config.region}a`,
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `project-subnet-private1-${config.region}a`,
+    name: ({ config }) =>
+      `project-vpc::project-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.128.0/20",
@@ -44,7 +45,8 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `project-subnet-private2-${config.region}b`,
+    name: ({ config }) =>
+      `project-vpc::project-subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.144.0/20",
@@ -56,7 +58,8 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `project-subnet-public1-${config.region}a`,
+    name: ({ config }) =>
+      `project-vpc::project-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.0.0.0/20",
@@ -68,7 +71,8 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `project-subnet-public2-${config.region}b`,
+    name: ({ config }) =>
+      `project-vpc::project-subnet-public2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       CidrBlock: "10.0.16.0/20",
@@ -80,7 +84,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `project-rtb-private1-${config.region}a`,
+    name: ({ config }) => `project-vpc::project-rtb-private1-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "project-vpc",
     }),
@@ -88,7 +92,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `project-rtb-private2-${config.region}b`,
+    name: ({ config }) => `project-vpc::project-rtb-private2-${config.region}b`,
     dependencies: ({}) => ({
       vpc: "project-vpc",
     }),
@@ -96,7 +100,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "project-rtb-public",
+    name: "project-vpc::project-rtb-public",
     dependencies: ({}) => ({
       vpc: "project-vpc",
     }),
@@ -105,32 +109,32 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `project-rtb-private1-${config.region}a`,
-      subnet: `project-subnet-private1-${config.region}a`,
+      routeTable: `project-vpc::project-rtb-private1-${config.region}a`,
+      subnet: `project-vpc::project-subnet-private1-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: `project-rtb-private2-${config.region}b`,
-      subnet: `project-subnet-private2-${config.region}b`,
+      routeTable: `project-vpc::project-rtb-private2-${config.region}b`,
+      subnet: `project-vpc::project-subnet-private2-${config.region}b`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "project-rtb-public",
-      subnet: `project-subnet-public1-${config.region}a`,
+      routeTable: "project-vpc::project-rtb-public",
+      subnet: `project-vpc::project-subnet-public1-${config.region}a`,
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "project-rtb-public",
-      subnet: `project-subnet-public2-${config.region}b`,
+      routeTable: "project-vpc::project-rtb-public",
+      subnet: `project-vpc::project-subnet-public2-${config.region}b`,
     }),
   },
   {
@@ -140,7 +144,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `project-rtb-private1-${config.region}a`,
+      routeTable: `project-vpc::project-rtb-private1-${config.region}a`,
       natGateway: `project-nat-public1-${config.region}a`,
     }),
   },
@@ -151,7 +155,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `project-rtb-private2-${config.region}b`,
+      routeTable: `project-vpc::project-rtb-private2-${config.region}b`,
       natGateway: `project-nat-public1-${config.region}a`,
     }),
   },
@@ -162,7 +166,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "project-rtb-public",
+      routeTable: "project-vpc::project-rtb-public",
       ig: "project-igw",
     }),
   },

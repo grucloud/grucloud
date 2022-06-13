@@ -2,21 +2,20 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.EC2.useVpc({
-    name: "vpc-default",
-  });
-
-  provider.EC2.makeSubnet({
-    name: "subnet-1",
+const createResources = () => [
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "vpc-default::subnet-1",
     properties: ({ config }) => ({
-      CidrBlock: "172.31.96.0/20",
       AvailabilityZone: `${config.region}a`,
+      CidrBlock: "172.31.96.0/20",
     }),
-    dependencies: ({ resources }) => ({
+    dependencies: ({}) => ({
       vpc: "vpc-default",
     }),
-  });
-};
+  },
+];
 
 exports.createResources = createResources;

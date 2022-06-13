@@ -46,7 +46,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet",
+    name: "vpc-ec2-example::subnet",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       CidrBlock: "10.1.0.0/24",
@@ -58,7 +58,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "route-table",
+    name: "vpc-ec2-example::route-table",
     dependencies: ({}) => ({
       vpc: "vpc-ec2-example",
     }),
@@ -67,8 +67,8 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "route-table",
-      subnet: "subnet",
+      routeTable: "vpc-ec2-example::route-table",
+      subnet: "vpc-ec2-example::subnet",
     }),
   },
   {
@@ -78,7 +78,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "route-table",
+      routeTable: "vpc-ec2-example::route-table",
       ig: "ig",
     }),
   },
@@ -172,7 +172,7 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: "subnet",
+            name: "vpc-ec2-example::subnet",
           })}`,
         },
       ],
@@ -183,7 +183,7 @@ exports.createResources = () => [
         "#!/bin/bash\necho \"Mounting /dev/xvdf\"\nwhile ! ls /dev/xvdf > /dev/null\ndo \n  sleep 1\ndone\nif [ `file -s /dev/xvdf | cut -d ' ' -f 2` = 'data' ]\nthen\n  echo \"Formatting /dev/xvdf\"\n  mkfs.xfs /dev/xvdf\nfi\nmkdir -p /data\nmount /dev/xvdf /data\necho /dev/xvdf /data defaults,nofail 0 2 >> /etc/fstab\n",
     }),
     dependencies: ({}) => ({
-      subnets: ["subnet"],
+      subnets: ["vpc-ec2-example::subnet"],
       keyPair: "kp-ec2-vpc",
       securityGroups: ["sg::vpc-ec2-example::security-group"],
     }),

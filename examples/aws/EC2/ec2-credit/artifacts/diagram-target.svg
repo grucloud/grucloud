@@ -29,18 +29,18 @@
 <text text-anchor="start" x="643" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
 <text text-anchor="start" x="643" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc&#45;default</text>
 </g>
-<!-- Subnet::subnet&#45;default&#45;d -->
+<!-- Subnet::vpc&#45;default::subnet&#45;default&#45;d -->
 <g id="node2" class="node">
-<title>Subnet::subnet&#45;default&#45;d</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="532.5,-129 390.5,-129 390.5,-71 532.5,-71 532.5,-129"/>
-<text text-anchor="start" x="402.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="402.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">subnet&#45;default&#45;d</text>
+<title>Subnet::vpc&#45;default::subnet&#45;default&#45;d</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="576.5,-129 346.5,-129 346.5,-71 576.5,-71 576.5,-129"/>
+<text text-anchor="start" x="358.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="358.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpc&#45;default::subnet&#45;default&#45;d</text>
 </g>
-<!-- Subnet::subnet&#45;default&#45;d&#45;&gt;Vpc::vpc&#45;default -->
+<!-- Subnet::vpc&#45;default::subnet&#45;default&#45;d&#45;&gt;Vpc::vpc&#45;default -->
 <g id="edge1" class="edge">
-<title>Subnet::subnet&#45;default&#45;d&#45;&gt;Vpc::vpc&#45;default</title>
-<path fill="none" stroke="#707070" d="M532.55,-112.13C560.81,-117.02 593.13,-122.61 620.46,-127.35"/>
-<polygon fill="#707070" stroke="#707070" points="620.23,-130.86 630.68,-129.12 621.42,-123.96 620.23,-130.86"/>
+<title>Subnet::vpc&#45;default::subnet&#45;default&#45;d&#45;&gt;Vpc::vpc&#45;default</title>
+<path fill="none" stroke="#707070" d="M576.75,-119.78C591.86,-122.39 606.85,-124.99 620.58,-127.37"/>
+<polygon fill="#707070" stroke="#707070" points="620.37,-130.88 630.82,-129.14 621.56,-123.99 620.37,-130.88"/>
 </g>
 <!-- SecurityGroup::sg::vpc&#45;default::launch&#45;wizard&#45;1 -->
 <g id="node3" class="node">
@@ -75,11 +75,11 @@
 <text text-anchor="start" x="105" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Instance</text>
 <text text-anchor="start" x="105" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ec&#45;credit</text>
 </g>
-<!-- Instance::ec&#45;credit&#45;&gt;Subnet::subnet&#45;default&#45;d -->
+<!-- Instance::ec&#45;credit&#45;&gt;Subnet::vpc&#45;default::subnet&#45;default&#45;d -->
 <g id="edge4" class="edge">
-<title>Instance::ec&#45;credit&#45;&gt;Subnet::subnet&#45;default&#45;d</title>
-<path fill="none" stroke="#707070" d="M223.68,-100C269.48,-100 331.21,-100 380.16,-100"/>
-<polygon fill="#707070" stroke="#707070" points="380.41,-103.5 390.41,-100 380.41,-96.5 380.41,-103.5"/>
+<title>Instance::ec&#45;credit&#45;&gt;Subnet::vpc&#45;default::subnet&#45;default&#45;d</title>
+<path fill="none" stroke="#707070" d="M223.68,-100C256.48,-100 297.45,-100 336.05,-100"/>
+<polygon fill="#707070" stroke="#707070" points="336.34,-103.5 346.34,-100 336.34,-96.5 336.34,-103.5"/>
 </g>
 <!-- Instance::ec&#45;credit&#45;&gt;SecurityGroup::sg::vpc&#45;default::launch&#45;wizard&#45;1 -->
 <g id="edge5" class="edge">

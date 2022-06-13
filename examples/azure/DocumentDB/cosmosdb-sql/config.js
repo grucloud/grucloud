@@ -21,7 +21,7 @@ const replaceStage = pipe([
 module.exports = () => ({
   projectName: pkg.name,
   location: "eastus",
-  tranformResourceName:
+  transformResourceName:
     ({ resource }) =>
     (name) =>
       pipe([
@@ -41,7 +41,7 @@ module.exports = () => ({
           ])
         ),
       ])(),
-  tranformResource:
+  transformResource:
     ({ resource }) =>
     (properties) =>
       pipe([

@@ -10,7 +10,19 @@ const { tagResource, untagResource } = require("./EC2Common");
 
 const { findDependenciesTransitGateway } = require("./EC2TransitGatewayCommon");
 
-const isInstanceDown = pipe([eq(get("State"), "deleted")]);
+const isInstanceDown = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  eq(get("State"), "deleted"),
+]);
+
+const isInstanceError = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  eq(get("State"), "failed"),
+]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -56,6 +68,7 @@ const createModel = ({ config }) => ({
       pick(["TransitGatewayAttachmentId"]),
     ]),
     isInstanceDown,
+    isInstanceError,
   },
 });
 
