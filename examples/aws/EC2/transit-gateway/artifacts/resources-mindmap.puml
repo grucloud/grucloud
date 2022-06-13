@@ -4,14 +4,15 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
-++++ Vpc (1)
-++++ Subnet (2)
-++++ RouteTable (1)
+++++ Vpc (2)
+++++ Subnet (4)
+++++ RouteTable (3)
+++++ RouteTableAssociation (2)
 ++++ Route (1)
 ++++ TransitGateway (1)
 ++++ TransitGatewayRoute (1)
 ++++ TransitGatewayRouteTable (1)
-++++ TransitGatewayVpcAttachment (1)
-++++ TransitGatewayRouteTableAssociation (1)
-++++ TransitGatewayRouteTablePropagation (1)
+++++ TransitGatewayVpcAttachment (2)
+++++ TransitGatewayRouteTableAssociation (2)
+++++ TransitGatewayRouteTablePropagation (2)
 @endmindmap

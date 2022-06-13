@@ -785,7 +785,9 @@ exports.findNameInTagsOrId =
     pipe([
       tap(() => {
         //TODO move assert up
-        assert(findId);
+        if (!config) {
+          assert(config);
+        }
         if (!live) {
           assert(live);
         }

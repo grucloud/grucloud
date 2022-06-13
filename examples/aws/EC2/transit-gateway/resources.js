@@ -3,7 +3,40 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "skope-A-vpc",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
   { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `skope-A-subnet-private1-${config.region}a`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      CidrBlock: "10.0.128.0/20",
+    }),
+    dependencies: ({}) => ({
+      vpc: "skope-A-vpc",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: ({ config }) => `skope-A-subnet-private2-${config.region}b`,
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      CidrBlock: "10.0.144.0/20",
+    }),
+    dependencies: ({}) => ({
+      vpc: "skope-A-vpc",
+    }),
+  },
   {
     type: "Subnet",
     group: "EC2",
@@ -29,6 +62,38 @@ exports.createResources = () => [
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `skope-A-rtb-private1-${config.region}a`,
+    dependencies: ({}) => ({
+      vpc: "skope-A-vpc",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: ({ config }) => `skope-A-rtb-private2-${config.region}b`,
+    dependencies: ({}) => ({
+      vpc: "skope-A-vpc",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `skope-A-rtb-private1-${config.region}a`,
+      subnet: `skope-A-subnet-private1-${config.region}a`,
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({ config }) => ({
+      routeTable: `skope-A-rtb-private2-${config.region}b`,
+      subnet: `skope-A-subnet-private2-${config.region}b`,
     }),
   },
   {
@@ -101,7 +166,44 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "TransitGatewayVpcAttachment",
+    group: "EC2",
+    name: "tgw-vpc-attach::transit-gateway::skope-A-vpc",
+    properties: ({}) => ({
+      Options: {
+        DnsSupport: "enable",
+        Ipv6Support: "disable",
+        ApplianceModeSupport: "disable",
+      },
+    }),
+    dependencies: ({ config }) => ({
+      transitGateway: "transit-gateway",
+      vpc: "skope-A-vpc",
+      subnets: [
+        `skope-A-subnet-private1-${config.region}a`,
+        `skope-A-subnet-private2-${config.region}b`,
+      ],
+    }),
+  },
+  {
     type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGatewayVpcAttachment: "tgw-attachment",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::transit-gateway::skope-A-vpc",
+    }),
+  },
+  {
+    type: "TransitGatewayRouteTablePropagation",
     group: "EC2",
     dependencies: ({}) => ({
       transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
@@ -113,7 +215,8 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({}) => ({
       transitGatewayRouteTable: "tgw-rtb-transit-gateway-default",
-      transitGatewayVpcAttachment: "tgw-attachment",
+      transitGatewayVpcAttachment:
+        "tgw-vpc-attach::transit-gateway::skope-A-vpc",
     }),
   },
 ];

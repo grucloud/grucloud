@@ -196,6 +196,7 @@ exports.ResourceMaker = ({
           deep,
           resources: provider.getResourcesByType(spec),
           lives: provider.lives,
+          config: provider.config,
         }),
       unless(
         or([isEmpty, () => isEmpty(provider.lives)]),
@@ -244,7 +245,12 @@ exports.ResourceMaker = ({
                   tap((params) => {
                     assert(true);
                   }),
-                  (client) => client.findName({ live, lives: provider.lives }),
+                  (client) =>
+                    client.findName({
+                      live,
+                      lives: provider.lives,
+                      config: provider.config,
+                    }),
                   tap((liveName) => {
                     logger.debug(
                       `findLive ${group}::${type} resourceName: ${getResourceName()} liveName: ${liveName}`

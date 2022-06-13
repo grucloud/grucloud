@@ -6,8 +6,8 @@
 
 Substitute tag value with region/account /other
 
+- aws_organizations_organization
 - PrincipalAssociation replace associatedEntity from config
-- TransitGatewayVpcAttachment name based on dependencies
   EIP name based on dependencies
   -ipamPoolIpv4: "ipam-pool-025afc9c9d7afbe93",
   ipamPoolIpv6: "ipam-pool-025afc9c9d7afbe93",

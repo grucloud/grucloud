@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map, filter, not } = require("rubico");
+const { pipe, tap, get, pick, eq, map, filter, not, fork } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -59,6 +59,45 @@ const createModel = ({ config }) => ({
   },
 });
 
+const findNameInDependency = ({ live, lives, config }) =>
+  pipe([
+    tap((params) => {
+      assert(config);
+    }),
+    () => live,
+    fork({
+      tgwName: pipe([
+        get("TransitGatewayId"),
+        tap((TransitGatewayId) => {
+          assert(TransitGatewayId);
+        }),
+        (id) =>
+          lives.getById({
+            id,
+            type: "TransitGateway",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
+        get("name", live.TransitGatewayId),
+      ]),
+      vpcName: pipe([
+        get("VpcId"),
+        tap((VpcId) => {
+          assert(VpcId);
+        }),
+        (id) =>
+          lives.getById({
+            id,
+            type: "Vpc",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
+        get("name", live.VpcId),
+      ]),
+    }),
+    ({ tgwName, vpcName }) => `tgw-vpc-attach::${tgwName}::${vpcName}`,
+  ])();
+
 const findId = pipe([
   get("live.TransitGatewayAttachmentId"),
   tap((TransitGatewayAttachmentId) => {
@@ -85,7 +124,7 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
         ids: live.SubnetIds,
       },
     ],
-    findName: findNameInTagsOrId({ findId }),
+    findName: findNameInTagsOrId({ findId: findNameInDependency }),
     pickId: pipe([
       tap(({ TransitGatewayAttachmentId }) => {
         assert(TransitGatewayAttachmentId);
