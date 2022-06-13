@@ -1,9 +1,9 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, switchCase } = require("rubico");
-const { defaultsDeep, find, append, prepend } = require("rubico/x");
+const { pipe, tap, get, pick, eq, switchCase, map, not } = require("rubico");
+const { defaultsDeep, find, append, prepend, isEmpty } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
-const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
+const { buildTags, findNameInTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -60,6 +60,21 @@ const createModel = ({ config }) => ({
   },
 });
 
+const findName = ({ live, lives, config }) =>
+  pipe([
+    () => [
+      findNameInTags({}),
+      get("live.Description"),
+      // TODO add locale ?
+      () => "ipam-scope",
+    ],
+    map((fn) => fn({ live, lives, config })),
+    find(not(isEmpty)),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
 const findId = pipe([
   get("live.IpamScopeId"),
   tap((IpamScopeId) => {
@@ -98,7 +113,7 @@ exports.EC2IpamScope = ({ spec, config }) =>
             prepend(`ipam-scope::default::`),
             append(live.IpamScopeType),
           ])(),
-        findNameInTagsOrId({ findId }),
+        findName,
       ]),
     ]),
     findId,

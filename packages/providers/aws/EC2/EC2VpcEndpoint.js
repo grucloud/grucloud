@@ -49,7 +49,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const findName = ({ live, lives }) =>
+  const findName = ({ live, lives, config }) =>
     pipe([
       () => live,
       get("Tags"),
@@ -57,7 +57,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
       switchCase([
         isEmpty,
         pipe([
-          () => ({ live, lives }),
+          () => ({ live, lives, config }),
           findNameInTagsOrId({
             findId: () =>
               pipe([
