@@ -389,7 +389,6 @@ const replaceRegion = ({ providerConfig, asFunction = true }) =>
         if (!isString(resource)) {
           assert(isString(resource));
         }
-        assert(resource.length > 1);
       }),
       includes(providerConfig.region),
     ]),
