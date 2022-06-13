@@ -6,6 +6,7 @@ const {
   tryCatch,
   filter,
   get,
+  fork,
   switchCase,
   not,
   assign,
@@ -89,10 +90,22 @@ exports.AwsIamRole = ({ spec, config }) => {
     group,
     ids: pipe([
       () => live,
-      get("Policies"),
-      pluck("PolicyDocument"),
-      pluck("Statement"),
-      flatten,
+      fork({
+        statementInPolicies: pipe([
+          get("Policies"),
+          pluck("PolicyDocument"),
+          pluck("Statement"),
+          flatten,
+        ]),
+        statementInAssumeRolePolicyDocument: pipe([
+          get("AssumeRolePolicyDocument"),
+          get("Statement"),
+        ]),
+      }),
+      ({
+        statementInPolicies = [],
+        statementInAssumeRolePolicyDocument = [],
+      }) => [...statementInPolicies, ...statementInAssumeRolePolicyDocument],
       flatMap(findInStatement({ type, group, lives, config })),
       filter(not(isEmpty)),
       tap.if(not(isEmpty), (id) => {
@@ -104,6 +117,9 @@ exports.AwsIamRole = ({ spec, config }) => {
   const findDependenciesRoleCommon = ({ live, lives, config }) =>
     pipe([
       () => dependenciesPoliciesKind,
+      tap((params) => {
+        assert(true);
+      }),
       map(({ type, group }) =>
         findDependencyRoleCommon({ type, group, live, lives, config })
       ),

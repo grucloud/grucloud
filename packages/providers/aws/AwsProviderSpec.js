@@ -26,6 +26,7 @@ const GROUPS = [
   ["KMS", "kms"],
   ["Lambda", "lambda"],
   ["NetworkFirewall", "network-firewall"],
+  ["Organisations", "organizations"],
   ["RDS", "rds"],
   ["RAM", "ram"],
   ["Route53", "route53"],
@@ -82,6 +83,9 @@ exports.fnSpecs = (config) =>
             includes(client),
           ])()
         ),
+        tap((params) => {
+          assert(true);
+        }),
         map(([group]) => group),
         append(GROUPS_GLOBAL),
         callProp("sort", (a, b) => a.localeCompare(b)),

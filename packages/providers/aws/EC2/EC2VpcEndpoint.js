@@ -94,7 +94,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
                       group: "NetworkFirewall",
                       providerName: config.providerName,
                     }),
-                  get("name"),
+                  get("name", id),
                 ]),
                 subnet: pipe([
                   () => live,

@@ -514,6 +514,7 @@ exports.compare = ({
           }),
           () => input,
           get("target", {}),
+          defaultsDeep(input.propertiesDefault),
           removeOurTags,
           filterTarget(input),
           filterAll(input),

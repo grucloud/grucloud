@@ -1127,6 +1127,12 @@ const replaceStatement = ({ providerConfig, lives }) =>
             assign({
               StringEquals: pipe([
                 get("StringEquals"),
+                map(
+                  replaceArnWithAccountAndRegion({
+                    providerConfig,
+                    lives,
+                  })
+                ),
                 when(
                   get("elasticfilesystem:AccessPointArn"),
                   assign({
@@ -1141,40 +1147,6 @@ const replaceStatement = ({ providerConfig, lives }) =>
                         providerConfig,
                         lives,
                       }),
-                    ]),
-                  })
-                ),
-                //TODO create function
-                when(
-                  get("aws:SourceAccount"),
-                  assign({
-                    "aws:SourceAccount": pipe([
-                      get("aws:SourceAccount"),
-                      replaceArnWithAccountAndRegion({
-                        providerConfig,
-                        lives,
-                      }),
-                    ]),
-                  })
-                ),
-                when(
-                  get("AWS:SourceAccount"),
-                  assign({
-                    "AWS:SourceAccount": pipe([
-                      get("AWS:SourceAccount"),
-                      replaceArnWithAccountAndRegion({
-                        providerConfig,
-                        lives,
-                      }),
-                    ]),
-                  })
-                ),
-                when(
-                  get("AWS:SourceOwner"),
-                  assign({
-                    "AWS:SourceOwner": pipe([
-                      get("AWS:SourceOwner"),
-                      replaceAccountAndRegion({ providerConfig }),
                     ]),
                   })
                 ),

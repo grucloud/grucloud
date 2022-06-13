@@ -15,8 +15,8 @@ const {
 } = require("./RAMResourceAssociation");
 
 const GROUP = "RAM";
-
-const compareRAM = compareAws({ tagsKey: "tags", key: "key" });
+const tagsKey = "tags";
+const compareRAM = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
@@ -110,5 +110,12 @@ module.exports = pipe([
       ],
     },
   ],
-  map(defaultsDeep({ group: GROUP, isOurMinion, compare: compareRAM({}) })),
+  map(
+    defaultsDeep({
+      group: GROUP,
+      isOurMinion,
+      compare: compareRAM({}),
+      tagsKey,
+    })
+  ),
 ]);
