@@ -51,7 +51,8 @@ exports.createResources = () => [
     name: "Vpc8378EB38::VpcPrivateSubnet1Subnet536B997A",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.128.0/18",
+      NewBits: 2,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -63,7 +64,8 @@ exports.createResources = () => [
     name: "Vpc8378EB38::VpcPrivateSubnet2Subnet3788AAA1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.192.0/18",
+      NewBits: 2,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -75,8 +77,9 @@ exports.createResources = () => [
     name: "Vpc8378EB38::VpcPublicSubnet1Subnet5C2D37C4",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/18",
       MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -88,8 +91,9 @@ exports.createResources = () => [
     name: "Vpc8378EB38::VpcPublicSubnet2Subnet691E08A3",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.64.0/18",
       MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -605,11 +609,9 @@ exports.createResources = () => [
                   "ecr:GetDownloadUrlForLayer",
                   "ecr:BatchGetImage",
                 ],
-                Resource: `arn:aws:ecr:${
-                  config.region
-                }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${
-                  config.region
-                }`,
+                Resource: `arn:aws:ecr:${config.region
+                  }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${config.region
+                  }`,
                 Effect: "Allow",
               },
               {

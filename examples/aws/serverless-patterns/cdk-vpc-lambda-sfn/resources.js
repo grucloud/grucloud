@@ -62,7 +62,8 @@ exports.createResources = () => [
       `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/24",
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
@@ -75,7 +76,8 @@ exports.createResources = () => [
       `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.1.0/24",
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
@@ -88,8 +90,9 @@ exports.createResources = () => [
       `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.2.0/24",
       MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
@@ -102,8 +105,9 @@ exports.createResources = () => [
       `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.3.0/24",
       MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
@@ -115,7 +119,8 @@ exports.createResources = () => [
     name: "vpcStack/test-VPC::vpcStack/test-VPC/test-isolated-subnet-1Subnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.4.0/24",
+      NewBits: 8,
+      NetworkNumber: 4,
     }),
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
@@ -127,7 +132,8 @@ exports.createResources = () => [
     name: "vpcStack/test-VPC::vpcStack/test-VPC/test-isolated-subnet-1Subnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.5.0/24",
+      NewBits: 8,
+      NetworkNumber: 5,
     }),
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
@@ -446,9 +452,8 @@ exports.createResources = () => [
                   "ec2:AssignPrivateIpAddresses",
                   "ec2:UnassignPrivateIpAddresses",
                 ],
-                Resource: `arn:aws:lambda:${
-                  config.region
-                }:${config.accountId()}:function:test-lambdaFunction`,
+                Resource: `arn:aws:lambda:${config.region
+                  }:${config.accountId()}:function:test-lambdaFunction`,
                 Effect: "Allow",
               },
             ],
@@ -509,11 +514,9 @@ exports.createResources = () => [
               {
                 Action: "lambda:InvokeFunction",
                 Resource: [
-                  `arn:aws:lambda:${
-                    config.region
+                  `arn:aws:lambda:${config.region
                   }:${config.accountId()}:function:test-lambdaFunction`,
-                  `arn:aws:lambda:${
-                    config.region
+                  `arn:aws:lambda:${config.region
                   }:${config.accountId()}:function:test-lambdaFunction:*`,
                 ],
                 Effect: "Allow",
@@ -586,9 +589,8 @@ exports.createResources = () => [
             OutputPath: "$.Payload",
             Resource: `arn:aws:states:::lambda:invoke`,
             Parameters: {
-              FunctionName: `arn:aws:lambda:${
-                config.region
-              }:${config.accountId()}:function:test-lambdaFunction`,
+              FunctionName: `arn:aws:lambda:${config.region
+                }:${config.accountId()}:function:test-lambdaFunction`,
               "Payload.$": "$",
             },
           },

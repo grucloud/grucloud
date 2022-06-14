@@ -26,7 +26,7 @@ describe("Route53ResolverRule", async function () {
     pipe([
       () =>
         rule.destroy({
-          live: { ResolverRuleId: "12345" },
+          live: { Id: "12345" },
         }),
     ])
   );
@@ -35,7 +35,7 @@ describe("Route53ResolverRule", async function () {
     pipe([
       () =>
         rule.getById({
-          ResolverRuleId: "12345",
+          Id: "12345",
         }),
     ])
   );

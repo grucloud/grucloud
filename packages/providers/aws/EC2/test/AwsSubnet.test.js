@@ -37,13 +37,4 @@ describe("Subnet", async function () {
       }),
     ])
   );
-  it(
-    "getByName with invalid id",
-    pipe([
-      () =>
-        subnet.getByName({
-          name: "invalid-subnet-id",
-        }),
-    ])
-  );
 });

@@ -49,6 +49,7 @@ describe("EC2 DhcpOptions", async function () {
       () =>
         dhcpOptions.getByName({
           name: "a123",
+          config: {}
         }),
     ])
   );

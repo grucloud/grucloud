@@ -37,7 +37,7 @@ describe("Route53ResolverRuleAssociation", async function () {
     pipe([
       () =>
         ruleAssociation.getById({
-          ResolverRuleAssociationId: "12345",
+          Id: "12345",
         }),
     ])
   );

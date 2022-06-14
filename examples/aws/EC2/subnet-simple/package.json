@@ -8,6 +8,7 @@
     "tree": "gc tree",
     "graph": "gc graph",
     "gencode": "gc gencode",
+    "gencode-no-fetch": "gc gencode --no-inventory-fetch",
     "list": "gc list",
     "list-graph": "gc list -g",
     "plan": "gc plan",

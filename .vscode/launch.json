@@ -6,170 +6,100 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/packages/core",
-      "port": 9229
+      "cwd": "${workspaceRoot}/packages/core"
     },
     {
       "name": "Debug Aws Provider",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/packages/providers/aws",
-      "port": 9229
+      "cwd": "${workspaceRoot}/packages/providers/aws"
     },
     {
       "name": "Debug Aws Provider Examples",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test-examples",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test-examples"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/packages/providers/aws",
-      "port": 9229
+      "cwd": "${workspaceRoot}/packages/providers/aws"
     },
     {
       "name": "Debug Google Provider",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/packages/providers/google",
-      "port": 9229
+      "cwd": "${workspaceRoot}/packages/providers/google"
     },
     {
       "name": "Debug Azure Provider",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/packages/providers/azure",
-      "port": 9229
+      "cwd": "${workspaceRoot}/packages/providers/azure"
     },
     {
       "name": "Debug OpenStack Provider",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/packages/providers/openstack",
-      "port": 9229
+      "cwd": "${workspaceRoot}/packages/providers/openstack"
     },
     {
       "name": "Debug K8s Provider",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/packages/providers/k8s",
-      "port": 9229
+      "cwd": "${workspaceRoot}/packages/providers/k8s"
     },
     {
       "name": "Debug Mock Provider",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/packages/providers/mock",
-      "port": 9229
+      "cwd": "${workspaceRoot}/packages/providers/mock"
     },
     {
       "name": "Debug test",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test:mocha",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test:mocha"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/",
-      "port": 9229
+      "cwd": "${workspaceRoot}/"
     },
     {
       "name": "Azure Gen Spec and doc",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/packages/providers/azure/az-spec-api-gen",
-      "port": 9229
+      "cwd": "${workspaceRoot}/packages/providers/azure/az-spec-api-gen"
     }
   ]
 }
