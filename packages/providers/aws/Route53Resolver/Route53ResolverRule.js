@@ -1,8 +1,16 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, not, assign, map, pick } = require("rubico");
-const { defaultsDeep, first, find, when, unless } = require("rubico/x");
+const {
+  defaultsDeep,
+  first,
+  find,
+  when,
+  unless,
+  callProp,
+} = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
+const { ipToInt32 } = require("@grucloud/core/ipUtils");
 
 const { buildTags, getNewCallerReference } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
@@ -40,6 +48,17 @@ const model = ({ config }) => ({
           assert(getById);
           assert(endpoint);
         }),
+        when(
+          get("TargetIps"),
+          assign({
+            TargetIps: pipe([
+              get("TargetIps"),
+              callProp("sort", (a, b) =>
+                ipToInt32(a.Ip) > ipToInt32(b.Ip) ? 1 : -1
+              ),
+            ]),
+          })
+        ),
         // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#listTagsForResource-property
         when(eq(get("OwnerId"), config.accountId()), assignTags({ endpoint })),
       ]),

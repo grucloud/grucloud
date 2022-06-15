@@ -352,7 +352,6 @@ exports.createResources = () => [
     name: ({ config }) => `dns_vpc::dns_attachment_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.4.0/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -365,6 +364,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 0,
       Ipv6SubnetPrefix: "00",
     }),
     dependencies: ({}) => ({
@@ -377,7 +378,6 @@ exports.createResources = () => [
     name: ({ config }) => `dns_vpc::dns_attachment_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.4.32/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -390,6 +390,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 1,
       Ipv6SubnetPrefix: "01",
     }),
     dependencies: ({}) => ({
@@ -402,7 +404,6 @@ exports.createResources = () => [
     name: ({ config }) => `dns_vpc::dns_attachment_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.0.4.64/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -415,6 +416,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 2,
       Ipv6SubnetPrefix: "02",
     }),
     dependencies: ({}) => ({
@@ -427,7 +430,6 @@ exports.createResources = () => [
     name: ({ config }) => `dns_vpc::dns_endpoint_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.4.128/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -440,6 +442,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 4,
+      NetworkNumber: 2,
       Ipv6SubnetPrefix: "03",
     }),
     dependencies: ({}) => ({
@@ -452,7 +456,6 @@ exports.createResources = () => [
     name: ({ config }) => `dns_vpc::dns_endpoint_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.4.192/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -465,6 +468,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 4,
+      NetworkNumber: 3,
       Ipv6SubnetPrefix: "04",
     }),
     dependencies: ({}) => ({
@@ -477,7 +482,6 @@ exports.createResources = () => [
     name: ({ config }) => `dns_vpc::dns_endpoint_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.0.5.0/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -490,6 +494,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 4,
+      NetworkNumber: 4,
       Ipv6SubnetPrefix: "05",
     }),
     dependencies: ({}) => ({
@@ -502,7 +508,6 @@ exports.createResources = () => [
     name: ({ config }) => `endpoint_vpc::endpoint_attachment_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.8.0/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -515,6 +520,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 0,
       Ipv6SubnetPrefix: "00",
     }),
     dependencies: ({}) => ({
@@ -527,7 +534,6 @@ exports.createResources = () => [
     name: ({ config }) => `endpoint_vpc::endpoint_attachment_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.8.32/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -540,6 +546,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 1,
       Ipv6SubnetPrefix: "01",
     }),
     dependencies: ({}) => ({
@@ -552,7 +560,6 @@ exports.createResources = () => [
     name: ({ config }) => `endpoint_vpc::endpoint_attachment_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.0.8.64/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -565,6 +572,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 2,
       Ipv6SubnetPrefix: "02",
     }),
     dependencies: ({}) => ({
@@ -577,7 +586,6 @@ exports.createResources = () => [
     name: ({ config }) => `endpoint_vpc::endpoint_endpoint_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.8.128/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -590,6 +598,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 4,
+      NetworkNumber: 2,
       Ipv6SubnetPrefix: "03",
     }),
     dependencies: ({}) => ({
@@ -602,7 +612,6 @@ exports.createResources = () => [
     name: ({ config }) => `endpoint_vpc::endpoint_endpoint_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.8.192/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -615,6 +624,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 4,
+      NetworkNumber: 3,
       Ipv6SubnetPrefix: "04",
     }),
     dependencies: ({}) => ({
@@ -627,7 +638,6 @@ exports.createResources = () => [
     name: ({ config }) => `endpoint_vpc::endpoint_endpoint_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.0.9.0/26",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -640,6 +650,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 4,
+      NetworkNumber: 4,
       Ipv6SubnetPrefix: "05",
     }),
     dependencies: ({}) => ({
@@ -653,7 +665,6 @@ exports.createResources = () => [
       `inspection_vpc::inspection_attachment_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -666,6 +677,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 0,
       Ipv6SubnetPrefix: "00",
     }),
     dependencies: ({}) => ({
@@ -679,7 +692,6 @@ exports.createResources = () => [
       `inspection_vpc::inspection_attachment_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.0.32/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -692,6 +704,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 1,
       Ipv6SubnetPrefix: "01",
     }),
     dependencies: ({}) => ({
@@ -705,7 +719,6 @@ exports.createResources = () => [
       `inspection_vpc::inspection_attachment_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.0.0.64/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -718,6 +731,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 2,
       Ipv6SubnetPrefix: "02",
     }),
     dependencies: ({}) => ({
@@ -731,7 +746,6 @@ exports.createResources = () => [
       `inspection_vpc::inspection_inspection_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.128/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -744,6 +758,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 4,
       Ipv6SubnetPrefix: "03",
     }),
     dependencies: ({}) => ({
@@ -757,7 +773,6 @@ exports.createResources = () => [
       `inspection_vpc::inspection_inspection_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.0.160/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -770,6 +785,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 5,
       Ipv6SubnetPrefix: "04",
     }),
     dependencies: ({}) => ({
@@ -783,7 +800,6 @@ exports.createResources = () => [
       `inspection_vpc::inspection_inspection_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.0.0.192/27",
       AssignIpv6AddressOnCreation: true,
       Tags: [
         {
@@ -796,6 +812,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 6,
       Ipv6SubnetPrefix: "05",
     }),
     dependencies: ({}) => ({
@@ -809,7 +827,6 @@ exports.createResources = () => [
       `inspection_vpc::inspection_internet_${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.224/27",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -822,6 +839,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 7,
       Ipv6SubnetPrefix: "06",
     }),
     dependencies: ({}) => ({
@@ -835,7 +854,6 @@ exports.createResources = () => [
       `inspection_vpc::inspection_internet_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.1.0/27",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -848,6 +866,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 8,
       Ipv6SubnetPrefix: "07",
     }),
     dependencies: ({}) => ({
@@ -861,7 +881,6 @@ exports.createResources = () => [
       `inspection_vpc::inspection_internet_${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.0.1.32/27",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -874,6 +893,8 @@ exports.createResources = () => [
         },
       ],
       EnableDns64: true,
+      NewBits: 5,
+      NetworkNumber: 9,
       Ipv6SubnetPrefix: "08",
     }),
     dependencies: ({}) => ({
@@ -3188,13 +3209,6 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `dns_vpc::dns_endpoint_${config.region}c`,
-          })}`,
-        },
-        {
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
             name: `dns_vpc::dns_endpoint_${config.region}a`,
           })}`,
         },
@@ -3203,6 +3217,13 @@ exports.createResources = () => [
             type: "Subnet",
             group: "EC2",
             name: `dns_vpc::dns_endpoint_${config.region}b`,
+          })}`,
+        },
+        {
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `dns_vpc::dns_endpoint_${config.region}c`,
           })}`,
         },
       ],
@@ -3227,13 +3248,6 @@ exports.createResources = () => [
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `dns_vpc::dns_endpoint_${config.region}c`,
-          })}`,
-        },
-        {
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
             name: `dns_vpc::dns_endpoint_${config.region}a`,
           })}`,
         },
@@ -3242,6 +3256,13 @@ exports.createResources = () => [
             type: "Subnet",
             group: "EC2",
             name: `dns_vpc::dns_endpoint_${config.region}b`,
+          })}`,
+        },
+        {
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: `dns_vpc::dns_endpoint_${config.region}c`,
           })}`,
         },
       ],
@@ -3282,7 +3303,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Type: "SecureString",
       Value:
-        "AQICAHhJJMncH+TIYM7GK7Cq/fhSOk3Vbs7m3Qyu22OfOmlMigFGECjpzTsVfvijtZrzPHQTAAAAeTB3BgkqhkiG9w0BBwagajBoAgEAMGMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMm0/iYoyLoEXzln/1AgEQgDaIam/tnw+hOuAD0/q7y3fJ45GdS873VXSiY1I4sCGyLFemG/RisAKrNinSyTjWNBkc7R2YJhc=",
+        "AQICAHhJJMncH+TIYM7GK7Cq/fhSOk3Vbs7m3Qyu22OfOmlMigGYPNK0/hbW+XA8okypTAnlAAAAeTB3BgkqhkiG9w0BBwagajBoAgEAMGMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM5NC0vK1oqz1MHvtmAgEQgDZ5221UNJFckxQuPcggXarwFekvao14bC0P3Kn4llK10S39oFPT53KccU14lHvW3dIKAPUViiM=",
       DataType: "text",
     }),
   },

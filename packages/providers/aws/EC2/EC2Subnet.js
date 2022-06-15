@@ -294,11 +294,11 @@ exports.EC2Subnet = ({ spec, config }) => {
         ],
       }),
       when(
-        () => NewBits,
+        () => NewBits && vpc.live,
         assign({
           CidrBlock: () =>
             cidrSubnetV4({
-              cidr: vpc.config.CidrBlock,
+              cidr: vpc.live.CidrBlock,
               newBits: NewBits,
               networkNumber: NetworkNumber,
             }),

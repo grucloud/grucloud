@@ -9,6 +9,7 @@ const {
   isEmpty,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { ipToInt32 } = require("@grucloud/core/ipUtils");
 
 const { buildTags, getNewCallerReference } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
@@ -33,9 +34,9 @@ const decorate = ({ endpoint }) =>
         pipe([
           () => ({ ResolverEndpointId: Id }),
           endpoint().listResolverEndpointIpAddresses,
-          get("IpAddresses"),
+          get("IpAddresses", []),
           callProp("sort", (a, b) =>
-            a.CreationTime.localeCompare(b.CreationTime)
+            ipToInt32(a.Ip) > ipToInt32(b.Ip) ? 1 : -1
           ),
         ])(),
     }),

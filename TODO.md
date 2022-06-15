@@ -4,16 +4,14 @@
 
 ## Aws
 
+-     ✖ NetworkFirewall::Firewall 0/1   Unable to fulfill request because the following related VPC endpoint(s) still exist in route table(s): [vpce-0396a59e10c894b36]
+
 - getById use map instead of find
 - HostedZone Config Comment
 - user tags for ec2 instance
-- aws_organizations_organization
 - PrincipalAssociation replace associatedEntity from config
-  EIP name based on dependencies
 
-  - ipamPoolIpv6
-
-- Route53ResolverRuleAssociation findName
+- ipamPoolIpv6
 
 - createVpcLink isInstanceUp
 - add isInstanceError for aws create, for instance in transit gateway
