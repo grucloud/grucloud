@@ -539,13 +539,13 @@ const AwsClient =
                               target: filterAll({ name })(payload),
                             }),
                           tap((diff) => {
-                            // logger.debug(
-                            //   `updating ${type}, ${name}, diff: ${JSON.stringify(
-                            //     diff,
-                            //     null,
-                            //     4
-                            //   )}`
-                            // );
+                            logger.debug(
+                              `updating ${type}, ${name}, diff: ${JSON.stringify(
+                                diff,
+                                null,
+                                4
+                              )}`
+                            );
                           }),
                           not(get("hasDataDiff")),
                         ]),

@@ -14,8 +14,8 @@ exports.createResources = () => [
   {
     type: "Parameter",
     group: "SSM",
-    name: "text-param",
     properties: ({}) => ({
+      Name: "text-param",
       Type: "String",
       Value: "my-value",
       DataType: "text",
@@ -33,6 +33,7 @@ exports.createResources = () => [
 ## Code Examples
 
 - [Simple Example](https://github.com/grucloud/grucloud/blob/main/examples/aws/SSM/ssm-param)
+- [Secure String Example](https://github.com/grucloud/grucloud/blob/main/examples/aws/SSM/ssm-param-secure-string)
 
 ## Properties
 
