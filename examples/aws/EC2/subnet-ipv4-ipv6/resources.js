@@ -18,9 +18,10 @@ exports.createResources = () => [
     name: "vpc-dual::subnet-dual",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
-      CidrBlock: "10.0.0.0/24",
       MapPublicIpOnLaunch: true,
       AssignIpv6AddressOnCreation: true,
+      NewBits: 8,
+      NetworkNumber: 0,
       Ipv6SubnetPrefix: "00",
     }),
     dependencies: ({}) => ({

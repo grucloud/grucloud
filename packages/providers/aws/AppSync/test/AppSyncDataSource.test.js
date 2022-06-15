@@ -19,7 +19,7 @@ describe("AppSyncDataSource", async function () {
         dataSource.destroy({
           live: {
             name: "datasource-no-exist",
-            apiId: "12345",
+            apiId: "inm4iqehhjdf5hhsuqmk7bq35t",
           },
         }),
     ])
@@ -30,7 +30,7 @@ describe("AppSyncDataSource", async function () {
       () =>
         dataSource.getById({
           name: "datasource-no-exist",
-          apiId: "12345",
+          apiId: "inm4iqehhjdf5hhsuqmk7bq35t",
         }),
     ])
   );

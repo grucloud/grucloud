@@ -50,6 +50,7 @@ exports.OrganisationsOrganisation = ({ spec, config }) =>
     spec,
     config,
     managedByOther: () => true,
+    cannotBeDeleted: () => true,
     findName: pipe([get("live.MasterAccountEmail")]),
     findId: pipe([get("live.Id")]),
     //TODO

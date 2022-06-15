@@ -12,8 +12,10 @@ const {
   assignTags,
 } = require("./Route53ResolverCommon");
 
-const cannotBeDeleted = ({ config }) =>
-  pipe([not(eq(get("live.OwnerId"), config.accountId()))]);
+const cannotBeDeleted =
+  ({ config }) =>
+  (live) =>
+    pipe([() => live, not(eq(get("live.OwnerId"), config.accountId()))])();
 
 const pickId = pipe([
   ({ Id }) => ({ ResolverRuleId: Id }),

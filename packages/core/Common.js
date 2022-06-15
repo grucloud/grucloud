@@ -256,16 +256,13 @@ exports.convertError = ({ error, name, procedure, params }) => {
 
 exports.getByNameCore =
   ({ findName, getList, deep = true }) =>
-  ({ name, resources, lives, config }) =>
+  ({ name, resources, lives, config = {} }) =>
     pipe([
       tap(() => {
         logger.info(`getByNameCore ${name}`);
         assert(name, "name");
         assert(findName, "findName");
         assert(getList, "getList");
-        if (!lives) {
-          //assert(lives);
-        }
       }),
       () => getList({ deep, lives, resources }),
       tap((items) => {

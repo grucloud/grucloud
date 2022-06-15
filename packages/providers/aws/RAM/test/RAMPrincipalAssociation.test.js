@@ -31,7 +31,7 @@ describe("RAMPrincipalAssociation", async function () {
           live: {
             resourceShareArn:
               "arn:aws:ram:us-east-1:840541460064:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807",
-            principals: ["123456789012"],
+            associatedEntity: "123456789012",
           },
         }),
     ])
@@ -43,6 +43,7 @@ describe("RAMPrincipalAssociation", async function () {
         principalAssociation.getById({
           resourceShareArn:
             "arn:aws:ram:us-east-1:840541460064:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807",
+          associatedEntity: "161408406883",
         }),
     ])
   );

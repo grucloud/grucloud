@@ -36,7 +36,8 @@ exports.createResources = () => [
     name: "sam-app-vpc::sam-app-prv-sub-1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "172.31.0.0/24",
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "sam-app-vpc",
@@ -48,7 +49,8 @@ exports.createResources = () => [
     name: "sam-app-vpc::sam-app-prv-sub-2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "172.31.1.0/24",
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "sam-app-vpc",
@@ -60,7 +62,8 @@ exports.createResources = () => [
     name: "sam-app-vpc::sam-app-prv-sub-3",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "172.31.2.0/24",
+      NewBits: 8,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "sam-app-vpc",

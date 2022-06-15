@@ -24,13 +24,19 @@ const {
   when,
   unless,
   isEmpty,
+  find,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSubnet" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { cidrSubnet } = require("@grucloud/core/ipUtils");
+const { cidrSubnetV6, cidrSubnetV4 } = require("@grucloud/core/ipUtils");
+
+const {
+  cidrsToNewBits,
+  cidrsToNetworkNumber,
+} = require("@grucloud/core/ipUtils");
 
 const {
   findNameInTagsOrId,
@@ -68,7 +74,33 @@ const getFirstIpv6CidrBlock = pipe([
   get("Ipv6CidrBlock"),
 ]);
 
-exports.filterLiveSubnet = when(
+exports.filterLiveSubnetV4 = ({ lives, providerConfig }) =>
+  pipe([
+    tap((params) => {
+      assert(lives);
+      assert(providerConfig);
+    }),
+    when(get("CidrBlock"), (live) =>
+      pipe([
+        () => lives,
+        find(eq(get("id"), live.VpcId)),
+        get("live.CidrBlock"),
+        (vpcCidr) =>
+          pipe([
+            () => live,
+            assign({
+              NewBits: () =>
+                cidrsToNewBits({ vpcCidr, subnetCidr: live.CidrBlock }),
+              NetworkNumber: () =>
+                cidrsToNetworkNumber({ vpcCidr, subnetCidr: live.CidrBlock }),
+            }),
+            omit(["CidrBlock"]),
+          ])(),
+      ])()
+    ),
+  ]);
+
+exports.filterLiveSubnetV6 = when(
   getFirstIpv6CidrBlock,
   assign({
     Ipv6SubnetPrefix: pipe([
@@ -236,7 +268,13 @@ exports.EC2Subnet = ({ spec, config }) => {
   const configDefault = async ({
     name,
     namespace,
-    properties: { Tags, Ipv6SubnetPrefix, ...otherProps },
+    properties: {
+      Tags,
+      NewBits,
+      NetworkNumber,
+      Ipv6SubnetPrefix,
+      ...otherProps
+    },
     dependencies: { vpc },
   }) =>
     pipe([
@@ -255,6 +293,17 @@ exports.EC2Subnet = ({ spec, config }) => {
           },
         ],
       }),
+      when(
+        () => NewBits,
+        assign({
+          CidrBlock: () =>
+            cidrSubnetV4({
+              cidr: vpc.config.CidrBlock,
+              newBits: NewBits,
+              networkNumber: NetworkNumber,
+            }),
+        })
+      ),
       omitAssignIpv6AddressOnCreationIfIpv6Native,
       when(
         () => Ipv6SubnetPrefix,
@@ -270,7 +319,7 @@ exports.EC2Subnet = ({ spec, config }) => {
               pipe([
                 first,
                 get("Ipv6CidrBlock"),
-                cidrSubnet({
+                cidrSubnetV6({
                   subnetPrefix: Ipv6SubnetPrefix,
                   prefixLength: "64",
                 }),

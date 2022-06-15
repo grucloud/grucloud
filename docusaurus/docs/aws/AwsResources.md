@@ -50,10 +50,14 @@ List of resources for provider aws:
 [Layer](./resources/Lambda/Layer.md), [Function](./resources/Lambda/Function.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md)
 * NetworkFirewall: 
 [Firewall](./resources/NetworkFirewall/Firewall.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md)
+* Organisations: 
+[Organisation](./resources/Organisations/Organisation.md)
+* RAM: 
+[ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
 * RDS: 
 [DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [DBCluster](./resources/RDS/DBCluster.md), [DBInstance](./resources/RDS/DBInstance.md)
 * Route53: 
-[HostedZone](./resources/Route53/HostedZone.md), [HostedZoneVpcAssociation](./resources/Route53/HostedZoneVpcAssociation.md), [Record](./resources/Route53/Record.md)
+[HostedZone](./resources/Route53/HostedZone.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md), [Record](./resources/Route53/Record.md)
 * Route53Domains: 
 [Domain](./resources/Route53Domains/Domain.md)
 * Route53Resolver: 

@@ -83,7 +83,8 @@ exports.createResources = () => [
     name: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.128.0/18",
+      NewBits: 2,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
@@ -95,7 +96,8 @@ exports.createResources = () => [
     name: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.192.0/18",
+      NewBits: 2,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
@@ -107,8 +109,9 @@ exports.createResources = () => [
     name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/18",
       MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
@@ -120,8 +123,9 @@ exports.createResources = () => [
     name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.64.0/18",
       MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
@@ -586,11 +590,9 @@ exports.createResources = () => [
                   "ecr:GetDownloadUrlForLayer",
                   "ecr:BatchGetImage",
                 ],
-                Resource: `arn:aws:ecr:${
-                  config.region
-                }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${
-                  config.region
-                }`,
+                Resource: `arn:aws:ecr:${config.region
+                  }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${config.region
+                  }`,
                 Effect: "Allow",
               },
               {

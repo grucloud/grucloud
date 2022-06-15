@@ -26,7 +26,7 @@ describe("Route53ResolverEndpoint", async function () {
     pipe([
       () =>
         endpoint.destroy({
-          live: { ResolverEndpointId: "12345" },
+          live: { Id: "12345" },
         }),
     ])
   );
@@ -35,7 +35,7 @@ describe("Route53ResolverEndpoint", async function () {
     pipe([
       () =>
         endpoint.getById({
-          ResolverEndpointId: "12345",
+          Id: "12345",
         }),
     ])
   );
