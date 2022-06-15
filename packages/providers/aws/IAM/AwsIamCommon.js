@@ -35,6 +35,8 @@ exports.dependenciesPoliciesKind = [
   { type: "LogGroup", group: "CloudWatchLogs" },
   { type: "Secret", group: "SecretsManager" },
   { type: "Parameter", group: "SSM" },
+  { type: "Organisation", group: "Organisations" },
+
   //{ type: "Function", group: "Lambda" },
   //{ type: "DBCluster", group: "RDS" },
 ];
@@ -85,6 +87,11 @@ exports.dependenciesPolicy = {
   ssmParameters: {
     type: "Parameter",
     group: "SSM",
+    list: true,
+  },
+  organisations: {
+    type: "Organisation",
+    group: "Organisations",
     list: true,
   },
   //dbClusters: { type: "DBCluster", group: "RDS", list: true },
@@ -165,6 +172,7 @@ exports.assignAttachedPolicies = ({ policies = [] }) =>
 const findArnInCondition = ({ Condition }) =>
   pipe([
     () => [
+      "StringEquals.aws:PrincipalOrgID",
       "StringEquals.elasticfilesystem:AccessPointArn",
       "ArnLike.AWS:SourceArn",
       "ArnEquals.aws:SourceArn",

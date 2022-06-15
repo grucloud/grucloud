@@ -838,6 +838,8 @@ module.exports = pipe([
         "Ipv6CidrBlockAssociationSet",
         "SubnetArn",
         "OutpostArn",
+        //TODO
+        "PrivateDnsNameOptionsOnLaunch",
       ],
       propertiesDefault: {
         MapPublicIpOnLaunch: false,
@@ -845,11 +847,12 @@ module.exports = pipe([
         AssignIpv6AddressOnCreation: false,
         EnableDns64: false,
         Ipv6Native: false,
-        PrivateDnsNameOptionsOnLaunch: {
-          HostnameType: "ip-name",
-          EnableResourceNameDnsARecord: false,
-          EnableResourceNameDnsAAAARecord: false,
-        },
+        //TODO
+        // PrivateDnsNameOptionsOnLaunch: {
+        //   HostnameType: "ip-name",
+        //   EnableResourceNameDnsARecord: false,
+        //   EnableResourceNameDnsAAAARecord: false,
+        // },
       },
       compare: compareEC2({
         filterAll: () => pipe([omitAssignIpv6AddressOnCreationIfIpv6Native]),

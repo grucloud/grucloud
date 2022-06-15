@@ -249,7 +249,13 @@ const buildProperties = ({
                 all(pipe([(key) => get(key, "")(tag), isNotOurTagKey])),
               ])()
             ),
-            filter(providerConfig.filterTags),
+            filter(
+              pipe([
+                when(get("key"), pipe([assign({ Key: get("key") })])),
+                when(get("TagKey"), pipe([assign({ Key: get("TagKey") })])),
+                providerConfig.filterTags,
+              ])
+            ),
             map(pipe([map(pipe([replaceRegion({ providerConfig })]))])),
           ]),
           // tags as objects

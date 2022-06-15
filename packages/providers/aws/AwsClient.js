@@ -185,7 +185,11 @@ const AwsClient =
               NextToken = results.NextToken;
               const newData = get(getParam)(results);
               if (newData) {
-                data = [...data, ...newData];
+                if (Array.isArray(newData)) {
+                  data = [...data, ...newData];
+                } else {
+                  data = [...data, newData];
+                }
               }
             } while (NextToken);
             return data;

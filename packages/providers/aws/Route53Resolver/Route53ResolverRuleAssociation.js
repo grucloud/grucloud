@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
+const { pipe, tap, get, pick, eq, fork } = require("rubico");
 const { defaultsDeep, first, identity, find } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -80,14 +80,38 @@ exports.Route53ResolverRuleAssociation = ({ spec, config }) =>
     config,
     cannotBeDeleted: cannotBeDeleted({ config }),
     managedByOther: cannotBeDeleted({ config }),
-    findName: ({ live }) =>
+    findName: ({ live, lives }) =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        //TODO match inferName
         () => live,
-        get("Name", live.Id),
+        fork({
+          vpcName: pipe([
+            () =>
+              lives.getById({
+                id: live.VPCId,
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            get("name"),
+            tap((name) => {
+              assert(name, "no  name in rule association");
+            }),
+          ]),
+          ruleName: pipe([
+            () =>
+              lives.getByType({
+                type: "Rule",
+                group: "Route53Resolver",
+                providerName: config.providerName,
+              }),
+            find(eq(get("live.Id"), live.ResolverRuleId)),
+            get("name"),
+            tap((name) => {
+              assert(name, "no rule name in rule association");
+            }),
+          ]),
+        }),
+        ({ vpcName, ruleName }) => `rule-assoc::${ruleName}::${vpcName}`,
         tap((Name) => {
           assert(Name);
         }),

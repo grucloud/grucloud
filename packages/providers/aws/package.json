@@ -44,6 +44,7 @@
     "@aws-sdk/client-kms": "3.76.0",
     "@aws-sdk/client-lambda": "3.76.0",
     "@aws-sdk/client-network-firewall": "3.81.0",
+    "@aws-sdk/client-organizations": "^3.105.0",
     "@aws-sdk/client-ram": "3.76.0",
     "@aws-sdk/client-rds": "3.76.0",
     "@aws-sdk/client-route-53": "3.76.0",
