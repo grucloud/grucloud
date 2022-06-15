@@ -105,7 +105,7 @@ exports.Route53ResolverRuleAssociation = ({ spec, config }) =>
                 providerName: config.providerName,
               }),
             find(eq(get("live.Id"), live.ResolverRuleId)),
-            get("name"),
+            get("name", live.ResolverRuleId),
             tap((name) => {
               assert(name, "no rule name in rule association");
             }),
@@ -173,7 +173,7 @@ exports.Route53ResolverRuleAssociation = ({ spec, config }) =>
         }),
         () => properties,
         defaultsDeep({
-          Name: name,
+          //Name: name,
           ResolverRuleId: getField(resolverRule, "Id"),
           VPCId: getField(vpc, "VpcId"),
         }),

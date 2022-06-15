@@ -70,7 +70,10 @@ exports.RAMResourceShare = ({ spec, config }) =>
     getByName: ({ getList, endpoint }) =>
       pipe([
         ({ name }) => ({ name, resourceShareStatus: "ACTIVE" }),
-        getList,
+        endpoint().getResourceShares,
+        get("resourceShares"),
+        //TODO
+        // getList,
         first,
       ]),
     tagResource: tagResource,
