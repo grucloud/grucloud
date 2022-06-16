@@ -65,11 +65,15 @@ module.exports = pipe([
         "Version",
         "LastModifiedDate",
         "ARN",
-        "Description", //TODO
         "Tier",
+        "LastModifiedUser",
+        "KeyId",
+        "Policies",
       ],
+      inferName: get("properties.Name"),
       filterLive: () =>
         pick([
+          "Name",
           "Type",
           "Value",
           "Description",

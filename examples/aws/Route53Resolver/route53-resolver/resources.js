@@ -17,7 +17,8 @@ exports.createResources = () => [
     name: "vpc-resolver-endpoint::subnet-1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/24",
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-resolver-endpoint",
@@ -29,7 +30,8 @@ exports.createResources = () => [
     name: "vpc-resolver-endpoint::subnet-2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.1.0/24",
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-resolver-endpoint",
@@ -68,7 +70,6 @@ exports.createResources = () => [
   {
     type: "Endpoint",
     group: "Route53Resolver",
-    name: "endpoint",
     properties: ({ getId }) => ({
       Direction: "OUTBOUND",
       Name: "endpoint",
@@ -100,11 +101,16 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "Route53Resolver",
-    name: "my-rule",
     properties: ({}) => ({
       DomainName: "internal.grucloud.org.",
       Name: "my-rule",
       RuleType: "FORWARD",
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       resolverEndpoint: "endpoint",

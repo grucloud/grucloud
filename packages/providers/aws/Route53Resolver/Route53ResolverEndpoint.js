@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, assign, map, and, not } = require("rubico");
+const { pipe, tap, get, eq, assign, map, and, not, filter } = require("rubico");
 const {
   defaultsDeep,
   first,
@@ -30,15 +30,15 @@ const decorate = ({ endpoint }) =>
   pipe([
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#listResolverEndpointIpAddresses-property
     assign({
-      IpAddresses: ({ Id }) =>
-        pipe([
-          () => ({ ResolverEndpointId: Id }),
-          endpoint().listResolverEndpointIpAddresses,
-          get("IpAddresses", []),
-          callProp("sort", (a, b) =>
-            ipToInt32(a.Ip) > ipToInt32(b.Ip) ? 1 : -1
-          ),
-        ])(),
+      IpAddresses: pipe([
+        pickId,
+        endpoint().listResolverEndpointIpAddresses,
+        get("IpAddresses", []),
+        filter(get("Ip")),
+        callProp("sort", (a, b) =>
+          ipToInt32(a.Ip) > ipToInt32(b.Ip) ? 1 : -1
+        ),
+      ]),
     }),
     assignTags({ endpoint }),
   ]);
@@ -108,6 +108,7 @@ exports.Route53ResolverEndpoint = ({ spec, config }) =>
         get("ResolverEndpoints"),
         //TODO getList,
         first,
+        decorate({ endpoint }),
       ]),
     tagResource: tagResource,
     untagResource: untagResource,
