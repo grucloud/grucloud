@@ -43,6 +43,9 @@ const createModel = ({ config }) => ({
   create: { method: "createFirewall" },
   destroy: {
     method: "deleteFirewall",
+    shouldRetryOnExceptionMessages: [
+      "Unable to fulfill request because the following related VPC endpoint(s) still exist in route table(s)",
+    ],
   },
 });
 
