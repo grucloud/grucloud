@@ -24,10 +24,12 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `project-subnet-public1-${config.region}a`,
+    name: ({ config }) =>
+      `project-vpc::project-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/20",
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "project-vpc",
@@ -36,7 +38,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "project-rtb-public",
+    name: "project-vpc::project-rtb-public",
     dependencies: ({}) => ({
       vpc: "project-vpc",
     }),
@@ -45,8 +47,8 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "project-rtb-public",
-      subnet: `project-subnet-public1-${config.region}a`,
+      routeTable: "project-vpc::project-rtb-public",
+      subnet: `project-vpc::project-subnet-public1-${config.region}a`,
     }),
   },
   {
@@ -56,8 +58,24 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "project-rtb-public",
+      routeTable: "project-vpc::project-rtb-public",
       ig: "project-igw",
+    }),
+  },
+  {
+    type: "Organisation",
+    group: "Organisations",
+    name: "frederic.heem@gmail.com",
+    readOnly: true,
+    properties: ({}) => ({
+      AvailablePolicyTypes: [
+        {
+          Status: "ENABLED",
+          Type: "SERVICE_CONTROL_POLICY",
+        },
+      ],
+      FeatureSet: "ALL",
+      MasterAccountEmail: "frederic.heem@gmail.com",
     }),
   },
   {
@@ -67,39 +85,6 @@ exports.createResources = () => [
       allowExternalPrincipals: false,
       featureSet: "STANDARD",
       name: "my-share",
-      tags: [
-        {
-          key: "gc-created-by-provider",
-          value: "aws",
-        },
-        {
-          key: "gc-managed-by",
-          value: "grucloud",
-        },
-        {
-          key: "gc-project-name",
-          value: "resource-share",
-        },
-        {
-          key: "gc-stage",
-          value: "dev",
-        },
-        {
-          key: "Name",
-          value: "my-share",
-        },
-      ],
-    }),
-  },
-  {
-    type: "PrincipalAssociation",
-    group: "RAM",
-    properties: ({}) => ({
-      associatedEntity: "161408406883",
-      external: false,
-    }),
-    dependencies: ({}) => ({
-      resourceShare: "my-share",
     }),
   },
   {
@@ -114,6 +99,31 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "PrincipalAssociation",
+    group: "RAM",
+    properties: ({}) => ({
+      associatedEntity:
+        "arn:aws:organizations::840541460064:ou/o-xs8pjirjbw/ou-941x-2jykk4xi",
+      external: false,
+    }),
+    dependencies: ({}) => ({
+      resourceShare: "my-share",
+    }),
+  },
+  {
+    type: "PrincipalAssociation",
+    group: "RAM",
+    properties: ({}) => ({
+      associatedEntity:
+        "arn:aws:organizations::840541460064:organization/o-xs8pjirjbw",
+      external: false,
+    }),
+    dependencies: ({}) => ({
+      resourceShare: "my-share",
+      organisation: "frederic.heem@gmail.com",
+    }),
+  },
+  {
     type: "ResourceAssociation",
     group: "RAM",
     properties: ({}) => ({
@@ -121,7 +131,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       resourceShare: "my-share",
-      subnet: `project-subnet-public1-${config.region}a`,
+      subnet: `project-vpc::project-subnet-public1-${config.region}a`,
     }),
   },
 ];

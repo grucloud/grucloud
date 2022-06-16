@@ -11,6 +11,8 @@ skinparam monochrome true
 ++++ RouteTable (1)
 ++++ RouteTableAssociation (1)
 ++++ Route (1)
++++ Organisations
+++++ Organisation (1)
 +++ RAM
 ++++ ResourceShare (1)
 ++++ PrincipalAssociation (2)

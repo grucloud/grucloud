@@ -1,11 +1,10 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, filter, not, map } = require("rubico");
-const { defaultsDeep, first, pluck, identity, when } = require("rubico/x");
-const { getField } = require("@grucloud/core/ProviderCommon");
+const { pipe, tap, get, pick, eq, filter, not } = require("rubico");
+const { defaultsDeep, first } = require("rubico/x");
 const { buildTags } = require("../AwsCommon");
 
 const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource, assignTags } = require("./RAMCommon");
+const { tagResource, untagResource } = require("./RAMCommon");
 
 const model = ({ config }) => ({
   package: "ram",
@@ -16,10 +15,13 @@ const model = ({ config }) => ({
     method: "getResourceShares",
     getField: "resourceShares",
     pickId: pipe([
+      tap((params) => {
+        assert(true);
+      }),
       tap(({ resourceShareArn }) => {
         assert(resourceShareArn);
       }),
-      ({ resourceShareArn }) => ({
+      ({ resourceShareArn, owningAccountId }) => ({
         resourceShareArns: [resourceShareArn],
         resourceOwner: "SELF",
       }),
@@ -42,7 +44,13 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#createResourceShare-property
   create: {
     method: "createResourceShare",
-    pickCreated: ({ payload }) => pipe([get("resourceShare")]),
+    pickCreated: ({ payload }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        get("resourceShare"),
+      ]),
     isInstanceUp: pipe([eq(get("status"), "ACTIVE")]),
     //isInstanceError: pipe([eq(get("Status"), "ACTION_NEEDED")]),
   },
@@ -69,7 +77,11 @@ exports.RAMResourceShare = ({ spec, config }) =>
     findId: pipe([get("live.resourceShareArn")]),
     getByName: ({ getList, endpoint }) =>
       pipe([
-        ({ name }) => ({ name, resourceShareStatus: "ACTIVE" }),
+        ({ name }) => ({
+          name,
+          resourceShareStatus: "ACTIVE",
+          resourceOwner: "SELF",
+        }),
         endpoint().getResourceShares,
         get("resourceShares"),
         //TODO

@@ -1,6 +1,15 @@
 const assert = require("assert");
-const { tap, pipe, map, get, switchCase } = require("rubico");
-const { defaultsDeep, append } = require("rubico/x");
+const { tap, pipe, map, get, switchCase, omit } = require("rubico");
+const {
+  defaultsDeep,
+  append,
+  values,
+  first,
+  isEmpty,
+  when,
+  prepend,
+  callProp,
+} = require("rubico/x");
 
 const {
   isOurMinion,
@@ -8,7 +17,10 @@ const {
   assignValueFromConfig,
 } = require("../AwsCommon");
 const { RAMResourceShare } = require("./RAMResourceShare");
-const { RAMPrincipalAssociation } = require("./RAMPrincipalAssociation");
+const {
+  RAMPrincipalAssociation,
+  PrincipalAssociationDependencies,
+} = require("./RAMPrincipalAssociation");
 const {
   RAMResourceAssociation,
   RamResourceDependencies,
@@ -35,18 +47,30 @@ module.exports = pipe([
     },
     {
       type: "PrincipalAssociation",
-      dependencies: { resourceShare: { type: "ResourceShare", group: "RAM" } },
+      dependencies: {
+        resourceShare: { type: "ResourceShare", group: "RAM" },
+        ...PrincipalAssociationDependencies,
+      },
+      includeDefaultDependencies: true,
       Client: RAMPrincipalAssociation,
       inferName: ({
         properties: { associatedEntity },
-        dependenciesSpec: { resourceShare },
+        dependenciesSpec: { resourceShare, ...dependencies },
       }) =>
         pipe([
           tap((params) => {
-            assert(associatedEntity);
+            // assert(associatedEntity);
             assert(resourceShare);
+            assert(dependencies);
           }),
-          () => `ram-principal-assoc::${resourceShare}::${associatedEntity}`,
+          () => dependencies,
+          values,
+          first,
+          when(isEmpty, () => associatedEntity),
+          prepend(`ram-principal-assoc::${resourceShare}::`),
+          tap((params) => {
+            assert(true);
+          }),
         ])(),
       omitProperties: [
         "creationTime",
@@ -58,7 +82,14 @@ module.exports = pipe([
       ],
       filterLive: ({ providerConfig }) =>
         pipe([
-          assignValueFromConfig({ providerConfig, key: "associatedEntity" }),
+          switchCase([
+            pipe([
+              get("associatedEntity"),
+              callProp("startsWith", "arn:aws:organizations"),
+            ]),
+            omit(["associatedEntity"]),
+            assignValueFromConfig({ providerConfig, key: "associatedEntity" }),
+          ]),
         ]),
     },
     {
