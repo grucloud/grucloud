@@ -609,9 +609,11 @@ exports.createResources = () => [
                   "ecr:GetDownloadUrlForLayer",
                   "ecr:BatchGetImage",
                 ],
-                Resource: `arn:aws:ecr:${config.region
-                  }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${config.region
-                  }`,
+                Resource: `arn:aws:ecr:${
+                  config.region
+                }:${config.accountId()}:repository/cdk-hnb659fds-container-assets-${config.accountId()}-${
+                  config.region
+                }`,
                 Effect: "Allow",
               },
               {

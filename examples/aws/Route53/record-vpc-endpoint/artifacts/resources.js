@@ -15,10 +15,11 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "subnet-public",
+    name: "vpc-4-record-vpc-endpoint::subnet-public",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
-      CidrBlock: "10.0.0.0/24",
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-4-record-vpc-endpoint",
@@ -46,7 +47,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "vpc-4-record-vpc-endpoint",
-      subnets: ["subnet-public"],
+      subnets: ["vpc-4-record-vpc-endpoint::subnet-public"],
     }),
   },
   {

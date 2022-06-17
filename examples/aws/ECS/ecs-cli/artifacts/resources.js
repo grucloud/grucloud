@@ -88,13 +88,14 @@ exports.createResources = () => [
     name: "Vpc::PubSubnetAz1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/24",
       Tags: [
         {
           Key: "my-tag",
           Value: "my-value",
         },
       ],
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",
@@ -106,13 +107,14 @@ exports.createResources = () => [
     name: "Vpc::PubSubnetAz2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.1.0/24",
       Tags: [
         {
           Key: "my-tag",
           Value: "my-value",
         },
       ],
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",

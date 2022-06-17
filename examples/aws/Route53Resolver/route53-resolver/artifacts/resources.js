@@ -105,6 +105,12 @@ exports.createResources = () => [
       DomainName: "internal.grucloud.org.",
       Name: "my-rule",
       RuleType: "FORWARD",
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "myvalue",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       resolverEndpoint: "endpoint",

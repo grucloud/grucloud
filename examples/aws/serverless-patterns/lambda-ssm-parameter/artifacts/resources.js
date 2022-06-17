@@ -83,8 +83,8 @@ exports.createResources = () => [
   {
     type: "Parameter",
     group: "SSM",
-    name: "ExampleParameterName",
     properties: ({}) => ({
+      Name: "ExampleParameterName",
       Type: "String",
       Value: '{"key1":"value1"}',
       DataType: "text",

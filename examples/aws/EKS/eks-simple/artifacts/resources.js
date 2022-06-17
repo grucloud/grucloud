@@ -26,23 +26,24 @@ exports.createResources = () => [
     group: "EC2",
     name: "NATGateway",
     dependencies: ({}) => ({
-      subnet: "SubnetPublicUSEAST1F",
+      subnet: "VPC::SubnetPublicUSEAST1F",
       eip: "NATIP",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "SubnetPrivateUSEAST1D",
+    name: "VPC::SubnetPrivateUSEAST1D",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
-      CidrBlock: "192.168.96.0/19",
       Tags: [
         {
           Key: "kubernetes.io/role/internal-elb",
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",
@@ -51,16 +52,17 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "SubnetPrivateUSEAST1F",
+    name: "VPC::SubnetPrivateUSEAST1F",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}f`,
-      CidrBlock: "192.168.64.0/19",
       Tags: [
         {
           Key: "kubernetes.io/role/internal-elb",
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",
@@ -69,10 +71,9 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "SubnetPublicUSEAST1D",
+    name: "VPC::SubnetPublicUSEAST1D",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
-      CidrBlock: "192.168.32.0/19",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -80,6 +81,8 @@ exports.createResources = () => [
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",
@@ -88,10 +91,9 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "SubnetPublicUSEAST1F",
+    name: "VPC::SubnetPublicUSEAST1F",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}f`,
-      CidrBlock: "192.168.0.0/19",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -99,6 +101,8 @@ exports.createResources = () => [
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",
@@ -107,7 +111,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "PrivateRouteTableUSEAST1D",
+    name: "VPC::PrivateRouteTableUSEAST1D",
     dependencies: ({}) => ({
       vpc: "VPC",
     }),
@@ -115,7 +119,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "PrivateRouteTableUSEAST1F",
+    name: "VPC::PrivateRouteTableUSEAST1F",
     dependencies: ({}) => ({
       vpc: "VPC",
     }),
@@ -123,7 +127,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "PublicRouteTable",
+    name: "VPC::PublicRouteTable",
     dependencies: ({}) => ({
       vpc: "VPC",
     }),
@@ -132,32 +136,32 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1D",
-      subnet: "SubnetPrivateUSEAST1D",
+      routeTable: "VPC::PrivateRouteTableUSEAST1D",
+      subnet: "VPC::SubnetPrivateUSEAST1D",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1F",
-      subnet: "SubnetPrivateUSEAST1F",
+      routeTable: "VPC::PrivateRouteTableUSEAST1F",
+      subnet: "VPC::SubnetPrivateUSEAST1F",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "PublicRouteTable",
-      subnet: "SubnetPublicUSEAST1D",
+      routeTable: "VPC::PublicRouteTable",
+      subnet: "VPC::SubnetPublicUSEAST1D",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "PublicRouteTable",
-      subnet: "SubnetPublicUSEAST1F",
+      routeTable: "VPC::PublicRouteTable",
+      subnet: "VPC::SubnetPublicUSEAST1F",
     }),
   },
   {
@@ -167,7 +171,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1D",
+      routeTable: "VPC::PrivateRouteTableUSEAST1D",
       natGateway: "NATGateway",
     }),
   },
@@ -178,7 +182,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "PrivateRouteTableUSEAST1F",
+      routeTable: "VPC::PrivateRouteTableUSEAST1F",
       natGateway: "NATGateway",
     }),
   },
@@ -189,7 +193,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "PublicRouteTable",
+      routeTable: "VPC::PublicRouteTable",
       ig: "InternetGateway",
     }),
   },
@@ -293,10 +297,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       subnets: [
-        "SubnetPrivateUSEAST1D",
-        "SubnetPrivateUSEAST1F",
-        "SubnetPublicUSEAST1D",
-        "SubnetPublicUSEAST1F",
+        "VPC::SubnetPrivateUSEAST1D",
+        "VPC::SubnetPrivateUSEAST1F",
+        "VPC::SubnetPublicUSEAST1D",
+        "VPC::SubnetPublicUSEAST1F",
       ],
       securityGroups: ["sg::VPC::ControlPlaneSecurityGroup"],
       role: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
@@ -323,7 +327,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       cluster: "my-cluster",
-      subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
+      subnets: ["VPC::SubnetPublicUSEAST1D", "VPC::SubnetPublicUSEAST1F"],
       role: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
       launchTemplate: "eksctl-my-cluster-nodegroup-ng-1",
     }),

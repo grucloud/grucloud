@@ -19,7 +19,8 @@ exports.createResources = () => [
     name: ({ config }) => `spoke-A-vpc::subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.128.0/20",
+      NewBits: 4,
+      NetworkNumber: 8,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-A-vpc",
@@ -31,7 +32,8 @@ exports.createResources = () => [
     name: ({ config }) => `spoke-A-vpc::subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.144.0/20",
+      NewBits: 4,
+      NetworkNumber: 9,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-A-vpc",

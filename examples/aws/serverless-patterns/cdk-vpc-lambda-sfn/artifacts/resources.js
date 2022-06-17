@@ -452,8 +452,9 @@ exports.createResources = () => [
                   "ec2:AssignPrivateIpAddresses",
                   "ec2:UnassignPrivateIpAddresses",
                 ],
-                Resource: `arn:aws:lambda:${config.region
-                  }:${config.accountId()}:function:test-lambdaFunction`,
+                Resource: `arn:aws:lambda:${
+                  config.region
+                }:${config.accountId()}:function:test-lambdaFunction`,
                 Effect: "Allow",
               },
             ],
@@ -514,9 +515,11 @@ exports.createResources = () => [
               {
                 Action: "lambda:InvokeFunction",
                 Resource: [
-                  `arn:aws:lambda:${config.region
+                  `arn:aws:lambda:${
+                    config.region
                   }:${config.accountId()}:function:test-lambdaFunction`,
-                  `arn:aws:lambda:${config.region
+                  `arn:aws:lambda:${
+                    config.region
                   }:${config.accountId()}:function:test-lambdaFunction:*`,
                 ],
                 Effect: "Allow",
@@ -589,8 +592,9 @@ exports.createResources = () => [
             OutputPath: "$.Payload",
             Resource: `arn:aws:states:::lambda:invoke`,
             Parameters: {
-              FunctionName: `arn:aws:lambda:${config.region
-                }:${config.accountId()}:function:test-lambdaFunction`,
+              FunctionName: `arn:aws:lambda:${
+                config.region
+              }:${config.accountId()}:function:test-lambdaFunction`,
               "Payload.$": "$",
             },
           },
