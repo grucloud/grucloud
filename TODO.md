@@ -5,8 +5,6 @@
 ## Aws
 
 - createOrganizationalUnit
-- ✖ NetworkFirewall::Firewall 0/1 Unable to fulfill request because the following related VPC endpoint(s) still exist in route table(s): [vpce-0396a59e10c894b36]
-
 - getById use map instead of find
 - HostedZone Config Comment
 - user tags for ec2 instance

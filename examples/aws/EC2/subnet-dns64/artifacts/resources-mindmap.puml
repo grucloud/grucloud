@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project subnet-dns64
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Subnet (1)
+++++ Vpc (1)
+@endmindmap

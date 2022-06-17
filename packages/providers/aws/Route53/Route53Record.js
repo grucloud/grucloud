@@ -638,8 +638,6 @@ exports.Route53Record = ({ spec, config }) => {
         }),
       tap.if(isEmpty, () => {
         logger.error(`missing hostedZone ${live.HostedZoneId} in cache`);
-        logger.error(lives.json);
-        //assert(hostedZone);
       }),
       get("managedByUs"),
       tap((params) => {
