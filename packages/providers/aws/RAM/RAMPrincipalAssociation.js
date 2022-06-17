@@ -1,9 +1,30 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, filter, not, map } = require("rubico");
-const { defaultsDeep, first } = require("rubico/x");
+const { pipe, tap, get, assign, eq, filter, not, map } = require("rubico");
+const {
+  defaultsDeep,
+  first,
+  isEmpty,
+  when,
+  prepend,
+  find,
+  keys,
+} = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
+
+const PrincipalAssociationDependencies = {
+  organisation: { type: "Organisation", group: "Organisations", arnKey: "Arn" },
+  organisationalUnit: {
+    type: "OrganisationalUnit",
+    group: "Organisations",
+    arnKey: "Arn",
+  },
+  user: { type: "User", group: "IAM", arnKey: "Arn" },
+  group: { type: "Group", group: "IAM", arnKey: "Arn" },
+};
+
+exports.PrincipalAssociationDependencies = PrincipalAssociationDependencies;
 
 const model = ({ config }) => ({
   package: "ram",
@@ -73,34 +94,92 @@ exports.RAMPrincipalAssociation = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([
-      get("live"),
-      ({ resourceShareName, associatedEntity }) =>
-        `ram-principal-assoc::${resourceShareName}::${associatedEntity}`,
-    ]),
+    findName: ({ live, lives }) =>
+      pipe([
+        tap(() => {
+          assert(live.associatedEntity);
+        }),
+        () =>
+          lives.getByType({
+            type: "Organisation",
+            group: "Organisations",
+          }),
+        tap((params) => {
+          assert(true);
+        }),
+        find(eq(get("live.Arn"), live.associatedEntity)),
+        get("name"),
+        tap((params) => {
+          assert(true);
+        }),
+        when(
+          isEmpty,
+          pipe([
+            () =>
+              lives.getById({
+                id: live.associatedEntity,
+                type: "User",
+                group: "IAM",
+              }),
+            get("name"),
+          ])
+        ),
+        when(isEmpty, () => live.associatedEntity),
+        prepend(`ram-principal-assoc::${live.resourceShareName}::`),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
     findId: pipe([
       get("live"),
       ({ resourceShareArn, associatedEntity }) =>
         `${resourceShareArn}::${associatedEntity}`,
     ]),
-    findDependencies: ({ live }) => [
+    findDependencies: ({ live, lives }) => [
       {
         type: "ResourceShare",
         group: "RAM",
         ids: [live.resourceShareArn],
       },
+      {
+        type: "Organisation",
+        group: "Organisations",
+        ids: [
+          pipe([
+            tap((params) => {
+              assert(live.associatedEntity);
+            }),
+            () =>
+              lives.getByType({
+                type: "Organisation",
+                group: "Organisations",
+              }),
+            tap((params) => {
+              assert(true);
+            }),
+            find(eq(get("live.Arn"), live.associatedEntity)),
+            get("id"),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
+        ],
+      },
     ],
     getByName: ({ getList, endpoint }) =>
       pipe([
-        ({ name }) => ({ name, resourceShareStatus: "ACTIVE" }),
+        ({ name }) => ({ params: { name, resourceShareStatus: "ACTIVE" } }),
         getList,
+        tap((params) => {
+          assert(true);
+        }),
         first,
       ]),
     configDefault: ({
       name,
       namespace,
       properties: { ...otheProps },
-      dependencies: { resourceShare },
+      dependencies: { resourceShare, ...principalDependencies },
     }) =>
       pipe([
         tap((params) => {
@@ -110,5 +189,20 @@ exports.RAMPrincipalAssociation = ({ spec, config }) =>
         defaultsDeep({
           resourceShareArn: getField(resourceShare, "resourceShareArn"),
         }),
+        when(
+          () => !isEmpty(principalDependencies),
+          assign({
+            associatedEntity: pipe([
+              () => principalDependencies,
+              keys,
+              first,
+              (depKey) =>
+                getField(
+                  principalDependencies[depKey],
+                  PrincipalAssociationDependencies[depKey].arnKey || "Arn"
+                ),
+            ]),
+          })
+        ),
       ])(),
   });

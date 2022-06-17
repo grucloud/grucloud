@@ -43,7 +43,7 @@ exports.AwsIamUser = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
 
-  const findId = get("live.UserName");
+  const findId = get("live.Arn");
   const pickId = pick(["UserName"]);
   const findName = findNameInTagsOrId({ findId });
 
