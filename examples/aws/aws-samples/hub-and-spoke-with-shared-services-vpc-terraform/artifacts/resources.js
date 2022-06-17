@@ -114,7 +114,8 @@ exports.createResources = () => [
     name: ({ config }) => `shared-services-vpc::private-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.50.0/26",
+      NewBits: 2,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "shared-services-vpc",
@@ -126,7 +127,8 @@ exports.createResources = () => [
     name: ({ config }) => `shared-services-vpc::private-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.50.64/26",
+      NewBits: 2,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "shared-services-vpc",
@@ -138,7 +140,8 @@ exports.createResources = () => [
     name: ({ config }) => `shared-services-vpc::tgw-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.50.192/28",
+      NewBits: 4,
+      NetworkNumber: 12,
     }),
     dependencies: ({}) => ({
       vpc: "shared-services-vpc",
@@ -150,7 +153,8 @@ exports.createResources = () => [
     name: ({ config }) => `shared-services-vpc::tgw-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.50.208/28",
+      NewBits: 4,
+      NetworkNumber: 13,
     }),
     dependencies: ({}) => ({
       vpc: "shared-services-vpc",
@@ -162,7 +166,8 @@ exports.createResources = () => [
     name: ({ config }) => `spoke-vpc-1::private-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/26",
+      NewBits: 2,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -174,7 +179,8 @@ exports.createResources = () => [
     name: ({ config }) => `spoke-vpc-1::tgw-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.192/28",
+      NewBits: 4,
+      NetworkNumber: 12,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -186,7 +192,8 @@ exports.createResources = () => [
     name: ({ config }) => `spoke-vpc-2::private-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.1.0/26",
+      NewBits: 2,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -198,7 +205,8 @@ exports.createResources = () => [
     name: ({ config }) => `spoke-vpc-2::tgw-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.1.192/28",
+      NewBits: 4,
+      NetworkNumber: 12,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -1243,20 +1251,6 @@ exports.createResources = () => [
           },
         ],
       },
-      Tags: [
-        {
-          TagKey: "Project",
-          TagValue: "Hub and Spoke - Shared Services VPC",
-        },
-        {
-          TagKey: "Region",
-          TagValue: "eu-west-2",
-        },
-        {
-          TagKey: "Terraform",
-          TagValue: "Managed",
-        },
-      ],
     }),
   },
   {

@@ -2748,34 +2748,34 @@ exports.createResources = () => [
   {
     type: "PrincipalAssociation",
     group: "RAM",
-    properties: ({ config }) => ({
-      associatedEntity: config.organisationManagement,
+    properties: ({}) => ({
       external: false,
     }),
     dependencies: ({}) => ({
       resourceShare: "ipam-org-share",
+      organisation: "frederic.heem@gmail.com",
     }),
   },
   {
     type: "PrincipalAssociation",
     group: "RAM",
-    properties: ({ config }) => ({
-      associatedEntity: config.organisationManagement,
+    properties: ({}) => ({
       external: false,
     }),
     dependencies: ({}) => ({
       resourceShare: "r53r-org-share",
+      organisation: "frederic.heem@gmail.com",
     }),
   },
   {
     type: "PrincipalAssociation",
     group: "RAM",
-    properties: ({ config }) => ({
-      associatedEntity: config.organisationManagement,
+    properties: ({}) => ({
       external: false,
     }),
     dependencies: ({}) => ({
       resourceShare: "tgw-org-share",
+      organisation: "frederic.heem@gmail.com",
     }),
   },
   {
@@ -3299,11 +3299,12 @@ exports.createResources = () => [
   {
     type: "Parameter",
     group: "SSM",
-    name: "/ipam/pool/id",
     properties: ({}) => ({
+      Name: "/ipam/pool/id",
       Type: "SecureString",
-      Value:
-        "AQICAHhJJMncH+TIYM7GK7Cq/fhSOk3Vbs7m3Qyu22OfOmlMigGYPNK0/hbW+XA8okypTAnlAAAAeTB3BgkqhkiG9w0BBwagajBoAgEAMGMGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM5NC0vK1oqz1MHvtmAgEQgDZ5221UNJFckxQuPcggXarwFekvao14bC0P3Kn4llK10S39oFPT53KccU14lHvW3dIKAPUViiM=",
+      Value: "ipam-pool-0ff6398af005e18f2",
+      Description:
+        "IPAM pool ID in central account for corresponding enviornment",
       DataType: "text",
     }),
   },

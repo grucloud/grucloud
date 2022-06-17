@@ -107,22 +107,6 @@ exports.createResources = () => [
   {
     type: "Record",
     group: "Route53",
-    dependencies: ({}) => ({
-      hostedZone: "grucloud.org.",
-      certificate: "grucloud.org",
-    }),
-  },
-  {
-    type: "Record",
-    group: "Route53",
-    dependencies: ({}) => ({
-      hostedZone: "grucloud.org.",
-      userPoolDomain: "auth.grucloud.org",
-    }),
-  },
-  {
-    type: "Record",
-    group: "Route53",
     properties: ({}) => ({
       Name: "grucloud.org.",
       Type: "A",
@@ -135,6 +119,22 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
+    }),
+  },
+  {
+    type: "Record",
+    group: "Route53",
+    dependencies: ({}) => ({
+      hostedZone: "grucloud.org.",
+      certificate: "grucloud.org",
+    }),
+  },
+  {
+    type: "Record",
+    group: "Route53",
+    dependencies: ({}) => ({
+      hostedZone: "grucloud.org.",
+      userPoolDomain: "auth.grucloud.org",
     }),
   },
   {

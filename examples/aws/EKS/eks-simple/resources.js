@@ -123,7 +123,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "PublicRouteTable",
+    name: "VPC::PublicRouteTable",
     dependencies: ({}) => ({
       vpc: "VPC",
     }),
@@ -148,7 +148,7 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "PublicRouteTable",
+      routeTable: "VPC::PublicRouteTable",
       subnet: "VPC::SubnetPublicUSEAST1D",
     }),
   },
@@ -156,7 +156,7 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "PublicRouteTable",
+      routeTable: "VPC::PublicRouteTable",
       subnet: "VPC::SubnetPublicUSEAST1F",
     }),
   },
@@ -189,7 +189,7 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "PublicRouteTable",
+      routeTable: "VPC::PublicRouteTable",
       ig: "InternetGateway",
     }),
   },

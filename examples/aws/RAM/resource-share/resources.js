@@ -102,20 +102,6 @@ exports.createResources = () => [
     type: "PrincipalAssociation",
     group: "RAM",
     properties: ({}) => ({
-      associatedEntity:
-        "arn:aws:organizations::840541460064:ou/o-xs8pjirjbw/ou-941x-2jykk4xi",
-      external: false,
-    }),
-    dependencies: ({}) => ({
-      resourceShare: "my-share",
-    }),
-  },
-  {
-    type: "PrincipalAssociation",
-    group: "RAM",
-    properties: ({}) => ({
-      associatedEntity:
-        "arn:aws:organizations::840541460064:organization/o-xs8pjirjbw",
       external: false,
     }),
     dependencies: ({}) => ({

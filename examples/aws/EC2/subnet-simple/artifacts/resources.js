@@ -17,13 +17,14 @@ exports.createResources = () => [
     name: "vpc::subnet-a",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "192.168.0.0/16",
       Tags: [
         {
           Key: "mykey",
           Value: "myvalue",
         },
       ],
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "vpc",

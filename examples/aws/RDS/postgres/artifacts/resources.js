@@ -35,7 +35,8 @@ exports.createResources = () => [
     name: "vpc-postgres::subnet-1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "192.168.0.0/19",
+      NewBits: 3,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-postgres",
@@ -47,7 +48,8 @@ exports.createResources = () => [
     name: "vpc-postgres::subnet-2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "192.168.32.0/19",
+      NewBits: 3,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-postgres",

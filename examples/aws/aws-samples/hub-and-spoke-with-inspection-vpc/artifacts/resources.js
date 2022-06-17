@@ -78,7 +78,8 @@ exports.createResources = () => [
       `inspection-vpc::inspection-vpc-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.129.200.0/24",
+      NewBits: 8,
+      NetworkNumber: 200,
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -91,7 +92,8 @@ exports.createResources = () => [
       `inspection-vpc::inspection-vpc-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.129.201.0/24",
+      NewBits: 8,
+      NetworkNumber: 201,
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -104,7 +106,8 @@ exports.createResources = () => [
       `inspection-vpc::inspection-vpc-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.129.202.0/24",
+      NewBits: 8,
+      NetworkNumber: 202,
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -117,7 +120,8 @@ exports.createResources = () => [
       `inspection-vpc::inspection-vpc-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.129.1.0/24",
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -130,7 +134,8 @@ exports.createResources = () => [
       `inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.129.2.0/24",
+      NewBits: 8,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -143,7 +148,8 @@ exports.createResources = () => [
       `inspection-vpc::inspection-vpc-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.129.3.0/24",
+      NewBits: 8,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -156,7 +162,8 @@ exports.createResources = () => [
       `inspection-vpc::inspection-vpc-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.129.129.0/24",
+      NewBits: 8,
+      NetworkNumber: 129,
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -169,7 +176,8 @@ exports.createResources = () => [
       `inspection-vpc::inspection-vpc-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.129.130.0/24",
+      NewBits: 8,
+      NetworkNumber: 130,
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -182,7 +190,8 @@ exports.createResources = () => [
       `inspection-vpc::inspection-vpc-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.129.131.0/24",
+      NewBits: 8,
+      NetworkNumber: 131,
     }),
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
@@ -195,7 +204,8 @@ exports.createResources = () => [
       `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.11.200.0/24",
+      NewBits: 8,
+      NetworkNumber: 200,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -208,7 +218,8 @@ exports.createResources = () => [
       `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.11.201.0/24",
+      NewBits: 8,
+      NetworkNumber: 201,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -221,7 +232,8 @@ exports.createResources = () => [
       `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.11.202.0/24",
+      NewBits: 8,
+      NetworkNumber: 202,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -234,7 +246,8 @@ exports.createResources = () => [
       `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.11.1.0/24",
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -247,7 +260,8 @@ exports.createResources = () => [
       `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.11.2.0/24",
+      NewBits: 8,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -260,7 +274,8 @@ exports.createResources = () => [
       `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.11.3.0/24",
+      NewBits: 8,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -273,7 +288,8 @@ exports.createResources = () => [
       `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.11.129.0/24",
+      NewBits: 8,
+      NetworkNumber: 129,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -286,7 +302,8 @@ exports.createResources = () => [
       `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.11.130.0/24",
+      NewBits: 8,
+      NetworkNumber: 130,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -299,7 +316,8 @@ exports.createResources = () => [
       `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.11.131.0/24",
+      NewBits: 8,
+      NetworkNumber: 131,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
@@ -312,7 +330,8 @@ exports.createResources = () => [
       `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.12.200.0/24",
+      NewBits: 8,
+      NetworkNumber: 200,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -325,7 +344,8 @@ exports.createResources = () => [
       `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.12.201.0/24",
+      NewBits: 8,
+      NetworkNumber: 201,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -338,7 +358,8 @@ exports.createResources = () => [
       `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.12.202.0/24",
+      NewBits: 8,
+      NetworkNumber: 202,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -351,7 +372,8 @@ exports.createResources = () => [
       `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.12.1.0/24",
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -364,7 +386,8 @@ exports.createResources = () => [
       `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.12.2.0/24",
+      NewBits: 8,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -377,7 +400,8 @@ exports.createResources = () => [
       `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.12.3.0/24",
+      NewBits: 8,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -390,7 +414,8 @@ exports.createResources = () => [
       `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.12.129.0/24",
+      NewBits: 8,
+      NetworkNumber: 129,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -403,7 +428,8 @@ exports.createResources = () => [
       `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.12.130.0/24",
+      NewBits: 8,
+      NetworkNumber: 130,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
@@ -416,7 +442,8 @@ exports.createResources = () => [
       `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.12.131.0/24",
+      NewBits: 8,
+      NetworkNumber: 131,
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
