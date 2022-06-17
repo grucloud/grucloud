@@ -78,10 +78,18 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateRouteTable-property
-  const create = ({ payload, name, dependencies, lives }) =>
+  const create = ({
+    payload,
+    name,
+    dependencies,
+    lives,
+    resolvedDependencies,
+  }) =>
     pipe([
       tap(() => {
-        logger.info(`create associateRouteTable ${tos({ payload })}`);
+        logger.info(
+          `create associateRouteTable ${JSON.stringify({ payload })}`
+        );
       }),
       () => payload,
       ec2().associateRouteTable,
@@ -93,7 +101,7 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
         retryCall({
           name: `create rt assoc: ${name}`,
           fn: pipe([
-            () => ({ lives }),
+            () => ({ lives, resolvedDependencies }),
             dependencies().routeTable.getLive,
             tap((params) => {
               assert(true);

@@ -267,9 +267,9 @@ const findDependsOnInstance = ({ uri, plans, dependsOnInstance }) =>
       ])()
     ),
     tap((dependsOn) => {
-      logger.debug(
-        `findDependsOnInstance: ${JSON.stringify({ uri, dependsOn })}`
-      );
+      // logger.debug(
+      //   `findDependsOnInstance: ${JSON.stringify({ uri, dependsOn })}`
+      // );
     }),
   ])();
 
