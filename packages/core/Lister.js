@@ -158,7 +158,7 @@ exports.Lister =
           tap.if(isEmpty, () => {
             //assert(false, `all resources has dependsOn, plan: ${tos({ inputs })}`);
           }),
-          forEach(runItem({ onEnd, inputsFiltered })),
+          map.pool(40, runItem({ onEnd, inputsFiltered })),
           () => inputs,
           map(({ key }) => resultMap.get(key)),
           fork({ error: any(get("error")), results: identity }),

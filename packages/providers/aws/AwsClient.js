@@ -161,7 +161,6 @@ const AwsClient =
       ({ lives, params = {} } = {}) =>
         pipe([
           tap(() => {
-            logger.info(`getList ${groupType}, method: ${method}`);
             assert(method);
             assert(getParam);
             //assert(isFunction(endpoint()[method]));
@@ -171,7 +170,9 @@ const AwsClient =
           defaultsDeep(enhanceParams()()),
           tap((params) => {
             logger.debug(
-              `getList ${groupType}, params: ${JSON.stringify(params)}`
+              `getList ${groupType}, method: ${method}, params: ${JSON.stringify(
+                params
+              )}`
             );
           }),
           async (params) => {

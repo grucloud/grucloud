@@ -41,7 +41,11 @@ const liveToResourceSet = pipe([omitFieldRecord, filterEmptyResourceRecords]);
 
 const findId = pipe([get("live"), buildRecordName]);
 
-const getHostedZone = ({ resource: { name, dependencies }, lives }) =>
+const getHostedZone = ({
+  resource: { name, dependencies },
+  lives,
+  resolvedDependencies,
+}) =>
   pipe([
     tap(() => {
       assert(dependencies);
@@ -58,7 +62,7 @@ const getHostedZone = ({ resource: { name, dependencies }, lives }) =>
         };
       },
       pipe([
-        (hostedZone) => hostedZone.getLive({ lives }),
+        (hostedZone) => hostedZone.getLive({ lives, resolvedDependencies }),
         tap((live) => {
           logger.debug(`getHostedZone live ${tos(live)}`);
         }),
@@ -326,7 +330,12 @@ exports.Route53Record = ({ spec, config }) => {
           tap(() => {
             logger.debug(`getByName recordName ${targetRecordName}`);
           }),
-          () => getHostedZone({ resource: { dependencies, name }, lives }),
+          () =>
+            getHostedZone({
+              resource: { dependencies, name },
+              lives,
+              resolvedDependencies,
+            }),
           tap((params) => {
             assert(targetRecordName);
           }),
@@ -629,8 +638,6 @@ exports.Route53Record = ({ spec, config }) => {
         }),
       tap.if(isEmpty, () => {
         logger.error(`missing hostedZone ${live.HostedZoneId} in cache`);
-        logger.error(lives.json);
-        //assert(hostedZone);
       }),
       get("managedByUs"),
       tap((params) => {

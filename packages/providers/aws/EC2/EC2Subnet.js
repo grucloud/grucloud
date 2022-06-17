@@ -27,7 +27,7 @@ const {
   find,
 } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "AwsSubnet" });
+const logger = require("@grucloud/core/logger")({ prefix: "EC2Subnet" });
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -58,6 +58,7 @@ const SubnetAttributes = [
   "MapCustomerOwnedIpOnLaunch",
   "MapPublicIpOnLaunch",
   "AssignIpv6AddressOnCreation",
+  "EnableDns64"
 ];
 
 const omitAssignIpv6AddressOnCreationIfIpv6Native = when(
@@ -247,7 +248,7 @@ exports.EC2Subnet = ({ spec, config }) => {
     pipe([
       tap(() => {
         logger.info(`update subnet: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
+        //logger.debug(tos({ payload, diff }));
       }),
       () => diff.liveDiff.updated,
       modifySubnetAttribute({ SubnetId: live.SubnetId }),

@@ -12,12 +12,11 @@ const {
   pick,
   fork,
 } = require("rubico");
-const { defaultsDeep, prepend, callProp, last } = require("rubico/x");
+const { defaultsDeep, first, callProp, last } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EC2RouteTable" });
 const { tos } = require("@grucloud/core/tos");
 const { getByIdCore, buildTags } = require("../AwsCommon");
-const { getByNameCore } = require("@grucloud/core/Common");
 const { findNameInTagsOrId, findNamespaceInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -32,9 +31,8 @@ const {
 const extractRouteTableName = pipe([callProp("split", "::"), last]);
 
 exports.EC2RouteTable = ({ spec, config }) => {
-  const ec2 = createEC2(config);
-  const client = AwsClient({ spec, config })(ec2);
-  const { providerName } = config;
+  const endpoint = createEC2(config);
+  const client = AwsClient({ spec, config })(endpoint);
 
   const findId = get("live.RouteTableId");
   const pickId = pick(["RouteTableId"]);
@@ -55,7 +53,10 @@ exports.EC2RouteTable = ({ spec, config }) => {
             }),
           get("name"),
           tap((name) => {
-            assert(name, "no vpc name in route table");
+            assert(
+              name,
+              `no vpc name in route table id ${live.RouteTableId}, VpcId: ${live.VpcId}`
+            );
           }),
         ])(),
       rtbName: switchCase([
@@ -88,7 +89,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
               RouteTableId: live.RouteTableId,
               DestinationCidrBlock: DestinationCidrBlock,
             }),
-            ec2().deleteRoute,
+            endpoint().deleteRoute,
           ]),
           (error, Route) =>
             pipe([
@@ -116,7 +117,41 @@ exports.EC2RouteTable = ({ spec, config }) => {
       ]),
   });
 
-  const getByName = getByNameCore({ getList, findName });
+  const getByName = ({ name, isDefault, resolvedDependencies }) =>
+    pipe([
+      tap((params) => {
+        assert(resolvedDependencies);
+      }),
+      () => resolvedDependencies,
+      switchCase([
+        get("vpc"),
+        get("vpc.live.VpcId"),
+        get("routeTable"),
+        get("routeTable.live.VpcId"),
+        () => {
+          assert(false, "no vpc or route table dependencies");
+        },
+      ]),
+      tap((VpcId) => {
+        assert(VpcId);
+      }),
+      fork({
+        filterName: switchCase([
+          () => isDefault,
+          () => ({ Name: "association.main", Values: [true] }),
+          () => ({ Name: "tag:Name", Values: [extractRouteTableName(name)] }),
+        ]),
+        filterVpc: (VpcId) => ({
+          Name: "vpc-id",
+          Values: [VpcId],
+        }),
+      }),
+      ({ filterName, filterVpc }) => ({ Filters: [filterName, filterVpc] }),
+      endpoint().describeRouteTables,
+      get("RouteTables"),
+      first,
+    ])();
+
   const getById = pipe([
     ({ RouteTableId }) => ({ id: RouteTableId }),
     getByIdCore({ fieldIds: "RouteTableIds", getList }),
@@ -182,7 +217,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    tagResource: tagResource({ endpoint: ec2 }),
-    untagResource: untagResource({ endpoint: ec2 }),
+    tagResource: tagResource({ endpoint }),
+    untagResource: untagResource({ endpoint }),
   };
 };

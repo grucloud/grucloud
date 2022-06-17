@@ -106,7 +106,7 @@ const ruleDefaultToName =
       //   })(IpPermission)
       // ),
       tap((name) => {
-        logger.debug(`rule name: ${name}`);
+        //logger.debug(`rule name: ${name}`);
       }),
     ])();
 

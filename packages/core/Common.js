@@ -284,7 +284,7 @@ exports.getByNameCore =
       ), //TODO check on meta
       tap((instance) => {
         logger.info(`getByNameCore ${name}: ${instance ? "UP" : "DOWN"}`);
-        logger.debug(`getByNameCore ${name}: ${tos({ instance })}`);
+        //logger.debug(`getByNameCore ${name}: ${tos({ instance })}`);
       }),
     ])();
 

@@ -416,7 +416,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
               ResourceRecordSet: filterEmptyResourceRecords(ResourceRecordSet),
             })),
             tap((Changes) => {
-              logger.debug(`destroy ${tos(Changes)}`);
+              //logger.debug(`destroy ${tos(Changes)}`);
             }),
             tap.if(not(isEmpty), (Changes) =>
               route53().changeResourceRecordSets({

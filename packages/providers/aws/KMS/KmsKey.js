@@ -155,7 +155,7 @@ exports.KmsKey = ({ spec, config }) => {
     pipe([
       tap(() => {
         logger.info(`key update: ${name}`);
-        logger.debug(tos({ payload, diff, live }));
+        //logger.debug(tos({ payload, diff, live }));
       }),
       () => live,
       tap.if(

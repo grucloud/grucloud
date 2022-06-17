@@ -179,6 +179,9 @@ exports.ResourceMaker = ({
 
   const getLive = ({ deep = true, options = {}, resolvedDependencies } = {}) =>
     pipe([
+      tap((params) => {
+        assert(resolvedDependencies);
+      }),
       tap(() => {
         logger.info(`getLive ${toString()}, deep: ${deep}`);
       }),
@@ -197,6 +200,7 @@ exports.ResourceMaker = ({
           resources: provider.getResourcesByType(spec),
           lives: provider.lives,
           config: provider.config,
+          isDefault,
         }),
       unless(
         or([isEmpty, () => isEmpty(provider.lives)]),
