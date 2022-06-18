@@ -180,7 +180,7 @@ exports.ResourceMaker = ({
   const getLive = ({ deep = true, options = {}, resolvedDependencies } = {}) =>
     pipe([
       tap((params) => {
-        assert(resolvedDependencies);
+        //assert(resolvedDependencies);
       }),
       tap(() => {
         logger.info(`getLive ${toString()}, deep: ${deep}`);
