@@ -5,6 +5,8 @@
 ## Aws
 
 - createOrganizationalUnit
+
+- lives get error
 - getById use map instead of find
 - HostedZone Config Comment
 - user tags for ec2 instance

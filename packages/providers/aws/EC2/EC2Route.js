@@ -92,13 +92,7 @@ exports.EC2Route = ({ spec, config }) => {
                 providerName: config.providerName,
                 id: live.GatewayId,
               }),
-            get("name"),
-            tap((name) => {
-              assert(
-                name,
-                `no id for VpcEndpoint: ${live.GatewayId}, provider: ${config.providerName}`
-              );
-            }),
+            get("name", live.GatewayId),
             prepend(`${rt}-`),
           ])(),
         // Transit Gateway

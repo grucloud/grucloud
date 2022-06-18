@@ -274,13 +274,13 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           PolicyArn,
         }),
       tap((result) => {
-        logger.debug(`listEntitiesForPolicy ${tos(result)}`);
+        //logger.debug(`listEntitiesForPolicy ${tos(result)}`);
       }),
       fork({
         PolicyUsers: pipe([
           get("PolicyUsers"),
           tap((policyUsers) => {
-            logger.debug(`destroy detachUserPolicy ${tos(policyUsers)}`);
+            //logger.debug(`destroy detachUserPolicy ${tos(policyUsers)}`);
           }),
           map(({ UserName }) =>
             iam().detachUserPolicy({
@@ -292,7 +292,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         PolicyGroups: pipe([
           get("PolicyGroups"),
           tap((policyGroups) => {
-            logger.debug(`destroy detachGroupPolicy ${tos(policyGroups)}`);
+            //logger.debug(`destroy detachGroupPolicy ${tos(policyGroups)}`);
           }),
           map(({ GroupName }) =>
             iam().detachGroupPolicy({
@@ -304,7 +304,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         PolicyRoles: pipe([
           get("PolicyRoles"),
           tap((policyRoles) => {
-            logger.debug(`destroy detachRolePolicy ${tos(policyRoles)}`);
+            //logger.debug(`destroy detachRolePolicy ${tos(policyRoles)}`);
           }),
           map(({ RoleName }) =>
             iam().detachRolePolicy({
