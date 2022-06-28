@@ -27,6 +27,7 @@ const {
   isFunction,
   unless,
 } = require("rubico/x");
+const { memoize } = require("lodash");
 const util = require("util");
 const logger = require("./logger")({ prefix: "Client" });
 const { tos } = require("./tos");
@@ -98,28 +99,33 @@ const decorateLive =
       (resource) => ({
         ...resource,
         get name() {
-          return pipe([
-            () => client.findName({ live, lives, config }),
-            tap((name) => {
-              if (!isString(name)) {
-                logger.error(`no name in ${tos(live)}`);
-                assert(false, `no name in ${tos(live)}`);
-              }
-            }),
-          ])();
+          return memoize(
+            pipe([
+              () => ({ live, lives, config }),
+              client.findName,
+              tap((name) => {
+                if (!isString(name)) {
+                  logger.error(`no name in ${tos(live)}`);
+                  assert(false, `no name in ${tos(live)}`);
+                }
+              }),
+            ])
+          )();
         },
         get id() {
-          return pipe([
-            () => client.findId({ live, lives, config }),
-            tap((id) => {
-              if (!isString(id)) {
-                assert(
-                  isString(id),
-                  `no id in live: ${JSON.stringify(live, null, 4)}`
-                );
-              }
-            }),
-          ])();
+          return memoize(
+            pipe([
+              () => client.findId({ live, lives, config }),
+              tap((id) => {
+                if (!isString(id)) {
+                  assert(
+                    isString(id),
+                    `no id in live: ${JSON.stringify(live, null, 4)}`
+                  );
+                }
+              }),
+            ])
+          )();
         },
         get meta() {
           return client.findMeta({ live, lives, config });
@@ -137,36 +143,38 @@ const decorateLive =
           return client.spec.displayResource({ lives, config })(live);
         },
         get dependencies() {
-          return pipe([
-            () =>
-              client.findDependencies({
-                live,
-                lives,
-                config,
+          return memoize(
+            pipe([
+              () =>
+                client.findDependencies({
+                  live,
+                  lives,
+                  config,
+                }),
+              tap((ids) => {
+                assert(Array.isArray(ids));
               }),
-            tap((ids) => {
-              assert(Array.isArray(ids));
-            }),
-            filter(not(isEmpty)),
-            map(
-              pipe([
-                tap(({ type, group }) => {
-                  if (!type) {
-                    assert(type);
-                  }
-                  //assert(group);
-                }),
-                assign({
-                  providerName: () => client.spec.providerName,
-                  groupType: buildGroupType,
-                  ids: pipe([get("ids", []), filter(not(isEmpty)), uniq]),
-                }),
-              ])
-            ),
-            tap((params) => {
-              assert(true);
-            }),
-          ])();
+              filter(not(isEmpty)),
+              map(
+                pipe([
+                  tap(({ type, group }) => {
+                    if (!type) {
+                      assert(type);
+                    }
+                    //assert(group);
+                  }),
+                  assign({
+                    providerName: () => client.spec.providerName,
+                    groupType: buildGroupType,
+                    ids: pipe([get("ids", []), filter(not(isEmpty)), uniq]),
+                  }),
+                ])
+              ),
+              tap((params) => {
+                assert(true);
+              }),
+            ])
+          )();
         },
       }),
       tap((resource) =>

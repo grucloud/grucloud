@@ -1,6 +1,6 @@
 ---
-id: UserPoolClient
-title: User Pool Client
+id: UserPoolDomain
+title: User Pool Domain
 ---
 
 Manages a [Cognito User Pool Domain](https://console.aws.amazon.com/cognito/v2/idp/user-pools).

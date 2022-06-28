@@ -155,7 +155,7 @@ const authorize = async ({
 
   return pipe([
     () => fs.readFile(applicationCredentialsFile, "utf-8"),
-    (content) => JSON.parse(content),
+    JSON.parse,
     tap((keys) => {
       logger.info(
         `authorize with email: ${keys.client_email}, keyId: ${keys.private_key_id}`
@@ -1103,7 +1103,9 @@ exports.GoogleProvider = ({
   ...other
 }) => {
   const gcloudConfig = getConfig();
-
+  if (gcloudConfig.error) {
+    throw Error(gcloudConfig.error.stderr);
+  }
   const mergeConfig = ({ config, configs }) =>
     pipe([
       () => [...configs, config],
@@ -1133,6 +1135,7 @@ exports.GoogleProvider = ({
             () => gcloudConfig,
             get("config.properties.compute", {}),
             pick(["region", "zone"]),
+            map(get("value")),
             defaultsDeep(config),
           ])(),
       ]),
@@ -1161,7 +1164,6 @@ exports.GoogleProvider = ({
     if (!serviceAccountAccessToken) {
       serviceAccountAccessToken = await authorize({
         gcloudConfig,
-
         projectId: projectId(),
         projectName: projectName(),
         applicationCredentialsFile,

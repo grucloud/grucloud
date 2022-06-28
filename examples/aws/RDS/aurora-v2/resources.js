@@ -42,8 +42,9 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `pg-vpc::pg-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.128.0/20",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
     }),
     dependencies: ({}) => ({
       vpc: "pg-vpc",
@@ -54,8 +55,9 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `pg-vpc::pg-subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.144.0/20",
       AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 9,
     }),
     dependencies: ({}) => ({
       vpc: "pg-vpc",
@@ -66,8 +68,9 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `pg-vpc::pg-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/20",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "pg-vpc",
@@ -78,8 +81,9 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `pg-vpc::pg-subnet-public2-${config.region}b`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.16.0/20",
       AvailabilityZone: `${config.region}b`,
+      NewBits: 4,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "pg-vpc",

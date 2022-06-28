@@ -125,12 +125,14 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
     method: "attachVolume",
     isInstanceUp: eq(get("State"), "attached"),
     getById,
-    postCreate: ({ dependencies, lives }) =>
+    postCreate: ({ dependencies, lives, resolvedDependencies }) =>
       pipe([
         tap((params) => {
           assert(true);
         }),
-        tap(() => dependencies().volume.getLive({ lives })),
+        tap(() =>
+          dependencies().volume.getLive({ lives, resolvedDependencies })
+        ),
       ]),
   });
 

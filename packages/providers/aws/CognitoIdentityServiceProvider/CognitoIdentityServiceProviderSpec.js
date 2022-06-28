@@ -75,6 +75,9 @@ module.exports = pipe([
             TemporaryPasswordValidityDays: 7,
           },
         },
+        UserAttributeUpdateSettings: {
+          AttributesRequireVerificationBeforeUpdate: [],
+        },
         // SchemaAttributes: [
         //   {
         //     AttributeDataType: "String",
@@ -319,6 +322,7 @@ module.exports = pipe([
           IdToken: "minutes",
           RefreshToken: "days",
         },
+        EnablePropagateAdditionalUserContextData: false,
       },
       dependencies: {
         userPool: { type: "UserPool", group: GROUP, parent: true },
