@@ -26,13 +26,6 @@ exports.createResources = () => [
     name: "vpn-connection",
     properties: ({}) => ({
       Category: "VPN",
-      Options: {
-        EnableAcceleration: false,
-        StaticRoutesOnly: false,
-        LocalIpv4NetworkCidr: "0.0.0.0/0",
-        RemoteIpv4NetworkCidr: "0.0.0.0/0",
-        TunnelInsideIpVersion: "ipv4",
-      },
     }),
     dependencies: () => ({
       customerGateway: "cgw",

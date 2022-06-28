@@ -7,7 +7,6 @@
 - createOrganizationalUnit
 
 - lives get error
-- getById use map instead of find
 - HostedZone Config Comment
 - user tags for ec2 instance
 - PrincipalAssociation replace associatedEntity from config
@@ -61,7 +60,11 @@ omit AWSLogs S3 Objects
 
 ## Refactoring
 
+https://rushjs.io/
+
 ## Common:
+
+- https://rushjs.io/
 
 - https://stackshare.io/terraform/alternatives
 

@@ -210,11 +210,11 @@ const securityGroupRuleDependencies = {
     parent: true,
     filterDependency:
       ({ resource }) =>
-        (dependency) =>
-          pipe([
-            () => resource,
-            eq(get("live.GroupId"), dependency.live.GroupId),
-          ])(),
+      (dependency) =>
+        pipe([
+          () => resource,
+          eq(get("live.GroupId"), dependency.live.GroupId),
+        ])(),
   },
   securityGroupFrom: {
     type: "SecurityGroup",
@@ -222,16 +222,16 @@ const securityGroupRuleDependencies = {
     list: true,
     filterDependency:
       ({ resource }) =>
-        (dependency) =>
-          pipe([
-            () => resource,
-            tap(() => {
-              assert(dependency.live.GroupId);
-              assert(resource.live.GroupId);
-            }),
-            get("live.IpPermission.UserIdGroupPairs"),
-            any(eq(get("GroupId"), dependency.live.GroupId)),
-          ])(),
+      (dependency) =>
+        pipe([
+          () => resource,
+          tap(() => {
+            assert(dependency.live.GroupId);
+            assert(resource.live.GroupId);
+          }),
+          get("live.IpPermission.UserIdGroupPairs"),
+          any(eq(get("GroupId"), dependency.live.GroupId)),
+        ])(),
   },
 };
 
@@ -241,67 +241,67 @@ const sortByFromPort = pipe([
 
 const getIpPermissions =
   ({ type, targetResources, lives, config }) =>
-    ({ GroupName, VpcId }) =>
-      pipe([
-        tap(() => {
-          assert(type);
-          assert(targetResources);
-          assert(lives);
-          assert(GroupName);
-          assert(VpcId);
-          assert(config);
-        }),
-        () => targetResources,
-        tap((params) => {
-          assert(Array.isArray(targetResources));
-        }),
-        filter(eq(get("type"), type)),
-        filter(
-          eq(
-            ({ dependencies }) =>
-              pipe([
-                dependencies,
-                get("securityGroup.name"),
-                callProp("split", "::"),
-                ([sg, vpcName]) =>
-                  pipe([
-                    () =>
-                      lives.getByName({
-                        name: vpcName,
-                        type: "Vpc",
-                        group: "EC2",
-                        providerName: config.providerName,
-                      }),
-                    get("id"),
-                  ])(),
-                tap((vpcName) => {
-                  assert(vpcName);
-                }),
-              ])(),
-            VpcId
-          )
-        ),
-        filter(
-          eq(
-            ({ dependencies }) =>
-              pipe([
-                dependencies,
-                get("securityGroup.name"),
-                callProp("split", "::"),
-                last,
-              ])(),
-            GroupName
-          )
-        ),
-        map(({ properties }) =>
-          pipe([
-            () => properties({}),
-            get("IpPermission"),
-            omit(["UserIdGroupPairs"]),
-          ])()
-        ),
-        sortByFromPort,
-      ])();
+  ({ GroupName, VpcId }) =>
+    pipe([
+      tap(() => {
+        assert(type);
+        assert(targetResources);
+        assert(lives);
+        assert(GroupName);
+        assert(VpcId);
+        assert(config);
+      }),
+      () => targetResources,
+      tap((params) => {
+        assert(Array.isArray(targetResources));
+      }),
+      filter(eq(get("type"), type)),
+      filter(
+        eq(
+          ({ dependencies }) =>
+            pipe([
+              dependencies,
+              get("securityGroup.name"),
+              callProp("split", "::"),
+              ([sg, vpcName]) =>
+                pipe([
+                  () =>
+                    lives.getByName({
+                      name: vpcName,
+                      type: "Vpc",
+                      group: "EC2",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])(),
+              tap((vpcName) => {
+                assert(vpcName);
+              }),
+            ])(),
+          VpcId
+        )
+      ),
+      filter(
+        eq(
+          ({ dependencies }) =>
+            pipe([
+              dependencies,
+              get("securityGroup.name"),
+              callProp("split", "::"),
+              last,
+            ])(),
+          GroupName
+        )
+      ),
+      map(({ properties }) =>
+        pipe([
+          () => properties({}),
+          get("IpPermission"),
+          omit(["UserIdGroupPairs"]),
+        ])()
+      ),
+      sortByFromPort,
+    ])();
 
 const filterPermissions = pipe([
   map(
@@ -329,11 +329,11 @@ const omitLocaleNone = when(eq(get("Locale"), "None"), omit(["Locale"]));
 
 const getByIdFromLives =
   ({ lives, groupType }) =>
-    (id) =>
-      pipe([
-        () => lives,
-        find(and([eq(get("groupType"), groupType), eq(get("id"), id)])),
-      ])();
+  (id) =>
+    pipe([
+      () => lives,
+      find(and([eq(get("groupType"), groupType), eq(get("id"), id)])),
+    ])();
 
 const omitNetworkInterfacesForDefaultSubnetAndSecurityGroup = ({ lives }) =>
   pipe([
@@ -613,34 +613,34 @@ module.exports = pipe([
       //TODO do we need that ?
       ignoreResource:
         ({ lives }) =>
-          (resource) =>
-            pipe([
-              () => resource,
-              or([
-                get("managedByOther"),
-                pipe([
-                  get("live.Attachments"),
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  any(({ Device, InstanceId }) =>
-                    pipe([
-                      () => InstanceId,
-                      findLiveById({
-                        type: "Instance",
-                        group: "EC2",
-                        lives,
-                        providerName: resource.providerName,
-                      }),
-                      eq(get("live.RootDeviceName"), Device),
-                    ])()
-                  ),
-                  tap((params) => {
-                    assert(true);
-                  }),
-                ]),
+        (resource) =>
+          pipe([
+            () => resource,
+            or([
+              get("managedByOther"),
+              pipe([
+                get("live.Attachments"),
+                tap((params) => {
+                  assert(true);
+                }),
+                any(({ Device, InstanceId }) =>
+                  pipe([
+                    () => InstanceId,
+                    findLiveById({
+                      type: "Instance",
+                      group: "EC2",
+                      lives,
+                      providerName: resource.providerName,
+                    }),
+                    eq(get("live.RootDeviceName"), Device),
+                  ])()
+                ),
+                tap((params) => {
+                  assert(true);
+                }),
               ]),
-            ])(),
+            ]),
+          ])(),
     },
     {
       type: "VolumeAttachment",
@@ -685,8 +685,8 @@ module.exports = pipe([
           group: "EC2",
           filterDependency:
             ({ resource }) =>
-              (dependency) =>
-                pipe([() => resource, get("live.CidrBlock")])(),
+            (dependency) =>
+              pipe([() => resource, get("live.CidrBlock")])(),
         },
         // TODO ipamPoolIpv6
         // ipamPoolIpv6: {
@@ -838,7 +838,7 @@ module.exports = pipe([
         "OutpostArn",
         //TODO
         "PrivateDnsNameOptionsOnLaunch",
-        "CidrBlock"
+        "CidrBlock",
       ],
       propertiesDefault: {
         MapPublicIpOnLaunch: false,
@@ -969,14 +969,14 @@ module.exports = pipe([
           pipe([omit(["Origin", "State", "DestinationPrefixListId"])]),
         filterTarget:
           () =>
-            ({ VpcEndpointId, ...others }) =>
-              pipe([
-                () => others,
-                when(
-                  () => VpcEndpointId,
-                  defaultsDeep({ GatewayId: VpcEndpointId })
-                ),
-              ])(),
+          ({ VpcEndpointId, ...others }) =>
+            pipe([
+              () => others,
+              when(
+                () => VpcEndpointId,
+                defaultsDeep({ GatewayId: VpcEndpointId })
+              ),
+            ])(),
       }),
       filterLive: () =>
         pipe([pick(["DestinationCidrBlock", "DestinationIpv6CidrBlock"])]),
@@ -1265,104 +1265,104 @@ module.exports = pipe([
       ],
       filterLive:
         ({ lives, providerConfig }) =>
-          (live) =>
-            pipe([
-              () => live,
-              differenceObject(
+        (live) =>
+          pipe([
+            () => live,
+            differenceObject(
+              pipe([
+                () => live,
+                getLaunchTemplateIdFromTags,
+                getByIdFromLives({ lives, groupType: "EC2::LaunchTemplate" }),
+                get("live.LaunchTemplateData"),
+              ])()
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+            switchCase([
+              or([
                 pipe([
-                  () => live,
                   getLaunchTemplateIdFromTags,
                   getByIdFromLives({ lives, groupType: "EC2::LaunchTemplate" }),
-                  get("live.LaunchTemplateData"),
-                ])()
-              ),
-              tap((params) => {
-                assert(true);
-              }),
-              switchCase([
-                or([
-                  pipe([
-                    getLaunchTemplateIdFromTags,
-                    getByIdFromLives({ lives, groupType: "EC2::LaunchTemplate" }),
-                    get("live.LaunchTemplateData.SecurityGroupIds"),
-                  ]),
-                  omitNetworkInterfacesForDefaultSubnetAndSecurityGroup({
-                    lives,
-                  }),
+                  get("live.LaunchTemplateData.SecurityGroupIds"),
                 ]),
-                omit(["NetworkInterfaces"]),
-                assign({
-                  NetworkInterfaces: pipe([
-                    get("NetworkInterfaces"),
-                    map((networkInterface) =>
-                      pipe([
-                        () => networkInterface,
-                        when(
-                          get("Description"),
-                          assign({ Description: get("Description") })
-                        ),
-                        fork({
-                          DeviceIndex: get("Attachment.DeviceIndex"),
-                          Groups: pipe([
-                            get("Groups"),
-                            map(
-                              pipe([
-                                get("GroupId"),
-                                replaceWithName({
-                                  groupType: "EC2::SecurityGroup",
-                                  path: "id",
-                                  providerConfig,
-                                  lives,
-                                }),
-                              ])
-                            ),
-                          ]),
-                          SubnetId: pipe([
-                            get("SubnetId"),
-                            replaceWithName({
-                              groupType: "EC2::Subnet",
-                              path: "id",
-                              providerConfig,
-                              lives,
-                            }),
-                          ]),
-                        }),
-                      ])()
-                    ),
-                  ]),
+                omitNetworkInterfacesForDefaultSubnetAndSecurityGroup({
+                  lives,
                 }),
               ]),
-              when(
-                getLaunchTemplateIdFromTags,
-                assign({
-                  LaunchTemplate: pipe([
-                    fork({
-                      LaunchTemplateId: pipe([
-                        getLaunchTemplateIdFromTags,
-                        replaceWithName({
-                          groupType: "EC2::LaunchTemplate",
-                          path: "id",
-                          providerConfig,
-                          lives,
-                        }),
-                      ]),
-                      Version: getLaunchTemplateVersionFromTags,
-                    }),
-                  ]),
-                })
-              ),
+              omit(["NetworkInterfaces"]),
               assign({
-                Placement: pipe([
-                  get("Placement"),
-                  assign({
-                    AvailabilityZone: buildAvailabilityZone,
-                  }),
+                NetworkInterfaces: pipe([
+                  get("NetworkInterfaces"),
+                  map((networkInterface) =>
+                    pipe([
+                      () => networkInterface,
+                      when(
+                        get("Description"),
+                        assign({ Description: get("Description") })
+                      ),
+                      fork({
+                        DeviceIndex: get("Attachment.DeviceIndex"),
+                        Groups: pipe([
+                          get("Groups"),
+                          map(
+                            pipe([
+                              get("GroupId"),
+                              replaceWithName({
+                                groupType: "EC2::SecurityGroup",
+                                path: "id",
+                                providerConfig,
+                                lives,
+                              }),
+                            ])
+                          ),
+                        ]),
+                        SubnetId: pipe([
+                          get("SubnetId"),
+                          replaceWithName({
+                            groupType: "EC2::Subnet",
+                            path: "id",
+                            providerConfig,
+                            lives,
+                          }),
+                        ]),
+                      }),
+                    ])()
+                  ),
                 ]),
               }),
-              tap((params) => {
-                assert(true);
-              }),
-            ])(),
+            ]),
+            when(
+              getLaunchTemplateIdFromTags,
+              assign({
+                LaunchTemplate: pipe([
+                  fork({
+                    LaunchTemplateId: pipe([
+                      getLaunchTemplateIdFromTags,
+                      replaceWithName({
+                        groupType: "EC2::LaunchTemplate",
+                        path: "id",
+                        providerConfig,
+                        lives,
+                      }),
+                    ]),
+                    Version: getLaunchTemplateVersionFromTags,
+                  }),
+                ]),
+              })
+            ),
+            assign({
+              Placement: pipe([
+                get("Placement"),
+                assign({
+                  AvailabilityZone: buildAvailabilityZone,
+                }),
+              ]),
+            }),
+            tap((params) => {
+              assert(true);
+            }),
+          ])(),
       dependencies: {
         ...ec2InstanceDependencies,
         launchTemplate: { type: "LaunchTemplate", group: "EC2" },
@@ -1568,11 +1568,11 @@ module.exports = pipe([
           parent: true,
           filterDependency:
             ({ resource }) =>
-              (dependency) =>
-                pipe([
-                  () => resource,
-                  eq(get("live.RequesterVpcInfo.VpcId"), dependency.live.VpcId),
-                ])(),
+            (dependency) =>
+              pipe([
+                () => resource,
+                eq(get("live.RequesterVpcInfo.VpcId"), dependency.live.VpcId),
+              ])(),
         },
         vpcPeer: {
           type: "Vpc",
@@ -1580,11 +1580,11 @@ module.exports = pipe([
           parent: true,
           filterDependency:
             ({ resource }) =>
-              (dependency) =>
-                pipe([
-                  () => resource,
-                  eq(get("live.AccepterVpcInfo.VpcId"), dependency.live.VpcId),
-                ])(),
+            (dependency) =>
+              pipe([
+                () => resource,
+                eq(get("live.AccepterVpcInfo.VpcId"), dependency.live.VpcId),
+              ])(),
         },
       },
     },
@@ -1707,37 +1707,37 @@ module.exports = pipe([
           group: "EC2",
           filterDependency:
             ({ resource }) =>
-              (dependency) =>
-                pipe([
-                  tap((params) => {
-                    assert(dependency);
-                  }),
-                  () => resource,
-                  eq(
-                    get("live.RequesterTgwInfo.TransitGatewayId"),
-                    dependency.live.TransitGatewayId
-                  ),
-                ])(),
+            (dependency) =>
+              pipe([
+                tap((params) => {
+                  assert(dependency);
+                }),
+                () => resource,
+                eq(
+                  get("live.RequesterTgwInfo.TransitGatewayId"),
+                  dependency.live.TransitGatewayId
+                ),
+              ])(),
         },
         transitGatewayPeer: {
           type: "TransitGateway",
           group: "EC2",
           filterDependency:
             ({ resource }) =>
-              (dependency) =>
-                pipe([
-                  tap((params) => {
-                    assert(dependency);
-                  }),
-                  () => resource,
-                  eq(
-                    get("live.AccepterTgwInfo.TransitGatewayId"),
-                    dependency.live.TransitGatewayId
-                  ),
-                  tap((params) => {
-                    assert(true);
-                  }),
-                ])(),
+            (dependency) =>
+              pipe([
+                tap((params) => {
+                  assert(dependency);
+                }),
+                () => resource,
+                eq(
+                  get("live.AccepterTgwInfo.TransitGatewayId"),
+                  dependency.live.TransitGatewayId
+                ),
+                tap((params) => {
+                  assert(true);
+                }),
+              ])(),
         },
       },
       filterLive: ({ providerConfig }) =>
@@ -1859,7 +1859,17 @@ module.exports = pipe([
         "CustomerGatewayConfiguration",
         "Routes",
       ],
-      propertiesDefault: { Type: "ipsec.1" },
+      propertiesDefault: {
+        Type: "ipsec.1",
+        Options: {
+          EnableAcceleration: false,
+          LocalIpv4NetworkCidr: "0.0.0.0/0",
+          OutsideIpAddressType: "PublicIpv4",
+          RemoteIpv4NetworkCidr: "0.0.0.0/0",
+          StaticRoutesOnly: false,
+          TunnelInsideIpVersion: "ipv4",
+        },
+      },
       dependencies: {
         customerGateway: { type: "CustomerGateway", group: "EC2" },
         vpnGateway: { type: "VpnGateway", group: "EC2" },

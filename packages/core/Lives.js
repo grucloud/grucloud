@@ -95,13 +95,13 @@ exports.createLives = () => {
           assert(isString(id));
         }
       }),
-      // tap(() => {
-      //   logger.debug(`getById ${group}::${type}, id: ${id}`);
-      // }),
-      // no providerName for cross account dependencies
-      () => getByType({ type, group }),
-      //TODO map.get
-      find(pipe([get("id"), eq(callProp("toUpperCase"), id.toUpperCase())])),
+      () => ({ group, type }),
+      toGroupType,
+      getMapByIdByGroupType,
+      (mapById) => mapById.get(id.toLowerCase()),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
   const getByName = ({ providerName, type, group, name }) =>
@@ -116,19 +116,26 @@ exports.createLives = () => {
   return {
     get error() {
       logger.info("get error");
-      return any(get("error"))(toJSON());
+      //TODO
+      return false;
+      //return any(get("error"))(toJSON());
     },
     addResource: ({ groupType, resource }) =>
       pipe([
         tap((params) => {
-          if (!groupType) {
-            assert(groupType);
-          }
           logger.info(
             `live addResource ${groupType}, ${JSON.stringify({
               providerName: resource.providerName,
               mapPerTypeSize: mapPerType.size,
             })}`
+          );
+          assert(groupType);
+          assert(resource);
+          assert(
+            isString(resource.id),
+            `'${JSON.stringify(
+              resource.id
+            )}' is not a string, groupType: ${groupType}`
           );
           if (isEmpty(resource.live)) {
             logger.error(`live addResource no live for ${groupType}`);
@@ -146,7 +153,7 @@ exports.createLives = () => {
             })}`
           );
         }),
-        tap((mapById) => mapById.set(resource.id, resource)),
+        tap((mapById) => mapById.set(resource.id.toLowerCase(), resource)),
         tap((mapById) => {
           mapPerType.set(groupType, mapById);
         }),
@@ -179,6 +186,10 @@ exports.createLives = () => {
             () => resource,
             get("id"),
             tap((id) => {
+              assert(id);
+            }),
+            callProp("toLowerCase"),
+            tap((id) => {
               if (mapById.get(id)) {
                 logger.info(
                   `live addResources ${groupType}, id: '${id}' already exists`
@@ -194,6 +205,7 @@ exports.createLives = () => {
       ])();
     },
     get json() {
+      logger.info(`toJSON`);
       return toJSON();
     },
     // remove
@@ -208,9 +220,6 @@ exports.createLives = () => {
           { groupType, resources },
         ]),
         values,
-        tap((params) => {
-          assert(true);
-        }),
       ])(),
     getByType,
     getById,

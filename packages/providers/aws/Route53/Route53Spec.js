@@ -164,7 +164,7 @@ module.exports = pipe([
             get("elasticIpAddress"),
             pipe([
               get("elasticIpAddress", "noName"),
-              prepend("EC2::ElasticIpAddress::A"),
+              prepend("EC2::ElasticIpAddress::A::"),
             ]),
             get("certificate"),
             pipe([get("certificate"), prepend(`ACM::Certificate::CNAME::`)]),

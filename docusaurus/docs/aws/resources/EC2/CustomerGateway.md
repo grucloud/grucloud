@@ -37,6 +37,44 @@ exports.createResources = () => [
 gc l -t CustomerGateway
 ```
 
-```sh
+```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 1/1
+┌─────────────────────────────────────────────────────────────────────┐
+│ 1 EC2::CustomerGateway from aws                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│ name: cgw                                                           │
+│ managedByUs: Yes                                                    │
+│ live:                                                               │
+│   BgpAsn: 65000                                                     │
+│   CustomerGatewayId: cgw-0d899ea9051e3fdc1                          │
+│   IpAddress: 1.1.1.1                                                │
+│   State: available                                                  │
+│   Type: ipsec.1                                                     │
+│   Tags:                                                             │
+│     - Key: gc-created-by-provider                                   │
+│       Value: aws                                                    │
+│     - Key: gc-managed-by                                            │
+│       Value: grucloud                                               │
+│     - Key: gc-project-name                                          │
+│       Value: customer-gateway                                       │
+│     - Key: gc-stage                                                 │
+│       Value: dev                                                    │
+│     - Key: Name                                                     │
+│       Value: cgw                                                    │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
 
+
+List Summary:
+Provider: aws
+┌────────────────────────────────────────────────────────────────────┐
+│ aws                                                                │
+├──────────────────────┬─────────────────────────────────────────────┤
+│ EC2::CustomerGateway │ cgw                                         │
+└──────────────────────┴─────────────────────────────────────────────┘
+1 resources, 1 type, 1 provider
+Command "gc l -t CustomerGateway" executed in 4s, 96 MB
 ```

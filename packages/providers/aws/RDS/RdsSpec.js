@@ -144,6 +144,7 @@ module.exports = pipe([
         "Subnets",
         "DBSubnetGroupArn",
       ],
+      propertiesDefault: { SupportedNetworkTypes: ["IPV4"] },
       ignoreResource: () => pipe([get("isDefault")]),
       filterLive: () => pick(["DBSubnetGroupDescription"]),
       dependencies: {
@@ -301,6 +302,7 @@ module.exports = pipe([
         "KmsKeyId",
         "MonitoringRoleArn",
         "PerformanceInsightsKMSKeyId",
+        "NetworkType", //TODO
       ],
       compare: compareRDS({
         filterAll: () =>

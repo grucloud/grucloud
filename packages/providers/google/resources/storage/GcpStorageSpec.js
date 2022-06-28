@@ -1,4 +1,4 @@
-const { tap, pipe, assign, map, get, pick } = require("rubico");
+const { tap, pipe, assign, map, get, pick, fork } = require("rubico");
 const { callProp } = require("rubico/x");
 const path = require("path");
 const assert = require("assert");
@@ -42,20 +42,24 @@ module.exports = () =>
       compare: compareGoogle({
         filterTarget: ({ programOptions }) =>
           pipe([
-            (target) => ({
-              md5Hash: pipe([
-                tap(() => {
-                  assert(programOptions.workingDirectory);
-                  assert(target.source, "missing source");
-                }),
-                () =>
-                  path.resolve(programOptions.workingDirectory, target.source),
-                md5FileBase64,
-                tap((targetHash) => {
-                  assert(targetHash);
-                }),
-              ])(),
-            }),
+            (target) =>
+              fork({
+                md5Hash: pipe([
+                  tap(() => {
+                    assert(programOptions.workingDirectory);
+                    assert(target.source, "missing source");
+                  }),
+                  () =>
+                    path.resolve(
+                      programOptions.workingDirectory,
+                      target.source
+                    ),
+                  md5FileBase64,
+                  tap((targetHash) => {
+                    assert(targetHash);
+                  }),
+                ]),
+              })(),
           ]),
         filterLive: () => pipe([pick(["md5Hash"])]),
       }),
