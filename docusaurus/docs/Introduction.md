@@ -32,3 +32,7 @@ The next flowchart describes how to use the GruCloud CLI `gc` to manage your inf
 - [Google Cloud Resources](./google/GcpResources.md)
 - [Microsoft Azure Resources](./azure/AzureResources.md)
 - [Kubernetes Resources](./k8s/K8sResources.md)
+
+# Links
+
+- [Comparison between GruCloud, Terraform and AWS CDK](./GruCloudComparison.md)
