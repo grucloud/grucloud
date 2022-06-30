@@ -1,6 +1,6 @@
 ---
 id: comparison
-title: comparison
+title: Comparison
 ---
 
 Let's compare GruCloud with Terraform and the AWS CDK:
