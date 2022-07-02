@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project cloud-wan
+skinparam monochrome true
++ Infra
+++ aws
++++ NetworkManager
+++++ GlobalNetwork (1)
+++++ CoreNetwork (1)
+@endmindmap

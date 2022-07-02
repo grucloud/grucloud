@@ -757,7 +757,7 @@ exports.createAwsResource = ({
     tap((params) => {
       assert(config);
     }),
-    () => createEndpoint(model.package, model.client)(config),
+    () => createEndpoint(model.package, model.client, model.region)(config),
     (endpoint) =>
       pipe([
         () => endpoint,
