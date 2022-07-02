@@ -4,6 +4,23 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "TransitGateway",
+    group: "EC2",
+    name: "my-tgw",
+    properties: ({}) => ({
+      Description: "",
+      Options: {
+        AmazonSideAsn: 64512,
+        AutoAcceptSharedAttachments: "disable",
+        DefaultRouteTableAssociation: "disable",
+        DefaultRouteTablePropagation: "disable",
+        VpnEcmpSupport: "enable",
+        DnsSupport: "enable",
+        MulticastSupport: "disable",
+      },
+    }),
+  },
+  {
     type: "GlobalNetwork",
     group: "NetworkManager",
     name: "cloudwan-module-without",
@@ -66,6 +83,14 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       globalNetwork: "cloudwan-module-without",
+    }),
+  },
+  {
+    type: "TransitGatewayRegistration",
+    group: "NetworkManager",
+    dependencies: ({}) => ({
+      globalNetwork: "cloudwan-module-without",
+      transitGateway: "my-tgw",
     }),
   },
 ];

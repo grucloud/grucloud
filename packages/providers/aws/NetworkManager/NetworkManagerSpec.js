@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, map, tap } = require("rubico");
+const { pipe, map, tap, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
@@ -8,6 +8,9 @@ const {
   NetworkManagerGlobalNetwork,
 } = require("./NetworkManagerGlobalNetwork");
 const { NetworkManagerCoreNetwork } = require("./NetworkManagerCoreNetwork");
+const {
+  NetworkManagerTransitGatewayRegistration,
+} = require("./NetworkManagerTransitGatewayRegistration");
 
 const GROUP = "NetworkManager";
 const compareNetworkManager = compareAws({});
@@ -66,6 +69,29 @@ module.exports = pipe([
         "PolicyVersionId",
       ],
       dependencies: { globalNetwork: { type: "GlobalNetwork", group: GROUP } },
+    },
+    {
+      type: "TransitGatewayRegistration",
+      Client: NetworkManagerTransitGatewayRegistration,
+      filterLive: ({ resource, programOptions }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      omitProperties: ["GlobalNetworkId", "TransitGatewayArn", "State"],
+      inferName: pipe([
+        get("dependenciesSpec"),
+        ({ globalNetwork, transitGateway }) =>
+          `tgw-assoc::${globalNetwork}::${transitGateway}`,
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      dependencies: {
+        globalNetwork: { type: "GlobalNetwork", group: GROUP, parent: true },
+        transitGateway: { type: "TransitGateway", group: "EC2" },
+      },
     },
   ],
   map(
