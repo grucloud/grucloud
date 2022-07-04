@@ -4,6 +4,23 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "TransitGateway",
+    group: "EC2",
+    name: "my-tgw",
+    properties: ({}) => ({
+      Description: "",
+      Options: {
+        AmazonSideAsn: 64512,
+        AutoAcceptSharedAttachments: "disable",
+        DefaultRouteTableAssociation: "disable",
+        DefaultRouteTablePropagation: "disable",
+        VpnEcmpSupport: "enable",
+        DnsSupport: "enable",
+        MulticastSupport: "disable",
+      },
+    }),
+  },
+  {
     type: "GlobalNetwork",
     group: "NetworkManager",
     name: "cloudwan-module-without",
@@ -66,6 +83,49 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       globalNetwork: "cloudwan-module-without",
+    }),
+  },
+  {
+    type: "Site",
+    group: "NetworkManager",
+    name: "office",
+    properties: ({}) => ({
+      Location: {
+        Address: "rue de la paix",
+        Latitude: "0",
+        Longitude: "0",
+      },
+    }),
+    dependencies: ({}) => ({
+      globalNetwork: "cloudwan-module-without",
+    }),
+  },
+  {
+    type: "Device",
+    group: "NetworkManager",
+    name: "my-device",
+    properties: ({}) => ({
+      Location: {
+        Address: "king's street",
+        Latitude: "0",
+        Longitude: "0",
+      },
+      Model: "switch",
+      SerialNumber: "123",
+      Type: "927",
+      Vendor: "cisco",
+    }),
+    dependencies: ({}) => ({
+      globalNetwork: "cloudwan-module-without",
+      site: "office",
+    }),
+  },
+  {
+    type: "TransitGatewayRegistration",
+    group: "NetworkManager",
+    dependencies: ({}) => ({
+      globalNetwork: "cloudwan-module-without",
+      transitGateway: "my-tgw",
     }),
   },
 ];

@@ -30,6 +30,7 @@ exports.createResources = () => [
 ### Used By
 
 - [VpnConnection](./VpnConnection.md)
+- [Network Manager Customer Gateway Association](../NetworkManager/CustomerGatewayAssociation.md)
 
 ### List
 

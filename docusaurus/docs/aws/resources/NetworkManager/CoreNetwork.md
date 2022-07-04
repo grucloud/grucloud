@@ -6,8 +6,8 @@ title: Core Network
 Provides a [Core Network](https://us-west-2.console.aws.amazon.com/networkmanager/home#/networks)
 
 ```js
-exports.createResources = () => [{
-     {
+exports.createResources = () => [
+  {
     type: "CoreNetwork",
     group: "NetworkManager",
     name: "cloudwan-module-without",
@@ -64,7 +64,7 @@ exports.createResources = () => [{
       globalNetwork: "cloudwan-module-without",
     }),
   },
-}];
+];
 ```
 
 ### Examples

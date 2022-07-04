@@ -20,5 +20,5 @@ describe(title, async function () {
         },
       ],
     });
-  }).timeout(30 * 60e3);
+  }).timeout(45 * 60e3);
 });

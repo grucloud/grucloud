@@ -86,6 +86,56 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Site",
+    group: "NetworkManager",
+    name: "office",
+    properties: ({}) => ({
+      Location: {
+        Address: "rue de la paix",
+        Latitude: "0",
+        Longitude: "0",
+      },
+    }),
+    dependencies: ({}) => ({
+      globalNetwork: "cloudwan-module-without",
+    }),
+  },
+  {
+    type: "Device",
+    group: "NetworkManager",
+    name: "my-device",
+    properties: ({}) => ({
+      Location: {
+        Address: "king's street",
+        Latitude: "0",
+        Longitude: "0",
+      },
+      Model: "switch",
+      SerialNumber: "123",
+      Type: "927",
+      Vendor: "cisco",
+    }),
+    dependencies: ({}) => ({
+      globalNetwork: "cloudwan-module-without",
+      site: "office",
+    }),
+  },
+  {
+    type: "Link",
+    group: "NetworkManager",
+    name: "my-link",
+    properties: ({}) => ({
+      Bandwidth: {
+        DownloadSpeed: 1,
+        UploadSpeed: 1,
+      },
+    }),
+    dependencies: ({}) => ({
+      globalNetwork: "cloudwan-module-without",
+      site: "office",
+    }),
+  },
+  {
     type: "TransitGatewayRegistration",
     group: "NetworkManager",
     dependencies: ({}) => ({

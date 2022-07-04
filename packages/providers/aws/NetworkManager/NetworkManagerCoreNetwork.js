@@ -45,12 +45,14 @@ const createModel = ({ config }) => ({
     getParam: "CoreNetworks",
     decorate: ({ endpoint, getById }) => pipe([getById]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#createCoreNetwork-property
   create: {
     method: "createCoreNetwork",
     pickCreated: ({ payload }) => pipe([get("CoreNetwork")]),
     isInstanceUp: pipe([eq(get("State"), "AVAILABLE")]),
     filterPayload: pipe([assignPolicyDocument]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#deleteCoreNetwork-property
   destroy: {
     method: "deleteCoreNetwork",
     pickId: pipe([pick(["CoreNetworkId"])]),

@@ -11,6 +11,9 @@ const { NetworkManagerCoreNetwork } = require("./NetworkManagerCoreNetwork");
 const {
   NetworkManagerTransitGatewayRegistration,
 } = require("./NetworkManagerTransitGatewayRegistration");
+const { NetworkManagerSite } = require("./NetworkManagerSite");
+const { NetworkManagerDevice } = require("./NetworkManagerDevice");
+const { NetworkManagerLink } = require("./NetworkManagerLink");
 
 const GROUP = "NetworkManager";
 const compareNetworkManager = compareAws({});
@@ -20,20 +23,6 @@ module.exports = pipe([
     {
       type: "GlobalNetwork",
       Client: NetworkManagerGlobalNetwork,
-      compare: compareNetworkManager({
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-      }),
-      filterLive: ({ resource, programOptions }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
       omitProperties: [
         "GlobalNetworkId",
         "GlobalNetworkArn",
@@ -44,20 +33,6 @@ module.exports = pipe([
     {
       type: "CoreNetwork",
       Client: NetworkManagerCoreNetwork,
-      compare: compareNetworkManager({
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
-      }),
-      filterLive: ({ resource, programOptions }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
       omitProperties: [
         "GlobalNetworkId",
         "CoreNetworkId",
@@ -71,14 +46,54 @@ module.exports = pipe([
       dependencies: { globalNetwork: { type: "GlobalNetwork", group: GROUP } },
     },
     {
+      type: "Site",
+      Client: NetworkManagerSite,
+      omitProperties: [
+        "GlobalNetworkId",
+        "SiteId",
+        "SiteArn",
+        "CreatedAt",
+        "State",
+      ],
+      dependencies: {
+        globalNetwork: { type: "GlobalNetwork", group: GROUP, parent: true },
+      },
+    },
+    {
+      type: "Device",
+      Client: NetworkManagerDevice,
+      omitProperties: [
+        "GlobalNetworkId",
+        "SiteId",
+        "DeviceId",
+        "DeviceArn",
+        "CreatedAt",
+        "State",
+      ],
+      dependencies: {
+        globalNetwork: { type: "GlobalNetwork", group: GROUP, parent: true },
+        site: { type: "Site", group: GROUP, parent: true },
+      },
+    },
+    {
+      type: "Link",
+      Client: NetworkManagerLink,
+      omitProperties: [
+        "GlobalNetworkId",
+        "SiteId",
+        "CreatedAt",
+        "State",
+        "LinkArn",
+        "LinkId",
+      ],
+      dependencies: {
+        globalNetwork: { type: "GlobalNetwork", group: GROUP, parent: true },
+        site: { type: "Site", group: GROUP, parent: true },
+      },
+    },
+    {
       type: "TransitGatewayRegistration",
       Client: NetworkManagerTransitGatewayRegistration,
-      filterLive: ({ resource, programOptions }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
       omitProperties: ["GlobalNetworkId", "TransitGatewayArn", "State"],
       inferName: pipe([
         get("dependenciesSpec"),
