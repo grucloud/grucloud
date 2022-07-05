@@ -164,6 +164,7 @@ exports.createResources = () => [
 ## Dependencies
 
 - [Route53 HostedZone](./HostedZone)
+- [HealthCheck](./HealthCheck.md)
 - [LoadBalancer](../ELBv2/LoadBalancer.md)
 - [Certificate](../ACM/Certificate)
 - [ApiGatewayV2 DomainName](../ApiGatewayV2/DomainName.md)

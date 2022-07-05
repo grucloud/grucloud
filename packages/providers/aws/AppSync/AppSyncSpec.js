@@ -135,6 +135,23 @@ module.exports = pipe([
             "relationalDatabaseConfig",
           ]),
           when(
+            get("dynamodbConfig"),
+            assign({
+              dynamodbConfig: pipe([
+                get("dynamodbConfig"),
+                when(
+                  get("awsRegion"),
+                  assign({
+                    awsRegion: pipe([
+                      get("awsRegion"),
+                      replaceRegion({ providerConfig }),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
+          when(
             get("httpConfig"),
             assign({
               httpConfig: pipe([

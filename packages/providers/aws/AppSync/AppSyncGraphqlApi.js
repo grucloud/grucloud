@@ -26,7 +26,7 @@ const {
   untagResource,
 } = require("./AppSyncCommon");
 const findName = get("live.name");
-const findId = get("live.arn");
+const findId = get("live.apiId");
 
 const pickId = pipe([
   tap(({ apiId }) => {
@@ -57,22 +57,14 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([() => ""]);
-
   const getIntrospectionSchema = tryCatch(
     pipe([
       pick(["apiId"]),
       defaultsDeep({ format: "SDL", includeDirectives: true }),
       (params) => appSync().getIntrospectionSchema(params),
-      tap((params) => {
-        assert(true);
-      }),
       get("schema"),
       Buffer.from,
       callProp("toString"),
-      tap((params) => {
-        assert(true);
-      }),
     ]),
     (error) =>
       pipe([
@@ -266,7 +258,6 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace,
     findDependencies,
     getByName,
     getById,
@@ -276,7 +267,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    tagResource: tagResource({ appSync }),
-    untagResource: untagResource({ appSync }),
+    tagResource: tagResource({ appSync, property: "arn" }),
+    untagResource: untagResource({ appSync, property: "arn" }),
   };
 };

@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project alarm-stop-ec2
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatch
+++++ MetricAlarm (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (1)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
+++++ Instance (1)
++++ SNS
+++++ Topic (1)
+@endmindmap

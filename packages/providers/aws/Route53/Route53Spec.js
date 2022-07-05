@@ -26,6 +26,7 @@ const { Route53Record, compareRoute53Record } = require("./Route53Record");
 const {
   Route53VpcAssociationAuthorization,
 } = require("./Route53VpcAssociationAuthorization");
+const { Route53HealthCheck } = require("./Route53HealthCheck");
 const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "Route53";
@@ -34,6 +35,59 @@ const compareRoute53 = compareAws({});
 
 module.exports = pipe([
   () => [
+    {
+      type: "HealthCheck",
+      dependencies: {
+        cloudWatchAlarm: {
+          type: "Alarm",
+          group: "CloudWatch",
+        },
+        routingControl: {
+          type: "RoutingControl",
+          group: "Route53RecoveryControlConfig",
+        },
+      },
+      Client: Route53HealthCheck,
+      compare: compareRoute53({
+        filterTarget: () => pipe([() => ({})]),
+        filterLive: () => pipe([() => ({})]),
+      }),
+      inferName: ({ properties, dependenciesSpec }) =>
+        pipe([
+          () => properties,
+          switchCase([
+            ({ Type }) =>
+              pipe([
+                () => [
+                  "HTTP",
+                  "HTTPS",
+                  "HTTP_STR_MATCH",
+                  "HTTPS_STR_MATCH",
+                  "TCP",
+                ],
+                includes(Type),
+              ])(),
+            ({ Type, ResourcePath }) => `heathcheck::${Type}::${ResourcePath}`,
+            //TODO
+            eq(get("Type"), "CALCULATED"),
+            pipe([get("ResourcePath"), prepend("heathcheck::CALCULATED::")]),
+            eq(get("Type"), "CLOUDWATCH_METRIC"),
+            pipe([
+              get("AlarmIdentifier.Name"),
+              prepend("heathcheck::CLOUDWATCH_METRIC::"),
+            ]),
+            eq(get("Type"), "RECOVERY_CONTROL"),
+            () => `heathcheck::RECOVERY_CONTROL::${routingControl}`,
+          ]),
+        ]),
+      omitProperties: ["Id", "CallerReference", "LinkedService"],
+      filterLive: ({ providerConfig }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+    },
     {
       type: "HostedZone",
       dependencies: {
@@ -59,25 +113,6 @@ module.exports = pipe([
           pick(["Config.Comment"]),
           omitIfEmpty(["Config.Comment"]),
           omitIfEmpty(["Config"]),
-          // when(
-          //   get("VpcAssociations"),
-          //   assign({
-          //     VpcAssociations: pipe([
-          //       get("VpcAssociations"),
-          //       tap((params) => {
-          //         assert(true);
-          //       }),
-          //       map(
-          //         assign({
-          //           VPCRegion: pipe([
-          //             get("VPCRegion"),
-          //             replaceRegionAll({ providerConfig }),
-          //           ]),
-          //         })
-          //       ),
-          //     ]),
-          //   })
-          // ),
         ]),
       includeDefaultDependencies: true,
     },

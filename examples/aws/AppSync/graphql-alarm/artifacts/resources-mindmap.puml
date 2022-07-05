@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project graphql-alarm
+skinparam monochrome true
++ Infra
+++ aws
++++ AppSync
+++++ GraphqlApi (1)
+++++ DataSource (1)
+++++ Resolver (5)
++++ CloudWatch
+++++ MetricAlarm (1)
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ SNS
+++++ Topic (1)
+@endmindmap
