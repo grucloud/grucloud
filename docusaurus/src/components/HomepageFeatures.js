@@ -289,7 +289,7 @@ function Home() {
           `}
         >
           <img
-            src="https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/diagram-live.svg"
+            src="https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/EC2/ec2-vpc/artifacts/diagram-live.svg"
             alt="graph"
           ></img>
         </div>
@@ -309,7 +309,7 @@ function Home() {
           `}
         >
           <img
-            src="https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/ec2-vpc/artifacts/resources-mindmap.svg"
+            src="https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/EC2/ec2-vpc/artifacts/resources-mindmap.svg"
             alt="graph"
           ></img>
         </div>

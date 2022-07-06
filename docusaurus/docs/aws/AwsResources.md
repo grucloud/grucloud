@@ -50,6 +50,8 @@ List of resources for provider aws:
 [Layer](./resources/Lambda/Layer.md), [Function](./resources/Lambda/Function.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md)
 * NetworkFirewall: 
 [Firewall](./resources/NetworkFirewall/Firewall.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md)
+* NetworkManager: 
+[GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Site](./resources/NetworkManager/Site.md), [Device](./resources/NetworkManager/Device.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md)
 * Organisations: 
 [Organisation](./resources/Organisations/Organisation.md)
 * RAM: 

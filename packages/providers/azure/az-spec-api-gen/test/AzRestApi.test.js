@@ -137,7 +137,7 @@ describe("AzureRestApi", function () {
     ])();
   });
 
-  it.only("processSwaggerFiles", async function () {
+  it("processSwaggerFiles", async function () {
     await pipe([
       tryCatch(
         pipe([

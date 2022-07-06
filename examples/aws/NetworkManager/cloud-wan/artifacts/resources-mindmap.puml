@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project cloud-wan
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ TransitGateway (1)
++++ NetworkManager
+++++ GlobalNetwork (1)
+++++ CoreNetwork (1)
+++++ Site (1)
+++++ Device (1)
+++++ TransitGatewayRegistration (1)
+@endmindmap

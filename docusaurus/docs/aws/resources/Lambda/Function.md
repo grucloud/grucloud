@@ -92,11 +92,11 @@ exports.createResources = () => [
 
 - [Layer](./Layer.md)
 - [Iam Role](../IAM/Role.md)
-- [SecretsManager Secret](../SecretsManager/Secrets.md)
-- [RDS Cluster](../RDS/Cluster.md)
-- [DynamoDB Table](../DynampDB/Table.md)
+- [SecretsManager Secret](../SecretsManager/Secret.md)
+- [RDS Cluster](../RDS/DBCluster.md)
+- [DynamoDB Table](../DynamoDB/Table.md)
 - [AppSync Graphql](../AppSync/GraphqlApi.md)
-- [EFS MountPoint](../EFS/MountPoint.md)
+- [EFS MountTarget](../EFS/MountTarget.md)
 
 ## UsedBy
 

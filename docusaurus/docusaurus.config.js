@@ -16,10 +16,7 @@ const config = {
   //plugins: ["@docusaurus/plugin-google-gtag"],
   themeConfig: {
     colorMode: { disableSwitch: true },
-    gtag: {
-      trackingID: "UA-179962442-1",
-      anonymizeIP: true,
-    },
+
     navbar: {
       title: "GruCloud",
       logo: {
@@ -107,6 +104,10 @@ const config = {
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
+        },
+        gtag: {
+          trackingID: "UA-179962442-1",
+          anonymizeIP: true,
         },
         // blog: {
         //   showReadingTime: true,

@@ -536,10 +536,7 @@ exports.Planner = ({
             logger.debug(
               `Planner run: start ${x.length} resource(s) in parallel`
             );
-            assert(
-              x.length > 0,
-              `all resources has dependsOn, plan: ${tos({ statuses })}`
-            );
+            assert(x.length > 0, `all resources has dependsOn`);
           }),
           map(
             tryCatch(

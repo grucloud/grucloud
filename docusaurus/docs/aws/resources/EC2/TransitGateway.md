@@ -31,6 +31,7 @@ exports.createResources = () => [
 
 - [transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/transit-gateway)
 - [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/hub-and-spoke-with-inspection-vpc)
+- [cloud-wan](https://github.com/grucloud/grucloud/blob/main/examples/aws/NetworkManager/cloud-wan)
 
 ### Properties
 
@@ -39,6 +40,10 @@ exports.createResources = () => [
 ### Used By
 
 - [TransitGatewayAttachment](./TransitGatewayAttachment.md)
+
+### Used By
+
+- [TransitGatewayRegistration](../NetworkManager/TransitGatewayRegistration.md)
 
 ### List
 

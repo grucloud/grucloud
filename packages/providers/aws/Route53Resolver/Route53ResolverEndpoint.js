@@ -7,6 +7,7 @@ const {
   callProp,
   when,
   isEmpty,
+  unless,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { ipToInt32 } = require("@grucloud/core/ipUtils");
@@ -20,6 +21,9 @@ const {
 } = require("./Route53ResolverCommon");
 
 const pickId = pipe([
+  tap((params) => {
+    assert(true);
+  }),
   tap(({ Id }) => {
     assert(Id);
   }),
@@ -103,12 +107,21 @@ exports.Route53ResolverEndpoint = ({ spec, config }) =>
     ],
     getByName: ({ getList, endpoint }) =>
       pipe([
+        tap((params) => {
+          assert(true);
+        }),
         ({ name }) => ({ Filters: [{ Name: "Name", Values: [name] }] }),
         endpoint().listResolverEndpoints,
         get("ResolverEndpoints"),
+        tap((params) => {
+          assert(true);
+        }),
         //TODO getList,
         first,
-        decorate({ endpoint }),
+        unless(isEmpty, decorate({ endpoint })),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
     tagResource: tagResource,
     untagResource: untagResource,
