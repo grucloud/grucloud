@@ -9,24 +9,24 @@ exports.createResources = () => [
     properties: ({ config, getId }) => ({
       AlarmName: "alarm-stop-ec2",
       AlarmActions: [
-        `arn:aws:swf:${
-          config.region
-        }:${config.accountId()}:action/actions/AWS_EC2.InstanceId.Reboot/1.0`,
         `arn:aws:sns:${
           config.region
         }:${config.accountId()}:Default_CloudWatch_Alarms_Topic`,
+        `arn:aws:swf:${
+          config.region
+        }:${config.accountId()}:action/actions/AWS_EC2.InstanceId.Reboot/1.0`,
       ],
       MetricName: "CPUUtilization",
       Namespace: "AWS/EC2",
       Statistic: "Average",
       Dimensions: [
         {
-          Name: "InstanceId",
           Value: `${getId({
             type: "Instance",
             group: "EC2",
             name: "ec2-for-alarm",
           })}`,
+          Name: "InstanceId",
         },
       ],
       Period: 300,

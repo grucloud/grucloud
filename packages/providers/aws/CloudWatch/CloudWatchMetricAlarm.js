@@ -25,6 +25,10 @@ exports.AlarmDependenciesDimensions = AlarmDependenciesDimensions;
 const decorate = ({ endpoint }) =>
   pipe([
     assign({
+      AlarmActions: pipe([
+        get("AlarmActions", []),
+        callProp("sort", (a, b) => a.localeCompare(b)),
+      ]),
       Tags: pipe([
         ({ AlarmArn }) => ({ ResourceARN: AlarmArn }),
         endpoint().listTagsForResource,
@@ -45,6 +49,7 @@ const model = ({ config }) => ({
       AlarmTypes: ["MetricAlarm"],
     }),
     getField: "MetricAlarms",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#describeAlarms-property
   getList: {
