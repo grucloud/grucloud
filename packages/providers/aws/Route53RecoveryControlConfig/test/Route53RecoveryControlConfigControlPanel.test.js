@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe.only("Route53RecoveryControlConfigControlPanel", async function () {
+describe("Route53RecoveryControlConfigControlPanel", async function () {
   let config;
   let provider;
   let controlPanel;

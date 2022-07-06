@@ -10,6 +10,10 @@ const GROUPS = [
   ["AppRunner", "apprunner"],
   ["AppSync", "appsync"],
   ["Autoscaling", "autoscaling"],
+  ["CodeBuild", "codebuild"],
+  //TODO
+  //["CodeDeploy", "codedeploy"],
+  //["CodePipeline", "codepipeline"],
   ["CloudFront", "cloudfront"],
   ["CloudFormation", "cloudformation"],
   ["CloudTrail", "cloudtrail"],

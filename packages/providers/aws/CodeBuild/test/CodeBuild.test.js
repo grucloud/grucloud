@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("Route53RecoveryControlConfigCluster", async function () {
+describe.only("CodeBuildProject", async function () {
   let config;
   let provider;
   let cluster;
@@ -10,7 +10,7 @@ describe("Route53RecoveryControlConfigCluster", async function () {
   before(async function () {
     provider = AwsProvider({ config });
     cluster = provider.getClient({
-      groupType: "Route53RecoveryControlConfig::Cluster",
+      groupType: "CodeBuild::Project",
     });
     await provider.start();
   });
@@ -28,7 +28,7 @@ describe("Route53RecoveryControlConfigCluster", async function () {
     pipe([
       () =>
         cluster.destroy({
-          live: { ClusterArn: "arn:aws:a-12345" },
+          live: { name: "my-project" },
         }),
     ])
   );
@@ -37,7 +37,7 @@ describe("Route53RecoveryControlConfigCluster", async function () {
     pipe([
       () =>
         cluster.getById({
-          ClusterArn: "a-12345",
+          name: "my-project",
         }),
     ])
   );
