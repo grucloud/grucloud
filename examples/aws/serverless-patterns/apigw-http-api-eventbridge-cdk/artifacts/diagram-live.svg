@@ -43,7 +43,7 @@
 <polygon fill="#707070" stroke="#707070" points="666.13,-351.54 675.89,-347.41 665.68,-344.56 666.13,-351.54"/>
 </g>
 <!-- Deployment::::deployment::MyHttpApi&#45;&gt;Api::::MyHttpApi -->
-<g id="edge2" class="edge">
+<g id="edge3" class="edge">
 <title>Deployment::::deployment::MyHttpApi&#45;&gt;Api::::MyHttpApi</title>
 <path fill="none" stroke="#707070" d="M262.06,-368.79C274.19,-369.72 286.33,-370.47 298,-371 422.32,-376.64 453.65,-375.75 578,-371 606.5,-369.91 637.44,-367.87 665.63,-365.3"/>
 <polygon fill="#707070" stroke="#707070" points="666.26,-368.75 675.89,-364.32 665.6,-361.78 666.26,-368.75"/>
@@ -56,7 +56,7 @@
 <text text-anchor="start" x="355" y="-308.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">$default</text>
 </g>
 <!-- Deployment::::deployment::MyHttpApi&#45;&gt;Stage::::$default -->
-<g id="edge3" class="edge">
+<g id="edge2" class="edge">
 <title>Deployment::::deployment::MyHttpApi&#45;&gt;Stage::::$default</title>
 <path fill="none" stroke="#707070" d="M262.33,-338.31C285.71,-336.39 310.09,-334.4 332.95,-332.52"/>
 <polygon fill="#707070" stroke="#707070" points="333.32,-336 343,-331.7 332.74,-329.03 333.32,-336"/>

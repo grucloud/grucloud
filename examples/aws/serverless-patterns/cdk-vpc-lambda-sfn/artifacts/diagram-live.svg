@@ -498,13 +498,13 @@
 <text text-anchor="start" x="382" y="-484.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpce::vpcStack/test&#45;VPC::com.ama...</text>
 </g>
 <!-- VpcEndpoint::::vpce::vpcStack/test&#45;VPC::com.amazonaws.us&#45;east&#45;1.states&#45;&gt;Subnet::::vpcStack/test&#45;VPC::test&#45;VPC&#45;test&#45;private&#45;subnet&#45;1&#45;us&#45;east&#45;1a -->
-<g id="edge48" class="edge">
+<g id="edge49" class="edge">
 <title>VpcEndpoint::::vpce::vpcStack/test&#45;VPC::com.amazonaws.us&#45;east&#45;1.states&#45;&gt;Subnet::::vpcStack/test&#45;VPC::test&#45;VPC&#45;test&#45;private&#45;subnet&#45;1&#45;us&#45;east&#45;1a</title>
 <path fill="none" stroke="#707070" d="M662.42,-520.77C676.55,-522.79 690.9,-524.84 705.05,-526.86"/>
 <polygon fill="#707070" stroke="#707070" points="704.92,-530.38 715.32,-528.33 705.91,-523.45 704.92,-530.38"/>
 </g>
 <!-- VpcEndpoint::::vpce::vpcStack/test&#45;VPC::com.amazonaws.us&#45;east&#45;1.states&#45;&gt;Subnet::::vpcStack/test&#45;VPC::test&#45;VPC&#45;test&#45;private&#45;subnet&#45;1&#45;us&#45;east&#45;1b -->
-<g id="edge49" class="edge">
+<g id="edge48" class="edge">
 <title>VpcEndpoint::::vpce::vpcStack/test&#45;VPC::com.amazonaws.us&#45;east&#45;1.states&#45;&gt;Subnet::::vpcStack/test&#45;VPC::test&#45;VPC&#45;test&#45;private&#45;subnet&#45;1&#45;us&#45;east&#45;1b</title>
 <path fill="none" stroke="#707070" d="M645.47,-470.94C668.16,-465.81 691.88,-460.44 714.82,-455.25"/>
 <polygon fill="#707070" stroke="#707070" points="715.62,-458.66 724.61,-453.04 714.08,-451.83 715.62,-458.66"/>

@@ -119,29 +119,29 @@
 <path fill="none" stroke="#707070" d="M301.03,-222.45C321.36,-221.78 342.03,-221.1 361.55,-220.45"/>
 <polygon fill="#707070" stroke="#707070" points="361.76,-223.95 371.64,-220.12 361.53,-216.95 361.76,-223.95"/>
 </g>
-<!-- Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="node8" class="node">
-<title>Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1617,-509 1343,-509 1343,-451 1617,-451 1617,-509"/>
-<text text-anchor="start" x="1355" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="1355" y="-464.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;ea...</text>
+<title>Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1616.5,-509 1343.5,-509 1343.5,-451 1616.5,-451 1616.5,-509"/>
+<text text-anchor="start" x="1356" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="1356" y="-464.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subne...</text>
 </g>
-<!-- VpcLink::APIGWVpcLinkToPrivateHTTPEndpoint&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- VpcLink::APIGWVpcLinkToPrivateHTTPEndpoint&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="edge9" class="edge">
-<title>VpcLink::APIGWVpcLinkToPrivateHTTPEndpoint&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
-<path fill="none" stroke="#707070" d="M1280.59,-357.18C1284.92,-359.87 1289.07,-362.81 1293,-366 1322,-389.58 1300.13,-418.26 1329,-442 1330.77,-443.46 1332.59,-444.86 1334.45,-446.2"/>
-<polygon fill="#707070" stroke="#707070" points="1332.61,-449.18 1342.88,-451.78 1336.47,-443.35 1332.61,-449.18"/>
+<title>VpcLink::APIGWVpcLinkToPrivateHTTPEndpoint&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
+<path fill="none" stroke="#707070" d="M1280.59,-357.18C1284.92,-359.87 1289.07,-362.81 1293,-366 1322,-389.58 1300.13,-418.26 1329,-442 1330.81,-443.49 1332.68,-444.92 1334.58,-446.3"/>
+<polygon fill="#707070" stroke="#707070" points="1332.95,-449.42 1343.23,-451.99 1336.8,-443.57 1332.95,-449.42"/>
 </g>
-<!-- Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
+<!-- Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
 <g id="node9" class="node">
-<title>Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1617,-433 1343,-433 1343,-375 1617,-375 1617,-433"/>
-<text text-anchor="start" x="1355" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
-<text text-anchor="start" x="1355" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;ea...</text>
+<title>Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1616.5,-433 1343.5,-433 1343.5,-375 1616.5,-375 1616.5,-433"/>
+<text text-anchor="start" x="1356" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Subnet</text>
+<text text-anchor="start" x="1356" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subne...</text>
 </g>
-<!-- VpcLink::APIGWVpcLinkToPrivateHTTPEndpoint&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
+<!-- VpcLink::APIGWVpcLinkToPrivateHTTPEndpoint&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
 <g id="edge10" class="edge">
-<title>VpcLink::APIGWVpcLinkToPrivateHTTPEndpoint&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
+<title>VpcLink::APIGWVpcLinkToPrivateHTTPEndpoint&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
 <path fill="none" stroke="#707070" d="M1266.83,-357.06C1290.03,-362.19 1314.28,-367.56 1337.74,-372.75"/>
 <polygon fill="#707070" stroke="#707070" points="1337.22,-376.22 1347.74,-374.96 1338.73,-369.38 1337.22,-376.22"/>
 </g>
@@ -152,81 +152,81 @@
 <text text-anchor="start" x="1785.5" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::Vpc</text>
 <text text-anchor="start" x="1785.5" y="-464.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpclink&#45;ex&#45;vpc</text>
 </g>
-<!-- Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc -->
+<!-- Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc -->
 <g id="edge11" class="edge">
-<title>Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc</title>
-<path fill="none" stroke="#707070" d="M1617.17,-480C1666.77,-480 1720.93,-480 1763.02,-480"/>
-<polygon fill="#707070" stroke="#707070" points="1763.18,-483.5 1773.18,-480 1763.18,-476.5 1763.18,-483.5"/>
+<title>Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc</title>
+<path fill="none" stroke="#707070" d="M1616.67,-480C1666.49,-480 1721,-480 1763.27,-480"/>
+<polygon fill="#707070" stroke="#707070" points="1763.47,-483.5 1773.47,-480 1763.47,-476.5 1763.47,-483.5"/>
 </g>
-<!-- Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc -->
+<!-- Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc -->
 <g id="edge12" class="edge">
-<title>Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc</title>
+<title>Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc</title>
 <path fill="none" stroke="#707070" d="M1616.67,-433C1666.6,-443.68 1721.23,-455.36 1763.54,-464.4"/>
 <polygon fill="#707070" stroke="#707070" points="1762.95,-467.86 1773.47,-466.52 1764.42,-461.01 1762.95,-467.86"/>
 </g>
-<!-- RouteTable::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="node10" class="node">
-<title>RouteTable::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</title>
+<title>RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1611,-585 1349,-585 1349,-527 1611,-527 1611,-585"/>
 <text text-anchor="start" x="1361" y="-565.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
-<text text-anchor="start" x="1361" y="-540.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;...</text>
+<text text-anchor="start" x="1361" y="-540.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;p...</text>
 </g>
-<!-- RouteTable::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc -->
+<!-- RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc -->
 <g id="edge13" class="edge">
-<title>RouteTable::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc</title>
+<title>RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc</title>
 <path fill="none" stroke="#707070" d="M1611.1,-528.19C1662.42,-517.22 1719.46,-505.02 1763.31,-495.65"/>
 <polygon fill="#707070" stroke="#707070" points="1764.27,-499.02 1773.31,-493.51 1762.8,-492.18 1764.27,-499.02"/>
 </g>
-<!-- RouteTable::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b -->
+<!-- RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b -->
 <g id="node11" class="node">
-<title>RouteTable::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b</title>
+<title>RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1611,-357 1349,-357 1349,-299 1611,-299 1611,-357"/>
 <text text-anchor="start" x="1361" y="-337.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTable</text>
-<text text-anchor="start" x="1361" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;...</text>
+<text text-anchor="start" x="1361" y="-312.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;p...</text>
 </g>
-<!-- RouteTable::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc -->
+<!-- RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc -->
 <g id="edge14" class="edge">
-<title>RouteTable::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc</title>
+<title>RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Vpc::vpclink&#45;ex&#45;vpc</title>
 <path fill="none" stroke="#707070" d="M1606.2,-357.09C1614.67,-359.86 1623.01,-362.83 1631,-366 1685.24,-387.49 1743.01,-420.55 1783.44,-445.54"/>
 <polygon fill="#707070" stroke="#707070" points="1781.71,-448.59 1792.05,-450.9 1785.41,-442.65 1781.71,-448.59"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="node12" class="node">
-<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1262.5,-509 1006.5,-509 1006.5,-451 1262.5,-451 1262.5,-509"/>
-<text text-anchor="start" x="1018.5" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
-<text text-anchor="start" x="1018.5" y="-464.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private...</text>
+<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1264,-509 1005,-509 1005,-451 1264,-451 1264,-509"/>
+<text text-anchor="start" x="1017.5" y="-489.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
+<text text-anchor="start" x="1017.5" y="-464.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclin...</text>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="edge16" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
-<path fill="none" stroke="#707070" d="M1262.92,-480C1285.62,-480 1309.43,-480 1332.61,-480"/>
-<polygon fill="#707070" stroke="#707070" points="1332.86,-483.5 1342.86,-480 1332.86,-476.5 1332.86,-483.5"/>
+<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
+<path fill="none" stroke="#707070" d="M1264.38,-480C1286.85,-480 1310.37,-480 1333.25,-480"/>
+<polygon fill="#707070" stroke="#707070" points="1333.37,-483.5 1343.37,-480 1333.37,-476.5 1333.37,-483.5"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="edge15" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</title>
-<path fill="none" stroke="#707070" d="M1262.92,-508.19C1287.7,-513.67 1313.8,-519.45 1338.95,-525.01"/>
-<polygon fill="#707070" stroke="#707070" points="1338.4,-528.48 1348.92,-527.22 1339.91,-521.64 1338.4,-528.48"/>
+<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a&#45;&gt;RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private1&#45;us&#45;east&#45;1a</title>
+<path fill="none" stroke="#707070" d="M1264.38,-508.52C1288.75,-513.91 1314.35,-519.57 1339.04,-525.03"/>
+<polygon fill="#707070" stroke="#707070" points="1338.3,-528.45 1348.82,-527.2 1339.81,-521.62 1338.3,-528.45"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
 <g id="node13" class="node">
-<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1262.5,-281 1006.5,-281 1006.5,-223 1262.5,-223 1262.5,-281"/>
-<text text-anchor="start" x="1018.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
-<text text-anchor="start" x="1018.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private...</text>
+<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1264,-281 1005,-281 1005,-223 1264,-223 1264,-281"/>
+<text text-anchor="start" x="1017.5" y="-261.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">EC2::RouteTableAssociation</text>
+<text text-anchor="start" x="1017.5" y="-236.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclin...</text>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
 <g id="edge18" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
-<path fill="none" stroke="#707070" d="M1262.85,-271.82C1273.68,-276.66 1283.94,-282.64 1293,-290 1322,-313.58 1300.13,-342.26 1329,-366 1330.77,-367.46 1332.59,-368.86 1334.45,-370.2"/>
-<polygon fill="#707070" stroke="#707070" points="1332.61,-373.18 1342.88,-375.78 1336.47,-367.35 1332.61,-373.18"/>
+<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
+<path fill="none" stroke="#707070" d="M1264.02,-272.35C1274.42,-277.1 1284.27,-282.9 1293,-290 1322,-313.58 1300.13,-342.26 1329,-366 1330.81,-367.49 1332.68,-368.92 1334.58,-370.3"/>
+<polygon fill="#707070" stroke="#707070" points="1332.95,-373.42 1343.23,-375.99 1336.8,-367.57 1332.95,-373.42"/>
 </g>
-<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;RouteTable::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b -->
+<!-- RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b -->
 <g id="edge17" class="edge">
-<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;RouteTable::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b</title>
-<path fill="none" stroke="#707070" d="M1262.92,-280.19C1287.7,-285.67 1313.8,-291.45 1338.95,-297.01"/>
-<polygon fill="#707070" stroke="#707070" points="1338.4,-300.48 1348.92,-299.22 1339.91,-293.64 1338.4,-300.48"/>
+<title>RouteTableAssociation::rt&#45;assoc::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b&#45;&gt;RouteTable::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;rtb&#45;private2&#45;us&#45;east&#45;1b</title>
+<path fill="none" stroke="#707070" d="M1264.38,-280.52C1288.75,-285.91 1314.35,-291.57 1339.04,-297.03"/>
+<polygon fill="#707070" stroke="#707070" points="1338.3,-300.45 1348.82,-299.2 1339.81,-293.62 1338.3,-300.45"/>
 </g>
 <!-- SecurityGroup::sg::vpclink&#45;ex&#45;vpc::sam&#45;app&#45;ECSSecurityGroup&#45;1FYEJS4ML4TYJ -->
 <g id="node14" class="node">
@@ -352,17 +352,17 @@
 <text text-anchor="start" x="999.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ECS::Service</text>
 <text text-anchor="start" x="999.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;app&#45;ECSService&#45;dVx4w3SfxVcU</text>
 </g>
-<!-- Service::sam&#45;app&#45;ECSService&#45;dVx4w3SfxVcU&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- Service::sam&#45;app&#45;ECSService&#45;dVx4w3SfxVcU&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="edge30" class="edge">
-<title>Service::sam&#45;app&#45;ECSService&#45;dVx4w3SfxVcU&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
-<path fill="none" stroke="#707070" d="M1282.2,-204.07C1286.04,-207.08 1289.66,-210.38 1293,-214 1362.58,-289.39 1259.85,-366.22 1329,-442 1330.82,-444 1332.73,-445.9 1334.72,-447.7"/>
-<polygon fill="#707070" stroke="#707070" points="1332.79,-450.64 1342.76,-454.21 1337.19,-445.2 1332.79,-450.64"/>
+<title>Service::sam&#45;app&#45;ECSService&#45;dVx4w3SfxVcU&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
+<path fill="none" stroke="#707070" d="M1282.2,-204.07C1286.04,-207.08 1289.66,-210.38 1293,-214 1362.58,-289.39 1259.85,-366.22 1329,-442 1331.04,-444.23 1333.18,-446.34 1335.43,-448.34"/>
+<polygon fill="#707070" stroke="#707070" points="1333.41,-451.2 1343.42,-454.67 1337.76,-445.72 1333.41,-451.2"/>
 </g>
-<!-- Service::sam&#45;app&#45;ECSService&#45;dVx4w3SfxVcU&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
+<!-- Service::sam&#45;app&#45;ECSService&#45;dVx4w3SfxVcU&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
 <g id="edge31" class="edge">
-<title>Service::sam&#45;app&#45;ECSService&#45;dVx4w3SfxVcU&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
-<path fill="none" stroke="#707070" d="M1282.19,-204.66C1286.01,-207.51 1289.63,-210.61 1293,-214 1341.99,-263.19 1280.29,-316.53 1329,-366 1330.86,-367.88 1332.79,-369.68 1334.79,-371.39"/>
-<polygon fill="#707070" stroke="#707070" points="1332.79,-374.27 1342.86,-377.58 1337.05,-368.71 1332.79,-374.27"/>
+<title>Service::sam&#45;app&#45;ECSService&#45;dVx4w3SfxVcU&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
+<path fill="none" stroke="#707070" d="M1282.19,-204.66C1286.01,-207.51 1289.63,-210.61 1293,-214 1341.99,-263.19 1280.29,-316.53 1329,-366 1330.9,-367.93 1332.88,-369.76 1334.93,-371.5"/>
+<polygon fill="#707070" stroke="#707070" points="1333.11,-374.52 1343.19,-377.81 1337.36,-368.96 1333.11,-374.52"/>
 </g>
 <!-- Service::sam&#45;app&#45;ECSService&#45;dVx4w3SfxVcU&#45;&gt;SecurityGroup::sg::vpclink&#45;ex&#45;vpc::sam&#45;app&#45;ECSSecurityGroup&#45;1FYEJS4ML4TYJ -->
 <g id="edge32" class="edge">
@@ -402,17 +402,17 @@
 <text text-anchor="start" x="1020.5" y="-413.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ELBv2::LoadBalancer</text>
 <text text-anchor="start" x="1020.5" y="-388.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">sam&#45;a&#45;LoadB&#45;EC9ZTKNG2RSH</text>
 </g>
-<!-- LoadBalancer::sam&#45;a&#45;LoadB&#45;EC9ZTKNG2RSH&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
+<!-- LoadBalancer::sam&#45;a&#45;LoadB&#45;EC9ZTKNG2RSH&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a -->
 <g id="edge34" class="edge">
-<title>LoadBalancer::sam&#45;a&#45;LoadB&#45;EC9ZTKNG2RSH&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
+<title>LoadBalancer::sam&#45;a&#45;LoadB&#45;EC9ZTKNG2RSH&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private1&#45;us&#45;east&#45;1a</title>
 <path fill="none" stroke="#707070" d="M1261.46,-431.87C1286.3,-437.37 1312.53,-443.17 1337.84,-448.77"/>
 <polygon fill="#707070" stroke="#707070" points="1337.35,-452.24 1347.87,-450.99 1338.86,-445.41 1337.35,-452.24"/>
 </g>
-<!-- LoadBalancer::sam&#45;a&#45;LoadB&#45;EC9ZTKNG2RSH&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
+<!-- LoadBalancer::sam&#45;a&#45;LoadB&#45;EC9ZTKNG2RSH&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b -->
 <g id="edge35" class="edge">
-<title>LoadBalancer::sam&#45;a&#45;LoadB&#45;EC9ZTKNG2RSH&#45;&gt;Subnet::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
-<path fill="none" stroke="#707070" d="M1261.46,-404C1284.66,-404 1309.07,-404 1332.81,-404"/>
-<polygon fill="#707070" stroke="#707070" points="1332.94,-407.5 1342.94,-404 1332.94,-400.5 1332.94,-407.5"/>
+<title>LoadBalancer::sam&#45;a&#45;LoadB&#45;EC9ZTKNG2RSH&#45;&gt;Subnet::vpclink&#45;ex&#45;vpc::vpclink&#45;ex&#45;subnet&#45;private2&#45;us&#45;east&#45;1b</title>
+<path fill="none" stroke="#707070" d="M1261.46,-404C1284.74,-404 1309.24,-404 1333.07,-404"/>
+<polygon fill="#707070" stroke="#707070" points="1333.23,-407.5 1343.23,-404 1333.23,-400.5 1333.23,-407.5"/>
 </g>
 <!-- LoadBalancer::sam&#45;a&#45;LoadB&#45;EC9ZTKNG2RSH&#45;&gt;SecurityGroup::sg::vpclink&#45;ex&#45;vpc::sam&#45;app&#45;LoadBalancerSG&#45;10GJVKU6RNTZ4 -->
 <g id="edge36" class="edge">

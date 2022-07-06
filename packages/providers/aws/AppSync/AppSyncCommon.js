@@ -1,6 +1,5 @@
 const assert = require("assert");
-const { pipe, get, eq, tap } = require("rubico");
-const { find } = require("rubico/x");
+const { pipe, get, tap } = require("rubico");
 
 const { createEndpoint } = require("../AwsCommon");
 
@@ -13,35 +12,34 @@ exports.findDependenciesGraphqlApi = ({ live, lives, config }) => ({
   group: "AppSync",
   ids: [
     pipe([
-      () =>
-        lives.getByType({
-          type: "GraphqlApi",
-          group: "AppSync",
-          providerName: config.providerName,
-        }),
-      tap((params) => {
-        assert(true);
+      tap(() => {
+        assert(live.apiId);
       }),
-      find(eq(get("live.apiId"), live.apiId)),
-      get("id"),
-      tap((params) => {
-        assert(true);
-      }),
+      () => live.apiId,
     ])(),
   ],
 });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#tagResource-property
 exports.tagResource =
-  ({ appSync }) =>
-  ({ live, id }) =>
-    pipe([(tags) => ({ resourceArn: id, tags }), appSync().tagResource]);
+  ({ appSync, property }) =>
+  ({ live }) =>
+    pipe([
+      tap((params) => {
+        assert(live[property]);
+      }),
+      (tags) => ({ resourceArn: live[property], tags }),
+      appSync().tagResource,
+    ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#untagResource-property
 exports.untagResource =
-  ({ appSync }) =>
-  ({ live, id }) =>
+  ({ appSync, property }) =>
+  ({ live }) =>
     pipe([
-      (tagKeys) => ({ resourceArn: id, tagKeys }),
+      tap((params) => {
+        assert(live[property]);
+      }),
+      (tagKeys) => ({ resourceArn: live[property], tagKeys }),
       appSync().untagResource,
     ]);

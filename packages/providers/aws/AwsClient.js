@@ -732,7 +732,9 @@ exports.createAwsResource = ({
   managedByOther,
   decorate,
   decorateList = ({ getById }) => getById,
+  //TODO remove
   isInstanceUp,
+  //TODO remove
   isInstanceDown,
   tagResource,
   untagResource,
@@ -742,14 +744,20 @@ exports.createAwsResource = ({
   getByName,
   configDefault,
   findDependencies,
+  //TODO remove
   createFilterPayload,
+  //TODO remove
   createShouldRetryOnExceptionCodes,
+  //TODO remove
   pickCreated,
   postCreate,
+  //TODO remove
   updateFilterParams,
   getList,
   create,
   update,
+  //TODO remove
+
   pickIdDestroy,
   destroy,
 }) =>

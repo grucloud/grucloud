@@ -13,6 +13,7 @@ const GROUPS = [
   ["CloudFront", "cloudfront"],
   ["CloudFormation", "cloudformation"],
   ["CloudTrail", "cloudtrail"],
+  ["CloudWatch", "cloudwatch"],
   ["CloudWatchEvent", "cloudwatch"],
   ["CognitoIdentityServiceProvider", "cognito-idp"],
   ["DynamoDB", "dynamodb"],
@@ -32,6 +33,7 @@ const GROUPS = [
   ["RAM", "ram"],
   ["Route53", "route53"],
   ["Route53Resolver", "route53resolver"],
+  ["Route53RecoveryControlConfig", "route53-recovery-control-config"],
   ["S3", "s3"],
   ["SecretsManager", "secretsmanager"],
   ["StepFunctions", "sns"],
@@ -44,6 +46,7 @@ const GROUPS_GLOBAL = [
   "Route53Domain", // always on us-east-1
   "CloudWatchLogs", // missing from the list provider by AWS
   "NetworkManager",
+  "Route53RecoveryReadiness",
 ];
 
 const findServicesPerRegion = ({ region }) =>

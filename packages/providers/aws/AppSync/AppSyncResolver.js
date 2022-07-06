@@ -54,8 +54,6 @@ exports.AppSyncResolver = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = pipe([() => ""]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listResolvers-property
   const getList = client.getListWithParent({
     parent: { type: "GraphqlApi", group: "AppSync" },
@@ -118,17 +116,13 @@ exports.AppSyncResolver = ({ spec, config }) => {
       () => otherProps,
       defaultsDeep({
         apiId: getField(graphqlApi, "apiId"),
-        // TODO optional or not ?
-        ...(dataSource && {
-          dataSourceName: getField(dataSource, "name"),
-        }),
+        dataSourceName: getField(dataSource, "name"),
       }),
     ])();
 
   return {
     spec,
     findId,
-    findNamespace,
     findDependencies,
     getByName,
     findName,
@@ -136,7 +130,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    tagResource: tagResource({ appSync }),
-    untagResource: untagResource({ appSync }),
+    tagResource: tagResource({ appSync, property: "resolverArn" }),
+    untagResource: untagResource({ appSync, property: "resolverArn" }),
   };
 };

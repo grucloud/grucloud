@@ -155,7 +155,7 @@ exports.AppSyncDataSource = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    tagResource: tagResource({ appSync }),
-    untagResource: untagResource({ appSync }),
+    tagResource: tagResource({ appSync, property: "dataSourceArn" }),
+    untagResource: untagResource({ appSync, property: "dataSourceArn" }),
   };
 };
