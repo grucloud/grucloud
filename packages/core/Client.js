@@ -70,6 +70,8 @@ const buildGroupType = switchCase([
 ]);
 exports.buildGroupType = buildGroupType;
 
+const defaultMemoizeResolver = () => "k";
+
 const decorateLive =
   ({ client, options, lives, config }) =>
   (live) =>
@@ -90,91 +92,112 @@ const decorateLive =
         assert(config);
       }),
       () => ({
+        memoFindName: memoize(
+          pipe([
+            () => ({ live, lives, config }),
+            client.findName,
+            tap((name) => {
+              if (!isString(name)) {
+                logger.error(`no name in ${tos(live)}`);
+                assert(false, `no name in ${tos(live)}`);
+              }
+            }),
+          ]),
+          defaultMemoizeResolver
+        ),
+        memoFindId: memoize(
+          pipe([
+            () => client.findId({ live, lives, config }),
+            tap((id) => {
+              if (!isString(id)) {
+                assert(
+                  isString(id),
+                  `no id in live: ${JSON.stringify(live, null, 4)}`
+                );
+              }
+            }),
+          ]),
+          defaultMemoizeResolver
+        ),
+        memoFindMeta: memoize(
+          pipe([() => client.findMeta({ live, lives, config })]),
+          defaultMemoizeResolver
+        ),
+        memoIsDefault: memoize(
+          pipe([() => client.isDefault({ live, lives, config })]),
+          defaultMemoizeResolver
+        ),
+        memoFindNamespace: memoize(
+          pipe([() => client.findNamespace({ live, lives, config })]),
+          defaultMemoizeResolver
+        ),
+        memoDependencies: memoize(
+          pipe([
+            () =>
+              client.findDependencies({
+                live,
+                lives,
+                config,
+              }),
+            tap((ids) => {
+              assert(Array.isArray(ids));
+            }),
+            filter(not(isEmpty)),
+            map(
+              pipe([
+                tap(({ type, group }) => {
+                  if (!type) {
+                    assert(type);
+                  }
+                  //assert(group);
+                }),
+                assign({
+                  providerName: () => client.spec.providerName,
+                  groupType: buildGroupType,
+                  ids: pipe([get("ids", []), filter(not(isEmpty)), uniq]),
+                }),
+              ])
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+          defaultMemoizeResolver
+        ),
+      }),
+      ({
+        memoFindName,
+        memoFindId,
+        memoFindMeta,
+        memoIsDefault,
+        memoFindNamespace,
+        memoDependencies,
+      }) => ({
         groupType: client.spec.groupType,
         group: client.spec.group,
         type: client.spec.type,
         providerName: client.spec.providerName,
         live,
-      }),
-      (resource) => ({
-        ...resource,
         get name() {
-          return memoize(
-            pipe([
-              () => ({ live, lives, config }),
-              client.findName,
-              tap((name) => {
-                if (!isString(name)) {
-                  logger.error(`no name in ${tos(live)}`);
-                  assert(false, `no name in ${tos(live)}`);
-                }
-              }),
-            ])
-          )();
+          return memoFindName();
         },
         get id() {
-          return memoize(
-            pipe([
-              () => client.findId({ live, lives, config }),
-              tap((id) => {
-                if (!isString(id)) {
-                  assert(
-                    isString(id),
-                    `no id in live: ${JSON.stringify(live, null, 4)}`
-                  );
-                }
-              }),
-            ])
-          )();
+          return memoFindId();
         },
         get meta() {
-          return client.findMeta({ live, lives, config });
+          return memoFindMeta();
         },
-
         get isDefault() {
-          return client.isDefault({ live, lives, config });
+          return memoIsDefault();
         },
         get namespace() {
-          //logger.debug(`findNamespace ${client.spec.groupType}`);
-          //TODO
-          return client.findNamespace({ live, lives, config });
+          return memoFindNamespace();
         },
         displayResource() {
           return client.spec.displayResource({ lives, config })(live);
         },
         get dependencies() {
-          return memoize(
-            pipe([
-              () =>
-                client.findDependencies({
-                  live,
-                  lives,
-                  config,
-                }),
-              tap((ids) => {
-                assert(Array.isArray(ids));
-              }),
-              filter(not(isEmpty)),
-              map(
-                pipe([
-                  tap(({ type, group }) => {
-                    if (!type) {
-                      assert(type);
-                    }
-                    //assert(group);
-                  }),
-                  assign({
-                    providerName: () => client.spec.providerName,
-                    groupType: buildGroupType,
-                    ids: pipe([get("ids", []), filter(not(isEmpty)), uniq]),
-                  }),
-                ])
-              ),
-              tap((params) => {
-                assert(true);
-              }),
-            ])
-          )();
+          return memoDependencies();
         },
       }),
       tap((resource) =>

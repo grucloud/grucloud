@@ -64,7 +64,7 @@ const getHostedZone = ({
       pipe([
         (hostedZone) => hostedZone.getLive({ lives, resolvedDependencies }),
         tap((live) => {
-          logger.debug(`getHostedZone live ${tos(live)}`);
+          //logger.debug(`getHostedZone live ${tos(live)}`);
         }),
       ]),
     ]),
@@ -341,9 +341,9 @@ exports.Route53Record = ({ spec, config }) => {
           }),
           get("RecordSet"),
           tap((RecordSet) => {
-            logger.debug(
-              `getByName RecordSet ${JSON.stringify(RecordSet, null, 4)}`
-            );
+            // logger.debug(
+            //   `getByName RecordSet ${JSON.stringify(RecordSet, null, 4)}`
+            // );
           }),
           find(
             pipe([buildRecordName, callProp("startsWith", targetRecordName)])

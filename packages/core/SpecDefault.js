@@ -76,13 +76,13 @@ const SpecDefault = ({ providerName }) => ({
       //TODO check for multiple default and assert
       find(and([eq(get("name"), name), get("live")])),
       tap.if(isEmpty, () => {
-        logger.info(
-          `findResource: Cannot find resource '${name}', ${JSON.stringify(
-            resources,
-            null,
-            4
-          )}`
-        );
+        // logger.info(
+        //   `findResource: Cannot find resource '${name}', ${JSON.stringify(
+        //     resources,
+        //     null,
+        //     4
+        //   )}`
+        // );
       }),
     ])(),
   findDefault: ({ resources }) =>

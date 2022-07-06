@@ -73,7 +73,7 @@ const runAsyncCommand = async ({ text, command }) => {
     }
     switch (nextState) {
       case "WAITING": {
-        logger.debug(`spinnies: create uri: ${uri}`);
+        //logger.debug(`spinnies: create uri: ${uri}`);
         spinnerList.push(uri);
         assert(
           !spinnies.pick(uri),
@@ -91,7 +91,7 @@ const runAsyncCommand = async ({ text, command }) => {
         break;
       }
       case "RUNNING": {
-        logger.debug(`spinnies RUNNING uri: ${uri}`);
+        //logger.debug(`spinnies RUNNING uri: ${uri}`);
         const spinner = spinnerMap.get(uri);
         if (!spinner) {
           logger.debug(`event RUNNING but ${uri} was not created`);
@@ -116,7 +116,7 @@ const runAsyncCommand = async ({ text, command }) => {
         break;
       }
       case "DONE": {
-        logger.debug(`spinnies DONE uri: ${uri} `);
+        //logger.debug(`spinnies DONE uri: ${uri} `);
 
         if (!hide) {
           const spinny = spinnies.pick(uri);
