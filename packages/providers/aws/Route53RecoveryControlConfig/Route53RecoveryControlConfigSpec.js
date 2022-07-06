@@ -1,11 +1,23 @@
 const assert = require("assert");
-const { tap, pipe, map, assign, eq, get, fork, omit, and } = require("rubico");
+const { tap, pipe, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { isOurMinion, compareAws } = require("../AwsCommon");
-// const {
-//   Route53RecoveryControlConfigCluster,
-// } = require("./Route53RecoveryControlConfigCluster");
+const {
+  Route53RecoveryControlConfigCluster,
+} = require("./Route53RecoveryControlConfigCluster");
+
+const {
+  Route53RecoveryControlConfigControlPanel,
+} = require("./Route53RecoveryControlConfigControlPanel");
+
+const {
+  Route53RecoveryControlConfigRoutingControl,
+} = require("./Route53RecoveryControlConfigRoutingControl");
+
+const {
+  Route53RecoveryControlConfigSafetyRule,
+} = require("./Route53RecoveryControlConfigSafetyRule");
 
 const GROUP = "Route53RecoveryControlConfig";
 
@@ -13,11 +25,47 @@ const compareRoute53RecoveryControlConfig = compareAws({});
 
 module.exports = pipe([
   () => [
-    // {
-    //   type: "Cell",
-    //   Client: Route53RecoveryControlConfigCluster,
-    //   omitProperties: [],
-    // },
+    {
+      type: "Cluster",
+      Client: Route53RecoveryControlConfigCluster,
+      inferName: pipe([get("properties.Name")]),
+      omitProperties: ["ClusterArn", "Status"],
+    },
+    {
+      type: "ControlPanel",
+      Client: Route53RecoveryControlConfigControlPanel,
+      inferName: pipe([get("properties.Name")]),
+      dependencies: {
+        cluster: { type: "Cluster", group: GROUP, parent: true },
+      },
+      omitProperties: [
+        "ClusterArn",
+        "ControlPanelArn",
+        "Status",
+        "RoutingControlCount",
+      ],
+    },
+    {
+      type: "RoutingControl",
+      Client: Route53RecoveryControlConfigRoutingControl,
+      inferName: pipe([get("properties.Name")]),
+      dependencies: {
+        controlPanel: { type: "ControlPanel", group: GROUP, parent: true },
+      },
+      omitProperties: ["RoutingControlArn", "ControlPanelArn", "Status"],
+    },
+    {
+      type: "SafetyRule",
+      Client: Route53RecoveryControlConfigSafetyRule,
+      inferName: pipe([get("properties.Name")]),
+      dependencies: {
+        controlPanel: { type: "ControlPanel", group: GROUP, parent: true },
+      },
+      omitProperties: [
+        "AssertionRule.ControlPanelArn",
+        "GatingRule.ControlPanelArn",
+      ],
+    },
   ],
   map(
     defaultsDeep({

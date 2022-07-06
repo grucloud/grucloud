@@ -192,6 +192,7 @@ module.exports = pipe([
         },
         apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
         vpcEndpoint: { type: "VpcEndpoint", group: "EC2" },
+        healthCheck: { type: "healthCheck", group: "Route53" },
       },
       Client: Route53Record,
       isOurMinion: () => true,
