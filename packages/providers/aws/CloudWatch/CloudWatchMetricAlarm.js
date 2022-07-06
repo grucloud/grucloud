@@ -1,14 +1,23 @@
 const assert = require("assert");
-const { pipe, tap, get, omit, filter, eq, assign } = require("rubico");
-const { defaultsDeep, pluck, callProp } = require("rubico/x");
+const { pipe, tap, map, get, omit, filter, eq, assign } = require("rubico");
+const { defaultsDeep, pluck, callProp, values } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./CloudWatchCommon");
 
 const AlarmDependenciesDimensions = {
-  ec2Instance: { type: "Instance", group: "EC2" },
-  appSyncGraphqlApi: { type: "GraphqlApi", group: "AppSync" },
+  ec2Instance: { type: "Instance", group: "EC2", dimensionId: "InstanceId" },
+  appSyncGraphqlApi: {
+    type: "GraphqlApi",
+    group: "AppSync",
+    dimensionId: "GraphQLAPIId",
+  },
+  route53HealhCheck: {
+    type: "HealthCheck",
+    group: "Route53",
+    dimensionId: "HealthCheckId",
+  },
 };
 
 exports.AlarmDependenciesDimensions = AlarmDependenciesDimensions;
@@ -62,6 +71,22 @@ const model = ({ config }) => ({
   },
 });
 
+const findDependenciesDimension = ({ live }) =>
+  pipe([
+    () => AlarmDependenciesDimensions,
+    values,
+    map(({ type, group, dimensionId }) => ({
+      type,
+      group,
+      ids: pipe([
+        () => live,
+        get("Dimensions"),
+        filter(eq(get("Name"), dimensionId)),
+        pluck("Value"),
+      ])(),
+    })),
+  ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html
 exports.CloudWatchMetricAlarm = ({ spec, config }) =>
   createAwsResource({
@@ -80,26 +105,7 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) =>
           filter(callProp("startsWith", "arn:aws:sns")),
         ])(),
       },
-      {
-        type: "GraphqlApi",
-        group: "AppSync",
-        ids: pipe([
-          () => live,
-          get("Dimensions"),
-          filter(eq(get("Name"), "GraphQLAPIId")),
-          pluck("Value"),
-        ])(),
-      },
-      {
-        type: "Instance",
-        group: "EC2",
-        ids: pipe([
-          () => live,
-          get("Dimensions"),
-          filter(eq(get("Name"), "InstanceId")),
-          pluck("Value"),
-        ])(),
-      },
+      ...findDependenciesDimension({ live }),
     ],
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ AlarmName: name }), getById]),

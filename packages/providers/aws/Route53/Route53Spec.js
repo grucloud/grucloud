@@ -11,7 +11,7 @@ const {
   switchCase,
   filter,
 } = require("rubico");
-const { prepend, isEmpty, find } = require("rubico/x");
+const { prepend, isEmpty, find, includes } = require("rubico/x");
 const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
@@ -55,6 +55,7 @@ module.exports = pipe([
       inferName: ({ properties, dependenciesSpec }) =>
         pipe([
           () => properties,
+          get("HealthCheckConfig"),
           switchCase([
             ({ Type }) =>
               pipe([
@@ -67,7 +68,8 @@ module.exports = pipe([
                 ],
                 includes(Type),
               ])(),
-            ({ Type, ResourcePath }) => `heathcheck::${Type}::${ResourcePath}`,
+            ({ Type, FullyQualifiedDomainName, IPAddress }) =>
+              `heathcheck::${Type}::${FullyQualifiedDomainName || IPAddress}`,
             //TODO
             eq(get("Type"), "CALCULATED"),
             pipe([get("ResourcePath"), prepend("heathcheck::CALCULATED::")]),
@@ -79,7 +81,17 @@ module.exports = pipe([
             eq(get("Type"), "RECOVERY_CONTROL"),
             () => `heathcheck::RECOVERY_CONTROL::${routingControl}`,
           ]),
-        ]),
+        ])(),
+      propertiesDefault: {
+        HealthCheckConfig: {
+          RequestInterval: 30,
+          FailureThreshold: 3,
+          MeasureLatency: false,
+          Inverted: false,
+          Disabled: false,
+          EnableSNI: false,
+        },
+      },
       omitProperties: ["Id", "CallerReference", "LinkedService"],
       filterLive: ({ providerConfig }) =>
         pipe([

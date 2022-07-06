@@ -640,6 +640,9 @@ exports.replaceWithName =
             ])(),
         ])
       ),
+      tap((params) => {
+        assert(true);
+      }),
       switchCase([
         isEmpty,
         () => Id,

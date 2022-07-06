@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project health-check
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatch
+++++ MetricAlarm (1)
++++ Route53
+++++ HealthCheck (1)
++++ SNS
+++++ Topic (1)
+@endmindmap

@@ -65,6 +65,7 @@ exports.createResources = () => [
 - [AppSync Graphql](../AppSync/GraphqlApi.md)
 - [Certificate](../ACM/Certificate.md)
 - [EC2 Instance](../EC2/Instance.md)
+- [Route53 Health Check](../Route53/HealthCheck.md)
 
 ## Used By
 

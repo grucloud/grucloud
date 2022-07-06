@@ -1,15 +1,6 @@
 const assert = require("assert");
-const {
-  tap,
-  pipe,
-  map,
-  assign,
-  eq,
-  get,
-  switchCase,
-  filter,
-} = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { tap, pipe, map, assign, eq, get, switchCase } = require("rubico");
+const { defaultsDeep, find, isEmpty, values } = require("rubico/x");
 const { replaceWithName } = require("@grucloud/core/Common");
 
 const {
@@ -26,6 +17,28 @@ const {
 const GROUP = "CloudWatch";
 
 const compareCloudWatch = compareAws({});
+
+const replaceDimension =
+  ({ providerConfig, lives }) =>
+  ({ Name, Value, ...other }) =>
+    pipe([
+      () => AlarmDependenciesDimensions,
+      values,
+      find(eq(get("dimensionId"), Name)),
+      switchCase([
+        isEmpty,
+        () => ({ Value }),
+        ({ type, group }) => ({
+          Value: replaceWithName({
+            groupType: `${group}::${type}`,
+            providerConfig,
+            lives,
+            path: "id",
+          })(Value),
+        }),
+      ]),
+      defaultsDeep({ Name, ...other }),
+    ])();
 
 module.exports = pipe([
   () => [
@@ -60,41 +73,7 @@ module.exports = pipe([
             ]),
             Dimensions: pipe([
               get("Dimensions"),
-              map(
-                pipe([
-                  switchCase([
-                    // GraphqlApi
-                    eq(get("Name"), "GraphQLAPIId"),
-                    pipe([
-                      assign({
-                        Value: pipe([
-                          get("Value"),
-                          replaceWithName({
-                            groupType: "AppSync::GraphqlApi",
-                            providerConfig,
-                            lives,
-                            path: "id",
-                          }),
-                        ]),
-                      }),
-                    ]),
-                    // EC2 Instance
-                    eq(get("Name"), "InstanceId"),
-                    assign({
-                      Value: pipe([
-                        get("Value"),
-                        replaceWithName({
-                          groupType: "EC2::Instance",
-                          providerConfig,
-                          lives,
-                          path: "id",
-                        }),
-                      ]),
-                    }),
-                    identity,
-                  ]),
-                ])
-              ),
+              map(pipe([replaceDimension({ providerConfig, lives })])),
             ]),
           }),
           tap((params) => {
