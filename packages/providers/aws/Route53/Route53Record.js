@@ -64,7 +64,7 @@ const getHostedZone = ({
       pipe([
         (hostedZone) => hostedZone.getLive({ lives, resolvedDependencies }),
         tap((live) => {
-          logger.debug(`getHostedZone live ${tos(live)}`);
+          //logger.debug(`getHostedZone live ${tos(live)}`);
         }),
       ]),
     ]),
@@ -79,6 +79,11 @@ exports.Route53Record = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives }) => [
     { type: "HostedZone", group: "Route53", ids: [live.HostedZoneId] },
+    {
+      type: "HealthCheck",
+      group: "Route53",
+      ids: [pipe([() => live, get("HealthCheckId")])()],
+    },
     {
       type: "VpcEndpoint",
       group: "EC2",
@@ -341,9 +346,9 @@ exports.Route53Record = ({ spec, config }) => {
           }),
           get("RecordSet"),
           tap((RecordSet) => {
-            logger.debug(
-              `getByName RecordSet ${JSON.stringify(RecordSet, null, 4)}`
-            );
+            // logger.debug(
+            //   `getByName RecordSet ${JSON.stringify(RecordSet, null, 4)}`
+            // );
           }),
           find(
             pipe([buildRecordName, callProp("startsWith", targetRecordName)])
@@ -598,6 +603,7 @@ exports.Route53Record = ({ spec, config }) => {
       distribution,
       userPoolDomain,
       vpcEndpoint,
+      healthCheck,
     },
   }) =>
     pipe([
@@ -605,6 +611,10 @@ exports.Route53Record = ({ spec, config }) => {
         //assert(hostedZone, "missing hostedZone dependencies");
       }),
       () => properties,
+      when(
+        () => healthCheck,
+        defaultsDeep({ HealthCheckId: getField(healthCheck, "Id") })
+      ),
       defaultsDeep(certificateRecord({ certificate })),
       defaultsDeep(loadBalancerRecord({ loadBalancer, hostedZone })),
       defaultsDeep(apiGatewayV2Record({ apiGatewayV2DomainName, hostedZone })),

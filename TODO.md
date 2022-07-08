@@ -4,6 +4,7 @@
 
 ## Aws
 
+- untagResource check for objects
 - createOrganizationalUnit
 
 - lives get error

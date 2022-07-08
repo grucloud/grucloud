@@ -17,18 +17,20 @@ exports.buildRecordName = pipe([
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
 exports.tagResource =
-  ({ route53, ResourceType }) =>
+  ({ ResourceType }) =>
+  ({ endpoint }) =>
   ({ id }) =>
     pipe([
       (AddTags) => ({ ResourceId: id, AddTags, ResourceType }),
-      route53().changeTagsForResource,
+      endpoint().changeTagsForResource,
     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
 exports.untagResource =
-  ({ route53, ResourceType }) =>
+  ({ ResourceType }) =>
+  ({ endpoint }) =>
   ({ id }) =>
     pipe([
       (RemoveTagKeys) => ({ ResourceId: id, RemoveTagKeys, ResourceType }),
-      route53().changeTagsForResource,
+      endpoint().changeTagsForResource,
     ]);

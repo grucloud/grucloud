@@ -1,0 +1,35 @@
+{
+  "name": "aws-route53-recovery-control",
+  "version": "7.7.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tree": "gc tree",
+    "graph": "gc graph",
+    "gencode": "gc gencode",
+    "list": "gc list",
+    "list-primary": "gc list -p aws-primary -a",
+    "list-s3": "gc list -t S3::Bucket -t S3::Object",
+    "list-graph": "gc list -g",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "destroy-regionB": "gc destroy -f -p aws-secondary",
+    "onDeployed": "gc run --onDeployed",
+    "onDestroyed": "gc run --onDestroyed",
+    "info": "gc info",
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^7.7.0",
+    "@grucloud/provider-aws": "^7.7.0",
+    "rubico": "^1.8.11"
+  },
+  "devDependencies": {
+    "mocha": "^9.2.2",
+    "mocha-junit-reporter": "^2.0.2"
+  }
+}

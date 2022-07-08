@@ -136,7 +136,7 @@ exports.replaceOwner = ({ providerConfig }) =>
     (resource) => () => "`" + resource + "`",
   ]);
 
-exports.getNewCallerReference = () => `grucloud-${new Date()}-${uuidv4()}`;
+exports.getNewCallerReference = () => `grucloud-${uuidv4()}`;
 
 const extractKeys = ({ key }) =>
   switchCase([Array.isArray, pipe([pluck(key)]), keys]);

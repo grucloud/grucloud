@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project codebuild-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ CodeBuild
+++++ Project (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
+@endmindmap

@@ -519,7 +519,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
     getList,
     configDefault,
     findNamespace: findNamespaceInTags(config),
-    tagResource: tagResource({ route53, ResourceType }),
-    untagResource: untagResource({ route53, ResourceType }),
+    tagResource: tagResource({ ResourceType })({ endpoint: route53 }),
+    untagResource: untagResource({ ResourceType })({ endpoint: route53 }),
   };
 };

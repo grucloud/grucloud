@@ -1,18 +1,27 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, switchCase } = require("rubico");
-const { defaultsDeep, prepend } = require("rubico/x");
+const { pipe, tap, get, eq, switchCase, assign } = require("rubico");
+const { defaultsDeep, prepend, includes, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, getNewCallerReference } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./Route53Common");
 
-const pickId = pipe([
-  tap(({ Id }) => {
-    assert(Id);
-  }),
-  ({ Id }) => ({ HealthCheckId: Id }),
-]);
+const ResourceType = "healthcheck";
+
+const pickId = pipe([({ Id }) => ({ HealthCheckId: Id })]);
+
+const decorate = ({ endpoint, getById }) =>
+  pipe([
+    getById,
+    assign({
+      Tags: pipe([
+        ({ Id }) => ({ ResourceId: Id, ResourceType: "healthcheck" }),
+        endpoint().listTagsForResource,
+        get("ResourceTagSet.Tags"),
+      ]),
+    }),
+  ]);
 
 const model = ({ config }) => ({
   package: "route-53",
@@ -28,12 +37,17 @@ const model = ({ config }) => ({
   getList: {
     method: "listHealthChecks",
     getParam: "HealthChecks",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createHealthCheck-property
   create: {
     method: "createHealthCheck",
-    //TODO TAGS
     pickCreated: ({ payload }) => pipe([get("HealthCheck")]),
+    postCreate: ({ endpoint, payload: { Tags } }) =>
+      pipe([
+        ({ Id }) => ({ ResourceId: Id, AddTags: Tags, ResourceType }),
+        endpoint().changeTagsForResource,
+      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#updateHealthCheck-property
   update: {
@@ -54,6 +68,7 @@ exports.Route53HealthCheck = ({ spec, config }) =>
     findName: ({ live, lives }) =>
       pipe([
         () => live,
+        get("HealthCheckConfig"),
         switchCase([
           ({ Type }) =>
             pipe([
@@ -66,7 +81,8 @@ exports.Route53HealthCheck = ({ spec, config }) =>
               ],
               includes(Type),
             ])(),
-          ({ Type, ResourcePath }) => `heathcheck::${Type}::${ResourcePath}`,
+          ({ Type, FullyQualifiedDomainName, IPAddress }) =>
+            `heathcheck::${Type}::${FullyQualifiedDomainName || IPAddress}`,
           //TODO
           eq(get("Type"), "CALCULATED"),
           pipe([get("ResourcePath"), prepend("heathcheck::CALCULATED::")]),
@@ -89,7 +105,10 @@ exports.Route53HealthCheck = ({ spec, config }) =>
               prepend("heathcheck::RECOVERY_CONTROL"),
             ])(),
         ]),
-      ]),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
     findId: pipe([get("live.Id")]),
     findDependencies: ({ live, lives }) => [
       {
@@ -113,17 +132,17 @@ exports.Route53HealthCheck = ({ spec, config }) =>
       {
         type: "RoutingControl",
         group: "Route53RecoveryControlConfig",
-        ids: [pipe([() => live, get("RoutingControlArn")])()],
+        ids: [pipe([() => live, get("HealthCheckConfig.RoutingControlArn")])()],
       },
     ],
     getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
+    tagResource: tagResource({ ResourceType }),
+    untagResource: untagResource({ ResourceType }),
     configDefault: ({
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: { alarm, routingControl },
+      dependencies: { routingControl },
     }) =>
       pipe([
         () => otherProps,
@@ -131,5 +150,13 @@ exports.Route53HealthCheck = ({ spec, config }) =>
           CallerReference: getNewCallerReference(),
           Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
+        when(
+          () => routingControl,
+          defaultsDeep({
+            HealthCheckConfig: {
+              RoutingControlArn: getField(routingControl, "RoutingControlArn"),
+            },
+          })
+        ),
       ])(),
   });
