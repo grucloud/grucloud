@@ -56,6 +56,7 @@ The list of properties are defined in [CreateListenerCommandInput](https://docs.
 ## Used By
 
 - [Api Gateway V2 Integration](../ApiGatewayV2/Integration.md)
+- [CodeDeploy DeploymentGroup](../CodeDeployDeploymentGroup.md)
 
 ## List
 

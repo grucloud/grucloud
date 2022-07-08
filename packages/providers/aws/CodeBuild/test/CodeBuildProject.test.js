@@ -2,14 +2,14 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe.only("CodeBuildProject", async function () {
+describe("CodeBuildProject", async function () {
   let config;
   let provider;
-  let cluster;
+  let project;
 
   before(async function () {
     provider = AwsProvider({ config });
-    cluster = provider.getClient({
+    project = provider.getClient({
       groupType: "CodeBuild::Project",
     });
     await provider.start();
@@ -17,7 +17,7 @@ describe.only("CodeBuildProject", async function () {
   it(
     "list",
     pipe([
-      () => cluster.getList(),
+      () => project.getList(),
       tap(({ items }) => {
         assert(Array.isArray(items));
       }),
@@ -27,7 +27,7 @@ describe.only("CodeBuildProject", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        cluster.destroy({
+        project.destroy({
           live: { name: "my-project" },
         }),
     ])
@@ -36,7 +36,7 @@ describe.only("CodeBuildProject", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        cluster.getById({
+        project.getById({
           name: "my-project",
         }),
     ])
@@ -45,7 +45,7 @@ describe.only("CodeBuildProject", async function () {
     "getByName with invalid id",
     pipe([
       () =>
-        cluster.getByName({
+        project.getByName({
           name: "a-124",
         }),
     ])

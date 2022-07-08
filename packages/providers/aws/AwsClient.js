@@ -108,6 +108,9 @@ const AwsClient =
                 assert(true);
               }),
               when(() => getField, get(getField)),
+              tap((params) => {
+                assert(true);
+              }),
               when(Array.isArray, first),
               unless(
                 isEmpty,

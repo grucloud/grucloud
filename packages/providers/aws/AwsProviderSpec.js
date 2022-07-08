@@ -11,9 +11,9 @@ const GROUPS = [
   ["AppSync", "appsync"],
   ["Autoscaling", "autoscaling"],
   ["CodeBuild", "codebuild"],
-  //TODO
-  //["CodeDeploy", "codedeploy"],
-  //["CodePipeline", "codepipeline"],
+  ["CodeDeploy", "codedeploy"],
+  ["CodePipeline", "codepipeline"],
+  ["CodeStarConnections", "codestar-connections"],
   ["CloudFront", "cloudfront"],
   ["CloudFormation", "cloudformation"],
   ["CloudTrail", "cloudtrail"],

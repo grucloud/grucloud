@@ -54,6 +54,7 @@ The list of properties are the parameter of [CreateTargetGroupCommandInput](http
 ## Used By
 
 - [AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
+- [CodeDeploy DeploymentGroup](../CodeDeployDeploymentGroup.md)
 
 ## List
 

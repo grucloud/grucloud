@@ -751,6 +751,9 @@ exports.ResourceMaker = ({
 
   const update = ({ payload, diff, live, resolvedDependencies }) =>
     pipe([
+      tap((params) => {
+        assert(true);
+      }),
       () => getLive({ resolvedDependencies }),
       tap.if(isEmpty, () => {
         throw Error(`Resource ${toString()} does not exist`);

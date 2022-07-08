@@ -163,6 +163,7 @@ exports.ELBListener = ({ spec, config }) => {
           {
             Type: "forward",
             TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
+            Order: 1,
             ForwardConfig: {
               TargetGroups: [
                 {
@@ -171,6 +172,7 @@ exports.ELBListener = ({ spec, config }) => {
                 },
               ],
               TargetGroupStickinessConfig: {
+                DurationSeconds: 3600,
                 Enabled: false,
               },
             },

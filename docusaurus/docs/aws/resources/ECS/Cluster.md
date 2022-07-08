@@ -37,6 +37,10 @@ exports.createResources = () => [
 - [Capacity Provider](./CapacityProvider.md)
 - [KMS Key](../KMS/Key.md)
 
+## Used By
+
+- [CodeDeploy DeploymentGroup](../CodeDeployDeploymentGroup.md)
+
 ## Full Examples
 
 - [Simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/ECS/ecs-simple)

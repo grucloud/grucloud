@@ -224,6 +224,7 @@ module.exports = pipe([
         "createdBy",
         "networkConfiguration.awsvpcConfiguration.securityGroups",
         "networkConfiguration.awsvpcConfiguration.subnets",
+        "taskSets",
       ],
       propertiesDefault: { propagateTags: "NONE" },
       compare: compareECS({

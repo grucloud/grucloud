@@ -56,6 +56,10 @@ exports.createResources = () => [
 - [Subnet](../EC2/Subnet.md)
 - [SecurityGroup](../EC2/SecurityGroup.md)
 
+## Used By
+
+- [CodePipeline Pipeline](../CodePipeline/Pipeline.md)
+
 ## Properties
 
 - [CreateProjectCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-codebuild/interfaces/createprojectcommandinput.html)
