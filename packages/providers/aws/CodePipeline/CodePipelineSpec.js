@@ -7,8 +7,8 @@ const { isOurMinion, compareAws } = require("../AwsCommon");
 const { CodePipelinePipeline } = require("./CodePipelinePipeline");
 
 const GROUP = "CodePipeline";
-
-const compareCodePipeline = compareAws({ tagsKey: "tags", key: "key" });
+const tagsKey = "tags";
+const compareCodePipeline = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
@@ -80,6 +80,7 @@ module.exports = pipe([
     defaultsDeep({
       group: GROUP,
       isOurMinion,
+      tagsKey,
       compare: compareCodePipeline({}),
     })
   ),

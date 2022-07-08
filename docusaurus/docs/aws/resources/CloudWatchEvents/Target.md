@@ -73,6 +73,8 @@ exports.createResources = () => [
 - [CloudWatchEvents Rule](../CloudWatchEvents/Rule.md)
 - [CloudWatchEvent Api Destination](../CloudWatchEvents/ApiDestination.md)
 - [CloudWatchLogs Log Group](../CloudWatchLogs/LogGroup.md)
+- [CodeBuild Project](../CodeBuild/Project.md)
+- [CodePipeline Pipeline](../CodePipeline/Pipeline.md)
 - [ECS Task](../ECS/Task.md)
 - [IAM Role](../IAM/Role.md)
 - [Lambda Function](../Lambda/Function.md)

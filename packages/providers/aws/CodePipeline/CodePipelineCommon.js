@@ -8,9 +8,9 @@ exports.tagResource =
   ({ live }) =>
     pipe([
       tap((params) => {
-        assert(live[property]);
+        assert(get(property)(live));
       }),
-      (tags) => ({ resourceArn: live[property], tags }),
+      (tags) => ({ resourceArn: get(property)(live), tags }),
       endpoint().tagResource,
     ]);
 
@@ -23,6 +23,6 @@ exports.untagResource =
       tap((params) => {
         assert(live[property]);
       }),
-      (tagKeys) => ({ resourceArn: live[property], tagKeys }),
+      (tagKeys) => ({ resourceArn: get(property)(live), tagKeys }),
       endpoint().untagResource,
     ]);

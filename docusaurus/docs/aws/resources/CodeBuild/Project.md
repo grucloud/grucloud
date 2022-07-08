@@ -59,6 +59,7 @@ exports.createResources = () => [
 ## Used By
 
 - [CodePipeline Pipeline](../CodePipeline/Pipeline.md)
+- [CloudWatchEvents Target](../CloudWatchEvents/Target.md)
 
 ## Properties
 

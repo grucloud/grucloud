@@ -151,6 +151,38 @@ exports.CodePipelinePipeline = ({ spec, config }) =>
           ),
         ])(),
       },
+      {
+        type: "Repository",
+        group: "ECR",
+        ids: pipe([
+          () => live,
+          get("pipeline.stages"),
+          flatMap(
+            pipe([
+              pipe([
+                get("actions"),
+                filter(eq(get("actionTypeId.provider"), "ECR")),
+                map(
+                  pipe([
+                    get("configuration.RepositoryName"),
+                    (name) =>
+                      lives.getByName({
+                        name,
+                        type: "Repository",
+                        group: "ECR",
+                        providerName: config.providerName,
+                      }),
+                    tap((params) => {
+                      assert(true);
+                    }),
+                    get("id"),
+                  ])
+                ),
+              ]),
+            ])
+          ),
+        ])(),
+      },
     ],
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ pipeline: { name } }), getById]),

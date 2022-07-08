@@ -12,7 +12,10 @@ const { envVarName } = require("@grucloud/core/generatorUtils");
 const { CloudWatchEventConnection } = require("./CloudWatchEventConnection");
 const { CloudWatchEventBus } = require("./CloudWatchEventBus");
 const { CloudWatchEventRule } = require("./CloudWatchEventRule");
-const { CloudWatchEventTarget } = require("./CloudWatchEventTarget");
+const {
+  CloudWatchEventTarget,
+  EventTargetDependencies,
+} = require("./CloudWatchEventTarget");
 const {
   CloudWatchEventApiDestination,
 } = require("./CloudWatchEventApiDestination");
@@ -194,15 +197,7 @@ module.exports = pipe([
         rule: { type: "Rule", group: "CloudWatchEvents", parent: true },
         role: { type: "Role", group: "IAM" },
         //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putTargets-property
-        apiDestination: { type: "ApiDestination", group: "CloudWatchEvents" },
-        logGroup: { type: "LogGroup", group: "CloudWatchLogs" },
-        sqsQueue: { type: "Queue", group: "SQS" },
-        snsTopic: { type: "Topic", group: "SNS" },
-        apiGatewayRest: { type: "RestApi", group: "APIGateway" },
-        eventBus: { type: "EventBus", group: "CloudWatchEvents" },
-        ecsTask: { type: "Task", group: "ECS" },
-        lambdaFunction: { type: "Function", group: "Lambda" },
-        sfnStateMachine: { type: "StateMachine", group: "StepFunctions" },
+        ...EventTargetDependencies,
       },
     },
   ],

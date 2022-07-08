@@ -1,5 +1,4 @@
 const assert = require("assert");
-const querystring = require("querystring");
 const {
   map,
   pipe,
@@ -23,9 +22,7 @@ const {
   defaultsDeep,
   size,
   isEmpty,
-  first,
   last,
-  keys,
   when,
 } = require("rubico/x");
 const moment = require("moment");

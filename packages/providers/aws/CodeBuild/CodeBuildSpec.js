@@ -7,6 +7,8 @@ const { CodeBuildProject } = require("./CodeBuildProject");
 
 const GROUP = "CodeBuild";
 
+const tagsKey = "tags";
+
 const compareCodeBuild = compareAws({ tagsKey: "Tags" });
 
 module.exports = pipe([
@@ -52,6 +54,7 @@ module.exports = pipe([
     defaultsDeep({
       group: GROUP,
       isOurMinion,
+      tagsKey: "tags",
       compare: compareCodeBuild({}),
     })
   ),

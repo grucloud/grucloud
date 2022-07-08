@@ -1,6 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, and, switchCase } = require("rubico");
-const { defaultsDeep, callProp, find, when } = require("rubico/x");
+const { pipe, tap, get, eq, and, assign, map } = require("rubico");
+const {
+  defaultsDeep,
+  callProp,
+  find,
+  when,
+  values,
+  keys,
+  first,
+  isEmpty,
+} = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -10,11 +19,85 @@ const {
 } = require("./CloudWatchEventCommon");
 
 //TODO
+// Batch job queue
+// API Gateway v2
+// Amazon EC2 CreateSnapshot API call
+// Amazon EC2 RebootInstances API call
+// Amazon EC2 StopInstances API call
+// Amazon EC2 TerminateInstances API call
+// Firehose delivery stream (Kinesis Data Firehose)
+// Inspector assessment template (Amazon Inspector)
+// Kinesis stream (Kinesis Data Stream)
+// Redshift clusters (Data API statement execution)
+// SSM Automation
+// SSM OpsItem
+// SSM Run Command
+
+const EventTargetDependencies = {
+  rule: { type: "Rule", group: "CloudWatchEvents", parent: true },
+  role: { type: "Role", group: "IAM" },
+  //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putTargets-property
+  apiDestination: {
+    type: "ApiDestination",
+    group: "CloudWatchEvents",
+    buildArn: () => get("ApiDestinationArn"),
+  },
+  logGroup: {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    buildArn: () => get("arn"),
+  },
+  sqsQueue: {
+    type: "Queue",
+    group: "SQS",
+    buildArn: () => get("Attributes.QueueArn"),
+  },
+  snsTopic: { type: "Topic", group: "SNS", buildArn: () => get("TopicArn") },
+  apiGatewayRest: {
+    type: "RestApi",
+    group: "APIGateway",
+    buildArn:
+      () =>
+      ({ id }) =>
+        `arn:aws:apigateway:${config.region}::/restapis/${id}`,
+  },
+  eventBus: {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    buildArn:
+      ({ config }) =>
+      ({ Name }) =>
+        `arn:aws:events:${
+          config.region
+        }:${config.accountId()}:event-bus/${Name}`,
+  },
+  ecsTask: { type: "Task", group: "ECS", buildArn: () => get("taskArn") },
+  lambdaFunction: {
+    type: "Function",
+    group: "Lambda",
+    buildArn: () => get("Configuration.FunctionArn"),
+  },
+  sfnStateMachine: {
+    type: "StateMachine",
+    group: "StepFunctions",
+    buildArn: () => get("stateMachineArn"),
+  },
+  codePipeline: {
+    type: "Pipeline",
+    group: "CodePipeline",
+    buildArn: () => get("metadata.pipelineArn"),
+  },
+  codeBuildProject: {
+    type: "Project",
+    group: "CodeBuild",
+    buildArn: () => get("arn"),
+  },
+};
+
+exports.EventTargetDependencies = EventTargetDependencies;
+
 const findId = get("live.Id");
 const findName = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   get("live"),
   tap(({ Id, Rule }) => {
     assert(Id);
@@ -32,28 +115,36 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     callProp("startsWith", "arn:aws:autoscaling"),
   ]);
 
-  const findTargetDependency = ({ type, group, live, lives }) => ({
-    type,
-    group,
-    ids: [
-      pipe([
-        () => live,
-        get("Arn"),
-        tap((Arn) => {
-          assert(Arn);
-        }),
-        (Arn) =>
-          lives.getById({
-            id: Arn,
-            type,
-            group,
-            providerName: config.providerName,
+  const findTargetDependency =
+    ({ live, lives }) =>
+    ({ type, group }) => ({
+      type,
+      group,
+      ids: [
+        pipe([
+          () => live,
+          get("Arn"),
+          tap((Arn) => {
+            assert(Arn);
           }),
-      ])(),
-    ],
-  });
+          (Arn) =>
+            lives.getById({
+              id: Arn,
+              type,
+              group,
+              providerName: config.providerName,
+            }),
+        ])(),
+      ],
+    });
 
-  // findDependencies for CloudWatchEventRule
+  const findTargetDependenciesEventTarget = ({ live, lives }) =>
+    pipe([
+      () => EventTargetDependencies,
+      values,
+      map(findTargetDependency({ live, lives })),
+    ])();
+
   const findDependencies = ({ live, lives }) => [
     {
       type: "Rule",
@@ -72,9 +163,6 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
               group: "CloudWatchEvents",
               providerName: config.providerName,
             }),
-          tap((params) => {
-            assert(true);
-          }),
           get("id"),
         ])(),
       ],
@@ -84,38 +172,11 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
       group: "IAM",
       ids: [live.RoleArn],
     },
-    findTargetDependency({ type: "Queue", group: "SQS", live, lives }),
-    findTargetDependency({ type: "Topic", group: "SNS", live, lives }),
-    findTargetDependency({
-      type: "LogGroup",
-      group: "CloudWatchLogs",
-      live,
-      lives,
-    }),
-    findTargetDependency({ type: "RestApi", group: "APIGateway", live, lives }),
-    findTargetDependency({
-      type: "EventBus",
-      group: "CloudWatchEvents",
-      live,
-      lives,
-    }),
-    findTargetDependency({ type: "Task", group: "ECS", live, lives }),
-    findTargetDependency({ type: "Function", group: "Lambda", live, lives }),
-    findTargetDependency({
-      type: "StateMachine",
-      group: "StepFunctions",
-      live,
-      lives,
-    }),
+    ...findTargetDependenciesEventTarget({ live, lives }),
   ];
 
   const decorate = ({ parent }) =>
     pipe([
-      tap((params) => {
-        assert(parent);
-        assert(parent.Name);
-        assert(parent.EventBusName);
-      }),
       defaultsDeep({ Rule: parent.Name, EventBusName: parent.EventBusName }),
     ]);
 
@@ -139,33 +200,14 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
   const getById =
     ({ lives }) =>
     ({ Rule, Id }) =>
-      pipe([
-        tap((params) => {
-          assert(Id);
-        }),
-        () => ({ lives }),
-        getList,
-        tap((params) => {
-          assert(true);
-        }),
-        find(and([eq(get("Id"), Id)])),
-        tap((params) => {
-          assert(true);
-        }),
-      ])();
+      pipe([() => ({ lives }), getList, find(and([eq(get("Id"), Id)]))])();
 
   const getByName = ({ name, lives, dependencies = () => ({}) }) =>
     pipe([
       () => name,
       callProp("split", "::"),
       ([target, Rule, Id]) => ({ Rule, Id }),
-      tap((params) => {
-        assert(true);
-      }),
       getById({ lives }),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
@@ -178,11 +220,6 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
         Targets: [otherProps],
       }),
     ]),
-    // pickCreated:
-    //   ({ payload }) =>
-    //   () =>
-    //     payload,
-    //getById,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
@@ -205,25 +242,36 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
+  const assignArnTarget = ({ dependencies }) =>
+    pipe([
+      assign({
+        Arn: pipe([
+          () => dependencies,
+          keys,
+          first,
+          tap((key) => {
+            assert(key);
+          }),
+          (key) =>
+            pipe([
+              () => dependencies[key].live,
+              tap((params) => {
+                assert(EventTargetDependencies[key]);
+              }),
+              EventTargetDependencies[key].buildArn({ config }),
+              when(isEmpty, () => `Arn of ${key} not available yet`),
+            ])(),
+        ]),
+      }),
+    ]);
+
   const configDefault = async ({
     name,
     namespace,
     properties,
-    dependencies: {
-      rule,
-      role,
-      lambdaFunction,
-      apiDestination,
-      sqsQueue,
-      snsTopic,
-      sfnStateMachine,
-      logGroup,
-    },
+    dependencies: { rule, role, ...otherDeps },
   }) =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       () => properties,
       defaultsDeep({
         EventBusName: getField(rule, "EventBusName"),
@@ -235,45 +283,7 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
           RoleArn: getField(role, "Arn"),
         })
       ),
-      switchCase([
-        // Lambda
-        () => lambdaFunction,
-        defaultsDeep({
-          Arn: getField(lambdaFunction, "Configuration.FunctionArn"),
-        }),
-        // CloudWatch Events Api Destination
-        () => apiDestination,
-        defaultsDeep({
-          Arn: getField(apiDestination, "ApiDestinationArn"),
-        }),
-        // SQS Queue
-        () => sqsQueue,
-        defaultsDeep({
-          Arn: getField(sqsQueue, "Attributes.QueueArn"),
-        }),
-        // SNS Topic
-        () => snsTopic,
-        defaultsDeep({
-          Arn: getField(snsTopic, "TopicArn"),
-        }),
-        // StepFunctions StateMachine
-        () => sfnStateMachine,
-        defaultsDeep({
-          Arn: getField(sfnStateMachine, "stateMachineArn"),
-        }),
-        // Log Group
-        () => logGroup,
-        defaultsDeep({
-          Arn: getField(logGroup, "arn"),
-        }),
-        // TODO complete all dependencies
-        () => {
-          assert(false, "TODO: implement me");
-        },
-      ]),
-      tap(({ Arn }) => {
-        assert(Arn);
-      }),
+      assignArnTarget({ dependencies: otherDeps }),
     ])();
 
   return {

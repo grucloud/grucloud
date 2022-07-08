@@ -94,6 +94,10 @@ exports.createResources = () => [
 - [CodeStarConnections Connection](../CodeStarConnections/Connection.md)
 - [CodeBuild Project](../CodeBuild/Project.md)
 
+## Used By
+
+- [CloudWatchEvents Target](../CloudWatchEvents/Target.md)
+
 ## Properties
 
 - [CreatePipelineCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-codepipeline/interfaces/createpipelinecommandinput.html)
