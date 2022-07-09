@@ -88,6 +88,27 @@ exports.Route53RecoveryControlConfigRoutingControl = ({ spec, config }) =>
     getByName: getByNameCore,
     tagResource: tagResource({ property: "RoutingControlArn" }),
     untagResource: untagResource({ property: "RoutingControlArn" }),
+    findDependencies: ({ live, lives }) => [
+      {
+        type: "ControlPanel",
+        group: "Route53RecoveryControlConfig",
+        ids: [
+          pipe([
+            () =>
+              lives.getById({
+                id: live.ControlPanelArn,
+                type: "ControlPanel",
+                group: "Route53RecoveryControlConfig",
+                config: config.providerName,
+              }),
+            get("id"),
+            tap((id) => {
+              assert(id);
+            }),
+          ])(),
+        ],
+      },
+    ],
     configDefault: ({
       name,
       namespace,

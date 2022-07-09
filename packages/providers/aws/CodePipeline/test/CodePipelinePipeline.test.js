@@ -28,18 +28,13 @@ describe("CodePipelinePipeline", async function () {
     pipe([
       () =>
         pipeline.destroy({
-          live: { name: "my-pipeline" },
+          live: { pipeline: { name: "my-pipeline" } },
         }),
     ])
   );
   it(
     "getById with invalid id",
-    pipe([
-      () =>
-        pipeline.getById({
-          name: "my-pipeline",
-        }),
-    ])
+    pipe([() => pipeline.getById({ pipeline: { name: "my-pipeline" } })])
   );
   it(
     "getByName with invalid id",

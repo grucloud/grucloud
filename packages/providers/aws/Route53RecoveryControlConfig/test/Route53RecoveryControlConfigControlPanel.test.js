@@ -19,7 +19,10 @@ describe("Route53RecoveryControlConfigControlPanel", async function () {
     pipe([
       () =>
         controlPanel.destroy({
-          live: { ControlPanelArn: "arn:aws:a-12345" },
+          live: {
+            ControlPanelArn:
+              "arn:aws:route53-recovery-control::840541460064:controlpanel/a5fccd99254446b4b3d85a6071013c8a",
+          },
         }),
     ])
   );
@@ -28,7 +31,8 @@ describe("Route53RecoveryControlConfigControlPanel", async function () {
     pipe([
       () =>
         controlPanel.getById({
-          ControlPanelArn: "a-12345",
+          ControlPanelArn:
+            "arn:aws:route53-recovery-control::840541460064:controlpanel/a5fccd99254446b4b3d85a6071013c8a",
         }),
     ])
   );

@@ -2,7 +2,7 @@ const assert = require("assert");
 const { tap, pipe, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { isOurMinion, compareAws, replaceRegion } = require("../AwsCommon");
 const {
   Route53RecoveryControlConfigCluster,
 } = require("./Route53RecoveryControlConfigCluster");
@@ -54,6 +54,8 @@ module.exports = pipe([
         controlPanel: { type: "ControlPanel", group: GROUP, parent: true },
       },
       omitProperties: ["RoutingControlArn", "ControlPanelArn", "Status"],
+      filterLive: ({ lives, providerConfig }) =>
+        pipe([assign({ CellName: replaceRegion({ providerConfig }) })]),
     },
     {
       type: "SafetyRule",
@@ -62,6 +64,7 @@ module.exports = pipe([
       inferName: pipe([get("properties.ASSERTION.Name")]),
       dependencies: {
         controlPanel: { type: "ControlPanel", group: GROUP, parent: true },
+        routingControls: { type: "RoutingControl", group: GROUP, list: true },
       },
       omitProperties: [
         "ASSERTION.SafetyRuleArn",

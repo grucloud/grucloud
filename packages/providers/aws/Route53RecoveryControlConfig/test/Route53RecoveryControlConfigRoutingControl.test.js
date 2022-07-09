@@ -19,7 +19,10 @@ describe("Route53RecoveryControlConfigRoutingControl", async function () {
     pipe([
       () =>
         routingControl.destroy({
-          live: { RoutingControlArn: "arn:aws:a-12345" },
+          live: {
+            RoutingControlArn:
+              "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/routingcontrol/21d6c872221c4961",
+          },
         }),
     ])
   );
@@ -28,7 +31,8 @@ describe("Route53RecoveryControlConfigRoutingControl", async function () {
     pipe([
       () =>
         routingControl.getById({
-          RoutingControlArn: "a-12345",
+          RoutingControlArn:
+            "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/routingcontrol/21d6c872221c4961",
         }),
     ])
   );

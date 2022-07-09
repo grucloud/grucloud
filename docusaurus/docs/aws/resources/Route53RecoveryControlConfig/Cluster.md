@@ -3,7 +3,7 @@ id: Cluster
 title: Cluster
 ---
 
-Provides [Route53 Recovery Control Config Cluster](https://us-west-2.console.aws.amazon.com/route53recovery/home#/dashboard)
+Provides [Route53 Recovery Control Config Cluster](https://us-west-2.console.aws.amazon.com/route53recovery/home#/recovery-control/clusters)
 
 ## Examples
 
@@ -22,6 +22,8 @@ exports.createResources = () => [];
 ## Dependencies
 
 ## Used By
+
+- [Control Panel](./ControlPanel.md)
 
 ## List
 

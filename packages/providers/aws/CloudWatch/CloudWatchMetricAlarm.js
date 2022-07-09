@@ -22,6 +22,11 @@ const AlarmDependenciesDimensions = {
 
 exports.AlarmDependenciesDimensions = AlarmDependenciesDimensions;
 
+const managedByOther = pipe([
+  get("live.AlarmDescription"),
+  callProp("startsWith", "DO NOT EDIT OR DELETE"),
+]);
+
 const decorate = ({ endpoint }) =>
   pipe([
     assign({
@@ -100,6 +105,7 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) =>
     config,
     findName: pipe([get("live.AlarmName")]),
     findId: pipe([get("live.AlarmArn")]),
+    managedByOther,
     findDependencies: ({ live, lives }) => [
       {
         type: "Topic",

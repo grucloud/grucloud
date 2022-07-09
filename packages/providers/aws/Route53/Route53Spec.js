@@ -97,6 +97,7 @@ module.exports = pipe([
         "CallerReference",
         "LinkedService",
         "HealthCheckConfig.RoutingControlArn",
+        "HealthCheckVersion",
       ],
       filterLive: ({ providerConfig }) =>
         pipe([

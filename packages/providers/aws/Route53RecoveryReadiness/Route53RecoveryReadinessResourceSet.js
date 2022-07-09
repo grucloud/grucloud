@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, omit, pick, map } = require("rubico");
+const { pipe, tap, get, omit, pick, map, flatMap } = require("rubico");
 const { defaultsDeep, callProp, last } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -14,8 +14,7 @@ const ResourceSetDependencies = {
   apiGatewayStage: { type: "Stage", group: "APIGateway" },
   apiGatewayV2Stage: { type: "Stage", group: "ApiGatewayV2" },
   autoScalingGroup: { type: "AutoScalingGroup", group: "AutoScaling" },
-  //TODO
-  //cloudWatchAlarm: { type: "Alarm", group: "CloudWatch" },
+  cloudWatchAlarm: { type: "MetricAlarm", group: "CloudWatch" },
   customerGateway: { type: "CustomerGateway", group: "EC2" },
   dynamoDBTable: { type: "Table", group: "DynamoDB" },
   ec2Volume: { type: "Volume", group: "EC2" },
@@ -24,7 +23,6 @@ const ResourceSetDependencies = {
   //TODO
   //mskCluster: { type: "Cluster", group: "MSK" },
   rdsDBCluster: { type: "DBCluster", group: "RDS" },
-  //TODO
   route53HealthCheck: { type: "HealthCheck", group: "Route53" },
   sqsQueue: { type: "Queue", group: "SQS" },
   snsTopic: { type: "Topic", group: "SNS" },
@@ -83,6 +81,80 @@ const model = ({ config }) => ({
   destroy: { method: "deleteResourceSet", pickId },
 });
 
+const findDependenciesResourceSet = ({ live, lives, config }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    () => live,
+    get("ResourceSetType"),
+    tap((ResourceSetType) => {
+      assert(ResourceSetType);
+    }),
+    callProp("split", "::"),
+    ([prefix, group, type]) =>
+      pipe([
+        tap((params) => {
+          assert(group);
+          assert(type);
+        }),
+        () => live,
+        get("Resources"),
+        map(({ ResourceArn }) =>
+          pipe([
+            tap(() => {
+              assert(ResourceArn);
+            }),
+            () =>
+              lives.getById({
+                id: ResourceArn,
+                type,
+                group,
+                config: config.providerName,
+              }),
+            get("id"),
+            tap((id) => {
+              assert(id);
+            }),
+          ])()
+        ),
+        (ids) => ({ type, group, ids }),
+      ])(),
+  ])();
+
+const findDependenciesReadinessScope = ({ live, lives, config }) =>
+  pipe([
+    () => live,
+    get("Resources"),
+    flatMap(({ ReadinessScopes }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        () => ReadinessScopes,
+        map(
+          pipe([
+            (id) =>
+              lives.getById({
+                id,
+                type: "Cell",
+                group: "Route53RecoveryReadiness",
+                config: config.providerName,
+              }),
+            get("id"),
+            tap((id) => {
+              assert(id);
+            }),
+          ])
+        ),
+      ])()
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+    (ids) => ({ type: "Cell", group: "Route53RecoveryReadiness", ids }),
+  ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html
 exports.Route53RecoveryReadinessResourceSet = ({ spec, config }) =>
   createAwsResource({
@@ -99,44 +171,17 @@ exports.Route53RecoveryReadinessResourceSet = ({ spec, config }) =>
           assert(true);
         }),
       ]),
-    findDependencies: ({ live, lives }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => live,
-        get("Resources"),
-        map(({ ResourceArn }) =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            () =>
-              lives.getById({
-                id: live.ResourceArn,
-                type: pipe([
-                  () => live.ResourceSetType,
-                  callProp("split", "::"),
-                  (arr) => arr[1],
-                ])(),
-                group: pipe([
-                  () => live.ResourceSetType,
-                  callProp("split", "::"),
-                  last,
-                ])(),
-                config: config.providerName,
-              }),
-            get("id"),
-          ])()
-        ),
-      ])(),
+    findDependencies: ({ live, lives }) => [
+      findDependenciesResourceSet({ live, lives, config }),
+      findDependenciesReadinessScope({ live, lives, config }),
+    ],
     tagResource: tagResource,
     untagResource: untagResource,
     configDefault: ({
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependecies: {},
+      dependencies: {},
     }) =>
       pipe([
         () => otherProps,

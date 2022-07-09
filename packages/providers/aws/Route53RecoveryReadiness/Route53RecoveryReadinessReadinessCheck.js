@@ -26,6 +26,13 @@ const model = ({ config }) => ({
   getById: {
     method: "getReadinessCheck",
     pickId,
+    decorate: () =>
+      pipe([
+        ({ ResourceSet, ...other }) => ({
+          ResourceSetName: ResourceSet,
+          ...other,
+        }),
+      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#listReadinessChecks-property
   getList: {
@@ -81,6 +88,9 @@ exports.Route53RecoveryReadinessReadinessCheck = ({ spec, config }) =>
         group: "Route53RecoveryReadiness",
         ids: [
           pipe([
+            tap((params) => {
+              assert(live.ResourceSetName);
+            }),
             () =>
               lives.getByName({
                 name: live.ResourceSetName,
@@ -88,7 +98,10 @@ exports.Route53RecoveryReadinessReadinessCheck = ({ spec, config }) =>
                 group: "Route53RecoveryReadiness",
                 config: config.providerName,
               }),
-            get("name"),
+            get("id"),
+            tap((id) => {
+              assert(id);
+            }),
           ])(),
         ],
       },
@@ -99,12 +112,14 @@ exports.Route53RecoveryReadinessReadinessCheck = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependecies: { resourceSet },
+      dependencies: { resourceSet },
     }) =>
       pipe([
+        tap((params) => {
+          assert(resourceSet);
+        }),
         () => otherProps,
         defaultsDeep({
-          ReadinessCheckName: name,
           ResourceSetName: getField(resourceSet, "ResourceSetName"),
           Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
         }),

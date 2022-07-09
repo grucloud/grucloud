@@ -104,6 +104,47 @@ exports.Route53RecoveryControlConfigSafetyRule = ({ spec, config }) =>
             config,
           }),
       ])(),
+    findDependencies: ({ live, lives }) => [
+      {
+        type: "ControlPanel",
+        group: "Route53RecoveryControlConfig",
+        ids: [
+          pipe([
+            () =>
+              lives.getById({
+                id: live.ControlPanelArn,
+                type: "ControlPanel",
+                group: "Route53RecoveryControlConfig",
+                config: config.providerName,
+              }),
+            get("id"),
+            tap((id) => {
+              assert(id);
+            }),
+          ])(),
+        ],
+      },
+      {
+        type: "RoutingControl",
+        group: "Route53RecoveryControlConfig",
+        ids: pipe([
+          () => live,
+          get("ASSERTION.AssertedControls"),
+          map(
+            pipe([
+              (id) =>
+                lives.getById({
+                  id,
+                  type: "RoutingControl",
+                  group: "Route53RecoveryControlConfig",
+                  config: config.providerName,
+                }),
+              get("id"),
+            ])
+          ),
+        ])(),
+      },
+    ],
     getByName: getByNameCore,
     tagResource: tagResource({ property: "SafetyRuleArn" }),
     untagResource: untagResource({ property: "SafetyRuleArn" }),

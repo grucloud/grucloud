@@ -1,8 +1,9 @@
 const assert = require("assert");
-const { tap, pipe, map, assign, eq, get, fork, omit, and } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { tap, pipe, map, assign, get } = require("rubico");
+const { defaultsDeep, callProp } = require("rubico/x");
+const { replaceWithName } = require("@grucloud/core/Common");
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { isOurMinion, compareAws, replaceRegion } = require("../AwsCommon");
 const {
   Route53RecoveryReadinessCell,
 } = require("./Route53RecoveryReadinessCell");
@@ -29,29 +30,81 @@ module.exports = pipe([
       type: "Cell",
       Client: Route53RecoveryReadinessCell,
       inferName: get("properties.CellName"),
-      dependencies: { cells: { type: "Cell", group: GROUP, list: true } },
-      omitProperties: ["CellArn"],
+      dependencies: {
+        cells: { type: "Cell", group: GROUP, list: true },
+      },
+      omitProperties: ["CellArn", "ParentReadinessScopes", "Cells"],
+      filterLive: ({ lives, providerConfig }) =>
+        pipe([
+          assign({
+            CellName: pipe([
+              get("CellName"),
+              replaceRegion({ providerConfig }),
+            ]),
+          }),
+        ]),
     },
     {
       type: "ReadinessCheck",
       Client: Route53RecoveryReadinessReadinessCheck,
       dependencies: { resourceSet: { type: "ResourceSet", group: GROUP } },
-      inferName: get("properties.ReadinessCheckName"),
-      omitProperties: ["ReadinessCheckName", "ResourceSet"],
+      inferName: pipe([get("properties.ReadinessCheckName")]),
+      omitProperties: ["ReadinessCheckArn", "ResourceSetName"],
     },
     {
       type: "RecoveryGroup",
       Client: Route53RecoveryReadinessRecoveryGroup,
       dependencies: { cells: { type: "Cell", group: GROUP, list: true } },
       inferName: get("properties.RecoveryGroupName"),
-      omitProperties: ["RecoveryGroupArn"],
+      omitProperties: ["RecoveryGroupArn", "Cells"],
     },
     {
       type: "ResourceSet",
       Client: Route53RecoveryReadinessResourceSet,
-      dependencies: ResourceSetDependencies,
+      dependencies: {
+        cells: { type: "Cell", group: "Route53RecoveryReadiness", list: true },
+        ...ResourceSetDependencies,
+      },
       inferName: get("properties.ResourceSetName"),
-      omitProperties: [],
+      omitProperties: ["ResourceSetArn"],
+      filterLive:
+        ({ lives, providerConfig }) =>
+        (live) =>
+          pipe([
+            () => live,
+            assign({
+              Resources: pipe([
+                get("Resources"),
+                map(
+                  assign({
+                    ReadinessScopes: pipe([
+                      get("ReadinessScopes"),
+                      map(
+                        replaceWithName({
+                          groupType: "Route53RecoveryReadiness::Cell",
+                          providerConfig,
+                          lives,
+                          path: "id",
+                        })
+                      ),
+                    ]),
+                    ResourceArn: pipe([
+                      get("ResourceArn"),
+                      replaceWithName({
+                        groupType: pipe([
+                          () => live.ResourceSetType,
+                          callProp("replace", "AWS::", ""),
+                        ])(),
+                        providerConfig,
+                        lives,
+                        path: "id",
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            }),
+          ])(),
     },
   ],
   map(
