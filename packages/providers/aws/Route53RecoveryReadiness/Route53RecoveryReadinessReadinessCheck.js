@@ -31,6 +31,13 @@ const model = ({ config }) => ({
   getList: {
     method: "listReadinessChecks",
     getParam: "ReadinessChecks",
+    decorate: ({ getById }) =>
+      pipe([
+        tap((param) => {
+          assert(true);
+        }),
+        getById,
+      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryReadiness.html#createReadinessCheck-property
   create: {

@@ -1,0 +1,20 @@
+@startmindmap
+title Resources for project code-pipeline-ecr
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ Rule (1)
+++++ Target (1)
++++ CodeBuild
+++++ Project (1)
++++ CodePipeline
+++++ Pipeline (1)
++++ ECR
+++++ Repository (1)
++++ IAM
+++++ Role (3)
+++++ Policy (3)
++++ S3
+++++ Bucket (1)
+@endmindmap

@@ -52,7 +52,7 @@ module.exports = pipe([
         filterTarget: () => pipe([() => ({})]),
         filterLive: () => pipe([() => ({})]),
       }),
-      inferName: ({ properties, dependenciesSpec }) =>
+      inferName: ({ properties, dependenciesSpec: { routingControl } }) =>
         pipe([
           () => properties,
           get("HealthCheckConfig"),
@@ -92,7 +92,12 @@ module.exports = pipe([
           EnableSNI: false,
         },
       },
-      omitProperties: ["Id", "CallerReference", "LinkedService"],
+      omitProperties: [
+        "Id",
+        "CallerReference",
+        "LinkedService",
+        "HealthCheckConfig.RoutingControlArn",
+      ],
       filterLive: ({ providerConfig }) =>
         pipe([
           tap((params) => {

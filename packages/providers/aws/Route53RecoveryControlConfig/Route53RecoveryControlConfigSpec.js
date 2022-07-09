@@ -29,7 +29,7 @@ module.exports = pipe([
       type: "Cluster",
       Client: Route53RecoveryControlConfigCluster,
       inferName: pipe([get("properties.Name")]),
-      omitProperties: ["ClusterArn", "Status"],
+      omitProperties: ["ClusterArn", "Status", "ClusterEndpoints"],
     },
     {
       type: "ControlPanel",
@@ -44,6 +44,7 @@ module.exports = pipe([
         "Status",
         "RoutingControlCount",
       ],
+      propertiesDefault: { DefaultControlPanel: false },
     },
     {
       type: "RoutingControl",
@@ -57,13 +58,18 @@ module.exports = pipe([
     {
       type: "SafetyRule",
       Client: Route53RecoveryControlConfigSafetyRule,
-      inferName: pipe([get("properties.Name")]),
+      //TODO
+      inferName: pipe([get("properties.ASSERTION.Name")]),
       dependencies: {
         controlPanel: { type: "ControlPanel", group: GROUP, parent: true },
       },
       omitProperties: [
-        "AssertionRule.ControlPanelArn",
-        "GatingRule.ControlPanelArn",
+        "ASSERTION.SafetyRuleArn",
+        "ASSERTION.ControlPanelArn",
+        "ASSERTION.Status",
+        "GATING.SafetyRuleArn",
+        "GATING.ControlPanelArn",
+        "GATING.Status",
       ],
     },
   ],

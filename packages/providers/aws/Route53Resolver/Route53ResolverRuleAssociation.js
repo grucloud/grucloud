@@ -92,10 +92,7 @@ exports.Route53ResolverRuleAssociation = ({ spec, config }) =>
                 group: "EC2",
                 providerName: config.providerName,
               }),
-            get("name"),
-            tap((name) => {
-              assert(name, "no  name in rule association");
-            }),
+            get("name", live.VPCId),
           ]),
           ruleName: pipe([
             () =>
@@ -106,9 +103,6 @@ exports.Route53ResolverRuleAssociation = ({ spec, config }) =>
               }),
             find(eq(get("live.Id"), live.ResolverRuleId)),
             get("name", live.ResolverRuleId),
-            tap((name) => {
-              assert(name, "no rule name in rule association");
-            }),
           ]),
         }),
         ({ vpcName, ruleName }) => `rule-assoc::${ruleName}::${vpcName}`,

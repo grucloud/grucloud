@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, omit, pick, eq } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when, isEmpty } = require("rubico/x");
 const { buildTagsObject, getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -50,8 +50,24 @@ exports.Route53RecoveryControlConfigSafetyRule = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.SafetyRuleArn")]),
+    findName: ({ live }) =>
+      pipe([
+        tap(() => {
+          assert(live);
+        }),
+        () => live,
+        get("ASSERTION.Name"),
+        when(isEmpty, () => get("GATING.Name")(live)),
+      ])(),
+    findId: ({ live }) =>
+      pipe([
+        tap(() => {
+          assert(live);
+        }),
+        () => live,
+        get("ASSERTION.SafetyRuleArn"),
+        when(isEmpty, () => get("GATING.SafetyRuleArn")(live)),
+      ])(),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listSafetyRules-property
     getList: ({ client, endpoint, getById, config }) =>
       pipe([
@@ -72,6 +88,9 @@ exports.Route53RecoveryControlConfigSafetyRule = ({ spec, config }) =>
                 assert(ControlPanelArn);
               }),
               pick(["ControlPanelArn"]),
+              tap(({ ControlPanelArn }) => {
+                assert(ControlPanelArn);
+              }),
             ]),
             method: "listSafetyRules",
             getParam: "SafetyRules",
