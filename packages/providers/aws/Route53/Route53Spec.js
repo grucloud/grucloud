@@ -12,7 +12,16 @@ const {
   filter,
   omit,
 } = require("rubico");
-const { prepend, isEmpty, find, includes } = require("rubico/x");
+const {
+  append,
+  prepend,
+  isEmpty,
+  find,
+  includes,
+  when,
+  unless,
+  callProp,
+} = require("rubico/x");
 const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
@@ -204,7 +213,7 @@ module.exports = pipe([
       Client: Route53Record,
       isOurMinion: () => true,
       compare: compareRoute53Record,
-      omitProperties: ["AliasTarget.HostedZoneId", "AliasTarget.DNSName"],
+      omitProperties: [],
       inferName: ({ properties, dependenciesSpec }) =>
         pipe([
           () => dependenciesSpec,
@@ -243,13 +252,23 @@ module.exports = pipe([
             () => `${properties.Type}::${properties.Name}`,
           ]),
           prepend(`record::`),
+          when(
+            () => properties.SetIdentifier,
+            append(`::${properties.SetIdentifier}`)
+          ),
           tap((params) => {
             assert(true);
           }),
         ])(),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
-          //pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
+          unless(
+            pipe([
+              get("AliasTarget.DNSName", ""),
+              callProp("startsWith", "s3-website"),
+            ]),
+            omit(["AliasTarget.DNSName", "AliasTarget.HostedZoneId"])
+          ),
           assign({
             Name: pipe([
               get("Name"),
@@ -286,7 +305,7 @@ module.exports = pipe([
             ]),
           }),
           omitIfEmpty(["ResourceRecords"]),
-          omit(["HostedZoneId", "Name"]),
+          omit(["HostedZoneId"]),
         ]),
       hasNoProperty: ({ lives, resource }) =>
         pipe([
