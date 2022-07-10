@@ -10,6 +10,7 @@ const {
   or,
   switchCase,
   filter,
+  omit,
 } = require("rubico");
 const { prepend, isEmpty, find, includes } = require("rubico/x");
 const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
@@ -248,7 +249,7 @@ module.exports = pipe([
         ])(),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
-          pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
+          //pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
           assign({
             Name: pipe([
               get("Name"),
@@ -285,12 +286,13 @@ module.exports = pipe([
             ]),
           }),
           omitIfEmpty(["ResourceRecords"]),
+          omit(["HostedZoneId", "Name"]),
         ]),
       hasNoProperty: ({ lives, resource }) =>
         pipe([
           () => resource,
           or([
-            hasDependency({ type: "LoadBalancer", group: "ELBv2" }),
+            //hasDependency({ type: "LoadBalancer", group: "ELBv2" }),
             hasDependency({ type: "Certificate", group: "ACM" }),
             hasDependency({ type: "Distribution", group: "CloudFront" }),
             hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),

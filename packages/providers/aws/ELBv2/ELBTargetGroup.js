@@ -118,7 +118,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     getList,
     configDefault,
     managedByOther,
-    tagResource: tagResource({ elb }),
-    untagResource: untagResource({ elb }),
+    tagResource: tagResource({ endpoint: elb }),
+    untagResource: untagResource({ endpoint: elb }),
   };
 };

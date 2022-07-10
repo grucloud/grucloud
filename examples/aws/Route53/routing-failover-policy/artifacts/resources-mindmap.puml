@@ -1,0 +1,24 @@
+@startmindmap
+title Resources for project routing-failover-policy
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
+++++ Route (2)
+++++ SecurityGroup (1)
++++ ELBv2
+++++ LoadBalancer (1)
+++++ TargetGroup (1)
+++++ Listener (1)
++++ Route53
+++++ HostedZone (1)
+++++ Record (1)
++++ Route53Domains
+++++ Domain (1)
+@endmindmap

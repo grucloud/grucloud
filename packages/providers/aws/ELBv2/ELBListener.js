@@ -1,221 +1,214 @@
 const assert = require("assert");
-const { assign, pipe, tap, get, not, eq, pick } = require("rubico");
-const { first, defaultsDeep, isEmpty, pluck, find, when } = require("rubico/x");
+const { pipe, tap, get, omit, pick, assign } = require("rubico");
+const { defaultsDeep, first, when, pluck } = require("rubico/x");
+
 const { getField } = require("@grucloud/core/ProviderCommon");
-
-const logger = require("@grucloud/core/logger")({ prefix: "ELBListener" });
 const { getByNameCore } = require("@grucloud/core/Common");
-
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
-const { createELB, tagResource, untagResource } = require("./ELBCommon");
+const { tagResource, untagResource } = require("./ELBCommon");
 
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 const ignoreErrorCodes = ["ListenerNotFound"];
 
 const findId = get("live.ListenerArn");
 const pickId = pick(["ListenerArn"]);
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 
-exports.ELBListener = ({ spec, config }) => {
-  const elb = createELB(config);
-  const client = AwsClient({ spec, config })(elb);
+const { createAwsResource } = require("../AwsClient");
 
-  const { providerName } = config;
-
-  const findName = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-      }),
-      () =>
-        lives.getById({
-          id: live.LoadBalancerArn,
-          type: "LoadBalancer",
-          group: "ELBv2",
-          providerName: config.providerName,
-        }),
-      get("name"),
-      tap((name) => {
-        assert(name);
-      }),
-      (name) => `listener::${name}::${live.Protocol}::${live.Port}`,
-    ])();
-
-  const managedByOther = ({ live, lives }) =>
-    pipe([
-      () =>
-        lives.getById({
-          type: "LoadBalancer",
-          group: "ELBv2",
-          providerName,
-          id: live.LoadBalancerArn,
-        }),
-      get("managedByOther"),
-    ])();
-
-  const findNamespaceInLoadBalancer = ({ live, lives }) =>
-    pipe([
-      () =>
-        lives.getById({
-          type: "LoadBalancer",
-          group: "ELBv2",
-          providerName,
-          id: live.LoadBalancerArn,
-        }),
-      get("namespace"),
-    ])();
-
-  const findNamespace = (param) =>
-    pipe([
-      () => [
-        findNamespaceInLoadBalancer(param),
-        findNamespaceInTags(config)(param),
+const certificateProperties = ({ certificate }) =>
+  when(
+    () => certificate,
+    () => ({
+      Certificates: [
+        {
+          CertificateArn: getField(certificate, "CertificateArn"),
+        },
       ],
-      find(not(isEmpty)),
-      tap((namespace) => {
-        logger.debug(`findNamespace ${namespace}`);
-      }),
-    ])();
+    })
+  )();
 
-  const findDependencies = ({ live }) => [
-    {
-      type: "LoadBalancer",
-      group: "ELBv2",
-      ids: [live.LoadBalancerArn],
-    },
-    {
-      type: "TargetGroup",
-      group: "ELBv2",
-      ids: pipe([() => live, get("DefaultActions"), pluck("TargetGroupArn")])(),
-    },
-    {
-      type: "Certificate",
-      group: "ACM",
-      ids: pipe([() => live, get("Certificates"), pluck("CertificateArn")])(),
-    },
-  ];
+const targetGroupProperties = ({ targetGroup }) =>
+  when(
+    () => targetGroup,
+    () => ({
+      DefaultActions: [
+        {
+          Type: "forward",
+          TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
+          Order: 1,
+          ForwardConfig: {
+            TargetGroups: [
+              {
+                TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
+                Weight: 1,
+              },
+            ],
+            TargetGroupStickinessConfig: {
+              DurationSeconds: 3600,
+              Enabled: false,
+            },
+          },
+        },
+      ],
+    })
+  )();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeListeners-property
-  const getList = client.getListWithParent({
-    parent: { type: "LoadBalancer", group: "ELBv2" },
-    pickKey: pick(["LoadBalancerArn"]),
-    method: "describeListeners",
-    getParam: "Listeners",
-    config,
-    decorate: ({ lives, parent }) =>
-      pipe([
-        assign({
-          Tags: pipe([
-            ({ ListenerArn }) => ({ ResourceArns: [ListenerArn] }),
-            elb().describeTags,
-            get("TagDescriptions"),
-            first,
-            get("Tags"),
-          ]),
-        }),
-      ]),
-  });
+// const findNamespaceInLoadBalancer = ({ live, lives }) =>
+//   pipe([
+//     () =>
+//       lives.getById({
+//         type: "LoadBalancer",
+//         group: "ELBv2",
+//         providerName,
+//         id: live.LoadBalancerArn,
+//       }),
+//     get("namespace"),
+//   ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeListeners-property
-  const getByName = getByNameCore({ getList, findName });
+// const findNamespace = (param) =>
+//   pipe([
+//     () => [
+//       findNamespaceInLoadBalancer(param),
+//       findNamespaceInTags(config)(param),
+//     ],
+//     find(not(isEmpty)),
+//     tap((namespace) => {
+//       logger.debug(`findNamespace ${namespace}`);
+//     }),
+//   ])();
 
-  const getById = client.getById({
+const model = ({ config }) => ({
+  package: "elastic-load-balancing-v2",
+  client: "ElasticLoadBalancingV2",
+  ignoreErrorCodes,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#describeControlPanel-property
+  getById: {
     pickId: ({ ListenerArn }) => ({ ListenerArns: [ListenerArn] }),
     method: "describeListeners",
     getField: "Listeners",
     ignoreErrorCodes,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createListener-property
-  const create = client.create({
+  },
+  create: {
     method: "createListener",
-    getById,
     pickCreated: () => pipe([get("Listeners"), first]),
     shouldRetryOnExceptionCodes: ["UnsupportedCertificate"],
     config: { retryCount: 40 * 10, retryDelay: 10e3 },
-  });
+  },
+  update: {
+    method: "modifyListener",
+    filterParams: ({ payload, live }) =>
+      pipe([
+        () => payload,
+        defaultsDeep({ ListenerArn: live.ListenerArn }),
+        tap((params) => {
+          assert(true);
+        }),
+        omit(["Tags"]),
+      ])(),
+  },
+  destroy: { pickId, method: "deleteListener", ignoreErrorCodes },
+});
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteListener-property
-  const destroy = client.destroy({
-    pickId,
-    method: "deleteListener",
-    getById,
-    ignoreErrorCodes,
-  });
-
-  const certificateProperties = ({ certificate }) =>
-    when(
-      () => certificate,
-      () => ({
-        Certificates: [
-          {
-            CertificateArn: getField(certificate, "CertificateArn"),
-          },
-        ],
-      })
-    )();
-
-  const targetGroupProperties = ({ targetGroup }) =>
-    when(
-      () => targetGroup,
-      () => ({
-        DefaultActions: [
-          {
-            Type: "forward",
-            TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
-            Order: 1,
-            ForwardConfig: {
-              TargetGroups: [
-                {
-                  TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
-                  Weight: 1,
-                },
-              ],
-              TargetGroupStickinessConfig: {
-                DurationSeconds: 3600,
-                Enabled: false,
-              },
-            },
-          },
-        ],
-      })
-    )();
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createListener-property
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: { loadBalancer, certificate, targetGroup },
-  }) =>
-    pipe([
-      tap(() => {
-        assert(loadBalancer);
-      }),
-      () => ({}),
-      defaultsDeep(certificateProperties({ certificate })),
-      defaultsDeep(targetGroupProperties({ targetGroup })),
-      defaultsDeep(otherProps),
-      defaultsDeep({
-        LoadBalancerArn: getField(loadBalancer, "LoadBalancerArn"),
-        Tags: buildTags({ name, namespace, config, UserTags: Tags }),
-      }),
-    ])();
-
-  return {
+exports.ELBListener = ({ spec, config }) =>
+  createAwsResource({
+    model: model({ config }),
     spec,
+    config,
+    findName: ({ live, lives }) =>
+      pipe([
+        tap(() => {
+          assert(lives);
+        }),
+        () =>
+          lives.getById({
+            id: live.LoadBalancerArn,
+            type: "LoadBalancer",
+            group: "ELBv2",
+            providerName: config.providerName,
+          }),
+        get("name"),
+        tap((name) => {
+          assert(name);
+        }),
+        (name) => `listener::${name}::${live.Protocol}::${live.Port}`,
+      ])(),
     findId,
-    findDependencies,
-    findNamespace,
-    getById,
-    getByName,
-    findName,
-    create,
-    destroy,
-    getList,
-    configDefault,
-    managedByOther,
-    tagResource: tagResource({ elb }),
-    untagResource: untagResource({ elb }),
-  };
-};
+    managedByOther: ({ live, lives }) =>
+      pipe([
+        () =>
+          lives.getById({
+            type: "LoadBalancer",
+            group: "ELBv2",
+            providerName: config.providerName,
+            id: live.LoadBalancerArn,
+          }),
+        get("managedByOther"),
+      ])(),
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listControlPanels-property
+    getList: ({ client, endpoint, getById, config }) =>
+      pipe([
+        () =>
+          client.getListWithParent({
+            parent: { type: "LoadBalancer", group: "ELBv2" },
+            pickKey: pick(["LoadBalancerArn"]),
+            method: "describeListeners",
+            getParam: "Listeners",
+            decorate: ({ lives, parent }) =>
+              pipe([
+                assign({
+                  Tags: pipe([
+                    ({ ListenerArn }) => ({ ResourceArns: [ListenerArn] }),
+                    endpoint().describeTags,
+                    get("TagDescriptions"),
+                    first,
+                    get("Tags"),
+                  ]),
+                }),
+              ]),
+            config,
+          }),
+      ])(),
+    getByName: getByNameCore,
+    tagResource: tagResource,
+    untagResource: untagResource,
+    findDependencies: ({ live, lives }) => [
+      {
+        type: "LoadBalancer",
+        group: "ELBv2",
+        ids: [live.LoadBalancerArn],
+      },
+      {
+        type: "TargetGroup",
+        group: "ELBv2",
+        ids: pipe([
+          () => live,
+          get("DefaultActions"),
+          pluck("TargetGroupArn"),
+        ])(),
+      },
+      {
+        type: "Certificate",
+        group: "ACM",
+        ids: pipe([() => live, get("Certificates"), pluck("CertificateArn")])(),
+      },
+    ],
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      dependencies: { loadBalancer, certificate, targetGroup },
+    }) =>
+      pipe([
+        tap(() => {
+          assert(loadBalancer);
+        }),
+        () => ({}),
+        defaultsDeep(certificateProperties({ certificate })),
+        defaultsDeep(targetGroupProperties({ targetGroup })),
+        defaultsDeep(otherProps),
+        defaultsDeep({
+          LoadBalancerArn: getField(loadBalancer, "LoadBalancerArn"),
+          Tags: buildTags({ name, namespace, config, UserTags: Tags }),
+        }),
+      ])(),
+  });

@@ -50,7 +50,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#createCluster-property
   create: {
     method: "createCluster",
-    pickCreated: ({ payload }) => pipe([pick(["ClusterArn"])]),
+    pickCreated: ({ payload }) => pipe([pickId]),
     isInstanceUp: eq(get("Status"), "DEPLOYED"),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#updateCluster-property

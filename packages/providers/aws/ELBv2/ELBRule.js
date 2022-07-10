@@ -251,7 +251,7 @@ exports.ELBRule = ({ spec, config }) => {
     isDefault,
     cannotBeDeleted,
     managedByOther,
-    tagResource: tagResource({ elb }),
-    untagResource: untagResource({ elb }),
+    tagResource: tagResource({ endpoint: elb }),
+    untagResource: untagResource({ endpoint: elb }),
   };
 };
