@@ -1,20 +1,48 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign } = require("rubico");
+const { pipe, tap, get, eq } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./CloudTrailCommon");
 
+const pickId = pipe([
+  tap(({ EventDataStoreArn }) => {
+    assert(EventDataStoreArn);
+  }),
+  ({ EventDataStoreArn }) => ({ EventDataStore: EventDataStoreArn }),
+]);
+
 const model = {
   package: "cloudtrail",
   client: "CloudTrail",
   ignoreErrorCodes: ["EventDataStoreNotFoundException"],
-  getById: { method: "getEventDataStore" },
-  getList: { method: "listEventDataStores", getParam: "EventDataStores" },
-  create: { method: "createEventDataStore" },
+  getById: { method: "getEventDataStore", pickId },
+  getList: {
+    method: "listEventDataStores",
+    getParam: "EventDataStores",
+    decorate: ({ endpoint, getById }) =>
+      pipe([
+        tap((params) => {
+          assert(getById);
+          assert(endpoint);
+        }),
+        getById,
+      ]),
+  },
+  create: {
+    method: "createEventDataStore",
+    pickCreated: ({ pickId }) =>
+      pipe([
+        tap((params) => {
+          assert(pickId);
+        }),
+        pickId,
+      ]),
+    isInstanceUp: pipe([eq(get("Status"), "ENABLED")]),
+  },
   update: { method: "updateEventDataStore" },
-  destroy: { method: "deleteEventDataStore" },
+  destroy: { method: "deleteEventDataStore", pickId },
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudTrail.html
@@ -25,34 +53,7 @@ exports.CloudTrailEventDataStore = ({ spec, config }) =>
     config,
     findName: get("live.Name"),
     findId: pipe([get("live.EventDataStoreArn")]),
-    pickId: pipe([
-      tap(({ EventDataStoreArn }) => {
-        assert(EventDataStoreArn);
-      }),
-      ({ EventDataStoreArn }) => ({ EventDataStore: EventDataStoreArn }),
-    ]),
     //findDependencies: ({ live, lives }) => [],
-    decorateList: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-        getById,
-      ]),
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-    pickCreated: ({ pickId }) =>
-      pipe([
-        tap((params) => {
-          assert(pickId);
-        }),
-        pickId,
-      ]),
     getByName: ({ getById }) =>
       pipe([
         tap((params) => {

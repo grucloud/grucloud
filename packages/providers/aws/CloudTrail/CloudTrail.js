@@ -1,5 +1,14 @@
 const assert = require("assert");
-const { pipe, assign, tap, get, pick, omit, switchCase } = require("rubico");
+const {
+  pipe,
+  assign,
+  tap,
+  get,
+  pick,
+  omit,
+  switchCase,
+  not,
+} = require("rubico");
 const { defaultsDeep, when, isEmpty, unless, first } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
@@ -9,38 +18,16 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const SELECTORS = ["EventSelectors", "AdvancedEventSelectors"];
 
-const model = {
+const pickId = pipe([pick(["Name"])]);
+
+const createModel = () => ({
   package: "cloudtrail",
   client: "CloudTrail",
   ignoreErrorCodes: ["TrailNotFoundException", "ResourceNotFoundException"],
-  getById: { method: "getTrail", getField: "Trail" },
-  getList: { method: "listTrails", getParam: "Trails" },
-  create: { method: "createTrail" },
-  update: { method: "update" },
-  destroy: { method: "deleteTrail" },
-};
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudTrail.html
-exports.CloudTrail = ({ spec, config }) =>
-  createAwsResource({
-    model,
-    spec,
-    config,
-    findName: get("live.Name"),
-    findId: pipe([get("live.TrailARN")]),
-    pickId: pipe([pick(["Name"])]),
-    findDependencies: ({ live, lives }) => [
-      { type: "Bucket", group: "S3", ids: [live.S3BucketName] },
-      {
-        type: "LogsGroup",
-        group: "CloudWatchLogs",
-        ids: [live.CloudWatchLogsLogGroupArn],
-      },
-      { type: "role", group: "IAM", ids: [live.CloudWatchLogsRoleArn] },
-      { type: "Key", group: "KMS", ids: [live.KmsKeyId] },
-      { type: "Topic", group: "SNS", ids: [live.SnsTopicARN] },
-    ],
-    decorateList: ({ endpoint, getById }) => pipe([getById]),
+  getById: {
+    pickId,
+    method: "getTrail",
+    getField: "Trail",
     decorate:
       ({ endpoint }) =>
       (live) =>
@@ -59,7 +46,15 @@ exports.CloudTrail = ({ spec, config }) =>
             ]),
           }),
         ])(),
-    createFilterPayload: pipe([omit(SELECTORS)]),
+  },
+  getList: {
+    method: "listTrails",
+    getParam: "Trails",
+    decorate: ({ endpoint, getById }) => pipe([getById]),
+  },
+  create: {
+    method: "createTrail",
+    filterPayload: pipe([omit(SELECTORS)]),
     pickCreated:
       ({ payload }) =>
       () =>
@@ -78,11 +73,85 @@ exports.CloudTrail = ({ spec, config }) =>
           }),
           () => undefined,
         ]),
-        unless(isEmpty, endpoint().putEventSelectors),
+        unless(
+          isEmpty,
+          pipe([
+            defaultsDeep({ TrailName: payload.Name }),
+            endpoint().putEventSelectors,
+          ])
+        ),
       ]),
+  },
+  destroy: { method: "deleteTrail", pickId },
+});
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudTrail.html
+exports.CloudTrail = ({ spec, config }) =>
+  createAwsResource({
+    model: createModel({ config }),
+    spec,
+    config,
+    findName: get("live.Name"),
+    findId: pipe([get("live.TrailARN")]),
+    findDependencies: ({ live, lives }) => [
+      { type: "Bucket", group: "S3", ids: [live.S3BucketName] },
+      {
+        type: "LogsGroup",
+        group: "CloudWatchLogs",
+        ids: [live.CloudWatchLogsLogGroupArn],
+      },
+      { type: "role", group: "IAM", ids: [live.CloudWatchLogsRoleArn] },
+      { type: "Key", group: "KMS", ids: [live.KmsKeyId] },
+      { type: "Topic", group: "SNS", ids: [live.SnsTopicARN] },
+    ],
     getByName: ({ getById }) => pipe([({ name }) => ({ Name: name }), getById]),
     tagResource: tagResource,
     untagResource: untagResource,
+    update:
+      ({ endpoint }) =>
+      async ({ pickId, payload, diff, live }) =>
+        pipe([
+          tap((params) => {
+            assert(endpoint);
+          }),
+          () => diff,
+          tap.if(
+            get("liveDiff.updated.EventSelectors"),
+            pipe([
+              () => payload,
+              pick(["EventSelectors"]),
+              defaultsDeep({ TrailName: payload.Name }),
+              endpoint().putEventSelectors,
+            ])
+          ),
+          tap.if(
+            get("liveDiff.updated.AdvancedEventSelectors"),
+            pipe([
+              () => payload,
+              pick(["AdvancedEventSelectors"]),
+              defaultsDeep({ TrailName: payload.Name }),
+              endpoint().putEventSelectors,
+            ])
+          ),
+          omit([
+            "liveDiff.updated.AdvancedEventSelectors",
+            "liveDiff.updated.EventSelectors",
+          ]),
+          tap.if(
+            not(pipe([get("liveDiff.updated"), isEmpty])),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => payload,
+              omit(["AdvancedEventSelectors", "EventSelectors", "TagsList"]),
+              endpoint().updateTrail,
+              tap((params) => {
+                assert(true);
+              }),
+            ])
+          ),
+        ])(),
     configDefault: ({
       name,
       namespace,
