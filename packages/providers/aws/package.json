@@ -67,6 +67,7 @@
     "@aws-sdk/client-sqs": "3.112.0",
     "@aws-sdk/client-ssm": "3.112.0",
     "@aws-sdk/client-sts": "3.112.0",
+    "@aws-sdk/client-wafv2": "3.112.0",
     "@aws-sdk/credential-providers": "3.112.0",
     "@aws-sdk/s3-request-presigner": "3.117.0",
     "@grucloud/core": "7.7.0",
