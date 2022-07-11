@@ -744,7 +744,7 @@ exports.createAwsResource = ({
   cannotBeDeleted,
   findNamespace,
   pickId,
-  getByName,
+  getByName = () => undefined,
   configDefault,
   findDependencies,
   //TODO remove
