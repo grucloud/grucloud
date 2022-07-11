@@ -78,7 +78,7 @@ exports.createResources = () => [
 
 ## Source Code
 
-- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ELBv2/load-balancer/resources.js)
+- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ElasticLoadBalancingV2/load-balancer/resources.js)
 
 ## Dependencies
 
@@ -88,7 +88,7 @@ exports.createResources = () => [
 ## List
 
 ```sh
-gc l -t ELBv2::Rule
+gc l -t ElasticLoadBalancingV2::Rule
 ```
 
 ```txt
@@ -97,7 +97,7 @@ Listing resources on 1 provider: aws
   ✓ Initialising
   ✓ Listing 9/9
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ 5 ELBv2::Rule from aws                                                      │
+│ 5 ElasticLoadBalancingV2::Rule from aws                                                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ name: rule-default-listener::load-balancer::HTTP::80::default               │
 │ managedByUs: NO                                                             │
@@ -257,12 +257,12 @@ Provider: aws
 ┌────────────────────────────────────────────────────────────────────────────┐
 │ aws                                                                        │
 ├─────────────┬──────────────────────────────────────────────────────────────┤
-│ ELBv2::Rule │ rule-default-listener::load-balancer::HTTP::80::default      │
+│ ElasticLoadBalancingV2::Rule │ rule-default-listener::load-balancer::HTTP::80::default      │
 │             │ rule-default-listener::load-balancer::HTTPS::443::default    │
 │             │ rule::listener::load-balancer::HTTP::80::1                   │
 │             │ rule::listener::load-balancer::HTTPS::443::1                 │
 │             │ rule::listener::load-balancer::HTTPS::443::2                 │
 └─────────────┴──────────────────────────────────────────────────────────────┘
 5 resources, 1 type, 1 provider
-Command "gc l -t ELBv2::Rule" executed in 10s
+Command "gc l -t ElasticLoadBalancingV2::Rule" executed in 10s
 ```

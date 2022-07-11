@@ -44,7 +44,7 @@ The list of properties are the parameter of [CreateTargetGroupCommandInput](http
 
 ## Source Code
 
-- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ELBv2/load-balancer/resources.js)
+- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ElasticLoadBalancingV2/load-balancer/resources.js)
 
 ## Dependencies
 
@@ -54,7 +54,7 @@ The list of properties are the parameter of [CreateTargetGroupCommandInput](http
 ## Used By
 
 - [AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
-- [CodeDeploy DeploymentGroup](../CodeDeployDeploymentGroup.md)
+- [CodeDeploy DeploymentGroup](../CodeDeploy/DeploymentGroup.md)
 
 ## List
 
@@ -68,7 +68,7 @@ Listing resources on 1 provider: aws
   ✓ Initialising
   ✓ Listing 2/2
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ 2 ELBv2::TargetGroup from aws                                               │
+│ 2 ElasticLoadBalancingV2::TargetGroup from aws                                               │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ name: target-group-rest                                                     │
 │ managedByUs: Yes                                                            │
@@ -147,7 +147,7 @@ Provider: aws
 ┌────────────────────────────────────────────────────────────────────────────┐
 │ aws                                                                        │
 ├────────────────────┬───────────────────────────────────────────────────────┤
-│ ELBv2::TargetGroup │ target-group-rest                                     │
+│ ElasticLoadBalancingV2::TargetGroup │ target-group-rest                                     │
 │                    │ target-group-web                                      │
 └────────────────────┴───────────────────────────────────────────────────────┘
 2 resources, 1 type, 1 provider

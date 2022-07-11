@@ -31,7 +31,7 @@ exports.createResources = () => [];
 - [EC2 Vpc](../EC2/Vpc.md)
 - [EC2 VpnConnection](../EC2/VpnConnection.md)
 - [EC2 VpnGateway](../EC2/VpnGateway.md)
-- [ELBv2 LoadBalancer](../ELBv2/LoadBalancer.md)
+- [ElasticLoadBalancingV2 LoadBalancer](../ElasticLoadBalancingV2/LoadBalancer.md)
 - [Lambda Function](../Lambda/Function.md)
 - [RDS DBCluster](../RDS/DBCluster.md)
 - [Route53 HealthCheck](../Route53/HealthCheck.md)

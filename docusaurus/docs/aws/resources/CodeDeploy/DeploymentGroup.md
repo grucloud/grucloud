@@ -103,8 +103,8 @@ exports.createResources = () => [
 - [IAM Role](../IAM/Role.md)
 - [ECS Cluster](../ECS/Cluster.md)
 - [ECS Service](../ECS/Service.md)
-- [ELBv2 Listener](../ELBv2/Listener.md)
-- [ELBv2 TargetGroup](../ELBv2/TargetGroup.md)
+- [ElasticLoadBalancingV2 Listener](../ElasticLoadBalancingV2/Listener.md)
+- [ElasticLoadBalancingV2 TargetGroup](../ElasticLoadBalancingV2/TargetGroup.md)
 
 ## Properties
 

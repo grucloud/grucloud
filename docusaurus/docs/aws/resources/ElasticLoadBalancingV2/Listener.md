@@ -45,7 +45,7 @@ The list of properties are defined in [CreateListenerCommandInput](https://docs.
 
 ## Source Code
 
-- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ELBv2/load-balancer/resources.js)
+- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ElasticLoadBalancingV2/load-balancer/resources.js)
 
 ## Dependencies
 
@@ -56,7 +56,7 @@ The list of properties are defined in [CreateListenerCommandInput](https://docs.
 ## Used By
 
 - [Api Gateway V2 Integration](../ApiGatewayV2/Integration.md)
-- [CodeDeploy DeploymentGroup](../CodeDeployDeploymentGroup.md)
+- [CodeDeploy DeploymentGroup](../CodeDeploy/DeploymentGroup.md)
 
 ## List
 
@@ -70,7 +70,7 @@ Listing resources on 1 provider: aws
   ✓ Initialising
   ✓ Listing 8/8
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ 2 ELBv2::Listener from aws                                                  │
+│ 2 ElasticLoadBalancingV2::Listener from aws                                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ name: listener::load-balancer::HTTP::80                                     │
 │ managedByUs: Yes                                                            │
@@ -143,7 +143,7 @@ Provider: aws
 ┌────────────────────────────────────────────────────────────────────────────┐
 │ aws                                                                        │
 ├─────────────────┬──────────────────────────────────────────────────────────┤
-│ ELBv2::Listener │ listener::load-balancer::HTTP::80                        │
+│ ElasticLoadBalancingV2::Listener │ listener::load-balancer::HTTP::80                        │
 │                 │ listener::load-balancer::HTTPS::443                      │
 └─────────────────┴──────────────────────────────────────────────────────────┘
 2 resources, 1 type, 1 provider

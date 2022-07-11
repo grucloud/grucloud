@@ -39,7 +39,7 @@ exports.createResources = () => [
 
 ## Used By
 
-- [CodeDeploy DeploymentGroup](../CodeDeployDeploymentGroup.md)
+- [CodeDeploy DeploymentGroup](../CodeDeploy/DeploymentGroup.md)
 
 ## Full Examples
 

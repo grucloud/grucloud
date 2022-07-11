@@ -62,7 +62,7 @@ exports.createResources = () => [
 
 ## Source Code
 
-- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ELBv2/load-balancer/resources.js)
+- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ElasticLoadBalancingV2/load-balancer/resources.js)
 
 ## Properties
 
@@ -85,7 +85,7 @@ Listing resources on 1 provider: aws
   ✓ Initialising
   ✓ Listing 5/5
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ 1 ELBv2::LoadBalancer from aws                                              │
+│ 1 ElasticLoadBalancingV2::LoadBalancer from aws                                              │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ name: load-balancer                                                         │
 │ managedByUs: Yes                                                            │
@@ -130,7 +130,7 @@ Provider: aws
 ┌────────────────────────────────────────────────────────────────────────────┐
 │ aws                                                                        │
 ├─────────────────────┬──────────────────────────────────────────────────────┤
-│ ELBv2::LoadBalancer │ load-balancer                                        │
+│ ElasticLoadBalancingV2::LoadBalancer │ load-balancer                                        │
 └─────────────────────┴──────────────────────────────────────────────────────┘
 1 resource, 1 type, 1 provider
 Command "gc l -t LoadBalancer" executed in 6s

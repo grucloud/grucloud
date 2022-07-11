@@ -24,8 +24,8 @@ exports.createResources = () => [];
 
 ### Used By
 
-- [Connection](../Connection.md)
-- [CustomerGatewayAssociation](../CustomerGatewayAssociation.md)
+- [Connection](./Connection.md)
+- [CustomerGatewayAssociation](./CustomerGatewayAssociation.md)
 
 ### List
 
