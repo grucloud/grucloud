@@ -50,8 +50,8 @@ List of resources for provider aws:
 [FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
 [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
-* ELBv2: 
-[LoadBalancer](./resources/ELBv2/LoadBalancer.md), [TargetGroup](./resources/ELBv2/TargetGroup.md), [Listener](./resources/ELBv2/Listener.md), [Rule](./resources/ELBv2/Rule.md)
+* ElasticLoadBalancingV2: 
+[LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md)
 * IAM: 
 [OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
 * KMS: 

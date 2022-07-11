@@ -58,7 +58,7 @@ exports.createResources = () => [
               listenerArns: [
                 `${getId({
                   type: "Listener",
-                  group: "ELBv2",
+                  group: "ElasticLoadBalancingV2",
                   name: "listener::EC2Co-EcsEl-GK4BG406T8NP::HTTP::80",
                 })}`,
               ],
@@ -67,7 +67,7 @@ exports.createResources = () => [
               {
                 name: `${getId({
                   type: "TargetGroup",
-                  group: "ELBv2",
+                  group: "ElasticLoadBalancingV2",
                   name: "EC2Co-Defau-MMUISWY3DEAQ",
                   path: "name",
                 })}`,
@@ -75,7 +75,7 @@ exports.createResources = () => [
               {
                 name: `${getId({
                   type: "TargetGroup",
-                  group: "ELBv2",
+                  group: "ElasticLoadBalancingV2",
                   name: "tg-cluste-api-2",
                   path: "name",
                 })}`,

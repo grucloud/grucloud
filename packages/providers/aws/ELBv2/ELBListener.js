@@ -58,7 +58,7 @@ const targetGroupProperties = ({ targetGroup }) =>
 //     () =>
 //       lives.getById({
 //         type: "LoadBalancer",
-//         group: "ELBv2",
+//         group: "ElasticLoadBalancingV2",
 //         providerName,
 //         id: live.LoadBalancerArn,
 //       }),
@@ -123,7 +123,7 @@ exports.ELBListener = ({ spec, config }) =>
           lives.getById({
             id: live.LoadBalancerArn,
             type: "LoadBalancer",
-            group: "ELBv2",
+            group: "ElasticLoadBalancingV2",
             providerName: config.providerName,
           }),
         get("name"),
@@ -138,7 +138,7 @@ exports.ELBListener = ({ spec, config }) =>
         () =>
           lives.getById({
             type: "LoadBalancer",
-            group: "ELBv2",
+            group: "ElasticLoadBalancingV2",
             providerName: config.providerName,
             id: live.LoadBalancerArn,
           }),
@@ -149,7 +149,7 @@ exports.ELBListener = ({ spec, config }) =>
       pipe([
         () =>
           client.getListWithParent({
-            parent: { type: "LoadBalancer", group: "ELBv2" },
+            parent: { type: "LoadBalancer", group: "ElasticLoadBalancingV2" },
             pickKey: pick(["LoadBalancerArn"]),
             method: "describeListeners",
             getParam: "Listeners",
@@ -174,12 +174,12 @@ exports.ELBListener = ({ spec, config }) =>
     findDependencies: ({ live, lives }) => [
       {
         type: "LoadBalancer",
-        group: "ELBv2",
+        group: "ElasticLoadBalancingV2",
         ids: [live.LoadBalancerArn],
       },
       {
         type: "TargetGroup",
-        group: "ELBv2",
+        group: "ElasticLoadBalancingV2",
         ids: pipe([
           () => live,
           get("DefaultActions"),

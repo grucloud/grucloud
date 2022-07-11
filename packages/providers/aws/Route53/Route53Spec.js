@@ -94,12 +94,8 @@ module.exports = pipe([
         ])(),
       propertiesDefault: {
         HealthCheckConfig: {
-          RequestInterval: 30,
-          FailureThreshold: 3,
-          MeasureLatency: false,
           Inverted: false,
           Disabled: false,
-          EnableSNI: false,
         },
       },
       omitProperties: [
@@ -199,7 +195,7 @@ module.exports = pipe([
       dependencies: {
         hostedZone: { type: "HostedZone", group: "Route53", parent: true },
         elasticIpAddress: { type: "ElasticIpAddress", group: "EC2" },
-        loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
+        loadBalancer: { type: "LoadBalancer", group: "ElasticLoadBalancingV2" },
         certificate: { type: "Certificate", group: "ACM" },
         distribution: { type: "Distribution", group: "CloudFront" },
         userPoolDomain: {
@@ -238,7 +234,10 @@ module.exports = pipe([
               prepend("CognitoIdentityServiceProvider::UserPoolDomain::A::"),
             ]),
             get("loadBalancer"),
-            pipe([get("loadBalancer"), prepend("ELBv2::LoadBalancer::A::")]),
+            pipe([
+              get("loadBalancer"),
+              prepend("ElasticLoadBalancingV2::LoadBalancer::A::"),
+            ]),
             get("distribution"),
             pipe([
               get("distribution"),
@@ -311,7 +310,7 @@ module.exports = pipe([
         pipe([
           () => resource,
           or([
-            //hasDependency({ type: "LoadBalancer", group: "ELBv2" }),
+            //hasDependency({ type: "LoadBalancer", group: "ElasticLoadBalancingV2" }),
             hasDependency({ type: "Certificate", group: "ACM" }),
             hasDependency({ type: "Distribution", group: "CloudFront" }),
             hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),

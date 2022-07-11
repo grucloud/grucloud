@@ -487,7 +487,7 @@ exports.createResources = () => [
           containerPort: 80,
           targetGroupArn: `${getId({
             type: "TargetGroup",
-            group: "ELBv2",
+            group: "ElasticLoadBalancingV2",
             name: "CdkSt-Farga-1SEGM16UZSRPF",
           })}`,
         },
@@ -519,7 +519,7 @@ exports.createResources = () => [
   },
   {
     type: "LoadBalancer",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "CdkSt-Farga-SRS4XA0Y0M8",
     properties: ({}) => ({
       Scheme: "internet-facing",
@@ -538,7 +538,7 @@ exports.createResources = () => [
   },
   {
     type: "TargetGroup",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "CdkSt-Farga-1SEGM16UZSRPF",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -552,7 +552,7 @@ exports.createResources = () => [
   },
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",

@@ -42,8 +42,16 @@ module.exports = pipe([
         },
         ecsServices: { type: "Service", group: "ECS", list: true },
         ecsClusters: { type: "Cluster", group: "ECS", list: true },
-        targetGroups: { type: "TargetGroup", group: "ELBv2", list: true },
-        listeners: { type: "Listener", group: "ELBv2", list: true },
+        targetGroups: {
+          type: "TargetGroup",
+          group: "ElasticLoadBalancingV2",
+          list: true,
+        },
+        listeners: {
+          type: "Listener",
+          group: "ElasticLoadBalancingV2",
+          list: true,
+        },
         // SNS
       },
       compare: compareAws({ filterLive: () => pipe([]) }),
@@ -67,7 +75,7 @@ module.exports = pipe([
                             get("listenerArns", []),
                             map(
                               replaceWithName({
-                                groupType: "ELBv2::Listener",
+                                groupType: "ElasticLoadBalancingV2::Listener",
                                 path: "id",
                                 pathLive: "id",
                                 providerConfig,
@@ -84,7 +92,8 @@ module.exports = pipe([
                             name: pipe([
                               get("name"),
                               replaceWithName({
-                                groupType: "ELBv2::TargetGroup",
+                                groupType:
+                                  "ElasticLoadBalancingV2::TargetGroup",
                                 path: "name",
                                 pathLive: "name",
                                 providerConfig,

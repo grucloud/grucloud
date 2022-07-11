@@ -311,7 +311,7 @@ exports.createResources = () => [
           containerPort: 80,
           targetGroupArn: `${getId({
             type: "TargetGroup",
-            group: "ELBv2",
+            group: "ElasticLoadBalancingV2",
             name: "sam-a-LoadB-29TIQLVPQQY9",
           })}`,
         },
@@ -343,7 +343,7 @@ exports.createResources = () => [
   },
   {
     type: "LoadBalancer",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "sam-a-LoadB-EC9ZTKNG2RSH",
     properties: ({}) => ({
       Scheme: "internal",
@@ -362,7 +362,7 @@ exports.createResources = () => [
   },
   {
     type: "TargetGroup",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "sam-a-LoadB-29TIQLVPQQY9",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -376,7 +376,7 @@ exports.createResources = () => [
   },
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",

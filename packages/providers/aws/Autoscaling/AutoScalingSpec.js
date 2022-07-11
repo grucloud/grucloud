@@ -137,7 +137,7 @@ module.exports = pipe([
           group: "AutoScaling",
           parent: true,
         },
-        targetGroup: { type: "TargetGroup", group: "ELBv2" },
+        targetGroup: { type: "TargetGroup", group: "ElasticLoadBalancingV2" },
       },
     },
     {

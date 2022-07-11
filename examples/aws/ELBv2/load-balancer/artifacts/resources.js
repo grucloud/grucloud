@@ -144,7 +144,7 @@ exports.createResources = () => [
   },
   {
     type: "LoadBalancer",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "load-balancer",
     properties: ({}) => ({
       Scheme: "internet-facing",
@@ -164,7 +164,7 @@ exports.createResources = () => [
   },
   {
     type: "TargetGroup",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "target-group-rest",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -183,7 +183,7 @@ exports.createResources = () => [
   },
   {
     type: "TargetGroup",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "target-group-web",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -196,7 +196,7 @@ exports.createResources = () => [
   },
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",
@@ -214,7 +214,7 @@ exports.createResources = () => [
   },
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 443,
       Protocol: "HTTPS",
@@ -227,7 +227,7 @@ exports.createResources = () => [
   },
   {
     type: "Rule",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [
@@ -263,7 +263,7 @@ exports.createResources = () => [
   },
   {
     type: "Rule",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [
@@ -280,7 +280,7 @@ exports.createResources = () => [
   },
   {
     type: "Rule",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Priority: "2",
       Conditions: [
@@ -306,6 +306,13 @@ exports.createResources = () => [
   {
     type: "Record",
     group: "Route53",
+    properties: ({}) => ({
+      Name: "grucloud.org.",
+      Type: "A",
+      AliasTarget: {
+        EvaluateTargetHealth: true,
+      },
+    }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       loadBalancer: "load-balancer",

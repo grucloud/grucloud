@@ -198,7 +198,7 @@ exports.CodeDeployDeploymentGroup = ({ spec, config }) =>
       },
       {
         type: "TargetGroup",
-        group: "ELBv2",
+        group: "ElasticLoadBalancingV2",
         ids: pipe([
           () => live,
           get("loadBalancerInfo.targetGroupPairInfoList", []),
@@ -211,7 +211,7 @@ exports.CodeDeployDeploymentGroup = ({ spec, config }) =>
                     lives.getByName({
                       name,
                       type: "TargetGroup",
-                      group: "ELBv2",
+                      group: "ElasticLoadBalancingV2",
                       providerName: config.providerName,
                     }),
                   get("id"),
@@ -223,7 +223,7 @@ exports.CodeDeployDeploymentGroup = ({ spec, config }) =>
       },
       {
         type: "Listener",
-        group: "ELBv2",
+        group: "ElasticLoadBalancingV2",
         ids: pipe([
           () => live,
           get("loadBalancerInfo.targetGroupPairInfoList", []),
@@ -236,7 +236,7 @@ exports.CodeDeployDeploymentGroup = ({ spec, config }) =>
                     lives.getById({
                       id,
                       type: "Listener",
-                      group: "ELBv2",
+                      group: "ElasticLoadBalancingV2",
                       providerName: config.providerName,
                     }),
                   get("id"),

@@ -23,7 +23,7 @@ const AlarmDependenciesDimensions = {
 exports.AlarmDependenciesDimensions = AlarmDependenciesDimensions;
 
 const managedByOther = pipe([
-  get("live.AlarmDescription"),
+  get("live.AlarmDescription", ""),
   callProp("startsWith", "DO NOT EDIT OR DELETE"),
 ]);
 

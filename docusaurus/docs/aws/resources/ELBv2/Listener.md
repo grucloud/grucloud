@@ -13,7 +13,7 @@ Manage an [ELB Listener](https://docs.aws.amazon.com/elasticloadbalancing/latest
 exports.createResources = () => [
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",
@@ -25,7 +25,7 @@ exports.createResources = () => [
   },
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 443,
       Protocol: "HTTPS",

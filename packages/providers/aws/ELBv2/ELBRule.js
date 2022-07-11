@@ -36,7 +36,7 @@ exports.ELBRule = ({ spec, config }) => {
       () =>
         lives.getById({
           type: "Listener",
-          group: "ELBv2",
+          group: "ElasticLoadBalancingV2",
           id: live.ListenerArn,
           providerName: config.providerName,
         }),
@@ -72,7 +72,7 @@ exports.ELBRule = ({ spec, config }) => {
           () =>
             lives.getById({
               type: "Listener",
-              group: "ELBv2",
+              group: "ElasticLoadBalancingV2",
               providerName: config.providerName,
               id: live.ListenerArn,
             }),
@@ -86,7 +86,7 @@ exports.ELBRule = ({ spec, config }) => {
           (LoadBalancerArn) =>
             lives.getById({
               type: "LoadBalancer",
-              group: "ELBv2",
+              group: "ElasticLoadBalancingV2",
               providerName: config.providerName,
               id: LoadBalancerArn,
             }),
@@ -99,10 +99,14 @@ exports.ELBRule = ({ spec, config }) => {
   ]);
 
   const findDependencies = ({ live }) => [
-    { type: "Listener", group: "ELBv2", ids: [live.ListenerArn] },
+    {
+      type: "Listener",
+      group: "ElasticLoadBalancingV2",
+      ids: [live.ListenerArn],
+    },
     {
       type: "TargetGroup",
-      group: "ELBv2",
+      group: "ElasticLoadBalancingV2",
       ids: pipe([() => live, get("Actions"), pluck("TargetGroupArn"), ,])(),
     },
   ];
@@ -117,7 +121,7 @@ exports.ELBRule = ({ spec, config }) => {
           lives.getById({
             providerName: config.providerName,
             type: "Listener",
-            group: "ELBv2",
+            group: "ElasticLoadBalancingV2",
             id: ListenerArn,
           }),
         tap((listener) => {
@@ -143,7 +147,7 @@ exports.ELBRule = ({ spec, config }) => {
     ])();
 
   const getList = client.getListWithParent({
-    parent: { type: "Listener", group: "ELBv2" },
+    parent: { type: "Listener", group: "ElasticLoadBalancingV2" },
     pickKey: pick(["ListenerArn"]),
     method: "describeRules",
     getParam: "Rules",

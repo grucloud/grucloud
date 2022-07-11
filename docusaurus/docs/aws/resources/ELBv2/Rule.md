@@ -15,7 +15,7 @@ Provide a rule to redirect HTTP traffic to HTTPS.
 exports.createResources = () => [
   {
     type: "Rule",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [
@@ -54,7 +54,7 @@ Forward traffic matching _/api/_ to the target group running the REST server.
 exports.createResources = () => [
   {
     type: "Rule",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [

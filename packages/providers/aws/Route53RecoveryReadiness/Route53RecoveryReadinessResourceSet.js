@@ -18,7 +18,7 @@ const ResourceSetDependencies = {
   customerGateway: { type: "CustomerGateway", group: "EC2" },
   dynamoDBTable: { type: "Table", group: "DynamoDB" },
   ec2Volume: { type: "Volume", group: "EC2" },
-  elbV2LoadBalancer: { type: "LoadBalancer", group: "ELBv2" },
+  elbV2LoadBalancer: { type: "LoadBalancer", group: "ElasticLoadBalancingV2" },
   lambdaFunction: { type: "Function", group: "Lambda" },
   //TODO
   //mskCluster: { type: "Cluster", group: "MSK" },

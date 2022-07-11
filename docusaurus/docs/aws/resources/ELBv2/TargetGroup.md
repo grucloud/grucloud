@@ -13,7 +13,7 @@ A target group can be attached directly to an AutoScaling Group or an AutoScalin
 exports.createResources = () => [
   {
     type: "TargetGroup",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "target-group-rest",
     properties: ({}) => ({
       Protocol: "HTTP",

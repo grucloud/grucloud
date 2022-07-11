@@ -116,7 +116,7 @@ exports.createResources = () => [
   },
   {
     type: "LoadBalancer",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "alb1",
     properties: ({}) => ({
       Scheme: "internet-facing",
@@ -133,7 +133,7 @@ exports.createResources = () => [
   },
   {
     type: "TargetGroup",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "tg1",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -147,7 +147,7 @@ exports.createResources = () => [
   },
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",

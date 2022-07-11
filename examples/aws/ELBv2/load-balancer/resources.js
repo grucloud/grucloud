@@ -64,7 +64,8 @@ exports.createResources = () => [
     name: "vpc::subnet-a",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "192.168.0.0/19",
+      NewBits: 3,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -76,7 +77,8 @@ exports.createResources = () => [
     name: "vpc::subnet-b",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "192.168.32.0/19",
+      NewBits: 3,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -142,7 +144,7 @@ exports.createResources = () => [
   },
   {
     type: "LoadBalancer",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "load-balancer",
     properties: ({}) => ({
       Scheme: "internet-facing",
@@ -162,7 +164,7 @@ exports.createResources = () => [
   },
   {
     type: "TargetGroup",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "target-group-rest",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -181,7 +183,7 @@ exports.createResources = () => [
   },
   {
     type: "TargetGroup",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "target-group-web",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -194,7 +196,7 @@ exports.createResources = () => [
   },
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",
@@ -212,7 +214,7 @@ exports.createResources = () => [
   },
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 443,
       Protocol: "HTTPS",
@@ -225,7 +227,7 @@ exports.createResources = () => [
   },
   {
     type: "Rule",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [
@@ -261,7 +263,7 @@ exports.createResources = () => [
   },
   {
     type: "Rule",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [
@@ -278,7 +280,7 @@ exports.createResources = () => [
   },
   {
     type: "Rule",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Priority: "2",
       Conditions: [
@@ -304,6 +306,13 @@ exports.createResources = () => [
   {
     type: "Record",
     group: "Route53",
+    properties: ({}) => ({
+      Name: "grucloud.org.",
+      Type: "A",
+      AliasTarget: {
+        EvaluateTargetHealth: true,
+      },
+    }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       loadBalancer: "load-balancer",

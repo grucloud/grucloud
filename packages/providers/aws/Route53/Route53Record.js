@@ -134,7 +134,7 @@ exports.Route53Record = ({ spec, config }) => {
     },
     {
       type: "LoadBalancer",
-      group: "ELBv2",
+      group: "ElasticLoadBalancingV2",
       ids: pipe([
         () => live,
         get("AliasTarget.DNSName", ""),
@@ -144,7 +144,7 @@ exports.Route53Record = ({ spec, config }) => {
             () =>
               lives.getByType({
                 type: "LoadBalancer",
-                group: "ELBv2",
+                group: "ElasticLoadBalancingV2",
                 providerName,
               }),
             filter(({ live }) =>

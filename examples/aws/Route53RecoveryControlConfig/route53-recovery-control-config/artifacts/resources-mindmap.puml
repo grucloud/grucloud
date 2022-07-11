@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project route53-recovery-control-config
+skinparam monochrome true
++ Infra
+++ aws
++++ Route53
+++++ HealthCheck (2)
++++ Route53RecoveryControlConfig
+++++ Cluster (1)
+++++ ControlPanel (1)
+++++ RoutingControl (2)
+++++ SafetyRule (1)
+@endmindmap

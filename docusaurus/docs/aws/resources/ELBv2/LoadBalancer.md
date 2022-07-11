@@ -13,7 +13,7 @@ Manage an AWS Load Balancer.
 exports.createResources = () => [
   {
     type: "LoadBalancer",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "load-balancer",
     properties: ({}) => ({
       Scheme: "internet-facing",
@@ -38,7 +38,7 @@ const clusterName = "cluster";
 exports.createResources = () => [
   {
     type: "LoadBalancer",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "load-balancer",
     readOnly: true,
     filterLives: ({ resources }) =>
