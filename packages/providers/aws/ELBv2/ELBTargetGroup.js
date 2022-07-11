@@ -29,7 +29,11 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   // TODO findDependencies
   const findDependencies = ({ live }) => [
     { type: "Vpc", group: "EC2", ids: [live.VpcId] },
-    { type: "LoadBalancer", group: "ELBv2", ids: live.LoadBalancerArns },
+    {
+      type: "LoadBalancer",
+      group: "ElasticLoadBalancingV2",
+      ids: live.LoadBalancerArns,
+    },
     // TODO eks.NodeGroup
   ];
 
@@ -118,7 +122,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     getList,
     configDefault,
     managedByOther,
-    tagResource: tagResource({ elb }),
-    untagResource: untagResource({ elb }),
+    tagResource: tagResource({ endpoint: elb }),
+    untagResource: untagResource({ endpoint: elb }),
   };
 };

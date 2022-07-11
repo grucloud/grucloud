@@ -22,10 +22,20 @@ List of resources for provider aws:
 [Distribution](./resources/CloudFront/Distribution.md), [CachePolicy](./resources/CloudFront/CachePolicy.md), [Function](./resources/CloudFront/Function.md), [OriginAccessIdentity](./resources/CloudFront/OriginAccessIdentity.md)
 * CloudTrail: 
 [Trail](./resources/CloudTrail/Trail.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
+* CloudWatch: 
+[MetricAlarm](./resources/CloudWatch/MetricAlarm.md)
 * CloudWatchEvents: 
 [ApiDestination](./resources/CloudWatchEvents/ApiDestination.md), [Connection](./resources/CloudWatchEvents/Connection.md), [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
 [LogGroup](./resources/CloudWatchLogs/LogGroup.md)
+* CodeBuild: 
+[Project](./resources/CodeBuild/Project.md)
+* CodeDeploy: 
+[Application](./resources/CodeDeploy/Application.md), [DeploymentGroup](./resources/CodeDeploy/DeploymentGroup.md)
+* CodePipeline: 
+[Pipeline](./resources/CodePipeline/Pipeline.md)
+* CodeStarConnections: 
+[Connection](./resources/CodeStarConnections/Connection.md)
 * CognitoIdentityServiceProvider: 
 [IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md), [UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [UserPoolClient](./resources/CognitoIdentityServiceProvider/UserPoolClient.md), [UserPoolDomain](./resources/CognitoIdentityServiceProvider/UserPoolDomain.md)
 * DynamoDB: 
@@ -40,8 +50,8 @@ List of resources for provider aws:
 [FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
 [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
-* ELBv2: 
-[LoadBalancer](./resources/ELBv2/LoadBalancer.md), [TargetGroup](./resources/ELBv2/TargetGroup.md), [Listener](./resources/ELBv2/Listener.md), [Rule](./resources/ELBv2/Rule.md)
+* ElasticLoadBalancingV2: 
+[LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md)
 * IAM: 
 [OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
 * KMS: 
@@ -51,7 +61,7 @@ List of resources for provider aws:
 * NetworkFirewall: 
 [Firewall](./resources/NetworkFirewall/Firewall.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md)
 * NetworkManager: 
-[GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Site](./resources/NetworkManager/Site.md), [Device](./resources/NetworkManager/Device.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md)
+[GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Site](./resources/NetworkManager/Site.md), [Device](./resources/NetworkManager/Device.md), [Link](./resources/NetworkManager/Link.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md)
 * Organisations: 
 [Organisation](./resources/Organisations/Organisation.md)
 * RAM: 
@@ -59,9 +69,13 @@ List of resources for provider aws:
 * RDS: 
 [DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [DBCluster](./resources/RDS/DBCluster.md), [DBInstance](./resources/RDS/DBInstance.md)
 * Route53: 
-[HostedZone](./resources/Route53/HostedZone.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md), [Record](./resources/Route53/Record.md)
+[HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md), [Record](./resources/Route53/Record.md)
 * Route53Domains: 
 [Domain](./resources/Route53Domains/Domain.md)
+* Route53RecoveryControlConfig: 
+[Cluster](./resources/Route53RecoveryControlConfig/Cluster.md), [ControlPanel](./resources/Route53RecoveryControlConfig/ControlPanel.md), [RoutingControl](./resources/Route53RecoveryControlConfig/RoutingControl.md), [SafetyRule](./resources/Route53RecoveryControlConfig/SafetyRule.md)
+* Route53RecoveryReadiness: 
+[Cell](./resources/Route53RecoveryReadiness/Cell.md), [ReadinessCheck](./resources/Route53RecoveryReadiness/ReadinessCheck.md), [RecoveryGroup](./resources/Route53RecoveryReadiness/RecoveryGroup.md), [ResourceSet](./resources/Route53RecoveryReadiness/ResourceSet.md)
 * Route53Resolver: 
 [Endpoint](./resources/Route53Resolver/Endpoint.md), [Rule](./resources/Route53Resolver/Rule.md), [RuleAssociation](./resources/Route53Resolver/RuleAssociation.md)
 * S3: 

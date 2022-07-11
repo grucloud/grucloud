@@ -631,6 +631,9 @@ exports.replaceWithName =
           get(pathLive),
           (id) =>
             pipe([
+              tap((params) => {
+                assert(id);
+              }),
               () => Id,
               switchCase([
                 () => groupType,

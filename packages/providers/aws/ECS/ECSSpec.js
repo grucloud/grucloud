@@ -224,6 +224,7 @@ module.exports = pipe([
         "createdBy",
         "networkConfiguration.awsvpcConfiguration.securityGroups",
         "networkConfiguration.awsvpcConfiguration.subnets",
+        "taskSets",
       ],
       propertiesDefault: { propagateTags: "NONE" },
       compare: compareECS({
@@ -252,7 +253,7 @@ module.exports = pipe([
                     targetGroupArn: pipe([
                       get("targetGroupArn"),
                       replaceWithName({
-                        groupType: "ELBv2::TargetGroup",
+                        groupType: "ElasticLoadBalancingV2::TargetGroup",
                         path: "id",
                         providerConfig,
                         lives,
@@ -271,8 +272,16 @@ module.exports = pipe([
         taskDefinition: { type: "TaskDefinition", group: "ECS" },
         subnets: { type: "Subnet", group: "EC2", list: true },
         securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-        loadBalancers: { type: "LoadBalancer", group: "ELBv2", list: true },
-        targetGroups: { type: "TargetGroup", group: "ELBv2", list: true },
+        loadBalancers: {
+          type: "LoadBalancer",
+          group: "ElasticLoadBalancingV2",
+          list: true,
+        },
+        targetGroups: {
+          type: "TargetGroup",
+          group: "ElasticLoadBalancingV2",
+          list: true,
+        },
       },
     },
     {

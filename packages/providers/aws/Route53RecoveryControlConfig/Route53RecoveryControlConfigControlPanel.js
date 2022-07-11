@@ -8,7 +8,10 @@ const { createAwsResource } = require("../AwsClient");
 const {
   tagResource,
   untagResource,
+  assignTags,
 } = require("./Route53RecoveryControlConfigCommon");
+
+const findId = pipe([get("live.ControlPanelArn")]);
 
 const pickId = pipe([
   pick(["ControlPanelArn"]),
@@ -16,6 +19,18 @@ const pickId = pipe([
     assert(ControlPanelArn);
   }),
 ]);
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    assignTags({ endpoint, findId }),
+    tap((params) => {
+      assert(true);
+    }),
+    ({ Name, ...other }) => ({ ControlPanelName: Name, ...other }),
+  ]);
 
 const managedByOther = pipe([get("live.DefaultControlPanel")]);
 
@@ -29,12 +44,13 @@ const model = ({ config }) => ({
     method: "describeControlPanel",
     pickId,
     getField: "ControlPanel",
+    decorate,
   },
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#createControlPanel-property
   create: {
     method: "createControlPanel",
-    pickCreated: ({ payload }) => pipe([pick(["ControlPanelArn"])]),
+    pickCreated: ({ payload }) => pipe([get("ControlPanel"), pickId]),
     isInstanceUp: eq(get("Status"), "DEPLOYED"),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#updateControlPanel-property
@@ -53,9 +69,10 @@ exports.Route53RecoveryControlConfigControlPanel = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.ControlPanelArn")]),
+    findName: pipe([get("live.ControlPanelName")]),
+    findId,
     managedByOther,
+    cannotBeDeleted: managedByOther,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listControlPanels-property
     getList: ({ client, endpoint, getById, config }) =>
       pipe([
@@ -81,17 +98,26 @@ exports.Route53RecoveryControlConfigControlPanel = ({ spec, config }) =>
                 tap((params) => {
                   assert(true);
                 }),
+                assignTags({ findId, endpoint }),
+                ({ Name, ...other }) => ({ ControlPanelName: Name, ...other }),
               ]),
             config,
           }),
       ])(),
     getByName: getByNameCore,
-    tagResource: tagResource({ property: "ControlPanelArn" }),
-    untagResource: untagResource({ property: "ControlPanelArn" }),
+    tagResource: tagResource({ findId }),
+    untagResource: untagResource({ findId }),
+    findDependencies: ({ live, lives }) => [
+      {
+        type: "Cluster",
+        group: "Route53RecoveryControlConfig",
+        ids: [live.ClusterArn],
+      },
+    ],
     configDefault: ({
       name,
       namespace,
-      properties: { Name, Tags, ...otherProps },
+      properties: { Tags, ...otherProps },
       dependencies: { cluster },
     }) =>
       pipe([
@@ -100,7 +126,6 @@ exports.Route53RecoveryControlConfigControlPanel = ({ spec, config }) =>
         }),
         () => otherProps,
         defaultsDeep({
-          ControlPanelName: Name,
           ClusterArn: getField(cluster, "ClusterArn"),
           Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
         }),

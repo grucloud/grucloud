@@ -1,4 +1,4 @@
-# ELBv2 Load Balancer
+# ElasticLoadBalancingV2 Load Balancer
 
 ```sh
 gc tree

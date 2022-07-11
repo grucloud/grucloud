@@ -1,0 +1,29 @@
+@startmindmap
+title Resources for project codedeploy-ecs
+skinparam monochrome true
++ Infra
+++ aws
++++ CodeDeploy
+++++ Application (1)
+++++ DeploymentGroup (1)
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ Subnet (2)
+++++ RouteTable (1)
+++++ RouteTableAssociation (2)
+++++ Route (1)
+++++ SecurityGroup (3)
+++++ SecurityGroupRuleIngress (4)
++++ ECS
+++++ Cluster (1)
+++++ TaskDefinition (1)
+++++ Service (1)
++++ ELBv2
+++++ LoadBalancer (1)
+++++ TargetGroup (3)
+++++ Listener (1)
++++ IAM
+++++ Role (2)
+@endmindmap

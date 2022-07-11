@@ -10,7 +10,7 @@ describe("ELB Rules", async function () {
   before(async function () {
     provider = AwsProvider({ config });
     rule = provider.getClient({
-      groupType: "ELBv2::Rule",
+      groupType: "ElasticLoadBalancingV2::Rule",
     });
     await provider.start();
   });

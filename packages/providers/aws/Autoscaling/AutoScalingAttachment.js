@@ -25,7 +25,7 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
           id: live.TargetGroupARN,
           providerName: config.providerName,
           type: "TargetGroup",
-          group: "ELBv2",
+          group: "ElasticLoadBalancingV2",
         }),
       get("name"),
       tap((targetGroupName) => {
@@ -35,7 +35,11 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
     ])();
 
   const findDependencies = ({ live }) => [
-    { type: "TargetGroup", group: "ELBv2", ids: [live.TargetGroupARN] },
+    {
+      type: "TargetGroup",
+      group: "ElasticLoadBalancingV2",
+      ids: [live.TargetGroupARN],
+    },
     {
       type: "AutoScalingGroup",
       group: "AutoScaling",

@@ -486,7 +486,7 @@ exports.createResources = () => [
           containerPort: 80,
           targetGroupArn: `${getId({
             type: "TargetGroup",
-            group: "ELBv2",
+            group: "ElasticLoadBalancingV2",
             name: "ECSSe-amazo-1HU1HZ8BFKNTJ",
           })}`,
         },
@@ -519,7 +519,7 @@ exports.createResources = () => [
   },
   {
     type: "LoadBalancer",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "ECSSe-amazo-NBIYVNWJ9TTY",
     properties: ({}) => ({
       Scheme: "internet-facing",
@@ -538,7 +538,7 @@ exports.createResources = () => [
   },
   {
     type: "TargetGroup",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "ECSSe-amazo-1HU1HZ8BFKNTJ",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -552,7 +552,7 @@ exports.createResources = () => [
   },
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",

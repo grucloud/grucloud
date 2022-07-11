@@ -105,7 +105,7 @@ exports.createResources = () => [
 - [API](./Api.md)
 - [Lambda Function](../Lambda/Function.md)
 - [Event Bus](../CloudWatchEvents/EventBus.md)
-- [Load Balancer Listener](../ELBv2/Listener.md)
+- [Load Balancer Listener](../ElasticLoadBalancingV2/Listener.md)
 - [Vpc Link](./VpcLink.md)
 
 ## Used By

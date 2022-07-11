@@ -31,7 +31,7 @@ exports.ECSService = ({ spec, config }) => {
     },
     {
       type: "LoadBalancer",
-      group: "ELBv2",
+      group: "ElasticLoadBalancingV2",
       ids: [
         pipe([
           () =>
@@ -39,7 +39,7 @@ exports.ECSService = ({ spec, config }) => {
               providerName: config.providerName,
               name: live.loadBalancerName,
               type: "LoadBalancer",
-              group: "ELBv2",
+              group: "ElasticLoadBalancingV2",
             }),
           get("id"),
         ]),
@@ -47,7 +47,7 @@ exports.ECSService = ({ spec, config }) => {
     },
     {
       type: "TargetGroup",
-      group: "ELBv2",
+      group: "ElasticLoadBalancingV2",
       ids: pluck("targetGroupArn")(live.loadBalancers),
     },
     {

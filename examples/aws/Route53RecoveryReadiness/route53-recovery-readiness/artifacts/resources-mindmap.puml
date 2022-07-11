@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project route53-recovery-readiness
+skinparam monochrome true
++ Infra
+++ aws
++++ DynamoDB
+++++ Table (1)
++++ Route53RecoveryReadiness
+++++ Cell (2)
+++++ ReadinessCheck (1)
+++++ RecoveryGroup (1)
+++++ ResourceSet (1)
+@endmindmap

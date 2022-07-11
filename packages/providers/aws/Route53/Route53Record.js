@@ -18,13 +18,13 @@ const {
 } = require("rubico");
 const {
   find,
-  pluck,
   defaultsDeep,
   isEmpty,
   isDeepEqual,
   callProp,
   includes,
   unless,
+  when,
 } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 
@@ -82,7 +82,7 @@ exports.Route53Record = ({ spec, config }) => {
     {
       type: "HealthCheck",
       group: "Route53",
-      ids: [pipe([() => live, get("HealthCheckId")])()],
+      ids: pipe([() => [live.HealthCheckId], filter(not(isEmpty))])(),
     },
     {
       type: "VpcEndpoint",
@@ -134,7 +134,7 @@ exports.Route53Record = ({ spec, config }) => {
     },
     {
       type: "LoadBalancer",
-      group: "ELBv2",
+      group: "ElasticLoadBalancingV2",
       ids: pipe([
         () => live,
         get("AliasTarget.DNSName", ""),
@@ -144,7 +144,7 @@ exports.Route53Record = ({ spec, config }) => {
             () =>
               lives.getByType({
                 type: "LoadBalancer",
-                group: "ELBv2",
+                group: "ElasticLoadBalancingV2",
                 providerName,
               }),
             filter(({ live }) =>
@@ -257,6 +257,9 @@ exports.Route53Record = ({ spec, config }) => {
       unless(
         isEmpty,
         pipe([
+          tap((params) => {
+            assert(true);
+          }),
           tap(({ ids }) => {
             if (!ids[0].name) {
               assert(ids[0].name);

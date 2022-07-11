@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project record-alias-s3
+skinparam monochrome true
++ Infra
+++ aws
++++ Route53
+++++ HostedZone (1)
+++++ Record (2)
++++ Route53Domains
+++++ Domain (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

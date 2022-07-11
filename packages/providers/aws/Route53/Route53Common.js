@@ -1,19 +1,21 @@
 const assert = require("assert");
 const { pipe, tap } = require("rubico");
-const { callProp } = require("rubico/x");
+const { callProp, when, append } = require("rubico/x");
 const { createEndpoint } = require("../AwsCommon");
 
 exports.createRoute53 = createEndpoint("route-53", "Route53");
 
 exports.hostedZoneIdToResourceId = callProp("replace", "/hostedzone/", "");
 
-exports.buildRecordName = pipe([
-  tap(({ Name, Type }) => {
-    assert(Name);
-    assert(Type);
-  }),
-  ({ Name, Type }) => `record::${Type}::${Name}`,
-]);
+exports.buildRecordName = ({ Name, Type, SetIdentifier }) =>
+  pipe([
+    tap(() => {
+      assert(Name);
+      assert(Type);
+    }),
+    () => `record::${Type}::${Name}`,
+    when(() => SetIdentifier, append(`::${SetIdentifier}`)),
+  ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
 exports.tagResource =

@@ -4,7 +4,6 @@
 
 ## Aws
 
-- untagResource check for objects
 - createOrganizationalUnit
 
 - lives get error
@@ -20,20 +19,14 @@
 
 omit AWSLogs S3 Objects
 
-- s3-eventbridge: missing cloudtrail EventDataStore
-
 - substitute zone, not ${region}/b
 
 - gc gencode lambda with java.
 
 - AWS::Glue::Job
-- AWS::Route53::RecordSetGroup
-- AWS::Route53::HealthCheck
-- AWS::Route53::RecordSetGroup
 - AWS::AmazonMQ::Broker
 - AWS::Kinesis::Stream
 - AWS::Pinpoint::App
-- AWS::CodeBuild::Project
 - AWS::RUM::AppMonitor
 - AWS::Cognito::IdentityPool
 - AWS::Cognito::IdentityPoolRoleAttachment
@@ -41,10 +34,10 @@ omit AWSLogs S3 Objects
 - AWS::WAFv2::WebACL
 - AWS::WAFv2::WebACLAssociation
 - AWS::ApiGateway::UsagePlan
-- AWS::CloudWatch::Alarm
 - AWS::CloudWatch::Dashboard
 - AWS::Events::Endpoint
 - aws_route53_delegation_set
+- EC2 Instance placement
 
 - apprunner example npm test
 - inferName Lambda layer
@@ -52,7 +45,6 @@ omit AWSLogs S3 Objects
 - RDS DBCluster AvailabilityZones
 - inferName Route Table
 - Nat gateway handle deleting
-- EC2 Instance placement
 - resource schema
 - document create key pair
 - UserData: ec2 update and displayResource

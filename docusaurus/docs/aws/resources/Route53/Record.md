@@ -152,7 +152,7 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [Alias record for a load balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ELBv2/load-balancer/resources.js)
+- [Alias record for a load balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ElasticLoadBalancingV2/load-balancer/resources.js)
 - [Aliad record for a Cloudfront distribution](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/resources.js)
 - [TXT record and hosted zone ](https://github.com/grucloud/grucloud/blob/main/examples/aws/Route53/txt-record/resources.js)
 - [A Record to an elastic IP address](https://github.com/grucloud/grucloud/blob/main/examples/aws/Route53/dns-record-ip-address/resources.js)
@@ -165,7 +165,7 @@ exports.createResources = () => [
 
 - [Route53 HostedZone](./HostedZone)
 - [HealthCheck](./HealthCheck.md)
-- [LoadBalancer](../ELBv2/LoadBalancer.md)
+- [LoadBalancer](../ElasticLoadBalancingV2/LoadBalancer.md)
 - [Certificate](../ACM/Certificate)
 - [ApiGatewayV2 DomainName](../ApiGatewayV2/DomainName.md)
 - [CloudFront Distribution](../CloudFront/Distribution.md)

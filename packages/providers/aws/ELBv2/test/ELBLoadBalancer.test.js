@@ -10,7 +10,7 @@ describe("ELB LoadBalancer", async function () {
   before(async function () {
     provider = AwsProvider({ config });
     loadBalancer = provider.getClient({
-      groupType: "ELBv2::LoadBalancer",
+      groupType: "ElasticLoadBalancingV2::LoadBalancer",
     });
     await provider.start();
   });

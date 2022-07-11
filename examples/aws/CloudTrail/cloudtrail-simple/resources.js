@@ -6,9 +6,8 @@ exports.createResources = () => [
   {
     type: "Trail",
     group: "CloudTrail",
-    name: "CloudTrailForS3ImagePushEvents",
     properties: ({ config }) => ({
-      HasInsightSelectors: false,
+      Name: "CloudTrailForS3ImagePushEvents",
       HomeRegion: config.region,
       IncludeGlobalServiceEvents: true,
       IsMultiRegionTrail: true,

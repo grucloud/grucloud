@@ -5,7 +5,7 @@ const { createStack } = require("../iac");
 
 const title = pkg.name;
 
-describe(title, async function () {
+describe.skip(title, async function () {
   it("run", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },

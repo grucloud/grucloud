@@ -8,12 +8,15 @@ exports.createELB = createEndpoint(
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#addTags-property
 exports.tagResource =
-  ({ elb }) =>
+  ({ endpoint }) =>
   ({ id }) =>
-    pipe([(Tags) => ({ ResourceArns: [id], Tags }), elb().addTags]);
+    pipe([(Tags) => ({ ResourceArns: [id], Tags }), endpoint().addTags]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#removeTags-property
 exports.untagResource =
-  ({ elb }) =>
+  ({ endpoint }) =>
   ({ id }) =>
-    pipe([(TagKeys) => ({ ResourceArns: [id], TagKeys }), elb().removeTags]);
+    pipe([
+      (TagKeys) => ({ ResourceArns: [id], TagKeys }),
+      endpoint().removeTags,
+    ]);

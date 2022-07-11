@@ -10,7 +10,7 @@ describe("ELB TargetGroup", async function () {
   before(async function () {
     provider = AwsProvider({ config });
     rule = provider.getClient({
-      groupType: "ELBv2::TargetGroup",
+      groupType: "ElasticLoadBalancingV2::TargetGroup",
     });
     await provider.start();
   });

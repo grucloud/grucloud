@@ -88,7 +88,6 @@ exports.createResources = () => [
     group: "EC2",
     name: "VPC::SubnetPrivateUSEAST1D",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.96.0/19",
       AvailabilityZone: `${config.region}d`,
       Tags: [
         {
@@ -96,6 +95,8 @@ exports.createResources = () => [
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",
@@ -106,7 +107,6 @@ exports.createResources = () => [
     group: "EC2",
     name: "VPC::SubnetPrivateUSEAST1F",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.64.0/19",
       AvailabilityZone: `${config.region}f`,
       Tags: [
         {
@@ -114,6 +114,8 @@ exports.createResources = () => [
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",
@@ -124,7 +126,6 @@ exports.createResources = () => [
     group: "EC2",
     name: "VPC::SubnetPublicUSEAST1D",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}d`,
       MapPublicIpOnLaunch: true,
       Tags: [
@@ -133,6 +134,8 @@ exports.createResources = () => [
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",
@@ -143,7 +146,6 @@ exports.createResources = () => [
     group: "EC2",
     name: "VPC::SubnetPublicUSEAST1F",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}f`,
       MapPublicIpOnLaunch: true,
       Tags: [
@@ -152,6 +154,8 @@ exports.createResources = () => [
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",
@@ -421,7 +425,7 @@ exports.createResources = () => [
   },
   {
     type: "LoadBalancer",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "load-balancer",
     properties: ({}) => ({
       Scheme: "internet-facing",
@@ -435,7 +439,7 @@ exports.createResources = () => [
   },
   {
     type: "TargetGroup",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "target-group-rest",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -449,7 +453,7 @@ exports.createResources = () => [
   },
   {
     type: "TargetGroup",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     name: "target-group-web",
     properties: ({}) => ({
       Protocol: "HTTP",
@@ -462,7 +466,7 @@ exports.createResources = () => [
   },
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 80,
       Protocol: "HTTP",
@@ -474,7 +478,7 @@ exports.createResources = () => [
   },
   {
     type: "Listener",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Port: 443,
       Protocol: "HTTPS",
@@ -487,7 +491,7 @@ exports.createResources = () => [
   },
   {
     type: "Rule",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [
@@ -517,7 +521,7 @@ exports.createResources = () => [
   },
   {
     type: "Rule",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Priority: "1",
       Conditions: [
@@ -534,7 +538,7 @@ exports.createResources = () => [
   },
   {
     type: "Rule",
-    group: "ELBv2",
+    group: "ElasticLoadBalancingV2",
     properties: ({}) => ({
       Priority: "2",
       Conditions: [

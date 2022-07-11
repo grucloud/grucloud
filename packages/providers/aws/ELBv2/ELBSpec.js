@@ -9,7 +9,7 @@ const { ELBRule } = require("./ELBRule");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
-const GROUP = "ELBv2";
+const GROUP = "ElasticLoadBalancingV2";
 
 const compareELB = compareAws({});
 
@@ -90,8 +90,12 @@ module.exports = pipe([
       type: "Listener",
       Client: ELBListener,
       dependencies: {
-        loadBalancer: { type: "LoadBalancer", group: "ELBv2", parent: true },
-        targetGroup: { type: "TargetGroup", group: "ELBv2" },
+        loadBalancer: {
+          type: "LoadBalancer",
+          group: "ElasticLoadBalancingV2",
+          parent: true,
+        },
+        targetGroup: { type: "TargetGroup", group: "ElasticLoadBalancingV2" },
         certificate: { type: "Certificate", group: "ACM" },
       },
       omitProperties: ["ListenerArn", "SslPolicy"],
@@ -117,9 +121,10 @@ module.exports = pipe([
               () => live,
               when(
                 () =>
-                  hasDependency({ type: "TargetGroup", group: "ELBv2" })(
-                    resource
-                  ),
+                  hasDependency({
+                    type: "TargetGroup",
+                    group: "ElasticLoadBalancingV2",
+                  })(resource),
                 omit(["DefaultActions"])
               ),
               pick(["Port", "Protocol", "DefaultActions"]),
@@ -130,8 +135,12 @@ module.exports = pipe([
       type: "Rule",
       Client: ELBRule,
       dependencies: {
-        listener: { type: "Listener", group: "ELBv2", parent: true },
-        targetGroup: { type: "TargetGroup", group: "ELBv2" },
+        listener: {
+          type: "Listener",
+          group: "ElasticLoadBalancingV2",
+          parent: true,
+        },
+        targetGroup: { type: "TargetGroup", group: "ElasticLoadBalancingV2" },
       },
       omitProperties: [
         "RuleArn",
@@ -185,9 +194,10 @@ module.exports = pipe([
               () => live,
               when(
                 () =>
-                  hasDependency({ type: "TargetGroup", group: "ELBv2" })(
-                    resource
-                  ),
+                  hasDependency({
+                    type: "TargetGroup",
+                    group: "ElasticLoadBalancingV2",
+                  })(resource),
                 omit(["Actions"])
               ),
               pick(["Priority", "Conditions", "Actions"]),

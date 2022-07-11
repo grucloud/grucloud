@@ -12,13 +12,15 @@ const GROUP = "CloudTrail";
 const tagsKey = "TagsList";
 const compareCloudTrail = compareAws({ tagsKey });
 
-const filterEventSelector = when(
-  and([
-    pipe([get("EventSelectors", lte(size, 1))]),
-    pipe([get("EventSelectors", first, get("DataResources"), isEmpty)]),
-  ]),
-  omit(["EventSelectors"])
-);
+const filterEventSelector = pipe([
+  when(
+    and([
+      pipe([get("EventSelectors"), lte(size, 1)]),
+      pipe([get("EventSelectors"), first, get("DataResources"), isEmpty]),
+    ]),
+    omit(["EventSelectors"])
+  ),
+]);
 
 module.exports = pipe([
   () => [
@@ -26,7 +28,6 @@ module.exports = pipe([
       type: "Trail",
       Client: CloudTrail,
       omitProperties: [
-        "Name",
         "S3BucketName",
         "SnsTopicARN",
         "TrailARN",
@@ -35,7 +36,9 @@ module.exports = pipe([
         "KmsKeyId",
         "HasCustomEventSelectors",
         "LogFileValidationEnabled",
+        "HasInsightSelectors",
       ],
+      inferName: pipe([get("properties.Name")]),
       compare: compareCloudTrail({
         filterLive: () => pipe([filterEventSelector]),
       }),

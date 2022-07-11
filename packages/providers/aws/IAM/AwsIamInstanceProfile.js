@@ -222,7 +222,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
                 group: "IAM",
                 providerName: config.providerName,
               }),
-            findNamespaceInTags(config),
+            unless(isEmpty, findNamespaceInTags(config)),
           ])
         ),
       ])(),

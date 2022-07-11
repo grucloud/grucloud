@@ -7,8 +7,10 @@ const { createAwsResource } = require("../AwsClient");
 const {
   tagResource,
   untagResource,
+  assignTags,
 } = require("./Route53RecoveryControlConfigCommon");
 
+const findId = pipe([get("live.ClusterArn")]);
 const pickId = pipe([
   pick(["ClusterArn"]),
   tap(({ ClusterArn }) => {
@@ -21,13 +23,11 @@ const decorate = ({ endpoint }) =>
     tap((params) => {
       assert(true);
     }),
-    // assign({
-    //   Tags: pipe([
-    //     ({ AlarmArn }) => ({ ResourceARN: AlarmArn }),
-    //     endpoint().listTagsForResource,
-    //     get("Tags"),
-    //   ]),
-    // }),
+    assignTags({ endpoint, findId }),
+    tap((params) => {
+      assert(true);
+    }),
+    ({ Name, ...other }) => ({ ClusterName: Name, ...other }),
   ]);
 
 const model = ({ config }) => ({
@@ -40,6 +40,7 @@ const model = ({ config }) => ({
     method: "describeCluster",
     pickId,
     getField: "Cluster",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listClusters-property
   getList: {
@@ -50,7 +51,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#createCluster-property
   create: {
     method: "createCluster",
-    pickCreated: ({ payload }) => pipe([pick(["ClusterArn"])]),
+    pickCreated: ({ payload }) => pipe([get("Cluster"), pickId]),
     isInstanceUp: eq(get("Status"), "DEPLOYED"),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#updateCluster-property
@@ -69,20 +70,15 @@ exports.Route53RecoveryControlConfigCluster = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.ClusterArn")]),
+    findName: pipe([get("live.ClusterName")]),
+    findId,
     getByName: getByNameCore,
-    tagResource: tagResource({ property: "ClusterArn" }),
-    untagResource: untagResource({ property: "ClusterArn" }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Name, Tags, ...otherProps },
-    }) =>
+    tagResource: tagResource({ findId }),
+    untagResource: untagResource({ findId }),
+    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
-          ClusterName: Name,
           Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
         }),
       ])(),

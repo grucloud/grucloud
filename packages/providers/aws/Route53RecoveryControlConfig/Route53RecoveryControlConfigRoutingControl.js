@@ -5,10 +5,8 @@ const { buildTagsObject, getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
-const {
-  tagResource,
-  untagResource,
-} = require("./Route53RecoveryControlConfigCommon");
+
+const findId = pipe([get("live.RoutingControlArn")]);
 
 const pickId = pipe([
   pick(["RoutingControlArn"]),
@@ -16,6 +14,17 @@ const pickId = pipe([
     assert(RoutingControlArn);
   }),
 ]);
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    tap((params) => {
+      assert(true);
+    }),
+    ({ Name, ...other }) => ({ RoutingControlName: Name, ...other }),
+  ]);
 
 const model = ({ config }) => ({
   package: "route53-recovery-control-config",
@@ -27,11 +36,12 @@ const model = ({ config }) => ({
     method: "describeRoutingControl",
     pickId,
     getField: "RoutingControl",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#createRoutingControl-property
   create: {
     method: "createRoutingControl",
-    pickCreated: ({ payload }) => pipe([pick(["RoutingControlArn"])]),
+    pickCreated: ({ payload }) => pipe([get("RoutingControl"), pickId]),
     isInstanceUp: eq(get("Status"), "DEPLOYED"),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#updateRoutingControl-property
@@ -50,17 +60,11 @@ exports.Route53RecoveryControlConfigRoutingControl = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.RoutingControlArn")]),
+    findName: pipe([get("live.RoutingControlName")]),
+    findId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listRoutingControls-property
     getList: ({ client, endpoint, getById, config }) =>
       pipe([
-        tap((params) => {
-          assert(client);
-          assert(endpoint);
-          assert(getById);
-          assert(config);
-        }),
         () =>
           client.getListWithParent({
             parent: {
@@ -75,23 +79,22 @@ exports.Route53RecoveryControlConfigRoutingControl = ({ spec, config }) =>
             ]),
             method: "listRoutingControls",
             getParam: "RoutingControls",
-            decorate: ({ endpoint, lives, parent }) =>
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listAssociatedRoute53HealthChecks-property
-              ]),
+            decorate,
             config,
           }),
       ])(),
     getByName: getByNameCore,
-    tagResource: tagResource({ property: "RoutingControlArn" }),
-    untagResource: untagResource({ property: "RoutingControlArn" }),
+    findDependencies: ({ live, lives }) => [
+      {
+        type: "ControlPanel",
+        group: "Route53RecoveryControlConfig",
+        ids: [live.ControlPanelArn],
+      },
+    ],
     configDefault: ({
       name,
       namespace,
-      properties: { Name, Tags, ...otherProps },
+      properties: { Tags, ...otherProps },
       dependencies: { controlPanel },
     }) =>
       pipe([
@@ -100,10 +103,8 @@ exports.Route53RecoveryControlConfigRoutingControl = ({ spec, config }) =>
         }),
         () => otherProps,
         defaultsDeep({
-          RoutingControlName: Name,
           ClusterArn: getField(controlPanel, "ClusterArn"),
           ControlPanelArn: getField(controlPanel, "ControlPanelArn"),
-          Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
         }),
       ])(),
   });

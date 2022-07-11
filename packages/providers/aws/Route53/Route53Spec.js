@@ -10,8 +10,18 @@ const {
   or,
   switchCase,
   filter,
+  omit,
 } = require("rubico");
-const { prepend, isEmpty, find, includes } = require("rubico/x");
+const {
+  append,
+  prepend,
+  isEmpty,
+  find,
+  includes,
+  when,
+  unless,
+  callProp,
+} = require("rubico/x");
 const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
 
@@ -52,7 +62,7 @@ module.exports = pipe([
         filterTarget: () => pipe([() => ({})]),
         filterLive: () => pipe([() => ({})]),
       }),
-      inferName: ({ properties, dependenciesSpec }) =>
+      inferName: ({ properties, dependenciesSpec: { routingControl } }) =>
         pipe([
           () => properties,
           get("HealthCheckConfig"),
@@ -84,15 +94,17 @@ module.exports = pipe([
         ])(),
       propertiesDefault: {
         HealthCheckConfig: {
-          RequestInterval: 30,
-          FailureThreshold: 3,
-          MeasureLatency: false,
           Inverted: false,
           Disabled: false,
-          EnableSNI: false,
         },
       },
-      omitProperties: ["Id", "CallerReference", "LinkedService"],
+      omitProperties: [
+        "Id",
+        "CallerReference",
+        "LinkedService",
+        "HealthCheckConfig.RoutingControlArn",
+        "HealthCheckVersion",
+      ],
       filterLive: ({ providerConfig }) =>
         pipe([
           tap((params) => {
@@ -183,7 +195,7 @@ module.exports = pipe([
       dependencies: {
         hostedZone: { type: "HostedZone", group: "Route53", parent: true },
         elasticIpAddress: { type: "ElasticIpAddress", group: "EC2" },
-        loadBalancer: { type: "LoadBalancer", group: "ELBv2" },
+        loadBalancer: { type: "LoadBalancer", group: "ElasticLoadBalancingV2" },
         certificate: { type: "Certificate", group: "ACM" },
         distribution: { type: "Distribution", group: "CloudFront" },
         userPoolDomain: {
@@ -197,7 +209,7 @@ module.exports = pipe([
       Client: Route53Record,
       isOurMinion: () => true,
       compare: compareRoute53Record,
-      omitProperties: ["AliasTarget.HostedZoneId", "AliasTarget.DNSName"],
+      omitProperties: [],
       inferName: ({ properties, dependenciesSpec }) =>
         pipe([
           () => dependenciesSpec,
@@ -222,7 +234,10 @@ module.exports = pipe([
               prepend("CognitoIdentityServiceProvider::UserPoolDomain::A::"),
             ]),
             get("loadBalancer"),
-            pipe([get("loadBalancer"), prepend("ELBv2::LoadBalancer::A::")]),
+            pipe([
+              get("loadBalancer"),
+              prepend("ElasticLoadBalancingV2::LoadBalancer::A::"),
+            ]),
             get("distribution"),
             pipe([
               get("distribution"),
@@ -236,13 +251,23 @@ module.exports = pipe([
             () => `${properties.Type}::${properties.Name}`,
           ]),
           prepend(`record::`),
+          when(
+            () => properties.SetIdentifier,
+            append(`::${properties.SetIdentifier}`)
+          ),
           tap((params) => {
             assert(true);
           }),
         ])(),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
-          pick(["Name", "Type", "TTL", "ResourceRecords", "AliasTarget"]),
+          unless(
+            pipe([
+              get("AliasTarget.DNSName", ""),
+              callProp("startsWith", "s3-website"),
+            ]),
+            omit(["AliasTarget.DNSName", "AliasTarget.HostedZoneId"])
+          ),
           assign({
             Name: pipe([
               get("Name"),
@@ -279,12 +304,13 @@ module.exports = pipe([
             ]),
           }),
           omitIfEmpty(["ResourceRecords"]),
+          omit(["HostedZoneId"]),
         ]),
       hasNoProperty: ({ lives, resource }) =>
         pipe([
           () => resource,
           or([
-            hasDependency({ type: "LoadBalancer", group: "ELBv2" }),
+            //hasDependency({ type: "LoadBalancer", group: "ElasticLoadBalancingV2" }),
             hasDependency({ type: "Certificate", group: "ACM" }),
             hasDependency({ type: "Distribution", group: "CloudFront" }),
             hasDependency({ type: "DomainName", group: "ApiGatewayV2" }),

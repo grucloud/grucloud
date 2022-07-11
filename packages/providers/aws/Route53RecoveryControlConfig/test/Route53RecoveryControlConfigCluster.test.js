@@ -28,7 +28,10 @@ describe("Route53RecoveryControlConfigCluster", async function () {
     pipe([
       () =>
         cluster.destroy({
-          live: { ClusterArn: "arn:aws:a-12345" },
+          live: {
+            ClusterArn:
+              "arn:aws:route53-recovery-control::840541460064:cluster/3011f1ab-0558-4627-a890-cad5e8e7ae8a",
+          },
         }),
     ])
   );
@@ -37,7 +40,8 @@ describe("Route53RecoveryControlConfigCluster", async function () {
     pipe([
       () =>
         cluster.getById({
-          ClusterArn: "a-12345",
+          ClusterArn:
+            "arn:aws:route53-recovery-control::840541460064:cluster/3011f1ab-0558-4627-a890-cad5e8e7ae8a",
         }),
     ])
   );

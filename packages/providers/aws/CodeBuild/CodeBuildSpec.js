@@ -7,7 +7,9 @@ const { CodeBuildProject } = require("./CodeBuildProject");
 
 const GROUP = "CodeBuild";
 
-const compareCodeBuild = compareAws({ tagsKey: "tags" });
+const tagsKey = "tags";
+
+const compareCodeBuild = compareAws({ tagsKey: "Tags" });
 
 module.exports = pipe([
   () => [
@@ -37,11 +39,7 @@ module.exports = pipe([
         },
         source: {
           gitCloneDepth: 1,
-          gitSubmodulesConfig: {
-            fetchSubmodules: false,
-          },
           insecureSsl: false,
-          reportBuildStatus: false,
         },
         projectVisibility: "PRIVATE",
         queuedTimeoutInMinutes: 480,
@@ -56,6 +54,7 @@ module.exports = pipe([
     defaultsDeep({
       group: GROUP,
       isOurMinion,
+      tagsKey: "tags",
       compare: compareCodeBuild({}),
     })
   ),

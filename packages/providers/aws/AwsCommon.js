@@ -990,6 +990,7 @@ const replaceArnWithAccountAndRegion =
               !Id.startsWith("arn:aws:lambda") &&
               !Id.startsWith("arn:aws:rds") &&
               !Id.startsWith("arn:aws:sqs") &&
+              !Id.startsWith("arn:aws:code") &&
               !Id.startsWith("arn:aws:sns"),
           ])
         ),

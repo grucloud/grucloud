@@ -36,7 +36,7 @@ exports.createResources = () => [
 
 - [Launch Template simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/launchTemplate)
 
-- [ELBv2 Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ELBv2/load-balancer)
+- [ElasticLoadBalancingV2 Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ElasticLoadBalancingV2/load-balancer)
 
 - [EKS simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/eks-simple)
 

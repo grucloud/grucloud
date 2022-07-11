@@ -6,22 +6,34 @@ exports.createResources = () => [
   {
     type: "Trail",
     group: "CloudTrail",
-    name: "CloudTrailForS3ImagePushEvents",
     properties: ({ config }) => ({
-      HasInsightSelectors: false,
+      EventSelectors: [
+        {
+          DataResources: [
+            {
+              Type: "AWS::S3::Object",
+              Values: ["arn:aws:s3:::gc-s3-eventbridgeaaa/"],
+            },
+          ],
+          ExcludeManagementEventSources: [],
+          IncludeManagementEvents: true,
+          ReadWriteType: "WriteOnly",
+        },
+      ],
       HomeRegion: config.region,
       IncludeGlobalServiceEvents: true,
       IsMultiRegionTrail: true,
       IsOrganizationTrail: false,
+      Name: "CloudTrailForS3ImagePushEvents",
     }),
     dependencies: ({}) => ({
-      bucket: "grucloud-s3-event-bridge-logs",
+      bucket: "gc-s3-eventbridge-cloudtrail",
     }),
   },
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "sam-app-S3NewImageEvent-W0968CSQOUFJ",
+    name: "sam-app-S3NewImageEvent-WQBVMJ27U1IW",
     properties: ({}) => ({
       Description:
         "This rule will trigger lambda when an image is uploaded into S3",
@@ -31,7 +43,7 @@ exports.createResources = () => [
         detail: {
           eventSource: ["s3.amazonaws.com"],
           requestParameters: {
-            bucketName: ["grucloud-s3-event-bridge-images"],
+            bucketName: ["gc-s3-eventbridge"],
           },
           eventName: ["PutObject", "CopyObject", "CompleteMultipartUpload"],
         },
@@ -46,14 +58,14 @@ exports.createResources = () => [
       Id: "S3NewImageEvent",
     }),
     dependencies: ({}) => ({
-      rule: "sam-app-S3NewImageEvent-W0968CSQOUFJ",
-      sqsQueue: "sam-app-NewImageEventQueue-DGEXqRa9ZM4Z",
+      rule: "sam-app-S3NewImageEvent-WQBVMJ27U1IW",
+      sqsQueue: "sam-app-NewImageEventQueue-xg4G9e9EBenI",
     }),
   },
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-s3-event-bridge-images",
+    name: "gc-s3-eventbridge",
     properties: ({}) => ({
       Policy: {
         Version: "2008-10-17",
@@ -63,8 +75,8 @@ exports.createResources = () => [
             Principal: "*",
             Action: "s3:*",
             Resource: [
-              `arn:aws:s3:::grucloud-s3-event-bridge-images/*`,
-              `arn:aws:s3:::grucloud-s3-event-bridge-images`,
+              `arn:aws:s3:::gc-s3-eventbridge/*`,
+              `arn:aws:s3:::gc-s3-eventbridge`,
             ],
             Condition: {
               Bool: {
@@ -79,7 +91,7 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-s3-event-bridge-logs",
+    name: "gc-s3-eventbridge-cloudtrail",
     properties: ({ config }) => ({
       Policy: {
         Version: "2012-10-17",
@@ -90,8 +102,8 @@ exports.createResources = () => [
             Principal: "*",
             Action: "s3:*",
             Resource: [
-              `arn:aws:s3:::grucloud-s3-event-bridge-logs/*`,
-              `arn:aws:s3:::grucloud-s3-event-bridge-logs`,
+              `arn:aws:s3:::gc-s3-eventbridge-cloudtrail/*`,
+              `arn:aws:s3:::gc-s3-eventbridge-cloudtrail`,
             ],
             Condition: {
               Bool: {
@@ -106,7 +118,7 @@ exports.createResources = () => [
               Service: "cloudtrail.amazonaws.com",
             },
             Action: "s3:GetBucketAcl",
-            Resource: `arn:aws:s3:::grucloud-s3-event-bridge-logs`,
+            Resource: `arn:aws:s3:::gc-s3-eventbridge-cloudtrail`,
           },
           {
             Sid: "AllowCloudTrailToWriteToBucket",
@@ -115,7 +127,7 @@ exports.createResources = () => [
               Service: "cloudtrail.amazonaws.com",
             },
             Action: "s3:PutObject",
-            Resource: `arn:aws:s3:::grucloud-s3-event-bridge-logs/AWSLogs/${config.accountId()}/*`,
+            Resource: `arn:aws:s3:::gc-s3-eventbridge-cloudtrail/AWSLogs/${config.accountId()}/*`,
             Condition: {
               StringEquals: {
                 "s3:x-amz-acl": "bucket-owner-full-control",
@@ -129,7 +141,7 @@ exports.createResources = () => [
   {
     type: "Queue",
     group: "SQS",
-    name: "sam-app-NewImageEventQueue-DGEXqRa9ZM4Z",
+    name: "sam-app-NewImageEventQueue-xg4G9e9EBenI",
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
@@ -143,7 +155,7 @@ exports.createResources = () => [
               Action: "SQS:SendMessage",
               Resource: `arn:aws:sqs:${
                 config.region
-              }:${config.accountId()}:sam-app-NewImageEventQueue-DGEXqRa9ZM4Z`,
+              }:${config.accountId()}:sam-app-NewImageEventQueue-xg4G9e9EBenI`,
             },
           ],
         },

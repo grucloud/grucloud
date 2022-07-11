@@ -47,7 +47,7 @@ const listenerUriToName = ({ lives, config }) =>
       lives.getById({
         id,
         type: "Listener",
-        group: "ELBv2",
+        group: "ElasticLoadBalancingV2",
         providerName: config.providerName,
       }),
     get("name"),
@@ -111,12 +111,12 @@ exports.Integration = ({ spec, config }) => {
     },
     {
       type: "Listener",
-      group: "ELBv2",
+      group: "ElasticLoadBalancingV2",
       ids: pipe([
         () =>
           lives.getByType({
             type: "Listener",
-            group: "ELBv2",
+            group: "ElasticLoadBalancingV2",
             providerName: config.providerName,
           }),
         tap((params) => {

@@ -2,6 +2,7 @@ const assert = require("assert");
 const { pipe, tap, get, eq, switchCase, assign } = require("rubico");
 const { defaultsDeep, prepend, includes, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, getNewCallerReference } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
@@ -102,7 +103,7 @@ exports.Route53HealthCheck = ({ spec, config }) =>
                   config: config.providerName,
                 }),
               get("name"),
-              prepend("heathcheck::RECOVERY_CONTROL"),
+              prepend("heathcheck::RECOVERY_CONTROL::"),
             ])(),
         ]),
         tap((params) => {

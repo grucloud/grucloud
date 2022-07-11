@@ -1,30 +1,41 @@
 const assert = require("assert");
 const { pipe, tap, get, assign } = require("rubico");
-const { keys } = require("rubico/x");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#tagResource-property
 exports.tagResource =
-  ({ property }) =>
+  ({ findId }) =>
   ({ endpoint }) =>
   ({ live }) =>
     pipe([
       tap((params) => {
-        assert(live[property]);
+        assert(findId({ live }));
       }),
-      (Tags) => ({ ResourceArn: live[property], Tags }),
+      (Tags) => ({ ResourceArn: findId({ live }), Tags }),
       endpoint().tagResource,
     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#untagResource-property
 exports.untagResource =
-  ({ property }) =>
+  ({ findId }) =>
   ({ endpoint }) =>
   ({ live }) =>
     pipe([
       tap((params) => {
-        assert(live[property]);
+        assert(findId({ live }));
       }),
-      keys,
-      (TagKeys) => ({ ResourceArn: live[property], TagKeys }),
+      (TagKeys) => ({ ResourceArn: findId({ live }), TagKeys }),
       endpoint().untagResource,
     ]);
+
+exports.assignTags = ({ findId, endpoint }) =>
+  pipe([
+    assign({
+      Tags: pipe([
+        (live) => ({ live }),
+        findId,
+        (ResourceArn) => ({ ResourceArn }),
+        endpoint().listTagsForResource,
+        get("Tags"),
+      ]),
+    }),
+  ]);

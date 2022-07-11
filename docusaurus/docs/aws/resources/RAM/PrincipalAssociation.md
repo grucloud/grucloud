@@ -15,7 +15,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceShare: "ipam-org-share",
-      organisation: "frederic.heem@gmail.com",
+      organisation: "fred@mail.com",
     }),
   },
 ];
@@ -31,6 +31,9 @@ exports.createResources = () => [
 - [AssociateResourceShareCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ram/interfaces/associateresourcesharecommandinput.html)
 
 ### Dependencies
+
+- [Resource Share](./ResourceShare.md)
+- [Organisation](../Organisations/Organisation.md)
 
 ### Used By
 

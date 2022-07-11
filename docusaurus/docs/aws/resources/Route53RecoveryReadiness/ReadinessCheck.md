@@ -3,7 +3,7 @@ id: ReadinessCheck
 title: Readiness Check
 ---
 
-Provides [Route53 Recovery Readiness Recovery Group](https://us-west-2.console.aws.amazon.com/route53recovery/home#/dashboard)
+Provides [Route53 Recovery Readiness Recovery Group](https://us-west-2.console.aws.amazon.com/route53recovery/home#/readiness/home)
 
 ## Examples
 
@@ -34,5 +34,31 @@ gc list -t Route53RecoveryReadiness::ReadinessCheck
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 1/1
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│ 1 Route53RecoveryReadiness::ReadinessCheck from aws                             │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│ name: dynamodb                                                                  │
+│ managedByUs: Yes                                                                │
+│ live:                                                                           │
+│   ReadinessCheckArn: arn:aws:route53-recovery-readiness::840541460064:readines… │
+│   ReadinessCheckName: dynamodb                                                  │
+│   ResourceSet: dynamodb                                                         │
+│   Tags:                                                                         │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
 
+
+List Summary:
+Provider: aws
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                            │
+├──────────────────────────────────────────┬─────────────────────────────────────┤
+│ Route53RecoveryReadiness::ReadinessCheck │ dynamodb                            │
+└──────────────────────────────────────────┴─────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc list -t Route53RecoveryReadiness::ReadinessCheck" executed in 5s, 111 MB
 ```

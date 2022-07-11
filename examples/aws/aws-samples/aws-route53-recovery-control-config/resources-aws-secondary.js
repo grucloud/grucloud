@@ -2,4 +2,932 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-exports.createResources = () => [];
+exports.createResources = () => [
+  {
+    type: "AutoScalingGroup",
+    group: "AutoScaling",
+    name: "tf-arc-asg",
+    properties: ({}) => ({
+      MinSize: 2,
+      MaxSize: 2,
+      DesiredCapacity: 2,
+      HealthCheckType: "ELB",
+      HealthCheckGracePeriod: 30,
+    }),
+    dependencies: ({}) => ({
+      subnets: [
+        "tf-arc-VPC::tf-arc-PrivateSubnet-1",
+        "tf-arc-VPC::tf-arc-PrivateSubnet-2",
+      ],
+      launchConfiguration: "tf-arc-launch-config",
+    }),
+  },
+  {
+    type: "LaunchConfiguration",
+    group: "AutoScaling",
+    properties: ({}) => ({
+      LaunchConfigurationName: "tf-arc-launch-config",
+      UserData:
+        '#!/bin/bash -x\nexec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1\n              \n# Install dependencies\necho "Installing dependencies"\nsleep 60\n              \nsudo yum -y update\nsudo yum install -y aws-cli ruby jq\nsudo yum install -y wget\n              \n# Set REGION environment variables for the CodeDeploy agent and the NodeJS app\necho "Setting REGION variable"\n              \ncd /home/ec2-user\necho \'export REGION="us-west-2"\' >> .bashrc\n              \n## Code Deploy Agent Bootstrap Script ##\n              \n#To clean the AMI of any previous agent caching information, run the following script:\necho "Deleting CodeDeploy agent"\n              \nCODEDEPLOY_BIN="/opt/codedeploy-agent/bin/codedeploy-agent"\n$CODEDEPLOY_BIN stop\nsudo yum erase codedeploy-agent -y\n              \n# Install CodeDeploy agent\necho "Installing CodeDeploy agent"\ncd /home/ec2-user\nwget https://aws-codedeploy-us-west-2.s3.us-west-2.amazonaws.com/latest/install\nsudo chmod +x ./install\nif ./install auto; then\n    echo "CodeDeploy Agent: Installation completed"\n    exit 0\nelse\n    echo "CodeDeploy Agent: Installation script failed, please investigate"\n    exit 1\nfi\n              \n',
+      InstanceType: "t4g.micro",
+      BlockDeviceMappings: [
+        {
+          DeviceName: "/dev/xvda",
+          Ebs: {
+            DeleteOnTermination: true,
+            Encrypted: true,
+          },
+        },
+      ],
+      InstanceMonitoring: {
+        Enabled: true,
+      },
+      EbsOptimized: false,
+      Image: {
+        Description:
+          "Amazon Linux 2 LTS Arm64 AMI 2.0.20220606.1 arm64 HVM gp2",
+      },
+    }),
+    dependencies: ({}) => ({
+      securityGroups: ["sg::tf-arc-VPC::tf-arc-asg-sg"],
+    }),
+  },
+  {
+    type: "Table",
+    group: "DynamoDB",
+    name: "nodejs-tutorial",
+    properties: ({}) => ({
+      AttributeDefinitions: [
+        {
+          AttributeName: "email",
+          AttributeType: "S",
+        },
+      ],
+      KeySchema: [
+        {
+          AttributeName: "email",
+          KeyType: "HASH",
+        },
+      ],
+      BillingMode: "PAY_PER_REQUEST",
+    }),
+  },
+  { type: "KeyPair", group: "EC2", name: "kp" },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "tf-arc-VPC",
+    properties: ({}) => ({
+      CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
+  {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-eks",
+    properties: ({}) => ({
+      CidrBlock: "192.168.0.0/16",
+      Tags: [
+        {
+          Key: "CreatedByProvider",
+          Value: "aws",
+        },
+        {
+          Key: "kubernetes.io/cluster/cluster",
+          Value: "shared",
+        },
+        {
+          Key: "ManagedBy",
+          Value: "GruCloud",
+        },
+        {
+          Key: "projectName",
+          Value: "grucloud-k8s-aws-starhackit",
+        },
+        {
+          Key: "stage",
+          Value: "dev",
+        },
+      ],
+      DnsHostnames: true,
+    }),
+  },
+  {
+    type: "InternetGateway",
+    group: "EC2",
+    name: "ig-default",
+    isDefault: true,
+  },
+  { type: "InternetGateway", group: "EC2", name: "tf-arc-IGW" },
+  {
+    type: "InternetGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "tf-arc-VPC",
+      internetGateway: "tf-arc-IGW",
+    }),
+  },
+  {
+    type: "NatGateway",
+    group: "EC2",
+    name: "tf-arc-NatGateway",
+    dependencies: ({}) => ({
+      subnet: "tf-arc-VPC::tf-arc-PublicSubnet-1",
+      eip: "eipalloc-0a44dd96db8b910e4",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "tf-arc-VPC::tf-arc-PrivateSubnet-1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "tf-arc-VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "tf-arc-VPC::tf-arc-PrivateSubnet-2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 1,
+    }),
+    dependencies: ({}) => ({
+      vpc: "tf-arc-VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "tf-arc-VPC::tf-arc-PublicSubnet-1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 2,
+    }),
+    dependencies: ({}) => ({
+      vpc: "tf-arc-VPC",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "tf-arc-VPC::tf-arc-PublicSubnet-2",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 3,
+    }),
+    dependencies: ({}) => ({
+      vpc: "tf-arc-VPC",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "tf-arc-VPC::tf-arc-PrivateRouteTable",
+    dependencies: ({}) => ({
+      vpc: "tf-arc-VPC",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "tf-arc-VPC::tf-arc-PublicRouteTable",
+    dependencies: ({}) => ({
+      vpc: "tf-arc-VPC",
+    }),
+  },
+  {
+    type: "RouteTable",
+    group: "EC2",
+    name: "vpc-default::rt-default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "tf-arc-VPC::tf-arc-PrivateRouteTable",
+      subnet: "tf-arc-VPC::tf-arc-PrivateSubnet-1",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "tf-arc-VPC::tf-arc-PrivateRouteTable",
+      subnet: "tf-arc-VPC::tf-arc-PrivateSubnet-2",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "tf-arc-VPC::tf-arc-PublicRouteTable",
+      subnet: "tf-arc-VPC::tf-arc-PublicSubnet-1",
+    }),
+  },
+  {
+    type: "RouteTableAssociation",
+    group: "EC2",
+    dependencies: ({}) => ({
+      routeTable: "tf-arc-VPC::tf-arc-PublicRouteTable",
+      subnet: "tf-arc-VPC::tf-arc-PublicSubnet-2",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "tf-arc-VPC::tf-arc-PrivateRouteTable",
+      natGateway: "tf-arc-NatGateway",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "tf-arc-VPC::tf-arc-PublicRouteTable",
+      ig: "tf-arc-IGW",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "vpc-default::rt-default",
+      ig: "ig-default",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "tf-arc-alb-sg",
+      Description: "ALB Security Group",
+    }),
+    dependencies: ({}) => ({
+      vpc: "tf-arc-VPC",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "tf-arc-asg-sg",
+      Description: "Managed by Terraform",
+    }),
+    dependencies: ({}) => ({
+      vpc: "tf-arc-VPC",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    name: "sg::vpc-default::default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "security-group-cluster",
+      Description: "SG for the EKS Cluster",
+      Tags: [
+        {
+          Key: "CreatedByProvider",
+          Value: "aws",
+        },
+        {
+          Key: "ManagedBy",
+          Value: "GruCloud",
+        },
+        {
+          Key: "projectName",
+          Value: "grucloud-k8s-aws-starhackit",
+        },
+        {
+          Key: "stage",
+          Value: "dev",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-eks",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "security-group-nodes",
+      Description: "SG for the EKS Nodes",
+      Tags: [
+        {
+          Key: "CreatedByProvider",
+          Value: "aws",
+        },
+        {
+          Key: "kubernetes.io/cluster/cluster",
+          Value: "owned",
+        },
+        {
+          Key: "ManagedBy",
+          Value: "GruCloud",
+        },
+        {
+          Key: "projectName",
+          Value: "grucloud-k8s-aws-starhackit",
+        },
+        {
+          Key: "stage",
+          Value: "dev",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-eks",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpPermission: {
+        FromPort: 80,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        ToPort: 80,
+      },
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::tf-arc-VPC::tf-arc-alb-sg",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpPermission: {
+        FromPort: 3000,
+        IpProtocol: "tcp",
+        ToPort: 3000,
+      },
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::tf-arc-VPC::tf-arc-asg-sg",
+      securityGroupFrom: ["sg::tf-arc-VPC::tf-arc-alb-sg"],
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpPermission: {
+        FromPort: 5432,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        ToPort: 5432,
+      },
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-default::default",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpPermission: {
+        FromPort: 443,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        ToPort: 443,
+      },
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-eks::security-group-cluster",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleEgress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpPermission: {
+        FromPort: 1024,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        ToPort: 65535,
+      },
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-eks::security-group-cluster",
+    }),
+  },
+  {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    name: "eipalloc-0a44dd96db8b910e4",
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    name: "codedeploy-service-role",
+    properties: ({}) => ({
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: `codedeploy.amazonaws.com`,
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AWSCodeDeployRole",
+          PolicyArn: "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole",
+        },
+      ],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    name: "terraform-20220708211444285600000001",
+    properties: ({}) => ({
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: `codebuild.amazonaws.com`,
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      policies: ["terraform-20220708211446252500000004"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    name: "terraform-20220708211446759600000005",
+    properties: ({}) => ({
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: `codepipeline.amazonaws.com`,
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    name: "tf-arc-us-east-2-app-role",
+    properties: ({}) => ({
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: `ec2.amazonaws.com`,
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonEC2RoleforAWSCodeDeploy",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy",
+        },
+        {
+          PolicyName: "AmazonSSMManagedInstanceCore",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      policies: ["tf-arc-us-east-2-dynamodb_rw_policy"],
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    name: ({ config }) => `tf-arc-${config.region}-app-role`,
+    properties: ({}) => ({
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Principal: {
+              Service: `ec2.amazonaws.com`,
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonEC2RoleforAWSCodeDeploy",
+          PolicyArn:
+            "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy",
+        },
+        {
+          PolicyName: "AmazonSSMManagedInstanceCore",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+        },
+      ],
+    }),
+    dependencies: ({ config }) => ({
+      policies: [`tf-arc-${config.region}-dynamodb_rw_policy`],
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "terraform-20220708211446252500000004",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              "logs:CreateLogGroup",
+              "logs:CreateLogStream",
+              "logs:PutLogEvents",
+            ],
+            Effect: "Allow",
+            Resource: `*`,
+          },
+          {
+            Action: ["s3:GetObject", "s3:GetObjectVersion", "s3:PutObject"],
+            Effect: "Allow",
+            Resource: [
+              `arn:aws:s3:::terraform-20220708211444290400000002/*`,
+              `arn:aws:s3:::terraform-20220708211444290400000002`,
+            ],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+      Description: "Policy to allow codebuild to execute build spec",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: "tf-arc-us-east-2-dynamodb_rw_policy",
+    properties: ({}) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["dynamodb:*"],
+            Effect: "Allow",
+            Resource: [`*`],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    name: ({ config }) => `tf-arc-${config.region}-dynamodb_rw_policy`,
+    properties: ({}) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["dynamodb:*"],
+            Effect: "Allow",
+            Resource: [`*`],
+          },
+        ],
+        Version: "2012-10-17",
+      },
+      Path: "/",
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "tf-arc-us-east-2-app-profile",
+    dependencies: ({}) => ({
+      roles: ["tf-arc-us-east-2-app-role"],
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: ({ config }) => `tf-arc-${config.region}-app-profile`,
+    dependencies: ({ config }) => ({
+      roles: [`tf-arc-${config.region}-app-role`],
+    }),
+  },
+  {
+    type: "HealthCheck",
+    group: "Route53",
+    properties: ({}) => ({
+      HealthCheckConfig: {
+        Type: "RECOVERY_CONTROL",
+      },
+    }),
+    dependencies: ({}) => ({
+      routingControl: "tf-arc-Cell1-us-east-2",
+    }),
+  },
+  {
+    type: "HealthCheck",
+    group: "Route53",
+    properties: ({}) => ({
+      HealthCheckConfig: {
+        Type: "RECOVERY_CONTROL",
+      },
+    }),
+    dependencies: ({ config }) => ({
+      routingControl: `tf-arc-Cell2-${config.region}`,
+    }),
+  },
+  {
+    type: "Cluster",
+    group: "Route53RecoveryControlConfig",
+    properties: ({}) => ({
+      Name: "tf-arc-Cluster",
+    }),
+  },
+  {
+    type: "ControlPanel",
+    group: "Route53RecoveryControlConfig",
+    properties: ({}) => ({
+      Name: "tf-arc-ControlPanel",
+    }),
+  },
+  {
+    type: "RoutingControl",
+    group: "Route53RecoveryControlConfig",
+    properties: ({}) => ({
+      Name: "tf-arc-Cell1-us-east-2",
+      CellName: {
+        ControlPanelArn:
+          "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d",
+        Name: "tf-arc-Cell1-us-east-2",
+        RoutingControlArn:
+          "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/routingcontrol/21d6c872221c4960",
+        Status: "DEPLOYED",
+      },
+    }),
+  },
+  {
+    type: "RoutingControl",
+    group: "Route53RecoveryControlConfig",
+    properties: ({}) => ({
+      Name: "tf-arc-Cell2-us-west-2",
+      CellName: {
+        ControlPanelArn:
+          "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d",
+        Name: "tf-arc-Cell2-us-west-2",
+        RoutingControlArn:
+          "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/routingcontrol/ebbfbb0c2b9f4447",
+        Status: "DEPLOYED",
+      },
+    }),
+  },
+  {
+    type: "SafetyRule",
+    group: "Route53RecoveryControlConfig",
+    properties: ({}) => ({
+      AssertionRule: {
+        Name: "tf-arc-MinCellsActive",
+        RuleConfig: {
+          Inverted: false,
+          Threshold: 1,
+          Type: "ATLEAST",
+        },
+        WaitPeriodMs: 5000,
+      },
+    }),
+  },
+  {
+    type: "Cell",
+    group: "Route53RecoveryReadiness",
+    properties: ({}) => ({
+      CellName: "tf-arc-Cell1-us-east-2",
+    }),
+  },
+  {
+    type: "Cell",
+    group: "Route53RecoveryReadiness",
+    properties: ({ config }) => ({
+      CellName: `tf-arc-Cell2-${config.region}`,
+    }),
+  },
+  {
+    type: "ReadinessCheck",
+    group: "Route53RecoveryReadiness",
+    properties: ({}) => ({
+      ReadinessCheckName: "tf-arc-ReadinessCheck-ALB",
+      ResourceSet: "tf-arc-ResourceSet-ALB",
+    }),
+  },
+  {
+    type: "ReadinessCheck",
+    group: "Route53RecoveryReadiness",
+    properties: ({}) => ({
+      ReadinessCheckName: "tf-arc-ReadinessCheck-ASG",
+      ResourceSet: "tf-arc-ResourceSet-ASG",
+    }),
+  },
+  {
+    type: "ReadinessCheck",
+    group: "Route53RecoveryReadiness",
+    properties: ({}) => ({
+      ReadinessCheckName: "tf-arc-ReadinessCheck-DynamoDB",
+      ResourceSet: "tf-arc-ResourceSet-DDB",
+    }),
+  },
+  {
+    type: "RecoveryGroup",
+    group: "Route53RecoveryReadiness",
+    properties: ({}) => ({
+      RecoveryGroupName: "tf-arc-RecoveryGroup",
+    }),
+    dependencies: ({ config }) => ({
+      cells: ["tf-arc-Cell1-us-east-2", `tf-arc-Cell2-${config.region}`],
+    }),
+  },
+  {
+    type: "ResourceSet",
+    group: "Route53RecoveryReadiness",
+    properties: ({ config, getId }) => ({
+      ResourceSetName: "tf-arc-ResourceSet-ALB",
+      ResourceSetType: "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      Resources: [
+        {
+          ReadinessScopes: [
+            `${getId({
+              type: "Cell",
+              group: "Route53RecoveryReadiness",
+              name: "tf-arc-Cell1-us-east-2",
+            })}`,
+          ],
+          ResourceArn:
+            "arn:aws:elasticloadbalancing:us-east-2:840541460064:loadbalancer/app/tf-arc-alb/8a1ea27b5e682435",
+        },
+        {
+          ReadinessScopes: [
+            `${getId({
+              type: "Cell",
+              group: "Route53RecoveryReadiness",
+              name: `tf-arc-Cell2-${config.region}`,
+            })}`,
+          ],
+          ResourceArn:
+            "arn:aws:elasticloadbalancing:us-west-2:840541460064:loadbalancer/app/tf-arc-alb/e5064a46852af4c2",
+        },
+      ],
+    }),
+  },
+  {
+    type: "ResourceSet",
+    group: "Route53RecoveryReadiness",
+    properties: ({ config, getId }) => ({
+      ResourceSetName: "tf-arc-ResourceSet-ASG",
+      ResourceSetType: "AWS::AutoScaling::AutoScalingGroup",
+      Resources: [
+        {
+          ReadinessScopes: [
+            `${getId({
+              type: "Cell",
+              group: "Route53RecoveryReadiness",
+              name: "tf-arc-Cell1-us-east-2",
+            })}`,
+          ],
+          ResourceArn:
+            "arn:aws:autoscaling:us-east-2:840541460064:autoScalingGroup:cfb63656-cdd6-4353-9c99-015dafc7cfc1:autoScalingGroupName/tf-arc-asg",
+        },
+        {
+          ReadinessScopes: [
+            `${getId({
+              type: "Cell",
+              group: "Route53RecoveryReadiness",
+              name: `tf-arc-Cell2-${config.region}`,
+            })}`,
+          ],
+          ResourceArn: `${getId({
+            type: "AutoScalingGroup",
+            group: "AutoScaling",
+            name: "tf-arc-asg",
+          })}`,
+        },
+      ],
+    }),
+  },
+  {
+    type: "ResourceSet",
+    group: "Route53RecoveryReadiness",
+    properties: ({ config, getId }) => ({
+      ResourceSetName: "tf-arc-ResourceSet-DDB",
+      ResourceSetType: "AWS::DynamoDB::Table",
+      Resources: [
+        {
+          ReadinessScopes: [
+            `${getId({
+              type: "Cell",
+              group: "Route53RecoveryReadiness",
+              name: "tf-arc-Cell1-us-east-2",
+            })}`,
+          ],
+          ResourceArn:
+            "arn:aws:dynamodb:us-east-2:840541460064:table/nodejs-tutorial",
+        },
+        {
+          ReadinessScopes: [
+            `${getId({
+              type: "Cell",
+              group: "Route53RecoveryReadiness",
+              name: `tf-arc-Cell2-${config.region}`,
+            })}`,
+          ],
+          ResourceArn: `${getId({
+            type: "Table",
+            group: "DynamoDB",
+            name: "nodejs-tutorial",
+          })}`,
+        },
+      ],
+    }),
+  },
+];
