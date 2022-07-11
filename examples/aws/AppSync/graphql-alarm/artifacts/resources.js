@@ -129,12 +129,12 @@ exports.createResources = () => [
       Statistic: "Average",
       Dimensions: [
         {
-          Name: "GraphQLAPIId",
           Value: `${getId({
             type: "GraphqlApi",
             group: "AppSync",
             name: "My AppSync App",
           })}`,
+          Name: "GraphQLAPIId",
         },
       ],
       Period: 300,

@@ -30,6 +30,21 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(elb);
   const { providerName } = config;
 
+  const assignTags = unless(
+    isEmpty,
+    assign({
+      Tags: pipe([
+        ({ LoadBalancerArn }) =>
+          elb().describeTags({ ResourceArns: [LoadBalancerArn] }),
+        get("TagDescriptions"),
+        first,
+        get("Tags"),
+      ]),
+    })
+  );
+
+  const decorate = () => pipe([assignTags]);
+
   const managedByOther = hasKeyInTags({
     key: "elbv2.k8s.aws/cluster",
   });
@@ -72,33 +87,19 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     key: "elbv2.k8s.aws/cluster",
   });
 
-  const assignTags = unless(
-    isEmpty,
-    assign({
-      Tags: pipe([
-        ({ LoadBalancerArn }) =>
-          elb().describeTags({ ResourceArns: [LoadBalancerArn] }),
-        get("TagDescriptions"),
-        first,
-        get("Tags"),
-      ]),
-    })
-  );
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
-
   const getById = client.getById({
     pickId: ({ LoadBalancerName }) => ({ Names: [LoadBalancerName] }),
     method: "describeLoadBalancers",
     getField: "LoadBalancers",
     ignoreErrorCodes: ["LoadBalancerNotFound"],
-    decorate: () => pipe([assignTags]),
+    decorate,
   });
-
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
   const getList = client.getList({
     method: "describeLoadBalancers",
     getParam: "LoadBalancers",
-    decorate: () => pipe([assignTags]),
+    decorate,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
@@ -132,6 +133,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       }),
     ])();
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createLoadBalancer-property
   const create = client.create({
     method: "createLoadBalancer",
     getById,

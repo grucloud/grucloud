@@ -44,6 +44,7 @@ const GROUPS = [
   ["SNS", "sns"],
   ["SQS", "sqs"],
   ["SSM", "ssm"],
+  //["WAFV2", "waf"],
 ];
 
 const GROUPS_GLOBAL = [
