@@ -106,6 +106,7 @@ module.exports = () =>
               "CallerReference",
               "AliasICPRecordals",
             ]),
+            omitIfEmpty(["WebACLId"]),
           ]),
       }),
       omitProperties: [
