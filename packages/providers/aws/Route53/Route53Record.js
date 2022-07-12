@@ -25,6 +25,7 @@ const {
   includes,
   unless,
   when,
+  append,
 } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 
@@ -269,8 +270,11 @@ exports.Route53Record = ({ spec, config }) => {
             eq(get("type"), "VpcEndpoint"),
             ({ group, type }) =>
               `record::${group}::${type}::${live.Type}::${live.Name}`,
-            ({ group, type, ids }) =>
-              `record::${group}::${type}::${live.Type}::${ids[0].name}`,
+            pipe([
+              ({ group, type, ids }) =>
+                `record::${group}::${type}::${live.Type}::${ids[0].name}`,
+              when(() => live.SetIdentifier, append(`::${live.SetIdentifier}`)),
+            ]),
           ]),
         ])
       ),
