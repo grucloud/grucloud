@@ -1,36 +1,61 @@
+const { omitIfEmpty } = require("@grucloud/core/Common");
 const assert = require("assert");
-const { assign, map, pipe, tap, get, and, or, switchCase } = require("rubico");
-const { defaultsDeep, when, callProp, isString } = require("rubico/x");
+const { map, pipe, tap } = require("rubico");
+const { defaultsDeep, first, prepend, values } = require("rubico/x");
+
+const { isOurMinion, compareAws } = require("../AwsCommon");
+const { WAFV2WebACL } = require("./WAFV2WebACL");
+const { WAFV2WebACLCloudFront } = require("./WAFV2WebACLCloudFront");
 
 const {
-  isOurMinion,
-  compareAws,
-  replaceArnWithAccountAndRegion,
-} = require("../AwsCommon");
-const { WAFV2WebAcl } = require("./WAFV2WebAcl");
-const {
-  WAFV2WebAclAssociation,
+  WAFV2WebACLAssociation,
   WebAclDependencies,
-} = require("./WAFV2WebAclAssociation");
+} = require("./WAFV2WebACLAssociation");
 
-const GROUP = "WAFV2";
+const GROUP = "WAFv2";
 
 const tagsKey = "Tags";
 const compareWAFV2 = compareAws({ tagsKey });
 
+const filterDescription = omitIfEmpty(["Description"]);
+const omitPropertiesWebACL = ["ARN", "Id", "LockToken", "LabelNamespace"];
+
 module.exports = pipe([
   () => [
     {
-      type: "WebAcl",
-      Client: WAFV2WebAcl,
-      omitProperties: ["Id"],
+      type: "WebACL",
+      Client: WAFV2WebACL,
+      omitProperties: omitPropertiesWebACL,
+      compare: compareWAFV2({
+        filterLive: () => pipe([filterDescription]),
+      }),
+      filterLive: () => pipe([filterDescription]),
     },
     {
-      type: "WebAclAssociation",
-      Client: WAFV2WebAclAssociation,
+      type: "WebACLCloudFront",
+      Client: WAFV2WebACLCloudFront,
+      omitProperties: omitPropertiesWebACL,
+      compare: compareWAFV2({
+        filterLive: () => pipe([filterDescription]),
+      }),
+      filterLive: () => pipe([filterDescription]),
+    },
+    {
+      type: "WebACLAssociation",
+      Client: WAFV2WebACLAssociation,
       omitProperties: ["ResourceArn", "WebACLArn"],
+      inferName: ({ dependenciesSpec: { webAcl, ...otherDeps } }) =>
+        pipe([
+          () => otherDeps,
+          values,
+          first,
+          tap((dep) => {
+            assert(dep);
+          }),
+          prepend(`webacl-assoc::${webAcl}::`),
+        ])(),
       dependencies: {
-        webACL: { type: "WebAcl", group: GROUP },
+        webAcl: { type: "WebACL", group: GROUP },
         ...WebAclDependencies,
       },
     },

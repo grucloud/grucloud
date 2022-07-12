@@ -39,28 +39,6 @@ exports.createResources = () => [
       source: {
         type: "CODEPIPELINE",
       },
-      tags: [
-        {
-          key: "gc-created-by-provider",
-          value: "aws",
-        },
-        {
-          key: "gc-managed-by",
-          value: "grucloud",
-        },
-        {
-          key: "gc-project-name",
-          value: "code-pipeline-simple",
-        },
-        {
-          key: "gc-stage",
-          value: "dev",
-        },
-        {
-          key: "Name",
-          value: "starhackit",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       serviceRole: "codebuild-starhackit-service-role",
@@ -143,28 +121,6 @@ exports.createResources = () => [
         ],
         version: 1,
       },
-      tags: [
-        {
-          key: "gc-created-by-provider",
-          value: "aws",
-        },
-        {
-          key: "gc-managed-by",
-          value: "grucloud",
-        },
-        {
-          key: "gc-project-name",
-          value: "code-pipeline-simple",
-        },
-        {
-          key: "gc-stage",
-          value: "dev",
-        },
-        {
-          key: "Name",
-          value: "my-pipeline",
-        },
-      ],
     }),
     dependencies: ({ config }) => ({
       role: `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,

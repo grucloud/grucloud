@@ -81,7 +81,7 @@ const model = ({ config }) => ({
   },
 });
 
-const findDependenciesDimension = ({ live }) =>
+const findDependenciesDimension = ({ live, lives, config }) =>
   pipe([
     () => AlarmDependenciesDimensions,
     values,
@@ -93,6 +93,17 @@ const findDependenciesDimension = ({ live }) =>
         get("Dimensions"),
         filter(eq(get("Name"), dimensionId)),
         pluck("Value"),
+        (id) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type,
+                group,
+                providerName: config.providerName,
+              }),
+            filter(pipe([get("id"), callProp("endsWith", id)])),
+            pluck("id"),
+          ])(),
       ])(),
     })),
   ])();
@@ -116,7 +127,7 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) =>
           filter(callProp("startsWith", "arn:aws:sns")),
         ])(),
       },
-      ...findDependenciesDimension({ live }),
+      ...findDependenciesDimension({ live, lives, config }),
     ],
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ AlarmName: name }), getById]),

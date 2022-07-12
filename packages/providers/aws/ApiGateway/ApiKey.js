@@ -3,7 +3,12 @@ const { pipe, tap, get } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createAPIGateway, ignoreErrorCodes } = require("./ApiGatewayCommon");
+const {
+  createAPIGateway,
+  ignoreErrorCodes,
+  tagResource,
+  untagResource,
+} = require("./ApiGatewayCommon");
 
 const findName = get("live.name");
 const findId = get("live.id");
@@ -13,6 +18,9 @@ const pickId = ({ id }) => ({ apiKey: id });
 exports.ApiKey = ({ spec, config }) => {
   const apiGateway = createAPIGateway(config);
   const client = AwsClient({ spec, config })(apiGateway);
+
+  const buildResourceArn = ({ id }) =>
+    `arn:aws:apigateway:${config.region}::/apikeys/${id}`;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getApiKey-property
   const getById = client.getById({
@@ -79,5 +87,7 @@ exports.ApiKey = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    tagResource: tagResource({ apiGateway, buildResourceArn }),
+    untagResource: untagResource({ apiGateway, buildResourceArn }),
   };
 };

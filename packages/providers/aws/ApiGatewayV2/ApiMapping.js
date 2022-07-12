@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, omit, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, assign, filter, eq, pick, and } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -40,7 +40,26 @@ exports.ApiMapping = ({ spec, config }) => {
     {
       type: "Stage",
       group: "ApiGatewayV2",
-      ids: [live.Stage],
+      ids: [
+        pipe([
+          () =>
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Stage",
+              group: "ApiGatewayV2",
+            }),
+          tap((params) => {
+            assert(true);
+          }),
+          find(
+            and([
+              eq(get("live.StageName"), live.Stage),
+              eq(get("live.ApiId"), live.ApiId),
+            ])
+          ),
+          get("id"),
+        ])(),
+      ],
     },
   ];
 

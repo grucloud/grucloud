@@ -136,9 +136,9 @@ exports.createResources = () => [
 
 ### Examples
 
-- [https static website ](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/resources.js)
-
-- [cloudfront distribution with origin access identity](https://github.com/grucloud/grucloud/blob/main/examples/aws/CloudFront/cloudfront-distribution/resources.js)
+- [HTTPS static website ](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/resources.js)
+- [Cloudfront distribution with origin access identity](https://github.com/grucloud/grucloud/blob/main/examples/aws/CloudFront/cloudfront-distribution/resources.js)
+- [WebACL with CloudFront](https://github.com/grucloud/grucloud/blob/main/examples/aws/WAFv2/wafv2-cloudfront)
 
 ### Properties
 
@@ -153,3 +153,4 @@ When some S3 objects are updated during the _gc apply_ command, a [_createInvali
 - [S3 Bucket](../S3/Bucket.md)
 - [Certificate](../ACM/Certificate.md)
 - [OriginAccessIdentity](./OriginAccessIdentity.md)
+- [WAFv2 WebACLCloudFront](../WAFv2/WebACLCloudFront.md)

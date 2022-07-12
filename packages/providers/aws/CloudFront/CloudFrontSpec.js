@@ -53,6 +53,7 @@ module.exports = () =>
           group: "CloudFront",
           list: true,
         },
+        webAcl: { type: "WebACLCloudFront", group: "WAFv2" },
       },
       Client: CloudFrontDistribution,
       inferName: ({ properties }) =>
@@ -103,9 +104,9 @@ module.exports = () =>
               "LastModifiedTime",
               "DomainName",
               "CallerReference",
-              "WebACLId",
               "AliasICPRecordals",
             ]),
+            omitIfEmpty(["WebACLId"]),
           ]),
       }),
       omitProperties: [

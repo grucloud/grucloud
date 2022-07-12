@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project wafv2-cloudfront
+skinparam monochrome true
++ Infra
+++ aws
++++ ACM
+++++ Certificate (1)
++++ CloudFront
+++++ Distribution (1)
+++++ OriginAccessIdentity (1)
++++ WAFv2
+++++ WebACLCloudFront (1)
+@endmindmap

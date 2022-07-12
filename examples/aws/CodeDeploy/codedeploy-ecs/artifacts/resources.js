@@ -87,11 +87,15 @@ exports.createResources = () => [
           },
         ],
       },
+      tags: [],
     }),
     dependencies: ({}) => ({
+      application: "AppECS-cluster-api",
       serviceRole: "roleECSCodeDeploy",
       ecsServices: ["api"],
       ecsClusters: ["cluster"],
+      targetGroups: ["EC2Co-Defau-MMUISWY3DEAQ", "tg-cluste-api-2"],
+      listeners: ["listener::EC2Co-EcsEl-GK4BG406T8NP::HTTP::80"],
     }),
   },
   {

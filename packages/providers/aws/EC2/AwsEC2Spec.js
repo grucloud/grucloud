@@ -111,6 +111,9 @@ const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { EC2NetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 const { EC2VpcPeeringConnection } = require("./EC2VpcPeeringConnection");
+
+const { EC2PlacementGroup } = require("./EC2PlacementGroup");
+
 const {
   EC2VpcPeeringConnectionAccepter,
 } = require("./EC2VpcPeeringConnectionAccepter");
@@ -195,6 +198,7 @@ const ec2InstanceDependencies = {
     group: "EC2",
     list: true,
   },
+  placementGroup: { type: "PlacementGroup", group: "EC2" },
 };
 
 const buildAvailabilityZone = pipe([
@@ -1467,6 +1471,14 @@ module.exports = pipe([
         filterLive: () => pipe([pick([])]),
       }),
       filterLive: () => pipe([pick(["AddressFamily"])]),
+    },
+    {
+      type: "PlacementGroup",
+      dependencies: {},
+      Client: EC2PlacementGroup,
+      omitProperties: ["State", "GroupId", "GroupArn", "PartitionCount"],
+      inferName: pipe([get("properties.GroupName")]),
+      //filterLive: () => pipe([]),
     },
     {
       type: "VpcEndpoint",

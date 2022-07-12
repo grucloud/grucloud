@@ -32,31 +32,10 @@ exports.createResources = () => [
         buildspec:
           "version: 0.2\n\nphases:\n  build:\n    commands:\n       - npm install\n",
         location: "https://github.com/grucloud/grucloud",
+        reportBuildStatus: false,
         type: "GITHUB",
       },
       sourceVersion: "main",
-      tags: [
-        {
-          key: "gc-created-by-provider",
-          value: "aws",
-        },
-        {
-          key: "gc-managed-by",
-          value: "grucloud",
-        },
-        {
-          key: "gc-project-name",
-          value: "codebuild-simple",
-        },
-        {
-          key: "gc-stage",
-          value: "dev",
-        },
-        {
-          key: "Name",
-          value: "my-project",
-        },
-      ],
     }),
     dependencies: ({}) => ({
       serviceRole: "codebuild-my-project-service-role",

@@ -47,12 +47,13 @@ exports.createResources = () => [
 
 ### Dependencies
 
-- [SecurityGroup](./SecurityGroup.md)
+- [Security Group](./SecurityGroup.md)
 - [Subnet](./Subnet.md)
-- [KeyPair](./KeyPair.md)
+- [Key Pair](./KeyPair.md)
 - [Image](./Image.md)
-- [LaunchTemplate](./LaunchTemplate.md)
-- [IamInstanceProfile](../IAM/InstanceProfile.md)
+- [Launch Template](./LaunchTemplate.md)
+- [Placement Group](./PlacementGroup.md)
+- [Iam Instance Profile](../IAM/InstanceProfile.md)
 
 ### Used By
 

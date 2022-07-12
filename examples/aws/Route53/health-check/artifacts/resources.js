@@ -44,8 +44,11 @@ exports.createResources = () => [
         Port: 80,
         Type: "HTTP",
         FullyQualifiedDomainName: "healthcheck.grucloud.org",
+        RequestInterval: 30,
+        FailureThreshold: 3,
+        MeasureLatency: false,
+        EnableSNI: false,
       },
-      HealthCheckVersion: 1,
     }),
   },
   {

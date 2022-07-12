@@ -36,6 +36,7 @@ exports.createResources = () => [
 - [Resolver](./Resolver.md)
 - [Data Source](./DataSource.md)
 - [CloudWatch MetricAlarm](../CloudWatch/MetricAlarm.md)
+- [WAFv2 WebACLAssociation](../WAFv2/WebACLAssociation.md)
 
 ## Full Examples
 

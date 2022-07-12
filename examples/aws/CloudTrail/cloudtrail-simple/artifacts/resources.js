@@ -6,13 +6,12 @@ exports.createResources = () => [
   {
     type: "Trail",
     group: "CloudTrail",
-    name: "CloudTrailForS3ImagePushEvents",
     properties: ({ config }) => ({
-      HasInsightSelectors: false,
       HomeRegion: config.region,
       IncludeGlobalServiceEvents: true,
       IsMultiRegionTrail: true,
       IsOrganizationTrail: false,
+      Name: "CloudTrailForS3ImagePushEvents",
     }),
     dependencies: ({}) => ({
       bucket: "grucloud-s3-event-bridge-logs",

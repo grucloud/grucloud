@@ -121,6 +121,21 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Link",
+    group: "NetworkManager",
+    name: "my-link",
+    properties: ({}) => ({
+      Bandwidth: {
+        DownloadSpeed: 1,
+        UploadSpeed: 1,
+      },
+    }),
+    dependencies: ({}) => ({
+      globalNetwork: "cloudwan-module-without",
+      site: "office",
+    }),
+  },
+  {
     type: "TransitGatewayRegistration",
     group: "NetworkManager",
     dependencies: ({}) => ({

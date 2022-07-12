@@ -76,6 +76,7 @@ const configDefault =
       securityGroups,
       iamInstanceProfile,
       launchTemplate,
+      placementGroup,
     },
   }) =>
     pipe([
@@ -96,6 +97,15 @@ const configDefault =
               },
             ],
           }),
+          // Placement Group
+          when(
+            () => placementGroup,
+            defaultsDeep({
+              Placement: {
+                GroupName: getField(placementGroup, "GroupName"),
+              },
+            })
+          ),
           // IamInstanceProfile
           when(
             () => iamInstanceProfile,
@@ -231,6 +241,27 @@ exports.EC2Instance = ({ spec, config }) => {
       type: "InstanceProfile",
       group: "IAM",
       ids: [pipe([() => live, get("IamInstanceProfile.Arn")])()],
+    },
+    {
+      type: "PlacementGroup",
+      group: "EC2",
+      ids: [
+        pipe([
+          () => live,
+          get("Placement.GroupName"),
+          (name) =>
+            pipe([
+              () =>
+                lives.getByName({
+                  name,
+                  type: "PlacementGroup",
+                  group: "EC2",
+                  providerName,
+                }),
+              get("id"),
+            ])(),
+        ])(),
+      ],
     },
   ];
 

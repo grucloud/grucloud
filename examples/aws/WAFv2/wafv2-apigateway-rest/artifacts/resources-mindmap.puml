@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project wafv2-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ Account (1)
+++++ ApiKey (1)
+++++ RestApi (1)
+++++ Stage (2)
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ IAM
+++++ Role (1)
++++ WAFv2
+++++ WebACL (1)
+++++ WebACLAssociation (1)
+@endmindmap

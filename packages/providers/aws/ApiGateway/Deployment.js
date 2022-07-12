@@ -54,7 +54,7 @@ exports.Deployment = ({ spec, config }) => {
             type: "Stage",
             group: "APIGateway",
           }),
-        filter(eq(get("live.id"), live.deploymentId)),
+        filter(eq(get("live.deploymentId"), live.deploymentId)),
         pluck("id"),
       ])(),
     },
