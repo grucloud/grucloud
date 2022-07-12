@@ -28,6 +28,7 @@ const GROUPS = [
   ["EKS", "eks"],
   ["ELBv2", "elb"],
   ["IAM", "iam"],
+  ["Kinesis", "kinesis"],
   ["KMS", "kms"],
   ["Lambda", "lambda"],
   ["NetworkFirewall", "network-firewall"],

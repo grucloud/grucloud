@@ -159,68 +159,88 @@ const AwsClient =
         filterResource = () => true,
         extraParam = {},
         enhanceParams = () => identity,
+        ignoreErrorCodes = ["AccessDeniedException"],
         getById,
       }) =>
       ({ lives, params = {} } = {}) =>
         pipe([
-          tap(() => {
-            assert(method);
-            assert(getParam);
-            //assert(isFunction(endpoint()[method]));
-          }),
-          () => params,
-          defaultsDeep(extraParam),
-          defaultsDeep(enhanceParams()()),
-          tap((params) => {
-            logger.debug(
-              `getList ${groupType}, method: ${method}, params: ${JSON.stringify(
-                params
-              )}`
-            );
-          }),
-          async (params) => {
-            let NextToken;
-            let data = [];
-            do {
-              const results = await endpoint()[method]({
-                ...params,
-                NextToken,
-              });
-              NextToken = results.NextToken;
-              const newData = get(getParam)(results);
-              if (newData) {
-                if (Array.isArray(newData)) {
-                  data = [...data, ...newData];
-                } else {
-                  data = [...data, newData];
-                }
-              }
-            } while (NextToken);
-            return data;
-          },
-          tap((params) => {
-            assert(true);
-          }),
-          transformListPre({ lives, endpoint }),
-          filter(filterResource),
-          tap((params) => {
-            assert(true);
-          }),
-          map(decorate({ lives, endpoint, getById })),
-          transformListPost({ lives, endpoint }),
-          tap((params) => {
-            assert(true);
-          }),
-          map(assignTagsSort),
-          tap((items) => {
-            assert(Array.isArray(items));
-            logger.info(`getList ${groupType} #items ${size(items)}`);
-          }),
-          filter(not(isEmpty)),
-          tap((items) => {
-            assert(Array.isArray(items));
-            logger.info(`getList ${groupType} final #items ${size(items)}`);
-          }),
+          tryCatch(
+            pipe([
+              tap(() => {
+                assert(method);
+                assert(getParam);
+                //assert(isFunction(endpoint()[method]));
+              }),
+              () => params,
+              defaultsDeep(extraParam),
+              defaultsDeep(enhanceParams()()),
+              tap((params) => {
+                logger.debug(
+                  `getList ${groupType}, method: ${method}, params: ${JSON.stringify(
+                    params
+                  )}`
+                );
+              }),
+              async (params) => {
+                let NextToken;
+                let data = [];
+                do {
+                  const results = await endpoint()[method]({
+                    ...params,
+                    NextToken,
+                  });
+                  NextToken = results.NextToken;
+                  const newData = get(getParam)(results);
+                  if (newData) {
+                    if (Array.isArray(newData)) {
+                      data = [...data, ...newData];
+                    } else {
+                      data = [...data, newData];
+                    }
+                  }
+                } while (NextToken);
+                return data;
+              },
+              tap((params) => {
+                assert(true);
+              }),
+              transformListPre({ lives, endpoint }),
+              filter(filterResource),
+              tap((params) => {
+                assert(true);
+              }),
+              map(decorate({ lives, endpoint, getById })),
+              transformListPost({ lives, endpoint }),
+              tap((params) => {
+                assert(true);
+              }),
+              map(assignTagsSort),
+              tap((items) => {
+                assert(Array.isArray(items));
+                logger.info(`getList ${groupType} #items ${size(items)}`);
+              }),
+              filter(not(isEmpty)),
+              tap((items) => {
+                assert(Array.isArray(items));
+                logger.info(`getList ${groupType} final #items ${size(items)}`);
+              }),
+            ]),
+            pipe([
+              switchCase([
+                (error) =>
+                  pipe([() => ignoreErrorCodes, includes(error.name)])(),
+                pipe([
+                  tap((result) => {
+                    assert(true);
+                  }),
+                  () => [],
+                ]),
+                (error) => {
+                  throw error;
+                },
+              ]),
+            ])
+          ),
         ])();
 
     const getListWithParent =
