@@ -20,7 +20,6 @@ omit AWSLogs S3 Objects
 - substitute zone, not ${region}/b
 
 - gc gencode lambda with java.
-
 - AWS::Glue::Job
 - AWS::AmazonMQ::Broker
 - AWS::Kinesis::Stream
@@ -33,7 +32,6 @@ omit AWSLogs S3 Objects
 - AWS::CloudWatch::Dashboard
 - AWS::Events::Endpoint
 - aws_route53_delegation_set
-- EC2 Instance placement
 - createOrganizationalUnit
 
 - apprunner example npm test
