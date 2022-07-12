@@ -333,6 +333,7 @@ module.exports = pipe([
         "createdDate",
         "lastUpdatedDate",
         "cacheClusterStatus",
+        "webAclArn",
       ],
       propertiesDefault: { cacheClusterEnabled: false, tracingEnabled: false },
       compare: compareAPIGateway({

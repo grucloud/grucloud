@@ -76,6 +76,10 @@ exports.createResources = () => [
 
 - [RestAPI](./RestApi.md)
 
+## Used By
+
+- [WAFv2 WebACLAssociation](../WAFv2/WebACLAssociation.md)
+
 ## Full Examples
 
 - [RestAPI with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/APIGateway/restapi-lambda)

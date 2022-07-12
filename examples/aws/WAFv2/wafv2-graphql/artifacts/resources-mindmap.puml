@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project wafv2-graphql
+skinparam monochrome true
++ Infra
+++ aws
++++ AppSync
+++++ GraphqlApi (1)
++++ WAFv2
+++++ WebACL (1)
+++++ WebACLAssociation (1)
+@endmindmap

@@ -1,5 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, assign } = require("rubico");
+const { pipe, tap, get, assign, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#tagResource-property
 exports.tagResource =
@@ -27,15 +28,101 @@ exports.untagResource =
       endpoint().untagResource,
     ]);
 
-exports.assignTags = ({ findId, endpoint }) =>
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#listTagsForResource-property
+const assignTags = ({ findId, endpoint }) =>
   pipe([
     assign({
       Tags: pipe([
         (live) => ({ live }),
         findId,
-        (ResourceArn) => ({ ResourceArn }),
+        (ResourceARN) => ({ ResourceARN }),
         endpoint().listTagsForResource,
-        get("Tags"),
+        get("TagInfoForResource.TagList"),
       ]),
     }),
   ]);
+
+exports.assignTags = assignTags;
+
+const findId = pipe([get("live.ARN")]);
+
+const decorate =
+  ({ Scope }) =>
+  ({ endpoint }) =>
+    pipe([
+      assignTags({ endpoint, findId }),
+      defaultsDeep({ Scope }),
+      tap((params) => {
+        assert(true);
+      }),
+    ]);
+
+exports.createModelWebAcls = ({ config, region, Scope }) => ({
+  package: "wafv2",
+  client: "WAFV2",
+  region,
+  ignoreErrorCodes: ["WAFNonexistentItemException"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#getWebACL-property
+  getById: {
+    method: "getWebACL",
+    pickId: pipe([
+      pick(["Id", "LockToken", "Name", "Scope"]),
+      tap(({ Id, Scope }) => {
+        assert(Id);
+        assert(Scope);
+      }),
+    ]),
+    getField: "WebACL",
+    decorate: decorate({ Scope }),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#listWebACLs-property
+  getList: {
+    method: "listWebACLs",
+    enhanceParams: () => () => ({ Scope }),
+    getParam: "WebACLs",
+    decorate:
+      ({ getById }) =>
+      (live) =>
+        pipe([
+          () => live,
+          defaultsDeep({ Scope }),
+          getById,
+          defaultsDeep(live),
+        ])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#createWebACL-property
+  create: {
+    method: "createWebACL",
+    pickCreated: ({ payload }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        get("Summary"),
+        defaultsDeep({ Scope }),
+      ]),
+    //isInstanceUp: eq(get("Status"), "DEPLOYED"),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#updateWebACL-property
+  update: {
+    method: "updateWebACL",
+    filterParams: ({ payload, live }) =>
+      pipe([
+        () => payload,
+        defaultsDeep(
+          pipe([() => live, pick(["Id", "LockToken", "Name", "Scope"])])()
+        ),
+        omit(["Tags"]),
+      ])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#deleteWebACL-property
+  destroy: {
+    method: "deleteWebACL",
+    pickId: pipe([
+      pick(["Id", "LockToken", "Name", "Scope"]),
+      tap(({ Scope }) => {
+        assert(Scope);
+      }),
+    ]),
+  },
+});

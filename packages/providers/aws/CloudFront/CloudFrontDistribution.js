@@ -23,6 +23,7 @@ const {
   last,
   includes,
   first,
+  when,
 } = require("rubico/x");
 
 const { AwsClient } = require("../AwsClient");
@@ -70,11 +71,12 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     {
       type: "Certificate",
       group: "ACM",
-      ids: pipe([
-        () => live,
-        get("ViewerCertificate.ACMCertificateArn"),
-        (arn) => [arn],
-      ])(),
+      ids: [pipe([() => live, get("ViewerCertificate.ACMCertificateArn")])()],
+    },
+    {
+      type: "WebACLCloudFront",
+      group: "WAFv2",
+      ids: [pipe([() => live, get("WebACLId")])()],
     },
     {
       type: "Function",
@@ -280,12 +282,13 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
     name,
     properties: { Tags, ...otherProps },
     namespace,
-    dependencies: { certificate },
+    dependencies: { certificate, webAcl },
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
         CallerReference: getNewCallerReference(),
+
         Enabled: true,
         ...(certificate && {
           ViewerCertificate: {
@@ -298,6 +301,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
           },
         }),
       }),
+      when(() => webAcl, defaultsDeep({ WebACLId: getField(webAcl, "ARN") })),
       (payload) => ({
         DistributionConfig: payload,
         Tags: buildTags({ name, namespace, config, UserTags: Tags }),

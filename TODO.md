@@ -4,9 +4,7 @@
 
 ## Aws
 
-- createOrganizationalUnit
 
-- lives get error
 - HostedZone Config Comment
 - user tags for ec2 instance
 - PrincipalAssociation replace associatedEntity from config
@@ -31,13 +29,12 @@ omit AWSLogs S3 Objects
 - AWS::Cognito::IdentityPool
 - AWS::Cognito::IdentityPoolRoleAttachment
 - AWS::CloudFront::CachePolicy
-- AWS::WAFv2::WebACL
-- AWS::WAFv2::WebACLAssociation
 - AWS::ApiGateway::UsagePlan
 - AWS::CloudWatch::Dashboard
 - AWS::Events::Endpoint
 - aws_route53_delegation_set
 - EC2 Instance placement
+- createOrganizationalUnit
 
 - apprunner example npm test
 - inferName Lambda layer

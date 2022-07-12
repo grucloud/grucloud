@@ -1,5 +1,6 @@
 const assert = require("assert");
-const { pipe, get, tap } = require("rubico");
+const { pipe, get, tap, filter, eq } = require("rubico");
+const { find } = require("rubico/x");
 
 const { createEndpoint } = require("../AwsCommon");
 
@@ -15,7 +16,23 @@ exports.findDependenciesGraphqlApi = ({ live, lives, config }) => ({
       tap(() => {
         assert(live.apiId);
       }),
-      () => live.apiId,
+      () =>
+        lives.getByType({
+          type: "GraphqlApi",
+          group: "AppSync",
+          providerName: config.providerName,
+        }),
+      tap((param) => {
+        assert(true);
+      }),
+      find(eq(get("live.apiId"), live.apiId)),
+      tap((param) => {
+        assert(true);
+      }),
+      get("id"),
+      tap((param) => {
+        assert(true);
+      }),
     ])(),
   ],
 });

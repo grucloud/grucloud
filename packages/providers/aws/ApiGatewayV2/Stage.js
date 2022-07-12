@@ -13,14 +13,18 @@ const {
   untagResource,
 } = require("./ApiGatewayCommon");
 
-const findId = get("live.StageName");
-const findName = get("live.StageName");
-
-const pickId = pick(["ApiId", "StageName"]);
-
 exports.Stage = ({ spec, config }) => {
   const apiGateway = createApiGatewayV2(config);
   const client = AwsClient({ spec, config })(apiGateway);
+
+  const buildResourceArn = ({ ApiId, StageName }) =>
+    `arn:aws:apigateway:${config.region}::/apis/${ApiId}/stages/${StageName}`;
+
+  const findId = pipe([get("live"), buildResourceArn]);
+
+  const findName = get("live.StageName");
+
+  const pickId = pick(["ApiId", "StageName"]);
 
   const findDependencies = ({ live, lives }) => [
     findDependenciesApi({ live, config }),
@@ -111,9 +115,6 @@ exports.Stage = ({ spec, config }) => {
         })
       ),
     ])();
-
-  const buildResourceArn = ({ ApiId, StageName }) =>
-    `arn:aws:apigateway:${config.region}::/apis/${ApiId}/stages/${StageName}`;
 
   return {
     spec,

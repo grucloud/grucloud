@@ -13,11 +13,6 @@ const {
   untagResource,
 } = require("./ApiGatewayCommon");
 
-const findId = get("live.stageName");
-const findName = get("live.stageName");
-
-const pickId = pick(["restApiId", "stageName"]);
-
 const translatePropertyMap = {
   metricsEnabled: "metrics/enabled",
   dataTraceEnabled: "logging/dataTrace",
@@ -37,6 +32,14 @@ const translateProperty = (property) =>
 exports.Stage = ({ spec, config }) => {
   const apiGateway = createAPIGateway(config);
   const client = AwsClient({ spec, config })(apiGateway);
+
+  const buildResourceArn = ({ restApiId, stageName }) =>
+    `arn:aws:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`;
+
+  const findId = pipe([get("live"), buildResourceArn]);
+  const findName = get("live.stageName");
+
+  const pickId = pick(["restApiId", "stageName"]);
 
   // Find dependencies for APIGateway::Stage
   const findDependencies = ({ live, lives }) => [
@@ -143,8 +146,7 @@ exports.Stage = ({ spec, config }) => {
     getById,
     ignoreErrorCodes,
   });
-  const buildResourceArn = ({ restApiId, stageName }) =>
-    `arn:aws:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`;
+
   return {
     spec,
     findName,
