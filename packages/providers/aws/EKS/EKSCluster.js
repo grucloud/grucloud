@@ -45,6 +45,8 @@ exports.EKSCluster = ({ spec, config }) => {
   const eks = createEKS(config);
   const client = AwsClient({ spec, config })(eks);
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
+
   const getById = client.getById({
     pickId,
     method: "describeCluster",
@@ -66,8 +68,6 @@ exports.EKSCluster = ({ spec, config }) => {
       ]),
   });
   const getByName = getById;
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
 
   const kubeConfigUpdate = ({ name }) =>
     pipe([
@@ -110,8 +110,7 @@ exports.EKSCluster = ({ spec, config }) => {
       ({ payload }) =>
       () =>
         payload,
-    //TODO isInstanceError
-    // isInstanceError: eq(get("status"), "TODOERROR")
+    isInstanceError: eq(get("status"), "FAILED"),
     isInstanceUp: eq(get("status"), "ACTIVE"),
     shouldRetryOnExceptionMessages: [
       "The KeyArn in encryptionConfig provider",

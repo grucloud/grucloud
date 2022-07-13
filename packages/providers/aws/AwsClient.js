@@ -351,6 +351,7 @@ const AwsClient =
         getById,
         isInstanceUp = not(isEmpty),
         isInstanceError = () => false,
+        getErrorMessage = () => "error",
         shouldRetryOnExceptionCodes = [],
         shouldRetryOnExceptionMessages = [],
         shouldRetryOnException = () => false,
@@ -430,7 +431,7 @@ const AwsClient =
                         identity,
                         isInstanceError,
                         (live) => {
-                          const ex = new Error("instance is in error state");
+                          const ex = new Error(getErrorMessage(live));
                           ex.live = live;
                           throw ex;
                         },

@@ -4,15 +4,11 @@
 
 ## Aws
 
-
 - HostedZone Config Comment
-- user tags for ec2 instance
 - PrincipalAssociation replace associatedEntity from config
 
 - ipamPoolIpv6
 
-- createVpcLink isInstanceUp
-- add isInstanceError for aws create, for instance in transit gateway
 - SecretsManagerResourcePolicy
 
 omit AWSLogs S3 Objects

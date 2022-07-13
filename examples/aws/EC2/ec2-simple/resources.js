@@ -12,6 +12,12 @@ exports.createResources = () => [
       Image: {
         Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
       },
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "myvalue",
+        },
+      ],
       Placement: {
         AvailabilityZone: `${config.region}d`,
       },

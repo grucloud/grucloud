@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, assign, pick } = require("rubico");
+const { map, pipe, tap, eq, get, assign, pick } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 
@@ -12,9 +12,16 @@ const model = {
   package: "apigatewayv2",
   client: "ApiGatewayV2",
   ignoreErrorCodes: ["NotFoundException"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getVpcLink-property
   getById: { method: "getVpcLink" },
   getList: { method: "getVpcLinks", getParam: "Items" },
-  create: { method: "createVpcLink" },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createVpcLink-property
+  create: {
+    method: "createVpcLink",
+    getErrorMessage: get("VpcLinkStatusMessage", "error"),
+    isInstanceError: eq(get("VpcLinkStatus"), "FAILED"),
+    isInstanceUp: eq(get("VpcLinkStatus"), "AVAILABLE"),
+  },
   update: { method: "updateVpcLink" },
   destroy: { method: "deleteVpcLink" },
 };
@@ -27,21 +34,8 @@ exports.ApiGatewayV2VpcLink = ({ spec, config }) => {
     model,
     spec,
     config,
-    findName: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      get("live.Name"),
-      tap((Name) => {
-        assert(Name);
-      }),
-    ]),
-    pickId: pipe([
-      tap(({ VpcLinkId }) => {
-        assert(VpcLinkId);
-      }),
-      pick(["VpcLinkId"]),
-    ]),
+    findName: pipe([get("live.Name")]),
+    pickId: pipe([pick(["VpcLinkId"])]),
     findId: get("live.VpcLinkId"),
     findDependencies: ({ live }) => [
       {
@@ -55,13 +49,7 @@ exports.ApiGatewayV2VpcLink = ({ spec, config }) => {
         ids: pipe([() => live, get("SecurityGroupIds")])(),
       },
     ],
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        assign({}),
-      ]),
+    decorate: ({ endpoint }) => pipe([assign({})]),
     getByName: getByNameCore,
     configDefault: ({
       name,
