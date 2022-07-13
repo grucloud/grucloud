@@ -3,7 +3,7 @@
 - check stage for all providers
 
 ## Aws
-
+-  stage name prefix with rest api
 - HostedZone Config Comment
 - PrincipalAssociation replace associatedEntity from config
 
@@ -13,19 +13,14 @@
 
 omit AWSLogs S3 Objects
 
-- substitute zone, not ${region}/b
-
-- gc gencode lambda with java.
 - AWS::AmazonMQ::Broker
-- AWS::Pinpoint::App
-- AWS::RUM::AppMonitor
 - AWS::Cognito::IdentityPool
 - AWS::Cognito::IdentityPoolRoleAttachment
 - AWS::CloudFront::CachePolicy
-- AWS::ApiGateway::UsagePlan
 - AWS::CloudWatch::Dashboard
 - AWS::Events::Endpoint
 - aws_route53_delegation_set
+- CodeStarConnections Host
 - createOrganizationalUnit
 
 - apprunner example npm test

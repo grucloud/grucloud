@@ -1,6 +1,6 @@
 ---
-id: WebACL
-title: WebACL
+id: WebACLCloudFront
+title: WebACL CloudFront
 ---
 
 Manage a [WAFv2 WebACL](https://console.aws.amazon.com/wafv2/homev2/web-acls).

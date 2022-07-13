@@ -41,10 +41,17 @@ The remaining input properties:
 
 - [Authorizer](./Authorizer.md)
 - [Stage](./Stage.md)
+- [UsagePlan](./UsagePlan.md)
 
 ## Full Examples
 
-- [RestAPI with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/APIGateway/restapi-lambda)
+- [restapi-lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/APIGateway/restapi-lambda)
+- [apigw-rest-api-dynamodb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-rest-api-dynamodb)
+- [apigw-rest-api-eventbridge-terraform ](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-rest-api-eventbridge-terraform)
+- [sfn-apigw](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/sfn-apigw)
+- [wafv2-apigateway-rest](https://github.com/grucloud/grucloud/tree/main/examples/aws/WAFv2/wafv2-apigateway-rest)
+
+
 
 ## List
 

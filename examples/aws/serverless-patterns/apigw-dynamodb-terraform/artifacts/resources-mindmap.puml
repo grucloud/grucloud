@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project apigw-dynamodb-terraform
+skinparam monochrome true
++ Infra
+++ aws
++++ APIGateway
+++++ Account (1)
+++++ ApiKey (1)
+++++ RestApi (1)
+++++ Stage (1)
+++++ UsagePlan (1)
++++ CloudWatchLogs
+++++ LogGroup (2)
++++ DynamoDB
+++++ Table (1)
++++ IAM
+++++ Role (2)
+++++ Policy (1)
+@endmindmap

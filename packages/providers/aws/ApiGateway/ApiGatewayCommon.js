@@ -55,21 +55,26 @@ exports.diffToPatch = ({ diff }) =>
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#tagResource-property
 exports.tagResource =
-  ({ apiGateway, buildResourceArn }) =>
+  ({ buildResourceArn }) =>
+  ({ endpoint }) =>
   ({ live }) =>
     pipe([
       (tags) => ({ resourceArn: buildResourceArn(live), tags }),
-      apiGateway().tagResource,
+      tap((params) => {
+        assert(params);
+      }),
+      endpoint().tagResource,
     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#untagResource-property
 exports.untagResource =
-  ({ apiGateway, buildResourceArn }) =>
+  ({ buildResourceArn }) =>
+  ({ endpoint }) =>
   ({ live }) =>
     pipe([
       (tagKeys) => ({
         resourceArn: buildResourceArn(live),
         tagKeys,
       }),
-      apiGateway().untagResource,
+      endpoint().untagResource,
     ]);

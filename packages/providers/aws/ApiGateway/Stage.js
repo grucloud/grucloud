@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, pick, omit } = require("rubico");
+const { map, pipe, tap, get, pick, omit, assign } = require("rubico");
 const { defaultsDeep, values, flatten, when, isEmpty } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
@@ -16,6 +16,7 @@ const {
 const translatePropertyMap = {
   metricsEnabled: "metrics/enabled",
   dataTraceEnabled: "logging/dataTrace",
+  loggingLevel: "logging/loglevel",
   throttlingBurstLimit: "throttling/burstLimit",
   throttlingRateLimit: "throttling/rateLimit",
   cachingEnabled: "caching/enabled",
@@ -30,13 +31,15 @@ const translateProperty = (property) =>
   pipe([() => translatePropertyMap[property], when(isEmpty, () => property)])();
 
 exports.Stage = ({ spec, config }) => {
-  const apiGateway = createAPIGateway(config);
-  const client = AwsClient({ spec, config })(apiGateway);
+  const endpoint = createAPIGateway(config);
+  const client = AwsClient({ spec, config })(endpoint);
 
-  const buildResourceArn = ({ restApiId, stageName }) =>
-    `arn:aws:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`;
+  const buildResourceArn =
+    ({ config }) =>
+    ({ restApiId, stageName }) =>
+      `arn:aws:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`;
 
-  const findId = pipe([get("live"), buildResourceArn]);
+  const findId = pipe([get("live"), buildResourceArn({ config })]);
   const findName = get("live.stageName");
 
   const pickId = pick(["restApiId", "stageName"]);
@@ -87,48 +90,49 @@ exports.Stage = ({ spec, config }) => {
       }),
     ])();
 
+  const createPatchOperations = pipe([
+    get("methodSettings", {}),
+    map.entries(([path, settings]) => [
+      path,
+      pipe([
+        () => settings,
+        map.entries(([key, value]) => [
+          key,
+          pipe([
+            () => ({
+              op: "replace",
+              path: `/${path}/${translateProperty(key)}`,
+              value: value.toString(),
+            }),
+          ])(),
+        ]),
+        values,
+      ])(),
+    ]),
+    values,
+    flatten,
+  ]);
+
   const create = client.create({
     method: "createStage",
     pickCreated:
       ({ payload }) =>
       () =>
         payload,
-    filterPayload: omit(["methodSettings"]),
+    filterPayload: omit(["methodSettings", "accessLogSettings"]),
     getById,
     postCreate:
       ({ payload, name }) =>
       ({ restApiId, stageName }) =>
         pipe([
           () => payload,
-          get("methodSettings", {}),
-          map.entries(([path, settings]) => [
-            path,
-            pipe([
-              () => settings,
-              map.entries(([key, value]) => [
-                key,
-                pipe([
-                  () => ({
-                    op: "replace",
-                    path: `/${path}/${translateProperty(key)}`,
-                    value: value.toString(),
-                  }),
-                ])(),
-              ]),
-              values,
-            ])(),
-          ]),
-          values,
-          flatten,
+          createPatchOperations,
           (patchOperations) => ({
             restApiId,
             stageName,
             patchOperations,
           }),
-          tap((params) => {
-            assert(true);
-          }),
-          apiGateway().updateStage,
+          endpoint().updateStage,
         ])(),
   });
 
@@ -137,6 +141,14 @@ exports.Stage = ({ spec, config }) => {
     pickId,
     method: "updateStage",
     getById,
+    filterParams: ({ payload, live, diff }) =>
+      pipe([
+        () => live,
+        pick(["restApiId", "stageName"]),
+        assign({
+          patchOperations: pipe([() => payload, createPatchOperations]),
+        }),
+      ])(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteStage-property
@@ -159,7 +171,11 @@ exports.Stage = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    tagResource: tagResource({ apiGateway, buildResourceArn }),
-    untagResource: untagResource({ apiGateway, buildResourceArn }),
+    tagResource: tagResource({
+      buildResourceArn: buildResourceArn({ config }),
+    })({ endpoint }),
+    untagResource: untagResource({
+      buildResourceArn: buildResourceArn({ config }),
+    })({ endpoint }),
   };
 };

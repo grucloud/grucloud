@@ -39,7 +39,7 @@ exports.createResources = () => [
 
 ### Used By
 
-- [TransitGatewayAttachment](./TransitGatewayAttachment.md)
+- [TransitGatewayVpcAttachment](./TransitGatewayVpcAttachment.md)
 
 ### Used By
 

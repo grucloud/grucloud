@@ -7,19 +7,10 @@ Manages an [Api Gateway V2 Integration](https://console.aws.amazon.com/apigatewa
 
 ## Sample code
 
+### Lambda integration
+
 ```js
 exports.createResources = () => [
-  {
-    type: "Api",
-    group: "ApiGatewayV2",
-    name: "my-api",
-    properties: ({}) => ({
-      ProtocolType: "HTTP",
-      ApiKeySelectionExpression: "$request.header.x-api-key",
-      DisableExecuteApiEndpoint: false,
-      RouteSelectionExpression: "$request.method $request.path",
-    }),
-  },
   {
     type: "Integration",
     group: "ApiGatewayV2",
@@ -29,68 +20,62 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "2.0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "my-api",
       lambdaFunction: "my-function",
     }),
   },
+];
+```
+
+### Load Balancer integration
+
+```js
+exports.createResources = () => [
   {
-    type: "Role",
-    group: "IAM",
-    name: "lambda-role",
+    type: "Integration",
+    group: "ApiGatewayV2",
     properties: ({}) => ({
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "lambda.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
+      ConnectionType: "VPC_LINK",
+      Description: "API Integration with AWS Fargate Service",
+      IntegrationMethod: "GET",
+      IntegrationType: "HTTP_PROXY",
+      PayloadFormatVersion: "1.0",
+      RequestTemplates: {},
     }),
-    dependencies: () => ({
-      policies: ["lambda-policy"],
+    dependencies: ({}) => ({
+      api: "ApigwFargate",
+      listener: "listener::CdkSt-MyFar-RZX6AW5H3B08::HTTP::80",
+      vpcLink: "V2 VPC Link",
     }),
   },
+];
+```
+
+### Event Bus integration
+
+```js
+exports.createResources = () => [
   {
-    type: "Policy",
-    group: "IAM",
-    name: "lambda-policy",
+    type: "Integration",
+    group: "ApiGatewayV2",
     properties: ({}) => ({
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["logs:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
+      ConnectionType: "INTERNET",
+      IntegrationSubtype: "EventBridge-PutEvents",
+      IntegrationType: "AWS_PROXY",
+      PayloadFormatVersion: "1.0",
+      RequestParameters: {
+        DetailType: "MyDetailType",
+        Source: "WebApp",
+        Detail: "$request.body",
       },
-      Path: "/",
-      Description: "Allow logs",
+      RequestTemplates: {},
+      TimeoutInMillis: 10000,
     }),
-  },
-  {
-    type: "Function",
-    group: "Lambda",
-    name: "my-function",
-    properties: ({}) => ({
-      Handler: "my-function.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
-      Description: "",
-      Timeout: 3,
-      MemorySize: 128,
-    }),
-    dependencies: () => ({
-      role: "lambda-role",
+    dependencies: ({}) => ({
+      api: "MyHttpApi",
+      eventBus: "MyEventBus",
+      role: "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-V1AK3L262GGK",
     }),
   },
 ];
@@ -116,6 +101,10 @@ exports.createResources = () => [
 
 - [Http with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/http-lambda)
 - [apigw-vpclink-pvt-alb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-vpclink-pvt-alb)
+- [apigw-fargate-cdk](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-fargate-cdk)
+- [apigw-http-api-eventbridge](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-http-api-eventbridge)
+- [apigw-websocket-api-lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-websocket-api-lambda)
+- [cognito-httpapi](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/cognito-httpapi)
 
 ## List
 

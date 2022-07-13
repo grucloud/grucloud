@@ -11,7 +11,7 @@ const {
   when,
 } = require("rubico/x");
 
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const {
   isOurMinionObject,
   compareAws,
@@ -27,6 +27,7 @@ const { Method } = require("./Method");
 const { Resource } = require("./Resource");
 const { Integration } = require("./Integration");
 const { Deployment } = require("./Deployment");
+const { UsagePlan } = require("./UsagePlan");
 
 const GROUP = "APIGateway";
 const tagsKey = "tags";
@@ -334,6 +335,8 @@ module.exports = pipe([
         "lastUpdatedDate",
         "cacheClusterStatus",
         "webAclArn",
+        "accessLogSettings",
+        "restApiId",
       ],
       propertiesDefault: { cacheClusterEnabled: false, tracingEnabled: false },
       compare: compareAPIGateway({
@@ -352,6 +355,7 @@ module.exports = pipe([
             "tracingEnabled",
           ]),
           omitIfEmpty(["methodSettings"]),
+          omit(["accessLogSettings.destinationArn"]),
         ]),
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
@@ -370,6 +374,41 @@ module.exports = pipe([
           group: "CognitoIdentityServiceProvider",
           list: true,
         },
+      },
+    },
+    {
+      type: "UsagePlan",
+      Client: UsagePlan,
+      omitProperties: ["id"],
+      propertiesDefault: {},
+      inferName: get("properties.name"),
+      filterLive: ({ lives, providerConfig }) =>
+        pipe([
+          assign({
+            apiStages: pipe([
+              get("apiStages"),
+              map(
+                assign({
+                  apiId: pipe([
+                    get("apiId"),
+                    replaceWithName({
+                      groupType: "APIGateway::RestApi",
+                      path: "id",
+                      pathLive: "live.id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                })
+              ),
+            ]),
+          }),
+          tap((param) => {
+            assert(param);
+          }),
+        ]),
+      dependencies: {
+        stages: { type: "Stage", group: GROUP, list: true },
       },
     },
   ],

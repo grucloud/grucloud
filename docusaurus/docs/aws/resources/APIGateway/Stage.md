@@ -79,6 +79,7 @@ exports.createResources = () => [
 ## Used By
 
 - [WAFv2 WebACLAssociation](../WAFv2/WebACLAssociation.md)
+- [Usage Plan](./UsagePlan.md)
 
 ## Full Examples
 
