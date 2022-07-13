@@ -74,6 +74,7 @@ exports.createResources = () => [
 ## USed By
 
 - [SNS Subscription](./Subscription.md)
+- [StepFunctions StateMachine](../StepFunctions/StateMachine.md)
 
 ## Full Examples
 

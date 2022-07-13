@@ -26,6 +26,10 @@ exports.createResources = () => [
 
 - [CreateQueueCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-sqs/interfaces/createqueuecommandinput.html)
 
+## Used By
+
+- [StepFunctions StateMachine](../StepFunctions/StateMachine.md)
+
 ## Full Examples
 
 - [Simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/SQS/sqs-simple)

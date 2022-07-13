@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { map, pipe, tap } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { map, pipe, tap, assign, eq, get, omit } = require("rubico");
+const { defaultsDeep, size, when } = require("rubico/x");
 
 const { isOurMinion, compareAws } = require("../AwsCommon");
 const { KinesisStream } = require("./KinesisStream");
@@ -25,6 +25,14 @@ module.exports = pipe([
         "EnhancedMonitoring", // TODO
       ],
       propertiesDefault: { EncryptionType: "NONE", RetentionPeriodHours: 24 },
+      compare: compareAws({ filterTarget: () => pipe([omit(["ShardCount"])]) }),
+      filterLive: () =>
+        pipe([
+          when(
+            eq(get("StreamModeDetails.StreamMode"), "PROVISIONED"),
+            pipe([assign({ ShardCount: pipe([get("Shards"), size]) })])
+          ),
+        ]),
     },
   ],
   map(

@@ -22,16 +22,7 @@ const model = ({ config }) => ({
     method: "describeStream",
     pickId,
     getField: "StreamDescription",
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        assignTags({ endpoint }),
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
+    decorate: ({ endpoint }) => pipe([assignTags({ endpoint })]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kinesis.html#listStreams-property
   getList: {
@@ -49,17 +40,7 @@ const model = ({ config }) => ({
     postCreate:
       ({ endpoint }) =>
       (live) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => live,
-          get("Tags"),
-          tagResource({ endpoint })({ live }),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
+        pipe([() => live, get("Tags"), tagResource({ endpoint })({ live })])(),
   },
   update: {
     method: "updateStream",
@@ -83,13 +64,7 @@ exports.KinesisStream = ({ spec, config }) =>
     findName: pipe([get("live.StreamName")]),
     findId: pipe([get("live.StreamARN")]),
     getByName: ({ getList, endpoint, getById }) =>
-      pipe([
-        ({ name }) => ({ StreamName: name }),
-        getById,
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
+      pipe([({ name }) => ({ StreamName: name }), getById]),
     tagResource: tagResource,
     untagResource: untagResource,
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>

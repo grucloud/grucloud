@@ -37,6 +37,7 @@ module.exports = pipe([
       },
       dependencies: {
         role: { type: "Role", group: "IAM" },
+        glueJob: { type: "Job", group: "Glue" },
         logGroups: { type: "LogGroup", group: "CloudWatchLogs", list: true },
         lambdaFunctions: { type: "Function", group: "Lambda", list: true },
         snsTopics: { type: "Topic", group: "SNS", list: true },

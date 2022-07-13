@@ -98,10 +98,11 @@ exports.createResources = () => [
 - [AppSync Graphql](../AppSync/GraphqlApi.md)
 - [EFS MountTarget](../EFS/MountTarget.md)
 
-## UsedBy
+## Used By
 
 - [ApiGateway Integration](../ApiGatewayV2/Integration.md)
 - [S3 Bucket](../S3/Bucket.md)
+- [StepFunctions StateMachine](../StepFunctions/StateMachine.md)
 
 ## List
 

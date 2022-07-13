@@ -20,9 +20,7 @@ omit AWSLogs S3 Objects
 - substitute zone, not ${region}/b
 
 - gc gencode lambda with java.
-- AWS::Glue::Job
 - AWS::AmazonMQ::Broker
-- AWS::Kinesis::Stream
 - AWS::Pinpoint::App
 - AWS::RUM::AppMonitor
 - AWS::Cognito::IdentityPool

@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project dynamodb-kinesis
+skinparam monochrome true
++ Infra
+++ aws
++++ DynamoDB
+++++ Table (1)
+++++ KinesisStreamingDestination (1)
++++ Kinesis
+++++ Stream (1)
+@endmindmap

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, not, pick, assign } = require("rubico");
+const { map, pipe, tap, get, eq, pick, assign } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
@@ -41,16 +41,10 @@ exports.DynamoDBTable = ({ spec, config }) => {
     ignoreErrorCodes,
     decorate: () =>
       pipe([
-        tap((params) => {
-          assert(params);
-        }),
         assign({
           Tags: pipe([
             ({ TableName }) => ({
               ResourceArn: tableArn({ TableName, config }),
-            }),
-            tap((params) => {
-              assert(true);
             }),
             dynamoDB().listTagsOfResource,
             get("Tags"),

@@ -1,0 +1,20 @@
+@startmindmap
+title Resources for project sfn-glue
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchEvents
+++++ Rule (1)
+++++ Target (1)
++++ CloudWatchLogs
+++++ LogGroup (3)
++++ Glue
+++++ Job (1)
++++ IAM
+++++ Role (3)
+++++ Policy (1)
++++ S3
+++++ Bucket (1)
++++ StepFunctions
+++++ StateMachine (1)
+@endmindmap

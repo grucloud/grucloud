@@ -27,6 +27,7 @@ const GROUPS = [
   ["EFS", "efs"],
   ["EKS", "eks"],
   ["ELBv2", "elb"],
+  ["Glue", "glue"],
   ["IAM", "iam"],
   ["Kinesis", "kinesis"],
   ["KMS", "kms"],
