@@ -44,6 +44,12 @@ exports.createResources = () => [
 
 - [RegisterTaskDefinitionCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecs/interfaces/registertaskdefinitioncommandinput.html)
 
+## Dependencies
+
+- [SecretsManager Secret](../SecretsManager/Secret.md)
+- [IAM Role](../IAM/Role.md)
+- [RDS DBCluster](../RDS/DBCluster.md)
+
 ## Used By
 
 - [Service](./Service.md)
@@ -51,6 +57,16 @@ exports.createResources = () => [
 ## Full Examples
 
 - [Simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/ECS/ecs-simple)
+
+- [aws-cdk-examples/application-load-balancer-fargate-service]((https://github.com/grucloud/grucloud/tree/main/examples/aws/aws-cdk-examples/application-load-balancer-fargate-service)
+
+- [serverless-patterns/apigw-fargate-cdk]((https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-fargate-cdk)
+
+- [serverless-patterns/apigw-vpclink-pvt-alb]((https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-vpclink-pvt-alb)
+
+- [serverless-patterns/fargate-aurora-serverless-cdk]((https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/fargate-aurora-serverless-cdk)
+
+- [serverless-patterns/fargate-eventbridge]((https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/fargate-eventbridge)
 
 ## List
 

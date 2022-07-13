@@ -22,6 +22,11 @@ omit AWSLogs S3 Objects
 - aws_route53_delegation_set
 - CodeStarConnections Host
 - createOrganizationalUnit
+Lambda EventSourceMapping: 
+- Amazon DynamoDB Streams
+- Amazon MQ and RabbitMQ
+- Amazon MSK
+- Apache Kafka
 
 - apprunner example npm test
 - inferName Lambda layer

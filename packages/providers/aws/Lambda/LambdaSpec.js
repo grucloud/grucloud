@@ -56,6 +56,11 @@ const hasIdInLive = ({ idToMatch, lives, groupType }) =>
 
 const createTempDir = () => os.tmpdir();
 
+const omitDestinationConfig = when(
+  get("DestinationConfig.OnFailure"),
+  omit(["DestinationConfig"])
+);
+
 module.exports = pipe([
   () => [
     {
@@ -319,7 +324,7 @@ module.exports = pipe([
               "LastModified",
               "LastProcessingResult",
               "StateTransitionReason",
-              "MaximumRecordAgeInSeconds",
+              //"MaximumRecordAgeInSeconds",
               "State",
             ]),
             omitIfEmpty([
@@ -331,6 +336,7 @@ module.exports = pipe([
               "TumblingWindowInSeconds",
               "FunctionResponseTypes",
             ]),
+            omitDestinationConfig,
           ]),
       }),
       filterLive:
@@ -348,22 +354,22 @@ module.exports = pipe([
               "DestinationConfig",
               "Topics",
               "Queues",
-              "MaximumRecordAgeInSeconds",
+              //"MaximumRecordAgeInSeconds",
               "BisectBatchOnFunctionError",
               "MaximumRetryAttempts",
               "TumblingWindowInSeconds",
               "FunctionResponseTypes",
             ]),
             omitIfEmpty(["FunctionResponseTypes"]),
+            omitDestinationConfig,
           ])(),
       dependencies: {
         lambdaFunction: { type: "Function", group: "Lambda", parent: true },
         sqsQueue: { type: "Queue", group: "SQS" },
+        kinesisStream: { type: "Stream", group: "Kinesis" },
         //TODO other event source
         /*
   Amazon DynamoDB Streams
-Amazon Kinesis
-Amazon SQS
 Amazon MQ and RabbitMQ
 Amazon MSK
 Apache Kafka

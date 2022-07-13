@@ -103,7 +103,8 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [sqs lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Lambda/nodejs/sqs-lambda/resources.js)
+- [sqs feeding lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Lambda/nodejs/sqs-lambda/resources.js)
+- [kinesis stream feeding lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Kinesis/kinesis-stream)
 
 ## Properties
 
@@ -113,6 +114,7 @@ exports.createResources = () => [
 
 - [Lambda Function](./Function.md)
 - [SQS Queue](../SQS/Queue.md)
+- [Kinesis Stream](../Kinesis/Stream.md)
 
 ## List
 
