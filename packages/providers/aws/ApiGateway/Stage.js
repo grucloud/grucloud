@@ -1,6 +1,13 @@
 const assert = require("assert");
 const { map, pipe, tap, get, pick, omit, assign } = require("rubico");
-const { defaultsDeep, values, flatten, when, isEmpty } = require("rubico/x");
+const {
+  defaultsDeep,
+  values,
+  flatten,
+  when,
+  isEmpty,
+  append,
+} = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -40,7 +47,26 @@ exports.Stage = ({ spec, config }) => {
       `arn:aws:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`;
 
   const findId = pipe([get("live"), buildResourceArn({ config })]);
-  const findName = get("live.stageName");
+
+  const findName = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(live.restApiId);
+        assert(live.stageName);
+      }),
+      () =>
+        lives.getById({
+          id: live.restApiId,
+          type: "RestApi",
+          group: "APIGateway",
+          providerName: config.providerName,
+        }),
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+      append(`::${live.stageName}`),
+    ])();
 
   const pickId = pick(["restApiId", "stageName"]);
 
@@ -64,8 +90,8 @@ exports.Stage = ({ spec, config }) => {
     // All other apis have 'items'
     getParam: "item",
     config,
-    decorate: ({ lives, parent: { id: restApiId, Tags } }) =>
-      defaultsDeep({ restApiId, Tags }),
+    decorate: ({ lives, parent: { id: restApiId, name: restApiName, Tags } }) =>
+      defaultsDeep({ restApiId, restApiName, Tags }),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -83,7 +109,6 @@ exports.Stage = ({ spec, config }) => {
       }),
       () => otherProps,
       defaultsDeep({
-        stageName: name,
         restApiId: getField(restApi, "id"),
         deploymentId: getField(restApi, "deployments[0].id"),
         tags: buildTagsObject({ config, namespace, userTags: tags }),

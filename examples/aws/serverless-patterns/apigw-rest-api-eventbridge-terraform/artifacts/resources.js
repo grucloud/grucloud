@@ -105,7 +105,9 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "dev",
+    properties: ({}) => ({
+      stageName: "dev",
+    }),
     dependencies: ({}) => ({
       restApi: "rest-api-eb-fOaf",
     }),

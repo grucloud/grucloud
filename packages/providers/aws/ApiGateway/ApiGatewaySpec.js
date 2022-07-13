@@ -313,7 +313,7 @@ module.exports = pipe([
                         eq(get("live.deploymentId"), deploymentId),
                       ])
                     ),
-                    get("name"),
+                    get("live.stageName"),
                   ])(),
                 (stageName) => ({
                   stageName,
@@ -337,7 +337,22 @@ module.exports = pipe([
         "webAclArn",
         "accessLogSettings",
         "restApiId",
+        "restApiName",
       ],
+      inferName: ({
+        properties: { stageName },
+        dependenciesSpec: { restApi },
+      }) =>
+        pipe([
+          tap(() => {
+            assert(stageName);
+            assert(restApi);
+          }),
+          () => `${restApi}::${stageName}`,
+          tap((name) => {
+            assert(name);
+          }),
+        ])(),
       propertiesDefault: { cacheClusterEnabled: false, tracingEnabled: false },
       compare: compareAPIGateway({
         filterLive: () => pipe([omitIfEmpty(["methodSettings"])]),
@@ -345,8 +360,8 @@ module.exports = pipe([
       filterLive: () =>
         pipe([
           pick([
+            "stageName",
             "description",
-            "StageName",
             "StageVariables",
             "methodSettings",
             "accessLogSettings",

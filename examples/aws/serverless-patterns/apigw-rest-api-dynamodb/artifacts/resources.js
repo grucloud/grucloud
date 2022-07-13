@@ -133,7 +133,9 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "prod",
+    properties: ({}) => ({
+      stageName: "prod",
+    }),
     dependencies: ({}) => ({
       restApi: "ApiDynamoRestApi",
     }),

@@ -47,7 +47,7 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "Prod",
+    properties: ({}) => ({ stageName: "Prod" }),
     dependencies: ({}) => ({
       restApi: "sam-app",
     }),
@@ -55,7 +55,7 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "Stage",
+    properties: ({}) => ({ stageName: "Stage" }),
     dependencies: ({}) => ({
       restApi: "sam-app",
     }),

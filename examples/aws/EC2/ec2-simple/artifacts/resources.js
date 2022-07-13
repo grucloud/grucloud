@@ -19,6 +19,12 @@ exports.createResources = () => [
           SubnetId: "subnet-41e85860",
         },
       ],
+      Tags: [
+        {
+          Key: "mykey",
+          Value: "myvalue",
+        },
+      ],
       Image: {
         Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
       },

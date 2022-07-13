@@ -405,8 +405,8 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "dev",
     properties: ({}) => ({
+      stageName: "dev",
       description: "dev",
       methodSettings: {
         "*/*": {
@@ -426,17 +426,6 @@ exports.createResources = () => [
       tags: {
         mykey: "myvalue3",
       },
-    }),
-    dependencies: ({}) => ({
-      restApi: "PetStore",
-    }),
-  },
-  {
-    type: "Stage",
-    group: "APIGateway",
-    name: "prod",
-    properties: ({}) => ({
-      description: "prod",
     }),
     dependencies: ({}) => ({
       restApi: "PetStore",
@@ -514,7 +503,7 @@ exports.createResources = () => [
     group: "WAFv2",
     dependencies: ({}) => ({
       webAcl: "my-webacl",
-      apiGatewayStage: "dev",
+      apiGatewayStage: "PetStore::dev",
     }),
   },
 ];

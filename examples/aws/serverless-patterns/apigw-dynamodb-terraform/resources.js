@@ -123,8 +123,8 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "v1",
     properties: ({}) => ({
+      stageName: "v1",
       methodSettings: {
         "*/*": {
           cacheDataEncrypted: false,
@@ -139,12 +139,6 @@ exports.createResources = () => [
           unauthorizedCacheControlHeaderStrategy:
             "SUCCEED_WITH_RESPONSE_HEADER",
         },
-      },
-      accessLogSettings: {
-        destinationArn:
-          "arn:aws:logs:us-east-1:840541460064:log-group:/aws/APIGW/terraform20220713145946431200000001",
-        format:
-          '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod","routeKey":"$context.routeKey", "status":"$context.status","protocol":"$context.protocol", "responseLength":"$context.responseLength" }',
       },
     }),
     dependencies: ({}) => ({
@@ -177,13 +171,18 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      stages: ["v1"],
+      stages: ["APIGW DynamoDB Serverless Pattern Demo::v1"],
     }),
   },
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
     name: "/aws/APIGW/terraform20220713145946431200000001",
+  },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    name: "API-Gateway-Execution-Logs_2t8dtt680a/v1",
   },
   {
     type: "LogGroup",

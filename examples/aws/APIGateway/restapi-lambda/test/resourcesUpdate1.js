@@ -15,8 +15,8 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "dev",
     properties: ({}) => ({
+      stageName: "dev",
       description: "dev",
       methodSettings: {
         "*/*": {

@@ -77,6 +77,7 @@ exports.mapToGraph = (mapResource) =>
                 map(
                   pipe([
                     tap((dep) => {
+                      assert(dep);
                       assert(
                         dep.toJSON,
                         `dependency has no toJSON function: ${util.inspect(
