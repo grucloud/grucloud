@@ -51,7 +51,7 @@ exports.createResources = () => [
 ## Full Examples
 
 - [Http with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/http-lambda)
-- [Authorizer with User Pool](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/cognito-httpapi)
+- [cognito-httpapi](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/cognito-httpapi)
 
 ## List
 

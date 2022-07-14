@@ -4,7 +4,6 @@
 
 ## Aws
 -  stage name prefix with rest api
-- HostedZone Config Comment
 - PrincipalAssociation replace associatedEntity from config
 
 - ipamPoolIpv6

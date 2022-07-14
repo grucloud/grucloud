@@ -129,14 +129,13 @@ module.exports = pipe([
       },
       Client: Route53HostedZone,
       compare: compareRoute53({
-        filterTarget: () => pipe([() => ({})]),
-        filterLive: () => pipe([() => ({})]),
+        filterAll: () => pipe([pick(["HostedZoneConfig.Comment"])]),
       }),
       filterLive: ({ providerConfig }) =>
         pipe([
-          pick(["Config.Comment"]),
-          omitIfEmpty(["Config.Comment"]),
-          omitIfEmpty(["Config"]),
+          pick(["HostedZoneConfig.Comment"]),
+          omitIfEmpty(["HostedZoneConfig.Comment"]),
+          omitIfEmpty(["HostedZoneConfig"]),
         ]),
       includeDefaultDependencies: true,
     },

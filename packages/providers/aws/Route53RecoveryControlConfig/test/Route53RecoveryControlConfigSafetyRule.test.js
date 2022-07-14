@@ -20,8 +20,10 @@ describe("Route53RecoveryControlConfigSafetyRule", async function () {
       () =>
         safetyRule.destroy({
           live: {
-            SafetyRuleArn:
-              "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/safetyrule/3004465f9a384eab",
+            AssertionRule: {
+              SafetyRuleArn:
+                "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/safetyrule/3004465f9a384eab",
+            },
           },
         }),
     ])
@@ -31,8 +33,10 @@ describe("Route53RecoveryControlConfigSafetyRule", async function () {
     pipe([
       () =>
         safetyRule.getById({
-          SafetyRuleArn:
-            "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/safetyrule/3004465f9a384eab",
+          AssertionRule: {
+            SafetyRuleArn:
+              "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/safetyrule/3004465f9a384eab",
+          },
         }),
     ])
   );

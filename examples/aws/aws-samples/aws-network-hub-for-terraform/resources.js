@@ -2816,7 +2816,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `athena.${config.region}.amazonaws.com.`,
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
       Tags: [
@@ -2835,7 +2835,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `autoscaling.${config.region}.amazonaws.com.`,
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
       Tags: [
@@ -2854,7 +2854,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `ec2.${config.region}.amazonaws.com.`,
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
       Tags: [
@@ -2873,7 +2873,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `ec2messages.${config.region}.amazonaws.com.`,
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
       Tags: [
@@ -2892,7 +2892,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `ecs.${config.region}.amazonaws.com.`,
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
       Tags: [
@@ -2911,7 +2911,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `logs.${config.region}.amazonaws.com.`,
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
       Tags: [
@@ -2930,7 +2930,7 @@ exports.createResources = () => [
     group: "Route53",
     name: "network-dev.internal.",
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
     }),
@@ -2943,7 +2943,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `rds.${config.region}.amazonaws.com.`,
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
       Tags: [
@@ -2962,7 +2962,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `sns.${config.region}.amazonaws.com.`,
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
       Tags: [
@@ -2981,7 +2981,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `sqs.${config.region}.amazonaws.com.`,
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
       Tags: [
@@ -3000,7 +3000,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `ssm.${config.region}.amazonaws.com.`,
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
       Tags: [
@@ -3019,7 +3019,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `ssmmessages.${config.region}.amazonaws.com.`,
     properties: ({}) => ({
-      Config: {
+      HostedZoneConfig: {
         Comment: "Managed by Terraform",
       },
       Tags: [

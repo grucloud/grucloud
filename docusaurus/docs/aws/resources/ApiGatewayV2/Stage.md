@@ -55,6 +55,11 @@ exports.createResources = () => [
 ## Full Examples
 
 - [Http with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/http-lambda)
+- [apigw-fargate-cdk](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-fargate-cdk)
+- [apigw-http-api-eventbridge](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-http-api-eventbridge)
+- [apigw-vpclink-pvt-alb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-vpclink-pvt-alb)
+- [apigw-vpclink-pvt-alb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-websocket-api-lambda)
+- [cognito-httpapi](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/cognito-httpapi)
 
 ## List
 

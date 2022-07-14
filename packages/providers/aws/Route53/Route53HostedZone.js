@@ -193,6 +193,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
             get("ResourceTagSet.Tags"),
           ]),
         }),
+        ({ Config, ...other }) => ({ ...other, HostedZoneConfig: Config }),
       ]),
     // When at least one of the hosted zone is private:
     //   Get the list of VPCs
@@ -205,7 +206,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
         pipe([
           () => hostedZones,
           when(
-            any(get("Config.PrivateZone")),
+            any(get("HostedZoneConfig.PrivateZone")),
             pipe([
               () =>
                 lives.getByType({
@@ -434,18 +435,39 @@ exports.Route53HostedZone = ({ spec, config }) => {
     config,
   });
 
-  const update = ({ name, live, diff }) =>
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#updateHostedZoneComment-property
+  const update = ({ name, payload, live, diff }) =>
     pipe([
       tap(() => {
         logger.info(`update hosted zone ${name}, diff: ${tos(diff)}`);
         assert(name, "name");
         assert(live, "live");
         assert(diff, "diff");
-        assert(diff.needUpdate, "diff.needUpate");
-        assert(diff.deletions, "diff.deletions");
+        //assert(diff.needUpdate, "diff.needUpate");
+        //assert(diff.deletions, "diff.deletions");
       }),
-      switchCase([
-        () => diff.needUpdateRecordSet,
+      () => diff,
+      tap.if(
+        get("liveDiff.updated.HostedZoneConfig.Comment"),
+        pipe([
+          tap((params) => {
+            assert(live.Id);
+          }),
+          () => live,
+          get("Id"),
+          hostedZoneIdToResourceId,
+          (Id) => ({ Id, Comment: payload.HostedZoneConfig.Comment }),
+          tap((params) => {
+            assert(params);
+          }),
+          route53().updateHostedZoneComment,
+          tap((params) => {
+            assert(params);
+          }),
+        ])
+      ),
+      tap.if(
+        get("needUpdateRecordSet"),
         tryCatch(
           pipe([
             () =>
@@ -473,8 +495,11 @@ exports.Route53HostedZone = ({ spec, config }) => {
             //TODO axios here ?
             throw axiosErrorToJSON(error);
           }
-        ),
-      ]),
+        )
+      ),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
   const configDefault = ({
