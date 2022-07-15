@@ -8,6 +8,7 @@ exports.createResources = () => [
     group: "APIGateway",
     name: "rest-api-eb-fOaf",
     properties: ({ config }) => ({
+      name: "rest-api-eb-fOaf",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],

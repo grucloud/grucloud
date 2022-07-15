@@ -13,6 +13,7 @@ exports.createResources = () => [
         AllowOrigins: ["https://myapp.com"],
       },
       Description: "Cognito to HTTP API demo",
+      Name: "sam-app",
     }),
   },
   {
@@ -21,6 +22,7 @@ exports.createResources = () => [
     name: "$default",
     properties: ({}) => ({
       AutoDeploy: true,
+      StageName: "$default",
     }),
     dependencies: ({}) => ({
       api: "sam-app",
@@ -31,6 +33,7 @@ exports.createResources = () => [
     group: "ApiGatewayV2",
     name: "OAuth2Authorizer",
     properties: ({}) => ({
+      Name: "OAuth2Authorizer",
       AuthorizerType: "JWT",
       IdentitySource: ["$request.header.Authorization"],
       JwtConfiguration: {

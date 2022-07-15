@@ -1258,7 +1258,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `ec2messages.${config.region}.amazonaws.com.`,
     dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
+      vpc: "spoke-vpc-1",
     }),
   },
   {
@@ -1266,7 +1266,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `s3.${config.region}.amazonaws.com.`,
     dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
+      vpc: "spoke-vpc-1",
     }),
   },
   {
@@ -1274,7 +1274,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `ssm.${config.region}.amazonaws.com.`,
     dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
+      vpc: "spoke-vpc-1",
     }),
   },
   {
@@ -1282,7 +1282,7 @@ exports.createResources = () => [
     group: "Route53",
     name: ({ config }) => `ssmmessages.${config.region}.amazonaws.com.`,
     dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
+      vpc: "spoke-vpc-1",
     }),
   },
   {
@@ -1290,7 +1290,7 @@ exports.createResources = () => [
     group: "Route53",
     dependencies: ({ config }) => ({
       hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
-      vpc: "spoke-vpc-1",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1306,7 +1306,7 @@ exports.createResources = () => [
     group: "Route53",
     dependencies: ({ config }) => ({
       hostedZone: `s3.${config.region}.amazonaws.com.`,
-      vpc: "spoke-vpc-1",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1322,7 +1322,7 @@ exports.createResources = () => [
     group: "Route53",
     dependencies: ({ config }) => ({
       hostedZone: `ssm.${config.region}.amazonaws.com.`,
-      vpc: "spoke-vpc-1",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1338,7 +1338,7 @@ exports.createResources = () => [
     group: "Route53",
     dependencies: ({ config }) => ({
       hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
-      vpc: "spoke-vpc-1",
+      vpc: "shared-services-vpc",
     }),
   },
   {

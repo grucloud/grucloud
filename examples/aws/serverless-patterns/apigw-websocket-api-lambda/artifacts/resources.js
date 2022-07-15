@@ -10,6 +10,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Description:
         "An Amazon API Gateway WebSocket API and an AWS Lambda function.",
+      Name: "sam-app",
       ProtocolType: "WEBSOCKET",
       RouteSelectionExpression: "$request.body.action",
     }),
@@ -24,6 +25,7 @@ exports.createResources = () => [
         LoggingLevel: "OFF",
       },
       Description: "Prod Stage",
+      StageName: "prod",
     }),
     dependencies: ({}) => ({
       api: "sam-app",

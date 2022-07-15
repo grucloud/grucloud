@@ -3,13 +3,21 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Api", group: "ApiGatewayV2", name: "MyHttpApi" },
+  {
+    type: "Api",
+    group: "ApiGatewayV2",
+    name: "MyHttpApi",
+    properties: ({}) => ({
+      Name: "MyHttpApi",
+    }),
+  },
   {
     type: "Stage",
     group: "ApiGatewayV2",
     name: "$default",
     properties: ({}) => ({
       AutoDeploy: true,
+      StageName: "$default",
     }),
     dependencies: ({}) => ({
       api: "MyHttpApi",

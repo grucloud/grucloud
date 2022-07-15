@@ -29,6 +29,7 @@ exports.createResources = () => [
     group: "ApiGatewayV2",
     name: "my-api",
     properties: ({}) => ({
+      Name: "my-api",
       Tags: {
         mykey1: "value",
       },
@@ -43,6 +44,7 @@ exports.createResources = () => [
         Format:
           '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
       },
+      StageName: "my-api-stage-dev",
       Tags: {
         mykey1: "value",
       },

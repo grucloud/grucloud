@@ -8,6 +8,7 @@ exports.createResources = () => [
     group: "APIGateway",
     name: "sam-app",
     properties: ({ config }) => ({
+      name: "sam-app",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],

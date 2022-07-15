@@ -58,7 +58,6 @@ module.exports = pipe([
         "ApiId",
         "CreatedDate",
         "AccessLogSettings.DestinationArn",
-        "Name",
       ],
       propertiesDefault: {
         Version: "1.0",
@@ -85,7 +84,6 @@ module.exports = pipe([
         "AccessLogSettings.DestinationArn",
         "LastDeploymentStatusMessage",
         "ApiId",
-        "StageName",
       ],
       filterLive: () => pipe([omitIfEmpty(["StageVariables"])]),
       dependencies: {
@@ -100,6 +98,7 @@ module.exports = pipe([
       filterLive: () =>
         pipe([
           pick([
+            "Name",
             "AuthorizerType",
             "IdentitySource",
             "AuthorizerPayloadFormatVersion",

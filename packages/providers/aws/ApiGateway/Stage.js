@@ -73,6 +73,11 @@ exports.Stage = ({ spec, config }) => {
   // Find dependencies for APIGateway::Stage
   const findDependencies = ({ live, lives }) => [
     findDependenciesRestApi({ live }),
+    {
+      type: "Account",
+      group: "APIGateway",
+      ids: ["default"],
+    },
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getStage-property

@@ -19,7 +19,14 @@ exports.createResources = () => [
       certificate: "grucloud.org",
     }),
   },
-  { type: "Api", group: "ApiGatewayV2", name: "my-api" },
+  {
+    type: "Api",
+    group: "ApiGatewayV2",
+    name: "my-api",
+    properties: ({}) => ({
+      Name: "my-api",
+    }),
+  },
   {
     type: "Stage",
     group: "ApiGatewayV2",
@@ -29,6 +36,7 @@ exports.createResources = () => [
         Format:
           '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
       },
+      StageName: "my-api-stage-dev",
     }),
     dependencies: ({}) => ({
       api: "my-api",
@@ -40,6 +48,7 @@ exports.createResources = () => [
     group: "ApiGatewayV2",
     name: "authorizer-auth0",
     properties: ({}) => ({
+      Name: "authorizer-auth0",
       AuthorizerType: "JWT",
       IdentitySource: ["$request.header.Authorization"],
       JwtConfiguration: {

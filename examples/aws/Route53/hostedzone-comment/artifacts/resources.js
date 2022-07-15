@@ -9,7 +9,7 @@ exports.createResources = () => [
     name: "grucloud.org.",
     properties: ({}) => ({
       HostedZoneConfig: {
-        Comment: "My Hosted Zone",
+        Comment: "My Hosted Zone New",
       },
     }),
     dependencies: ({}) => ({

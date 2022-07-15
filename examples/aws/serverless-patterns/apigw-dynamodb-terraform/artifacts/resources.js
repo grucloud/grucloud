@@ -8,7 +8,7 @@ exports.createResources = () => [
     group: "APIGateway",
     name: "default",
     dependencies: ({}) => ({
-      cloudwatchRole: "terraform-20220713145946432200000003",
+      cloudwatchRole: "terraform-20220714213227147700000003",
     }),
   },
   {
@@ -17,6 +17,7 @@ exports.createResources = () => [
     name: "apigw-dynamodb-terraform-api-key",
     properties: ({}) => ({
       description: "Managed by Terraform",
+      name: "apigw-dynamodb-terraform-api-key",
     }),
   },
   {
@@ -24,6 +25,7 @@ exports.createResources = () => [
     group: "APIGateway",
     name: "APIGW DynamoDB Serverless Pattern Demo",
     properties: ({ config }) => ({
+      name: "APIGW DynamoDB Serverless Pattern Demo",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
@@ -44,7 +46,7 @@ exports.createResources = () => [
                 },
               },
               "x-amazon-apigateway-integration": {
-                credentials: `arn:aws:iam::${config.accountId()}:role/terraform-20220713145946432200000002`,
+                credentials: `arn:aws:iam::${config.accountId()}:role/terraform-20220714213227147500000002`,
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_TEMPLATES",
                 requestTemplates: {
@@ -82,7 +84,7 @@ exports.createResources = () => [
                 },
               },
               "x-amazon-apigateway-integration": {
-                credentials: `arn:aws:iam::${config.accountId()}:role/terraform-20220713145946432200000002`,
+                credentials: `arn:aws:iam::${config.accountId()}:role/terraform-20220714213227147500000002`,
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_TEMPLATES",
                 requestParameters: {
@@ -117,14 +119,14 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      roles: ["terraform-20220713145946432200000002"],
+      roles: ["terraform-20220714213227147500000002"],
     }),
   },
   {
     type: "Stage",
     group: "APIGateway",
-    name: "v1",
     properties: ({}) => ({
+      stageName: "v1",
       methodSettings: {
         "*/*": {
           cacheDataEncrypted: false,
@@ -143,6 +145,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       restApi: "APIGW DynamoDB Serverless Pattern Demo",
+      account: "default",
     }),
   },
   {
@@ -171,23 +174,34 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      stages: ["v1"],
+      stages: ["APIGW DynamoDB Serverless Pattern Demo::v1"],
+    }),
+  },
+  {
+    type: "UsagePlanKey",
+    group: "APIGateway",
+    properties: ({}) => ({
+      name: "apigw-dynamodb-terraform-api-key",
+    }),
+    dependencies: ({}) => ({
+      usagePlan: "apigw-dynamodb-terraform-usage-plan",
+      apiKey: "apigw-dynamodb-terraform-api-key",
     }),
   },
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/APIGW/terraform20220713145946431200000001",
+    name: "/aws/APIGW/terraform20220714213227146600000001",
   },
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "API-Gateway-Execution-Logs_3wnu55wdxi/v1",
+    name: "API-Gateway-Execution-Logs_fl46irphu6/v1",
   },
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "API-Gateway-Execution-Logs_dkkvydrrql/v1",
+    name: "API-Gateway-Execution-Logs_hr99j3nbrh/v1",
   },
   {
     type: "Table",
@@ -244,7 +258,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "terraform-20220713145946432200000002",
+    name: "terraform-20220714213227147500000002",
     properties: ({}) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -260,13 +274,13 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      policies: ["terraform-20220713150004726200000005"],
+      policies: ["terraform-20220714213245320000000005"],
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "terraform-20220713145946432200000003",
+    name: "terraform-20220714213227147700000003",
     properties: ({}) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -301,7 +315,7 @@ exports.createResources = () => [
               },
             ],
           },
-          PolicyName: "terraform-20220713145948821100000004",
+          PolicyName: "terraform-20220714213229394700000004",
         },
       ],
     }),
@@ -309,7 +323,7 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "terraform-20220713150004726200000005",
+    name: "terraform-20220714213245320000000005",
     properties: ({ getId }) => ({
       PolicyDocument: {
         Statement: [

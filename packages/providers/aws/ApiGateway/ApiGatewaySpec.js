@@ -23,11 +23,12 @@ const { Stage } = require("./Stage");
 const { Authorizer } = require("./Authorizer");
 const { ApiKey } = require("./ApiKey");
 const { Account } = require("./Account");
-const { Method } = require("./Method");
-const { Resource } = require("./Resource");
-const { Integration } = require("./Integration");
-const { Deployment } = require("./Deployment");
+// const { Method } = require("./Method");
+// const { Resource } = require("./Resource");
+// const { Integration } = require("./Integration");
 const { UsagePlan } = require("./UsagePlan");
+// const { Deployment } = require("./Deployment");
+const { UsagePlanKey } = require("./UsagePlanKey");
 
 const GROUP = "APIGateway";
 const tagsKey = "tags";
@@ -81,13 +82,7 @@ module.exports = pipe([
     {
       type: "ApiKey",
       Client: ApiKey,
-      omitProperties: [
-        "name",
-        "id",
-        "createdDate",
-        "lastUpdatedDate",
-        "stageKeys",
-      ],
+      omitProperties: ["id", "createdDate", "lastUpdatedDate", "stageKeys"],
       propertiesDefault: { enabled: true },
     },
     // {
@@ -245,7 +240,7 @@ module.exports = pipe([
               assert(providerConfig);
             }),
             () => live,
-            pick(["apiKeySource", "endpointConfiguration", "schema"]),
+            pick(["name", "apiKeySource", "endpointConfiguration", "schema"]),
             assign({
               schema: pipe([
                 get("schema"),
@@ -375,6 +370,7 @@ module.exports = pipe([
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
         deployment: { type: "Deployment", group: "APIGateway" },
+        account: { type: "Account", group: "APIGateway" },
       },
     },
     {
@@ -424,6 +420,17 @@ module.exports = pipe([
         ]),
       dependencies: {
         stages: { type: "Stage", group: GROUP, list: true },
+      },
+    },
+    {
+      type: "UsagePlanKey",
+      Client: UsagePlanKey,
+      omitProperties: ["id", "keyId", "usagePlanId"],
+      inferName: pipe([get("properties.name")]),
+      propertiesDefault: { keyType: "API_KEY" },
+      dependencies: {
+        usagePlan: { type: "UsagePlan", group: GROUP, parent: true },
+        apiKey: { type: "ApiKey", group: GROUP },
       },
     },
   ],

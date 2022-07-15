@@ -11,12 +11,20 @@ exports.createResources = () => [
       cloudwatchRole: "roleApiGatewayCloudWatch",
     }),
   },
-  { type: "ApiKey", group: "APIGateway", name: "my-key" },
+  {
+    type: "ApiKey",
+    group: "APIGateway",
+    name: "my-key",
+    properties: ({}) => ({
+      name: "my-key",
+    }),
+  },
   {
     type: "RestApi",
     group: "APIGateway",
     name: "PetStore",
     properties: ({ config }) => ({
+      name: "PetStore",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["REGIONAL"],
@@ -429,6 +437,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       restApi: "PetStore",
+      account: "default",
     }),
   },
   {
@@ -440,6 +449,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       restApi: "PetStore",
+      account: "default",
     }),
   },
   { type: "LogGroup", group: "CloudWatchLogs", name: "restapi" },

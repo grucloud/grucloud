@@ -7,7 +7,7 @@ List of resources for provider aws:
 * ACM: 
 [Certificate](./resources/ACM/Certificate.md)
 * APIGateway: 
-[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [Deployment](./resources/APIGateway/Deployment.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md), [UsagePlan](./resources/APIGateway/UsagePlan.md)
+[Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md), [UsagePlan](./resources/APIGateway/UsagePlan.md)
 * ApiGatewayV2: 
 [DomainName](./resources/ApiGatewayV2/DomainName.md), [Api](./resources/ApiGatewayV2/Api.md), [Stage](./resources/ApiGatewayV2/Stage.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
 * AppRunner: 
