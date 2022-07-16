@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project flow-logs-tgw
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ FlowLogs (1)
+++++ TransitGateway (1)
+@endmindmap

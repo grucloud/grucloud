@@ -44,6 +44,7 @@ exports.createResources = () => [
 ### Used By
 
 - [TransitGatewayRegistration](../NetworkManager/TransitGatewayRegistration.md)
+- [Flow Logs](../EC2/FlowLogs.md)
 
 ### List
 

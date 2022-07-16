@@ -56,7 +56,7 @@ exports.createResources = () => [
 
 ## List
 
-The integrations can be filtered with the _APIGateway::UsagePlan_ type:
+The usage plan can be filtered with the _APIGateway::UsagePlan_ type:
 
 ```sh
 gc l -t APIGateway::UsagePlan

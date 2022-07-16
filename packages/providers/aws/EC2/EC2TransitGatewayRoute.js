@@ -7,8 +7,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 const {
-  findDependenciesVpcAttachment,
-  findDependenciesPeeringAttachment,
+  findDependenciesTgwAttachment,
   findNameRouteTableArm,
 } = require("./EC2TransitGatewayCommon");
 
@@ -67,8 +66,7 @@ exports.EC2TransitGatewayRoute = ({ spec, config }) =>
         group: "EC2",
         ids: [live.TransitGatewayRouteTableId],
       },
-      findDependenciesVpcAttachment({ live, lives, config }),
-      findDependenciesPeeringAttachment({ live, lives, config }),
+      findDependenciesTgwAttachment({ live, lives, config }),
     ],
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#searchTransitGatewayRoutes-property
     getList: ({ client }) =>

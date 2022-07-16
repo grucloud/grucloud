@@ -33,6 +33,7 @@ exports.createResources = () => [
 ### Dependencies
 
 - [Vpn Gateway](./VpnGateway.md)
+- [Transit Gateway](./TransitGateway.md)
 - [Customer Gateway](./CustomerGateway.md)
 
 ### List

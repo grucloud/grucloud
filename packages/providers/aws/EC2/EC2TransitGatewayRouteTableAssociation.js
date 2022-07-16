@@ -1,15 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, get, filter, map, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
 const { isAwsError } = require("../AwsCommon");
 const {
-  findDependenciesTransitGateway,
-  findDependenciesVpcAttachment,
-  findDependenciesPeeringAttachment,
+  findDependenciesTgwAttachment,
   findNameRouteTableArm,
 } = require("./EC2TransitGatewayCommon");
 
@@ -58,8 +56,7 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ spec, config }) =>
         group: "EC2",
         ids: [live.TransitGatewayRouteTableId],
       },
-      findDependenciesVpcAttachment({ live, lives, config }),
-      findDependenciesPeeringAttachment({ live, lives, config }),
+      findDependenciesTgwAttachment({ live, lives, config }),
     ],
     findName: findNameRouteTableArm({
       prefix: "tgw-rtb-assoc",
@@ -92,13 +89,17 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ spec, config }) =>
       name,
       namespace,
       properties,
-      dependencies: { transitGatewayRouteTable, transitGatewayVpcAttachment },
+      dependencies: {
+        transitGatewayRouteTable,
+        transitGatewayVpcAttachment,
+        transitGatewayAttachment,
+      },
     }) =>
       pipe([
         tap((params) => {
           assert(transitGatewayRouteTable);
           //TODO direct connect
-          assert(transitGatewayVpcAttachment);
+          assert(transitGatewayVpcAttachment || transitGatewayAttachment);
         }),
         () => properties,
         defaultsDeep({
@@ -106,11 +107,25 @@ exports.EC2TransitGatewayRouteTableAssociation = ({ spec, config }) =>
             transitGatewayRouteTable,
             "TransitGatewayRouteTableId"
           ),
-          TransitGatewayAttachmentId: getField(
-            transitGatewayVpcAttachment,
-            "TransitGatewayAttachmentId"
-          ),
         }),
+        when(
+          () => transitGatewayVpcAttachment,
+          defaultsDeep({
+            TransitGatewayAttachmentId: getField(
+              transitGatewayVpcAttachment,
+              "TransitGatewayAttachmentId"
+            ),
+          })
+        ),
+        when(
+          () => transitGatewayAttachment,
+          defaultsDeep({
+            TransitGatewayAttachmentId: getField(
+              transitGatewayAttachment,
+              "TransitGatewayAttachmentId"
+            ),
+          })
+        ),
         tap((params) => {
           assert(true);
         }),

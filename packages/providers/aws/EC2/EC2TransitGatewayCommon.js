@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, switchCase, fork } = require("rubico");
-const { prepend, append } = require("rubico/x");
+const { pipe, tap, get, switchCase, fork, not, map } = require("rubico");
+const { prepend, append, find, isEmpty, unless } = require("rubico/x");
 
 exports.findDependenciesTransitGateway = ({ live }) => ({
   type: "TransitGateway",
@@ -8,45 +8,39 @@ exports.findDependenciesTransitGateway = ({ live }) => ({
   ids: [live.TransitGatewayId],
 });
 
-exports.findDependenciesVpcAttachment = ({ live, lives, config }) => ({
-  type: "TransitGatewayVpcAttachment",
-  group: "EC2",
-  ids: [
-    pipe([
-      tap((params) => {
-        assert(live.TransitGatewayAttachmentId);
-      }),
-      () =>
-        lives.getById({
-          id: live.TransitGatewayAttachmentId,
-          type: "TransitGatewayVpcAttachment",
-          group: "EC2",
-          providerName: config.providerName,
-        }),
-      get("id"),
-    ])(),
-  ],
-});
+const TgwAttachmentDependencies = [
+  "TransitGatewayVpcAttachment",
+  "TransitGatewayPeeringAttachment",
+  "TransitGatewayAttachment",
+];
 
-exports.findDependenciesPeeringAttachment = ({ live, lives, config }) => ({
-  type: "TransitGatewayPeeringAttachment",
-  group: "EC2",
-  ids: [
-    pipe([
-      tap((params) => {
-        assert(live.TransitGatewayAttachmentId);
-      }),
-      () =>
-        lives.getById({
-          id: live.TransitGatewayAttachmentId,
-          type: "TransitGatewayPeeringAttachment",
-          group: "EC2",
-          providerName: config.providerName,
-        }),
-      get("id"),
-    ])(),
-  ],
-});
+exports.findDependenciesTgwAttachment = ({ live, lives, config }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    () => TgwAttachmentDependencies,
+    map((type) =>
+      pipe([
+        () =>
+          lives.getById({
+            id: live.TransitGatewayAttachmentId,
+            type,
+            group: "EC2",
+            providerName: config.providerName,
+          }),
+        get("id"),
+        unless(isEmpty, (id) => ({ type, group: "EC2", ids: [id] })),
+      ])()
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+    find(not(isEmpty)),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 exports.findNameRouteTableArm =
   ({ prefix, config }) =>
@@ -73,6 +67,16 @@ exports.findNameRouteTableArm =
             }),
           get("name"),
         ]),
+        transitGatewayAttachment: pipe([
+          () =>
+            lives.getById({
+              id: live.TransitGatewayAttachmentId,
+              type: "TransitGatewayAttachment",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("name"),
+        ]),
         transitGatewayRouteTable: pipe([
           () =>
             lives.getById({
@@ -87,12 +91,15 @@ exports.findNameRouteTableArm =
       ({
         transitGatewayVpcAttachment,
         transitGatewayPeeringAttachment,
+        transitGatewayAttachment,
         transitGatewayRouteTable,
       }) =>
         pipe([
           tap((params) => {
             assert(
-              transitGatewayVpcAttachment || transitGatewayPeeringAttachment
+              transitGatewayVpcAttachment ||
+                transitGatewayPeeringAttachment ||
+                transitGatewayAttachment
             );
             assert(transitGatewayRouteTable);
           }),
@@ -101,6 +108,8 @@ exports.findNameRouteTableArm =
             () => transitGatewayVpcAttachment,
             () => transitGatewayPeeringAttachment,
             () => transitGatewayPeeringAttachment,
+            () => transitGatewayAttachment,
+            () => transitGatewayAttachment,
             () => {
               assert(false, "findNameRouteTableArm");
             },
@@ -119,12 +128,17 @@ exports.inferNameRouteTableArm =
     dependenciesSpec: {
       transitGatewayVpcAttachment,
       transitGatewayPeeringAttachment,
+      transitGatewayAttachment,
       transitGatewayRouteTable,
     },
   }) =>
     pipe([
       tap(() => {
-        assert(transitGatewayVpcAttachment || transitGatewayPeeringAttachment);
+        assert(
+          transitGatewayVpcAttachment ||
+            transitGatewayPeeringAttachment ||
+            transitGatewayAttachment
+        );
         assert(transitGatewayRouteTable);
       }),
       switchCase([
@@ -132,6 +146,8 @@ exports.inferNameRouteTableArm =
         () => transitGatewayVpcAttachment,
         () => transitGatewayPeeringAttachment,
         () => transitGatewayPeeringAttachment,
+        () => transitGatewayAttachment,
+        () => transitGatewayAttachment,
         () => {
           assert(false, "inferNameRouteTableArm");
         },
@@ -148,6 +164,11 @@ exports.transitGatewayAttachmentDependencies = {
   },
   transitGatewayPeeringAttachment: {
     type: "TransitGatewayPeeringAttachment",
+    group: "EC2",
+    parent: true,
+  },
+  transitGatewayAttachment: {
+    type: "TransitGatewayAttachment",
     group: "EC2",
     parent: true,
   },

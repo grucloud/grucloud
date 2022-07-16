@@ -31,7 +31,7 @@ exports.createResources = () => [
 
 ## Used By
 
-- [FlowLogs](./FlowLogs.md)
+- [Flow Logs](./FlowLogs.md)
 
 ## Listing
 
