@@ -27,8 +27,8 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "my-api",
     properties: ({}) => ({
+      Name: "my-api",
       Tags: {
         mykey1: "value",
       },
@@ -37,12 +37,12 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "my-api-stage-dev",
     properties: ({}) => ({
       AccessLogSettings: {
         Format:
           '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
       },
+      StageName: "my-api-stage-dev",
       Tags: {
         mykey1: "value",
       },
@@ -197,7 +197,9 @@ exports.createResources = () => [
   {
     type: "HostedZone",
     group: "Route53",
-    name: "grucloud.org.",
+    properties: ({}) => ({
+      Name: "grucloud.org.",
+    }),
     dependencies: ({}) => ({
       domain: "grucloud.org",
     }),

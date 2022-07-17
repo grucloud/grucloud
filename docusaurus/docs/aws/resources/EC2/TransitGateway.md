@@ -39,11 +39,12 @@ exports.createResources = () => [
 
 ### Used By
 
-- [TransitGatewayAttachment](./TransitGatewayAttachment.md)
+- [TransitGatewayVpcAttachment](./TransitGatewayVpcAttachment.md)
 
 ### Used By
 
 - [TransitGatewayRegistration](../NetworkManager/TransitGatewayRegistration.md)
+- [Flow Logs](../EC2/FlowLogs.md)
 
 ### List
 

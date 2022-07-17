@@ -1,0 +1,17 @@
+@startmindmap
+title Resources for project flow-logs-tgw-vpn
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ CustomerGateway (1)
+++++ FlowLogs (1)
+++++ TransitGateway (1)
+++++ TransitGatewayRouteTable (1)
+++++ TransitGatewayAttachment (1)
+++++ TransitGatewayRouteTableAssociation (1)
+++++ TransitGatewayRouteTablePropagation (1)
+++++ VpnConnection (1)
+@endmindmap

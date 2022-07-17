@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "shared-services-vpc-vpc-flow-logs-20220609203327158400000001",
+    name: "shared-services-vpc-vpc-flow-logs-20220717111209245600000006",
     properties: ({}) => ({
       retentionInDays: 7,
     }),
@@ -17,7 +17,7 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "spoke-vpc-1-vpc-flow-logs-20220609203327160500000008",
+    name: "spoke-vpc-1-vpc-flow-logs-20220717111207772600000001",
     properties: ({}) => ({
       retentionInDays: 7,
     }),
@@ -28,7 +28,7 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "spoke-vpc-2-vpc-flow-logs-20220610082937587500000002",
+    name: "spoke-vpc-2-vpc-flow-logs-20220717111208892800000005",
     properties: ({}) => ({
       retentionInDays: 7,
     }),
@@ -46,9 +46,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "shared-services-vpc",
-      iamRole: "shared-services-vpc-cw-access-role-20220610082937588800000005",
+      iamRole: "shared-services-vpc-cw-access-role-20220717111209660000000007",
       cloudWatchLogGroup:
-        "shared-services-vpc-vpc-flow-logs-20220609203327158400000001",
+        "shared-services-vpc-vpc-flow-logs-20220717111209245600000006",
     }),
   },
   {
@@ -61,9 +61,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
-      iamRole: "spoke-vpc-1-cw-access-role-20220610082937589000000007",
+      iamRole: "spoke-vpc-1-cw-access-role-20220717111209704200000008",
       cloudWatchLogGroup:
-        "spoke-vpc-1-vpc-flow-logs-20220609203327160500000008",
+        "spoke-vpc-1-vpc-flow-logs-20220717111207772600000001",
     }),
   },
   {
@@ -76,9 +76,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
-      iamRole: "spoke-vpc-2-cw-access-role-20220610082937588900000006",
+      iamRole: "spoke-vpc-2-cw-access-role-20220717111209913100000009",
       cloudWatchLogGroup:
-        "spoke-vpc-2-vpc-flow-logs-20220610082937587500000002",
+        "spoke-vpc-2-vpc-flow-logs-20220717111208892800000005",
     }),
   },
   {
@@ -649,7 +649,7 @@ exports.createResources = () => [
         HttpTokens: "required",
       },
       Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220503.0 x86_64 HVM gp2",
+        Description: "Amazon Linux AMI 2018.03.0.20220609.0 x86_64 HVM gp2",
       },
     }),
     dependencies: ({ config }) => ({
@@ -688,7 +688,7 @@ exports.createResources = () => [
         HttpTokens: "required",
       },
       Image: {
-        Description: "Amazon Linux AMI 2018.03.0.20220503.0 x86_64 HVM gp2",
+        Description: "Amazon Linux AMI 2018.03.0.20220609.0 x86_64 HVM gp2",
       },
     }),
     dependencies: ({ config }) => ({
@@ -1002,7 +1002,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "shared-services-vpc-cw-access-role-20220610082937588800000005",
+    name: "shared-services-vpc-cw-access-role-20220717111209660000000007",
     properties: ({}) => ({
       Description:
         "Cloudwatch permissions role for shared-services-vpc with vpc-flow-logs",
@@ -1022,14 +1022,14 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       policies: [
-        "shared-services-vpc-cw-access-policy-20220610082937588200000004",
+        "shared-services-vpc-cw-access-policy-20220717111207838000000002",
       ],
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "spoke-vpc-1-cw-access-role-20220610082937589000000007",
+    name: "spoke-vpc-1-cw-access-role-20220717111209704200000008",
     properties: ({}) => ({
       Description:
         "Cloudwatch permissions role for spoke-vpc-1 with vpc-flow-logs",
@@ -1048,13 +1048,13 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      policies: ["spoke-vpc-1-cw-access-policy-20220610082937586900000001"],
+      policies: ["spoke-vpc-1-cw-access-policy-20220717111208786100000004"],
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "spoke-vpc-2-cw-access-role-20220610082937588900000006",
+    name: "spoke-vpc-2-cw-access-role-20220717111209913100000009",
     properties: ({}) => ({
       Description:
         "Cloudwatch permissions role for spoke-vpc-2 with vpc-flow-logs",
@@ -1073,7 +1073,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      policies: ["spoke-vpc-2-cw-access-policy-20220610082937587500000003"],
+      policies: ["spoke-vpc-2-cw-access-policy-20220717111208293100000003"],
     }),
   },
   {
@@ -1123,7 +1123,7 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "shared-services-vpc-cw-access-policy-20220610082937588200000004",
+    name: "shared-services-vpc-cw-access-policy-20220717111207838000000002",
     properties: ({}) => ({
       PolicyDocument: {
         Statement: [
@@ -1150,7 +1150,7 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "spoke-vpc-1-cw-access-policy-20220610082937586900000001",
+    name: "spoke-vpc-1-cw-access-policy-20220717111208786100000004",
     properties: ({}) => ({
       PolicyDocument: {
         Statement: [
@@ -1177,7 +1177,7 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "spoke-vpc-2-cw-access-policy-20220610082937587500000003",
+    name: "spoke-vpc-2-cw-access-policy-20220717111208293100000003",
     properties: ({}) => ({
       PolicyDocument: {
         Statement: [
@@ -1256,33 +1256,53 @@ exports.createResources = () => [
   {
     type: "HostedZone",
     group: "Route53",
-    name: ({ config }) => `ec2messages.${config.region}.amazonaws.com.`,
+    properties: ({ config }) => ({
+      Name: `ec2messages.${config.region}.amazonaws.com.`,
+      HostedZoneConfig: {
+        Comment: "Managed by Terraform",
+      },
+    }),
     dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
+      vpc: "spoke-vpc-1",
     }),
   },
   {
     type: "HostedZone",
     group: "Route53",
-    name: ({ config }) => `s3.${config.region}.amazonaws.com.`,
+    properties: ({ config }) => ({
+      Name: `s3.${config.region}.amazonaws.com.`,
+      HostedZoneConfig: {
+        Comment: "Managed by Terraform",
+      },
+    }),
     dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
+      vpc: "spoke-vpc-1",
     }),
   },
   {
     type: "HostedZone",
     group: "Route53",
-    name: ({ config }) => `ssm.${config.region}.amazonaws.com.`,
+    properties: ({ config }) => ({
+      Name: `ssm.${config.region}.amazonaws.com.`,
+      HostedZoneConfig: {
+        Comment: "Managed by Terraform",
+      },
+    }),
     dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
+      vpc: "spoke-vpc-1",
     }),
   },
   {
     type: "HostedZone",
     group: "Route53",
-    name: ({ config }) => `ssmmessages.${config.region}.amazonaws.com.`,
+    properties: ({ config }) => ({
+      Name: `ssmmessages.${config.region}.amazonaws.com.`,
+      HostedZoneConfig: {
+        Comment: "Managed by Terraform",
+      },
+    }),
     dependencies: ({}) => ({
-      vpc: "shared-services-vpc",
+      vpc: "spoke-vpc-1",
     }),
   },
   {
@@ -1290,7 +1310,7 @@ exports.createResources = () => [
     group: "Route53",
     dependencies: ({ config }) => ({
       hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
-      vpc: "spoke-vpc-1",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1306,7 +1326,7 @@ exports.createResources = () => [
     group: "Route53",
     dependencies: ({ config }) => ({
       hostedZone: `s3.${config.region}.amazonaws.com.`,
-      vpc: "spoke-vpc-1",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1322,7 +1342,7 @@ exports.createResources = () => [
     group: "Route53",
     dependencies: ({ config }) => ({
       hostedZone: `ssm.${config.region}.amazonaws.com.`,
-      vpc: "spoke-vpc-1",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1338,7 +1358,7 @@ exports.createResources = () => [
     group: "Route53",
     dependencies: ({ config }) => ({
       hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
-      vpc: "spoke-vpc-1",
+      vpc: "shared-services-vpc",
     }),
   },
   {

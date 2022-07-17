@@ -27,8 +27,8 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "dev",
     properties: ({}) => ({
+      stageName: "dev",
       description: "dev",
       methodSettings: {
         "*/*": {
@@ -57,6 +57,7 @@ exports.createResources = () => [
     group: "APIGateway",
     name: "prod",
     properties: ({}) => ({
+      stageName: "prod",
       description: "prod",
       cacheClusterEnabled: false,
       tracingEnabled: false,
@@ -79,6 +80,7 @@ exports.createResources = () => [
 ## Used By
 
 - [WAFv2 WebACLAssociation](../WAFv2/WebACLAssociation.md)
+- [Usage Plan](./UsagePlan.md)
 
 ## Full Examples
 

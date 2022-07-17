@@ -82,6 +82,7 @@ const vpc = provider.EC2.makeVpc({
 - [Security Group](./SecurityGroup.md)
 - [Internet Gateway Attachment](./InternetGatewayAttachment.md)
 - [Dhcp Options Association](./DhcpOptionsAssociation.md)
+- [Flow Logs](./FlowLogs.md)
 - [Route53 HostedZone](../Route53/HostedZone.md)
 - [CodeBuild Project](../CodeBuild/Project.md)
 

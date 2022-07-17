@@ -11,7 +11,7 @@ const {
   when,
 } = require("rubico/x");
 
-const { omitIfEmpty } = require("@grucloud/core/Common");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const {
   isOurMinionObject,
   compareAws,
@@ -23,10 +23,12 @@ const { Stage } = require("./Stage");
 const { Authorizer } = require("./Authorizer");
 const { ApiKey } = require("./ApiKey");
 const { Account } = require("./Account");
-const { Method } = require("./Method");
-const { Resource } = require("./Resource");
-const { Integration } = require("./Integration");
-const { Deployment } = require("./Deployment");
+// const { Method } = require("./Method");
+// const { Resource } = require("./Resource");
+// const { Integration } = require("./Integration");
+const { UsagePlan } = require("./UsagePlan");
+// const { Deployment } = require("./Deployment");
+const { UsagePlanKey } = require("./UsagePlanKey");
 
 const GROUP = "APIGateway";
 const tagsKey = "tags";
@@ -80,154 +82,148 @@ module.exports = pipe([
     {
       type: "ApiKey",
       Client: ApiKey,
-      omitProperties: [
-        "name",
-        "id",
-        "createdDate",
-        "lastUpdatedDate",
-        "stageKeys",
-      ],
+      omitProperties: ["id", "createdDate", "lastUpdatedDate", "stageKeys"],
       propertiesDefault: { enabled: true },
     },
-    {
-      type: "Deployment",
-      Client: Deployment,
-      ignoreResource: () => () => true,
-      omitProperties: ["createdDate", "id", "restApiId", "restApiName"],
-      dependencies: {
-        restApi: { type: "RestApi", group: "APIGateway", parent: true },
-      },
-    },
-    {
-      type: "Integration",
-      Client: Integration,
-      ignoreResource: () => () => true,
-      omitProperties: [
-        "credentials",
-        "restApiId",
-        "restApiName",
-        "resourceId",
-        "resource",
-        "cacheNamespace",
-      ],
-      compare: compareAPIGateway({
-        filterAll: () =>
-          pipe([
-            omitIfEmpty(["cacheKeyParameters"]),
-            omit(["integrationHttpMethod"]),
-          ]),
-      }),
-      filterLive: () => pipe([omitIfEmpty(["cacheKeyParameters"])]),
-      propertiesDefault: {
-        //type: "AWS",
-        timeoutInMillis: 29000,
-        requestParameters: {},
-        integrationResponses: {
-          200: {
-            responseParameters: {},
-            responseTemplates: { "application/json": "{}" },
-            statusCode: "200",
-          },
-        },
-      },
-      dependencies: {
-        method: { type: "Method", group: "APIGateway", parent: true },
-        lambdaFunction: { type: "Function", group: "Lambda" },
-        role: { type: "Role", group: "IAM" },
-        table: { type: "Table", group: "DynamoDB" },
-      },
-      inferName: ({ properties, dependenciesSpec }) =>
-        pipe([
-          () => dependenciesSpec,
-          tap(({ method }) => {
-            assert(method);
-          }),
-          get("method"),
-          prepend("integration::"),
-        ])(),
-    },
-    {
-      type: "Resource",
-      ignoreResource: () => () => true,
-      Client: Resource,
-      dependencies: {
-        restApi: { type: "RestApi", group: "APIGateway", parent: true },
-        parent: { type: "Resource", group: "APIGateway" },
-      },
-      includeDefaultDependencies: true,
-      omitProperties: [
-        "id",
-        "parentId",
-        "path",
-        "restApiName",
-        "restApiId",
-        "resourceMethods",
-      ],
-      inferName: ({ properties, dependenciesSpec }) =>
-        pipe([
-          () => dependenciesSpec,
-          tap(({ restApi }) => {
-            assert(restApi);
-            assert(properties);
-          }),
-          get("restApi"),
-          append("::"),
-          when(
-            () => dependenciesSpec.parent,
-            (name) =>
-              append(
-                pipe([
-                  () => dependenciesSpec.parent,
-                  callProp("split", "::"),
-                  last,
-                ])()
-              )(name)
-          ),
-          append(properties.pathPart || "/"),
-        ])(),
-    },
-    {
-      type: "Method",
-      ignoreResource: () => () => true,
-      Client: Method,
-      dependencies: {
-        resource: { type: "Resource", group: "APIGateway", parent: true },
-      },
-      cannotBeDeleted: () => true,
-      omitProperties: [
-        "resource",
-        "resourceId",
-        "restApiName",
-        "restApiId",
-        "methodIntegration",
-      ],
-      filterLive: () =>
-        pipe([
-          omitIfEmpty([
-            "description",
-            "requestModels",
-            "requestParameters",
-            "methodResponses.200.responseModels",
-            "methodResponses.200.responseParameters",
-          ]),
-        ]),
-      propertiesDefault: {
-        apiKeyRequired: false,
-        authorizationType: "NONE",
-        methodResponses: { 200: { statusCode: "200" } },
-      },
-      inferName: ({ properties, dependenciesSpec }) =>
-        pipe([
-          () => dependenciesSpec,
-          tap(({ resource }) => {
-            assert(resource);
-            assert(properties.httpMethod);
-          }),
-          get("resource"),
-          append("::"),
-          append(properties.httpMethod),
-        ])(),
-    },
+    // {
+    //   type: "Deployment",
+    //   Client: Deployment,
+    //   ignoreResource: () => () => true,
+    //   omitProperties: ["createdDate", "id", "restApiId", "restApiName"],
+    //   dependencies: {
+    //     restApi: { type: "RestApi", group: "APIGateway", parent: true },
+    //   },
+    // },
+    // {
+    //   type: "Integration",
+    //   Client: Integration,
+    //   ignoreResource: () => () => true,
+    //   omitProperties: [
+    //     "credentials",
+    //     "restApiId",
+    //     "restApiName",
+    //     "resourceId",
+    //     "resource",
+    //     "cacheNamespace",
+    //   ],
+    //   compare: compareAPIGateway({
+    //     filterAll: () =>
+    //       pipe([
+    //         omitIfEmpty(["cacheKeyParameters"]),
+    //         omit(["integrationHttpMethod"]),
+    //       ]),
+    //   }),
+    //   filterLive: () => pipe([omitIfEmpty(["cacheKeyParameters"])]),
+    //   propertiesDefault: {
+    //     //type: "AWS",
+    //     timeoutInMillis: 29000,
+    //     requestParameters: {},
+    //     integrationResponses: {
+    //       200: {
+    //         responseParameters: {},
+    //         responseTemplates: { "application/json": "{}" },
+    //         statusCode: "200",
+    //       },
+    //     },
+    //   },
+    //   dependencies: {
+    //     method: { type: "Method", group: "APIGateway", parent: true },
+    //     lambdaFunction: { type: "Function", group: "Lambda" },
+    //     role: { type: "Role", group: "IAM" },
+    //     table: { type: "Table", group: "DynamoDB" },
+    //   },
+    //   inferName: ({ properties, dependenciesSpec }) =>
+    //     pipe([
+    //       () => dependenciesSpec,
+    //       tap(({ method }) => {
+    //         assert(method);
+    //       }),
+    //       get("method"),
+    //       prepend("integration::"),
+    //     ])(),
+    // },
+    // {
+    //   type: "Resource",
+    //   ignoreResource: () => () => true,
+    //   Client: Resource,
+    //   dependencies: {
+    //     restApi: { type: "RestApi", group: "APIGateway", parent: true },
+    //     parent: { type: "Resource", group: "APIGateway" },
+    //   },
+    //   includeDefaultDependencies: true,
+    //   omitProperties: [
+    //     "id",
+    //     "parentId",
+    //     "path",
+    //     "restApiName",
+    //     "restApiId",
+    //     "resourceMethods",
+    //   ],
+    //   inferName: ({ properties, dependenciesSpec }) =>
+    //     pipe([
+    //       () => dependenciesSpec,
+    //       tap(({ restApi }) => {
+    //         assert(restApi);
+    //         assert(properties);
+    //       }),
+    //       get("restApi"),
+    //       append("::"),
+    //       when(
+    //         () => dependenciesSpec.parent,
+    //         (name) =>
+    //           append(
+    //             pipe([
+    //               () => dependenciesSpec.parent,
+    //               callProp("split", "::"),
+    //               last,
+    //             ])()
+    //           )(name)
+    //       ),
+    //       append(properties.pathPart || "/"),
+    //     ])(),
+    // },
+    // {
+    //   type: "Method",
+    //   ignoreResource: () => () => true,
+    //   Client: Method,
+    //   dependencies: {
+    //     resource: { type: "Resource", group: "APIGateway", parent: true },
+    //   },
+    //   cannotBeDeleted: () => true,
+    //   omitProperties: [
+    //     "resource",
+    //     "resourceId",
+    //     "restApiName",
+    //     "restApiId",
+    //     "methodIntegration",
+    //   ],
+    //   filterLive: () =>
+    //     pipe([
+    //       omitIfEmpty([
+    //         "description",
+    //         "requestModels",
+    //         "requestParameters",
+    //         "methodResponses.200.responseModels",
+    //         "methodResponses.200.responseParameters",
+    //       ]),
+    //     ]),
+    //   propertiesDefault: {
+    //     apiKeyRequired: false,
+    //     authorizationType: "NONE",
+    //     methodResponses: { 200: { statusCode: "200" } },
+    //   },
+    //   inferName: ({ properties, dependenciesSpec }) =>
+    //     pipe([
+    //       () => dependenciesSpec,
+    //       tap(({ resource }) => {
+    //         assert(resource);
+    //         assert(properties.httpMethod);
+    //       }),
+    //       get("resource"),
+    //       append("::"),
+    //       append(properties.httpMethod),
+    //     ])(),
+    // },
     {
       type: "RestApi",
       Client: RestApi,
@@ -244,7 +240,7 @@ module.exports = pipe([
               assert(providerConfig);
             }),
             () => live,
-            pick(["apiKeySource", "endpointConfiguration", "schema"]),
+            pick(["name", "apiKeySource", "endpointConfiguration", "schema"]),
             assign({
               schema: pipe([
                 get("schema"),
@@ -312,7 +308,7 @@ module.exports = pipe([
                         eq(get("live.deploymentId"), deploymentId),
                       ])
                     ),
-                    get("name"),
+                    get("live.stageName"),
                   ])(),
                 (stageName) => ({
                   stageName,
@@ -334,7 +330,24 @@ module.exports = pipe([
         "lastUpdatedDate",
         "cacheClusterStatus",
         "webAclArn",
+        "accessLogSettings",
+        "restApiId",
+        "restApiName",
       ],
+      inferName: ({
+        properties: { stageName },
+        dependenciesSpec: { restApi },
+      }) =>
+        pipe([
+          tap(() => {
+            assert(stageName);
+            assert(restApi);
+          }),
+          () => `${restApi}::${stageName}`,
+          tap((name) => {
+            assert(name);
+          }),
+        ])(),
       propertiesDefault: { cacheClusterEnabled: false, tracingEnabled: false },
       compare: compareAPIGateway({
         filterLive: () => pipe([omitIfEmpty(["methodSettings"])]),
@@ -342,8 +355,8 @@ module.exports = pipe([
       filterLive: () =>
         pipe([
           pick([
+            "stageName",
             "description",
-            "StageName",
             "StageVariables",
             "methodSettings",
             "accessLogSettings",
@@ -352,10 +365,12 @@ module.exports = pipe([
             "tracingEnabled",
           ]),
           omitIfEmpty(["methodSettings"]),
+          omit(["accessLogSettings.destinationArn"]),
         ]),
       dependencies: {
         restApi: { type: "RestApi", group: "APIGateway", parent: true },
         deployment: { type: "Deployment", group: "APIGateway" },
+        account: { type: "Account", group: "APIGateway" },
       },
     },
     {
@@ -370,6 +385,52 @@ module.exports = pipe([
           group: "CognitoIdentityServiceProvider",
           list: true,
         },
+      },
+    },
+    {
+      type: "UsagePlan",
+      Client: UsagePlan,
+      omitProperties: ["id"],
+      propertiesDefault: {},
+      inferName: get("properties.name"),
+      filterLive: ({ lives, providerConfig }) =>
+        pipe([
+          assign({
+            apiStages: pipe([
+              get("apiStages"),
+              map(
+                assign({
+                  apiId: pipe([
+                    get("apiId"),
+                    replaceWithName({
+                      groupType: "APIGateway::RestApi",
+                      path: "id",
+                      pathLive: "live.id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                })
+              ),
+            ]),
+          }),
+          tap((param) => {
+            assert(param);
+          }),
+        ]),
+      dependencies: {
+        stages: { type: "Stage", group: GROUP, list: true },
+      },
+    },
+    {
+      type: "UsagePlanKey",
+      Client: UsagePlanKey,
+      omitProperties: ["id", "keyId", "usagePlanId"],
+      inferName: pipe([get("properties.name")]),
+      propertiesDefault: { keyType: "API_KEY" },
+      dependencies: {
+        usagePlan: { type: "UsagePlan", group: GROUP, parent: true },
+        apiKey: { type: "ApiKey", group: GROUP },
       },
     },
   ],

@@ -6,10 +6,10 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "sam-app",
     properties: ({}) => ({
       Description:
         "An Amazon API Gateway WebSocket API and an AWS Lambda function.",
+      Name: "sam-app",
       ProtocolType: "WEBSOCKET",
       RouteSelectionExpression: "$request.body.action",
     }),
@@ -17,13 +17,13 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "prod",
     properties: ({}) => ({
       DefaultRouteSettings: {
         DataTraceEnabled: false,
         LoggingLevel: "OFF",
       },
       Description: "Prod Stage",
+      StageName: "prod",
     }),
     dependencies: ({}) => ({
       api: "sam-app",

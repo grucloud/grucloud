@@ -10,21 +10,10 @@ Manages an [Api Gateway V2 Authorizer](https://console.aws.amazon.com/apigateway
 ```js
 exports.createResources = () => [
   {
-    type: "Api",
-    group: "ApiGatewayV2",
-    name: "my-api",
-    properties: ({}) => ({
-      ProtocolType: "HTTP",
-      ApiKeySelectionExpression: "$request.header.x-api-key",
-      DisableExecuteApiEndpoint: false,
-      RouteSelectionExpression: "$request.method $request.path",
-    }),
-  },
-  {
     type: "Authorizer",
     group: "ApiGatewayV2",
-    name: "authorizer-auth0",
     properties: ({}) => ({
+      Name: "authorizer-auth0",
       AuthorizerType: "JWT",
       IdentitySource: ["$request.header.Authorization"],
       JwtConfiguration: {
@@ -51,7 +40,7 @@ exports.createResources = () => [
 ## Full Examples
 
 - [Http with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/http-lambda)
-- [Authorizer with User Pool](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/cognito-httpapi)
+- [cognito-httpapi](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/cognito-httpapi)
 
 ## List
 

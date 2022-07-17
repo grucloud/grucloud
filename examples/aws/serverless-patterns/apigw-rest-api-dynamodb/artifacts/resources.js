@@ -17,6 +17,7 @@ exports.createResources = () => [
     group: "APIGateway",
     name: "ApiDynamoRestApi",
     properties: ({ config }) => ({
+      name: "ApiDynamoRestApi",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
@@ -133,9 +134,12 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "prod",
+    properties: ({}) => ({
+      stageName: "prod",
+    }),
     dependencies: ({}) => ({
       restApi: "ApiDynamoRestApi",
+      account: "default",
     }),
   },
   {

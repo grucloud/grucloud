@@ -43,6 +43,7 @@ const {
   replaceRegion,
   replaceRegionAll,
   replaceOwner,
+  replaceAccountAndRegion,
 } = require("../AwsCommon");
 
 const {
@@ -102,7 +103,7 @@ const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const {
   EC2ElasticIpAddressAssociation,
 } = require("./EC2ElasticIpAddressAssociation");
-const { EC2FlowLogs } = require("./EC2FlowLogs");
+const { EC2FlowLogs, FlowLogsDependencies } = require("./EC2FlowLogs");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
 const { EC2CustomerGateway } = require("./EC2CustomerGateway");
 const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
@@ -119,6 +120,9 @@ const {
 } = require("./EC2VpcPeeringConnectionAccepter");
 
 const { EC2TransitGateway } = require("./EC2TransitGateway");
+const {
+  EC2TransitGatewayAttachment,
+} = require("./EC2TransitGatewayAttachment");
 const {
   EC2TransitGatewayVpcAttachment,
 } = require("./EC2TransitGatewayVpcAttachment");
@@ -434,10 +438,10 @@ module.exports = pipe([
         LogFormat:
           "${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}",
       },
+      includeDefaultDependencies: true,
       omitProperties: [
         "ResourceId",
         "CreationTime",
-        "DeliverLogsPermissionArn",
         "DeliverLogsStatus",
         "DeliverLogsErrorMessage",
         "LogGroupName",
@@ -447,9 +451,7 @@ module.exports = pipe([
         "LogDestination",
       ],
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2" },
-        subnet: { type: "Subnet", group: "EC2" },
-        networkInterface: { type: "NetworkInterface", group: "EC2" },
+        ...FlowLogsDependencies,
         iamRole: { type: "Role", group: "IAM" },
         cloudWatchLogGroup: { type: "LogGroup", group: "CloudWatchLogs" },
         s3Bucket: { type: "Bucket", group: "S3" },
@@ -463,6 +465,21 @@ module.exports = pipe([
           tap((params) => {
             assert(true);
           }),
+          switchCase([
+            ({ DeliverLogsPermissionArn }) =>
+              pipe([
+                () => lives,
+                find(eq(get("id"), DeliverLogsPermissionArn)),
+              ])(),
+            omit(["DeliverLogsPermissionArn"]),
+            assign({
+              DeliverLogsPermissionArn: pipe([
+                get("DeliverLogsPermissionArn"),
+                replaceAccountAndRegion({ providerConfig, lives }),
+              ]),
+            }),
+          ]),
+
           when(
             eq(get("LogDestinationType"), "s3"),
             pipe([
@@ -1768,6 +1785,30 @@ module.exports = pipe([
             }),
           }),
         ]),
+    },
+    {
+      type: "TransitGatewayAttachment",
+      Client: EC2TransitGatewayAttachment,
+      // TODO remove this
+      //ignoreResource: () => true,
+      omitProperties: [
+        "TransitGatewayOwnerId",
+        "ResourceOwnerId",
+        "ResourceId",
+        "Association",
+        "TransitGatewayAttachmentId",
+        "TransitGatewayId",
+        "CreationTime",
+        "State",
+      ],
+      dependencies: {
+        transitGateway: {
+          type: "TransitGateway",
+          group: "EC2",
+        },
+        vpc: { type: "Vpc", group: "EC2" },
+        vpnConnection: { type: "VpnConnection", group: "EC2" },
+      },
     },
     {
       type: "TransitGatewayVpcAttachment",

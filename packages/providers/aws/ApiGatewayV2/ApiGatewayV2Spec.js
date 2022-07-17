@@ -53,12 +53,12 @@ module.exports = pipe([
         DisableExecuteApiEndpoint: false,
         RouteSelectionExpression: "$request.method $request.path",
       },
+      inferName: get("properties.Name"),
       omitProperties: [
         "ApiEndpoint",
         "ApiId",
         "CreatedDate",
         "AccessLogSettings.DestinationArn",
-        "Name",
       ],
       propertiesDefault: {
         Version: "1.0",
@@ -71,6 +71,7 @@ module.exports = pipe([
     {
       type: "Stage",
       Client: Stage,
+      inferName: get("properties.StageName"),
       propertiesDefault: {
         RouteSettings: {},
         DefaultRouteSettings: {
@@ -85,7 +86,6 @@ module.exports = pipe([
         "AccessLogSettings.DestinationArn",
         "LastDeploymentStatusMessage",
         "ApiId",
-        "StageName",
       ],
       filterLive: () => pipe([omitIfEmpty(["StageVariables"])]),
       dependencies: {
@@ -96,10 +96,12 @@ module.exports = pipe([
     {
       type: "Authorizer",
       Client: Authorizer,
+      inferName: get("properties.Name"),
       omitProperties: ["AuthorizerId", "ApiName"],
       filterLive: () =>
         pipe([
           pick([
+            "Name",
             "AuthorizerType",
             "IdentitySource",
             "AuthorizerPayloadFormatVersion",

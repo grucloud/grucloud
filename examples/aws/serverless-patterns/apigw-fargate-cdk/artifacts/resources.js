@@ -6,18 +6,18 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "ApigwFargate",
     properties: ({}) => ({
       Description:
         "Integration between apigw and Application Load-Balanced Fargate Service",
+      Name: "ApigwFargate",
     }),
   },
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "$default",
     properties: ({}) => ({
       AutoDeploy: true,
+      StageName: "$default",
     }),
     dependencies: ({}) => ({
       api: "ApigwFargate",

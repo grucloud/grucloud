@@ -923,6 +923,7 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
                   or([
                     isAwsError("InvalidParameterValue"),
                     isAwsError("OperationNotPermitted"),
+                    isAwsError("InvalidNetworkInterface.InUse"),
                   ]),
                   () => true,
                   () => false,

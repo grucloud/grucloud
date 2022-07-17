@@ -114,7 +114,9 @@ exports.createResources = () => [
   {
     type: "HostedZone",
     group: "Route53",
-    name: "cloudfront.aws.test.grucloud.org.",
+    properties: ({}) => ({
+      Name: "cloudfront.aws.test.grucloud.org.",
+    }),
     dependencies: ({}) => ({
       domain: "grucloud.org",
     }),

@@ -12,7 +12,7 @@ skinparam monochrome true
 ++++ RouteTableAssociation (2)
 ++++ Route (2)
 ++++ SecurityGroup (1)
-+++ ELBv2
++++ ElasticLoadBalancingV2
 ++++ LoadBalancer (1)
 ++++ TargetGroup (1)
 ++++ Listener (1)

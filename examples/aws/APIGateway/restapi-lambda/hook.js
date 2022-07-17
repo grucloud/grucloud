@@ -25,7 +25,7 @@ module.exports = ({ provider }) => {
         get("results"),
         find(eq(get("groupType"), "APIGateway::Stage")),
         get("resources"),
-        find(eq(get("name"), "dev")),
+        find(eq(get("live.stageName"), "dev")),
         get("live"),
       ]),
       actions: [

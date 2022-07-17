@@ -35,6 +35,8 @@ exports.createResources = () => [
 
 ## Used By
 
+- [Lambda EventSourceMapping](../Lambda/EventSourceMapping.md)
+
 ## List
 
 ```sh

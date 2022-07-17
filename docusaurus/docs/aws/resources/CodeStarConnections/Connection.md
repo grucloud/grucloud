@@ -22,8 +22,6 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [CodeStarConnections Host](./Host.md)
-
 ## Used By
 
 - [CodePipeline Pipeline](../CodePipeline/Pipeline.md)

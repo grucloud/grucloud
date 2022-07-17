@@ -69,6 +69,7 @@ const createModel = ({ config }) => ({
   },
   destroy: {
     method: "deleteTransitGateway",
+    shouldRetryOnExceptionMessages: ["has non-deleted VPN Attachments"],
     isInstanceDown,
     pickId: pipe([
       tap(({ TransitGatewayId }) => {
@@ -81,9 +82,6 @@ const createModel = ({ config }) => ({
 });
 
 const findId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   get("live.TransitGatewayId"),
   tap((TransitGatewayId) => {
     assert(TransitGatewayId);

@@ -807,7 +807,12 @@ const hasResourceInDependency = (resource) =>
       assert(resource);
       assert(resource.id);
       assert(resourceIn.id);
-      //console.log("resource", resource.id, resourceIn.id);
+      // console.log(
+      //   "resource",
+      //   resource.name,
+      //   resource.id,
+      //   resourceIn.name,
+      //   resourceIn.id
     }),
     get("dependencies"),
     find(
@@ -883,6 +888,7 @@ const findUsedBy =
       }),
       () => lives,
       filter(hasResourceInDependency(resource)),
+      filter(not(eq(get("id"), resource.id))),
       tap((params) => {
         assert(true);
       }),

@@ -66,8 +66,6 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const octalReplace = pipe([callProp("replaceAll", "\\052", "*")]);
 
-//Check for the final dot
-const findName = get("live.Name");
 const findId = pipe([get("live.Id"), hostedZoneIdToResourceId]);
 const pickId = pick(["Id"]);
 
@@ -100,6 +98,9 @@ exports.Route53HostedZone = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(route53);
   const { providerName } = config;
 
+  //Check for the final dot
+  const findName = get("live.Name");
+
   const findDependencies = ({ live, lives }) => [
     {
       type: "Domain",
@@ -131,7 +132,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
             group: "Route53",
             providerName,
           }),
-        filter(not(eq(get("name"), live.Name))),
+        filter(not(eq(get("live.Name"), live.Name))),
         filter(
           pipe([
             get("live.RecordSet"),
@@ -193,6 +194,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
             get("ResourceTagSet.Tags"),
           ]),
         }),
+        ({ Config, ...other }) => ({ ...other, HostedZoneConfig: Config }),
       ]),
     // When at least one of the hosted zone is private:
     //   Get the list of VPCs
@@ -205,7 +207,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
         pipe([
           () => hostedZones,
           when(
-            any(get("Config.PrivateZone")),
+            any(get("HostedZoneConfig.PrivateZone")),
             pipe([
               () =>
                 lives.getByType({
@@ -294,23 +296,6 @@ exports.Route53HostedZone = ({ spec, config }) => {
           route53().changeTagsForResource,
         ])
       ),
-      // tap(({ HostedZone }) =>
-      //   pipe([
-      //     () => payload.RecordSet,
-      //     map((ResourceRecordSet) => ({
-      //       Action: "CREATE",
-      //       ResourceRecordSet,
-      //     })),
-      //     tap.if(not(isEmpty), (Changes) =>
-      //       route53().changeResourceRecordSets({
-      //         HostedZoneId: HostedZone.Id,
-      //         ChangeBatch: {
-      //           Changes,
-      //         },
-      //       })
-      //     ),
-      //   ])()
-      // ),
       tap.if(
         ({ DelegationSet }) =>
           domain &&
@@ -397,7 +382,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
   const destroy = client.destroy({
     pickId,
-    preDestroy: ({ live, name }) =>
+    preDestroy: ({ live }) =>
       pipe([
         () => live,
         ({ Id: HostedZoneId }) =>
@@ -410,7 +395,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
             tap((ResourceRecordSet) => {
               logger.debug(`destroy ${tos(ResourceRecordSet)}`);
             }),
-            filter(canDeleteRecord(name)),
+            filter(canDeleteRecord(live.Name)),
             map((ResourceRecordSet) => ({
               Action: "DELETE",
               ResourceRecordSet: filterEmptyResourceRecords(ResourceRecordSet),
@@ -434,18 +419,39 @@ exports.Route53HostedZone = ({ spec, config }) => {
     config,
   });
 
-  const update = ({ name, live, diff }) =>
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#updateHostedZoneComment-property
+  const update = ({ name, payload, live, diff }) =>
     pipe([
       tap(() => {
         logger.info(`update hosted zone ${name}, diff: ${tos(diff)}`);
         assert(name, "name");
         assert(live, "live");
         assert(diff, "diff");
-        assert(diff.needUpdate, "diff.needUpate");
-        assert(diff.deletions, "diff.deletions");
+        //assert(diff.needUpdate, "diff.needUpate");
+        //assert(diff.deletions, "diff.deletions");
       }),
-      switchCase([
-        () => diff.needUpdateRecordSet,
+      () => diff,
+      tap.if(
+        get("liveDiff.updated.HostedZoneConfig.Comment"),
+        pipe([
+          tap((params) => {
+            assert(live.Id);
+          }),
+          () => live,
+          get("Id"),
+          hostedZoneIdToResourceId,
+          (Id) => ({ Id, Comment: payload.HostedZoneConfig.Comment }),
+          tap((params) => {
+            assert(params);
+          }),
+          route53().updateHostedZoneComment,
+          tap((params) => {
+            assert(params);
+          }),
+        ])
+      ),
+      tap.if(
+        get("needUpdateRecordSet"),
         tryCatch(
           pipe([
             () =>
@@ -473,8 +479,11 @@ exports.Route53HostedZone = ({ spec, config }) => {
             //TODO axios here ?
             throw axiosErrorToJSON(error);
           }
-        ),
-      ]),
+        )
+      ),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
   const configDefault = ({

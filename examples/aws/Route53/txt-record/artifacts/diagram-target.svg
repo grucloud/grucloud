@@ -42,16 +42,16 @@
 <path fill="none" stroke="#707070" d="M520.21,-100C528.56,-100 537.09,-100 545.62,-100"/>
 <polygon fill="#707070" stroke="#707070" points="545.63,-103.5 555.63,-100 545.63,-96.5 545.63,-103.5"/>
 </g>
-<!-- Record::record::gcrun.grucloud.org.::TXT -->
+<!-- Record::record::TXT::gcrun.grucloud.org. -->
 <g id="node2" class="node">
-<title>Record::record::gcrun.grucloud.org.::TXT</title>
+<title>Record::record::TXT::gcrun.grucloud.org.</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="294,-129 24,-129 24,-71 294,-71 294,-129"/>
 <text text-anchor="start" x="36" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
-<text text-anchor="start" x="36" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">record::gcrun.grucloud.org.::TXT...</text>
+<text text-anchor="start" x="36" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">record::TXT::gcrun.grucloud.org....</text>
 </g>
-<!-- Record::record::gcrun.grucloud.org.::TXT&#45;&gt;HostedZone::grucloud.org. -->
+<!-- Record::record::TXT::gcrun.grucloud.org.&#45;&gt;HostedZone::grucloud.org. -->
 <g id="edge2" class="edge">
-<title>Record::record::gcrun.grucloud.org.::TXT&#45;&gt;HostedZone::grucloud.org.</title>
+<title>Record::record::TXT::gcrun.grucloud.org.&#45;&gt;HostedZone::grucloud.org.</title>
 <path fill="none" stroke="#707070" d="M294.32,-100C302.83,-100 311.33,-100 319.68,-100"/>
 <polygon fill="#707070" stroke="#707070" points="319.77,-103.5 329.77,-100 319.77,-96.5 319.77,-103.5"/>
 </g>

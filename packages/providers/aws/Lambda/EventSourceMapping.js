@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, callProp, last } = require("rubico/x");
+const { defaultsDeep, callProp, last, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -34,8 +34,6 @@ exports.EventSourceMapping = ({ spec, config }) => {
 
   /*
   Amazon DynamoDB Streams
-Amazon Kinesis
-Amazon SQS
 Amazon MQ and RabbitMQ
 Amazon MSK
 Apache Kafka
@@ -69,6 +67,22 @@ Apache Kafka
               id: live.EventSourceArn,
               type: "Queue",
               group: "SQS",
+            }),
+          get("id"),
+        ])(),
+      ],
+    },
+    {
+      type: "Stream",
+      group: "Kinesis",
+      ids: [
+        pipe([
+          () =>
+            lives.getById({
+              providerName: config.providerName,
+              id: live.EventSourceArn,
+              type: "Stream",
+              group: "Kinesis",
             }),
           get("id"),
         ])(),
@@ -121,7 +135,6 @@ Apache Kafka
   TODO
 Amazon DynamoDB Streams
 Amazon Kinesis
-Amazon SQS
 Amazon MQ and RabbitMQ
 Amazon MSK
 Apache Kafka
@@ -130,7 +143,7 @@ Apache Kafka
     name,
     namespace,
     properties,
-    dependencies: { lambdaFunction, sqsQueue },
+    dependencies: { lambdaFunction, sqsQueue, kinesisStream },
   }) =>
     pipe([
       tap(() => {
@@ -139,10 +152,19 @@ Apache Kafka
       () => properties,
       defaultsDeep({
         FunctionName: getField(lambdaFunction, "Configuration.FunctionName"),
-        ...(sqsQueue && {
-          EventSourceArn: getField(sqsQueue, "Attributes.QueueArn"),
-        }),
       }),
+      when(
+        () => sqsQueue,
+        defaultsDeep({
+          EventSourceArn: getField(sqsQueue, "Attributes.QueueArn"),
+        })
+      ),
+      when(
+        () => kinesisStream,
+        defaultsDeep({
+          EventSourceArn: getField(kinesisStream, "StreamARN"),
+        })
+      ),
       tap((params) => {
         assert(true);
       }),

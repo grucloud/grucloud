@@ -62,9 +62,9 @@ const pickId = pipe([
 ]);
 
 exports.RestApi = ({ spec, config }) => {
-  const apiGateway = createAPIGateway(config);
+  const endpoint = createAPIGateway(config);
 
-  const client = AwsClient({ spec, config })(apiGateway);
+  const client = AwsClient({ spec, config })(endpoint);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -511,7 +511,7 @@ exports.RestApi = ({ spec, config }) => {
     fork({
       resources: pipe([
         () => ({ restApiId }),
-        apiGateway().getResources,
+        endpoint().getResources,
         get("items"),
         callProp("sort", (a, b) => a.path.localeCompare(b.path)),
         map(
@@ -527,7 +527,7 @@ exports.RestApi = ({ spec, config }) => {
                         resourceId,
                         httpMethod,
                       }),
-                      apiGateway().getMethod,
+                      endpoint().getMethod,
                       tap((params) => {
                         assert(true);
                       }),
@@ -545,7 +545,7 @@ exports.RestApi = ({ spec, config }) => {
       ]),
       models: pipe([
         () => ({ restApiId }),
-        apiGateway().getModels,
+        endpoint().getModels,
         get("items"),
         callProp("sort", (a, b) => a.name.localeCompare(b.name)),
       ]),
@@ -560,7 +560,7 @@ exports.RestApi = ({ spec, config }) => {
         deployments: ({ id: restApiId }) =>
           pipe([
             () => ({ restApiId }),
-            apiGateway().getDeployments,
+            endpoint().getDeployments,
             get("items"),
             tap((deployments) => {
               logger.debug(`restApi #deployments ${size(deployments)}`);
@@ -621,7 +621,7 @@ exports.RestApi = ({ spec, config }) => {
         }),
         JSON.stringify,
         (body) => ({ body, restApiId: id, mode: "overwrite" }),
-        apiGateway().putRestApi,
+        endpoint().putRestApi,
       ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createRestApi-property
@@ -634,7 +634,7 @@ exports.RestApi = ({ spec, config }) => {
         tap(putRestApi(params)),
         ({ id }) => ({ restApiId: id, ...params.deployment }),
         omit(["stageName"]),
-        apiGateway().createDeployment,
+        endpoint().createDeployment,
       ]),
   });
 
@@ -656,7 +656,7 @@ exports.RestApi = ({ spec, config }) => {
             tap(() => {
               logger.info(`createDeployment ${name}`);
             }),
-            apiGateway().createDeployment,
+            endpoint().createDeployment,
           ])
         ),
       ]),
@@ -707,8 +707,10 @@ exports.RestApi = ({ spec, config }) => {
       }),
     ])();
 
-  const buildResourceArn = ({ id }) =>
-    `arn:aws:apigateway:${config.region}::/restapis/${id}`;
+  const buildResourceArn =
+    ({ config }) =>
+    ({ id }) =>
+      `arn:aws:apigateway:${config.region}::/restapis/${id}`;
 
   return {
     spec,
@@ -722,7 +724,11 @@ exports.RestApi = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    tagResource: tagResource({ apiGateway, buildResourceArn }),
-    untagResource: untagResource({ apiGateway, buildResourceArn }),
+    tagResource: tagResource({
+      buildResourceArn: buildResourceArn({ config }),
+    })({ endpoint }),
+    untagResource: untagResource({
+      buildResourceArn: buildResourceArn({ config }),
+    })({ endpoint }),
   };
 };

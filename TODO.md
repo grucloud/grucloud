@@ -3,8 +3,7 @@
 - check stage for all providers
 
 ## Aws
-
-- HostedZone Config Comment
+-  stage name prefix with rest api
 - PrincipalAssociation replace associatedEntity from config
 
 - ipamPoolIpv6
@@ -13,20 +12,20 @@
 
 omit AWSLogs S3 Objects
 
-- substitute zone, not ${region}/b
-
-- gc gencode lambda with java.
 - AWS::AmazonMQ::Broker
-- AWS::Pinpoint::App
-- AWS::RUM::AppMonitor
 - AWS::Cognito::IdentityPool
 - AWS::Cognito::IdentityPoolRoleAttachment
 - AWS::CloudFront::CachePolicy
-- AWS::ApiGateway::UsagePlan
 - AWS::CloudWatch::Dashboard
 - AWS::Events::Endpoint
 - aws_route53_delegation_set
+- CodeStarConnections Host
 - createOrganizationalUnit
+Lambda EventSourceMapping: 
+- Amazon DynamoDB Streams
+- Amazon MQ and RabbitMQ
+- Amazon MSK
+- Apache Kafka
 
 - apprunner example npm test
 - inferName Lambda layer

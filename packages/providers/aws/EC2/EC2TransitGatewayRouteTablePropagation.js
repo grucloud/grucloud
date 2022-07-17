@@ -8,8 +8,7 @@ const { createAwsResource } = require("../AwsClient");
 const { isAwsError } = require("../AwsCommon");
 
 const {
-  findDependenciesVpcAttachment,
-  findDependenciesPeeringAttachment,
+  findDependenciesTgwAttachment,
   findNameRouteTableArm,
 } = require("./EC2TransitGatewayCommon");
 
@@ -62,8 +61,7 @@ exports.EC2TransitGatewayRouteTablePropagation = ({ spec, config }) =>
         group: "EC2",
         ids: [live.TransitGatewayRouteTableId],
       },
-      findDependenciesVpcAttachment({ live, lives, config }),
-      findDependenciesPeeringAttachment({ live, lives, config }),
+      findDependenciesTgwAttachment({ live, lives, config }),
     ],
     findName: findNameRouteTableArm({
       prefix: "tgw-rtb-propagation",
@@ -88,7 +86,11 @@ exports.EC2TransitGatewayRouteTablePropagation = ({ spec, config }) =>
       name,
       namespace,
       properties,
-      dependencies: { transitGatewayRouteTable, transitGatewayVpcAttachment },
+      dependencies: {
+        transitGatewayRouteTable,
+        transitGatewayVpcAttachment,
+        transitGatewayAttachment,
+      },
     }) =>
       pipe([
         tap((params) => {
@@ -101,11 +103,19 @@ exports.EC2TransitGatewayRouteTablePropagation = ({ spec, config }) =>
             "TransitGatewayRouteTableId"
           ),
         }),
+        //TODO common with route and route table association
         switchCase([
           () => transitGatewayVpcAttachment,
           defaultsDeep({
             TransitGatewayAttachmentId: getField(
               transitGatewayVpcAttachment,
+              "TransitGatewayAttachmentId"
+            ),
+          }),
+          () => transitGatewayAttachment,
+          defaultsDeep({
+            TransitGatewayAttachmentId: getField(
+              transitGatewayAttachment,
               "TransitGatewayAttachmentId"
             ),
           }),

@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "API Gateway HTTP API to EventBridge",
     properties: ({}) => ({
+      Name: "API Gateway HTTP API to EventBridge",
       Tags: {
         "httpapi:createdBy": "SAM",
       },
@@ -16,9 +16,9 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "$default",
     properties: ({}) => ({
       AutoDeploy: true,
+      StageName: "$default",
       Tags: {
         "httpapi:createdBy": "SAM",
       },

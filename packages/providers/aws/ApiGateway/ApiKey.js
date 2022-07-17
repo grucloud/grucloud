@@ -16,11 +16,13 @@ const pickId = ({ id }) => ({ apiKey: id });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
 exports.ApiKey = ({ spec, config }) => {
-  const apiGateway = createAPIGateway(config);
-  const client = AwsClient({ spec, config })(apiGateway);
+  const endpoint = createAPIGateway(config);
+  const client = AwsClient({ spec, config })(endpoint);
 
-  const buildResourceArn = ({ id }) =>
-    `arn:aws:apigateway:${config.region}::/apikeys/${id}`;
+  const buildResourceArn =
+    ({ config }) =>
+    ({ id }) =>
+      `arn:aws:apigateway:${config.region}::/apikeys/${id}`;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getApiKey-property
   const getById = client.getById({
@@ -87,7 +89,11 @@ exports.ApiKey = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    tagResource: tagResource({ apiGateway, buildResourceArn }),
-    untagResource: untagResource({ apiGateway, buildResourceArn }),
+    tagResource: tagResource({
+      buildResourceArn: buildResourceArn({ config }),
+    })({ endpoint }),
+    untagResource: untagResource({
+      buildResourceArn: buildResourceArn({ config }),
+    })({ endpoint }),
   };
 };

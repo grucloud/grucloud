@@ -4,9 +4,10 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
-++++ Vpc (1)
+++++ Vpc (2)
 +++ Route53
 ++++ HostedZone (1)
+++++ ZoneVpcAssociation (1)
 +++ Route53Domains
 ++++ Domain (1)
 @endmindmap

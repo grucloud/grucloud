@@ -1,5 +1,5 @@
 @startmindmap
-title Resources for project wafv2-simple
+title Resources for project wafv2-apigateway-rest
 skinparam monochrome true
 + Infra
 ++ aws
@@ -7,7 +7,7 @@ skinparam monochrome true
 ++++ Account (1)
 ++++ ApiKey (1)
 ++++ RestApi (1)
-++++ Stage (2)
+++++ Stage (1)
 +++ CloudWatchLogs
 ++++ LogGroup (1)
 +++ IAM

@@ -48,7 +48,7 @@ exports.createResources = () => [
 gc l -t TransitGatewayVpcAttachment
 ```
 
-```sh
+```txt
 Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising

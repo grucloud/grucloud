@@ -6,21 +6,21 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "sam-app",
     properties: ({}) => ({
       CorsConfiguration: {
         AllowMethods: ["GET"],
         AllowOrigins: ["https://myapp.com"],
       },
       Description: "Cognito to HTTP API demo",
+      Name: "sam-app",
     }),
   },
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "$default",
     properties: ({}) => ({
       AutoDeploy: true,
+      StageName: "$default",
     }),
     dependencies: ({}) => ({
       api: "sam-app",
@@ -29,8 +29,8 @@ exports.createResources = () => [
   {
     type: "Authorizer",
     group: "ApiGatewayV2",
-    name: "OAuth2Authorizer",
     properties: ({}) => ({
+      Name: "OAuth2Authorizer",
       AuthorizerType: "JWT",
       IdentitySource: ["$request.header.Authorization"],
       JwtConfiguration: {

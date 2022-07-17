@@ -2,6 +2,7 @@ const { map, pipe, tap, tryCatch } = require("rubico");
 const assert = require("assert");
 const npath = require("path");
 const fs = require("fs");
+const util = require("util");
 const logger = require("./logger")({ prefix: "ConfigLoader" });
 
 const checkFileExist = (fileName) => {
@@ -16,7 +17,11 @@ const configFromDefault = ({ configDir }) =>
   pipe([
     () => npath.join(configDir, "config.js"),
     tryCatch(pipe([tap(checkFileExist), require]), (error) => {
-      logger.error(`configFromDefault error loading config: ${error}`);
+      logger.error(
+        `configFromDefault error loading config: configDir: ${configDir}, error: ${util.inspect(
+          error
+        )}`
+      );
     }),
   ])();
 

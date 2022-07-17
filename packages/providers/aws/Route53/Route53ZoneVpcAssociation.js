@@ -29,7 +29,12 @@ const createModel = ({ config }) => ({
   package: "route-53",
   client: "Route53",
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#associateVPCWithHostedZone-property
-  create: { method: "associateVPCWithHostedZone" },
+  create: {
+    method: "associateVPCWithHostedZone",
+    shouldRetryOnExceptionMessages: [
+      "because no resource-based policy allows the route53:AssociateVPCWithHostedZone action",
+    ],
+  },
   destroy: {
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#disassociateVPCFromHostedZone-property
     method: "disassociateVPCFromHostedZone",

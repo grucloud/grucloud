@@ -53,7 +53,9 @@ exports.createResources = () => [
   {
     type: "HostedZone",
     group: "Route53",
-    name: "vpce.grucloud.org.",
+    properties: ({}) => ({
+      Name: "vpce.grucloud.org.",
+    }),
     dependencies: ({}) => ({
       domain: "grucloud.org",
       vpc: "vpc-4-record-vpc-endpoint",

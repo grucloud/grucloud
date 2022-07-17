@@ -87,7 +87,8 @@ exports.createResources = () => [
       `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.101.128.0/20",
+      NewBits: 4,
+      NetworkNumber: 8,
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -100,7 +101,8 @@ exports.createResources = () => [
       `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.101.144.0/20",
+      NewBits: 4,
+      NetworkNumber: 9,
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -113,7 +115,8 @@ exports.createResources = () => [
       `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
-      CidrBlock: "10.101.160.0/20",
+      NewBits: 4,
+      NetworkNumber: 10,
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -126,8 +129,9 @@ exports.createResources = () => [
       `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.101.0.0/20",
       MapPublicIpOnLaunch: true,
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -140,8 +144,9 @@ exports.createResources = () => [
       `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "10.101.16.0/20",
       MapPublicIpOnLaunch: true,
+      NewBits: 4,
+      NetworkNumber: 1,
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
@@ -154,8 +159,9 @@ exports.createResources = () => [
       `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}d`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
-      CidrBlock: "10.101.32.0/20",
       MapPublicIpOnLaunch: true,
+      NewBits: 4,
+      NetworkNumber: 2,
     }),
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,

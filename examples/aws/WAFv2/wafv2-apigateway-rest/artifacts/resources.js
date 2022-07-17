@@ -11,12 +11,20 @@ exports.createResources = () => [
       cloudwatchRole: "roleApiGatewayCloudWatch",
     }),
   },
-  { type: "ApiKey", group: "APIGateway", name: "my-key" },
+  {
+    type: "ApiKey",
+    group: "APIGateway",
+    name: "my-key",
+    properties: ({}) => ({
+      name: "my-key",
+    }),
+  },
   {
     type: "RestApi",
     group: "APIGateway",
     name: "PetStore",
     properties: ({ config }) => ({
+      name: "PetStore",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["REGIONAL"],
@@ -405,8 +413,8 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "dev",
     properties: ({}) => ({
+      stageName: "dev",
       description: "dev",
       methodSettings: {
         "*/*": {
@@ -429,17 +437,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       restApi: "PetStore",
-    }),
-  },
-  {
-    type: "Stage",
-    group: "APIGateway",
-    name: "prod",
-    properties: ({}) => ({
-      description: "prod",
-    }),
-    dependencies: ({}) => ({
-      restApi: "PetStore",
+      account: "default",
     }),
   },
   { type: "LogGroup", group: "CloudWatchLogs", name: "restapi" },
@@ -513,7 +511,7 @@ exports.createResources = () => [
     group: "WAFv2",
     dependencies: ({}) => ({
       webAcl: "my-webacl",
-      apiGatewayStage: "dev",
+      apiGatewayStage: "PetStore::dev",
     }),
   },
 ];

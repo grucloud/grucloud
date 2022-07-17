@@ -114,6 +114,7 @@ exports.createResources = () => [
 - [EC2](./Instance.md)
 - [RouteTableAssociation](./RouteTableAssociation.md)
 - [NatGateway](./NatGateway.md)
+- [Flow Logs](./FlowLogs.md)
 
 ## Listing
 

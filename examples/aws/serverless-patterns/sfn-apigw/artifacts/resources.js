@@ -8,6 +8,7 @@ exports.createResources = () => [
     group: "APIGateway",
     name: "sam-app",
     properties: ({ config }) => ({
+      name: "sam-app",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
@@ -47,7 +48,9 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "Prod",
+    properties: ({}) => ({
+      stageName: "Prod",
+    }),
     dependencies: ({}) => ({
       restApi: "sam-app",
     }),
@@ -55,7 +58,9 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "Stage",
+    properties: ({}) => ({
+      stageName: "Stage",
+    }),
     dependencies: ({}) => ({
       restApi: "sam-app",
     }),

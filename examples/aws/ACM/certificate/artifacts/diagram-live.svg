@@ -68,29 +68,29 @@
 <path fill="none" stroke="#707070" d="M272.05,-222.94C282.85,-219.94 293.65,-216.93 304,-214 312.56,-211.58 321.42,-209.05 330.32,-206.48"/>
 <polygon fill="#707070" stroke="#707070" points="331.34,-209.83 339.97,-203.7 329.4,-203.11 331.34,-209.83"/>
 </g>
-<!-- Record::::record::grucloud.org.::NS -->
+<!-- Record::::record::NS::grucloud.org. -->
 <g id="node4" class="node">
-<title>Record::::record::grucloud.org.::NS</title>
+<title>Record::::record::NS::grucloud.org.</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="266.5,-205 61.5,-205 61.5,-147 266.5,-147 266.5,-205"/>
 <text text-anchor="start" x="74" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
-<text text-anchor="start" x="74" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">record::grucloud.org.::NS</text>
+<text text-anchor="start" x="74" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">record::NS::grucloud.org.</text>
 </g>
-<!-- Record::::record::grucloud.org.::NS&#45;&gt;HostedZone::::grucloud.org. -->
+<!-- Record::::record::NS::grucloud.org.&#45;&gt;HostedZone::::grucloud.org. -->
 <g id="edge4" class="edge">
-<title>Record::::record::grucloud.org.::NS&#45;&gt;HostedZone::::grucloud.org.</title>
+<title>Record::::record::NS::grucloud.org.&#45;&gt;HostedZone::::grucloud.org.</title>
 <path fill="none" stroke="#707070" d="M266.7,-176C287.28,-176 308.96,-176 329.64,-176"/>
 <polygon fill="#707070" stroke="#707070" points="329.7,-179.5 339.7,-176 329.7,-172.5 329.7,-179.5"/>
 </g>
-<!-- Record::::record::grucloud.org.::SOA -->
+<!-- Record::::record::SOA::grucloud.org. -->
 <g id="node5" class="node">
-<title>Record::::record::grucloud.org.::SOA</title>
+<title>Record::::record::SOA::grucloud.org.</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="272.5,-129 55.5,-129 55.5,-71 272.5,-71 272.5,-129"/>
 <text text-anchor="start" x="68" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route53::Record</text>
-<text text-anchor="start" x="68" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">record::grucloud.org.::SOA</text>
+<text text-anchor="start" x="68" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">record::SOA::grucloud.org.</text>
 </g>
-<!-- Record::::record::grucloud.org.::SOA&#45;&gt;HostedZone::::grucloud.org. -->
+<!-- Record::::record::SOA::grucloud.org.&#45;&gt;HostedZone::::grucloud.org. -->
 <g id="edge5" class="edge">
-<title>Record::::record::grucloud.org.::SOA&#45;&gt;HostedZone::::grucloud.org.</title>
+<title>Record::::record::SOA::grucloud.org.&#45;&gt;HostedZone::::grucloud.org.</title>
 <path fill="none" stroke="#707070" d="M272.05,-129.06C282.85,-132.06 293.65,-135.07 304,-138 312.56,-140.42 321.42,-142.95 330.32,-145.52"/>
 <polygon fill="#707070" stroke="#707070" points="329.4,-148.89 339.97,-148.3 331.34,-142.17 329.4,-148.89"/>
 </g>

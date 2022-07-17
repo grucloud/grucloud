@@ -29,6 +29,7 @@ const {
   isOurMinion,
   compareAws,
   replaceAccountAndRegion,
+  replaceRegion,
 } = require("../AwsCommon");
 const { Route53HostedZone } = require("./Route53HostedZone");
 const { Route53ZoneVpcAssociation } = require("./Route53ZoneVpcAssociation");
@@ -42,6 +43,11 @@ const defaultsDeep = require("rubico/x/defaultsDeep");
 const GROUP = "Route53";
 
 const compareRoute53 = compareAws({});
+
+const omitHostedZoneConfigComment = pipe([
+  omitIfEmpty(["HostedZoneConfig.Comment"]),
+  omitIfEmpty(["HostedZoneConfig"]),
+]);
 
 module.exports = pipe([
   () => [
@@ -129,14 +135,20 @@ module.exports = pipe([
       },
       Client: Route53HostedZone,
       compare: compareRoute53({
-        filterTarget: () => pipe([() => ({})]),
-        filterLive: () => pipe([() => ({})]),
+        filterAll: () =>
+          pipe([
+            pick(["HostedZoneConfig.Comment"]),
+            omitHostedZoneConfigComment,
+          ]),
       }),
-      filterLive: ({ providerConfig }) =>
+      inferName: get("properties.Name"),
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
-          pick(["Config.Comment"]),
-          omitIfEmpty(["Config.Comment"]),
-          omitIfEmpty(["Config"]),
+          pick(["Name", "HostedZoneConfig.Comment"]),
+          omitHostedZoneConfigComment,
+          assign({
+            Name: pipe([get("Name"), replaceRegion({ lives, providerConfig })]),
+          }),
         ]),
       includeDefaultDependencies: true,
     },

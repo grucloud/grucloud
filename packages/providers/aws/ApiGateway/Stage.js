@@ -1,6 +1,13 @@
 const assert = require("assert");
-const { map, pipe, tap, get, pick, omit } = require("rubico");
-const { defaultsDeep, values, flatten, when, isEmpty } = require("rubico/x");
+const { map, pipe, tap, get, pick, omit, assign } = require("rubico");
+const {
+  defaultsDeep,
+  values,
+  flatten,
+  when,
+  isEmpty,
+  append,
+} = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -16,6 +23,7 @@ const {
 const translatePropertyMap = {
   metricsEnabled: "metrics/enabled",
   dataTraceEnabled: "logging/dataTrace",
+  loggingLevel: "logging/loglevel",
   throttlingBurstLimit: "throttling/burstLimit",
   throttlingRateLimit: "throttling/rateLimit",
   cachingEnabled: "caching/enabled",
@@ -30,20 +38,46 @@ const translateProperty = (property) =>
   pipe([() => translatePropertyMap[property], when(isEmpty, () => property)])();
 
 exports.Stage = ({ spec, config }) => {
-  const apiGateway = createAPIGateway(config);
-  const client = AwsClient({ spec, config })(apiGateway);
+  const endpoint = createAPIGateway(config);
+  const client = AwsClient({ spec, config })(endpoint);
 
-  const buildResourceArn = ({ restApiId, stageName }) =>
-    `arn:aws:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`;
+  const buildResourceArn =
+    ({ config }) =>
+    ({ restApiId, stageName }) =>
+      `arn:aws:apigateway:${config.region}::/restapis/${restApiId}/stages/${stageName}`;
 
-  const findId = pipe([get("live"), buildResourceArn]);
-  const findName = get("live.stageName");
+  const findId = pipe([get("live"), buildResourceArn({ config })]);
+
+  const findName = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(live.restApiId);
+        assert(live.stageName);
+      }),
+      () =>
+        lives.getById({
+          id: live.restApiId,
+          type: "RestApi",
+          group: "APIGateway",
+          providerName: config.providerName,
+        }),
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+      append(`::${live.stageName}`),
+    ])();
 
   const pickId = pick(["restApiId", "stageName"]);
 
   // Find dependencies for APIGateway::Stage
   const findDependencies = ({ live, lives }) => [
     findDependenciesRestApi({ live }),
+    {
+      type: "Account",
+      group: "APIGateway",
+      ids: ["default"],
+    },
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getStage-property
@@ -61,8 +95,8 @@ exports.Stage = ({ spec, config }) => {
     // All other apis have 'items'
     getParam: "item",
     config,
-    decorate: ({ lives, parent: { id: restApiId, Tags } }) =>
-      defaultsDeep({ restApiId, Tags }),
+    decorate: ({ lives, parent: { id: restApiId, name: restApiName, Tags } }) =>
+      defaultsDeep({ restApiId, restApiName, Tags }),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -80,12 +114,34 @@ exports.Stage = ({ spec, config }) => {
       }),
       () => otherProps,
       defaultsDeep({
-        stageName: name,
         restApiId: getField(restApi, "id"),
         deploymentId: getField(restApi, "deployments[0].id"),
         tags: buildTagsObject({ config, namespace, userTags: tags }),
       }),
     ])();
+
+  const createPatchOperations = pipe([
+    get("methodSettings", {}),
+    map.entries(([path, settings]) => [
+      path,
+      pipe([
+        () => settings,
+        map.entries(([key, value]) => [
+          key,
+          pipe([
+            () => ({
+              op: "replace",
+              path: `/${path}/${translateProperty(key)}`,
+              value: value.toString(),
+            }),
+          ])(),
+        ]),
+        values,
+      ])(),
+    ]),
+    values,
+    flatten,
+  ]);
 
   const create = client.create({
     method: "createStage",
@@ -93,42 +149,20 @@ exports.Stage = ({ spec, config }) => {
       ({ payload }) =>
       () =>
         payload,
-    filterPayload: omit(["methodSettings"]),
+    filterPayload: omit(["methodSettings", "accessLogSettings"]),
     getById,
     postCreate:
       ({ payload, name }) =>
       ({ restApiId, stageName }) =>
         pipe([
           () => payload,
-          get("methodSettings", {}),
-          map.entries(([path, settings]) => [
-            path,
-            pipe([
-              () => settings,
-              map.entries(([key, value]) => [
-                key,
-                pipe([
-                  () => ({
-                    op: "replace",
-                    path: `/${path}/${translateProperty(key)}`,
-                    value: value.toString(),
-                  }),
-                ])(),
-              ]),
-              values,
-            ])(),
-          ]),
-          values,
-          flatten,
+          createPatchOperations,
           (patchOperations) => ({
             restApiId,
             stageName,
             patchOperations,
           }),
-          tap((params) => {
-            assert(true);
-          }),
-          apiGateway().updateStage,
+          endpoint().updateStage,
         ])(),
   });
 
@@ -137,6 +171,14 @@ exports.Stage = ({ spec, config }) => {
     pickId,
     method: "updateStage",
     getById,
+    filterParams: ({ payload, live, diff }) =>
+      pipe([
+        () => live,
+        pick(["restApiId", "stageName"]),
+        assign({
+          patchOperations: pipe([() => payload, createPatchOperations]),
+        }),
+      ])(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteStage-property
@@ -159,7 +201,11 @@ exports.Stage = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    tagResource: tagResource({ apiGateway, buildResourceArn }),
-    untagResource: untagResource({ apiGateway, buildResourceArn }),
+    tagResource: tagResource({
+      buildResourceArn: buildResourceArn({ config }),
+    })({ endpoint }),
+    untagResource: untagResource({
+      buildResourceArn: buildResourceArn({ config }),
+    })({ endpoint }),
   };
 };

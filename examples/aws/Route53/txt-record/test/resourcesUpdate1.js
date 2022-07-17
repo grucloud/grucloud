@@ -4,6 +4,7 @@ exports.createResources = () => [
     group: "Route53",
     name: "grucloud.org.",
     properties: ({}) => ({
+      Name: "grucloud.org.",
       Tags: [{ Key: "mykey1", Value: "value" }],
     }),
     dependencies: () => ({

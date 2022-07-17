@@ -10,25 +10,14 @@ Manages an [Api Gateway V2 Stage](https://console.aws.amazon.com/apigateway/main
 ```js
 exports.createResources = () => [
   {
-    type: "Api",
-    group: "ApiGatewayV2",
-    name: "my-api",
-    properties: ({}) => ({
-      ProtocolType: "HTTP",
-      ApiKeySelectionExpression: "$request.header.x-api-key",
-      DisableExecuteApiEndpoint: false,
-      RouteSelectionExpression: "$request.method $request.path",
-    }),
-  },
-  {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "my-api-stage-dev",
     properties: ({}) => ({
       AccessLogSettings: {
         Format:
           '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
       },
+      StageName: "my-api-stage-dev",
     }),
     dependencies: () => ({
       api: "my-api",
@@ -55,6 +44,11 @@ exports.createResources = () => [
 ## Full Examples
 
 - [Http with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/http-lambda)
+- [apigw-fargate-cdk](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-fargate-cdk)
+- [apigw-http-api-eventbridge](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-http-api-eventbridge)
+- [apigw-vpclink-pvt-alb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-vpclink-pvt-alb)
+- [apigw-vpclink-pvt-alb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-websocket-api-lambda)
+- [cognito-httpapi](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/cognito-httpapi)
 
 ## List
 
