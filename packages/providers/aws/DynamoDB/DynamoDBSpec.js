@@ -5,7 +5,9 @@ const { isOurMinion, compareAws } = require("../AwsCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { DynamoDBTable } = require("./DynamoDBTable");
-
+const {
+  DynamoDBKinesisStreamingDestination,
+} = require("./DynamoDBKinesisStreamingDestination");
 const GROUP = "DynamoDB";
 const compareDynamoDB = compareAws({});
 
@@ -72,6 +74,22 @@ module.exports = pipe([
         kmsKey: { type: "Key", group: "KMS" },
       },
     },
+    {
+      type: "KinesisStreamingDestination",
+      Client: DynamoDBKinesisStreamingDestination,
+      omitProperties: ["TableName", "StreamArn", "DestinationStatus"],
+      inferName: pipe([
+        get("dependenciesSpec"),
+        ({ table, kinesisStream }) =>
+          `table-kinesis-stream::${table}::${kinesisStream}`,
+      ]),
+      dependencies: {
+        table: { type: "Table", group: "DynamoDB", parent: true },
+        kinesisStream: { type: "Stream", group: "Kinesis" },
+      },
+    },
   ],
-  map(defaultsDeep({ group: GROUP, isOurMinion })),
+  map(
+    defaultsDeep({ group: GROUP, isOurMinion, compare: compareDynamoDB({}) })
+  ),
 ]);

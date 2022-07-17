@@ -51,6 +51,13 @@ exports.createResources = () => [
 
 - [CreateStateMachineCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-sfn/interfaces/createstatemachinecommandinput.html)
 
+## Dependecies
+
+- [Lamda Function](../Lambda/Function.md)
+- [Glue Job](../Glue/Job.md)
+- [SQS Queues](../SQS/Queue.md)
+- [SNS Topic](../SNS/Topic.md)
+
 ## Used By
 
 - [IAM Role](../IAM/Role.md)

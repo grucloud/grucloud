@@ -75,6 +75,7 @@ const model = ({ config }) => ({
       ]),
     ]),
     isInstanceError: pipe([eq(get("Status"), "ACTION_NEEDED")]),
+    getErrorMessage: get("StatusMessage", "error"),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#updateResolverEndpoint-property
   update: {

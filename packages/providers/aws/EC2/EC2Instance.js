@@ -69,7 +69,7 @@ const configDefault =
   ({
     name,
     namespace,
-    properties: { Image, ...otherProperties },
+    properties: { Tags, Image, ...otherProperties },
     dependencies: {
       keyPair,
       subnets,
@@ -93,7 +93,7 @@ const configDefault =
             TagSpecifications: [
               {
                 ResourceType: "instance",
-                Tags: buildTags({ config, namespace, name }),
+                Tags: buildTags({ config, namespace, name, UserTags: Tags }),
               },
             ],
           }),

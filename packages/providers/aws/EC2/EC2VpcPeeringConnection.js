@@ -89,6 +89,7 @@ const createModel = ({ config }) => ({
     pickCreated: ({ payload }) => pipe([get("VpcPeeringConnection")]),
     configIsUp: { retryCount: 20 * 10, retryDelay: 5e3 },
     isInstanceError: eq(get("Status.Code"), "failed"),
+    getErrorMessage: get("Status.Message", "error"),
     isInstanceUp: pipe([
       tap(({ Status }) => {
         logger.debug(`VpcPeeringConnection State: ${JSON.stringify(Status)}`);

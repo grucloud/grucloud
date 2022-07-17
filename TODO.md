@@ -4,15 +4,11 @@
 
 ## Aws
 
-
 - HostedZone Config Comment
-- user tags for ec2 instance
 - PrincipalAssociation replace associatedEntity from config
 
 - ipamPoolIpv6
 
-- createVpcLink isInstanceUp
-- add isInstanceError for aws create, for instance in transit gateway
 - SecretsManagerResourcePolicy
 
 omit AWSLogs S3 Objects
@@ -20,9 +16,7 @@ omit AWSLogs S3 Objects
 - substitute zone, not ${region}/b
 
 - gc gencode lambda with java.
-- AWS::Glue::Job
 - AWS::AmazonMQ::Broker
-- AWS::Kinesis::Stream
 - AWS::Pinpoint::App
 - AWS::RUM::AppMonitor
 - AWS::Cognito::IdentityPool

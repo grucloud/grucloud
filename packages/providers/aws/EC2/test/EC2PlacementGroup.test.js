@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe.only("PlacementGroup", async function () {
+describe("PlacementGroup", async function () {
   let config;
   let provider;
   let placementGroup;

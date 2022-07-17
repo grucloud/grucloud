@@ -122,6 +122,7 @@ const model = ({ config }) => ({
       pipe([get("resourceShareAssociations"), first]),
     isInstanceUp: pipe([eq(get("status"), "ASSOCIATED")]),
     isInstanceError: pipe([eq(get("status"), "FAILED")]),
+    getErrorMessage: get("statusMessage", "error"),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#updateResourceShare-property
   // update: {

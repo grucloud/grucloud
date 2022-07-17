@@ -10,19 +10,8 @@ const { tagResource, untagResource } = require("./EC2Common");
 
 const { findDependenciesTransitGateway } = require("./EC2TransitGatewayCommon");
 
-const isInstanceDown = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  eq(get("State"), "deleted"),
-]);
-
-const isInstanceError = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  eq(get("State"), "failed"),
-]);
+const isInstanceDown = pipe([eq(get("State"), "deleted")]);
+const isInstanceError = pipe([eq(get("State"), "failed")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -34,9 +23,6 @@ const createModel = ({ config }) => ({
     method: "describeTransitGatewayVpcAttachments",
     getField: "TransitGatewayVpcAttachments",
     pickId: pipe([
-      tap(({ TransitGatewayAttachmentId }) => {
-        assert(TransitGatewayAttachmentId);
-      }),
       ({ TransitGatewayAttachmentId }) => ({
         TransitGatewayAttachmentIds: [TransitGatewayAttachmentId],
       }),

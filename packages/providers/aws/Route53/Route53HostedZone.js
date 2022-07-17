@@ -430,7 +430,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
       ])(),
     method: "deleteHostedZone",
     getById,
-    //ignoreErrorCodes: [""],
+    ignoreErrorCodes: ["NoSuchHostedZone"],
     config,
   });
 

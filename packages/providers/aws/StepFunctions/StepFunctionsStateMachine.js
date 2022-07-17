@@ -58,6 +58,29 @@ exports.StepFunctionsStateMachine = ({ spec, config }) =>
         ])(),
       },
       {
+        type: "Job",
+        group: "Glue",
+        ids: pipe([
+          () => live,
+          get("definition.States"),
+          flattenObject({ filterKey: (key) => key === "JobName" }),
+          map(
+            pipe([
+              (id) =>
+                lives.getById({
+                  id,
+                  type: "Job",
+                  group: "Glue",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ])
+          ),
+          //TODO move uniq to flattenObject
+          uniq,
+        ])(),
+      },
+      {
         type: "Queue",
         group: "SQS",
         ids: pipe([

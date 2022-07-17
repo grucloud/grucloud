@@ -105,8 +105,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     method: "createNodegroup",
     pickId,
     pickCreated: () => get("nodegroup"),
-    //TODO isInstanceError
-    // isInstanceError: eq(get("status"), "TODOERROR")
+    isInstanceError: eq(get("status"), "CREATE_FAILED"),
     isInstanceUp: eq(get("status"), "ACTIVE"),
     getById,
     configIsUp: { retryCount: 12 * 25, retryDelay: 5e3 },

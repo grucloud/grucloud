@@ -69,6 +69,7 @@ const model = ({ config }) => ({
     pickCreated: ({ payload }) => pipe([get("ResolverRule")]),
     isInstanceUp: pipe([eq(get("Status"), "COMPLETE")]),
     isInstanceError: pipe([eq(get("Status"), "FAILED")]),
+    getErrorMessage: get("StatusMessage", "error"),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#updateResolverRule-property
   update: {
