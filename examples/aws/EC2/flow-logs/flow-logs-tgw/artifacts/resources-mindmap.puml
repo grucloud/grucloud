@@ -4,8 +4,14 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ CloudWatchLogs
-++++ LogGroup (1)
+++++ LogGroup (2)
 +++ EC2
-++++ FlowLogs (1)
+++++ FlowLogs (2)
+++++ Vpc (1)
+++++ Subnet (1)
 ++++ TransitGateway (1)
+++++ TransitGatewayRouteTable (1)
+++++ TransitGatewayVpcAttachment (1)
+++++ TransitGatewayRouteTableAssociation (1)
+++++ TransitGatewayRouteTablePropagation (1)
 @endmindmap

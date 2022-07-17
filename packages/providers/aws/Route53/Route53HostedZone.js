@@ -66,8 +66,6 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const octalReplace = pipe([callProp("replaceAll", "\\052", "*")]);
 
-//Check for the final dot
-const findName = get("live.Name");
 const findId = pipe([get("live.Id"), hostedZoneIdToResourceId]);
 const pickId = pick(["Id"]);
 
@@ -100,6 +98,9 @@ exports.Route53HostedZone = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(route53);
   const { providerName } = config;
 
+  //Check for the final dot
+  const findName = get("live.Name");
+
   const findDependencies = ({ live, lives }) => [
     {
       type: "Domain",
@@ -131,7 +132,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
             group: "Route53",
             providerName,
           }),
-        filter(not(eq(get("name"), live.Name))),
+        filter(not(eq(get("live.Name"), live.Name))),
         filter(
           pipe([
             get("live.RecordSet"),
@@ -295,23 +296,6 @@ exports.Route53HostedZone = ({ spec, config }) => {
           route53().changeTagsForResource,
         ])
       ),
-      // tap(({ HostedZone }) =>
-      //   pipe([
-      //     () => payload.RecordSet,
-      //     map((ResourceRecordSet) => ({
-      //       Action: "CREATE",
-      //       ResourceRecordSet,
-      //     })),
-      //     tap.if(not(isEmpty), (Changes) =>
-      //       route53().changeResourceRecordSets({
-      //         HostedZoneId: HostedZone.Id,
-      //         ChangeBatch: {
-      //           Changes,
-      //         },
-      //       })
-      //     ),
-      //   ])()
-      // ),
       tap.if(
         ({ DelegationSet }) =>
           domain &&
@@ -398,7 +382,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
   const destroy = client.destroy({
     pickId,
-    preDestroy: ({ live, name }) =>
+    preDestroy: ({ live }) =>
       pipe([
         () => live,
         ({ Id: HostedZoneId }) =>
@@ -411,7 +395,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
             tap((ResourceRecordSet) => {
               logger.debug(`destroy ${tos(ResourceRecordSet)}`);
             }),
-            filter(canDeleteRecord(name)),
+            filter(canDeleteRecord(live.Name)),
             map((ResourceRecordSet) => ({
               Action: "DELETE",
               ResourceRecordSet: filterEmptyResourceRecords(ResourceRecordSet),

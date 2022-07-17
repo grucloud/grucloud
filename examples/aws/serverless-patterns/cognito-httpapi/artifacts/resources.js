@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "sam-app",
     properties: ({}) => ({
       CorsConfiguration: {
         AllowMethods: ["GET"],
@@ -19,7 +18,6 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "$default",
     properties: ({}) => ({
       AutoDeploy: true,
       StageName: "$default",
@@ -31,7 +29,6 @@ exports.createResources = () => [
   {
     type: "Authorizer",
     group: "ApiGatewayV2",
-    name: "OAuth2Authorizer",
     properties: ({}) => ({
       Name: "OAuth2Authorizer",
       AuthorizerType: "JWT",

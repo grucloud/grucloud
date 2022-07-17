@@ -18,7 +18,7 @@ skinparam monochrome true
 ++++ Route (1)
 ++++ SecurityGroup (1)
 ++++ LaunchTemplate (1)
-+++ ELBv2
++++ ElasticLoadBalancingV2
 ++++ LoadBalancer (1)
 ++++ TargetGroup (2)
 ++++ Listener (2)

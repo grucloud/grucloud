@@ -27,7 +27,6 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "my-api",
     properties: ({}) => ({
       Name: "my-api",
       Tags: {
@@ -38,7 +37,6 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "my-api-stage-dev",
     properties: ({}) => ({
       AccessLogSettings: {
         Format:
@@ -199,7 +197,9 @@ exports.createResources = () => [
   {
     type: "HostedZone",
     group: "Route53",
-    name: "grucloud.org.",
+    properties: ({}) => ({
+      Name: "grucloud.org.",
+    }),
     dependencies: ({}) => ({
       domain: "grucloud.org",
     }),

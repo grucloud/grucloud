@@ -24,7 +24,7 @@ skinparam monochrome true
 +++ EKS
 ++++ Cluster (1)
 ++++ NodeGroup (1)
-+++ ELBv2
++++ ElasticLoadBalancingV2
 ++++ LoadBalancer (1)
 ++++ TargetGroup (2)
 ++++ Listener (2)

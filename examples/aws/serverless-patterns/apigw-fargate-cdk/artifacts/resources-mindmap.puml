@@ -29,7 +29,7 @@ skinparam monochrome true
 ++++ Cluster (1)
 ++++ TaskDefinition (1)
 ++++ Service (1)
-+++ ELBv2
++++ ElasticLoadBalancingV2
 ++++ LoadBalancer (1)
 ++++ TargetGroup (1)
 ++++ Listener (1)

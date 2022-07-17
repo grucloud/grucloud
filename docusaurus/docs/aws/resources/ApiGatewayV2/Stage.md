@@ -10,25 +10,14 @@ Manages an [Api Gateway V2 Stage](https://console.aws.amazon.com/apigateway/main
 ```js
 exports.createResources = () => [
   {
-    type: "Api",
-    group: "ApiGatewayV2",
-    name: "my-api",
-    properties: ({}) => ({
-      ProtocolType: "HTTP",
-      ApiKeySelectionExpression: "$request.header.x-api-key",
-      DisableExecuteApiEndpoint: false,
-      RouteSelectionExpression: "$request.method $request.path",
-    }),
-  },
-  {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "my-api-stage-dev",
     properties: ({}) => ({
       AccessLogSettings: {
         Format:
           '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
       },
+      StageName: "my-api-stage-dev",
     }),
     dependencies: () => ({
       api: "my-api",

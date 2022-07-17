@@ -22,7 +22,6 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "my-api",
     properties: ({}) => ({
       Name: "my-api",
     }),
@@ -30,7 +29,6 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "my-api-stage-dev",
     properties: ({}) => ({
       AccessLogSettings: {
         Format:
@@ -46,7 +44,6 @@ exports.createResources = () => [
   {
     type: "Authorizer",
     group: "ApiGatewayV2",
-    name: "authorizer-auth0",
     properties: ({}) => ({
       Name: "authorizer-auth0",
       AuthorizerType: "JWT",
@@ -194,7 +191,9 @@ exports.createResources = () => [
   {
     type: "HostedZone",
     group: "Route53",
-    name: "grucloud.org.",
+    properties: ({}) => ({
+      Name: "grucloud.org.",
+    }),
     dependencies: ({}) => ({
       domain: "grucloud.org",
     }),

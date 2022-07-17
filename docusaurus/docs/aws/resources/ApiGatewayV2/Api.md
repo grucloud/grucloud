@@ -12,8 +12,8 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "my-api",
     properties: ({}) => ({
+      Name:  "my-api",
       ProtocolType: "HTTP",
       ApiKeySelectionExpression: "$request.header.x-api-key",
       DisableExecuteApiEndpoint: false,

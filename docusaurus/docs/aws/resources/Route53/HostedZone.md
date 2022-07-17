@@ -15,13 +15,16 @@ Create a HostedZone with a Route53Domain as a dependency to update automatically
 
 ```js
 const domainName = "mydomain.com";
+
 exports.createResources = () => [
   {
     type: "HostedZone",
     group: "Route53",
-    name: `${domainName}.`,
-    dependencies: () => ({
-      domain: domainName,
+    properties: ({}) => ({
+      Name: domainName,
+    }),
+    dependencies: ({}) => ({
+      domain: "grucloud.org",
     }),
   },
   {
@@ -50,7 +53,9 @@ exports.createResources = () => [
   {
     type: "HostedZone",
     group: "Route53",
-    name: "test.grucloud.org.",
+    properties: ({}) => ({
+      Name: "test.grucloud.org.",
+    }),
     dependencies: ({}) => ({
       domain: "grucloud.org",
       vpc: "vpc-hostedzone",

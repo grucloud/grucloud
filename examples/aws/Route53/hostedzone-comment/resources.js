@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "HostedZone",
     group: "Route53",
-    name: "grucloud.org.",
     properties: ({}) => ({
+      Name: "grucloud.org.",
       HostedZoneConfig: {
         Comment: "My Hosted Zone New",
       },

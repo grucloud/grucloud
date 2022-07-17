@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "MyHttpApi",
     properties: ({}) => ({
       Name: "MyHttpApi",
     }),
@@ -14,7 +13,6 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "$default",
     properties: ({}) => ({
       AutoDeploy: true,
       StageName: "$default",

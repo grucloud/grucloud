@@ -53,6 +53,7 @@ module.exports = pipe([
         DisableExecuteApiEndpoint: false,
         RouteSelectionExpression: "$request.method $request.path",
       },
+      inferName: get("properties.Name"),
       omitProperties: [
         "ApiEndpoint",
         "ApiId",
@@ -70,6 +71,7 @@ module.exports = pipe([
     {
       type: "Stage",
       Client: Stage,
+      inferName: get("properties.StageName"),
       propertiesDefault: {
         RouteSettings: {},
         DefaultRouteSettings: {
@@ -94,6 +96,7 @@ module.exports = pipe([
     {
       type: "Authorizer",
       Client: Authorizer,
+      inferName: get("properties.Name"),
       omitProperties: ["AuthorizerId", "ApiName"],
       filterLive: () =>
         pipe([

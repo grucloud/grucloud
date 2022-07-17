@@ -52,7 +52,7 @@ exports.createResources = () => [
   {
     type: "TransitGatewayRouteTable",
     group: "EC2",
-    name: "tgw-rtb--default",
+    name: "tgw-rtb-tgw-default",
     readOnly: true,
     properties: ({}) => ({
       DefaultAssociationRouteTable: true,
@@ -79,7 +79,7 @@ exports.createResources = () => [
     type: "TransitGatewayRouteTableAssociation",
     group: "EC2",
     dependencies: ({}) => ({
-      transitGatewayRouteTable: "tgw-rtb--default",
+      transitGatewayRouteTable: "tgw-rtb-tgw-default",
       transitGatewayAttachment: "tgw-attach::tgw::vpn::vpn-connection",
     }),
   },
@@ -87,7 +87,7 @@ exports.createResources = () => [
     type: "TransitGatewayRouteTablePropagation",
     group: "EC2",
     dependencies: ({}) => ({
-      transitGatewayRouteTable: "tgw-rtb--default",
+      transitGatewayRouteTable: "tgw-rtb-tgw-default",
       transitGatewayAttachment: "tgw-attach::tgw::vpn::vpn-connection",
     }),
   },
