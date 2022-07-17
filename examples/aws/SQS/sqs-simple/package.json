@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-sqs-queue",
-  "version": "7.7.0",
+  "version": "8.0.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -16,8 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^7.7.0",
-    "@grucloud/provider-aws": "^7.7.0",
+    "@grucloud/core": "^8.0.0",
+    "@grucloud/provider-aws": "^8.0.0",
     "rubico": "^1.6.29"
   },
   "devDependencies": {

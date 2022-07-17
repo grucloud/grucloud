@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/docker-axios",
-  "version": "7.3.0",
+  "version": "8.0.0",
   "description": "Docker node client based on Axios",
   "main": "src/docker.js",
   "scripts": {
