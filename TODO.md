@@ -3,12 +3,9 @@
 - check stage for all providers
 
 ## Aws
--  stage name prefix with rest api
 - PrincipalAssociation replace associatedEntity from config
 
 - ipamPoolIpv6
-
-- SecretsManagerResourcePolicy
 
 omit AWSLogs S3 Objects
 

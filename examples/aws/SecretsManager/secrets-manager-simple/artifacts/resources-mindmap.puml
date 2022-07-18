@@ -5,4 +5,5 @@ skinparam monochrome true
 ++ aws
 +++ SecretsManager
 ++++ Secret (1)
+++++ ResourcePolicy (1)
 @endmindmap

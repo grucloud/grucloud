@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Secret",
     group: "SecretsManager",
-    name: "prod/myapp/db",
     properties: ({ generatePassword }) => ({
+      Name: "prod/myapp/db",
       SecretString: {
         password: generatePassword({ length: 32 }),
         username: "demousername",
@@ -19,6 +19,29 @@ exports.createResources = () => [
           Value: "myvalue",
         },
       ],
+    }),
+  },
+  {
+    type: "ResourcePolicy",
+    group: "SecretsManager",
+    properties: ({}) => ({
+      ResourcePolicy: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "EnableAnotherAccountToReadTheSecret",
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::548529576214:root`,
+            },
+            Action: "secretsmanager:GetSecretValue",
+            Resource: `*`,
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      secret: "prod/myapp/db",
     }),
   },
 ];

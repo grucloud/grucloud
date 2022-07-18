@@ -137,8 +137,8 @@ exports.createResources = () => [
   {
     type: "Secret",
     group: "SecretsManager",
-    name: "DBSecret",
     properties: ({ generatePassword }) => ({
+      Name: "DBSecret",
       SecretString: {
         password: generatePassword({ length: 30 }),
         username: "admin_user",

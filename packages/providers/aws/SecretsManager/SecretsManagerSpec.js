@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, map, tap, omit, assign, get } = require("rubico");
 const { defaultsDeep, when, size } = require("rubico/x");
 
-const { compareAws } = require("../AwsCommon");
+const { compareAws, assignPolicyAccountAndRegion } = require("../AwsCommon");
 const { SecretsManagerSecret } = require("./SecretsManagerSecret");
 const {
   SecretsManagerResourcePolicy,
@@ -19,9 +19,9 @@ module.exports = pipe([
       type: "Secret",
       Client: SecretsManagerSecret,
       dependencies: { kmsKey: { type: "Key", group: "KMS" } },
+      inferName: get("properties.Name"),
       ignoreResource: () => pipe([get("live.OwningService")]),
       omitProperties: [
-        "Name",
         "ARN",
         "CreatedDate",
         "LastAccessedDate",
@@ -54,21 +54,28 @@ module.exports = pipe([
               ),
             ]),
           }),
+          ({ Name, ...other }) => ({ Name, ...other }),
         ]),
     },
-    //TODO
-    // {
-    //   type: "ResourcePolicy",
-    //   Client: SecretsManagerResourcePolicy,
-    //   dependencies: { secret: { type: "Secret", group: GROUP, parent: true } },
-    //   omitProperties: ["Name", "ARN"],
-    //   filterLive: ({ providerConfig }) =>
-    //     pipe([
-    //       tap((params) => {
-    //         assert(providerConfig);
-    //       }),
-    //     ]),
-    // },
+    {
+      type: "ResourcePolicy",
+      Client: SecretsManagerResourcePolicy,
+      inferName: get("dependenciesSpec.secret"),
+      dependencies: { secret: { type: "Secret", group: GROUP, parent: true } },
+      omitProperties: ["ARN", "Name"],
+      compare: compareSecretsManager({
+        filterAll: () => pipe([omit(["SecretId", "Name"])]),
+      }),
+      filterLive: ({ lives, providerConfig }) =>
+        pipe([
+          assign({
+            ResourcePolicy: pipe([
+              get("ResourcePolicy"),
+              assignPolicyAccountAndRegion({ providerConfig, lives }),
+            ]),
+          }),
+        ]),
+    },
   ],
   map(
     defaultsDeep({

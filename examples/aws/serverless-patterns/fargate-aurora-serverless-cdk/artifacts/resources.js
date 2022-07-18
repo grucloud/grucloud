@@ -735,8 +735,8 @@ exports.createResources = () => [
   {
     type: "Secret",
     group: "SecretsManager",
-    name: "aurora-user-secret",
     properties: ({ generatePassword }) => ({
+      Name: "aurora-user-secret",
       SecretString: {
         password: generatePassword({ length: 30 }),
         dbname: "aurora_db",
