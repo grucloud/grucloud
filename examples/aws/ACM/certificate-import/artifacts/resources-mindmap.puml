@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project certificate-import
+skinparam monochrome true
++ Infra
+++ aws
++++ ACM
+++++ Certificate (1)
+@endmindmap

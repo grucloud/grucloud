@@ -1,16 +1,41 @@
-const { pipe, assign, map, omit, pick, get, eq, and } = require("rubico");
-const { isEmpty, identity, first, when, size } = require("rubico/x");
+const assert = require("assert");
+const {
+  pipe,
+  tap,
+  assign,
+  map,
+  omit,
+  pick,
+  get,
+  eq,
+  and,
+  switchCase,
+} = require("rubico");
+const {
+  isEmpty,
+  identity,
+  first,
+  when,
+  size,
+  callProp,
+  last,
+} = require("rubico/x");
+const fs = require("fs");
+
 const { isOurMinion } = require("../AwsCommon");
 const { compareAws } = require("../AwsCommon");
 
-const { AwsCertificate } = require("./AwsCertificate");
+const {
+  AwsCertificate,
+  getCommonNameFromCertificate,
+} = require("./AwsCertificate");
 
 const GROUP = "ACM";
 
 const compareACM = compareAws({});
 
-module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+module.exports = pipe([
+  () => [
     {
       type: "Certificate",
       Client: AwsCertificate,
@@ -21,6 +46,26 @@ module.exports = () =>
         filterLive: () => pipe([pick([])]),
       }),
       ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
+      inferName: pipe([
+        get("properties"),
+        switchCase([
+          get("certificateFile"),
+          pipe([
+            get("certificateFile"),
+            (certificateFile) => fs.readFileSync(certificateFile, "utf-8"),
+            getCommonNameFromCertificate,
+            tap((CN) => {
+              assert(CN);
+            }),
+          ]),
+          pipe([
+            get("DomainName"),
+            tap((DomainName) => {
+              assert(DomainName);
+            }),
+          ]),
+        ]),
+      ]),
       filterLive: () =>
         pipe([
           pick(["DomainName", "SubjectAlternativeNames"]),
@@ -32,7 +77,8 @@ module.exports = () =>
               ])(),
             omit(["SubjectAlternativeNames"])
           ),
-          omit(["DomainName"]),
         ]),
     },
-  ]);
+  ],
+  map(assign({ group: () => GROUP })),
+]);

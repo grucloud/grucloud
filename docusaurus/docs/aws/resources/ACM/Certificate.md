@@ -12,10 +12,33 @@ Provides an SSL certificate.
 ### Create a certificate with DNS validation
 
 ```js
-const domainName = "your.domain.name.com";
 
 exports.createResources = () => [
-  { type: "Certificate", group: "ACM", name: domainName },
+ {
+    type: "Certificate",
+    group: "ACM",
+    properties: ({}) => ({
+      DomainName: "grucloud.org",
+      SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
+    }),
+  },
+];
+```
+
+### Import a certificate
+
+```js
+
+exports.createResources = () => [
+ {
+    type: "Certificate",
+    group: "ACM",
+    properties: () => ({
+      privateKeyFile: path.resolve(__dirname, "pki/client1.domain.tld.key"),
+      certificateFile: path.resolve(__dirname, "pki/client1.domain.tld.crt"),
+      certificateChainFile: path.resolve(__dirname, "pki/ca.crt"),
+    }),
+  },
 ];
 ```
 
@@ -23,10 +46,12 @@ exports.createResources = () => [
 
 - [certificate validated by DNS](https://github.com/grucloud/grucloud/blob/main/examples/aws/ACM/certificate/resources.js)
 - [https static website](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/resources.js)
+- [client-vpn-endpoint](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/client-vpn-endpoint)
 
 ## Properties
 
 - [RequestCertificateCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-acm/interfaces/requestcertificatecommandinput.html)
+- [ImportCertificateCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-acm/interfaces/importcertificatecommandinput.html)
 
 ## UsedBy
 
@@ -34,6 +59,7 @@ exports.createResources = () => [
 - [CloudFront Distribution](../CloudFront/Distribution.md)
 - [ApiGatewayV2 Domain Name](../ApiGatewayV2/DomainName.md)
 - [CloudWatch Metric Alarm](../CloudWatch/MetricAlarm.md)
+- [Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
 
 ## List
 

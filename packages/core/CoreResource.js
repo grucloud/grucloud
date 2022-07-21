@@ -41,6 +41,8 @@ const {
 const generator = require("generate-password");
 const { mergeWith } = require("lodash/fp");
 const util = require("util");
+const { memoize } = require("lodash");
+
 const logger = require("./logger")({ prefix: "CoreResources" });
 const { tos } = require("./tos");
 const { retryCall } = require("./Retry");
@@ -104,51 +106,53 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const getResourceName = pipe([
-    () => resourceName,
-    switchCase([
-      isFunction,
-      () => resourceName({ config: provider.getConfig() }),
-      isString,
-      identity,
-      isEmpty,
-      pipe([
-        tap((params) => {
-          assert(
-            spec.inferName,
-            `resource ${spec.type} without name must implement 'inferName'`
-          );
-        }),
-        () => ({
-          properties: properties({
-            config,
-            getId,
-            generatePassword: generator.generate,
+  const getResourceName = memoize(
+    pipe([
+      () => resourceName,
+      switchCase([
+        isFunction,
+        () => resourceName({ config: provider.getConfig() }),
+        isString,
+        identity,
+        isEmpty,
+        pipe([
+          tap((params) => {
+            assert(
+              spec.inferName,
+              `resource ${spec.type} without name must implement 'inferName'`
+            );
           }),
-          dependenciesSpec: dependencies({ config }),
-          dependencies: getDependencies(),
-        }),
-        tap((params) => {
-          assert(true);
-        }),
-        spec.inferName,
-        tap((name) => {
-          assert(name, `empty inferName for ${spec.groupType}`);
-          assert(isString(name));
-        }),
+          () => ({
+            properties: properties({
+              config,
+              getId,
+              generatePassword: generator.generate,
+            }),
+            dependenciesSpec: dependencies({ config }),
+            dependencies: getDependencies(),
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+          spec.inferName,
+          tap((name) => {
+            assert(name, `empty inferName for ${spec.groupType}`);
+            assert(isString(name));
+          }),
+        ]),
+        (resourceName) => {
+          throw Error(
+            `resource name ${JSON.stringify(
+              resourceName
+            )} is neither empty, nor a string, nor a function`
+          );
+        },
       ]),
-      (resourceName) => {
-        throw Error(
-          `resource name ${JSON.stringify(
-            resourceName
-          )} is neither empty, nor a string, nor a function`
-        );
-      },
-    ]),
-    tap((name) => {
-      assert(name, `resource name is empty for ${groupType}`);
-    }),
-  ]);
+      tap((name) => {
+        assert(name, `resource name is empty for ${groupType}`);
+      }),
+    ])
+  );
 
   logger.debug(
     `ResourceMaker: ${JSON.stringify({

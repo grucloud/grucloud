@@ -201,7 +201,7 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "API-Gateway-Execution-Logs_nzijnixfel/v1",
+    name: "API-Gateway-Execution-Logs_xl0l6iiu0j/v1",
   },
   {
     type: "Table",

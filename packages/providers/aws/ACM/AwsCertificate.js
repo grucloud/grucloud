@@ -1,31 +1,40 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, pick } = require("rubico");
-const { first, defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, assign, pick, switchCase } = require("rubico");
+const { first, defaultsDeep, when, callProp, find, last } = require("rubico/x");
+const fs = require("fs").promises;
+const crypto = require("crypto");
 
+const { retryCall } = require("@grucloud/core/Retry");
 const { getByNameCore } = require("@grucloud/core/Common");
+
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./ACMCommon");
 
-const model = {
+exports.getCommonNameFromCertificate = pipe([
+  (certificatePem) => new crypto.X509Certificate(certificatePem),
+  callProp("toLegacyObject"),
+  get("subject"),
+  callProp("split", "\n"),
+  find(callProp("startsWith", "CN")),
+  tap((CN) => {
+    assert(CN);
+  }),
+  callProp("split", "="),
+  last,
+  tap((CN) => {
+    assert(CN);
+  }),
+]);
+
+const createModel = () => ({
   package: "acm",
   client: "ACM",
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  getById: { method: "describeCertificate", getField: "Certificate" },
-  getList: { method: "listCertificates", getParam: "CertificateSummaryList" },
-  create: { method: "requestCertificate" },
-  destroy: { method: "deleteCertificate" },
-};
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
-exports.AwsCertificate = ({ spec, config }) =>
-  createAwsResource({
-    model,
-    config,
-    spec,
-    findName: get("live.DomainName"),
-    findId: get("live.CertificateArn"),
-    pickId: pick(["CertificateArn"]),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#describeCertificate-property
+  getById: {
+    method: "describeCertificate",
+    getField: "Certificate",
     decorate: ({ endpoint }) =>
       pipe([
         assign({
@@ -36,23 +45,118 @@ exports.AwsCertificate = ({ spec, config }) =>
           ]),
         }),
       ]),
-    isInstanceUp: pipe([
-      get("DomainValidationOptions"),
-      first,
-      get("ResourceRecord"),
-    ]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property
+  getList: {
+    method: "listCertificates",
+    getParam: "CertificateSummaryList",
+    decorate: ({ getById }) => pipe([getById]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#deleteCertificate-property
+  destroy: { method: "deleteCertificate" },
+});
+
+const isInstanceUp = pipe([
+  get("DomainValidationOptions"),
+  first,
+  get("ResourceRecord"),
+]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#requestCertificate-property
+const requestCertificate = ({ endpoint, getById }) =>
+  pipe([
+    endpoint().requestCertificate,
+    (params) =>
+      retryCall({
+        name: `requestCertificate`,
+        fn: pipe([() => params, getById, isInstanceUp]),
+        //config: configIsUp,
+      }),
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#importCertificate-property
+const importCertificate = ({ endpoint }) =>
+  pipe([
+    assign({
+      Certificate: pipe([get("Certificate"), Buffer.from]),
+      PrivateKey: pipe([get("PrivateKey"), Buffer.from]),
+    }),
+    when(
+      get("CertificateChain"),
+      assign({
+        CertificateChain: pipe([get("CertificateChain"), Buffer.from]),
+      })
+    ),
+    endpoint().importCertificate,
+  ]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
+exports.AwsCertificate = ({ spec, config }) =>
+  createAwsResource({
+    model: createModel({ config }),
+    config,
+    spec,
+    findName: get("live.DomainName"),
+    findId: get("live.CertificateArn"),
+    pickId: pick(["CertificateArn"]),
     getByName: getByNameCore,
     cannotBeDeleted: () => true,
     tagResource,
     untagResource,
     findNamespace: findNamespaceInTags(config),
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    create: ({ endpoint, getById }) =>
+      pipe([
+        get("payload"),
+        switchCase([
+          get("Certificate"),
+          importCertificate({ endpoint }),
+          requestCertificate({ endpoint, getById }),
+        ]),
+      ]),
+    configDefault: ({
+      name,
+      namespace,
+      properties: {
+        privateKeyFile,
+        certificateFile,
+        certificateChainFile,
+        Tags,
+        ...otherProps
+      },
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
-          DomainName: name,
-          ValidationMethod: "DNS",
           Tags: buildTags({ name, namespace, config, UserTags: Tags }),
+        }),
+        switchCase([
+          () => privateKeyFile,
+          // Import certificate
+          pipe([
+            tap((params) => {
+              assert(certificateFile);
+            }),
+            assign({
+              Certificate: pipe([() => fs.readFile(certificateFile, "utf-8")]),
+              PrivateKey: pipe([() => fs.readFile(privateKeyFile, "utf-8")]),
+            }),
+            when(
+              () => certificateChainFile,
+              assign({
+                CertificateChain: pipe([
+                  () => fs.readFile(certificateChainFile, "utf-8"),
+                ]),
+              })
+            ),
+          ]),
+          // AWS issued certificate
+          defaultsDeep({
+            DomainName: name,
+            ValidationMethod: "DNS",
+          }),
+        ]),
+        tap((params) => {
+          assert(true);
         }),
       ])(),
   });

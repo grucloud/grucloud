@@ -3,6 +3,8 @@
 - check stage for all providers
 
 ## Aws
+
+
 - PrincipalAssociation replace associatedEntity from config
 
 - ipamPoolIpv6
@@ -143,6 +145,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Nice to have
 
+- https://node-security.com/posts/certificate-generation-pure-nodejs/
 - terraform workspace new staging
 - terraform workspace select (staging/production)
 

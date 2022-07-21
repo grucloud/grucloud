@@ -6,7 +6,9 @@ exports.createResources = () => [
   {
     type: "Certificate",
     group: "ACM",
-    name: "cloudfront.aws.test.grucloud.org",
+    properties: ({}) => ({
+      DomainName: "cloudfront.aws.test.grucloud.org",
+    }),
   },
   {
     type: "Distribution",

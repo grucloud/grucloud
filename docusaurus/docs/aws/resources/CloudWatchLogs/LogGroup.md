@@ -40,6 +40,7 @@ exports.createResources = () => [
 ## Used By
 
 - [Network Firewall Logging Configuration](../NetworkFirewall/LoggingConfiguration.md)
+- [Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
 
 ## List
 
