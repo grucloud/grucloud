@@ -330,8 +330,8 @@ exports.createResources = () => [
   {
     type: "Secret",
     group: "SecretsManager",
-    name: "sam-app-cluster-secret",
     properties: ({ generatePassword }) => ({
+      Name: "sam-app-cluster-secret",
       SecretString: {
         password: generatePassword({ length: 10 }),
         username: "masteruser",

@@ -122,8 +122,8 @@ exports.createResources = () => [
   {
     type: "Secret",
     group: "SecretsManager",
-    name: "demordsservice-demostage-credentials",
     properties: ({ generatePassword }) => ({
+      Name: "demordsservice-demostage-credentials",
       SecretString: {
         password: generatePassword({ length: 32 }),
         username: "demousername",

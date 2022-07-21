@@ -40,3 +40,4 @@ exports.createResources = () => [
 - [EC2](./Instance.md)
 - [SecurityGroupRuleIngress](./SecurityGroupRuleIngress.md)
 - [SecurityGroupRuleEgress](./SecurityGroupRuleEgress.md)
+- [Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)

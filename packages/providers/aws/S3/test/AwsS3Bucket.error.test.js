@@ -12,7 +12,8 @@ describe("AwsS3BucketErrors", async function () {
   before(async function () {});
   after(async () => {});
 
-  it("s3Bucket already exist", async function () {
+  //TODO
+  it.skip("s3Bucket already exist", async function () {
     const provider = AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
@@ -32,7 +33,7 @@ describe("AwsS3BucketErrors", async function () {
       await cli.planApply({
         commandOptions: { force: true },
       });
-      assert("should not be here");
+      assert(false, "should not be here");
     } catch (exception) {
       assert(exception.error);
       const result =

@@ -3,7 +3,13 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Certificate", group: "ACM", name: "cloudfront-demo.grucloud.org" },
+  {
+    type: "Certificate",
+    group: "ACM",
+    properties: ({}) => ({
+      DomainName: "cloudfront-demo.grucloud.org",
+    }),
+  },
   {
     type: "Distribution",
     group: "CloudFront",

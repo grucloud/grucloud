@@ -29,6 +29,7 @@ const {
   when,
   isDeepEqual,
   callProp,
+  identity,
 } = require("rubico/x");
 const {
   omitIfEmpty,
@@ -106,19 +107,21 @@ const {
 const { EC2FlowLogs, FlowLogsDependencies } = require("./EC2FlowLogs");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
 const { EC2CustomerGateway } = require("./EC2CustomerGateway");
-const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
+const { EC2ClientVpnEndpoint } = require("./EC2ClientVpnEndpoint");
+const { EC2ClientVpnTargetNetwork } = require("./EC2ClientVpnTargetNetwork");
+const {
+  EC2ClientVpnAuthorizationRule,
+} = require("./EC2ClientVpnAuthorizationRule");
 
+const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
 const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { EC2NetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 const { EC2VpcPeeringConnection } = require("./EC2VpcPeeringConnection");
-
 const { EC2PlacementGroup } = require("./EC2PlacementGroup");
-
 const {
   EC2VpcPeeringConnectionAccepter,
 } = require("./EC2VpcPeeringConnectionAccepter");
-
 const { EC2TransitGateway } = require("./EC2TransitGateway");
 const {
   EC2TransitGatewayAttachment,
@@ -126,21 +129,16 @@ const {
 const {
   EC2TransitGatewayVpcAttachment,
 } = require("./EC2TransitGatewayVpcAttachment");
-
 const {
   EC2TransitGatewayPeeringAttachment,
 } = require("./EC2TransitGatewayPeeringAttachment");
-
 const { EC2TransitGatewayRoute } = require("./EC2TransitGatewayRoute");
-
 const {
   EC2TransitGatewayRouteTable,
 } = require("./EC2TransitGatewayRouteTable");
-
 const {
   EC2TransitGatewayRouteTableAssociation,
 } = require("./EC2TransitGatewayRouteTableAssociation");
-
 const {
   EC2TransitGatewayRouteTablePropagation,
 } = require("./EC2TransitGatewayRouteTablePropagation");
@@ -413,6 +411,180 @@ module.exports = pipe([
         ]),
       dependencies: {
         certificate: { type: "Certificate", group: "ACM" },
+      },
+    },
+    {
+      type: "ClientVpnAuthorizationRule",
+      Client: EC2ClientVpnAuthorizationRule,
+      omitProperties: ["ClientVpnEndpointId", "Status"],
+      inferName: pipe([
+        ({
+          properties: { TargetNetworkCidr },
+          dependenciesSpec: { clientVpnEndpoint },
+        }) =>
+          `client-vpn-rule-assoc::${clientVpnEndpoint}::${TargetNetworkCidr}`,
+      ]),
+      propertiesDefault: {},
+      compare: compareEC2({ filterAll: () => pick([]) }),
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omitIfEmpty(["GroupId"]),
+        ]),
+      dependencies: {
+        clientVpnEndpoint: {
+          type: "ClientVpnEndpoint",
+          group: "EC2",
+          parent: true,
+        },
+      },
+    },
+    {
+      type: "ClientVpnEndpoint",
+      Client: EC2ClientVpnEndpoint,
+      omitProperties: [
+        "ClientVpnEndpointId",
+        "CreationTime",
+        "ServerCertificateArn",
+        "DnsName",
+        "SecurityGroupIds",
+        "VpcId",
+        "Status",
+        "ClientConnectOptions.Status",
+        "AuthenticationOptions[].MutualAuthentication.ClientRootCertificateChain",
+        "SelfServicePortalUrl",
+      ],
+      ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
+      propertiesDefault: {
+        VpnPort: 443,
+        SessionTimeoutHours: 24,
+        ClientLoginBannerOptions: { Enabled: false },
+        ConnectionLogOptions: {
+          Enabled: false,
+        },
+        ClientConnectOptions: {
+          Enabled: false,
+        },
+        SplitTunnel: false,
+        VpnProtocol: "openvpn",
+        TransportProtocol: "udp",
+      },
+      compare: compareEC2({ filterAll: () => pick([]) }),
+      filterLive: ({ lives, providerConfig }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          omitIfEmpty(["Description"]),
+          assign({
+            AuthenticationOptions: pipe([
+              get("AuthenticationOptions"),
+              map(
+                pipe([
+                  switchCase([
+                    eq(get("Type"), "certificate-authentication"),
+                    pipe([
+                      assign({
+                        MutualAuthentication: pipe([
+                          get("MutualAuthentication"),
+                          assign({
+                            ClientRootCertificateChainArn: pipe([
+                              get("ClientRootCertificateChain"),
+                              tap((params) => {
+                                assert(true);
+                              }),
+                              replaceWithName({
+                                groupType: "ACM::Certificate",
+                                path: "id",
+                                providerConfig,
+                                lives,
+                              }),
+                            ]),
+                          }),
+                        ]),
+                      }),
+                    ]),
+                    identity,
+                  ]),
+                ])
+              ),
+            ]),
+          }),
+        ]),
+      dependencies: {
+        vpc: { type: "Vpc", group: "EC2" },
+        securityGroups: { type: "SecurityGroup", group: "EC2" },
+        cloudWatchLogGroup: { type: "LogGroup", group: "CloudWatchLogs" },
+        serverCertificate: {
+          type: "Certificate",
+          group: "ACM",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                () => resource,
+                eq(
+                  get("live.ServerCertificateArn"),
+                  dependency.live.CertificateArn
+                ),
+              ])(),
+        },
+        clientCertificate: {
+          type: "Certificate",
+          group: "ACM",
+          filterDependency:
+            ({ resource }) =>
+            (dependency) =>
+              pipe([
+                () => resource,
+                eq(
+                  get(
+                    "live.AuthenticationOptions[0].MutualAuthentication.ClientRootCertificateChain"
+                  ),
+                  dependency.live.CertificateArn
+                ),
+              ])(),
+        },
+      },
+    },
+    {
+      type: "ClientVpnTargetNetwork",
+      Client: EC2ClientVpnTargetNetwork,
+      omitProperties: [
+        "ClientVpnEndpointId",
+        "AssociationId",
+        "SubnetId",
+        "VpcId",
+        "Status",
+        "SecurityGroups",
+      ],
+      //ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
+      includeDefaultDependencies: true,
+      inferName: pipe([
+        get("dependenciesSpec"),
+        ({ clientVpnEndpoint, subnet }) =>
+          `client-vpn-target-assoc::${clientVpnEndpoint}::${subnet}`,
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      propertiesDefault: {},
+      compare: compareEC2({ filterAll: () => pick([]) }),
+      filterLive: () =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      dependencies: {
+        clientVpnEndpoint: {
+          type: "ClientVpnEndpoint",
+          group: "EC2",
+          parent: true,
+        },
+        subnet: { type: "Subnet", group: "EC2" },
       },
     },
     {

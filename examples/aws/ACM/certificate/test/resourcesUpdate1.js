@@ -2,8 +2,8 @@ exports.createResources = () => [
   {
     type: "Certificate",
     group: "ACM",
-    name: "grucloud.org",
     properties: ({}) => ({
+      DomainName: "grucloud.org",
       SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
       Tags: [
         {

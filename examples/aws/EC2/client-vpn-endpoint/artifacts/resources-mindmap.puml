@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project client-vpn-endpoint
+skinparam monochrome true
++ Infra
+++ aws
++++ ACM
+++++ Certificate (2)
++++ EC2
+++++ ClientVpnAuthorizationRule (1)
+++++ ClientVpnEndpoint (1)
+++++ ClientVpnTargetNetwork (1)
+++++ Vpc (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
+@endmindmap

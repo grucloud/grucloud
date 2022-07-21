@@ -85,6 +85,7 @@ const vpc = provider.EC2.makeVpc({
 - [Flow Logs](./FlowLogs.md)
 - [Route53 HostedZone](../Route53/HostedZone.md)
 - [CodeBuild Project](../CodeBuild/Project.md)
+- [Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
 
 ## List
 

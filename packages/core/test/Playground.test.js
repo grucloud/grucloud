@@ -1,5 +1,4 @@
 const assert = require("assert");
-const urljoin = require("url-join");
 const {
   defaultsDeep,
   isDeepEqual,
@@ -29,10 +28,6 @@ describe("Playground", function () {
       () => []
     )(deps);
     assert.deepStrictEqual(expectedResult, result);
-  });
-  it.skip("urljoin", async function () {
-    const result = urljoin("", "/test");
-    assert.equal(result, "/test");
   });
   it("differenceWith array", async function () {
     const result = differenceWith(isDeepEqual, ["a", "b"])(["b", "a"]);
