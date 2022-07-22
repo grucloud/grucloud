@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project subscription-filter
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
+++++ LogStream (1)
+++++ SubscriptionFilter (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ Lambda
+++++ Function (1)
+@endmindmap

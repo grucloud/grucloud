@@ -1,16 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick, map } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, eq, pick, map, set } = require("rubico");
+const { defaultsDeep, when, find, includes } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
-
-const logger = require("@grucloud/core/logger")({
-  prefix: "ClientVpnEndpoint",
-});
 
 const findId = pipe([get("live.ClientVpnEndpointId")]);
 
@@ -44,20 +40,7 @@ const createModel = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createClientVpnEndpoint-property
   create: {
     method: "createClientVpnEndpoint",
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        pick(["ClientVpnEndpointId"]),
-      ]),
-    // isInstanceUp: pipe([
-    //   tap(({ Status }) => {
-    //     assert(Status);
-    //     logger.debug(`createClientVpnEndpoint state: ${Status.Code}`);
-    //   }),
-    //   eq(get("Status.Code"), "available"),
-    // ]),
+    pickCreated: ({ payload }) => pipe([pick(["ClientVpnEndpointId"])]),
     configIsUp: { retryCount: 20 * 10, retryDelay: 5e3 },
   },
   destroy: {
@@ -73,7 +56,7 @@ exports.EC2ClientVpnEndpoint = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live }) => [
+    findDependencies: ({ live, lives }) => [
       {
         type: "Vpc",
         group: "EC2",
@@ -88,7 +71,39 @@ exports.EC2ClientVpnEndpoint = ({ spec, config }) =>
         type: "LogGroup",
         group: "CloudWatchLogs",
         ids: [
-          pipe([() => live, get("ConnectionLogOptions.CloudwatchLogGroup")])(),
+          pipe([
+            () => live,
+            get("ConnectionLogOptions.CloudwatchLogGroup"),
+            (name) =>
+              lives.getByName({
+                name,
+                providerName: config.providerName,
+                type: "LogGroup",
+                group: "CloudWatchLogs",
+              }),
+            get("id"),
+          ])(),
+        ],
+      },
+      {
+        type: "LogStream",
+        group: "CloudWatchLogs",
+        ids: [
+          pipe([
+            () => live,
+            get("ConnectionLogOptions.CloudwatchLogStream"),
+            (logStream) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    providerName: config.providerName,
+                    type: "LogStream",
+                    group: "CloudWatchLogs",
+                  }),
+                find(pipe([eq(get("live.logStreamName"), logStream)])),
+                get("id"),
+              ])(),
+          ])(),
         ],
       },
       {
@@ -109,14 +124,6 @@ exports.EC2ClientVpnEndpoint = ({ spec, config }) =>
           ])(),
         ],
       },
-      //TODO
-      // {
-      //   type: "LogGroupStream",
-      //   group: "CloudWatchLogs",
-      //   ids: [
-      //     pipe([() => live, get("ConnectionLogOptions.CloudwatchLogStream")])(),
-      //   ],
-      // },
     ],
     findName: findNameInTagsOrId({ findId }),
     findId,
@@ -132,6 +139,7 @@ exports.EC2ClientVpnEndpoint = ({ spec, config }) =>
         vpc,
         securityGroups,
         cloudWatchLogGroup,
+        cloudWatchLogStream,
         serverCertificate,
       },
     }) =>
@@ -165,11 +173,16 @@ exports.EC2ClientVpnEndpoint = ({ spec, config }) =>
         ),
         when(
           () => cloudWatchLogGroup,
-          defaultsDeep({
-            ConnectionLogOptions: {
-              CloudwatchLogGroup: getField(cloudWatchLogGroup, "arn"),
-            },
-          })
+          pipe([
+            set("ConnectionLogOptions", {
+              Enabled: true,
+              CloudwatchLogGroup: cloudWatchLogGroup.config.logGroupName,
+              CloudwatchLogStream: getField(
+                cloudWatchLogStream,
+                "logStreamName"
+              ),
+            }),
+          ])
         ),
         when(
           () => serverCertificate,
@@ -177,5 +190,8 @@ exports.EC2ClientVpnEndpoint = ({ spec, config }) =>
             ServerCertificateArn: getField(serverCertificate, "CertificateArn"),
           })
         ),
+        tap((params) => {
+          assert(true);
+        }),
       ])(),
   });

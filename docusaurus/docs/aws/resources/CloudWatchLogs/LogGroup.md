@@ -3,7 +3,7 @@ id: LogGroup
 title: LogGroup
 ---
 
-Manages an Cloud Watch Log Group [Cloud Watch Log Group](https://console.aws.amazon.com/cloudwatch/home?#logsV2:log-groups).
+Manages a [Cloud Watch Log Group](https://console.aws.amazon.com/cloudwatch/home?#logsV2:log-groups).
 
 ## Sample code
 
@@ -41,6 +41,7 @@ exports.createResources = () => [
 
 - [Network Firewall Logging Configuration](../NetworkFirewall/LoggingConfiguration.md)
 - [Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
+- [Log Stream](./LogStream.md)
 
 ## List
 

@@ -455,6 +455,8 @@ module.exports = pipe([
         "ClientConnectOptions.Status",
         "AuthenticationOptions[].MutualAuthentication.ClientRootCertificateChain",
         "SelfServicePortalUrl",
+        "ConnectionLogOptions.CloudwatchLogGroup",
+        "ConnectionLogOptions.CloudwatchLogStream",
       ],
       ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
       propertiesDefault: {
@@ -517,6 +519,7 @@ module.exports = pipe([
         vpc: { type: "Vpc", group: "EC2" },
         securityGroups: { type: "SecurityGroup", group: "EC2" },
         cloudWatchLogGroup: { type: "LogGroup", group: "CloudWatchLogs" },
+        cloudWatchLogStream: { type: "LogStream", group: "CloudWatchLogs" },
         serverCertificate: {
           type: "Certificate",
           group: "ACM",

@@ -24,9 +24,9 @@ const findId = pipe([get("live.arn"), callProp("replace", ":*", "")]);
 const pickId = pick(["logGroupName"]);
 const findName = get("live.logGroupName");
 
-exports.CloudWatchLogsGroup = ({ spec, config }) => {
-  const cloudWatchLogs = createCloudWatchLogs(config);
-  const client = AwsClient({ spec, config })(cloudWatchLogs);
+exports.CloudWatchLogGroup = ({ spec, config }) => {
+  const endpoint = createCloudWatchLogs(config);
+  const client = AwsClient({ spec, config })(endpoint);
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -56,7 +56,7 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
       assign({
         tags: pipe([
           pick(["logGroupName"]),
-          cloudWatchLogs().listTagsLogGroup,
+          endpoint().listTagsLogGroup,
           get("tags"),
         ]),
         arn: pipe([get("arn"), callProp("replace", ":*", "")]),
@@ -86,14 +86,14 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
       get("retentionInDays"),
       pipe([
         pick(["logGroupName", "retentionInDays"]),
-        (params) => cloudWatchLogs().putRetentionPolicy(params),
+        (params) => endpoint().putRetentionPolicy(params),
       ])
     ),
   ]);
 
   const deleteRetentionPolicy = pipe([
     pick(["logGroupName"]),
-    (params) => cloudWatchLogs().deleteRetentionPolicy(params),
+    (params) => endpoint().deleteRetentionPolicy(params),
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#createLogGroup-property
@@ -149,9 +149,9 @@ exports.CloudWatchLogsGroup = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    cannotBeDeleted,
+    //cannotBeDeleted,
     managedByOther: cannotBeDeleted,
-    tagResource: tagResource({ cloudWatchLogs }),
-    untagResource: untagResource({ cloudWatchLogs }),
+    tagResource: tagResource({ endpoint }),
+    untagResource: untagResource({ endpoint }),
   };
 };
