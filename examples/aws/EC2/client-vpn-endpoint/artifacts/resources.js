@@ -17,6 +17,17 @@ exports.createResources = () => [
       DomainName: "server",
     }),
   },
+  { type: "LogGroup", group: "CloudWatchLogs", name: "/client-vpn" },
+  {
+    type: "LogStream",
+    group: "CloudWatchLogs",
+    properties: ({}) => ({
+      logStreamName: "cvpn-endpoint",
+    }),
+    dependencies: ({}) => ({
+      cloudWatchLogGroup: "/client-vpn",
+    }),
+  },
   {
     type: "ClientVpnAuthorizationRule",
     group: "EC2",
@@ -46,9 +57,14 @@ exports.createResources = () => [
           },
         },
       ],
+      ConnectionLogOptions: {
+        Enabled: true,
+      },
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
+      cloudWatchLogGroup: "/client-vpn",
+      cloudWatchLogStream: "/client-vpn::cvpn-endpoint",
       serverCertificate: "server",
       clientCertificate: "client1.domain.tld",
     }),

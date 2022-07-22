@@ -48,10 +48,7 @@ exports.createResources = () => [
 - [Vpc](./Vpc)
 - [Security Group](./SecurityGroup.md)
 - [CloudWatchLogs LogGroup](../CloudWatchLogs/LogGroup.md)
-
-### Used By
-
-- [ClientVpnEndpoint](./ClientVpnEndpoint.md)
+- [CloudWatchLogs LogStream](../CloudWatchLogs/LogStream.md)
 
 ### List
 
