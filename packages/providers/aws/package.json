@@ -49,6 +49,7 @@
     "@aws-sdk/client-efs": "3.130.0",
     "@aws-sdk/client-eks": "3.130.0",
     "@aws-sdk/client-elastic-load-balancing-v2": "3.130.0",
+    "@aws-sdk/client-firehose": "3.130.0",
     "@aws-sdk/client-glue": "3.130.0",
     "@aws-sdk/client-iam": "3.130.0",
     "@aws-sdk/client-kinesis": "3.130.0",
