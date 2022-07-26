@@ -17,13 +17,6 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
 
   const findName = findNameInTagsOrId({ findId });
 
-  const findDependencies = ({ live }) => [
-    {
-      type: "NetworkInterface",
-      group: "EC2",
-      ids: [pipe([() => live, get("NetworkInterfaceId")])()],
-    },
-  ];
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property
   const getList = client.getList({
     method: "describeAddresses",
@@ -75,7 +68,6 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
     findName,

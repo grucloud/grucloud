@@ -35,43 +35,6 @@ exports.AwsNatGateway = ({ spec, config }) => {
 
   const findName = findNameInTagsOrId({ findId });
 
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: [live.SubnetId],
-    },
-    {
-      type: "NetworkInterface",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("NatGatewayAddresses"),
-        pluck("NetworkInterfaceId"),
-      ])(),
-    },
-    {
-      type: "ElasticIpAddress",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("NatGatewayAddresses"),
-        pluck("AllocationId"),
-        map((AllocationId) =>
-          pipe([
-            () =>
-              lives.getByType({
-                type: "ElasticIpAddress",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            find(eq(get("live.AllocationId"), AllocationId)),
-            get("id"),
-          ])()
-        ),
-      ])(),
-    },
-  ];
   //TODO handle deleting
   const isInstanceDown = or([isEmpty, eq(get("State"), "deleted")]);
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeNatGateways-property
@@ -173,7 +136,6 @@ exports.AwsNatGateway = ({ spec, config }) => {
     findId,
     getByName,
     findName,
-    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getList,
     create,

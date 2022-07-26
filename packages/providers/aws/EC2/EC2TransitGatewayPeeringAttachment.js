@@ -19,9 +19,6 @@ const managedByOther =
     pipe([
       () => live,
       get("AccepterTgwInfo.TransitGatewayId"),
-      tap((params) => {
-        assert(true);
-      }),
       (id) =>
         lives.getById({
           id,
@@ -41,9 +38,6 @@ const createModel = ({ config }) => ({
     method: "describeTransitGatewayPeeringAttachments",
     getField: "TransitGatewayPeeringAttachments",
     pickId: pipe([
-      tap(({ TransitGatewayAttachmentId }) => {
-        assert(TransitGatewayAttachmentId);
-      }),
       ({ TransitGatewayAttachmentId }) => ({
         TransitGatewayAttachmentIds: [TransitGatewayAttachmentId],
       }),
@@ -54,13 +48,6 @@ const createModel = ({ config }) => ({
     method: "describeTransitGatewayPeeringAttachments",
     getParam: "TransitGatewayPeeringAttachments",
     transformListPre: () => pipe([filter(not(isInstanceDown))]),
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createTransitGatewayPeeringAttachment-property
   create: {
@@ -81,22 +68,12 @@ const createModel = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteTransitGatewayPeeringAttachment-property
   destroy: {
     method: "deleteTransitGatewayPeeringAttachment",
-    pickId: pipe([
-      tap(({ TransitGatewayAttachmentId }) => {
-        assert(TransitGatewayAttachmentId);
-      }),
-      pick(["TransitGatewayAttachmentId"]),
-    ]),
+    pickId: pipe([pick(["TransitGatewayAttachmentId"])]),
     isInstanceDown,
   },
 });
 
-const findId = pipe([
-  get("live.TransitGatewayAttachmentId"),
-  tap((TransitGatewayAttachmentId) => {
-    assert(TransitGatewayAttachmentId);
-  }),
-]);
+const findId = pipe([get("live.TransitGatewayAttachmentId")]);
 
 const findNamePeeringAttachment =
   ({ config }) =>
@@ -122,9 +99,6 @@ const findNamePeeringAttachment =
             ]),
             transitGatewayAcceptor: pipe([
               get("AccepterTgwInfo.TransitGatewayId"),
-              tap((params) => {
-                assert(true);
-              }),
               (id) =>
                 pipe([
                   () =>
@@ -147,9 +121,6 @@ const findNamePeeringAttachment =
             `tgw-peering-attach::${transitGatewayRequester}::${transitGatewayAcceptor}`,
         ])
       ),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
@@ -159,16 +130,6 @@ exports.EC2TransitGatewayPeeringAttachment = ({ spec, config }) =>
     spec,
     config,
     managedByOther: managedByOther({ config }),
-    findDependencies: ({ live }) => [
-      {
-        type: "TransitGateway",
-        group: "EC2",
-        ids: [
-          live.RequesterTgwInfo.TransitGatewayId,
-          live.AccepterTgwInfo.TransitGatewayId,
-        ],
-      },
-    ],
     findName: findNamePeeringAttachment({ config }),
     findId,
     cannotBeDeleted: eq(get("live.State"), "deleted"),

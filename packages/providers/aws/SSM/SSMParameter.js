@@ -86,13 +86,6 @@ exports.SSMParameter = ({ spec, config }) =>
         assert(ARN);
       }),
     ]),
-    findDependencies: ({ live }) => [
-      {
-        type: "Key",
-        group: "KMS",
-        ids: [live.KeyId],
-      },
-    ],
     getByName: ({ getById }) =>
       pipe([
         ({ name }) => ({ Name: name }),

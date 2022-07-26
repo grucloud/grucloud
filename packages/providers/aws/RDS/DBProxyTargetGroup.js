@@ -57,23 +57,6 @@ exports.DBProxyTargetGroup = ({ spec, config }) =>
     cannotBeDeleted: managedByOther,
     findName: get("live.TargetGroupName"),
     findId: get("live.TargetGroupArn"),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "DBProxy",
-        group: "RDS",
-        ids: [live.DBProxyName],
-      },
-      {
-        type: "DBCluster",
-        group: "RDS",
-        ids: live.DBClusterIdentifiers,
-      },
-      {
-        type: "DBInstance",
-        group: "RDS",
-        ids: live.DBInstanceIdentifiers,
-      },
-    ],
     getList: ({ client, endpoint, getById, config }) =>
       pipe([
         tap((params) => {

@@ -1,7 +1,8 @@
 const assert = require("assert");
 const { assign, map, pipe, tap, get, and, or, switchCase } = require("rubico");
-const { defaultsDeep, when, callProp, isString } = require("rubico/x");
+const { defaultsDeep, when, callProp, isString, uniq } = require("rubico/x");
 const { cloneDeepWith } = require("lodash/fp");
+const { flattenObject } = require("@grucloud/core/Common");
 
 const { replaceWithName } = require("@grucloud/core/Common");
 
@@ -36,12 +37,112 @@ module.exports = pipe([
         },
       },
       dependencies: {
-        role: { type: "Role", group: "IAM" },
-        glueJob: { type: "Job", group: "Glue" },
-        logGroups: { type: "LogGroup", group: "CloudWatchLogs", list: true },
-        lambdaFunctions: { type: "Function", group: "Lambda", list: true },
-        snsTopics: { type: "Topic", group: "SNS", list: true },
-        sqsQueues: { type: "Queue", group: "SQS", list: true },
+        role: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("roleArn"),
+        },
+        glueJob: {
+          type: "Job",
+          group: "Glue",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("definition.States"),
+              flattenObject({ filterKey: (key) => key === "JobName" }),
+              map(
+                pipe([
+                  (id) =>
+                    lives.getById({
+                      id,
+                      type: "Job",
+                      group: "Glue",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])
+              ),
+              //TODO move uniq to flattenObject
+              uniq,
+            ]),
+        },
+        logGroups: {
+          type: "LogGroup",
+          group: "CloudWatchLogs",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("loggingConfiguration.destinations"),
+              pluck("cloudWatchLogsLogGroup"),
+              pluck("logGroupArn"),
+              map((logGroupArn) =>
+                pipe([
+                  () =>
+                    lives.getByType({
+                      type: "LogGroup",
+                      group: "CloudWatchLogs",
+                      providerName: config.providerName,
+                    }),
+                  find(({ id }) => logGroupArn.includes(id)),
+                  get("id"),
+                ])()
+              ),
+            ]),
+        },
+        lambdaFunctions: {
+          type: "Function",
+          group: "Lambda",
+          list: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("definition.States"),
+              flattenObject({ filterKey: (key) => key === "FunctionName" }),
+              map(
+                pipe([
+                  (id) =>
+                    lives.getById({
+                      id,
+                      type: "Function",
+                      group: "Lambda",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])
+              ),
+              //TODO move uniq to flattenObject
+              uniq,
+            ]),
+        },
+        //TODO
+        // snsTopics: {
+        //   type: "Topic",
+        //   group: "SNS",
+        //   list: true,
+        //   dependencyId: ({ lives, config }) => get("WebACLArn"),
+        // },
+        sqsQueues: {
+          type: "Queue",
+          group: "SQS",
+          list: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("definition.States"),
+              flattenObject({ filterKey: (key) => key === "QueueUrl" }),
+              map((QueueUrl) =>
+                pipe([
+                  () =>
+                    lives.getByType({
+                      type: "Queue",
+                      group: "SQS",
+                      providerName: config.providerName,
+                    }),
+                  find(eq(get("live.QueueUrl"), QueueUrl)),
+                  get("id"),
+                ])()
+              ),
+              //TODO move uniq to flattenObject
+              uniq,
+            ]),
+        },
       },
       filterLive: ({ lives, providerConfig }) =>
         pipe([

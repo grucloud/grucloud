@@ -13,7 +13,7 @@ const {
   eq,
   fork,
 } = require("rubico");
-const { defaultsDeep, when, includes } = require("rubico/x");
+const { defaultsDeep, when, includes, pluck } = require("rubico/x");
 
 const AdmZip = require("adm-zip");
 const path = require("path");
@@ -281,25 +281,145 @@ module.exports = pipe([
             ),
           ])(),
       dependencies: {
-        layers: { type: "Layer", group: "Lambda", list: true },
-        role: { type: "Role", group: "IAM" },
-        kmsKey: { type: "Key", group: "KMS" },
-        secret: { type: "Secret", group: "SecretsManager", parent: true },
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-        s3Bucket: {
-          type: "Bucket",
-          group: "S3",
-          parent: true,
-          ignoreOnDestroy: true,
+        layers: {
+          type: "Layer",
+          group: "Lambda",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("Configuration.Layers"),
+              pluck("Arn"),
+              (layersArn) =>
+                pipe([
+                  () =>
+                    lives.getByType({
+                      providerName: config.providerName,
+                      type: "Layer",
+                      group: "Lambda",
+                    }),
+                  filter(
+                    pipe([
+                      get("live.LayerVersionArn"),
+                      removeVersion,
+                      (layerVersionArn) =>
+                        pipe([
+                          () => layersArn,
+                          map(removeVersion),
+                          includes(layerVersionArn),
+                        ])(),
+                    ])
+                  ),
+                ])(),
+              pluck("id"),
+            ]),
         },
-        graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
-        dynamoDbTable: { type: "Table", group: "DynamoDB", parent: true },
-        snsTopic: { type: "Topic", group: "SNS", parent: true },
-        dbCluster: { type: "DBCluster", group: "RDS", parent: true },
-        efsAccessPoint: { type: "AccessPoint", group: "EFS", list: true },
-        apiGatewayV2s: { type: "Api", group: "ApiGatewayV2", list: true },
-        ssmParameters: { type: "Parameter", group: "SSM", list: true },
+        role: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: () => get("Configuration.Role"),
+        },
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: () => get("Configuration.KMSKeyArn"),
+        },
+
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: () => get("Configuration.VpcConfig.SubnetIds"),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: () => get("Configuration.VpcConfig.SecurityGroupIds"),
+        },
+        //TODO
+        // s3Bucket: {
+        //   type: "Bucket",
+        //   group: "S3",
+        //   parent: true,
+        //   ignoreOnDestroy: true,
+        // },
+        efsAccessPoint: {
+          type: "AccessPoint",
+          group: "EFS",
+          list: true,
+          dependencyIds: () =>
+            pipe([get("Configuration.FileSystemConfigs"), pluck("Arn")]),
+        },
+        secrets: {
+          type: "Secret",
+          group: "SecretsManager",
+          parent: true,
+          // dependencyIds: findDependenciesInEnvironment({
+          //   pathLive: "live.ARN",
+          //   type: "Secret",
+          //   group: "SecretsManager",
+          // }),
+        },
+        graphqlApi: {
+          type: "GraphqlApi",
+          group: "AppSync",
+          parent: true,
+          // dependencyIds: findDependenciesInEnvironment({
+          //   pathLive: "live.ARN",
+          //   type: "GraphqlApi",
+          //   group: "AppSync",
+          // }),
+        },
+        dynamoDbTable: {
+          type: "Table",
+          group: "DynamoDB",
+          parent: true,
+          // dependencyIds: findDependenciesInEnvironment({
+          //   pathLive: "live.ARN",
+          //   type: "GraphqlApi",
+          //   group: "AppSync",
+          // }),
+        },
+        snsTopic: {
+          type: "Topic",
+          group: "SNS",
+          parent: true,
+          // dependencyIds: findDependenciesInEnvironment({
+          //   pathLive: "live.ARN",
+          //   type: "GraphqlApi",
+          //   group: "AppSync",
+          // }),
+        },
+        dbCluster: {
+          type: "DBCluster",
+          group: "RDS",
+          parent: true,
+          // dependencyIds: findDependenciesInEnvironment({
+          //   pathLive: "live.ARN",
+          //   type: "GraphqlApi",
+          //   group: "AppSync",
+          // }),
+        },
+        apiGatewayV2s: {
+          type: "Api",
+          group: "ApiGatewayV2",
+          list: true,
+          // dependencyIds: findDependenciesInEnvironment({
+          //   pathLive: "live.ARN",
+          //   type: "GraphqlApi",
+          //   group: "AppSync",
+          // }),
+        },
+        ssmParameters: {
+          type: "Parameter",
+          group: "SSM",
+          list: true,
+          // dependencyIds: findDependenciesInEnvironment({
+          //   pathLive: "live.ARN",
+          //   type: "GraphqlApi",
+          //   group: "AppSync",
+          // }),
+        },
       },
     },
     {

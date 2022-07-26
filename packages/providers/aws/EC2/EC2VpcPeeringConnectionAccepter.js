@@ -28,21 +28,10 @@ const createModel = ({ config }) => ({
           ])
         ),
       ]),
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(endpoint);
-        }),
-      ]),
   },
 });
 
-const findId = pipe([
-  get("live.VpcPeeringConnectionId"),
-  tap((VpcPeeringConnectionId) => {
-    assert(VpcPeeringConnectionId);
-  }),
-]);
+const findId = pipe([get("live.VpcPeeringConnectionId")]);
 
 const findName =
   ({ config }) =>
@@ -72,13 +61,6 @@ exports.EC2VpcPeeringConnectionAccepter = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live }) => [
-      {
-        type: "VpcPeeringConnection",
-        group: "EC2",
-        ids: [live.VpcPeeringConnectionId],
-      },
-    ],
     findName: findName({ config }),
     findId,
     cannotBeDeleted: () => true,

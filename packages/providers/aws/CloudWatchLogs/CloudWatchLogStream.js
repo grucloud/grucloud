@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, fork, switchCase } = require("rubico");
-const { defaultsDeep, find, callProp, identity } = require("rubico/x");
+const { pipe, tap, get, pick, fork, switchCase, any } = require("rubico");
+const { defaultsDeep, callProp } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
@@ -20,6 +20,15 @@ const logStreamNameFromArn = pipe([
   tap((logStreamName) => {
     assert(logStreamName);
   }),
+]);
+
+const managedByOther = pipe([
+  get("live.arn"),
+  (logGroupName) =>
+    pipe([
+      () => ["log-group:RDSOSMetrics"],
+      any((prefix) => logGroupName.includes(prefix)),
+    ])(),
 ]);
 
 const createModel = ({ config }) => ({
@@ -67,24 +76,7 @@ exports.CloudWatchLogStream = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "LogGroup",
-        group: "CloudWatchLogs",
-        ids: [
-          pipe([
-            () =>
-              lives.getByType({
-                providerName: config.providerName,
-                type: "LogGroup",
-                group: "CloudWatchLogs",
-              }),
-            find(pipe([({ id }) => live.arn.includes(id)])),
-            get("id"),
-          ])(),
-        ],
-      },
-    ],
+    managedByOther,
     findName: ({ live, lives }) =>
       pipe([
         () => live,
@@ -101,12 +93,6 @@ exports.CloudWatchLogStream = ({ spec, config }) =>
             method: "describeLogStreams",
             getParam: "logStreams",
             config,
-            decorate: () =>
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-              ]),
           }),
       ])(),
     getByName: getByNameCore,

@@ -56,13 +56,6 @@ exports.NetworkManagerSite = ({ spec, config }) =>
     findName: findNameInTagsOrId({ findId }),
     findId,
     pickId: pipe([pick(["SiteArn"])]),
-    findDependencies: ({ live }) => [
-      {
-        type: "GlobalNetwork",
-        group: "NetworkManager",
-        ids: [live.GlobalNetworkId],
-      },
-    ],
     getByName: getByNameCore,
     tagResource: tagResource({ property: "SiteArn" }),
     untagResource: untagResource({ property: "SiteArn" }),

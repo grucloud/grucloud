@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, eq, fork } = require("rubico");
-const { defaultsDeep, first, identity, find } = require("rubico/x");
+const { defaultsDeep, first, find } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
@@ -17,9 +17,6 @@ const cannotBeDeleted =
         }),
       find(eq(get("live.Id"), live.ResolverRuleId)),
       get("cannotBeDeleted"),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
 const model = ({ config }) => ({
@@ -30,38 +27,17 @@ const model = ({ config }) => ({
   getById: {
     method: "getResolverRuleAssociation",
     getField: "ResolverRuleAssociation",
-    pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      tap(({ Id }) => {
-        assert(Id);
-      }),
-      ({ Id }) => ({ ResolverRuleAssociationId: Id }),
-    ]),
+    pickId: pipe([({ Id }) => ({ ResolverRuleAssociationId: Id })]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#listResolverRuleAssociations-property
   getList: {
     method: "listResolverRuleAssociations",
     getParam: "ResolverRuleAssociations",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#associateResolverRule-property
   create: {
     method: "associateResolverRule",
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("ResolverRuleAssociation"),
-      ]),
+    pickCreated: ({ payload }) => pipe([get("ResolverRuleAssociation")]),
     isInstanceUp: pipe([eq(get("Status"), "COMPLETE")]),
     isInstanceError: pipe([eq(get("Status"), "FAILED")]),
     getErrorMessage: get("StatusMessage", "error"),
@@ -111,42 +87,7 @@ exports.Route53ResolverRuleAssociation = ({ spec, config }) =>
           assert(Name);
         }),
       ])(),
-    findId: pipe([
-      get("live.Id"),
-      tap((Id) => {
-        assert(Id);
-      }),
-    ]),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Rule",
-        group: "Route53Resolver",
-        ids: [
-          pipe([
-            () =>
-              lives.getByType({
-                type: "Rule",
-                group: "Route53Resolver",
-                providerName: config.providerName,
-              }),
-            find(eq(get("live.Id"), live.ResolverRuleId)),
-            get("id"),
-          ])(),
-        ],
-      },
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [
-          pipe([
-            tap((params) => {
-              assert(live.VPCId);
-            }),
-            () => live.VPCId,
-          ])(),
-        ],
-      },
-    ],
+    findId: pipe([get("live.Id")]),
     getByName: ({ getList, endpoint }) =>
       pipe([
         ({ name }) => ({

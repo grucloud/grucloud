@@ -155,48 +155,6 @@ const findName =
       }),
     ])();
 
-const findDependencies =
-  ({ config }) =>
-  ({ live, lives }) =>
-    [
-      {
-        type: "SecurityGroup",
-        group: "EC2",
-        ids: pipe([
-          () => [
-            get("GroupId"),
-            get("IpPermission.UserIdGroupPairs[0].GroupId"),
-          ],
-          map((fn) => fn(live)),
-          uniq,
-          filter(not(isEmpty)),
-        ])(),
-      },
-      {
-        type: "Cluster",
-        group: "EKS",
-        ids: [
-          pipe([
-            () =>
-              lives.getById({
-                id: live.GroupId,
-                type: "SecurityGroup",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            tap((resource) => {
-              if (!resource) {
-                assert(resource, "cannot find security group in cache");
-              }
-            }),
-            ({ live }) => ({ live, lives }),
-            findEksCluster({ config }),
-            get("id"),
-          ])(),
-        ],
-      },
-    ];
-
 const SecurityGroupRuleBase = ({ config }) => {
   const ec2 = createEC2(config);
   const isDefault =
@@ -545,7 +503,6 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
       }),
     ]),
     findName: findName({ kind: "ingress", config }),
-    findDependencies: findDependencies({ config }),
     findNamespace,
     getByName: getByName({ kind: "ingress", IsEgress: false, config }),
     getList: getList({ kind: "ingress", IsEgress: false }),
@@ -586,7 +543,6 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
 
   return {
     spec,
-    findDependencies: findDependencies({ config }),
     findNamespace,
     findId: pipe([
       get("live"),

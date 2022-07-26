@@ -36,19 +36,17 @@ exports.CloudWatchLogGroup = ({ spec, config }) => {
     },
   ];
 
-  const cannotBeDeleted = pipe([
-    tap((params) => {
-      assert(true);
-    }),
+  const managedByOther = pipe([
     get("live.logGroupName"),
     (logGroupName) =>
       pipe([
-        () => ["/aws/apigateway/" /*, "/aws/lambda/"*/, "/ecs/"],
+        () => [
+          "/aws/apigateway/" /*, "/aws/lambda/"*/,
+          "/ecs/",
+          "RDSOSMetrics",
+        ],
         any((prefix) => logGroupName.startsWith(prefix)),
       ])(),
-    tap((params) => {
-      assert(true);
-    }),
   ]);
 
   const decorate = () =>
@@ -149,8 +147,7 @@ exports.CloudWatchLogGroup = ({ spec, config }) => {
     getList,
     configDefault,
     findDependencies,
-    //cannotBeDeleted,
-    managedByOther: cannotBeDeleted,
+    managedByOther,
     tagResource: tagResource({ endpoint }),
     untagResource: untagResource({ endpoint }),
   };

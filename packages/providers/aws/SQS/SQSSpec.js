@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, get, eq } = require("rubico");
+const { pipe, assign, map, omit, tap, get, eq, flatMap } = require("rubico");
 const { when, defaultsDeep } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
@@ -8,6 +8,7 @@ const {
   isOurMinionObject,
   assignPolicyAccountAndRegion,
 } = require("../AwsCommon");
+const { findInStatement } = require("../IAM/AwsIamCommon");
 
 const { SQSQueue } = require("./SQSQueue");
 
@@ -32,7 +33,18 @@ module.exports = pipe([
         },
       },
       dependencies: {
-        snsTopics: { type: "Topic", group: "SNS", list: true },
+        snsTopics: {
+          type: "Topic",
+          group: "SNS",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("Attributes.Policy.Statement", []),
+              flatMap(
+                findInStatement({ type: "Topic", group: "SNS", lives, config })
+              ),
+            ]),
+        },
       },
       omitProperties: [
         "QueueName",

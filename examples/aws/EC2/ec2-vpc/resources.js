@@ -48,8 +48,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpc-ec2-example::subnet",
     properties: ({ config }) => ({
-      CidrBlock: "10.1.0.0/24",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-ec2-example",
@@ -176,11 +177,11 @@ exports.createResources = () => [
           })}`,
         },
       ],
+      UserData:
+        "#!/bin/bash\necho \"Mounting /dev/xvdf\"\nwhile ! ls /dev/xvdf > /dev/null\ndo \n  sleep 1\ndone\nif [ `file -s /dev/xvdf | cut -d ' ' -f 2` = 'data' ]\nthen\n  echo \"Formatting /dev/xvdf\"\n  mkfs.xfs /dev/xvdf\nfi\nmkdir -p /data\nmount /dev/xvdf /data\necho /dev/xvdf /data defaults,nofail 0 2 >> /etc/fstab\n",
       Image: {
         Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
       },
-      UserData:
-        "#!/bin/bash\necho \"Mounting /dev/xvdf\"\nwhile ! ls /dev/xvdf > /dev/null\ndo \n  sleep 1\ndone\nif [ `file -s /dev/xvdf | cut -d ' ' -f 2` = 'data' ]\nthen\n  echo \"Formatting /dev/xvdf\"\n  mkfs.xfs /dev/xvdf\nfi\nmkdir -p /data\nmount /dev/xvdf /data\necho /dev/xvdf /data defaults,nofail 0 2 >> /etc/fstab\n",
     }),
     dependencies: ({}) => ({
       subnets: ["vpc-ec2-example::subnet"],

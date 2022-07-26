@@ -13,21 +13,12 @@ const createModel = ({ config }) => ({
   destroy: {
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateDhcpOptions-property
     method: "associateDhcpOptions",
-    pickId: pipe([
-      tap(({ VpcId }) => {
-        assert(VpcId);
-      }),
-      ({ VpcId }) => ({ VpcId, DhcpOptionsId: "default" }),
-    ]),
+    pickId: pipe([({ VpcId }) => ({ VpcId, DhcpOptionsId: "default" })]),
   },
 });
 
 const findId = pipe([
   get("live"),
-  tap(({ DhcpOptionsId, VpcId }) => {
-    assert(DhcpOptionsId);
-    assert(VpcId);
-  }),
   ({ DhcpOptionsId, VpcId }) =>
     `dhcp-options-assoc::${DhcpOptionsId}::${VpcId}`,
 ]);
@@ -38,18 +29,6 @@ exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live }) => [
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [live.VpcId],
-      },
-      {
-        type: "DhcpOptions",
-        group: "EC2",
-        ids: [live.DhcpOptionsId],
-      },
-    ],
     findName: ({ live, lives }) =>
       pipe([
         fork({
@@ -92,15 +71,11 @@ exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
               group: "EC2",
             }),
           pluck("live"),
-
           filter(
             and([
               get("DhcpOptionsId"),
               not(({ DhcpOptionsId }) =>
                 pipe([
-                  tap((params) => {
-                    assert(true);
-                  }),
                   () =>
                     lives.getById({
                       id: DhcpOptionsId,

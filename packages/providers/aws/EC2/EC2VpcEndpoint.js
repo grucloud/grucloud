@@ -9,11 +9,9 @@ const {
   switchCase,
   fork,
   or,
-  flatMap,
 } = require("rubico");
 const {
   defaultsDeep,
-  pluck,
   when,
   callProp,
   find,
@@ -27,20 +25,13 @@ const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const {
-  createEC2,
-  tagResource,
-  untagResource,
-  findDependenciesVpc,
-} = require("./EC2Common");
-const { findInStatement } = require("../IAM/AwsIamCommon");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const ignoreErrorCodes = ["InvalidVpcEndpointId.NotFound"];
+
 const findId = get("live.VpcEndpointId");
+
 const pickId = pipe([
-  tap(({ VpcEndpointId }) => {
-    assert(VpcEndpointId);
-  }),
   ({ VpcEndpointId }) => ({ VpcEndpointIds: [VpcEndpointId] }),
 ]);
 
@@ -136,52 +127,8 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
     ]),
   ]);
 
-  const findDependencies = ({ live, lives, config }) => [
-    findDependenciesVpc({ live }),
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: live.SubnetIds,
-    },
-    {
-      type: "RouteTable",
-      group: "EC2",
-      ids: live.RouteTableIds,
-    },
-    {
-      type: "SecurityGroup",
-      group: "EC2",
-      ids: pipe([() => live, get("Groups"), pluck("GroupId")])(),
-    },
-    {
-      type: "Firewall",
-      group: "NetworkFirewall",
-      ids: [
-        pipe([
-          () => live,
-          get("Tags"),
-          find(eq(get("Key"), "Firewall")),
-          get("Value"),
-        ])(),
-      ],
-    },
-    {
-      type: "Role",
-      group: "IAM",
-      ids: pipe([
-        () => live,
-        get("PolicyDocument.Statement", []),
-        flatMap(findInStatement({ type: "Role", group: "IAM", lives, config })),
-        pluck("id"),
-      ])(),
-    },
-  ];
-
   const decorate = () =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       when(
         get("PolicyDocument"),
         assign({ PolicyDocument: pipe([get("PolicyDocument"), JSON.parse]) })
@@ -286,7 +233,6 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
     findId,
     cannotBeDeleted,
     managedByOther,
-    findDependencies,
     getByName,
     getById,
     findName,

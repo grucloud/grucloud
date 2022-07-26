@@ -104,6 +104,7 @@ const ResourceVarNameDefault = pipe([
 exports.ResourceVarNameDefault = ResourceVarNameDefault;
 
 const findDependencyNames = ({
+  dependencyKey,
   list,
   type,
   group,
@@ -124,7 +125,16 @@ const findDependencyNames = ({
     tap((dependencies) => {
       //console.log(resource.uri, "dependencies ", dependencies);
     }),
-    find(eq(get("groupType"), `${group}::${type}`)),
+    find(
+      and([
+        eq(get("groupType"), `${group}::${type}`),
+        switchCase([
+          get("dependencyKey"),
+          eq(get("dependencyKey"), dependencyKey),
+          () => true,
+        ]),
+      ])
+    ),
     get("ids"),
     tap((ids) => {
       assert(true);
@@ -424,7 +434,10 @@ const dependencyValue = ({ key, list, resource, providerConfig }) =>
         if (size(dependencyVarNames) > 1) {
           assert(key);
           assert(resource);
-          assert(false, `key ${key} has multiple dependencies`);
+          assert(
+            false,
+            `key ${key} has multiple dependencies for ${resource.groupType}`
+          );
         }
       }
     }),
@@ -457,10 +470,11 @@ const buildDependencies = ({
         assert(providerConfig);
       }),
       () => dependencies,
-      map.entries(([key, dependency]) => [
-        key,
+      map.entries(([dependencyKey, dependency]) => [
+        dependencyKey,
         pipe([
           () => dependency,
+          defaultsDeep({ dependencyKey }),
           tap((params) => {
             assert(true);
           }),
@@ -469,6 +483,7 @@ const buildDependencies = ({
           }),
           ({ findDependencyNames }) =>
             findDependencyNames({
+              dependencyKey,
               resource,
               lives,
               ...dependency,

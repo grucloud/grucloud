@@ -26,6 +26,8 @@ const {
   unless,
   when,
   append,
+  values,
+  first,
 } = require("rubico/x");
 const { compareAws } = require("../AwsCommon");
 
@@ -70,53 +72,16 @@ const getHostedZone = ({
       ]),
     ]),
   ])();
+
 const removeLastCharacter = callProp("slice", 0, -1);
+exports.removeLastCharacter = removeLastCharacter;
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
-exports.Route53Record = ({ spec, config }) => {
-  const { providerName } = config;
-  const route53 = createRoute53(config);
-  //const client = AwsClient({ spec, config })(route53);
-
-  const findDependencies = ({ live, lives }) => [
-    { type: "HostedZone", group: "Route53", ids: [live.HostedZoneId] },
-    {
-      type: "HealthCheck",
-      group: "Route53",
-      ids: pipe([() => [live.HealthCheckId], filter(not(isEmpty))])(),
-    },
-    {
-      type: "VpcEndpoint",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("AliasTarget.DNSName", ""),
-        removeLastCharacter,
-        (DNSName) =>
-          pipe([
-            () =>
-              lives.getByType({
-                type: "VpcEndpoint",
-                group: "EC2",
-                providerName,
-              }),
-            filter(({ live: endpointLive }) =>
-              pipe([
-                () => DNSName,
-                includes(
-                  pipe([() => endpointLive, get("DnsEntries[0].DnsName")])()
-                ),
-              ])()
-            ),
-            map(pick(["id", "name"])),
-          ])(),
-      ])(),
-    },
-    {
-      type: "ElasticIpAddress",
-      group: "EC2",
-      ids: pipe([
-        () => live,
+const Route53RecordDependencies = {
+  elasticIpAddress: {
+    type: "ElasticIpAddress",
+    group: "EC2",
+    dependencyId: ({ lives, config }) =>
+      pipe([
         get("ResourceRecords"),
         map(({ Value }) =>
           pipe([
@@ -124,20 +89,21 @@ exports.Route53Record = ({ spec, config }) => {
               lives.getByType({
                 type: "ElasticIpAddress",
                 group: "EC2",
-                providerName,
+                providerName: config.providerName,
               }),
             find(eq(get("live.PublicIp"), Value)),
             pick(["id", "name"]),
           ])()
         ),
         filter(not(isEmpty)),
-      ])(),
-    },
-    {
-      type: "LoadBalancer",
-      group: "ElasticLoadBalancingV2",
-      ids: pipe([
-        () => live,
+        first,
+      ]),
+  },
+  loadBalancer: {
+    type: "LoadBalancer",
+    group: "ElasticLoadBalancingV2",
+    dependencyId: ({ lives, config }) =>
+      pipe([
         get("AliasTarget.DNSName", ""),
         removeLastCharacter,
         (DNSName) =>
@@ -146,67 +112,43 @@ exports.Route53Record = ({ spec, config }) => {
               lives.getByType({
                 type: "LoadBalancer",
                 group: "ElasticLoadBalancingV2",
-                providerName,
+                providerName: config.providerName,
               }),
-            filter(({ live }) =>
-              pipe([() => DNSName, includes(live.DNSName)])()
-            ),
-            map(pick(["id", "name"])),
+            find(({ live }) => pipe([() => DNSName, includes(live.DNSName)])()),
+            pick(["id", "name"]),
           ])(),
-      ])(),
-    },
-    {
-      type: "UserPoolDomain",
-      group: "CognitoIdentityServiceProvider",
-      ids: pipe([
-        () => live,
-        get("AliasTarget.DNSName", ""),
-        removeLastCharacter,
-        (DNSName) =>
-          pipe([
-            () =>
-              lives.getByType({
-                type: "UserPoolDomain",
-                group: "CognitoIdentityServiceProvider",
-                providerName,
-              }),
-            filter(({ live }) =>
-              pipe([() => DNSName, includes(live.CloudFrontDistribution)])()
-            ),
-            map(pick(["id", "name"])),
-          ])(),
-      ])(),
-    },
-    {
-      type: "DomainName",
-      group: "ApiGatewayV2",
-      ids: pipe([
-        () => live,
-        get("AliasTarget.DNSName", ""),
-        removeLastCharacter,
-        (DNSName) =>
-          pipe([
-            () =>
-              lives.getByType({
-                type: "DomainName",
-                group: "ApiGatewayV2",
-                providerName,
-              }),
-            filter(
+      ]),
+  },
+  certificate: {
+    type: "Certificate",
+    group: "ACM",
+    dependencyId:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () =>
+            lives.getByType({
+              type: "Certificate",
+              group: "ACM",
+              providerName: config.providerName,
+            }),
+          find(
+            and([
               eq(
-                get("live.DomainNameConfigurations[0].ApiGatewayDomainName"),
-                DNSName
-              )
-            ),
-            map(pick(["id", "name"])),
-          ])(),
-      ])(),
-    },
-    {
-      type: "Distribution",
-      group: "CloudFront",
-      ids: pipe([
-        () => live,
+                get("live.DomainValidationOptions[0].ResourceRecord.Name"),
+                get("Name")(live)
+              ),
+              () => eq(get("Type"), "CNAME")(live),
+            ])
+          ),
+          pick(["id", "name"]),
+        ])(),
+  },
+  distribution: {
+    type: "Distribution",
+    group: "CloudFront",
+    dependencyId: ({ lives, config }) =>
+      pipe([
         get("AliasTarget.DNSName", ""),
         removeLastCharacter,
         (DNSName) =>
@@ -215,64 +157,138 @@ exports.Route53Record = ({ spec, config }) => {
               lives.getByType({
                 type: "Distribution",
                 group: "CloudFront",
-                providerName,
+                providerName: config.providerName,
               }),
-            filter(eq(get("live.DomainName"), DNSName)),
-            map(pick(["id", "name"])),
+            find(eq(get("live.DomainName"), DNSName)),
+            pick(["id", "name"]),
           ])(),
-      ])(),
-    },
-    {
-      type: "Certificate",
-      group: "ACM",
-      ids: pipe([
-        () =>
-          lives.getByType({
-            type: "Certificate",
-            group: "ACM",
-            providerName,
-          }),
-        filter(
-          and([
-            eq(
-              get("live.DomainValidationOptions[0].ResourceRecord.Name"),
-              get("Name")(live)
+      ]),
+  },
+  userPoolDomain: {
+    type: "UserPoolDomain",
+    group: "CognitoIdentityServiceProvider",
+    dependencyId: ({ lives, config }) =>
+      pipe([
+        get("AliasTarget.DNSName", ""),
+        removeLastCharacter,
+        (DNSName) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "UserPoolDomain",
+                group: "CognitoIdentityServiceProvider",
+                providerName: config.providerName,
+              }),
+            find(({ live }) =>
+              pipe([
+                () => DNSName,
+                //TODO
+                includes(live.CloudFrontDistribution),
+              ])()
             ),
-            () => eq(get("Type"), "CNAME")(live),
-          ])
-        ),
-        map(pick(["id", "name"])),
-      ])(),
-    },
-  ];
+            pick(["id", "name"]),
+          ])(),
+      ]),
+  },
+  apiGatewayV2DomainName: {
+    type: "DomainName",
+    group: "ApiGatewayV2",
+    dependencyId: ({ lives, config }) =>
+      pipe([
+        get("AliasTarget.DNSName", ""),
+        removeLastCharacter,
+        (DNSName) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "DomainName",
+                group: "ApiGatewayV2",
+                providerName: config.providerName,
+              }),
+            find(
+              eq(
+                get("live.DomainNameConfigurations[0].ApiGatewayDomainName"),
+                DNSName
+              )
+            ),
+            pick(["id", "name"]),
+          ])(),
+      ]),
+  },
+  vpcEndpoint: {
+    type: "VpcEndpoint",
+    group: "EC2",
+    dependencyId: ({ lives, config }) =>
+      pipe([
+        get("AliasTarget.DNSName", ""),
+        removeLastCharacter,
+        (DNSName) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "VpcEndpoint",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            tap((params) => {
+              assert(true);
+            }),
+            find(({ live: endpointLive }) =>
+              pipe([
+                () => DNSName,
+                includes(
+                  pipe([() => endpointLive, get("DnsEntries[0].DnsName")])()
+                ),
+              ])()
+            ),
+            tap((params) => {
+              assert(true);
+            }),
+            pick(["id", "name"]),
+          ])(),
+      ]),
+  },
+};
+
+exports.Route53RecordDependencies = Route53RecordDependencies;
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
+exports.Route53Record = ({ spec, config }) => {
+  const { providerName } = config;
+  const route53 = createRoute53(config);
 
   const findNameInDependencies = ({ live, lives }) =>
     pipe([
-      () => ({ live, lives }),
-      findDependencies,
-      filter(not(eq(get("type"), "HostedZone"))),
+      () => Route53RecordDependencies,
+      values,
       tap((params) => {
         assert(true);
       }),
-      find(pipe([get("ids"), not(isEmpty)])),
+      //TODO
+      map(({ type, group, dependencyId }) =>
+        pipe([
+          () => live,
+          dependencyId({ lives, config }),
+          (id) => ({ type, group, id }),
+        ])()
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+      find(pipe([get("id"), not(isEmpty)])),
       unless(
         isEmpty,
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          tap(({ ids }) => {
-            if (!ids[0].name) {
-              assert(ids[0].name);
-            }
+          tap(({ id }) => {
+            assert(id);
           }),
           switchCase([
             eq(get("type"), "VpcEndpoint"),
             ({ group, type }) =>
               `record::${group}::${type}::${live.Type}::${live.Name}`,
             pipe([
-              ({ group, type, ids }) =>
-                `record::${group}::${type}::${live.Type}::${ids[0].name}`,
+              ({ group, type, id }) =>
+                `record::${group}::${type}::${live.Type}::${id.name}`,
               when(() => live.SetIdentifier, append(`::${live.SetIdentifier}`)),
             ]),
           ]),
@@ -665,7 +681,6 @@ exports.Route53Record = ({ spec, config }) => {
 
   return {
     spec,
-    findDependencies,
     findNamespace,
     findId,
     getByName,

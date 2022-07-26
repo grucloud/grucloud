@@ -8,6 +8,23 @@ exports.createAppSync = createEndpoint("appsync", "AppSync");
 
 exports.ignoreErrorCodes = ["NotFoundException"];
 
+exports.findDependenciesGraphqlId =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(live.apiId);
+      }),
+      () =>
+        lives.getByType({
+          type: "GraphqlApi",
+          group: "AppSync",
+          providerName: config.providerName,
+        }),
+      find(eq(get("live.apiId"), live.apiId)),
+      get("id"),
+    ])();
+
 exports.findDependenciesGraphqlApi = ({ live, lives, config }) => ({
   type: "GraphqlApi",
   group: "AppSync",
@@ -22,17 +39,8 @@ exports.findDependenciesGraphqlApi = ({ live, lives, config }) => ({
           group: "AppSync",
           providerName: config.providerName,
         }),
-      tap((param) => {
-        assert(true);
-      }),
       find(eq(get("live.apiId"), live.apiId)),
-      tap((param) => {
-        assert(true);
-      }),
       get("id"),
-      tap((param) => {
-        assert(true);
-      }),
     ])(),
   ],
 });

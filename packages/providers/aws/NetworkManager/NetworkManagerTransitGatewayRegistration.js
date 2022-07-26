@@ -16,10 +16,6 @@ const createModel = ({ config }) => ({
   getById: {
     method: "getTransitGatewayRegistrations",
     pickId: pipe([
-      tap(({ GlobalNetworkId, TransitGatewayArn }) => {
-        assert(GlobalNetworkId);
-        assert(TransitGatewayArn);
-      }),
       ({ GlobalNetworkId, TransitGatewayArn }) => ({
         GlobalNetworkId,
         TransitGatewayArns: [TransitGatewayArn],
@@ -86,29 +82,6 @@ exports.NetworkManagerTransitGatewayRegistration = ({ spec, config }) =>
           `tgw-assoc::${globalNetworkName}::${transitGatewayName}`,
       ])(),
     findId,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "GlobalNetwork",
-        group: "NetworkManager",
-        ids: [live.GlobalNetworkId],
-      },
-      {
-        type: "TransitGateway",
-        group: "EC2",
-        ids: [
-          pipe([
-            () =>
-              lives.getByType({
-                type: "TransitGateway",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            find(eq(get("live.TransitGatewayArn"), live.TransitGatewayArn)),
-            get("id"),
-          ])(),
-        ],
-      },
-    ],
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#getTransitGatewayRegistrations-property
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

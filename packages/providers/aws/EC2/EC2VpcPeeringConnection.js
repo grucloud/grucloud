@@ -171,13 +171,6 @@ exports.EC2VpcPeeringConnection = ({ spec, config }) =>
     spec,
     config,
     managedByOther: managedByOther({ config }),
-    findDependencies: ({ live }) => [
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [live.RequesterVpcInfo.VpcId, live.AccepterVpcInfo.VpcId],
-      },
-    ],
     findName: findName({ config }),
     findId,
     cannotBeDeleted: eq(get("live.Status.Code"), "failed"),

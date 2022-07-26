@@ -1,14 +1,25 @@
 const assert = require("assert");
-const { tap, pipe, assign, map, omit, pick, get, or } = require("rubico");
+const {
+  tap,
+  pipe,
+  assign,
+  map,
+  omit,
+  pick,
+  get,
+  or,
+  not,
+  filter,
+} = require("rubico");
 const {
   when,
   includes,
-  isObject,
+  pluck,
   callProp,
   defaultsDeep,
+  isEmpty,
+  last,
 } = require("rubico/x");
-
-const mime = require("mime-types");
 
 const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 
@@ -60,9 +71,46 @@ module.exports = pipe([
           type: "OriginAccessIdentity",
           group: "CloudFront",
           list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("Policy.Statement", []),
+              pluck("Principal"),
+              pluck("AWS"),
+              filter(not(isEmpty)),
+              map(
+                pipe([
+                  callProp("split", " "),
+                  last,
+                  (id) =>
+                    lives.getById({
+                      id,
+                      type: "OriginAccessIdentity",
+                      group: "CloudFront",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])
+              ),
+            ]),
         },
-        snsTopic: { type: "Topic", group: "SNS" },
-        lambdaFunction: { type: "Function", group: "Lambda" },
+        snsTopic: {
+          type: "Topic",
+          group: "SNS",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("NotificationConfiguration.TopicConfigurations"),
+              pluck("TopicArn"),
+            ]),
+        },
+        lambdaFunction: {
+          type: "Function",
+          group: "Lambda",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("NotificationConfiguration.LambdaFunctionConfigurations"),
+              pluck("LambdaFunctionArn"),
+            ]),
+        },
       },
       compare: compareS3({
         filterTarget: () =>
@@ -250,7 +298,12 @@ module.exports = pipe([
     {
       type: "Object",
       dependencies: {
-        bucket: { type: "Bucket", group: "S3", parent: true },
+        bucket: {
+          type: "Bucket",
+          group: "S3",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("Bucket"),
+        },
       },
       Client: AwsS3Object,
       compare: compareS3Object,

@@ -80,6 +80,8 @@ const canDeleteRecord = (zoneName) =>
 const findNsRecordByName = (name) =>
   find(and([eq(get("Name"), name), eq(get("Type"), "NS")]));
 
+exports.findNsRecordByName = findNsRecordByName;
+
 const findDnsServers = (live) =>
   pipe([
     () => live.RecordSet,
@@ -90,6 +92,8 @@ const findDnsServers = (live) =>
       assert(true);
     }),
   ])();
+
+exports.findDnsServers = findDnsServers;
 
 const decorate = ({ endpoint }) =>
   pipe([
@@ -142,58 +146,6 @@ exports.Route53HostedZone = ({ spec, config }) => {
 
   //Check for the final dot
   const findName = get("live.Name");
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Domain",
-      group: "Route53Domains",
-      ids: pipe([
-        () =>
-          lives.getByType({
-            type: "Domain",
-            group: "Route53Domains",
-            providerName,
-          }),
-        filter(
-          pipe([
-            get("live.DomainName"),
-            (DomainName) =>
-              pipe([() => live.Name.slice(0, -1), includes(DomainName)])(),
-          ])
-        ),
-        pluck("id"),
-      ])(),
-    },
-    {
-      type: "HostedZone",
-      group: "Route53",
-      ids: pipe([
-        () =>
-          lives.getByType({
-            type: "HostedZone",
-            group: "Route53",
-            providerName,
-          }),
-        filter(not(eq(get("live.Name"), live.Name))),
-        filter(
-          pipe([
-            get("live.RecordSet"),
-            findNsRecordByName(live.Name),
-            get("ResourceRecords"),
-            first,
-            get("Value"),
-            (dnsServer) => includes(dnsServer)(findDnsServers(live)),
-          ])
-        ),
-        pluck("id"),
-      ])(),
-    },
-    {
-      type: "Vpc",
-      group: "EC2",
-      ids: [pipe([() => live, get("VpcAssociations"), first, get("VPCId")])()],
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
   const getList = client.getList({
@@ -524,7 +476,6 @@ exports.Route53HostedZone = ({ spec, config }) => {
     spec,
     findId,
     getByName,
-    findDependencies,
     findName,
     create,
     update,

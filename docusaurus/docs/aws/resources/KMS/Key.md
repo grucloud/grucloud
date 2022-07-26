@@ -66,6 +66,8 @@ exports.createResources = () => [
 
 - [EKS Cluster](../EKS/Cluster.md)
 - [CloudWatch LogGroup](../CloudWatchLogs/LogGroup.md)
+- [SNS Topic](../SNS/Topic.md)
+- [SecretsManager Secret](../SecretsManager/Secret.md)
 
 ## List
 

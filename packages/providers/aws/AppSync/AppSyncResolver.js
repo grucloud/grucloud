@@ -28,32 +28,6 @@ exports.AppSyncResolver = ({ spec, config }) => {
 
   const client = AwsClient({ spec, config })(appSync);
 
-  // findDependencies for AppSyncResolver
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesGraphqlApi({ live, lives, config }),
-    {
-      type: "Type",
-      group: "AppSync",
-      ids: [live.typeName],
-    },
-    {
-      type: "DataSource",
-      group: "AppSync",
-      ids: [
-        pipe([
-          () =>
-            lives.getByName({
-              name: live.dataSourceName,
-              type: "DataSource",
-              group: "AppSync",
-              providerName: config.providerName,
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-  ];
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listResolvers-property
   const getList = client.getListWithParent({
     parent: { type: "GraphqlApi", group: "AppSync" },
@@ -123,7 +97,6 @@ exports.AppSyncResolver = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     getByName,
     findName,
     create,

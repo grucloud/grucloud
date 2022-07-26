@@ -12,26 +12,18 @@ const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
   ignoreErrorCodes: ["InvalidCustomerGatewayID.NotFound"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeCustomerGateways-property
   getById: {
     method: "describeCustomerGateways",
     getField: "CustomerGateways",
     pickId: pipe([
-      tap(({ CustomerGatewayId }) => {
-        assert(CustomerGatewayId);
-      }),
       ({ CustomerGatewayId }) => ({ CustomerGatewayIds: [CustomerGatewayId] }),
     ]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeCustomerGateways-property
   getList: {
     method: "describeCustomerGateways",
     getParam: "CustomerGateways",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
   },
   create: {
     method: "createCustomerGateway",
@@ -40,22 +32,12 @@ const createModel = ({ config }) => ({
   },
   destroy: {
     method: "deleteCustomerGateway",
-    pickId: pipe([
-      tap(({ CustomerGatewayId }) => {
-        assert(CustomerGatewayId);
-      }),
-      pick(["CustomerGatewayId"]),
-    ]),
+    pickId: pipe([pick(["CustomerGatewayId"])]),
     isInstanceDown: pipe([eq(get("State"), "deleted")]),
   },
 });
 
-const findId = pipe([
-  get("live.CustomerGatewayId"),
-  tap((CustomerGatewayId) => {
-    assert(CustomerGatewayId);
-  }),
-]);
+const findId = pipe([get("live.CustomerGatewayId")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2CustomerGateway = ({ spec, config }) =>

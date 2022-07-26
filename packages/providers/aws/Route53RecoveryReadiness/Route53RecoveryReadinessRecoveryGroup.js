@@ -62,13 +62,6 @@ exports.Route53RecoveryReadinessRecoveryGroup = ({ spec, config }) =>
     findId: pipe([get("live.RecoveryGroupArn")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ RecoveryGroupName: name }), getById]),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Cell",
-        group: "Route53RecoveryReadiness",
-        ids: pipe([() => live.Cells])(),
-      },
-    ],
     tagResource: tagResource,
     untagResource: untagResource,
     configDefault: ({

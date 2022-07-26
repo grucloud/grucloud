@@ -150,13 +150,6 @@ exports.NetworkManagerCoreNetwork = ({ spec, config }) =>
     findName: findNameInTagsOrId({ findId }),
     findId,
     pickId: pipe([pick(["CoreNetworkArn"])]),
-    findDependencies: ({ live }) => [
-      {
-        type: "GlobalNetwork",
-        group: "NetworkManager",
-        ids: [live.GlobalNetworkId],
-      },
-    ],
     update:
       ({ endpoint }) =>
       ({ payload, name, namespace, diff, live, lives }) =>

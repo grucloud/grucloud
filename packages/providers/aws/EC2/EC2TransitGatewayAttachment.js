@@ -18,12 +18,6 @@ const createModel = ({ config }) => ({
     method: "describeTransitGatewayAttachments",
     getParam: "TransitGatewayAttachments",
     transformListPre: () => pipe([filter(not(isInstanceDown))]),
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(endpoint);
-        }),
-      ]),
   },
 });
 
@@ -96,19 +90,6 @@ exports.EC2TransitGatewayAttachment = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live, lives }) => [
-      findDependenciesTransitGateway({ live, lives, config }),
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [live.ResourceId],
-      },
-      {
-        type: "VpnConnection",
-        group: "EC2",
-        ids: [live.ResourceId],
-      },
-    ],
     findName: findNameInTagsOrId({ findId: findNameInDependency }),
     findId,
     cannotBeDeleted: () => true,

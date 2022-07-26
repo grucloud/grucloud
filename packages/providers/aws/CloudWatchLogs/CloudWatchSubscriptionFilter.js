@@ -1,14 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, not, map, filter, assign } = require("rubico");
-const {
-  defaultsDeep,
-  values,
-  unless,
-  isEmpty,
-  first,
-  keys,
-  when,
-} = require("rubico/x");
+const { defaultsDeep, first, keys, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
@@ -16,38 +8,52 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findId = pipe([get("live.filterName")]);
 
+const findDependenciesSubscriptionFilter =
+  ({ type, group }) =>
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      () =>
+        lives.getById({
+          id: live.destinationArn,
+          providerName: config.providerName,
+          type,
+          group,
+        }),
+      get("id"),
+    ])();
+
 const SubscriptionFilterDependencies = {
   lambdaFunction: {
     type: "Function",
     group: "Lambda",
     arn: "Configuration.FunctionArn",
+    dependencyId: findDependenciesSubscriptionFilter({
+      type: "Function",
+      group: "Lambda",
+    }),
   },
-  kinesisStream: { type: "Stream", group: "Kinesis", arn: "StreamARN" },
-  //TODO
-  //firehoseStream: { type: "Stream", group: "Firehose", arn: "TODO" },
+  kinesisStream: {
+    type: "Stream",
+    group: "Kinesis",
+    arn: "StreamARN",
+    dependencyId: findDependenciesSubscriptionFilter({
+      type: "Stream",
+      group: "Kinesis",
+    }),
+  },
+  firehoseStream: {
+    type: "DeliveryStream",
+    group: "Firehose",
+    arn: "DeliveryStreamARN",
+    dependencyId: findDependenciesSubscriptionFilter({
+      type: "DeliveryStream",
+      group: "Firehose",
+    }),
+  },
 };
 
 exports.SubscriptionFilterDependencies = SubscriptionFilterDependencies;
-
-const findDependenciesSubscriptionFilter = ({ live, lives, config }) =>
-  pipe([
-    () => SubscriptionFilterDependencies,
-    values,
-    map(({ type, group }) =>
-      pipe([
-        () =>
-          lives.getById({
-            id: live.destinationArn,
-            providerName: config.providerName,
-            type,
-            group,
-          }),
-        get("id"),
-        unless(isEmpty, (id) => ({ type, group, ids: [id] })),
-      ])()
-    ),
-    filter(not(isEmpty)),
-  ])();
 
 const createModel = ({ config }) => ({
   package: "cloudwatch-logs",
@@ -82,30 +88,6 @@ exports.CloudWatchSubscriptionFilter = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "LogGroup",
-        group: "CloudWatchLogs",
-        ids: [
-          pipe([
-            () =>
-              lives.getByName({
-                name: live.logGroupName,
-                providerName: config.providerName,
-                type: "LogGroup",
-                group: "CloudWatchLogs",
-              }),
-            get("id"),
-          ])(),
-        ],
-      },
-      {
-        type: "Role",
-        group: "IAM",
-        ids: [live.roleArn],
-      },
-      ...findDependenciesSubscriptionFilter({ live, lives, config }),
-    ],
     findName: ({ live, lives }) =>
       pipe([() => `${live.logGroupName}::${live.filterName}`])(),
     findId,

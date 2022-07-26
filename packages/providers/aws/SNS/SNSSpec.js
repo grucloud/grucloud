@@ -22,7 +22,13 @@ module.exports = pipe([
     {
       type: "Topic",
       Client: SNSTopic,
-      dependencies: { key: { type: "Key", group: "KMS" } },
+      dependencies: {
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: ({ lives, config }) => get("Attributes.KmsMasterKeyId"),
+        },
+      },
       omitProperties: [
         "Name",
         "Attributes.TopicArn",
@@ -58,10 +64,37 @@ module.exports = pipe([
     {
       type: "Subscription",
       Client: SNSSubscription,
+      //TODO firehose
       dependencies: {
-        snsTopic: { type: "Topic", group: "SNS" },
-        lambdaFunction: { type: "Function", group: "Lambda" },
-        sqsQueue: { type: "Queue", group: "SQS" },
+        snsTopic: {
+          type: "Topic",
+          group: "SNS",
+          dependencyId: ({ lives, config }) => get("TopicArn"),
+        },
+        lambdaFunction: {
+          type: "Function",
+          group: "Lambda",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              switchCase([
+                eq(get("Protocol"), "lambda"),
+                get("Endpoint"),
+                () => undefined,
+              ]),
+            ]),
+        },
+        sqsQueue: {
+          type: "Queue",
+          group: "SQS",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              switchCase([
+                eq(get("Protocol"), "sqs"),
+                get("Endpoint"),
+                () => undefined,
+              ]),
+            ]),
+        },
       },
       ignoreResource: () =>
         pipe([

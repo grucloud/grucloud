@@ -44,9 +44,6 @@ const findId = pipe([
   }),
   ({ TransitGatewayRouteTableId, TransitGatewayAttachmentId }) =>
     `${TransitGatewayRouteTableId}::${TransitGatewayAttachmentId}`,
-  tap((params) => {
-    assert(true);
-  }),
 ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html

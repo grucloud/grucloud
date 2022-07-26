@@ -34,18 +34,6 @@ exports.EC2ElasticIpAddressAssociation = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live }) => [
-      {
-        type: "Instance",
-        group: "EC2",
-        ids: [live.InstanceId],
-      },
-      {
-        type: "ElasticIpAddress",
-        group: "EC2",
-        ids: [live.AllocationId],
-      },
-    ],
     findName: ({ live, lives }) =>
       pipe([
         fork({

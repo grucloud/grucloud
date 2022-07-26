@@ -100,18 +100,6 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
     config,
     managedByOther: managedByOther({ config }),
     cannotBeDeleted: cannotBeDeleted({ config }),
-    findDependencies: ({ live }) => [
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [pipe([() => live, get("VPC.VPCId")])()],
-      },
-      {
-        type: "HostedZone",
-        group: "Route53",
-        ids: [live.HostedZoneId],
-      },
-    ],
     findName: ({ live, lives }) =>
       pipe([
         () => live,

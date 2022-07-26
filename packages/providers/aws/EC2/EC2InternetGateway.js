@@ -59,14 +59,6 @@ exports.EC2InternetGateway = ({ spec, config }) => {
     ]),
   ]);
 
-  const findDependencies = ({ live }) => [
-    {
-      type: "Vpc",
-      group: "EC2",
-      ids: pipe([() => live, get("Attachments"), pluck("VpcId")])(),
-    },
-  ];
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
   const getList = client.getList({
     method: "describeInternetGateways",
@@ -209,7 +201,6 @@ exports.EC2InternetGateway = ({ spec, config }) => {
     spec,
     findId,
     findName,
-    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
     isDefault: isDefault(config),

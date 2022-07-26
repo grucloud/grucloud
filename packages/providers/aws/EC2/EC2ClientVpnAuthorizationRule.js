@@ -18,9 +18,6 @@ const findId = pipe([
 
 const decorate = () =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
     ({ DestinationCidr, AccessAll, ...other }) => ({
       TargetNetworkCidr: DestinationCidr,
       AuthorizeAllGroups: AccessAll,
@@ -37,13 +34,6 @@ const createModel = ({ config }) => ({
     method: "describeClientVpnAuthorizationRules",
     getField: "AuthorizationRules",
     pickId: pipe([
-      tap((params) => {
-        assert(params);
-      }),
-      tap(({ ClientVpnEndpointId, TargetNetworkCidr }) => {
-        assert(ClientVpnEndpointId);
-        assert(TargetNetworkCidr);
-      }),
       ({ ClientVpnEndpointId, TargetNetworkCidr }) => ({
         ClientVpnEndpointId,
         Filters: [
@@ -59,13 +49,7 @@ const createModel = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeClientVpnIngress-property
   create: {
     method: "authorizeClientVpnIngress",
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(payload);
-        }),
-        () => payload,
-      ]),
+    pickCreated: ({ payload }) => pipe([() => payload]),
     isInstanceUp: pipe([
       tap(({ Status }) => {
         logger.debug(`authorizeClientVpnIngress state: ${Status.Code}`);
@@ -80,10 +64,6 @@ const createModel = ({ config }) => ({
   destroy: {
     method: "revokeClientVpnIngress",
     pickId: pipe([
-      tap(({ ClientVpnEndpointId, TargetNetworkCidr }) => {
-        assert(ClientVpnEndpointId);
-        assert(TargetNetworkCidr);
-      }),
       pick(["ClientVpnEndpointId", "TargetNetworkCidr", "AccessGroupId"]),
       unless(get("AccessGroupId"), defaultsDeep({ RevokeAllGroups: true })),
     ]),
@@ -98,13 +78,6 @@ exports.EC2ClientVpnAuthorizationRule = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live }) => [
-      {
-        type: "ClientVpnEndpoint",
-        group: "EC2",
-        ids: [live.ClientVpnEndpointId],
-      },
-    ],
     findName: ({ live, lives }) =>
       pipe([
         tap(() => {

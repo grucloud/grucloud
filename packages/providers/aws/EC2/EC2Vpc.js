@@ -8,22 +8,13 @@ const {
   switchCase,
   eq,
   not,
-  or,
   tryCatch,
   assign,
   pick,
   omit,
   and,
 } = require("rubico");
-const {
-  isEmpty,
-  defaultsDeep,
-  size,
-  when,
-  last,
-  pluck,
-  find,
-} = require("rubico/x");
+const { isEmpty, defaultsDeep, size, when, find } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "Vpc" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -54,10 +45,6 @@ exports.EC2Vpc = ({ spec, config }) => {
   ]);
 
   const pickId = pick(["VpcId"]);
-
-  const getFirstIpv6Cidr = pipe([
-    get("Ipv6CidrBlockAssociationSet[0].Ipv6CidrBlock"),
-  ]);
 
   const findDependencies = ({ live, lives }) => [
     {

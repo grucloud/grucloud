@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, get, map, tap, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, find } = require("rubico/x");
 const { isOurMinionObject } = require("../AwsCommon");
 const { compareAws } = require("../AwsCommon");
 
@@ -50,7 +50,24 @@ module.exports = pipe([
         dependenciesSpec: { cloudWatchLogGroup },
       }) => pipe([() => `${cloudWatchLogGroup}::${logStreamName}`])(),
       dependencies: {
-        cloudWatchLogGroup: { type: "LogGroup", group: GROUP, parent: true },
+        cloudWatchLogGroup: {
+          type: "LogGroup",
+          group: GROUP,
+          parent: true,
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    providerName: config.providerName,
+                    type: "LogGroup",
+                    group: "CloudWatchLogs",
+                  }),
+                find(pipe([({ id }) => live.arn.includes(id)])),
+                get("id"),
+              ])(),
+        },
       },
     },
     {
@@ -77,8 +94,29 @@ module.exports = pipe([
         dependenciesSpec: { cloudWatchLogGroup },
       }) => pipe([() => `${cloudWatchLogGroup}::${filterName}`])(),
       dependencies: {
-        cloudWatchLogGroup: { type: "LogGroup", group: GROUP, parent: true },
-        role: { type: "Role", group: "IAM" },
+        cloudWatchLogGroup: {
+          type: "LogGroup",
+          group: GROUP,
+          parent: true,
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByName({
+                    name: live.logGroupName,
+                    providerName: config.providerName,
+                    type: "LogGroup",
+                    group: "CloudWatchLogs",
+                  }),
+                get("id"),
+              ])(),
+        },
+        role: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: () => get("roleArn"),
+        },
         ...SubscriptionFilterDependencies,
       },
     },

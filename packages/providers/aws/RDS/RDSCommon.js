@@ -29,16 +29,10 @@ exports.renameTagList = pipe([
   omit(["TagList"]),
 ]);
 
-exports.findDependenciesSecret = ({
-  live,
-  lives,
-  config,
-  secretField,
-  rdsUsernameField,
-}) => ({
-  type: "Secret",
-  group: "SecretsManager",
-  ids: [
+exports.findDependenciesSecret =
+  ({ secretField, rdsUsernameField }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       () =>
         lives.getByType({
@@ -47,6 +41,4 @@ exports.findDependenciesSecret = ({
           providerName: config.providerName,
         }),
       find(eq(get(`live.SecretString.${secretField}`), live[rdsUsernameField])),
-    ])(),
-  ],
-});
+    ])();

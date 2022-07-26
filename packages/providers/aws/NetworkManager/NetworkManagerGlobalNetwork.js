@@ -18,24 +18,10 @@ const createModel = ({ config }) => ({
     pickId: pipe([
       ({ GlobalNetworkId }) => ({ GlobalNetworkIds: [GlobalNetworkId] }),
     ]),
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((live) => {
-          assert(live);
-        }),
-      ]),
   },
   getList: {
     method: "describeGlobalNetworks",
     getParam: "GlobalNetworks",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-        identity,
-      ]),
   },
   create: {
     method: "createGlobalNetwork",
@@ -65,7 +51,6 @@ exports.NetworkManagerGlobalNetwork = ({ spec, config }) =>
     untagResource: untagResource({ property: "GlobalNetworkArn" }),
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
-        tap((params) => {}),
         () => otherProps,
         defaultsDeep({
           Tags: buildTags({ config, namespace, name, UserTags: Tags }),

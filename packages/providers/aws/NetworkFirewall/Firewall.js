@@ -28,17 +28,21 @@ const createModel = ({ config }) => ({
   package: "network-firewall",
   client: "NetworkFirewall",
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkFirewall.html#describeFirewall-property
   getById: {
     method: "describeFirewall",
     pickId,
     decorate,
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkFirewall.html#listFirewalls-property
   getList: {
     method: "listFirewalls",
     getParam: "Firewalls",
     decorate: ({ getById }) => pipe([getById]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkFirewall.html#createFirewall-property
   create: { method: "createFirewall" },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkFirewall.html#deleteFirewall-property
   destroy: {
     method: "deleteFirewall",
     pickId,
@@ -56,25 +60,6 @@ exports.Firewall = ({ spec, config }) =>
     config,
     findName: get("live.FirewallName"),
     findId: pipe([get("live.FirewallArn")]),
-
-    findDependencies: ({ live }) => [
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [live.VpcId],
-      },
-      {
-        type: "Subnet",
-        group: "EC2",
-        ids: pipe([() => live, get("SubnetMappings"), pluck("SubnetId")])(),
-      },
-      {
-        type: "Policy",
-        group: "NetworkFirewall",
-        ids: [live.FirewallPolicyArn],
-      },
-    ],
-
     pickCreated: ({ payload }) => pipe([get("Firewall")]),
     getByName: getByNameCore,
     tagResource: tagResource,

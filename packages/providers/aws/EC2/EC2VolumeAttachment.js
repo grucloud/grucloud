@@ -5,7 +5,7 @@ const { defaultsDeep, find, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2, tagResource, untagResource } = require("./EC2Common");
+const { createEC2 } = require("./EC2Common");
 
 const ignoreErrorCodes = ["InvalidVolume.NotFound"];
 
@@ -56,15 +56,6 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
       }),
       ({ volume, instance }) => `vol-attachment::${volume}::${instance}`,
     ])();
-
-  const findDependencies = ({ live }) => [
-    { type: "Volume", group: "EC2", ids: [live.VolumeId] },
-    {
-      type: "Instance",
-      group: "EC2",
-      ids: [live.InstanceId],
-    },
-  ];
 
   const getList = client.getListWithParent({
     parent: { type: "Volume", group: "EC2" },
@@ -174,7 +165,6 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
     spec,
     findId,
     findName,
-    findDependencies,
     getByName,
     getById,
     getList,

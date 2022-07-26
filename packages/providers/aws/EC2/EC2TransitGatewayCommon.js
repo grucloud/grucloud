@@ -156,20 +156,43 @@ exports.inferNameRouteTableArm =
       append(`::${transitGatewayRouteTable}`),
     ])();
 
+// const dependencyIdTgwAttachment =
+//   ({ type }) =>
+//   ({ lives, config }) =>
+//     pipe([
+//       (live) =>
+//         lives.getById({
+//           id: live.TransitGatewayAttachmentId,
+//           type,
+//           group: "EC2",
+//           providerName: config.providerName,
+//         }),
+//       get("id"),
+//     ]);
+
 exports.transitGatewayAttachmentDependencies = {
   transitGatewayVpcAttachment: {
     type: "TransitGatewayVpcAttachment",
     group: "EC2",
     parent: true,
+    // dependencyId: dependencyIdTgwAttachment({
+    //   type: "TransitGatewayVpcAttachment",
+    // }),
   },
   transitGatewayPeeringAttachment: {
     type: "TransitGatewayPeeringAttachment",
     group: "EC2",
     parent: true,
+    // dependencyId: dependencyIdTgwAttachment({
+    //   type: "TransitGatewayPeeringAttachment",
+    // }),
   },
   transitGatewayAttachment: {
     type: "TransitGatewayAttachment",
     group: "EC2",
     parent: true,
+    // dependencyId: dependencyIdTgwAttachment({
+    //   type: "TransitGatewayAttachment",
+    // }),
   },
 };

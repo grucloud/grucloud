@@ -34,7 +34,6 @@ module.exports = pipe([
   () => [
     {
       type: "ResourceShare",
-      dependencies: {},
       Client: RAMResourceShare,
       omitProperties: [
         "creationTime",
@@ -48,7 +47,11 @@ module.exports = pipe([
     {
       type: "PrincipalAssociation",
       dependencies: {
-        resourceShare: { type: "ResourceShare", group: "RAM" },
+        resourceShare: {
+          type: "ResourceShare",
+          group: "RAM",
+          dependencyId: ({ lives, config }) => get("resourceShareArn"),
+        },
         ...PrincipalAssociationDependencies,
       },
       includeDefaultDependencies: true,
@@ -68,9 +71,6 @@ module.exports = pipe([
           first,
           when(isEmpty, () => associatedEntity),
           prepend(`ram-principal-assoc::${resourceShare}::`),
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
       omitProperties: [
         "creationTime",
@@ -98,6 +98,7 @@ module.exports = pipe([
         resourceShare: {
           type: "ResourceShare",
           group: "RAM",
+          dependencyId: ({ lives, config }) => get("resourceShareArn"),
         },
         ...RamResourceDependencies,
       },

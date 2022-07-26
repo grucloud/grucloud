@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, omit, pick, eq, switchCase, or } = require("rubico");
-const { defaultsDeep, when, isEmpty, identity } = require("rubico/x");
+const { defaultsDeep, when, isEmpty } = require("rubico/x");
 const { buildTagsObject, getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
@@ -12,9 +12,6 @@ const {
 
 const findId = ({ live }) =>
   pipe([
-    tap(() => {
-      assert(live);
-    }),
     () => live,
     get("AssertionRule.SafetyRuleArn"),
     when(isEmpty, () => get("GatingRule.SafetyRuleArn")(live)),
@@ -29,16 +26,7 @@ const pickId = pipe([
   (SafetyRuleArn) => ({ SafetyRuleArn }),
 ]);
 
-const decorate = ({ endpoint }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    assignTags({ endpoint, findId }),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+const decorate = ({ endpoint }) => pipe([assignTags({ endpoint, findId })]);
 
 const model = ({ config }) => ({
   package: "route53-recovery-control-config",
@@ -135,28 +123,6 @@ exports.Route53RecoveryControlConfigSafetyRule = ({ spec, config }) =>
             config,
           }),
       ])(),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "ControlPanel",
-        group: "Route53RecoveryControlConfig",
-        ids: [
-          pipe([
-            () =>
-              get("AssertionRule.ControlPanelArn")(live) ||
-              get("GatingRule.ControlPanelArn")(live),
-          ])(),
-        ],
-      },
-      {
-        type: "RoutingControl",
-        group: "Route53RecoveryControlConfig",
-        ids: pipe([
-          () => live,
-          get("AssertionRule.AssertedControls"),
-          when(isEmpty, () => get("GatingRule.AssertedControls", [])(live)),
-        ])(),
-      },
-    ],
     getByName: getByNameCore,
     tagResource: tagResource({ findId }),
     untagResource: untagResource({ findId }),

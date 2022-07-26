@@ -13,50 +13,22 @@ const createModel = ({ config }) => ({
   client: "EC2",
   ignoreErrorCodes: ["InvalidIpamScopeId.NotFound"],
   getById: {
-    pickId: pipe([
-      tap(({ IpamScopeId }) => {
-        assert(IpamScopeId);
-      }),
-      ({ IpamScopeId }) => ({ IpamScopeIds: [IpamScopeId] }),
-    ]),
+    pickId: pipe([({ IpamScopeId }) => ({ IpamScopeIds: [IpamScopeId] })]),
     method: "describeIpamScopes",
     getField: "IpamScopes",
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(endpoint);
-        }),
-      ]),
   },
   getList: {
     method: "describeIpamScopes",
     getParam: "IpamScopes",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
   },
   create: {
     method: "createIpamScope",
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("IpamScope"),
-      ]),
+    pickCreated: ({ payload }) => pipe([get("IpamScope")]),
     isInstanceUp: eq(get("State"), "create-complete"),
   },
   destroy: {
     method: "deleteIpamScope",
-    pickId: pipe([
-      tap(({ IpamScopeId }) => {
-        assert(IpamScopeId);
-      }),
-      pick(["IpamScopeId"]),
-    ]),
+    pickId: pipe([pick(["IpamScopeId"])]),
   },
 });
 
@@ -75,12 +47,7 @@ const findName = ({ live, lives, config }) =>
     }),
   ])();
 
-const findId = pipe([
-  get("live.IpamScopeId"),
-  tap((IpamScopeId) => {
-    assert(IpamScopeId);
-  }),
-]);
+const findId = pipe([get("live.IpamScopeId")]);
 
 const managedByOther = get("live.IsDefault");
 
@@ -119,24 +86,6 @@ exports.EC2IpamScope = ({ spec, config }) =>
     findId,
     cannotBeDeleted: managedByOther,
     managedByOther,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Ipam",
-        group: "EC2",
-        ids: [
-          pipe([
-            () =>
-              lives.getByType({
-                type: "Ipam",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            find(eq(get("live.IpamArn"), live.IpamArn)),
-            get("id"),
-          ])(),
-        ],
-      },
-    ],
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

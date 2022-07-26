@@ -13,15 +13,61 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
 
+const findAssociatedEntity =
+  ({ type, group }) =>
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap((params) => {
+        assert(live);
+        assert(live.associatedEntity);
+      }),
+      () =>
+        lives.getByType({
+          type,
+          group,
+        }),
+      find(eq(get("live.Arn"), live.associatedEntity)),
+      get("id"),
+    ])();
+
 const PrincipalAssociationDependencies = {
-  organisation: { type: "Organisation", group: "Organisations", arnKey: "Arn" },
+  organisation: {
+    type: "Organisation",
+    group: "Organisations",
+    arnKey: "Arn",
+    dependencyId: findAssociatedEntity({
+      type: "Organisation",
+      group: "Organisations",
+    }),
+  },
   organisationalUnit: {
     type: "OrganisationalUnit",
     group: "Organisations",
     arnKey: "Arn",
+    dependencyId: findAssociatedEntity({
+      type: "OrganisationalUnit",
+      group: "Organisations",
+    }),
   },
-  user: { type: "User", group: "IAM", arnKey: "Arn" },
-  group: { type: "Group", group: "IAM", arnKey: "Arn" },
+  user: {
+    type: "User",
+    group: "IAM",
+    arnKey: "Arn",
+    dependencyId: findAssociatedEntity({
+      type: "User",
+      group: "IAM",
+    }),
+  },
+  group: {
+    type: "Group",
+    group: "IAM",
+    arnKey: "Arn",
+    dependencyId: findAssociatedEntity({
+      type: "Group",
+      group: "IAM",
+    }),
+  },
 };
 
 exports.PrincipalAssociationDependencies = PrincipalAssociationDependencies;
@@ -35,10 +81,6 @@ const model = ({ config }) => ({
     method: "getResourceShareAssociations",
     getField: "resourceShareAssociations",
     pickId: pipe([
-      tap(({ resourceShareArn, associatedEntity }) => {
-        assert(resourceShareArn);
-        assert(associatedEntity);
-      }),
       ({ resourceShareArn, associatedEntity }) => ({
         resourceShareArns: [resourceShareArn],
         associationType: "PRINCIPAL",
@@ -53,12 +95,6 @@ const model = ({ config }) => ({
     getParam: "resourceShareAssociations",
     transformListPre: () =>
       pipe([filter(not(eq(get("status"), "DISASSOCIATED")))]),
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#associateResourceShare-property
   create: {
@@ -105,14 +141,9 @@ exports.RAMPrincipalAssociation = ({ spec, config }) =>
             type: "Organisation",
             group: "Organisations",
           }),
-        tap((params) => {
-          assert(true);
-        }),
         find(eq(get("live.Arn"), live.associatedEntity)),
         get("name"),
-        tap((params) => {
-          assert(true);
-        }),
+        //TODO
         when(
           isEmpty,
           pipe([
@@ -127,46 +158,12 @@ exports.RAMPrincipalAssociation = ({ spec, config }) =>
         ),
         when(isEmpty, () => live.associatedEntity),
         prepend(`ram-principal-assoc::${live.resourceShareName}::`),
-        tap((params) => {
-          assert(true);
-        }),
       ])(),
     findId: pipe([
       get("live"),
       ({ resourceShareArn, associatedEntity }) =>
         `${resourceShareArn}::${associatedEntity}`,
     ]),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "ResourceShare",
-        group: "RAM",
-        ids: [live.resourceShareArn],
-      },
-      {
-        type: "Organisation",
-        group: "Organisations",
-        ids: [
-          pipe([
-            tap((params) => {
-              assert(live.associatedEntity);
-            }),
-            () =>
-              lives.getByType({
-                type: "Organisation",
-                group: "Organisations",
-              }),
-            tap((params) => {
-              assert(true);
-            }),
-            find(eq(get("live.Arn"), live.associatedEntity)),
-            get("id"),
-            tap((params) => {
-              assert(true);
-            }),
-          ])(),
-        ],
-      },
-    ],
     getByName: ({ getList, endpoint }) =>
       pipe([
         ({ name }) => ({ params: { name, resourceShareStatus: "ACTIVE" } }),

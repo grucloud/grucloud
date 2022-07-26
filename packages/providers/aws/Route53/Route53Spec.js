@@ -11,6 +11,7 @@ const {
   switchCase,
   filter,
   omit,
+  not,
 } = require("rubico");
 const {
   append,
@@ -21,6 +22,9 @@ const {
   when,
   unless,
   callProp,
+  defaultsDeep,
+  first,
+  pluck,
 } = require("rubico/x");
 const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
@@ -31,14 +35,21 @@ const {
   replaceAccountAndRegion,
   replaceRegion,
 } = require("../AwsCommon");
-const { Route53HostedZone } = require("./Route53HostedZone");
+const {
+  Route53HostedZone,
+  findDnsServers,
+  findNsRecordByName,
+} = require("./Route53HostedZone");
 const { Route53ZoneVpcAssociation } = require("./Route53ZoneVpcAssociation");
-const { Route53Record, compareRoute53Record } = require("./Route53Record");
+const {
+  Route53Record,
+  compareRoute53Record,
+  Route53RecordDependencies,
+} = require("./Route53Record");
 const {
   Route53VpcAssociationAuthorization,
 } = require("./Route53VpcAssociationAuthorization");
 const { Route53HealthCheck } = require("./Route53HealthCheck");
-const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const GROUP = "Route53";
 
@@ -57,10 +68,24 @@ module.exports = pipe([
         cloudWatchAlarm: {
           type: "Alarm",
           group: "CloudWatch",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("AlarmIdentifier.Name"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  type: "Alarm",
+                  group: "CloudWatch",
+                  config: config.providerName,
+                }),
+              get("id"),
+            ]),
         },
         routingControl: {
           type: "RoutingControl",
           group: "Route53RecoveryControlConfig",
+          dependencyId: ({ lives, config }) =>
+            get("HealthCheckConfig.RoutingControlArn"),
         },
       },
       Client: Route53HealthCheck,
@@ -111,26 +136,70 @@ module.exports = pipe([
         "HealthCheckConfig.RoutingControlArn",
         "HealthCheckVersion",
       ],
-      filterLive: ({ providerConfig }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
     },
     {
       type: "HostedZone",
       dependencies: {
-        domain: { type: "Domain", group: "Route53Domains" },
+        domain: {
+          type: "Domain",
+          group: "Route53Domains",
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "Domain",
+                    group: "Route53Domains",
+                    providerName: config.providerNames,
+                  }),
+                find(
+                  pipe([
+                    get("live.DomainName"),
+                    (DomainName) =>
+                      pipe([
+                        () => live.Name.slice(0, -1),
+                        includes(DomainName),
+                      ])(),
+                  ])
+                ),
+                get("id"),
+              ])(),
+        },
         hostedZone: {
           type: "HostedZone",
           group: "Route53",
           ignoreOnDestroy: true,
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "HostedZone",
+                    group: "Route53",
+                    providerName: config.providerNames,
+                  }),
+                filter(not(eq(get("live.Name"), live.Name))),
+                filter(
+                  pipe([
+                    get("live.RecordSet"),
+                    findNsRecordByName(live.Name),
+                    get("ResourceRecords"),
+                    first,
+                    get("Value"),
+                    (dnsServer) => includes(dnsServer)(findDnsServers(live)),
+                  ])
+                ),
+                pluck("id"),
+              ])(),
         },
         vpc: {
           type: "Vpc",
           group: "EC2",
           parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([get("VpcAssociations"), first, get("VPCId")]),
         },
       },
       Client: Route53HostedZone,
@@ -160,11 +229,13 @@ module.exports = pipe([
           type: "HostedZone",
           group: "Route53",
           parent: true,
+          dependencyId: ({ lives, config }) => get("HostedZoneId"),
         },
         vpc: {
           type: "Vpc",
           group: "EC2",
           parent: true,
+          dependencyId: ({ lives, config }) => get("VPC.VPCId"),
         },
       },
       omitProperties: ["HostedZoneId", "Name", "Owner", "VPC"],
@@ -185,11 +256,13 @@ module.exports = pipe([
           type: "HostedZone",
           group: "Route53",
           parent: true,
+          dependencyId: ({ lives, config }) => get("HostedZoneId"),
         },
         vpc: {
           type: "Vpc",
           group: "EC2",
           parent: true,
+          dependencyId: ({ lives, config }) => get("VPC.VPCId"),
         },
       },
       omitProperties: ["HostedZoneId", "VPC"],
@@ -205,18 +278,18 @@ module.exports = pipe([
     {
       type: "Record",
       dependencies: {
-        hostedZone: { type: "HostedZone", group: "Route53", parent: true },
-        elasticIpAddress: { type: "ElasticIpAddress", group: "EC2" },
-        loadBalancer: { type: "LoadBalancer", group: "ElasticLoadBalancingV2" },
-        certificate: { type: "Certificate", group: "ACM" },
-        distribution: { type: "Distribution", group: "CloudFront" },
-        userPoolDomain: {
-          type: "UserPoolDomain",
-          group: "CognitoIdentityServiceProvider",
+        hostedZone: {
+          type: "HostedZone",
+          group: "Route53",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("HostedZoneId"),
         },
-        apiGatewayV2DomainName: { type: "DomainName", group: "ApiGatewayV2" },
-        vpcEndpoint: { type: "VpcEndpoint", group: "EC2" },
-        healthCheck: { type: "healthCheck", group: "Route53" },
+        healthCheck: {
+          type: "healthCheck",
+          group: "Route53",
+          dependencyId: ({ lives, config }) => get("HealthCheckId"),
+        },
+        ...Route53RecordDependencies,
       },
       Client: Route53Record,
       isOurMinion: () => true,

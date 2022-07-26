@@ -31,7 +31,12 @@ module.exports = pipe([
       Client: Route53RecoveryReadinessCell,
       inferName: get("properties.CellName"),
       dependencies: {
-        cells: { type: "Cell", group: GROUP, list: true },
+        cells: {
+          type: "Cell",
+          group: GROUP,
+          list: true,
+          dependencyIds: ({ lives, config }) => get("Cells"),
+        },
       },
       omitProperties: ["CellArn", "ParentReadinessScopes", "Cells"],
       filterLive: ({ lives, providerConfig }) =>
@@ -47,14 +52,43 @@ module.exports = pipe([
     {
       type: "ReadinessCheck",
       Client: Route53RecoveryReadinessReadinessCheck,
-      dependencies: { resourceSet: { type: "ResourceSet", group: GROUP } },
+      dependencies: {
+        resourceSet: {
+          type: "ResourceSet",
+          group: GROUP,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              tap((live) => {
+                assert(live.ResourceSetName);
+              }),
+              (live) =>
+                lives.getByName({
+                  name: live.ResourceSetName,
+                  type: "ResourceSet",
+                  group: "Route53RecoveryReadiness",
+                  config: config.providerName,
+                }),
+              get("id"),
+              tap((id) => {
+                assert(id);
+              }),
+            ]),
+        },
+      },
       inferName: pipe([get("properties.ReadinessCheckName")]),
       omitProperties: ["ReadinessCheckArn", "ResourceSetName"],
     },
     {
       type: "RecoveryGroup",
       Client: Route53RecoveryReadinessRecoveryGroup,
-      dependencies: { cells: { type: "Cell", group: GROUP, list: true } },
+      dependencies: {
+        cells: {
+          type: "Cell",
+          group: GROUP,
+          list: true,
+          dependencyIds: ({ lives, config }) => get("Cells"),
+        },
+      },
       inferName: get("properties.RecoveryGroupName"),
       omitProperties: ["RecoveryGroupArn", "Cells"],
     },
@@ -62,7 +96,13 @@ module.exports = pipe([
       type: "ResourceSet",
       Client: Route53RecoveryReadinessResourceSet,
       dependencies: {
-        cells: { type: "Cell", group: "Route53RecoveryReadiness", list: true },
+        //TODO
+        // cells: {
+        //   type: "Cell",
+        //   group: "Route53RecoveryReadiness",
+        //   list: true,
+        //   dependencyId: ({ lives, config }) => get(""),
+        // },
         ...ResourceSetDependencies,
       },
       inferName: get("properties.ResourceSetName"),

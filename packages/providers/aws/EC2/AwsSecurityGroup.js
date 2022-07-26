@@ -17,8 +17,6 @@ const {
 const {
   find,
   defaultsDeep,
-  pluck,
-  flatten,
   isEmpty,
   append,
   prepend,
@@ -35,7 +33,7 @@ const {
   destroyNetworkInterfaces,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { hasKeyInTags, findEksCluster } = require("../AwsCommon");
+const { hasKeyInTags } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecurityGroup" });
 const { AwsClient } = require("../AwsClient");
@@ -76,32 +74,6 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const findId = get("live.GroupId");
   const pickId = pick(["GroupId"]);
-
-  const findDependencies = ({ live, lives }) => [
-    { type: "Vpc", group: "EC2", ids: [live.VpcId] },
-    {
-      type: "SecurityGroup",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("IpPermissions"),
-        pluck("UserIdGroupPairs"),
-        flatten,
-        pluck("GroupId"),
-      ])(),
-    },
-    {
-      type: "Cluster",
-      group: "EKS",
-      ids: [
-        pipe([
-          () => ({ live, lives }),
-          findEksCluster({ config }),
-          get("id"),
-        ])(),
-      ],
-    },
-  ];
 
   const findNamespace = (param) =>
     pipe([
@@ -336,7 +308,6 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     getByName,
     findId,
     findName,
-    findDependencies,
     findNamespace,
     isDefault,
     cannotBeDeleted,

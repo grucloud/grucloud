@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, omit } = require("rubico");
-const { defaultsDeep, callProp, last } = require("rubico/x");
+const { pipe, tap, get, pick, eq } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
@@ -14,23 +14,11 @@ const createModel = ({ config }) => ({
   getById: {
     method: "describeVpnGateways",
     getField: "VpnGateways",
-    pickId: pipe([
-      tap(({ VpnGatewayId }) => {
-        assert(VpnGatewayId);
-      }),
-      ({ VpnGatewayId }) => ({ VpnGatewayIds: [VpnGatewayId] }),
-    ]),
+    pickId: pipe([({ VpnGatewayId }) => ({ VpnGatewayIds: [VpnGatewayId] })]),
   },
   getList: {
     method: "describeVpnGateways",
     getParam: "VpnGateways",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
   },
   create: {
     method: "createVpnGateway",
@@ -39,22 +27,12 @@ const createModel = ({ config }) => ({
   },
   destroy: {
     method: "deleteVpnGateway",
-    pickId: pipe([
-      tap(({ VpnGatewayId }) => {
-        assert(VpnGatewayId);
-      }),
-      pick(["VpnGatewayId"]),
-    ]),
+    pickId: pipe([pick(["VpnGatewayId"])]),
     isInstanceDown: pipe([eq(get("State"), "deleted")]),
   },
 });
 
-const findId = pipe([
-  get("live.VpnGatewayId"),
-  tap((VpnGatewayId) => {
-    assert(VpnGatewayId);
-  }),
-]);
+const findId = pipe([get("live.VpnGatewayId")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2VpnGateway = ({ spec, config }) =>

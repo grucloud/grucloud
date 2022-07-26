@@ -14,6 +14,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, isAwsError, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./SecretsManagerCommon");
+const { getField } = require("../../../core/ProviderCommon");
 
 const ignoreErrorMessages = [
   "You can't perform this operation on the secret because it was marked for deletion",
@@ -38,6 +39,7 @@ const model = {
       (live) =>
         pipe([() => live, getSecretValue({ endpoint }), defaultsDeep(live)])(),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecretsManager.html#putSecretValue-property
   update: {
     method: "putSecretValue",
     filterParams: ({ payload }) => pipe([() => payload]),
@@ -79,22 +81,25 @@ exports.SecretsManagerSecret = ({ spec, config }) =>
     spec,
     config,
     findName: findNameInTagsOrId({ findId: get("live.Name") }),
-
     findId: pipe([get("live.ARN")]),
-    findDependencies: ({ live }) => [
-      { type: "Key", group: "KMS", ids: [live.KmsKeyId] },
-    ],
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      dependencies: { kmsKey },
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
           Name: name,
           Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
+        when(() => kmsKey, defaultsDeep({ KmsKeyId: getField(kmsKey, "Arn") })),
       ])(),
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecretsManager.html#createSecret-property
     create:
       ({ endpoint, getById }) =>
       ({ payload }) =>

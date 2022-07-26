@@ -42,11 +42,33 @@ module.exports = pipe([
         "VpcId",
       ],
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2" },
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        firewallPolicy: { type: "Policy", group: "NetworkFirewall" },
-        kmsKey: { type: "Key", group: "KMS" },
-        vpcEndpoint: { type: "VpcEndpoint", group: "EC2" },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("VpcId"),
+        },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("SubnetMappings"), pluck("SubnetId")]),
+        },
+        firewallPolicy: {
+          type: "Policy",
+          group: "NetworkFirewall",
+          dependencyId: ({ lives, config }) => get("FirewallPolicyArn"),
+        },
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: ({ lives, config }) => get(""),
+        },
+        vpcEndpoint: {
+          type: "VpcEndpoint",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get(""),
+        },
       },
     },
     {
@@ -114,8 +136,17 @@ module.exports = pipe([
           }),
         ]),
       dependencies: {
-        kmsKey: { type: "Key", group: "KMS" },
-        ruleGroups: { type: "RuleGroup", group: GROUP, list: true },
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: ({ lives, config }) => get(""),
+        },
+        ruleGroups: {
+          type: "RuleGroup",
+          group: GROUP,
+          list: true,
+          dependencyIds: ({ lives, config }) => get(""),
+        },
       },
     },
     {
@@ -135,7 +166,13 @@ module.exports = pipe([
         filterLive: () => pipe([omitEncryptionConfiguration]),
       }),
       filterLive: () => pipe([omitEncryptionConfiguration]),
-      dependencies: { kmsKey: { type: "Key", group: "KMS" } },
+      dependencies: {
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: ({ lives, config }) => get(""),
+        },
+      },
     },
     {
       type: "LoggingConfiguration",
@@ -182,9 +219,24 @@ module.exports = pipe([
           }),
         ]),
       dependencies: {
-        firewall: { type: "Firewall", group: "NetworkFirewall", parent: true },
-        logGroups: { type: "LogGroup", group: "CloudWatchLogs", list: true },
-        buckets: { type: "Bucket", group: "S3", list: true },
+        firewall: {
+          type: "Firewall",
+          group: "NetworkFirewall",
+          parent: true,
+          dependencyId: ({ lives, config }) => get(""),
+        },
+        logGroups: {
+          type: "LogGroup",
+          group: "CloudWatchLogs",
+          list: true,
+          dependencyIds: ({ lives, config }) => get(""),
+        },
+        buckets: {
+          type: "Bucket",
+          group: "S3",
+          list: true,
+          dependencyIds: ({ lives, config }) => get(""),
+        },
         //TODO firehose
       },
     },

@@ -66,7 +66,12 @@ module.exports = pipe([
       Client: Route53RecoveryControlConfigControlPanel,
       inferName: pipe([get("properties.ControlPanelName")]),
       dependencies: {
-        cluster: { type: "Cluster", group: GROUP, parent: true },
+        cluster: {
+          type: "Cluster",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("ClusterArn"),
+        },
       },
       omitProperties: [
         "ClusterArn",
@@ -81,7 +86,12 @@ module.exports = pipe([
       Client: Route53RecoveryControlConfigRoutingControl,
       inferName: pipe([get("properties.RoutingControlName")]),
       dependencies: {
-        controlPanel: { type: "ControlPanel", group: GROUP, parent: true },
+        controlPanel: {
+          type: "ControlPanel",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("ControlPanelArn"),
+        },
       },
       omitProperties: [
         "RoutingControlArn",
@@ -115,8 +125,32 @@ module.exports = pipe([
         ]),
       ]),
       dependencies: {
-        controlPanel: { type: "ControlPanel", group: GROUP, parent: true },
-        routingControls: { type: "RoutingControl", group: GROUP, list: true },
+        controlPanel: {
+          type: "ControlPanel",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              (live) =>
+                get("AssertionRule.ControlPanelArn")(live) ||
+                get("GatingRule.ControlPanelArn")(live),
+            ]),
+        },
+        routingControls: {
+          type: "RoutingControl",
+          group: GROUP,
+          list: true,
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () => live,
+                get("AssertionRule.AssertedControls"),
+                when(isEmpty, () =>
+                  get("GatingRule.AssertedControls", [])(live)
+                ),
+              ])(),
+        },
       },
       omitProperties: [
         "AssertionRule.SafetyRuleArn",

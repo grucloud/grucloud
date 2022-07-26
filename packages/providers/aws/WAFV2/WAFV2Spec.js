@@ -1,6 +1,6 @@
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const assert = require("assert");
-const { map, pipe, tap } = require("rubico");
+const { map, pipe, tap, get } = require("rubico");
 const { defaultsDeep, first, prepend, values } = require("rubico/x");
 
 const { isOurMinion, compareAws } = require("../AwsCommon");
@@ -55,7 +55,11 @@ module.exports = pipe([
           prepend(`webacl-assoc::${webAcl}::`),
         ])(),
       dependencies: {
-        webAcl: { type: "WebACL", group: GROUP },
+        webAcl: {
+          type: "WebACL",
+          group: GROUP,
+          dependencyId: ({ lives, config }) => get("WebACLArn"),
+        },
         ...WebAclDependencies,
       },
     },

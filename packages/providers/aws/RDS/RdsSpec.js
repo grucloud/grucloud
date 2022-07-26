@@ -7,11 +7,12 @@ const {
   tap,
   get,
   pick,
-  not,
   switchCase,
 } = require("rubico");
-const { defaultsDeep, callProp, when } = require("rubico/x");
+const { defaultsDeep, callProp, when, pluck } = require("rubico/x");
 const { replaceWithName } = require("@grucloud/core/Common");
+
+const { findDependenciesSecret } = require("./RDSCommon");
 
 const { isOurMinionFactory, compareAws } = require("../AwsCommon");
 const { DBCluster } = require("./DBCluster");
@@ -107,10 +108,30 @@ module.exports = pipe([
           }),
         ]),
       dependencies: {
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-        secret: { type: "Secret", group: "SecretsManager", list: true },
-        role: { type: "Role", group: "IAM" },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("VpcSubnetIds"),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("VpcSecurityGroupIds"),
+        },
+        secrets: {
+          type: "Secret",
+          group: "SecretsManager",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("Auth"), pluck("SecretArn")]),
+        },
+        role: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("RoleArn"),
+        },
       },
     },
     {
@@ -129,9 +150,35 @@ module.exports = pipe([
           }),
         ]),
       dependencies: {
-        dbProxy: { type: "DBProxy", group: "RDS", parent: true },
-        dbClusters: { type: "DBCluster", group: "RDS", list: true },
-        dbInstances: { type: "DBInstance", group: "RDS", list: true },
+        dbProxy: {
+          type: "DBProxy",
+          group: "RDS",
+          parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("DBProxyName"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  type: "DBProxy",
+                  group: "RDS",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
+        dbClusters: {
+          type: "DBCluster",
+          group: "RDS",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("DBClusterIdentifiers"),
+        },
+        dbInstances: {
+          type: "DBInstance",
+          group: "RDS",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("DBInstanceIdentifiers"),
+        },
       },
     },
     {
@@ -148,21 +195,60 @@ module.exports = pipe([
       ignoreResource: () => pipe([get("isDefault")]),
       filterLive: () => pick(["DBSubnetGroupDescription"]),
       dependencies: {
-        subnets: { type: "Subnet", group: "EC2", list: true },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("Subnets"), pluck("SubnetIdentifier")]),
+        },
       },
     },
     {
       type: "DBCluster",
       Client: DBCluster,
       dependencies: {
-        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        dbSubnetGroup: {
+          type: "DBSubnetGroup",
+          group: "RDS",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("DBSubnetGroup"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  providerName: config.providerName,
+                  type: "DBSubnetGroup",
+                  group: "RDS",
+                }),
+              get("id"),
+            ]),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("VpcSecurityGroups"), pluck("VpcSecurityGroupId")]),
+        },
         key: {
           type: "Key",
           group: "KMS",
+          dependencyId: ({ lives, config }) => get("KmsKeyId"),
         },
-        secret: { type: "Secret", group: "SecretsManager" },
-        monitoringRole: { type: "Role", group: "IAM" },
+        secret: {
+          type: "Secret",
+          group: "SecretsManager",
+          dependencyId: findDependenciesSecret({
+            secretField: "username",
+            rdsUsernameField: "MasterUsername",
+          }),
+        },
+        monitoringRole: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("MonitoringRoleArn"),
+        },
       },
       omitProperties: [
         "DBClusterIdentifier",
@@ -252,11 +338,63 @@ module.exports = pipe([
       type: "DBInstance",
       Client: DBInstance,
       dependencies: {
-        dbSubnetGroup: { type: "DBSubnetGroup", group: "RDS" },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-        secret: { type: "Secret", group: "SecretsManager" },
-        dbCluster: { type: "DBCluster", group: "RDS" },
-        monitoringRole: { type: "Role", group: "IAM" },
+        dbSubnetGroup: {
+          type: "DBSubnetGroup",
+          group: "RDS",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("DBSubnetGroup.DBSubnetGroupName"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  providerName: config.providerName,
+                  type: "DBSubnetGroup",
+                  group: "RDS",
+                }),
+              get("id"),
+            ]),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("VpcSecurityGroups"), pluck("VpcSecurityGroupId")]),
+        },
+        secret: {
+          type: "Secret",
+          group: "SecretsManager",
+          dependencyId: findDependenciesSecret({
+            secretField: "username",
+            rdsUsernameField: "MasterUsername",
+          }),
+        },
+        key: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: ({ lives, config }) => get("KmsKeyId"),
+        },
+        dbCluster: {
+          type: "DBCluster",
+          group: "RDS",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("DBClusterIdentifier"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  providerName: config.providerName,
+                  type: "DBCluster",
+                  group: "RDS",
+                }),
+              get("id"),
+            ]),
+        },
+        monitoringRole: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("MonitoringRoleArn"),
+        },
       },
       propertiesDefault: {
         DBSecurityGroups: [],

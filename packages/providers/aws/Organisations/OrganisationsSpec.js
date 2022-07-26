@@ -32,8 +32,17 @@ module.exports = pipe([
     {
       type: "OrganisationalUnit",
       dependencies: {
-        root: { type: "Root", group: GROUP, parent: true },
-        organisationalUnitParent: { type: "OrganisationalUnit", group: GROUP },
+        root: {
+          type: "Root",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("ParentId"),
+        },
+        organisationalUnitParent: {
+          type: "OrganisationalUnit",
+          group: GROUP,
+          dependencyId: ({ lives, config }) => get("ParentId"),
+        },
       },
       Client: OrganisationsOrganisationalUnit,
       omitProperties: ["Id", "Arn"],

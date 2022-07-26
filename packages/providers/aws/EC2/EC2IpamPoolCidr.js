@@ -8,19 +8,12 @@ const { findNameInTagsOrId, isAwsError } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const pickId = pipe([
-  tap(({ IpamPoolId, Cidr }) => {
-    assert(IpamPoolId);
-    assert(Cidr);
-  }),
-  pick(["IpamPoolId", "Cidr"]),
-]);
+const pickId = pipe([pick(["IpamPoolId", "Cidr"])]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
   //TODO what is cidr does not exist
-
   ignoreErrorCodes: ["InvalidIpamPoolId.NotFound"],
   getById: {
     pickId,
@@ -46,13 +39,6 @@ exports.EC2IpamPoolCidr = ({ spec, config }) =>
     cannotBeDeleted: eq(get("live.State"), "deprovisioned"),
     findName: findNameInTagsOrId({ findId }),
     findId,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "IpamPool",
-        group: "EC2",
-        ids: [pipe([() => live.IpamPoolId])()],
-      },
-    ],
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#getIpamPoolCidrs-property
     getList: ({ client }) =>
       pipe([
