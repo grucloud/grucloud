@@ -8,41 +8,40 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./NetworkFirewallCommon");
 
+const pickId = pipe([pick(["FirewallArn"])]);
+
+const decorate =
+  ({ endpoint }) =>
+  ({ Firewall, ...otherProp }) =>
+    pipe([
+      () => ({ ...Firewall, ...otherProp }),
+      assign({
+        Tags: pipe([
+          ({ FirewallArn }) => ({ ResourceArn: FirewallArn }),
+          endpoint().listTagsForResource,
+          get("Tags"),
+        ]),
+      }),
+    ])();
+
 const createModel = ({ config }) => ({
   package: "network-firewall",
   client: "NetworkFirewall",
   ignoreErrorCodes: ["ResourceNotFoundException"],
   getById: {
     method: "describeFirewall",
-    decorate:
-      ({ endpoint }) =>
-      ({ Firewall, ...otherProp }) =>
-        pipe([
-          () => ({ ...Firewall, ...otherProp }),
-          assign({
-            Tags: pipe([
-              ({ FirewallArn }) => ({ ResourceArn: FirewallArn }),
-              endpoint().listTagsForResource,
-              get("Tags"),
-            ]),
-          }),
-        ])(),
+    pickId,
+    decorate,
   },
   getList: {
     method: "listFirewalls",
     getParam: "Firewalls",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-        getById,
-      ]),
+    decorate: ({ getById }) => pipe([getById]),
   },
   create: { method: "createFirewall" },
   destroy: {
     method: "deleteFirewall",
+    pickId,
     shouldRetryOnExceptionMessages: [
       "Unable to fulfill request because the following related VPC endpoint(s) still exist in route table(s)",
     ],
@@ -56,18 +55,8 @@ exports.Firewall = ({ spec, config }) =>
     spec,
     config,
     findName: get("live.FirewallName"),
-    findId: pipe([
-      get("live.FirewallArn"),
-      tap((FirewallArn) => {
-        assert(FirewallArn);
-      }),
-    ]),
-    pickId: pipe([
-      tap(({ FirewallArn }) => {
-        assert(FirewallArn);
-      }),
-      pick(["FirewallArn"]),
-    ]),
+    findId: pipe([get("live.FirewallArn")]),
+
     findDependencies: ({ live }) => [
       {
         type: "Vpc",

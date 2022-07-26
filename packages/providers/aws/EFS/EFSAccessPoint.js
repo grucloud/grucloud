@@ -12,15 +12,37 @@ const {
   findDependenciesFileSystem,
 } = require("./EFSCommon");
 
+const pickId = pipe([
+  tap(({ AccessPointId }) => {
+    assert(AccessPointId);
+  }),
+  pick(["AccessPointId"]),
+]);
+
 const model = {
   package: "efs",
   client: "EFS",
   ignoreErrorCodes: ["AccessPointNotFound", "BadRequest"],
-  getById: { method: "describeAccessPoints", getParam: "AccessPoints" },
-  getList: { method: "describeAccessPoints", getParam: "AccessPoints" },
+  getById: {
+    method: "describeAccessPoints",
+    pickId,
+    getParam: "AccessPoints",
+    decorate: ({ endpoint }) => pipe([assign({})]),
+  },
+  getList: {
+    method: "describeAccessPoints",
+    getParam: "AccessPoints",
+    decorate:
+      ({ endpoint, getById }) =>
+      (live) =>
+        pipe([() => live])(),
+  },
   create: { method: "createAccessPoint" },
-  update: { method: "updateAccessPoint" },
-  destroy: { method: "deleteAccessPoint" },
+  update: {
+    method: "updateAccessPoint",
+    filterParams: ({ payload }) => pipe([() => payload]),
+  },
+  destroy: { method: "deleteAccessPoint", pickId },
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EFS.html
@@ -30,21 +52,10 @@ exports.EFSAccessPoint = ({ spec, config }) =>
     spec,
     config,
     findName: findNameInTagsOrId({ findId: get("live.AccessPointId") }),
-    pickId: pipe([
-      tap(({ AccessPointId }) => {
-        assert(AccessPointId);
-      }),
-      pick(["AccessPointId"]),
-    ]),
     findId: pipe([get("live.AccessPointArn")]),
     findDependencies: ({ live, lives }) => [
       findDependenciesFileSystem({ live, lives, config }),
     ],
-    decorateList:
-      ({ endpoint, getById }) =>
-      (live) =>
-        pipe([() => live])(),
-    decorate: ({ endpoint }) => pipe([assign({})]),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
@@ -61,5 +72,4 @@ exports.EFSAccessPoint = ({ spec, config }) =>
           Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
       ])(),
-    updateFilterParams: ({ payload }) => pipe([() => payload]),
   });

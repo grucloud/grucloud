@@ -28,12 +28,6 @@ const model = ({ config }) => ({
   getList: {
     method: "getUsagePlans",
     getParam: "items",
-    decorate: ({ getById }) =>
-      pipe([
-        tap((params) => {
-          assert(params);
-        }),
-      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createUsagePlan-property
   create: {

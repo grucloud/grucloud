@@ -634,7 +634,7 @@ const AwsClient =
       ({ name, live, lives }) =>
         pipe([
           tap(() => {
-            assert(isFunction(pickId));
+            assert(isFunction(pickId), `no pickId for destroy ${groupType}`);
             assert(method);
             assert(ignoreError);
           }),
@@ -754,12 +754,6 @@ exports.createAwsResource = ({
   findName,
   findId,
   managedByOther,
-  decorate,
-  decorateList = ({ getById }) => getById,
-  //TODO remove
-  isInstanceUp,
-  //TODO remove
-  isInstanceDown,
   tagResource,
   untagResource,
   cannotBeDeleted,
@@ -768,21 +762,9 @@ exports.createAwsResource = ({
   getByName = () => undefined,
   configDefault,
   findDependencies,
-  //TODO remove
-  createFilterPayload,
-  //TODO remove
-  createShouldRetryOnExceptionCodes,
-  //TODO remove
-  pickCreated,
-  postCreate,
-  //TODO remove
-  updateFilterParams,
   getList,
   create,
   update,
-  //TODO remove
-
-  pickIdDestroy,
   destroy,
 }) =>
   pipe([
@@ -806,7 +788,6 @@ exports.createAwsResource = ({
               managedByOther,
               findNamespace,
               pickId,
-              pickIdDestroy: pickIdDestroy || pickId,
               configDefault,
             }),
             when(
@@ -822,9 +803,8 @@ exports.createAwsResource = ({
                 getById: ({ pickId }) =>
                   client.getById({
                     pickId,
-                    decorate,
-                    ...model.getById,
                     ignoreErrorCodes: model.ignoreErrorCodes,
+                    ...model.getById,
                   }),
               })
             ),
@@ -838,7 +818,6 @@ exports.createAwsResource = ({
                 ({ getById }) =>
                   client.getList({
                     getById,
-                    decorate: decorateList,
                     ...model.getList,
                   }),
               ]),
@@ -848,12 +827,6 @@ exports.createAwsResource = ({
                 ({ getById }) =>
                   client.create({
                     getById,
-                    pickCreated,
-                    postCreate,
-                    filterPayload: createFilterPayload,
-                    shouldRetryOnExceptionCodes:
-                      createShouldRetryOnExceptionCodes,
-                    isInstanceUp,
                     ...model.create,
                   }),
               ]),
@@ -864,20 +837,16 @@ exports.createAwsResource = ({
                   client.update({
                     pickId,
                     getById,
-                    filterParams: updateFilterParams,
-                    isInstanceUp,
                     ...model.update,
                   }),
               ]),
               destroy: switchCase([
                 () => destroy,
                 ({ getById }) => destroy({ endpoint, getById }),
-                ({ getById, pickIdDestroy }) =>
+                ({ getById }) =>
                   client.destroy({
-                    pickId: pickIdDestroy,
                     getById,
                     ignoreErrorCodes: model.ignoreErrorCodes,
-                    isInstanceDown,
                     ...model.destroy,
                   }),
               ]),

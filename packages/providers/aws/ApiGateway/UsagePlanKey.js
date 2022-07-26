@@ -80,18 +80,10 @@ exports.UsagePlanKey = ({ spec, config }) =>
     getByName: getByNameCore,
     getList: ({ client }) =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
         client.getListWithParent({
           parent: { type: "UsagePlan", group: "APIGateway" },
           config,
-          pickKey: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            ({ id }) => ({ usagePlanId: id }),
-          ]),
+          pickKey: pipe([({ id }) => ({ usagePlanId: id })]),
           method: "getUsagePlanKeys",
           getParam: "items",
           decorate:
@@ -99,9 +91,6 @@ exports.UsagePlanKey = ({ spec, config }) =>
             (live) =>
               pipe([
                 () => live,
-                tap((params) => {
-                  assert(true);
-                }),
                 defaultsDeep({
                   usagePlanId: id,
                 }),
@@ -112,9 +101,6 @@ exports.UsagePlanKey = ({ spec, config }) =>
                   ...other,
                 }),
               ])(),
-        }),
-        tap((params) => {
-          assert(true);
         }),
       ]),
     findDependencies: ({ live, lives }) => [

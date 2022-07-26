@@ -6,11 +6,23 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./SSMCommon");
 
+const pickId = pipe([pick(["Name"])]);
+
 const model = ({ config }) => ({
   package: "ssm",
   client: "SSM",
   ignoreErrorCodes: ["InvalidDocument"],
-  getById: { method: "describeDocument", getField: "Document" },
+  getById: {
+    method: "describeDocument",
+    getField: "Document",
+    decorate: ({ endpoint }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+    pickId,
+  },
   getList: {
     method: "listDocuments",
     enhanceParams: () =>
@@ -26,10 +38,23 @@ const model = ({ config }) => ({
         }),
       ]),
     getParam: "DocumentIdentifiers",
+    decorate: ({ endpoint, getById }) =>
+      pipe([
+        tap((params) => {
+          assert(getById);
+          assert(endpoint);
+        }),
+      ]),
   },
-  create: { method: "createDocument" },
+  create: {
+    method: "createDocument",
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
+  },
   update: { method: "updateDocument" },
-  destroy: { method: "deleteDocument" },
+  destroy: { method: "deleteDocument", pickId },
 });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html
@@ -44,7 +69,6 @@ exports.SSMDocument = ({ spec, config }) =>
       (Name) =>
         `arn:aws:ssm:${config.region}:${config.accountId()}:document/${Name}`,
     ]),
-    pickId: pipe([pick(["Name"])]),
     findDependencies: ({ live }) => [
       {
         type: "Function",
@@ -52,17 +76,8 @@ exports.SSMDocument = ({ spec, config }) =>
         ids: pipe([
           () => live,
           get("Content.mainSteps"),
-          tap((params) => {
-            assert(true);
-          }),
           pluck("inputs"),
-          tap((params) => {
-            assert(true);
-          }),
           pluck("FunctionName"),
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
       },
       {
@@ -71,23 +86,6 @@ exports.SSMDocument = ({ spec, config }) =>
         ids: [pipe([() => live, get("Content.assumeRole")])()],
       },
     ],
-    decorateList: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-    pickCreated:
-      ({ payload }) =>
-      () =>
-        payload,
     getByName: ({ getById }) => pipe([({ name }) => ({ Name: name }), getById]),
     tagResource: tagResource({ ResourceType: "Document" }),
     untagResource: untagResource({ ResourceType: "Document" }),

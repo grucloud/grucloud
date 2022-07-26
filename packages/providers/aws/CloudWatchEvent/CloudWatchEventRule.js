@@ -11,7 +11,6 @@ const {
   tagResource,
   untagResource,
 } = require("./CloudWatchEventCommon");
-const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const findId = get("live.Arn");
 const pickId = pick(["Name", "EventBusName"]);
@@ -59,11 +58,8 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     },
   ];
 
-  const decorate = ({ parent }) =>
+  const decorate = () =>
     pipe([
-      tap((params) => {
-        assert(parent);
-      }),
       when(
         get("EventPattern"),
         assign({

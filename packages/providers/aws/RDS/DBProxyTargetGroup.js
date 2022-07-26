@@ -7,14 +7,41 @@ const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./RDSCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
+const pickId = pick(["DBProxyName", "TargetGroupName"]);
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      Tags: pipe([
+        ({ TargetGroupArn }) => ({
+          ResourceName: TargetGroupArn,
+        }),
+        endpoint().listTagsForResource,
+        get("TagList"),
+      ]),
+    }),
+  ]);
+
 const model = {
   package: "rds",
   client: "RDS",
   ignoreErrorCodes: ["DBProxyNotFoundFault", "DBProxyTargetGroupNotFoundFault"],
-  getById: { method: "describeDBProxyTargetGroups", getField: "TargetGroups" },
-  create: { method: "registerDBProxyTargets" },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBProxyEndpoints-property
+  getById: {
+    method: "describeDBProxyTargetGroups",
+    pickId,
+    getField: "TargetGroups",
+    decorate,
+  },
+  create: {
+    method: "registerDBProxyTargets",
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
+  },
   update: { method: "modifyDBProxyTargetGroup" },
-  destroy: { method: "deregisterDBProxyTargets" },
+  destroy: { method: "deregisterDBProxyTargets", pickId },
 };
 
 const managedByOther = pipe([get("live.IsDefault")]);
@@ -30,7 +57,6 @@ exports.DBProxyTargetGroup = ({ spec, config }) =>
     cannotBeDeleted: managedByOther,
     findName: get("live.TargetGroupName"),
     findId: get("live.TargetGroupArn"),
-    pickId: pick(["DBProxyName", "TargetGroupName"]),
     findDependencies: ({ live, lives }) => [
       {
         type: "DBProxy",
@@ -59,43 +85,16 @@ exports.DBProxyTargetGroup = ({ spec, config }) =>
         () =>
           client.getListWithParent({
             parent: { type: "DBProxy", group: "RDS" },
-            pickKey: pipe([
-              tap(({ DBProxyName }) => {
-                assert(DBProxyName);
-              }),
-              pick(["DBProxyName"]),
-            ]),
+            pickKey: pipe([pick(["DBProxyName"])]),
             method: "describeDBProxyTargetGroups",
             getParam: "TargetGroups",
-            decorate: ({ lives, parent }) =>
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                defaultsDeep({}),
-              ]),
+            decorate,
             config,
           }),
         tap((params) => {
           assert(true);
         }),
       ])(),
-    decorate: ({ endpoint }) =>
-      pipe([
-        assign({
-          Tags: pipe([
-            ({ TargetGroupArn }) => ({
-              ResourceName: TargetGroupArn,
-            }),
-            endpoint().listTagsForResource,
-            get("TagList"),
-          ]),
-        }),
-      ]),
-    pickCreated:
-      ({ payload }) =>
-      () =>
-        payload,
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ TargetGroupName: name }), getById]),
     tagResource: tagResource,

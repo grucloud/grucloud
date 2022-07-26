@@ -8,35 +8,9 @@ const model = {
   package: "cloudfront",
   client: "CloudFront",
   ignoreErrorCodes: ["NoSuchCachePolicy"],
-  getById: { method: "getCachePolicy", getField: "CachePolicy" },
-  getList: { method: "listCachePolicies", getParam: "CachePolicyList.Items" },
-  create: { method: "createCachePolicy" },
-  update: { method: "updateCachePolicy" },
-  destroy: { method: "deleteCachePolicy" },
-};
-const managedByOther = pipe([eq(get("live.Type"), "managed")]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
-exports.CloudFrontCachePolicy = ({ spec, config }) =>
-  createAwsResource({
-    model,
-    spec,
-    config,
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    findName: pipe([get("live.CachePolicy.CachePolicyConfig.Name")]),
-    findId: get("live.CachePolicy.CachePolicyConfig.Name"),
-    decorateList:
-      ({ getById }) =>
-      (live) =>
-        pipe([
-          () => live,
-          // getById,
-          // defaultsDeep(live),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
+  getById: {
+    method: "getCachePolicy",
+    getField: "CachePolicy",
     decorate: ({ endpoint }) =>
       pipe([
         tap((params) => {
@@ -53,7 +27,33 @@ exports.CloudFrontCachePolicy = ({ spec, config }) =>
         assert(Id);
       }),
     ]),
-    pickIdDestroy: pipe([
+  },
+  getList: {
+    method: "listCachePolicies",
+    getParam: "CachePolicyList.Items",
+    decorate:
+      ({ getById }) =>
+      (live) =>
+        pipe([
+          () => live,
+          // getById,
+          // defaultsDeep(live),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+  },
+  create: {
+    method: "createCachePolicy",
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
+  },
+  update: { method: "updateCachePolicy" },
+  destroy: {
+    method: "deleteCachePolicy",
+    pickId: pipe([
       tap((params) => {
         assert(true);
       }),
@@ -63,10 +63,21 @@ exports.CloudFrontCachePolicy = ({ spec, config }) =>
         //assert(ETag);
       }),
     ]),
-    pickCreated:
-      ({ payload }) =>
-      () =>
-        payload,
+  },
+};
+
+const managedByOther = pipe([eq(get("live.Type"), "managed")]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
+exports.CloudFrontCachePolicy = ({ spec, config }) =>
+  createAwsResource({
+    model,
+    spec,
+    config,
+    managedByOther,
+    cannotBeDeleted: managedByOther,
+    findName: pipe([get("live.CachePolicy.CachePolicyConfig.Name")]),
+    findId: get("live.CachePolicy.CachePolicyConfig.Name"),
     getByName: ({ getById }) => pipe([({ name }) => ({ Name: name }), getById]),
     configDefault: ({ name, namespace, properties }) =>
       pipe([

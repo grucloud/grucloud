@@ -19,12 +19,15 @@ const ignoreErrorMessages = [
   "You can't perform this operation on the secret because it was marked for deletion",
 ];
 
+const pickId = pipe([({ Name }) => ({ SecretId: Name })]);
+
 const model = {
   package: "secrets-manager",
   client: "SecretsManager",
   ignoreErrorCodes: ["ResourceNotFoundException", "InvalidRequestException"],
   getById: {
     method: "getSecretValue",
+    pickId,
     ignoreErrorMessages,
   },
   getList: {
@@ -41,6 +44,7 @@ const model = {
   },
   destroy: {
     method: "deleteSecret",
+    pickId,
     ignoreErrorMessages,
   },
 };
@@ -75,12 +79,7 @@ exports.SecretsManagerSecret = ({ spec, config }) =>
     spec,
     config,
     findName: findNameInTagsOrId({ findId: get("live.Name") }),
-    pickId: pipe([
-      tap(({ Name }) => {
-        assert(Name);
-      }),
-      ({ Name }) => ({ SecretId: Name }),
-    ]),
+
     findId: pipe([get("live.ARN")]),
     findDependencies: ({ live }) => [
       { type: "Key", group: "KMS", ids: [live.KmsKeyId] },

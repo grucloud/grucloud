@@ -50,22 +50,11 @@ const createModel = ({ config }) => ({
   },
   destroy: {
     method: "deleteIpam",
-    pickId: pipe([
-      tap(({ IpamId }) => {
-        assert(IpamId);
-      }),
-      pick(["IpamId"]),
-      defaultsDeep({ Cascade: true }),
-    ]),
+    pickId: pipe([pick(["IpamId"]), defaultsDeep({ Cascade: true })]),
   },
 });
 
-const findId = pipe([
-  get("live.IpamId"),
-  tap((IpamId) => {
-    assert(IpamId);
-  }),
-]);
+const findId = pipe([get("live.IpamId")]);
 
 const findName = ({ live, lives, config }) =>
   pipe([

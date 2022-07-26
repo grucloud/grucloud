@@ -7,6 +7,8 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./SSMCommon");
 
+const pickId = pipe([pick(["Name"])]);
+
 const decorate =
   ({ endpoint }) =>
   (live) =>
@@ -37,13 +39,7 @@ const model = {
     method: "describeParameters",
     getField: "Parameters",
     pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       ({ Name }) => ({ Filters: [{ Key: "Name", Values: [Name] }] }),
-      tap((params) => {
-        assert(true);
-      }),
     ]),
     decorate,
   },
@@ -74,7 +70,7 @@ const model = {
         }),
       ])(),
   },
-  destroy: { method: "deleteParameter" },
+  destroy: { method: "deleteParameter", pickId },
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html
@@ -90,7 +86,6 @@ exports.SSMParameter = ({ spec, config }) =>
         assert(ARN);
       }),
     ]),
-    pickId: pipe([pick(["Name"])]),
     findDependencies: ({ live }) => [
       {
         type: "Key",

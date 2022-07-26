@@ -34,23 +34,25 @@ exports.DynamoDBTable = ({ spec, config }) => {
       config.region
     }:${config.accountId()}:table/${TableName}`;
 
+  const decorate = () =>
+    pipe([
+      assign({
+        Tags: pipe([
+          ({ TableName }) => ({
+            ResourceArn: tableArn({ TableName, config }),
+          }),
+          dynamoDB().listTagsOfResource,
+          get("Tags"),
+        ]),
+      }),
+    ]);
+
   const getById = client.getById({
     pickId,
     method: "describeTable",
     getField: "Table",
     ignoreErrorCodes,
-    decorate: () =>
-      pipe([
-        assign({
-          Tags: pipe([
-            ({ TableName }) => ({
-              ResourceArn: tableArn({ TableName, config }),
-            }),
-            dynamoDB().listTagsOfResource,
-            get("Tags"),
-          ]),
-        }),
-      ]),
+    decorate,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#describeTable-property

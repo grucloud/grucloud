@@ -7,6 +7,8 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./NetworkFirewallCommon");
 
+const pickId = pipe([pick(["FirewallPolicyArn"])]);
+
 const createModel = ({ config }) => ({
   package: "network-firewall",
   client: "NetworkFirewall",
@@ -25,6 +27,7 @@ const createModel = ({ config }) => ({
             assert(true);
           }),
         ])(),
+    pickId,
   },
   getList: {
     method: "listFirewallPolicies",
@@ -46,6 +49,7 @@ const createModel = ({ config }) => ({
   update: { method: "updateFirewallPolicy" },
   destroy: {
     method: "deleteFirewallPolicy",
+    pickId,
     shouldRetryOnExceptionMessages: [
       "Unable to delete the object because it is still in use",
     ],
@@ -60,7 +64,6 @@ exports.FirewallPolicy = ({ spec, config }) =>
     config,
     findName: pipe([get("live.FirewallPolicyName")]),
     findId: pipe([get("live.FirewallPolicyArn")]),
-    pickId: pipe([pick(["FirewallPolicyArn"])]),
     findDependencies: ({ live }) => [
       {
         type: "Key",

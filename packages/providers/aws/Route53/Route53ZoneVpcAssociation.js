@@ -17,12 +17,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { createAwsResource } = require("../AwsClient");
 const { hostedZoneIdToResourceId } = require("./Route53Common");
 
-const pickId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  pick(["HostedZoneId", "VPC"]),
-]);
+const pickId = pipe([pick(["HostedZoneId", "VPC"])]);
 
 const createModel = ({ config }) => ({
   ignoreErrorCodes: ["AccessDenied"],
@@ -38,6 +33,7 @@ const createModel = ({ config }) => ({
   destroy: {
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#disassociateVPCFromHostedZone-property
     method: "disassociateVPCFromHostedZone",
+    pickId,
   },
 });
 
@@ -158,7 +154,6 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
         ({ vpc, hostedZone }) => `zone-assoc::${hostedZone}::${vpc}`,
       ])(),
     findId,
-    pickId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZonesByVPC-property
     getList:
       ({ endpoint }) =>
@@ -172,18 +167,12 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
             }),
           flatMap(({ id }) =>
             pipe([
-              tap((params) => {
-                assert(id);
-              }),
               () => ({
                 VPCId: id,
                 VPCRegion: config.region,
               }),
               endpoint().listHostedZonesByVPC,
               get("HostedZoneSummaries"),
-              tap((params) => {
-                assert(true);
-              }),
               map(
                 defaultsDeep({ VPC: { VPCId: id, VPCRegion: config.region } })
               ),
@@ -203,23 +192,14 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
             VPCId: getField(vpc, "VpcId"),
             VPCRegion: get("resource.provider.config.region")(vpc),
           }),
-          tap((params) => {
-            assert(true);
-          }),
           endpoint().listHostedZonesByVPC,
           get("HostedZoneSummaries"),
-          tap((params) => {
-            assert(true);
-          }),
           find(
             eq(
               get("HostedZoneId"),
               hostedZoneIdToResourceId(getField(hostedZone, "Id"))
             )
           ),
-          tap((params) => {
-            assert(true);
-          }),
           defaultsDeep({
             VPC: {
               VPCId: getField(vpc, "VpcId"),
@@ -240,9 +220,6 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
             VPCRegion: get("resource.provider.config.region")(vpc),
           },
           HostedZoneId: hostedZoneIdToResourceId(getField(hostedZone, "Id")),
-        }),
-        tap((params) => {
-          assert(true);
         }),
       ])(),
   });

@@ -6,16 +6,49 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./RDSCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const pickId = pick(["DBProxyName"]);
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      // 1. create proxy
+      // 2. listTagsForResource may return DBProxyNotFoundFault
+      Tags: tryCatch(
+        pipe([
+          ({ DBProxyArn }) => ({
+            ResourceName: DBProxyArn,
+          }),
+          endpoint().listTagsForResource,
+          get("TagList"),
+        ]),
+        () => undefined
+      ),
+    }),
+  ]);
 
 const model = {
   package: "rds",
   client: "RDS",
   ignoreErrorCodes: ["DBProxyNotFoundFault"],
-  getById: { method: "describeDBProxies", getField: "DBProxies" },
-  getList: { method: "describeDBProxies", getParam: "DBProxies" },
-  create: { method: "createDBProxy" },
+  getById: {
+    method: "describeDBProxies",
+    pickId,
+    getField: "DBProxies",
+  },
+  getList: {
+    method: "describeDBProxies",
+    getParam: "DBProxies",
+    decorate,
+  },
+  create: {
+    method: "createDBProxy",
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
+  },
   update: { method: "modifyDBProxy" },
-  destroy: { method: "deleteDBProxy" },
+  destroy: { method: "deleteDBProxy", pickId },
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html
@@ -26,7 +59,6 @@ exports.DBProxy = ({ spec, config }) =>
     config,
     findName: get("live.DBProxyName"),
     findId: get("live.DBProxyArn"),
-    pickId: pick(["DBProxyName"]),
     findDependencies: ({ live, lives }) => [
       {
         type: "Secret",
@@ -49,30 +81,6 @@ exports.DBProxy = ({ spec, config }) =>
         ids: [live.RoleArn],
       },
     ],
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        assign({
-          // 1. create proxy
-          // 2. listTagsForResource may return DBProxyNotFoundFault
-          Tags: tryCatch(
-            pipe([
-              ({ DBProxyArn }) => ({
-                ResourceName: DBProxyArn,
-              }),
-              endpoint().listTagsForResource,
-              get("TagList"),
-            ]),
-            () => undefined
-          ),
-        }),
-      ]),
-    pickCreated:
-      ({ payload }) =>
-      () =>
-        payload,
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ DBProxyName: name }), getById]),
     tagResource: tagResource,

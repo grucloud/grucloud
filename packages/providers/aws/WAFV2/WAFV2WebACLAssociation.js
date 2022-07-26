@@ -73,24 +73,12 @@ const createModel = ({ config }) => ({
   destroy: {
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#disassociateWebACL-property
     method: "disassociateWebACL",
-    pickId: pipe([
-      tap(({ ResourceArn }) => {
-        assert(ResourceArn);
-      }),
-      pick(["ResourceArn"]),
-    ]),
+    pickId: pipe([pick(["ResourceArn"])]),
   },
 });
 
 const findId = pipe([
   get("live"),
-  tap((params) => {
-    assert(true);
-  }),
-  tap(({ WebACLArn, ResourceArn }) => {
-    assert(WebACLArn);
-    assert(ResourceArn);
-  }),
   ({ WebACLArn, ResourceArn }) => `webacl-assoc::${WebACLArn}::${ResourceArn}`,
 ]);
 

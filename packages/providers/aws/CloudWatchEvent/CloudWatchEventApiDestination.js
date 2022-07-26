@@ -7,16 +7,29 @@ const { createAwsResource } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html
+const pickId = pipe([pick(["Name"])]);
 
 const model = {
   package: "cloudwatch-events",
   client: "CloudWatchEvents",
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  getById: { method: "describeApiDestination" },
-  getList: { method: "listApiDestinations", getParam: "ApiDestinations" },
-  create: { method: "createApiDestination" },
+  getById: {
+    method: "describeApiDestination",
+    pickId,
+  },
+  getList: {
+    method: "listApiDestinations",
+    getParam: "ApiDestinations",
+  },
+  create: {
+    method: "createApiDestination",
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
+  },
   update: { method: "updateApiDestination" },
-  destroy: { method: "deleteApiDestination" },
+  destroy: { method: "deleteApiDestination", pickId },
 };
 
 exports.CloudWatchEventApiDestination = ({ spec, config }) =>
@@ -24,18 +37,7 @@ exports.CloudWatchEventApiDestination = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: pipe([
-      get("live.Name"),
-      tap((Name) => {
-        assert(Name);
-      }),
-    ]),
-    pickId: pipe([
-      tap(({ Name }) => {
-        assert(Name);
-      }),
-      pick(["Name"]),
-    ]),
+    findName: pipe([get("live.Name")]),
     findId: get("live.ApiDestinationArn"),
     findDependencies: ({ live }) => [
       {
@@ -52,24 +54,7 @@ exports.CloudWatchEventApiDestination = ({ spec, config }) =>
         ],
       },
     ],
-    decorateList: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        assign({}),
-      ]),
     getByName: getByNameCore,
-    pickCreated:
-      ({ payload }) =>
-      () =>
-        payload,
     getList: ({ client, endpoint, getById, config }) =>
       pipe([
         tap((params) => {
@@ -98,9 +83,6 @@ exports.CloudWatchEventApiDestination = ({ spec, config }) =>
               ]),
             config,
           }),
-        tap((params) => {
-          assert(true);
-        }),
       ])(),
     configDefault: ({
       name,

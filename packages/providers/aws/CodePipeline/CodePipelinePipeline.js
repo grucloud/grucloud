@@ -20,9 +20,6 @@ const { tagResource, untagResource } = require("./CodePipelineCommon");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodePipeline.html#listTagsForResource-property
 const assignTags = ({ endpoint }) =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
     assign({
       tags: pipe([
         get("metadata.pipelineArn"),
@@ -40,16 +37,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodePipeline.html#getPipeline-property
   getById: {
     method: "getPipeline",
-    pickId: pipe([
-      tap(({ pipeline }) => {
-        assert(pipeline);
-      }),
-      get("pipeline"),
-      tap((params) => {
-        assert(true);
-      }),
-      pick(["name"]),
-    ]),
+    pickId: pipe([get("pipeline"), pick(["name"])]),
     decorate: ({ endpoint }) => pipe([assignTags({ endpoint })]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodePipeline.html#listPipelines-property
@@ -62,13 +50,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodePipeline.html#createPipeline-property
   create: {
     method: "createPipeline",
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => payload,
-      ]),
+    pickCreated: ({ payload }) => pipe([() => payload]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodePipeline.html#updatePipeline-property
   //TODO

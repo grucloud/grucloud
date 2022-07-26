@@ -8,15 +8,47 @@ const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./StepFunctionsCommon");
 const { getByNameCore, flattenObject } = require("@grucloud/core/Common");
 
+const pickId = pick(["stateMachineArn"]);
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      definition: pipe([get("definition"), JSON.parse]),
+      tags: pipe([
+        ({ stateMachineArn }) => ({
+          resourceArn: stateMachineArn,
+        }),
+        endpoint().listTagsForResource,
+        get("tags"),
+      ]),
+    }),
+  ]);
+
 const model = {
   package: "sfn",
   client: "SFN",
   ignoreErrorCodes: ["StateMachineDoesNotExist"],
-  getById: { method: "describeStateMachine" },
-  getList: { method: "listStateMachines", getParam: "stateMachines" },
-  create: { method: "createStateMachine" },
+  getById: {
+    method: "describeStateMachine",
+    pickId,
+    decorate,
+  },
+  getList: {
+    method: "listStateMachines",
+    getParam: "stateMachines",
+    decorate: ({ getById }) => getById,
+  },
+  create: {
+    method: "createStateMachine",
+    filterPayload: pipe([
+      assign({
+        definition: pipe([get("definition"), JSON.stringify]),
+      }),
+    ]),
+    shouldRetryOnExceptionCodes: ["AccessDeniedException"],
+  },
   update: { method: "updateStateMachine" },
-  destroy: { method: "deleteStateMachine" },
+  destroy: { method: "deleteStateMachine", pickId },
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/StepFunctions.html
@@ -27,7 +59,6 @@ exports.StepFunctionsStateMachine = ({ spec, config }) =>
     config,
     findName: get("live.name"),
     findId: get("live.stateMachineArn"),
-    pickId: pick(["stateMachineArn"]),
     findDependencies: ({ live, lives }) => [
       {
         type: "Role",
@@ -132,25 +163,7 @@ exports.StepFunctionsStateMachine = ({ spec, config }) =>
         ])(),
       },
     ],
-    decorate: ({ endpoint }) =>
-      pipe([
-        assign({
-          definition: pipe([get("definition"), JSON.parse]),
-          tags: pipe([
-            ({ stateMachineArn }) => ({
-              resourceArn: stateMachineArn,
-            }),
-            endpoint().listTagsForResource,
-            get("tags"),
-          ]),
-        }),
-      ]),
-    createShouldRetryOnExceptionCodes: ["AccessDeniedException"],
-    createFilterPayload: pipe([
-      assign({
-        definition: pipe([get("definition"), JSON.stringify]),
-      }),
-    ]),
+
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

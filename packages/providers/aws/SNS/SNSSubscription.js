@@ -15,14 +15,45 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { createAwsResource } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
+const pickId = pipe([
+  pick(["SubscriptionArn"]),
+  tap(({ SubscriptionArn }) => {
+    assert(SubscriptionArn);
+  }),
+]);
+
 const model = {
   package: "sns",
   client: "SNS",
   ignoreErrorCodes: ["NotFound"],
-  getById: { method: "getSubscriptionAttributes", getField: "Attributes" },
-  getList: { method: "listSubscriptions", getParam: "Subscriptions" },
-  create: { method: "subscribe" },
-  destroy: { method: "unsubscribe" },
+  getById: {
+    method: "getSubscriptionAttributes",
+    getField: "Attributes",
+    pickId,
+  },
+  getList: {
+    method: "listSubscriptions",
+    getParam: "Subscriptions",
+    decorate: ({ endpoint, getById }) =>
+      pipe([
+        tap(({ SubscriptionArn }) => {
+          assert(SubscriptionArn);
+        }),
+        unless(eq(get("SubscriptionArn"), "PendingConfirmation"), getById),
+      ]),
+  },
+  create: {
+    method: "subscribe",
+    filterPayload: pipe([defaultsDeep({ ReturnSubscriptionArn: true })]),
+    pickCreated: () =>
+      pipe([
+        tap(({ SubscriptionArn }) => {
+          assert(SubscriptionArn);
+        }),
+        pick(["SubscriptionArn"]),
+      ]),
+  },
+  destroy: { method: "unsubscribe", pickId },
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html
@@ -40,15 +71,6 @@ exports.SNSSubscription = ({ spec, config }) =>
       }),
       ({ topic, protocol, endpoint }) =>
         `subscription::${topic}::${protocol}::${endpoint}`,
-    ]),
-    pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      pick(["SubscriptionArn"]),
-      tap(({ SubscriptionArn }) => {
-        assert(SubscriptionArn);
-      }),
     ]),
     findId: pipe([
       get("live.SubscriptionArn"),
@@ -98,36 +120,6 @@ exports.SNSSubscription = ({ spec, config }) =>
         ],
       },
     ],
-    decorateList: ({ endpoint, getById }) =>
-      pipe([
-        tap(({ SubscriptionArn, ...otherProp }) => {
-          assert(SubscriptionArn);
-          assert(getById);
-          assert(endpoint);
-          assert(otherProp);
-        }),
-        unless(eq(get("SubscriptionArn"), "PendingConfirmation"), getById),
-      ]),
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        assign({}),
-      ]),
-    createFilterPayload: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      defaultsDeep({ ReturnSubscriptionArn: true }),
-    ]),
-    pickCreated: () =>
-      pipe([
-        tap(({ SubscriptionArn }) => {
-          assert(SubscriptionArn);
-        }),
-        pick(["SubscriptionArn"]),
-      ]),
     getByName: getByNameCore,
     configDefault: ({
       name,

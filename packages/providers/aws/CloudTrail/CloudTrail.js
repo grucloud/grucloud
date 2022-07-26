@@ -50,7 +50,7 @@ const createModel = () => ({
   getList: {
     method: "listTrails",
     getParam: "Trails",
-    decorate: ({ endpoint, getById }) => pipe([getById]),
+    decorate: ({ getById }) => pipe([getById]),
   },
   create: {
     method: "createTrail",
