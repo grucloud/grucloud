@@ -9,14 +9,20 @@ const { createRDS, tagResource, untagResource } = require("./RDSCommon");
 
 const findId = get("live.DBSubnetGroupArn");
 const findName = get("live.DBSubnetGroupName");
-const pickId = pipe([
-  tap(({ DBSubnetGroupName }) => {
-    assert(DBSubnetGroupName);
-  }),
-  pick(["DBSubnetGroupName"]),
-]);
+const pickId = pipe([pick(["DBSubnetGroupName"])]);
 
 const ignoreErrorCodes = ["DBSubnetGroupNotFoundFault"];
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      Tags: pipe([
+        ({ DBSubnetGroupArn }) => ({ ResourceName: DBSubnetGroupArn }),
+        endpoint().listTagsForResource,
+        get("TagList"),
+      ]),
+    }),
+  ]);
 
 exports.DBSubnetGroup = ({ spec, config }) => {
   const rds = createRDS(config);
@@ -36,16 +42,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeDBSubnetGroups",
     getParam: "DBSubnetGroups",
-    decorate: () =>
-      pipe([
-        assign({
-          Tags: pipe([
-            ({ DBSubnetGroupArn }) => ({ ResourceName: DBSubnetGroupArn }),
-            rds().listTagsForResource,
-            get("TagList"),
-          ]),
-        }),
-      ]),
+    decorate,
   });
 
   const getById = client.getById({

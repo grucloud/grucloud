@@ -26,6 +26,7 @@ const createModel = ({ config }) => ({
   destroy: {
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#detachInternetGateway-property
     method: "detachInternetGateway",
+    pickId,
     ignoreErrorCodes: ["InvalidInternetGatewayID.NotFound"],
     shouldRetryOnExceptionCodes: ["DependencyViolation"],
   },

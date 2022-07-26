@@ -15,6 +15,18 @@ const buildArn =
       config.region
     }:${config.accountId()}:application:${applicationName}`;
 
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      tags: pipe([
+        buildArn({ config }),
+        (ResourceArn) => ({ ResourceArn }),
+        endpoint().listTagsForResource,
+        get("Tags"),
+      ]),
+    }),
+  ]);
+
 const model = ({ config }) => ({
   package: "codedeploy",
   client: "CodeDeploy",
@@ -24,17 +36,7 @@ const model = ({ config }) => ({
     method: "getApplication",
     pickId,
     getField: "application",
-    decorate: ({ endpoint }) =>
-      pipe([
-        assign({
-          tags: pipe([
-            buildArn({ config }),
-            (ResourceArn) => ({ ResourceArn }),
-            endpoint().listTagsForResource,
-            get("Tags"),
-          ]),
-        }),
-      ]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CodeDeploy.html#listApplications-property
   getList: {

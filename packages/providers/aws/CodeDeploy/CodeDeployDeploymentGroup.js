@@ -46,15 +46,9 @@ const assignTags = ({ endpoint, config }) =>
   pipe([
     assign({
       tags: pipe([
-        tap((params) => {
-          assert(config);
-        }),
         buildArn({ config }),
         (ResourceArn) => ({ ResourceArn }),
         endpoint().listTagsForResource,
-        tap((params) => {
-          assert(true);
-        }),
         get("Tags"),
       ]),
     }),
@@ -74,9 +68,6 @@ const model = ({ config }) => ({
     getField: "deploymentGroupInfo",
     decorate: ({ endpoint }) =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
         assignTags({ endpoint, config }),
         sortAutoRollbackConfigurationEvents,
         omitDeploymentGroupProperties,

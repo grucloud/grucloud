@@ -112,12 +112,7 @@ const model = ({ config }) => ({
   create: {
     method: "associateResourceShare",
     filterPayload: ({ associatedEntity, ...otheProps }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => ({ resourceArns: [associatedEntity], ...otheProps }),
-      ])(),
+      pipe([() => ({ resourceArns: [associatedEntity], ...otheProps })])(),
     pickCreated: ({ payload }) =>
       pipe([get("resourceShareAssociations"), first]),
     isInstanceUp: pipe([eq(get("status"), "ASSOCIATED")]),
@@ -133,9 +128,6 @@ const model = ({ config }) => ({
   destroy: {
     method: "disassociateResourceShare",
     pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       ({ associatedEntity, resourceShareArn }) => ({
         resourceArns: [associatedEntity],
         resourceShareArn,
@@ -153,9 +145,6 @@ exports.RAMResourceAssociation = ({ spec, config }) =>
     config,
     findName: ({ live, lives }) =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
         () => ({ live, lives, config }),
         findResoureName,
         (resourceName) =>

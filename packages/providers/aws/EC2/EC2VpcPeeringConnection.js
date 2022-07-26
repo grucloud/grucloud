@@ -18,7 +18,7 @@ const logger = require("@grucloud/core/logger")({
   prefix: "VpcPeeringConnection",
 });
 
-const { buildTags, findNameInTags } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 

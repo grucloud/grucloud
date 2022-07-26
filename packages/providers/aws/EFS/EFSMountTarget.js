@@ -11,14 +11,24 @@ const {
 } = require("./EFSCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
+const pickId = pipe([
+  tap(({ MountTargetId }) => {
+    assert(MountTargetId);
+  }),
+  pick(["MountTargetId"]),
+]);
+
 const model = {
   package: "efs",
   client: "EFS",
   ignoreErrorCodes: ["MountTargetNotFound"],
-  getById: { method: "describeMountTargets", getField: "MountTargets" },
-  create: { method: "createMountTarget" },
+  getById: { method: "describeMountTargets", getField: "MountTargets", pickId },
+  create: {
+    method: "createMountTarget",
+    isInstanceUp: eq(get("LifeCycleState"), "available"),
+  },
   update: { method: "updateMountTarget" },
-  destroy: { method: "deleteMountTarget" },
+  destroy: { method: "deleteMountTarget", pickId },
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EFS.html
@@ -47,14 +57,8 @@ exports.EFSMountTarget = ({ spec, config }) =>
         append("::"),
         append(pipe([() => live.AvailabilityZoneName, last])()),
       ])(),
-    pickId: pipe([
-      tap(({ MountTargetId }) => {
-        assert(MountTargetId);
-      }),
-      pick(["MountTargetId"]),
-    ]),
+
     findId: pipe([get("live.MountTargetId")]),
-    isInstanceUp: eq(get("LifeCycleState"), "available"),
     findDependencies: ({ live, lives }) => [
       findDependenciesFileSystem({ live, lives, config }),
       { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
@@ -65,12 +69,6 @@ exports.EFSMountTarget = ({ spec, config }) =>
     untagResource: untagResource,
     getList: ({ client, endpoint, getById, config }) =>
       pipe([
-        tap((params) => {
-          assert(client);
-          assert(endpoint);
-          assert(getById);
-          assert(config);
-        }),
         () =>
           client.getListWithParent({
             parent: { type: "FileSystem", group: "EFS" },
@@ -94,9 +92,6 @@ exports.EFSMountTarget = ({ spec, config }) =>
               ]),
             config,
           }),
-        tap((params) => {
-          assert(true);
-        }),
       ])(),
     configDefault: ({
       name,
@@ -120,5 +115,4 @@ exports.EFSMountTarget = ({ spec, config }) =>
           })
         ),
       ])(),
-    //updateFilterParams: ({ payload }) => pipe([() => payload]),
   });

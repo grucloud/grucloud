@@ -11,10 +11,42 @@ const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
   ignoreErrorCodes: ["InvalidVpnGatewayID.NotFound"],
-  getById: { method: "describeVpnGateways", getField: "VpnGateways" },
-  getList: { method: "describeVpnGateways", getParam: "VpnGateways" },
-  create: { method: "createVpnGateway" },
-  destroy: { method: "deleteVpnGateway" },
+  getById: {
+    method: "describeVpnGateways",
+    getField: "VpnGateways",
+    pickId: pipe([
+      tap(({ VpnGatewayId }) => {
+        assert(VpnGatewayId);
+      }),
+      ({ VpnGatewayId }) => ({ VpnGatewayIds: [VpnGatewayId] }),
+    ]),
+  },
+  getList: {
+    method: "describeVpnGateways",
+    getParam: "VpnGateways",
+    decorate: ({ endpoint, getById }) =>
+      pipe([
+        tap((params) => {
+          assert(getById);
+          assert(endpoint);
+        }),
+      ]),
+  },
+  create: {
+    method: "createVpnGateway",
+    pickCreated: ({ payload }) => pipe([get("VpnGateway")]),
+    isInstanceUp: pipe([eq(get("State"), "available")]),
+  },
+  destroy: {
+    method: "deleteVpnGateway",
+    pickId: pipe([
+      tap(({ VpnGatewayId }) => {
+        assert(VpnGatewayId);
+      }),
+      pick(["VpnGatewayId"]),
+    ]),
+    isInstanceDown: pipe([eq(get("State"), "deleted")]),
+  },
 });
 
 const findId = pipe([
@@ -32,28 +64,6 @@ exports.EC2VpnGateway = ({ spec, config }) =>
     config,
     findName: findNameInTagsOrId({ findId }),
     findId,
-    pickId: pipe([
-      tap(({ VpnGatewayId }) => {
-        assert(VpnGatewayId);
-      }),
-      ({ VpnGatewayId }) => ({ VpnGatewayIds: [VpnGatewayId] }),
-    ]),
-    pickIdDestroy: pipe([
-      tap(({ VpnGatewayId }) => {
-        assert(VpnGatewayId);
-      }),
-      pick(["VpnGatewayId"]),
-    ]),
-    decorateList: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
-    pickCreated: ({ payload }) => pipe([get("VpnGateway")]),
-    isInstanceUp: pipe([eq(get("State"), "available")]),
-    isInstanceDown: pipe([eq(get("State"), "deleted")]),
     cannotBeDeleted: eq(get("live.State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,

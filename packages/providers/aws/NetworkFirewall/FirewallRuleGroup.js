@@ -7,6 +7,8 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./NetworkFirewallCommon");
 
+const pickId = pipe([pick(["RuleGroupArn"])]);
+
 const createModel = ({ config }) => ({
   package: "network-firewall",
   client: "NetworkFirewall",
@@ -16,6 +18,7 @@ const createModel = ({ config }) => ({
   ],
   getById: {
     method: "describeRuleGroup",
+    pickId,
     decorate:
       ({ endpoint, live }) =>
       ({ RuleGroup, RuleGroupResponse }) =>
@@ -50,6 +53,7 @@ const createModel = ({ config }) => ({
   },
   destroy: {
     method: "deleteRuleGroup",
+    pickId,
     shouldRetryOnExceptionMessages: [
       "Unable to delete the object because it is still in use",
     ],
@@ -64,12 +68,7 @@ exports.FirewallRuleGroup = ({ spec, config }) =>
     config,
     findName: pipe([get("live.RuleGroupName")]),
     findId: pipe([get("live.RuleGroupArn")]),
-    pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      pick(["RuleGroupArn"]),
-    ]),
+
     findDependencies: ({ live }) => [
       {
         type: "Key",

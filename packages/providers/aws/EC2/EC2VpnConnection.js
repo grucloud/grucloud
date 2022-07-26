@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, eq } = require("rubico");
-const { defaultsDeep, when, last } = require("rubico/x");
+const { pipe, tap, get, eq, pick } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -18,37 +18,28 @@ const createModel = ({ config }) => ({
     method: "describeVpnConnections",
     getField: "VpnConnections",
     pickId: pipe([
-      tap(({ VpnConnectionId }) => {
-        assert(VpnConnectionId);
-      }),
       ({ VpnConnectionId }) => ({ VpnConnectionIds: [VpnConnectionId] }),
     ]),
   },
   getList: {
     method: "describeVpnConnections",
     getParam: "VpnConnections",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
   },
   create: {
     method: "createVpnConnection",
     pickCreated: ({ payload }) => pipe([get("VpnConnection")]),
     isInstanceUp: pipe([
       tap(({ State }) => {
-        assert(State);
         logger.debug(`createVpnConnection state: ${State}`);
       }),
       eq(get("State"), "available"),
     ]),
     configIsUp: { retryCount: 20 * 10, retryDelay: 5e3 },
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteVpnConnection-property
   destroy: {
     method: "deleteVpnConnection",
+    pickId: pipe([pick(["VpnConnectionId"])]),
     isInstanceDown: pipe([eq(get("State"), "deleted")]),
   },
 });
@@ -75,11 +66,6 @@ exports.EC2VpnConnection = ({ spec, config }) =>
       },
     ],
     findName: findNameInTagsOrId({ findId }),
-    pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
     findId,
     cannotBeDeleted: eq(get("live.State"), "deleted"),
     getByName: getByNameCore,

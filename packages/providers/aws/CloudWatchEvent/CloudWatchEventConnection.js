@@ -6,16 +6,39 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { createAwsResource } = require("../AwsClient");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html
+const pickId = pipe([pick(["Name"])]);
 
 const model = {
   package: "cloudwatch-events",
   client: "CloudWatchEvents",
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  getById: { method: "describeConnection" },
-  getList: { method: "listConnections", getParam: "Connections" },
-  create: { method: "createConnection" },
-  update: { method: "updateConnection" },
-  destroy: { method: "deleteConnection" },
+  getById: {
+    method: "describeConnection",
+    pickId,
+  },
+  getList: {
+    method: "listConnections",
+    getParam: "Connections",
+    decorate: ({ getById }) => getById,
+  },
+  create: {
+    method: "createConnection",
+    pickCreated:
+      ({ payload }) =>
+      () =>
+        payload,
+  },
+  update: {
+    method: "updateConnection",
+    filterParams: ({ payload }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        () => payload,
+      ]),
+  },
+  destroy: { method: "deleteConnection", pickId },
 };
 
 exports.CloudWatchEventConnection = ({ spec, config }) =>
@@ -23,21 +46,7 @@ exports.CloudWatchEventConnection = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      get("live.Name"),
-      tap((Name) => {
-        assert(Name);
-      }),
-    ]),
-    pickId: pipe([
-      tap(({ Name }) => {
-        assert(Name);
-      }),
-      pick(["Name"]),
-    ]),
+    findName: pipe([get("live.Name")]),
     findId: get("live.ConnectionArn"),
     findDependencies: ({ live }) => [
       {
@@ -46,13 +55,6 @@ exports.CloudWatchEventConnection = ({ spec, config }) =>
         ids: [pipe([() => live, get("SecretArn")])()],
       },
     ],
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        assign({}),
-      ]),
     getByName: getByNameCore,
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
@@ -61,15 +63,4 @@ exports.CloudWatchEventConnection = ({ spec, config }) =>
           Name: name,
         }),
       ])(),
-    pickCreated:
-      ({ payload }) =>
-      () =>
-        payload,
-    updateFilterParams: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => payload,
-      ]),
   });

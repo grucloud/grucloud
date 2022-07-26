@@ -7,13 +7,18 @@ const { createAwsResource } = require("../AwsClient");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { tagResource, untagResource } = require("./ApiGatewayCommon");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html
+const pickId = pipe([pick(["VpcLinkId"])]);
 
 const model = {
   package: "apigatewayv2",
   client: "ApiGatewayV2",
   ignoreErrorCodes: ["NotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getVpcLink-property
-  getById: { method: "getVpcLink" },
+  getById: {
+    method: "getVpcLink",
+    pickId,
+    decorate: ({ endpoint }) => pipe([assign({})]),
+  },
   getList: { method: "getVpcLinks", getParam: "Items" },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createVpcLink-property
   create: {
@@ -23,7 +28,7 @@ const model = {
     isInstanceUp: eq(get("VpcLinkStatus"), "AVAILABLE"),
   },
   update: { method: "updateVpcLink" },
-  destroy: { method: "deleteVpcLink" },
+  destroy: { method: "deleteVpcLink", pickId },
 };
 
 exports.ApiGatewayV2VpcLink = ({ spec, config }) => {
@@ -35,7 +40,6 @@ exports.ApiGatewayV2VpcLink = ({ spec, config }) => {
     spec,
     config,
     findName: pipe([get("live.Name")]),
-    pickId: pipe([pick(["VpcLinkId"])]),
     findId: get("live.VpcLinkId"),
     findDependencies: ({ live }) => [
       {
@@ -49,7 +53,6 @@ exports.ApiGatewayV2VpcLink = ({ spec, config }) => {
         ids: pipe([() => live, get("SecurityGroupIds")])(),
       },
     ],
-    decorate: ({ endpoint }) => pipe([assign({})]),
     getByName: getByNameCore,
     configDefault: ({
       name,

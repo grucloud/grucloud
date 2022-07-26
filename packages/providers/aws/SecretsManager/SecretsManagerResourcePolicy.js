@@ -6,6 +6,8 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
 
+const pickId = pipe([({ Name }) => ({ SecretId: Name })]);
+
 const stringifyResourcePolicy = assign({
   ResourcePolicy: pipe([get("ResourcePolicy"), JSON.stringify]),
 });
@@ -23,6 +25,7 @@ const model = {
   ignoreErrorCodes: ["ResourceNotFoundException"],
   getById: {
     method: "getResourcePolicy",
+    pickId,
     decorate: () => pipe([paerseResourcePolicy]),
   },
   create: {
@@ -42,6 +45,7 @@ const model = {
   },
   destroy: {
     method: "deleteResourcePolicy",
+    pickId,
     isInstanceDown: pipe([eq(get("ResourcePolicy"), undefined)]),
   },
 };
@@ -53,7 +57,6 @@ exports.SecretsManagerResourcePolicy = ({ spec, config }) =>
     spec,
     config,
     findName: pipe([get("live.Name")]),
-    pickId: pipe([({ Name }) => ({ SecretId: Name })]),
     findId: pipe([get("live.ARN")]),
     getByName: getByNameCore,
     configDefault: ({

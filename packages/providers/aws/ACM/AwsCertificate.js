@@ -11,6 +11,8 @@ const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./ACMCommon");
 
+const pickId = pick(["CertificateArn"]);
+
 exports.getCommonNameFromCertificate = pipe([
   (certificatePem) => new crypto.X509Certificate(certificatePem),
   callProp("toLegacyObject"),
@@ -27,6 +29,17 @@ exports.getCommonNameFromCertificate = pipe([
   }),
 ]);
 
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      Tags: pipe([
+        pick(["CertificateArn"]),
+        endpoint().listTagsForCertificate,
+        get("Tags"),
+      ]),
+    }),
+  ]);
+
 const createModel = () => ({
   package: "acm",
   client: "ACM",
@@ -34,17 +47,9 @@ const createModel = () => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#describeCertificate-property
   getById: {
     method: "describeCertificate",
+    pickId,
     getField: "Certificate",
-    decorate: ({ endpoint }) =>
-      pipe([
-        assign({
-          Tags: pipe([
-            pick(["CertificateArn"]),
-            endpoint().listTagsForCertificate,
-            get("Tags"),
-          ]),
-        }),
-      ]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property
   getList: {
@@ -53,7 +58,7 @@ const createModel = () => ({
     decorate: ({ getById }) => pipe([getById]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#deleteCertificate-property
-  destroy: { method: "deleteCertificate" },
+  destroy: { method: "deleteCertificate", pickId },
 });
 
 const isInstanceUp = pipe([
@@ -98,7 +103,7 @@ exports.AwsCertificate = ({ spec, config }) =>
     spec,
     findName: get("live.DomainName"),
     findId: get("live.CertificateArn"),
-    pickId: pick(["CertificateArn"]),
+
     getByName: getByNameCore,
     cannotBeDeleted: () => true,
     tagResource,

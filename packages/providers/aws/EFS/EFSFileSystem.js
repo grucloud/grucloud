@@ -7,15 +7,32 @@ const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EFSCommon");
 
+const pickId = pipe([
+  tap(({ FileSystemId }) => {
+    assert(FileSystemId);
+  }),
+  pick(["FileSystemId"]),
+]);
+
 const model = {
   package: "efs",
   client: "EFS",
   ignoreErrorCodes: ["FileSystemNotFound", "BadRequest"],
-  getById: { method: "describeFileSystems", getField: "FileSystems" },
-  getList: { method: "describeFileSystems", getParam: "FileSystems" },
-  create: { method: "createFileSystem" },
-  update: { method: "updateFileSystem" },
-  destroy: { method: "deleteFileSystem" },
+  getById: { method: "describeFileSystems", getField: "FileSystems", pickId },
+  getList: {
+    method: "describeFileSystems",
+    getParam: "FileSystems",
+    decorate: ({ endpoint }) => pipe([assign({})]),
+  },
+  create: {
+    method: "createFileSystem",
+    isInstanceUp: eq(get("LifeCycleState"), "available"),
+  },
+  update: {
+    method: "updateFileSystem",
+    filterParams: ({ payload }) => pipe([() => payload]),
+  },
+  destroy: { method: "deleteFileSystem", pickId },
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EFS.html
@@ -25,22 +42,10 @@ exports.EFSFileSystem = ({ spec, config }) =>
     spec,
     config,
     findName: findNameInTagsOrId({ findId: get("live.FileSystemId") }),
-    pickId: pipe([
-      tap(({ FileSystemId }) => {
-        assert(FileSystemId);
-      }),
-      pick(["FileSystemId"]),
-    ]),
     findId: pipe([get("live.FileSystemArn")]),
-    decorateList:
-      ({ endpoint, getById }) =>
-      (live) =>
-        pipe([() => live])(),
-    decorate: ({ endpoint }) => pipe([assign({})]),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
-    isInstanceUp: eq(get("LifeCycleState"), "available"),
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
         () => otherProps,
@@ -48,5 +53,4 @@ exports.EFSFileSystem = ({ spec, config }) =>
           Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
       ])(),
-    updateFilterParams: ({ payload }) => pipe([() => payload]),
   });

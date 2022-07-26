@@ -32,6 +32,25 @@ const pickId = pipe([
   }),
 ]);
 
+const decorate =
+  ({ config }) =>
+  ({ endpoint }) =>
+    pipe([
+      when(
+        get("TargetIps"),
+        assign({
+          TargetIps: pipe([
+            get("TargetIps"),
+            callProp("sort", (a, b) =>
+              ipToInt32(a.Ip) > ipToInt32(b.Ip) ? 1 : -1
+            ),
+          ]),
+        })
+      ),
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#listTagsForResource-property
+      when(eq(get("OwnerId"), config.accountId()), assignTags({ endpoint })),
+    ]);
+
 const model = ({ config }) => ({
   package: "route53resolver",
   client: "Route53Resolver",
@@ -42,26 +61,7 @@ const model = ({ config }) => ({
   getList: {
     method: "listResolverRules",
     getParam: "ResolverRules",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-        when(
-          get("TargetIps"),
-          assign({
-            TargetIps: pipe([
-              get("TargetIps"),
-              callProp("sort", (a, b) =>
-                ipToInt32(a.Ip) > ipToInt32(b.Ip) ? 1 : -1
-              ),
-            ]),
-          })
-        ),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#listTagsForResource-property
-        when(eq(get("OwnerId"), config.accountId()), assignTags({ endpoint })),
-      ]),
+    decorate: decorate({ config }),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#createResolverRule-property
   create: {

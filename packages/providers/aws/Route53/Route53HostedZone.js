@@ -91,6 +91,48 @@ const findDnsServers = (live) =>
     }),
   ])();
 
+const decorate = ({ endpoint }) =>
+  pipe([
+    tap(({ Id }) => {
+      assert(Id);
+    }),
+    assign({
+      RecordSet: pipe([
+        (hostedZone) => ({
+          HostedZoneId: hostedZone.Id,
+        }),
+        endpoint().listResourceRecordSets,
+        get("ResourceRecordSets"),
+        map(
+          pipe([
+            assign({
+              Name: pipe([get("Name"), octalReplace]),
+            }),
+            when(
+              get("AliasTarget"),
+              assign({
+                AliasTarget: pipe([
+                  get("AliasTarget"),
+                  assign({
+                    DNSName: pipe([get("DNSName"), octalReplace]),
+                  }),
+                ]),
+              })
+            ),
+          ])
+        ),
+      ]),
+      Tags: pipe([
+        (hostedZone) => ({
+          ResourceId: hostedZoneIdToResourceId(hostedZone.Id),
+          ResourceType: "hostedzone",
+        }),
+        endpoint().listTagsForResource,
+        get("ResourceTagSet.Tags"),
+      ]),
+    }),
+    ({ Config, ...other }) => ({ ...other, HostedZoneConfig: Config }),
+  ]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53HostedZone = ({ spec, config }) => {
   const route53 = createRoute53(config);
@@ -157,45 +199,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
   const getList = client.getList({
     method: "listHostedZones",
     getParam: "HostedZones",
-    decorate: () =>
-      pipe([
-        assign({
-          RecordSet: pipe([
-            (hostedZone) => ({
-              HostedZoneId: hostedZone.Id,
-            }),
-            route53().listResourceRecordSets,
-            get("ResourceRecordSets"),
-            map(
-              pipe([
-                assign({
-                  Name: pipe([get("Name"), octalReplace]),
-                }),
-                when(
-                  get("AliasTarget"),
-                  assign({
-                    AliasTarget: pipe([
-                      get("AliasTarget"),
-                      assign({
-                        DNSName: pipe([get("DNSName"), octalReplace]),
-                      }),
-                    ]),
-                  })
-                ),
-              ])
-            ),
-          ]),
-          Tags: pipe([
-            (hostedZone) => ({
-              ResourceId: hostedZoneIdToResourceId(hostedZone.Id),
-              ResourceType: "hostedzone",
-            }),
-            route53().listTagsForResource,
-            get("ResourceTagSet.Tags"),
-          ]),
-        }),
-        ({ Config, ...other }) => ({ ...other, HostedZoneConfig: Config }),
-      ]),
+    decorate,
     // When at least one of the hosted zone is private:
     //   Get the list of VPCs
     //   For each VPCs, call listHostedZonesByVPC to get the hosted zones associated to the VPC

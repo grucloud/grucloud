@@ -8,25 +8,30 @@ const model = {
   package: "cloudfront",
   client: "CloudFront",
   ignoreErrorCodes: ["NoSuchFunctionExists"],
-  getById: { method: "getFunction" },
-  getList: { method: "listFunctions", getParam: "FunctionList.Items" },
-  create: { method: "createFunction" },
-  update: { method: "updateFunction" },
-  destroy: { method: "deleteFunction" },
-};
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
-exports.CloudFrontFunction = ({ spec, config }) =>
-  createAwsResource({
-    model,
-    spec,
-    config,
-    findName: pipe([
-      get("live"),
-      ({ Name, FunctionMetadata: { Stage } }) => `${Name}::${Stage}`,
+  getById: {
+    method: "getFunction",
+    pickId: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      ({ Name, FunctionMetadata: { Stage } }) => ({ Name, Stage }),
+      tap(({ Name, Stage }) => {
+        assert(Name);
+        assert(Stage);
+      }),
     ]),
-    findId: pipe([get("live.FunctionMetadata.FunctionARN")]),
-    decorateList:
+    decorate: ({ endpoint }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        assign({}),
+      ]),
+  },
+  getList: {
+    method: "listFunctions",
+    getParam: "FunctionList.Items",
+    decorate:
       ({ getById }) =>
       (live) =>
         pipe([
@@ -51,24 +56,21 @@ exports.CloudFrontFunction = ({ spec, config }) =>
             assert(true);
           }),
         ])(),
-    decorate: ({ endpoint }) =>
+  },
+  create: {
+    method: "createFunction",
+    pickCreated: ({ payload }) =>
       pipe([
         tap((params) => {
           assert(true);
         }),
-        assign({}),
+        () => payload,
       ]),
+  },
+  update: { method: "updateFunction" },
+  destroy: {
+    method: "deleteFunction",
     pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      ({ Name, FunctionMetadata: { Stage } }) => ({ Name, Stage }),
-      tap(({ Name, Stage }) => {
-        assert(Name);
-        assert(Stage);
-      }),
-    ]),
-    pickIdDestroy: pipe([
       tap((params) => {
         assert(true);
       }),
@@ -78,13 +80,20 @@ exports.CloudFrontFunction = ({ spec, config }) =>
         assert(IfMatch);
       }),
     ]),
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        () => payload,
-      ]),
+  },
+};
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
+exports.CloudFrontFunction = ({ spec, config }) =>
+  createAwsResource({
+    model,
+    spec,
+    config,
+    findName: pipe([
+      get("live"),
+      ({ Name, FunctionMetadata: { Stage } }) => `${Name}::${Stage}`,
+    ]),
+    findId: pipe([get("live.FunctionMetadata.FunctionARN")]),
     getByName: ({ getById }) =>
       pipe([
         get("name"),

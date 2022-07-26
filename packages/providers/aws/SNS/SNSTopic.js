@@ -7,14 +7,61 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./SNSCommon");
 
+const pickId = pipe([get("Attributes"), pick(["TopicArn"])]);
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      Attributes: pipe([
+        get("Attributes"),
+        assign({
+          Policy: pipe([get("Policy"), JSON.parse]),
+          DeliveryPolicy: pipe([get("EffectiveDeliveryPolicy"), JSON.parse]),
+        }),
+        omit(["EffectiveDeliveryPolicy"]),
+      ]),
+      Tags: pipe([
+        get("Attributes"),
+        ({ TopicArn }) => ({
+          ResourceArn: TopicArn,
+        }),
+        endpoint().listTagsForResource,
+        get("Tags"),
+      ]),
+    }),
+  ]);
+
 const model = {
   package: "sns",
   client: "SNS",
   ignoreErrorCodes: ["NotFound"],
-  getById: { method: "getTopicAttributes" },
-  getList: { method: "listTopics", getParam: "Topics" },
-  create: { method: "createTopic" },
-  destroy: { method: "deleteTopic" },
+  getById: {
+    method: "getTopicAttributes",
+    pickId,
+    decorate,
+  },
+  getList: {
+    method: "listTopics",
+    getParam: "Topics",
+    decorate: ({ endpoint, getById }) =>
+      pipe([({ TopicArn }) => ({ Attributes: { TopicArn } }), getById]),
+  },
+  create: {
+    method: "createTopic",
+    filterPayload: pipe([
+      assign({
+        Attributes: pipe([
+          get("Attributes"),
+          assign({
+            Policy: pipe([get("Policy"), JSON.stringify]),
+            DeliveryPolicy: pipe([get("DeliveryPolicy"), JSON.stringify]),
+          }),
+        ]),
+      }),
+    ]),
+    pickCreated: () => pipe([({ TopicArn }) => ({ Attributes: { TopicArn } })]),
+  },
+  destroy: { method: "deleteTopic", pickId },
 };
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#removePermission-property
@@ -31,55 +78,9 @@ exports.SNSTopic = ({ spec, config }) =>
       callProp("split", ":"),
       last,
     ]),
-    pickId: pipe([get("Attributes"), pick(["TopicArn"])]),
     findId: pipe([get("live.Attributes.TopicArn")]),
     //TODO
     //findDependencies: ({ live }) => [{ type: "Key", group: "KMS", ids: [live.KmsMasterKeyId] }],
-    decorateList: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-        ({ TopicArn }) => ({ Attributes: { TopicArn } }),
-        getById,
-      ]),
-    decorate: ({ endpoint }) =>
-      pipe([
-        assign({
-          Attributes: pipe([
-            get("Attributes"),
-            assign({
-              Policy: pipe([get("Policy"), JSON.parse]),
-              DeliveryPolicy: pipe([
-                get("EffectiveDeliveryPolicy"),
-                JSON.parse,
-              ]),
-            }),
-            omit(["EffectiveDeliveryPolicy"]),
-          ]),
-          Tags: pipe([
-            get("Attributes"),
-            ({ TopicArn }) => ({
-              ResourceArn: TopicArn,
-            }),
-            endpoint().listTagsForResource,
-            get("Tags"),
-          ]),
-        }),
-      ]),
-    createFilterPayload: pipe([
-      assign({
-        Attributes: pipe([
-          get("Attributes"),
-          assign({
-            Policy: pipe([get("Policy"), JSON.stringify]),
-            DeliveryPolicy: pipe([get("DeliveryPolicy"), JSON.stringify]),
-          }),
-        ]),
-      }),
-    ]),
-    pickCreated: () => pipe([({ TopicArn }) => ({ Attributes: { TopicArn } })]),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

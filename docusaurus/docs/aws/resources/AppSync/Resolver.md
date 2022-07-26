@@ -223,6 +223,7 @@ exports.createResources = () => [
 
 - [GraphqlApi](./GraphqlApi.md)
 - [DataSource](./DataSource.md)
+- [Type](./Type.md)
 
 ## Full Examples
 

@@ -15,6 +15,7 @@ const createModel = ({ config }) => ({
   destroy: {
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateAddress-property
     method: "disassociateAddress",
+    pickId,
   },
 });
 
