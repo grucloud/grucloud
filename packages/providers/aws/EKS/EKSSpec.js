@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, assign, map, pick, omit, tap, not, get } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, map, pick, omit, tap, not, get, eq } = require("rubico");
+const { defaultsDeep, when, pluck, find } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
 const { isOurMinionObject } = require("../AwsCommon");
@@ -21,18 +21,28 @@ module.exports = pipe([
       type: "Cluster",
       Client: EKSCluster,
       dependencies: {
-        subnets: { type: "Subnet", group: "EC2", list: true },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            get("resourcesVpcConfig.subnetIds"),
+        },
         securityGroups: {
           type: "SecurityGroup",
           group: "EC2",
           list: true,
+          dependencyIds:
+            ({ lives, config }) =>
+            (live) =>
+              [
+                get("resourcesVpcConfig.clusterSecurityGroupId")(live),
+                ...get("resourcesVpcConfig.securityGroupIds")(live),
+              ],
           filterDependency:
             ({ resource }) =>
             (dependency) =>
               pipe([
-                tap(() => {
-                  assert(dependency);
-                }),
                 () => dependency,
                 not(get("managedByOther")),
                 tap((result) => {
@@ -40,8 +50,16 @@ module.exports = pipe([
                 }),
               ])(),
         },
-        role: { type: "Role", group: "IAM" },
-        key: { type: "Key", group: "KMS" },
+        role: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("roleArn"),
+        },
+        key: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: ({ lives, config }) => get("SecurityGroups"),
+        },
       },
       propertiesDefault: {
         resourcesVpcConfig: {
@@ -74,14 +92,61 @@ module.exports = pipe([
     {
       type: "NodeGroup",
       dependencies: {
-        cluster: { type: "Cluster", group: "EKS", parent: true },
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        role: { type: "Role", group: "IAM" },
-        launchTemplate: { type: "LaunchTemplate", group: "EC2" },
-        autoScaling: { type: "AutoScalingGroup", group: "AutoScaling" },
+        cluster: {
+          type: "Cluster",
+          group: "EKS",
+          parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              (live) =>
+                lives.getByName({
+                  name: live.clusterName,
+                  type: "Cluster",
+                  group: "EKS",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("subnets"),
+        },
+        role: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("nodeRole"),
+        },
+        launchTemplate: {
+          type: "LaunchTemplate",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("launchTemplate.id"),
+        },
+        autoScaling: {
+          type: "AutoScalingGroup",
+          group: "AutoScaling",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("resources.autoScalingGroups"),
+              pluck("name"),
+              map((name) =>
+                pipe([
+                  () =>
+                    lives.getByType({
+                      type: "AutoScalingGroup",
+                      group: "AutoScaling",
+                      providerName: config.providerName,
+                    }),
+                  find(eq(get("live.AutoScalingGroupName"), name)),
+                  get("id"),
+                ])()
+              ),
+            ]),
+        },
       },
       Client: EKSNodeGroup,
-
       compare: compareEKS({
         filterTarget: () =>
           pipe([

@@ -10,7 +10,6 @@ const { AwsClient } = require("../AwsClient");
 const {
   createECS,
   buildTagsEcs,
-  findDependenciesCluster,
   tagResource,
   untagResource,
 } = require("./ECSCommon");
@@ -23,23 +22,6 @@ const findName = findNameInTagsOrId({ findId });
 exports.ECSContainerInstance = ({ spec, config }) => {
   const ecs = createECS(config);
   const client = AwsClient({ spec, config })(ecs);
-
-  // findDependencies for ECSContainerInstance
-  const findDependencies = ({ live }) => [
-    findDependenciesCluster({ live }),
-    {
-      type: "Instance",
-      group: "EC2",
-      ids: [live.ec2InstanceId],
-    },
-  ];
-
-  const findNamespace = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => "",
-  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeContainerInstances-property
   const describeContainerInstances = pipe([
@@ -104,8 +86,6 @@ exports.ECSContainerInstance = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace,
-    findDependencies,
     getByName,
     findName,
     create,

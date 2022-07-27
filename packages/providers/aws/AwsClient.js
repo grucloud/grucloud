@@ -114,7 +114,7 @@ const AwsClient =
               when(Array.isArray, first),
               unless(
                 isEmpty,
-                pipe([decorate({ live, endpoint }), assignTagsSort])
+                pipe([decorate({ live, endpoint, config }), assignTagsSort])
               ),
             ]),
             switchCase([
@@ -209,7 +209,7 @@ const AwsClient =
               tap((params) => {
                 assert(true);
               }),
-              map(decorate({ lives, endpoint, getById })),
+              map(decorate({ lives, endpoint, getById, config })),
               transformListPost({ lives, endpoint }),
               tap((params) => {
                 assert(true);
@@ -287,7 +287,13 @@ const AwsClient =
                         Array.isArray,
                         pipe([
                           map(
-                            decorate({ name, parent: live, lives, endpoint })
+                            decorate({
+                              name,
+                              parent: live,
+                              lives,
+                              endpoint,
+                              config,
+                            })
                           ),
                           tap((params) => {
                             assert(true);
@@ -298,7 +304,13 @@ const AwsClient =
                           tap((params) => {
                             assert(true);
                           }),
-                          decorate({ name, parent: live, lives, endpoint }),
+                          decorate({
+                            name,
+                            parent: live,
+                            lives,
+                            endpoint,
+                            config,
+                          }),
                           tap((params) => {
                             assert(true);
                           }),
@@ -325,6 +337,7 @@ const AwsClient =
                     parent: live,
                     lives,
                     endpoint,
+                    config,
                   }),
                   unless(Array.isArray, (result) => [result]),
                 ]),

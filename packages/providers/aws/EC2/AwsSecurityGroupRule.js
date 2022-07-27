@@ -5,7 +5,6 @@ const {
   eq,
   and,
   tap,
-  filter,
   switchCase,
   tryCatch,
   not,
@@ -17,19 +16,13 @@ const {
   omit,
 } = require("rubico");
 const {
-  identity,
-  callProp,
   size,
   includes,
   defaultsDeep,
   isEmpty,
   find,
   first,
-  groupBy,
-  values,
   isDeepEqual,
-  uniq,
-  when,
   append,
   pluck,
 } = require("rubico/x");

@@ -6,7 +6,6 @@ const { findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const {
   createCognitoIdentityProvider,
-  findDependenciesUserPool,
   ignoreErrorCodes,
 } = require("./CognitoIdentityServiceProviderCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -28,22 +27,9 @@ exports.UserPoolDomain = ({ spec, config }) => {
   const cognitoIdentityServiceProvider = createCognitoIdentityProvider(config);
   const client = AwsClient({ spec, config })(cognitoIdentityServiceProvider);
 
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesUserPool({ live, lives, config }),
-    {
-      type: "Certificate",
-      group: "ACM",
-      ids: [get("CustomDomainConfig.CertificateArn")(live)],
-    },
-  ];
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeUserPoolDomain-property
   const getById = client.getById({
-    pickId: pipe([
-      tap(({ Domain }) => {
-        assert(Domain);
-      }),
-      pick(["Domain"]),
-    ]),
+    pickId: pipe([pick(["Domain"])]),
     method: "describeUserPoolDomain",
     getField: "DomainDescription",
     ignoreErrorCodes,
@@ -125,7 +111,6 @@ exports.UserPoolDomain = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     findNamespace: findNamespaceInTagsObject(config),
     getByName,
     getById,

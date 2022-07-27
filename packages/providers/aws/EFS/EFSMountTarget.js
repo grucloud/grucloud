@@ -4,19 +4,10 @@ const { defaultsDeep, when, prepend, append, last, find } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
-const {
-  tagResource,
-  untagResource,
-  findDependenciesFileSystem,
-} = require("./EFSCommon");
+const { tagResource, untagResource } = require("./EFSCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const pickId = pipe([
-  tap(({ MountTargetId }) => {
-    assert(MountTargetId);
-  }),
-  pick(["MountTargetId"]),
-]);
+const pickId = pipe([pick(["MountTargetId"])]);
 
 const model = {
   package: "efs",
@@ -59,11 +50,6 @@ exports.EFSMountTarget = ({ spec, config }) =>
       ])(),
 
     findId: pipe([get("live.MountTargetId")]),
-    findDependencies: ({ live, lives }) => [
-      findDependenciesFileSystem({ live, lives, config }),
-      { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
-      { type: "SecurityGroup", group: "EC2", ids: live.SecurityGroups },
-    ],
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

@@ -21,22 +21,6 @@ exports.ECSTaskSet = ({ spec, config }) => {
   const ecs = createECS(config);
   const client = AwsClient({ spec, config })(ecs);
 
-  // findDependencies for ECSTaskSet
-  const findDependencies = ({ live }) => [
-    {
-      type: "Cluster",
-      group: "ECS",
-      ids: [pipe([() => live, get("clusterArn")])()],
-    },
-    {
-      type: "Service",
-      group: "ECS",
-      ids: [pipe([() => live, get("serviceArn")])()],
-    },
-  ];
-
-  const findNamespace = pipe([() => ""]);
-
   const ignoreErrorCodes = [
     "ClusterNotFoundException",
     "InvalidParameterException",
@@ -128,8 +112,6 @@ exports.ECSTaskSet = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace,
-    findDependencies,
     getByName,
     getById,
     findName,

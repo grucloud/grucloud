@@ -27,7 +27,6 @@ const logger = require("@grucloud/core/logger")({
   prefix: "KmsKey",
 });
 const { retryCall } = require("@grucloud/core/Retry");
-const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 const { configProviderDefault } = require("@grucloud/core/Common");

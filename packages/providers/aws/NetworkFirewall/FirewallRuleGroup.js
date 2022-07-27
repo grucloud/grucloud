@@ -68,14 +68,6 @@ exports.FirewallRuleGroup = ({ spec, config }) =>
     config,
     findName: pipe([get("live.RuleGroupName")]),
     findId: pipe([get("live.RuleGroupArn")]),
-
-    findDependencies: ({ live }) => [
-      {
-        type: "Key",
-        group: "KMS",
-        ids: [get("EncryptionConfiguration.KeyId")(live)],
-      },
-    ],
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
@@ -83,7 +75,8 @@ exports.FirewallRuleGroup = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: { key },
+      //TODO
+      dependencies: { kmsKey },
     }) =>
       pipe([
         () => otherProps,

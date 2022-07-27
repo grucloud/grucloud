@@ -41,18 +41,6 @@ exports.ApiGatewayV2VpcLink = ({ spec, config }) => {
     config,
     findName: pipe([get("live.Name")]),
     findId: get("live.VpcLinkId"),
-    findDependencies: ({ live }) => [
-      {
-        type: "Subnet",
-        group: "EC2",
-        ids: pipe([() => live, get("SubnetIds")])(),
-      },
-      {
-        type: "SecurityGroup",
-        group: "EC2",
-        ids: pipe([() => live, get("SecurityGroupIds")])(),
-      },
-    ],
     getByName: getByNameCore,
     configDefault: ({
       name,

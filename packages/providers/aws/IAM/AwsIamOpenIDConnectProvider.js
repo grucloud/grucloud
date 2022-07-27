@@ -1,15 +1,5 @@
 const assert = require("assert");
-const {
-  map,
-  pipe,
-  tap,
-  get,
-  switchCase,
-  eq,
-  assign,
-  pick,
-  not,
-} = require("rubico");
+const { pipe, tap, get, switchCase, assign, pick, not } = require("rubico");
 const { defaultsDeep, isEmpty, find, prepend, callProp } = require("rubico/x");
 const tls = require("tls");
 
@@ -98,7 +88,6 @@ const untagResource = untagResourceIam({
 exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
-  const { providerName } = config;
 
   const findId = get("live.Arn");
   const pickId = pipe([({ Arn }) => ({ OpenIDConnectProviderArn: Arn })]);
@@ -106,33 +95,11 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   //TODO look for cluster name
   const findName = ({ live }) =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       () => live,
       get("Url"),
       callProp("replace", "https://", ""),
       prepend("oidp::"),
     ])();
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Cluster",
-      group: "EKS",
-      ids: [
-        pipe([
-          () =>
-            lives.getByType({
-              type: "Cluster",
-              group: "EKS",
-              providerName,
-            }),
-          find(eq(get("live.identity.oidc.issuer"), `https://${live.Url}`)),
-          get("id"),
-        ])(),
-      ],
-    },
-  ];
 
   const findNamespace = (param) =>
     pipe([
@@ -241,7 +208,6 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     spec,
     findNamespace,
     findId,
-    findDependencies,
     getByName,
     getById,
     findName,

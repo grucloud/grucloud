@@ -13,7 +13,13 @@ module.exports = pipe([
   () => [
     {
       type: "Stack",
-      dependencies: { role: { type: "Role", group: "IAM" } },
+      dependencies: {
+        role: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("RoleARN"),
+        },
+      },
       Client: CloudFormationStack,
       isOurMinion,
       ignoreResource: () => () => true,

@@ -16,14 +16,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
 
-  const findDependencies = ({ live }) => [
-    {
-      type: "Policy",
-      group: "IAM",
-      ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
-    },
-  ];
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroups-property
   const getList = client.getList({
     method: "listGroups",
@@ -170,7 +162,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     getByName,
     findName,
     create,

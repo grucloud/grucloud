@@ -5,50 +5,19 @@ const { pluck, defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const {
-  createApiGatewayV2,
-  findDependenciesApi,
-  ignoreErrorCodes,
-} = require("./ApiGatewayCommon");
+const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findId = get("live.DeploymentId");
 const pickId = pick(["ApiId", "DeploymentId"]);
 const findName = pipe([
   get("live"),
-  tap((params) => {
-    assert(true);
-  }),
-  tap(({ ApiName }) => {
-    assert(ApiName);
-  }),
   //TODO Stage ?
   ({ ApiName }) => `deployment::${ApiName}`,
-  tap((params) => {
-    assert(true);
-  }),
 ]);
 
 exports.Deployment = ({ spec, config }) => {
   const apiGateway = createApiGatewayV2(config);
   const client = AwsClient({ spec, config })(apiGateway);
-
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesApi({ live, config }),
-    {
-      type: "Stage",
-      group: "ApiGatewayV2",
-      ids: pipe([
-        () =>
-          lives.getByType({
-            providerName: config.providerName,
-            type: "Stage",
-            group: "ApiGatewayV2",
-          }),
-        filter(eq(get("live.DeploymentId"), live.DeploymentId)),
-        pluck("id"),
-      ])(),
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDeployment-property
   const getById = client.getById({
@@ -125,6 +94,5 @@ exports.Deployment = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    findDependencies,
   };
 };

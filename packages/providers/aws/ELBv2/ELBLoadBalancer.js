@@ -1,14 +1,6 @@
 const assert = require("assert");
 const { map, pipe, tap, get, eq, assign, filter, pick } = require("rubico");
-const {
-  isEmpty,
-  includes,
-  first,
-  defaultsDeep,
-  pluck,
-  callProp,
-  unless,
-} = require("rubico/x");
+const { isEmpty, first, defaultsDeep, unless } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const {
@@ -28,7 +20,6 @@ const pickId = pick(["LoadBalancerArn"]);
 exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const elb = createELB(config);
   const client = AwsClient({ spec, config })(elb);
-  const { providerName } = config;
 
   const assignTags = unless(
     isEmpty,
@@ -48,39 +39,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const managedByOther = hasKeyInTags({
     key: "elbv2.k8s.aws/cluster",
   });
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: pipe([() => live, get("AvailabilityZones"), pluck("SubnetId")])(),
-    },
-    {
-      type: "SecurityGroup",
-      group: "EC2",
-      ids: live.SecurityGroups,
-    },
-    {
-      type: "NetworkInterface",
-      group: "EC2",
-      ids: pipe([
-        () =>
-          lives.getByType({
-            type: "NetworkInterface",
-            group: "EC2",
-            providerName,
-          }),
-        filter(
-          pipe([
-            get("live.Description"),
-            callProp("replace", "ELB ", ""),
-            (description) => includes(description)(live.LoadBalancerArn),
-          ])
-        ),
-        pluck("id"),
-      ])(),
-    },
-  ];
 
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,
@@ -153,8 +111,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
-    findNamespace,
     getByName,
     findName,
     create,

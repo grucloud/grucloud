@@ -54,43 +54,12 @@ const {
 const findId = get("live.id");
 const findName = get("live.name");
 
-const pickId = pipe([
-  tap(({ id }) => {
-    assert(id);
-  }),
-  ({ id }) => ({ restApiId: id }),
-]);
+const pickId = pipe([({ id }) => ({ restApiId: id })]);
 
 exports.RestApi = ({ spec, config }) => {
   const endpoint = createAPIGateway(config);
 
   const client = AwsClient({ spec, config })(endpoint);
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Role",
-      group: "IAM",
-      ids: pipe([
-        () => live,
-        get("schema.paths"),
-        flattenObject({ filterKey: (key) => key === "credentials" }),
-        map(
-          pipe([
-            (id) =>
-              lives.getById({
-                id,
-                type: "Role",
-                group: "IAM",
-                providerName: config.providerName,
-              }),
-            get("id"),
-          ])
-        ),
-        //TODO move uniq to flattenObject
-        uniq,
-      ])(),
-    },
-  ];
 
   const buildName = pipe([callProp("split", "."), last]);
 
@@ -142,20 +111,6 @@ exports.RestApi = ({ spec, config }) => {
       values,
     ])();
 
-  // const buildSwaggerRequestModelParameters = ({ requestModels }) =>
-  //   pipe([
-  //     () => [
-  //       {
-  //         in: "body",
-  //         name: requestModels["application/json"],
-  //         required: true,
-  //         schema: {
-  //           $ref: `#/definitions/${requestModels["application/json"]}`,
-  //         },
-  //       },
-  //     ],
-  //   ])();
-
   const updateObject = (update) =>
     pipe([
       switchCase([
@@ -201,47 +156,6 @@ exports.RestApi = ({ spec, config }) => {
         ]),
       })
     );
-
-  // const methodProduces = ({ method }) =>
-  //   pipe([
-  //     () => method,
-  //     get("methodIntegration.integrationResponses", {}),
-  //     values,
-  //     pluck("responseParameters"),
-  //     filter(not(isEmpty)),
-  //     map((param) => param["method.response.header.Content-Type"]),
-  //     filter(not(isEmpty)),
-  //     map(callProp("replace", /'/g, "")),
-  //     when(isEmpty, () => ["application/json"]),
-  //   ])();
-
-  // const buildSwaggerMethodResponses = ({ method }) =>
-  //   pipe([
-  //     () => method,
-  //     get("methodResponses", {}),
-  //     map.entries(
-  //       ([key, { statusCode, responseParameters, responseModels }]) => [
-  //         key,
-  //         {
-  //           description: `${statusCode} response`,
-  //           ...(responseModels && {
-  //             schema: {
-  //               $ref: `#/definitions/${responseModels["application/json"]}`,
-  //             },
-  //           }),
-  //           ...(responseParameters && {
-  //             headers: pipe([
-  //               () => responseParameters,
-  //               map.entries(([key, value]) => [
-  //                 pipe([() => key, callProp("split", "."), last])(),
-  //                 { type: "string" },
-  //               ]),
-  //             ])(),
-  //           }),
-  //         },
-  //       ]
-  //     ),
-  //   ])();
 
   const buildOpenApiMethodResponses = ({ method }) =>
     pipe([
@@ -723,7 +637,6 @@ exports.RestApi = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    findDependencies,
     tagResource: tagResource({
       buildResourceArn: buildResourceArn({ config }),
     })({ endpoint }),

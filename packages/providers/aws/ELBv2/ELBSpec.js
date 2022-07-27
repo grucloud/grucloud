@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, assign, map, omit, pick, tap, get } = require("rubico");
-const { defaultsDeep, unless, when } = require("rubico/x");
+const { defaultsDeep, unless, when, pluck } = require("rubico/x");
 const { compareAws, isOurMinion } = require("../AwsCommon");
 const { ELBLoadBalancerV2 } = require("./ELBLoadBalancer");
 const { ELBTargetGroup } = require("./ELBTargetGroup");
@@ -18,11 +18,35 @@ module.exports = pipe([
     {
       type: "LoadBalancer",
       dependencies: {
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        internetGateway: { type: "InternetGateway", group: "EC2" },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-        role: { type: "Role", group: "IAM" },
-        key: { type: "Key", group: "KMS" },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("AvailabilityZones"), pluck("SubnetId")]),
+        },
+        // internetGateway: {
+        //   type: "InternetGateway",
+        //   group: "EC2",
+        //   dependencyId: ({ lives, config }) => get(""),
+        // },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("SecurityGroups"),
+        },
+        // TODO
+        // role: {
+        //   type: "Role",
+        //   group: "IAM",
+        //   dependencyId: ({ lives, config }) => get(""),
+        // },
+        // key: {
+        //   type: "Key",
+        //   group: "KMS",
+        //   dependencyId: ({ lives, config }) => get(""),
+        // },
       },
       Client: ELBLoadBalancerV2,
       omitProperties: [
@@ -44,11 +68,17 @@ module.exports = pipe([
       type: "TargetGroup",
       Client: ELBTargetGroup,
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2" },
-        nodeGroup: {
-          type: "NodeGroup",
-          group: "EKS",
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("VpcId"),
         },
+        //TODO
+        // nodeGroup: {
+        //   type: "NodeGroup",
+        //   group: "EKS",
+        //   dependencyId: ({ lives, config }) => get(""),
+        // },
         //TODO autoScalingGroup
       },
       propertiesDefault: {
@@ -94,9 +124,22 @@ module.exports = pipe([
           type: "LoadBalancer",
           group: "ElasticLoadBalancingV2",
           parent: true,
+          dependencyId: ({ lives, config }) => get("LoadBalancerArn"),
         },
-        targetGroup: { type: "TargetGroup", group: "ElasticLoadBalancingV2" },
-        certificate: { type: "Certificate", group: "ACM" },
+        targetGroup: {
+          type: "TargetGroup",
+          group: "ElasticLoadBalancingV2",
+          //TODO list ?
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("DefaultActions"), pluck("TargetGroupArn")]),
+        },
+        //TODO list ?
+        certificate: {
+          type: "Certificate",
+          group: "ACM",
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("Certificates"), pluck("CertificateArn")]),
+        },
       },
       omitProperties: ["ListenerArn", "SslPolicy"],
       compare: compareELB({
@@ -139,8 +182,15 @@ module.exports = pipe([
           type: "Listener",
           group: "ElasticLoadBalancingV2",
           parent: true,
+          dependencyId: ({ lives, config }) => get("ListenerArn"),
         },
-        targetGroup: { type: "TargetGroup", group: "ElasticLoadBalancingV2" },
+        targetGroup: {
+          type: "TargetGroup",
+          group: "ElasticLoadBalancingV2",
+          //TODO list ?
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("Actions"), pluck("TargetGroupArn")]),
+        },
       },
       omitProperties: [
         "RuleArn",

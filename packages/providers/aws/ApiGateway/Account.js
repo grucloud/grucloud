@@ -14,9 +14,6 @@ exports.Account = ({ spec, config }) => {
   const apiGateway = createAPIGateway(config);
   const client = AwsClient({ spec, config })(apiGateway);
 
-  const findDependencies = ({ live }) => [
-    { type: "Role", group: "IAM", ids: [live.cloudwatchRoleArn] },
-  ];
   const isDefault = pipe([not(get("live.cloudwatchRoleArn"))]);
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getAccount-property
   const getAccount = () => pipe([() => ({}), apiGateway().getAccount])();
@@ -54,9 +51,6 @@ exports.Account = ({ spec, config }) => {
     pickId: () => ({}),
     filterParams: ({ payload, live, diff }) =>
       pipe([
-        tap(() => {
-          assert(diff);
-        }),
         () => ({ diff }),
         diffToPatch,
         (patchOperations) => ({
@@ -84,7 +78,6 @@ exports.Account = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     getByName,
     findName,
     create,
@@ -95,11 +88,7 @@ exports.Account = ({ spec, config }) => {
     isDefault,
     managedByOther: isDefault,
     cannotBeDeleted: pipe([
-      tap((params) => {
-        assert(true);
-      }),
       get("live"),
-
       differenceObject({
         apiKeyVersion: "4",
         cloudwatchRoleArn: undefined,

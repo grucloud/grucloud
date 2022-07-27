@@ -53,11 +53,31 @@ module.exports = pipe([
           }),
         ]),
       dependencies: {
-        bucket: { type: "Bucket", group: "S3" },
-        logGroup: { type: "LogsGroup", group: "CloudWatchLogs" },
-        logGroupRole: { type: "role", group: "IAM" },
-        kmsKey: { type: "Key", group: "KMS" },
-        snsTopic: { type: "Topic", group: "SNS" },
+        bucket: {
+          type: "Bucket",
+          group: "S3",
+          dependencyId: ({ lives, config }) => get("S3BucketName"),
+        },
+        logGroup: {
+          type: "LogsGroup",
+          group: "CloudWatchLogs",
+          dependencyId: ({ lives, config }) => get("CloudWatchLogsLogGroupArn"),
+        },
+        logGroupRole: {
+          type: "role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("CloudWatchLogsRoleArn"),
+        },
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: ({ lives, config }) => get("KmsKeyId"),
+        },
+        snsTopic: {
+          type: "Topic",
+          group: "SNS",
+          dependencyId: ({ lives, config }) => get("SnsTopicARN"),
+        },
       },
     },
     {

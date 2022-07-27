@@ -1,10 +1,10 @@
 const assert = require("assert");
 const { pipe, tap, get, not, switchCase, assign, or, pick } = require("rubico");
 const {
+  when,
   first,
   defaultsDeep,
   isEmpty,
-  pluck,
   identity,
   prepend,
   append,
@@ -58,9 +58,6 @@ exports.ELBRule = ({ spec, config }) => {
   const isDefault = get("live.IsDefault");
 
   const managedByOther = pipe([
-    tap((params) => {
-      assert(true);
-    }),
     or([
       isDefault,
       ({ live, lives }) =>
@@ -93,23 +90,7 @@ exports.ELBRule = ({ spec, config }) => {
           get("managedByOther"),
         ])(),
     ]),
-    tap((params) => {
-      assert(true);
-    }),
   ]);
-
-  const findDependencies = ({ live }) => [
-    {
-      type: "Listener",
-      group: "ElasticLoadBalancingV2",
-      ids: [live.ListenerArn],
-    },
-    {
-      type: "TargetGroup",
-      group: "ElasticLoadBalancingV2",
-      ids: pipe([() => live, get("Actions"), pluck("TargetGroupArn"), ,])(),
-    },
-  ];
 
   const findNamespaceInListener =
     (config) =>
@@ -194,7 +175,7 @@ exports.ELBRule = ({ spec, config }) => {
   });
 
   const targetGroupProperties = ({ targetGroup }) =>
-    switchCase([
+    when(
       () => targetGroup,
       () => ({
         Actions: [
@@ -215,9 +196,8 @@ exports.ELBRule = ({ spec, config }) => {
             },
           },
         ],
-      }),
-      identity,
-    ])();
+      })
+    )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createRule-property
   const configDefault = ({
@@ -244,7 +224,6 @@ exports.ELBRule = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     findNamespace,
     getByName,
     findName,

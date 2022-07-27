@@ -33,11 +33,6 @@ const findId = pipe([get("live.registryId"), prepend("arn::aws::")]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 exports.EcrRegistry = ({ spec, config }) => {
   const ecr = createECR(config);
-  const client = AwsClient({ spec, config })(ecr);
-
-  const findDependencies = ({ live }) => [];
-
-  const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRegistryPolicy-property
   const getRegistryPolicy = tryCatch(
@@ -192,8 +187,6 @@ exports.EcrRegistry = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace,
-    findDependencies,
     getByName,
     findName,
     update,

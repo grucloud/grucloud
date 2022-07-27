@@ -22,18 +22,6 @@ exports.buildPayloadDescriptionTags = pipe([
   omit(["Tags"]),
 ]);
 
-exports.findDependenciesApi = pipe([
-  ({ live, lives, config }) => ({
-    type: "Api",
-    group: "ApiGatewayV2",
-    ids: [
-      `arn:aws:execute-api:${config.region}:${config.accountId()}:${
-        live.ApiId
-      }`,
-    ],
-  }),
-]);
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#tagResource-property
 exports.tagResource =
   ({ buildResourceArn }) =>

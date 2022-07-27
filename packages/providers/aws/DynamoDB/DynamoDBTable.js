@@ -19,14 +19,6 @@ exports.DynamoDBTable = ({ spec, config }) => {
   const dynamoDB = createDynamoDB(config);
   const client = AwsClient({ spec, config })(dynamoDB);
 
-  const findDependencies = ({ live }) => [
-    {
-      type: "Key",
-      group: "KMS",
-      ids: [get("SSEDescription.KMSMasterKeyArn")(live)],
-    },
-  ];
-
   const findNamespace = pipe([() => ""]);
 
   const tableArn = ({ TableName, config }) =>
@@ -96,7 +88,8 @@ exports.DynamoDBTable = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {},
+    //TODO
+    dependencies: { kmsKey },
   }) =>
     pipe([
       () => otherProps,
@@ -110,7 +103,6 @@ exports.DynamoDBTable = ({ spec, config }) => {
     spec,
     findId,
     findNamespace,
-    findDependencies,
     getByName,
     findName,
     create,

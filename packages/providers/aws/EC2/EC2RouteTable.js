@@ -78,6 +78,7 @@ exports.EC2RouteTable = ({ spec, config }) => {
               RouteTableId: live.RouteTableId,
               DestinationCidrBlock: DestinationCidrBlock,
             }),
+            // TODO InvalidRoute.NotFound
             endpoint().deleteRoute,
           ]),
           (error, Route) =>

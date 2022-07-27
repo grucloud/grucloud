@@ -10,7 +10,6 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const {
   createECS,
   buildTagsEcs,
-  findDependenciesCluster,
   tagResource,
   untagResource,
 } = require("./ECSCommon");
@@ -19,10 +18,6 @@ const findId = get("live.taskArn");
 const findName = findNameInTagsOrId({ findId });
 
 const pickId = pipe([
-  tap(({ taskArn, clusterArn }) => {
-    assert(taskArn);
-    assert(clusterArn);
-  }),
   ({ taskArn, clusterArn }) => ({
     task: taskArn,
     cluster: clusterArn,
@@ -34,50 +29,6 @@ const pickId = pipe([
 exports.ECSTask = ({ spec, config }) => {
   const ecs = createECS(config);
   const client = AwsClient({ spec, config })(ecs);
-
-  // findDependencies for ECSTask
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesCluster({ live }),
-    {
-      type: "TaskDefinition",
-      group: "ECS",
-      ids: [live.taskDefinitionArn],
-    },
-    {
-      type: "ContainerInstance",
-      group: "ECS",
-      ids: [live.containerInstanceArn],
-    },
-    {
-      type: "Service",
-      group: "ECS",
-      ids: [
-        pipe([
-          () => live,
-          get("group"),
-          when(
-            callProp("startsWith", "service:"),
-            pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              callProp("replace", "service:", ""),
-              (name) =>
-                lives.getByName({
-                  name,
-                  type: "Service",
-                  group: "ECS",
-                  providerName: config.providerName,
-                }),
-              get("id"),
-            ])
-          ),
-        ])(),
-      ],
-    },
-  ];
-
-  const findNamespace = pipe([() => ""]);
 
   const managedByOther = ({ live }) =>
     pipe([() => live, get("group"), callProp("startsWith", "service:")])();
@@ -154,8 +105,6 @@ exports.ECSTask = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace,
-    findDependencies,
     managedByOther,
     getByName,
     getById,

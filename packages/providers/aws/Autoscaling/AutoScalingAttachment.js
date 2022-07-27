@@ -1,11 +1,12 @@
 const assert = require("assert");
-const { tap, get, pipe, map, not, fork, flatMap } = require("rubico");
-const { defaultsDeep, first, includes, size } = require("rubico/x");
+const { tap, get, pipe, map } = require("rubico");
+const { defaultsDeep, first, includes } = require("rubico/x");
 const { retryCall } = require("@grucloud/core/Retry");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "AutoScalingAttachment",
 });
+
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -34,19 +35,6 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
       (targetGroupName) => `attachment::${live.name}::${targetGroupName}`,
     ])();
 
-  const findDependencies = ({ live }) => [
-    {
-      type: "TargetGroup",
-      group: "ElasticLoadBalancingV2",
-      ids: [live.TargetGroupARN],
-    },
-    {
-      type: "AutoScalingGroup",
-      group: "AutoScaling",
-      ids: [live.AutoScalingGroupARN],
-    },
-  ];
-
   const getList = client.getListWithParent({
     parent: { type: "AutoScalingGroup", group: "AutoScaling" },
     config,
@@ -59,11 +47,6 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
       },
     }) =>
       pipe([
-        tap((params) => {
-          assert(name);
-          assert(AutoScalingGroupName);
-          assert(AutoScalingGroupARN);
-        }),
         () => TargetGroupARNs,
         map((TargetGroupARN) => ({
           TargetGroupARN,
@@ -172,9 +155,7 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
     spec,
     findId,
     findName,
-    findDependencies,
     getByName,
-    //getById,
     getList,
     create,
     destroy,

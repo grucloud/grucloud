@@ -15,12 +15,6 @@ exports.buildTagsEcs = ({ name, config, namespace, tags }) =>
     value: "value",
   });
 
-exports.findDependenciesCluster = ({ live }) => ({
-  type: "Cluster",
-  group: "ECS",
-  ids: [live.clusterArn],
-});
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#tagResource-property
 exports.tagResource =
   ({ ecs }) =>

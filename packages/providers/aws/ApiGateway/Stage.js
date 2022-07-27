@@ -14,7 +14,6 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const {
   createAPIGateway,
-  findDependenciesRestApi,
   ignoreErrorCodes,
   tagResource,
   untagResource,
@@ -69,16 +68,6 @@ exports.Stage = ({ spec, config }) => {
     ])();
 
   const pickId = pick(["restApiId", "stageName"]);
-
-  // Find dependencies for APIGateway::Stage
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesRestApi({ live }),
-    {
-      type: "Account",
-      group: "APIGateway",
-      ids: ["default"],
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getStage-property
   const getById = client.getById({
@@ -200,7 +189,6 @@ exports.Stage = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    findDependencies,
     tagResource: tagResource({
       buildResourceArn: buildResourceArn({ config }),
     })({ endpoint }),

@@ -1,5 +1,4 @@
 const { pipe, tap, eq, get } = require("rubico");
-const { find } = require("rubico/x");
 
 const { createEndpoint } = require("../AwsCommon");
 
@@ -27,20 +26,3 @@ exports.untagResource =
     ]);
 
 exports.ignoreErrorCodes = ["ResourceNotFoundException"];
-
-exports.findDependenciesUserPool = ({ live, lives, config }) => ({
-  type: "UserPool",
-  group: "CognitoIdentityServiceProvider",
-  ids: [
-    pipe([
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "UserPool",
-          group: "CognitoIdentityServiceProvider",
-        }),
-      find(eq(get("live.Id"), live.UserPoolId)),
-      get("id"),
-    ])(),
-  ],
-});

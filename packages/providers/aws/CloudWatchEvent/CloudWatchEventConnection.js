@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, pick } = require("rubico");
+const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -48,13 +48,6 @@ exports.CloudWatchEventConnection = ({ spec, config }) =>
     config,
     findName: pipe([get("live.Name")]),
     findId: get("live.ConnectionArn"),
-    findDependencies: ({ live }) => [
-      {
-        type: "Secret",
-        group: "SecretsManager",
-        ids: [pipe([() => live, get("SecretArn")])()],
-      },
-    ],
     getByName: getByNameCore,
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([

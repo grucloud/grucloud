@@ -10,7 +10,6 @@ const { findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const {
   createCognitoIdentityProvider,
-  findDependenciesUserPool,
   ignoreErrorCodes,
 } = require("./CognitoIdentityServiceProviderCommon");
 const findId = get("ProviderName");
@@ -21,10 +20,6 @@ const findName = get("ProviderName");
 exports.IdentityProvider = ({ spec, config }) => {
   const cognitoIdentityServiceProvider = createCognitoIdentityProvider(config);
   const client = AwsClient({ spec, config })(cognitoIdentityServiceProvider);
-
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesUserPool({ live, lives, config }),
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeIdentityProvider-property
   const getById = client.getById({
@@ -37,21 +32,10 @@ exports.IdentityProvider = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#listIdentityProviders-property
   const getList = client.getListWithParent({
     parent: { type: "UserPool", group: "CognitoIdentityServiceProvider" },
-    pickKey: pipe([
-      tap(({ Id }) => {
-        assert(Id);
-      }),
-      ({ Id }) => ({ UserPoolId: Id }),
-    ]),
+    pickKey: pipe([({ Id }) => ({ UserPoolId: Id })]),
     method: "listIdentityProviders",
     getParam: "Providers",
     config,
-    decorate: ({ parent }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -101,7 +85,6 @@ exports.IdentityProvider = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     findNamespace: findNamespaceInTagsObject(config),
     getById,
     getById,

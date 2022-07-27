@@ -1,7 +1,7 @@
 const assert = require("assert");
 
 const { map, pipe, tap, get, not, eq, omit, pick } = require("rubico");
-const { defaultsDeep, includes, isEmpty } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { tos } = require("@grucloud/core/tos");
@@ -22,24 +22,6 @@ const findName = get("live.name");
 const findId = get("live.arn");
 const pickId = pick(["name"]);
 
-const findDependencies = ({ live }) => [
-  { type: "Vpc", group: "EC2", ids: [get("resourcesVpcConfig.vpcId")(live)] },
-  { type: "Role", group: "IAM", ids: [live.roleArn] },
-  {
-    type: "Subnet",
-    group: "EC2",
-    ids: get("resourcesVpcConfig.subnetIds")(live),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    ids: [
-      get("resourcesVpcConfig.clusterSecurityGroupId")(live),
-      ...get("resourcesVpcConfig.securityGroupIds")(live),
-    ],
-  },
-];
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
 exports.EKSCluster = ({ spec, config }) => {
   const eks = createEKS(config);
@@ -58,14 +40,7 @@ exports.EKSCluster = ({ spec, config }) => {
   const getList = client.getList({
     method: "listClusters",
     getParam: "clusters",
-    decorate: () =>
-      pipe([
-        tap((name) => {
-          assert(name);
-        }),
-        (name) => ({ name }),
-        getById,
-      ]),
+    decorate: () => pipe([(name) => ({ name }), getById]),
   });
   const getByName = getById;
 
@@ -182,6 +157,7 @@ exports.EKSCluster = ({ spec, config }) => {
           ),
           subnetIds: map((subnet) => getField(subnet, "SubnetId"))(subnets),
         },
+        //TODO when
         ...(role && { roleArn: getField(role, "Arn") }),
         ...(key && {
           encryptionConfig: [
@@ -199,7 +175,6 @@ exports.EKSCluster = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     findNamespace: findNamespaceInTagsObject(config),
     getByName,
     findName,

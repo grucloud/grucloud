@@ -67,74 +67,6 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     includes("AWSServiceRoleForAmazonEKSNodegroup"),
   ]);
 
-  const findDependencies = ({ live, lives, config }) => [
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("LaunchTemplateData.NetworkInterfaces"),
-        pluck("SubnetId"),
-      ])(),
-    },
-    {
-      type: "KeyPair",
-      group: "EC2",
-      ids: [
-        pipe([
-          () => live,
-          get("LaunchTemplateData.KeyName"),
-          (KeyName) =>
-            lives.getByName({
-              name: KeyName,
-              type: "KeyPair",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    {
-      type: "SecurityGroup",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        fork({
-          fromMain: get("LaunchTemplateData.SecurityGroupIds"),
-          fromInterfaces: pipe([
-            get("LaunchTemplateData.NetworkInterfaces"),
-            pluck("Groups"),
-            flatten,
-          ]),
-        }),
-        ({ fromMain = [], fromInterfaces = [] }) => [
-          ...fromMain,
-          ...fromInterfaces,
-        ],
-      ])(),
-    },
-    {
-      type: "InstanceProfile",
-      group: "IAM",
-      ids: [
-        pipe([() => live, get("LaunchTemplateData.IamInstanceProfile.Arn")])(),
-        pipe([
-          () => live,
-          get("LaunchTemplateData.IamInstanceProfile.Name"),
-          (name) =>
-            lives.getByName({
-              name,
-              type: "InstanceProfile",
-              group: "IAM",
-              providerName: config.providerName,
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-  ];
-
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,
     key: "eks:cluster-name",
@@ -145,10 +77,6 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     (launchTemplate) =>
       pipe([
         () => launchTemplate,
-        tap(({ LaunchTemplateId }) => {
-          assert(LaunchTemplateId);
-          assert(endpoint);
-        }),
         ({ LaunchTemplateId }) => ({
           LaunchTemplateId,
           Versions: ["$Latest"],
@@ -234,7 +162,13 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
       name,
       namespace,
       properties: { Image, ...otherProperties },
-      dependencies: { keyPair, subnets, securityGroups, iamInstanceProfile },
+      dependencies: {
+        keyPair,
+        subnets,
+        securityGroups,
+        iamInstanceProfile,
+        placementGroup,
+      },
     }) =>
       pipe([
         tap((params) => {
@@ -272,6 +206,15 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
                   () => securityGroups,
                   map((sg) => getField(sg, "GroupId")),
                 ]),
+              })
+            ),
+            // Placement Group
+            when(
+              () => placementGroup,
+              defaultsDeep({
+                Placement: {
+                  GroupName: getField(placementGroup, "GroupName"),
+                },
               })
             ),
           ])(),
@@ -317,7 +260,6 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     findId,
     managedByOther,
     findNamespace,
-    findDependencies,
     getByName,
     findName,
     create,

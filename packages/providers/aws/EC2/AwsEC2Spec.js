@@ -32,6 +32,7 @@ const {
   isDeepEqual,
   callProp,
   identity,
+  flatten,
 } = require("rubico/x");
 const {
   omitIfEmpty,
@@ -192,40 +193,6 @@ const securityGroupRulePickProperties = pipe([
 ]);
 
 const ec2InstanceDependencies = {
-  subnets: {
-    type: "Subnet",
-    group: "EC2",
-    list: true,
-    dependencyId: ({ lives, config }) => get("SubnetId"),
-  },
-  keyPair: {
-    type: "KeyPair",
-    group: "EC2",
-    dependencyId: ({ lives, config }) =>
-      pipe([
-        get("KeyName"),
-        (name) =>
-          lives.getByName({
-            name,
-            type: "KeyPair",
-            group: "EC2",
-            providerName: config.providerName,
-          }),
-        get("id"),
-      ]),
-  },
-  iamInstanceProfile: {
-    type: "InstanceProfile",
-    group: "IAM",
-    dependencyId: ({ lives, config }) => get("IamInstanceProfile.Arn"),
-  },
-  securityGroups: {
-    type: "SecurityGroup",
-    group: "EC2",
-    list: true,
-    dependencyIds: ({ lives, config }) =>
-      pipe([get("SecurityGroups"), pluck("GroupId")]),
-  },
   placementGroup: {
     type: "PlacementGroup",
     group: "EC2",
@@ -264,9 +231,15 @@ const securityGroupRuleDependencies = {
     type: "SecurityGroup",
     group: "EC2",
     list: true,
-    //TODO
-    dependencyId: ({ lives, config }) =>
-      pipe([get("IpPermission.UserIdGroupPairs[0].GroupId")]),
+    dependencyIds:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () => live,
+          get("IpPermission.UserIdGroupPairs", []),
+          pluck("GroupId"),
+          filter(not(includes(live.GroupId))),
+        ])(),
   },
 };
 
@@ -1877,11 +1850,64 @@ module.exports = pipe([
             }),
           ])(),
       dependencies: {
-        ...ec2InstanceDependencies,
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          //TODO no list
+          list: true,
+          dependencyId: ({ lives, config }) => get("SubnetId"),
+        },
+        keyPair: {
+          type: "KeyPair",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("KeyName"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  type: "KeyPair",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
+        iamInstanceProfile: {
+          type: "InstanceProfile",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("IamInstanceProfile.Arn"),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("SecurityGroups"), pluck("GroupId")]),
+        },
         launchTemplate: {
           type: "LaunchTemplate",
           group: "EC2",
           dependencyId: ({ lives, config }) => getLaunchTemplateIdFromTags,
+        },
+        placementGroup: {
+          type: "PlacementGroup",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("Placement.GroupName"),
+              (name) =>
+                pipe([
+                  () =>
+                    lives.getByName({
+                      name,
+                      type: "PlacementGroup",
+                      group: "EC2",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])(),
+            ]),
         },
       },
     },
@@ -1967,7 +1993,98 @@ module.exports = pipe([
             ]),
           }),
         ]),
-      dependencies: ec2InstanceDependencies,
+      dependencies: {
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("LaunchTemplateData.NetworkInterfaces", []),
+              pluck("SubnetId"),
+            ]),
+        },
+        keyPair: {
+          type: "KeyPair",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("LaunchTemplateData.KeyName"),
+              (KeyName) =>
+                lives.getByName({
+                  name: KeyName,
+                  type: "KeyPair",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
+        iamInstanceProfile: {
+          type: "InstanceProfile",
+          group: "IAM",
+          dependencyIds:
+            ({ lives, config }) =>
+            (live) =>
+              [
+                pipe([
+                  () => live,
+                  get("LaunchTemplateData.IamInstanceProfile.Arn"),
+                ])(),
+                pipe([
+                  () => live,
+                  get("LaunchTemplateData.IamInstanceProfile.Name"),
+                  (name) =>
+                    lives.getByName({
+                      name,
+                      type: "InstanceProfile",
+                      group: "IAM",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])(),
+              ],
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              fork({
+                fromMain: get("LaunchTemplateData.SecurityGroupIds"),
+                fromInterfaces: pipe([
+                  get("LaunchTemplateData.NetworkInterfaces"),
+                  pluck("Groups"),
+                  flatten,
+                ]),
+              }),
+              ({ fromMain = [], fromInterfaces = [] }) => [
+                ...fromMain,
+                ...fromInterfaces,
+              ],
+            ]),
+        },
+        placementGroup: {
+          type: "PlacementGroup",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("LaunchTemplateData.Placement.GroupName"),
+              (name) =>
+                pipe([
+                  () =>
+                    lives.getByName({
+                      name,
+                      type: "PlacementGroup",
+                      group: "EC2",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])(),
+            ]),
+        },
+      },
     },
     {
       type: "NetworkAcl",

@@ -82,13 +82,6 @@ module.exports = pipe([
         "logGroupName",
         "creationTime",
       ],
-      filterLive: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          //pick(["logStreamName"]),
-        ]),
       inferName: ({
         properties: { filterName },
         dependenciesSpec: { cloudWatchLogGroup },

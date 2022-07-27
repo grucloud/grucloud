@@ -10,8 +10,15 @@ const {
   omit,
   pick,
   eq,
+  switchCase,
 } = require("rubico");
-const { includes, defaultsDeep } = require("rubico/x");
+const {
+  includes,
+  defaultsDeep,
+  callProp,
+  unless,
+  isEmpty,
+} = require("rubico/x");
 const { compareAws, isOurMinion, DecodeUserData } = require("../AwsCommon");
 
 const { omitIfEmpty } = require("@grucloud/core/Common");
@@ -27,15 +34,9 @@ const { AutoScalingAttachment } = require("./AutoScalingAttachment");
 
 const compareAutoScaling = compareAws({
   getLiveTags: pipe([
-    tap((params) => {
-      assert(true);
-    }),
     get("Tags", []),
     filter(not(eq(get("Key"), "AmazonECSManaged"))),
     map(pick(["Key", "Value"])),
-    tap((params) => {
-      assert(true);
-    }),
   ]),
 });
 
@@ -50,27 +51,55 @@ module.exports = pipe([
     {
       type: "AutoScalingGroup",
       dependencies: {
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        launchTemplate: { type: "LaunchTemplate", group: "EC2" },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("VPCZoneIdentifier"), callProp("split", ",")]),
+        },
+        launchTemplate: {
+          type: "LaunchTemplate",
+          group: "EC2",
+          dependencyIds:
+            ({ lives, config }) =>
+            (live) =>
+              [
+                pipe([() => live, get("LaunchTemplate.LaunchTemplateId")])(),
+                pipe([
+                  () => live,
+                  get(
+                    "MixedInstancesPolicy.LaunchTemplate.LaunchTemplateSpecification.LaunchTemplateId"
+                  ),
+                ])(),
+              ],
+        },
         launchConfiguration: {
           type: "LaunchConfiguration",
           group: "AutoScaling",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("LaunchConfigurationName"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  providerName: config.providerName,
+                  type: "LaunchConfiguration",
+                  group: "AutoScaling",
+                }),
+              get("id"),
+            ]),
         },
         serviceLinkedRole: {
           type: "Role",
           group: "IAM",
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                tap(() => {
-                  assert(resource);
-                  assert(resource.live);
-                }),
-                () => resource,
-                get("live.ServiceLinkedRoleARN"),
-                not(includes("AWSServiceRoleForAutoScaling")),
-              ])(),
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              unless(
+                includes("AWSServiceRoleForAutoScaling"),
+                get("ServiceLinkedRoleARN")
+              ),
+            ]),
         },
       },
       Client: AutoScalingAutoScalingGroup,
@@ -136,8 +165,13 @@ module.exports = pipe([
           type: "AutoScalingGroup",
           group: "AutoScaling",
           parent: true,
+          dependencyId: ({ lives, config }) => get("AutoScalingGroupARN"),
         },
-        targetGroup: { type: "TargetGroup", group: "ElasticLoadBalancingV2" },
+        targetGroup: {
+          type: "TargetGroup",
+          group: "ElasticLoadBalancingV2",
+          dependencyId: ({ lives, config }) => get("TargetGroupARN"),
+        },
       },
     },
     {
@@ -169,10 +203,50 @@ module.exports = pipe([
       filterLive: () =>
         pipe([omitIfEmpty(["KernelId", "RamdiskId"]), DecodeUserData]),
       dependencies: {
-        instanceProfile: { type: "InstanceProfile", group: "IAM" },
-        keyPair: { type: "KeyPair", group: "EC2" },
-        image: { type: "Image", group: "EC2" },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        instanceProfile: {
+          type: "InstanceProfile",
+          group: "IAM",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("IamInstanceProfile"),
+              switchCase([
+                isEmpty,
+                () => undefined,
+                callProp("startsWith", "arn"),
+                pipe([
+                  (IamInstanceProfile) =>
+                    lives.getById({
+                      id: IamInstanceProfile,
+                      type: "InstanceProfile",
+                      group: "IAM",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ]),
+                pipe([
+                  (IamInstanceProfile) =>
+                    lives.getByName({
+                      name: IamInstanceProfile,
+                      type: "InstanceProfile",
+                      group: "IAM",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ]),
+              ]),
+            ]),
+        },
+        keyPair: {
+          type: "KeyPair",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("KeyName"),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("SecurityGroups"),
+        },
       },
     },
   ],

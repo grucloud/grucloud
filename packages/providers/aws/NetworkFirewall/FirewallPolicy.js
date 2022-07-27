@@ -64,30 +64,6 @@ exports.FirewallPolicy = ({ spec, config }) =>
     config,
     findName: pipe([get("live.FirewallPolicyName")]),
     findId: pipe([get("live.FirewallPolicyArn")]),
-    findDependencies: ({ live }) => [
-      {
-        type: "Key",
-        group: "KMS",
-        ids: [get("EncryptionConfiguration.KeyId")(live)],
-      },
-      {
-        type: "RuleGroup",
-        group: "NetworkFirewall",
-        ids: pipe([
-          () => live,
-          get("FirewallPolicy"),
-          ({
-            StatefulRuleGroupReferences = [],
-            StatelessRuleGroupReferences = [],
-          }) => [
-            ...StatefulRuleGroupReferences,
-            ...StatelessRuleGroupReferences,
-          ],
-          pluck("ResourceArn"),
-        ])(),
-      },
-    ],
-
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
@@ -95,10 +71,10 @@ exports.FirewallPolicy = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: { key },
+      //TODO
+      dependencies: { kmskey },
     }) =>
       pipe([
-        tap((params) => {}),
         () => otherProps,
         defaultsDeep({
           Tags: buildTags({ config, namespace, name, UserTags: Tags }),

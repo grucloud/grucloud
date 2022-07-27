@@ -15,7 +15,6 @@ const {
 } = require("./ECSCommon");
 const findId = get("live.capacityProviderArn");
 const findName = get("live.name");
-const pickId = pick(["capacityProviderArn"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSCapacityProvider = ({ spec, config }) => {
@@ -25,20 +24,6 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     spec: { type: "AutoScalingGroup", group: "AutoScaling" },
     config,
   });
-  const findDependencies = ({ live }) => [
-    {
-      type: "AutoScalingGroup",
-      group: "AutoScaling",
-      ids: [
-        pipe([
-          () => live,
-          get("autoScalingGroupProvider.autoScalingGroupArn"),
-        ])(),
-      ],
-    },
-  ];
-
-  const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeCapacityProviders-property
   const getById = client.getById({
@@ -141,8 +126,6 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace,
-    findDependencies,
     getByName: getById,
     findName,
     create,

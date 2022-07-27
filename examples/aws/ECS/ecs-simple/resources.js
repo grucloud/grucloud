@@ -72,9 +72,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "Vpc::PubSubnetAz1",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",
@@ -85,9 +86,10 @@ exports.createResources = () => [
     group: "EC2",
     name: "Vpc::PubSubnetAz2",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",

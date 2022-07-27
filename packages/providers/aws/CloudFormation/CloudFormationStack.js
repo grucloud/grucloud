@@ -11,25 +11,12 @@ const ignoreErrorMessages = ["does not exist"];
 const findName = pipe([get("live.StackName")]);
 const findId = get("live.StackId");
 
-const pickId = pipe([
-  tap(({ StackName }) => {
-    assert(StackName);
-  }),
-  pick(["StackName"]),
-]);
+const pickId = pipe([pick(["StackName"])]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html
 exports.CloudFormationStack = ({ spec, config }) => {
   const cloudFormation = createCloudFormation(config);
   const client = AwsClient({ spec, config })(cloudFormation);
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Role",
-      group: "IAM",
-      ids: [live.RoleARN],
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#describeStacks-property
   const getById = client.getById({
@@ -77,6 +64,5 @@ exports.CloudFormationStack = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    findDependencies,
   };
 };

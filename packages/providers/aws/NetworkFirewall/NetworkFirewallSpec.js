@@ -59,16 +59,17 @@ module.exports = pipe([
           group: "NetworkFirewall",
           dependencyId: ({ lives, config }) => get("FirewallPolicyArn"),
         },
-        kmsKey: {
-          type: "Key",
-          group: "KMS",
-          dependencyId: ({ lives, config }) => get(""),
-        },
-        vpcEndpoint: {
-          type: "VpcEndpoint",
-          group: "EC2",
-          dependencyId: ({ lives, config }) => get(""),
-        },
+        //TODO
+        // kmsKey: {
+        //   type: "Key",
+        //   group: "KMS",
+        //   dependencyId: ({ lives, config }) => get(""),
+        // },
+        // vpcEndpoint: {
+        //   type: "VpcEndpoint",
+        //   group: "EC2",
+        //   dependencyId: ({ lives, config }) => get(""),
+        // },
       },
     },
     {
@@ -139,13 +140,25 @@ module.exports = pipe([
         kmsKey: {
           type: "Key",
           group: "KMS",
-          dependencyId: ({ lives, config }) => get(""),
+          dependencyId: ({ lives, config }) =>
+            get("EncryptionConfiguration.KeyId"),
         },
         ruleGroups: {
           type: "RuleGroup",
           group: GROUP,
           list: true,
-          dependencyIds: ({ lives, config }) => get(""),
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("FirewallPolicy"),
+              ({
+                StatefulRuleGroupReferences = [],
+                StatelessRuleGroupReferences = [],
+              }) => [
+                ...StatefulRuleGroupReferences,
+                ...StatelessRuleGroupReferences,
+              ],
+              pluck("ResourceArn"),
+            ]),
         },
       },
     },
@@ -170,7 +183,8 @@ module.exports = pipe([
         kmsKey: {
           type: "Key",
           group: "KMS",
-          dependencyId: ({ lives, config }) => get(""),
+          dependencyId: ({ lives, config }) =>
+            get("EncryptionConfiguration.KeyId"),
         },
       },
     },
@@ -223,20 +237,48 @@ module.exports = pipe([
           type: "Firewall",
           group: "NetworkFirewall",
           parent: true,
-          dependencyId: ({ lives, config }) => get(""),
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              (live) =>
+                lives.getByName({
+                  name: live.FirewallName,
+                  type: "Firewall",
+                  group: "NetworkFirewall",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
         },
         logGroups: {
           type: "LogGroup",
           group: "CloudWatchLogs",
           list: true,
-          dependencyIds: ({ lives, config }) => get(""),
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("LoggingConfiguration.LogDestinationConfigs"),
+              pluck("LogDestination"),
+              pluck("logGroup"),
+              map((logGroup) =>
+                pipe([
+                  () =>
+                    lives.getByName({
+                      name: logGroup,
+                      type: "LogGroup",
+                      group: "CloudWatchLogs",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])()
+              ),
+            ]),
         },
-        buckets: {
-          type: "Bucket",
-          group: "S3",
-          list: true,
-          dependencyIds: ({ lives, config }) => get(""),
-        },
+        //TODO
+        // buckets: {
+        //   type: "Bucket",
+        //   group: "S3",
+        //   list: true,
+        //   dependencyIds: ({ lives, config }) => get(""),
+        // },
         //TODO firehose
       },
     },

@@ -82,33 +82,6 @@ exports.UsagePlan = ({ spec, config }) =>
     findName: pipe([get("live.name")]),
     findId,
     getByName: getByNameCore,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "RestApi",
-        group: "APIGateway",
-        ids: pipe([() => live, get("apiStages"), pluck("apiId")])(),
-      },
-      {
-        type: "Stage",
-        group: "APIGateway",
-        ids: pipe([
-          () => live,
-          get("apiStages"),
-          map(({ apiId, stage }) =>
-            pipe([
-              () =>
-                lives.getById({
-                  id: `arn:aws:apigateway:${config.region}::/restapis/${apiId}/stages/${stage}`,
-                  type: "Stage",
-                  group: "APIGateway",
-                  providerName: config.providerName,
-                }),
-              get("id"),
-            ])()
-          ),
-        ])(),
-      },
-    ],
     tagResource: tagResource({
       buildResourceArn: buildResourceArn({ config }),
     }),

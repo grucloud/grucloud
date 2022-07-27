@@ -193,10 +193,10 @@ const decorateLive =
                               })
                             : () => false,
                           tap((ids) => {
-                            assert(
-                              Array.isArray(ids),
-                              `ids not an array for type: ${type}, ${client.spec.groupType}`
-                            );
+                            // assert(
+                            //   Array.isArray(ids),
+                            //   `ids not an array for type: ${type}, ${client.spec.groupType}`
+                            // );
                           }),
                         ]),
                         () => {
@@ -218,10 +218,10 @@ const decorateLive =
                   if (!type) {
                     assert(type);
                   }
-                  assert(
-                    Array.isArray(ids),
-                    `no ids in dependency type ${type}, client ${client.spec.groupType}`
-                  );
+                  // assert(
+                  //   Array.isArray(ids),
+                  //   `no ids in dependency type ${type}, client ${client.spec.groupType}`
+                  // );
                   //assert(group);
                 }),
                 assign({

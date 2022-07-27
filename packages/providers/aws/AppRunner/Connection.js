@@ -20,8 +20,6 @@ exports.AppRunnerConnection = ({ spec, config }) => {
   const appRunner = createAppRunner(config);
   const client = AwsClient({ spec, config })(appRunner);
 
-  const findDependencies = ({ live, lives }) => [];
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#describeService-property
   const getById = client.getById({
     pickId,
@@ -71,7 +69,6 @@ exports.AppRunnerConnection = ({ spec, config }) => {
     spec,
     getById,
     findId,
-    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
     getById,

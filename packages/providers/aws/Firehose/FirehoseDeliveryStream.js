@@ -1,17 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, get, omit, pick, eq, filter, map } = require("rubico");
-const { defaultsDeep, pluck, flatten, callProp } = require("rubico/x");
+const { pipe, tap, get, omit, pick, eq } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 const { buildTags } = require("../AwsCommon");
 
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource, assignTags } = require("./FirehoseCommon");
 
-const pickId = pipe([
-  pick(["DeliveryStreamName"]),
-  tap(({ DeliveryStreamName }) => {
-    assert(DeliveryStreamName);
-  }),
-]);
+const pickId = pipe([pick(["DeliveryStreamName"])]);
 
 const model = ({ config }) => ({
   package: "firehose",
@@ -64,118 +59,6 @@ exports.FirehoseDeliveryStream = ({ spec, config }) =>
     config,
     findName: pipe([get("live.DeliveryStreamName")]),
     findId: pipe([get("live.DeliveryStreamARN")]),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Stream",
-        group: "Kinesis",
-        //TODO
-        ids: [live.GlobalNetworkId],
-      },
-      {
-        type: "Bucket",
-        group: "S3",
-        ids: [
-          ...pipe([
-            () => live,
-            get("Destinations"),
-            pluck("S3DestinationDescription"),
-            pluck("BucketARN"),
-            map(callProp("replace", "arn:aws:s3:::", "")),
-          ])(),
-          ...pipe([
-            () => live,
-            get("Destinations"),
-            pluck(
-              "ExtendedS3DestinationDescription.S3BackupDescription.BucketARN"
-            ),
-            map(callProp("replace", "arn:aws:s3:::", "")),
-          ])(),
-        ],
-      },
-      {
-        type: "Role",
-        group: "IAM",
-        //TODO
-        ids: pipe([
-          () => live,
-          get("Destinations"),
-          tap((params) => {
-            assert(true);
-          }),
-          pluck("S3DestinationDescription"),
-          tap((params) => {
-            assert(true);
-          }),
-          pluck("RoleARN"),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
-      },
-      {
-        type: "Function",
-        group: "Lambda",
-        ids: pipe([
-          () => live,
-          get("Destinations"),
-          pluck("ExtendedS3DestinationDescription"),
-          pluck("ProcessingConfiguration"),
-          pluck("Processors"),
-          flatten,
-          pluck("Parameters"),
-          flatten,
-          filter(eq(get("ParameterName"), "LambdaArn")),
-          pluck("ParameterValue"),
-          map(callProp("replace", ":$LATEST", "")),
-        ])(),
-      },
-      {
-        type: "LogStream",
-        group: "CloudWatchLogs",
-        ids: pipe([
-          () => live,
-          get("Destinations"),
-          pluck("ExtendedS3DestinationDescription"),
-          tap((params) => {
-            assert(true);
-          }),
-          pluck("CloudWatchLoggingOptions"),
-          tap((params) => {
-            assert(true);
-          }),
-          map(
-            pipe([
-              tap(({ LogGroupName, LogStreamName }) => {
-                assert(LogGroupName);
-                assert(LogStreamName);
-              }),
-              ({ LogGroupName, LogStreamName }) =>
-                lives.getByName({
-                  name: `${LogGroupName}::${LogStreamName}`,
-                  providerName: config.providerName,
-                  type: "LogStream",
-                  group: "CloudWatchLogs",
-                }),
-              tap((params) => {
-                assert(true);
-              }),
-
-              get("id"),
-            ])
-          ),
-        ])(),
-      },
-      {
-        type: "Key",
-        group: "KMS",
-        ids: [
-          pipe([
-            () => live,
-            get("DeliveryStreamEncryptionConfiguration.KeyARN"),
-          ])(),
-        ],
-      },
-    ],
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ DeliveryStreamName: name }), getById]),
     tagResource: tagResource,
