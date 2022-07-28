@@ -139,9 +139,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "aws_lambda_example",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "aws_lambda_example",
         Environment: {
           Variables: {
             application_name: `aws_lambda_example`,

@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "sam-app-DynamoDBTable-1WVU6LKKNMND3",
     properties: ({}) => ({
+      TableName: "sam-app-DynamoDBTable-1WVU6LKKNMND3",
       AttributeDefinitions: [
         {
           AttributeName: "id",

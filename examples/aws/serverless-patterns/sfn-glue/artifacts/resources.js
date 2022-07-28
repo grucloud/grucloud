@@ -231,7 +231,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "aws-stf-role",
-      glueJob: "sample-glue-job-terraform",
     }),
   },
 ];

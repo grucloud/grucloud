@@ -58,9 +58,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "my-function-url",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "my-function-url",
         Handler: "index.handler",
         Runtime: "nodejs14.x",
       },

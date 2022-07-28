@@ -380,9 +380,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "my-firehose-transform",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "my-firehose-transform",
         Description:
           "An Amazon Kinesis Firehose stream processor that accesses the records in the input and returns them with a processing status.",
         Handler: "index.handler",

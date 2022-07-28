@@ -117,6 +117,7 @@ module.exports = pipe([
       type: "Function",
       Client: Function,
       compare: compareFunction,
+      inferName: get("properties.Configuration.FunctionName"),
       displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
       ignoreResource: () =>
         pipe([
@@ -132,7 +133,6 @@ module.exports = pipe([
         "Configuration.Code",
         "Configuration.CodeSize",
         "Configuration.FunctionArn",
-        "Configuration.FunctionName",
         "Configuration.LastModified",
         "Configuration.LastUpdateStatus",
         "Configuration.LastUpdateStatusReason",
@@ -336,14 +336,14 @@ module.exports = pipe([
           list: true,
           dependencyIds: () => get("Configuration.VpcConfig.SecurityGroupIds"),
         },
-        //TODO
-        // s3Bucket: {
-        //   type: "Bucket",
-        //   group: "S3",
-        //   parent: true,
-        //   ignoreOnDestroy: true,
-        // },
-        efsAccessPoint: {
+        s3Buckets: {
+          type: "Bucket",
+          group: "S3",
+          parent: true,
+          list: true,
+          ignoreOnDestroy: true,
+        },
+        efsAccessPoints: {
           type: "AccessPoint",
           group: "EFS",
           list: true,
@@ -354,46 +354,51 @@ module.exports = pipe([
           type: "Secret",
           group: "SecretsManager",
           parent: true,
+          list: true,
           // dependencyIds: findDependenciesInEnvironment({
           //   pathLive: "live.ARN",
           //   type: "Secret",
           //   group: "SecretsManager",
           // }),
         },
-        graphqlApi: {
+        graphqlApis: {
           type: "GraphqlApi",
           group: "AppSync",
           parent: true,
+          list: true,
           // dependencyIds: findDependenciesInEnvironment({
           //   pathLive: "live.ARN",
           //   type: "GraphqlApi",
           //   group: "AppSync",
           // }),
         },
-        dynamoDbTable: {
+        dynamoDbTables: {
           type: "Table",
           group: "DynamoDB",
           parent: true,
+          list: true,
           // dependencyIds: findDependenciesInEnvironment({
           //   pathLive: "live.ARN",
           //   type: "GraphqlApi",
           //   group: "AppSync",
           // }),
         },
-        snsTopic: {
+        snsTopics: {
           type: "Topic",
           group: "SNS",
           parent: true,
+          list: true,
           // dependencyIds: findDependenciesInEnvironment({
           //   pathLive: "live.ARN",
           //   type: "GraphqlApi",
           //   group: "AppSync",
           // }),
         },
-        dbCluster: {
+        dbClusters: {
           type: "DBCluster",
           group: "RDS",
           parent: true,
+          list: true,
           // dependencyIds: findDependenciesInEnvironment({
           //   pathLive: "live.ARN",
           //   type: "GraphqlApi",

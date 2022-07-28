@@ -167,9 +167,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-MyTriggeredLambda-QtqMTZc89naA",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-MyTriggeredLambda-QtqMTZc89naA",
         Handler: "app.lambdaHandler",
         Runtime: "nodejs14.x",
       },

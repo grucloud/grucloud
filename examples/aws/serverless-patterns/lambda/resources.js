@@ -38,9 +38,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-SimpleFunction-Ts3MqUXuWKqN",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-SimpleFunction-Ts3MqUXuWKqN",
         Handler: "app.handler",
         MemorySize: 512,
         Runtime: "nodejs14.x",

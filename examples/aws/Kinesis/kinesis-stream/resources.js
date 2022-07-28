@@ -74,9 +74,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "read-kinesis-stream",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "read-kinesis-stream",
         Handler: "index.handler",
         Runtime: "nodejs16.x",
       },

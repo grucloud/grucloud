@@ -87,7 +87,6 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "CdkLambdaCallAppSyncStack-trigger73DC69F8-Fn5wBU5v76VC",
     properties: ({ getId }) => ({
       Configuration: {
         Environment: {
@@ -101,13 +100,14 @@ exports.createResources = () => [
             })}`,
           },
         },
+        FunctionName: "CdkLambdaCallAppSyncStack-trigger73DC69F8-Fn5wBU5v76VC",
         Handler: "index.handler",
         Runtime: "nodejs14.x",
       },
     }),
     dependencies: ({}) => ({
       role: "CdkLambdaCallAppSyncStack-triggerServiceRole07E9AB-5S1U4A7Y9DDX",
-      graphqlApi: "TriggeredByLambda",
+      graphqlApis: ["TriggeredByLambda"],
     }),
   },
 ];

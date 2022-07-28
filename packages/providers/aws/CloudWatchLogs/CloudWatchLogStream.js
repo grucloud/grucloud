@@ -26,7 +26,11 @@ const managedByOther = pipe([
   get("live.arn"),
   (logGroupName) =>
     pipe([
-      () => ["log-group:RDSOSMetrics", "log-group:/aws/lambda/"],
+      () => [
+        "log-group:RDSOSMetrics",
+        "log-group:/aws/lambda/",
+        "log-group:/aws/rds/cluster/",
+      ],
       any((prefix) => logGroupName.includes(prefix)),
     ])(),
 ]);

@@ -209,9 +209,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "lambda-fns",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "lambda-fns",
         Environment: {
           Variables: {
             NOTES_TABLE: `AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R`,

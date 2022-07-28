@@ -75,9 +75,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sqs-lambda-demo",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sqs-lambda-demo",
         Environment: {
           Variables: {
             POWERTOOLS_SERVICE_NAME: `sqs-lambda-demo`,

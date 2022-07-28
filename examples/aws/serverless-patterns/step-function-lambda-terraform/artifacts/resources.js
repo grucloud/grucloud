@@ -25,11 +25,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/aws_lambda_example",
-  },
-  {
     type: "Role",
     group: "IAM",
     name: "aws-events-invoke-StepFunction",
@@ -139,7 +134,6 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "aws_lambda_example",
     properties: ({}) => ({
       Configuration: {
         Environment: {
@@ -148,6 +142,7 @@ exports.createResources = () => [
             env: `dev`,
           },
         },
+        FunctionName: "aws_lambda_example",
         Handler: "lambda.lambda_handler",
         Runtime: "python3.7",
       },

@@ -223,9 +223,10 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-fRgMn9FyLO2d",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-fRgMn9FyLO2d",
         Handler: "index.handler",
         Runtime: "python3.7",
         Timeout: 900,

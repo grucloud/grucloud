@@ -34,14 +34,6 @@ exports.createResources = () => [
     name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-ZF99ZrezsQ4n",
   },
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "RDSOSMetrics",
-    properties: ({}) => ({
-      retentionInDays: 30,
-    }),
-  },
-  {
     type: "Vpc",
     group: "EC2",
     name: "CdkStack/Vpc",
@@ -456,11 +448,11 @@ exports.createResources = () => [
       requiresCompatibilities: ["FARGATE"],
     }),
     dependencies: ({}) => ({
-      secret: "aurora-user-secret",
-      rdsDbCluster: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
       taskRole: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-1HTR9O8XQQI4P",
       executionRole:
         "CdkStack-FargateServiceTaskDefExecutionRole9194820-18VY1XIQQ7L55",
+      secret: "aurora-user-secret",
+      rdsDbCluster: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
     }),
   },
   {

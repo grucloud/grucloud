@@ -73,7 +73,6 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "aurora-test-cluster-function",
     properties: ({ config, getId }) => ({
       Configuration: {
         Environment: {
@@ -89,6 +88,7 @@ exports.createResources = () => [
             DBName: `aurora_test_db`,
           },
         },
+        FunctionName: "aurora-test-cluster-function",
         Handler: "app.handler",
         Runtime: "nodejs14.x",
         Timeout: 30,
@@ -97,10 +97,10 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-LambdaFunctionRole-11TTATG2VDRQ2",
-      secret: "DBSecret",
-      dbCluster: "aurora-test-cluster",
+      secrets: ["DBSecret"],
+      dbClusters: ["aurora-test-cluster"],
     }),
   },
   {
@@ -130,7 +130,7 @@ exports.createResources = () => [
       },
       MasterUserPassword: process.env.AURORA_TEST_CLUSTER_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       secret: "DBSecret",
     }),
   },

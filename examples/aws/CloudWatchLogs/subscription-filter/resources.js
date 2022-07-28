@@ -82,8 +82,8 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "receive-cloudwatch-log-group",
     properties: ({ config, getId }) => ({
+      FunctionName: "receive-cloudwatch-log-group",
       Configuration: {
         Handler: "index.handler",
         Runtime: "nodejs16.x",

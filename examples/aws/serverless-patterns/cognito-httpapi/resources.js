@@ -160,9 +160,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-AppFunction-gKUxwsmxX2fK",
     properties: ({ config, getId }) => ({
       Configuration: {
+        FunctionName: "sam-app-AppFunction-gKUxwsmxX2fK",
         Handler: "app.handler",
         Runtime: "nodejs14.x",
       },

@@ -62,9 +62,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "lambda-hello-world",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "lambda-hello-world",
         Handler: "helloworld.handler",
         Runtime: "nodejs14.x",
       },
@@ -78,11 +78,34 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [hello world lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Lambda/nodejs/helloworld)
-
-- [lambda called by an Api gateway](https://github.com/grucloud/grucloud/blob/main/example/aws/api-gateway/lambda)
-
-- [lambda triggered by a write to an S3 Bucket](https://github.com/grucloud/grucloud/blob/main/example/aws/serverless-patterns/xray-lambdalayers-cdk-python)
+- [ApiGatewayV2 http-lambda](https://github.com/grucloud/grucloud/blob/main/examples/aws/ApiGatewayV2/http-lambda)
+- [hello world lambda](https://github.com/grucloud/grucloud/blob/main/examples/aws/Lambda/nodejs/helloworld)
+- [lambda url](https://github.com/grucloud/grucloud/blob/main/examples/aws/Lambda/nodejs/lambda-url)
+- [lambda sqs](https://github.com/grucloud/grucloud/blob/main/examples/aws/Lambda/nodejs/sqs-lambda)
+- [AppSync graphql](https://github.com/grucloud/grucloud/blob/main/examples/aws/AppSync/graphql)
+- [CloudWatch Subscription Filter](https://github.com/grucloud/grucloud/blob/main/examples/aws/CloudWatchLogs/subscription-filter)
+- [EFS simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/EFS/efs-simple)
+- [Firehose stream](https://github.com/grucloud/grucloud/blob/main/examples/aws/Firehose/firehose-delivery-stream)
+- [Kinesis stream](https://github.com/grucloud/grucloud/blob/main/examples/aws/Kinesis/kinesis-stream)
+- [serverless-patterns apigw-http-api-eventbridge](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/apigw-http-api-eventbridge)
+- [serverless-patterns apigw-websocket-api-lambda](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/apigw-websocket-api-lambda)
+- [serverless-patterns cdk-lambda-appsync](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/cdk-lambda-appsync)
+- [serverless-patterns cdk-vpc-lambda-sfn](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/cdk-vpc-lambda-sfn)
+- [serverless-patterns cognito-httpapi](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/cognito-httpapi)
+- [serverless-patterns lambda](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/lambda)
+- [serverless-patterns lambda-aurora-serverless](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/lambda-aurora-serverless)
+- [serverless-patterns lambda-cloudwatch](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/lambda-cloudwatch)
+- [serverless-patterns lambda-dynamodb](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/lambda-dynamodb)
+- [serverless-patterns lambda-layer-terraform](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/lambda-layer-terraform)
+- [serverless-patterns lambda-s3](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/lambda-s3)
+- [serverless-patterns lambda-ssm-parameter](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/lambda-ssm-parameter)
+- [serverless-patterns sfn-apigw](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/sfn-apigw)
+- [serverless-patterns sns-lambda](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/sns-lambda)
+- [serverless-patterns sqs-lambda-terraform-python](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/sqs-lambda-terraform-python)
+- [serverless-patterns step-functions-lambda-terraform](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/step-functions-lambda-terraform)
+- [serverless-patterns systems-manager-automation-to-lambda](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/systems-manager-automation-to-lambda)
+- [serverless-patterns ta-eventbridge-lambda-s3](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/ta-eventbridge-lambda-s3)
+- [lambda triggered by a write to an S3 Bucket](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/xray-lambdalayers-cdk-python)
 
 ## Properties
 

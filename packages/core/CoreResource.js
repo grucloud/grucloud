@@ -393,7 +393,9 @@ exports.ResourceMaker = ({
       switchCase([
         isEmpty,
         () => {
-          throw Error(`Cannot find the dependency ${depKey}, ${value} `);
+          throw Error(
+            `Cannot find the dependency ${depKey}, ${value}, groupType: ${spec.groupType} `
+          );
         },
         pipe([
           assign({ name: () => value }),

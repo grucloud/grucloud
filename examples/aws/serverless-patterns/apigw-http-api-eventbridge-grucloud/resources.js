@@ -176,9 +176,10 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-WT09pJuMy2gE",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "ApiEventbridgeStack-AWS679f53fac002430cb0da5b7982b-WT09pJuMy2gE",
         Handler: "index.handler",
         Runtime: "nodejs12.x",
         Timeout: 120,

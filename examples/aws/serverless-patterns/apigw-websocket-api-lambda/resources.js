@@ -382,9 +382,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-onconnect-function",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-onconnect-function",
         Environment: {
           Variables: {
             TABLE_NAME: `sam-app-websocket_connections`,
@@ -401,15 +401,15 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "sam-app-OnConnectLambdaFunctionRole-BWZIV6IR9OMV",
-      dynamoDbTable: "sam-app-websocket_connections",
+      dynamoDbTables: ["sam-app-websocket_connections"],
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-ondisconnect-function",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-ondisconnect-function",
         Environment: {
           Variables: {
             TABLE_NAME: `sam-app-websocket_connections`,
@@ -426,15 +426,15 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "sam-app-OnDisconnectLambdaFunctionRole-1K1VHGSO99JHS",
-      dynamoDbTable: "sam-app-websocket_connections",
+      dynamoDbTables: ["sam-app-websocket_connections"],
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-post-function",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-post-function",
         Environment: {
           Variables: {
             TABLE_NAME: `sam-app-websocket_connections`,
@@ -451,7 +451,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "sam-app-PostLambdaFunctionRole-1DAT8LSZH0D2Y",
-      dynamoDbTable: "sam-app-websocket_connections",
+      dynamoDbTables: ["sam-app-websocket_connections"],
     }),
   },
 ];

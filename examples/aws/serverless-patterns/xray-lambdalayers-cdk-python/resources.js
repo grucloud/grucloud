@@ -117,9 +117,10 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "LambdaLayerXRayStackStack-BucketNotificationsHandl-1XcDZ1JQT7M7",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "LambdaLayerXRayStackStack-BucketNotificationsHandl-1XcDZ1JQT7M7",
         Description:
           'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
         Handler: "index.handler",
@@ -134,9 +135,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "xray-handler",
     properties: ({ config }) => ({
       Configuration: {
+        FunctionName: "xray-handler",
         Handler: "lambda-handler.lambda_handler",
         Runtime: "python3.8",
         TracingConfig: {

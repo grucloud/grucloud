@@ -141,9 +141,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "OrderState",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "OrderState",
         Handler: "com.example.OrderState::handleRequest",
         MemorySize: 512,
         Runtime: "java11",
@@ -160,9 +160,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "ProcessOrder",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "ProcessOrder",
         Handler: "com.example.ProcessOrder::handleRequest",
         MemorySize: 512,
         Runtime: "java11",

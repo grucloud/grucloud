@@ -59,9 +59,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-LambdaFunction-0c5CYs3DOq13",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-LambdaFunction-0c5CYs3DOq13",
         Environment: {
           Variables: {
             SSMParameterName: `ExampleParameterName`,

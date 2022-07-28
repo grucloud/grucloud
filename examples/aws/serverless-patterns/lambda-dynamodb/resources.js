@@ -90,9 +90,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
         Environment: {
           Variables: {
             DatabaseTable: `sam-app-DynamoTable-1TM3ILOZ1A36J`,
@@ -107,7 +107,7 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       role: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
-      dynamoDbTable: "sam-app-DynamoTable-1TM3ILOZ1A36J",
+      dynamoDbTables: ["sam-app-DynamoTable-1TM3ILOZ1A36J"],
     }),
   },
 ];

@@ -221,9 +221,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-HelloEfsFunction-kAB4qyDAUDSl",
     properties: ({ getId }) => ({
       Configuration: {
+        FunctionName: "sam-app-HelloEfsFunction-kAB4qyDAUDSl",
         FileSystemConfigs: [
           {
             Arn: `${getId({

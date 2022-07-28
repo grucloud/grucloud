@@ -52,9 +52,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-PutMetricFunction-IRljDZikgnoj",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-PutMetricFunction-IRljDZikgnoj",
         Handler: "app.lambdaHandler",
         Runtime: "nodejs14.x",
       },

@@ -529,9 +529,10 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-c8VHz1jOeFFc",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-c8VHz1jOeFFc",
         Handler: "index.handler",
         Runtime: "nodejs14.x",
       },
@@ -543,10 +544,10 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "test-lambdaFunction",
     properties: ({}) => ({
       Configuration: {
         Architectures: ["arm64"],
+        FunctionName: "test-lambdaFunction",
         Handler: "app.lambdaHandler",
         MemorySize: 512,
         Runtime: "nodejs14.x",

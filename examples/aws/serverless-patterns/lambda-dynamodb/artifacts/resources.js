@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "sam-app-DynamoTable-1TM3ILOZ1A36J",
     properties: ({}) => ({
+      TableName: "sam-app-DynamoTable-1TM3ILOZ1A36J",
       AttributeDefinitions: [
         {
           AttributeName: "ID",
@@ -90,7 +90,6 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
     properties: ({}) => ({
       Configuration: {
         Environment: {
@@ -98,6 +97,7 @@ exports.createResources = () => [
             DatabaseTable: `sam-app-DynamoTable-1TM3ILOZ1A36J`,
           },
         },
+        FunctionName: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
         Handler: "app.handler",
         Runtime: "nodejs12.x",
       },
@@ -107,7 +107,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
-      dynamoDbTable: "sam-app-DynamoTable-1TM3ILOZ1A36J",
+      dynamoDbTables: ["sam-app-DynamoTable-1TM3ILOZ1A36J"],
     }),
   },
 ];

@@ -95,9 +95,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "lambda_with_layer",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "lambda_with_layer",
         Handler: "app.lambda_handler",
         Runtime: "python3.8",
       },
@@ -110,9 +110,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "lambda_without_layer",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "lambda_without_layer",
         Handler: "app.lambda_handler",
         Runtime: "python3.8",
       },

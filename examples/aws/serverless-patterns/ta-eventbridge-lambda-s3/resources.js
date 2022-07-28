@@ -218,9 +218,10 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "S3BucketPrivatizerStack-LogRetentionaae0aa3c5b4d4f-BCry9uKFvTNW",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "S3BucketPrivatizerStack-LogRetentionaae0aa3c5b4d4f-BCry9uKFvTNW",
         Handler: "index.handler",
         Runtime: "nodejs14.x",
       },
@@ -232,9 +233,10 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "ta-check-s3-open-lambda-function",
+
     properties: ({ getId }) => ({
       Configuration: {
+        FunctionName: "ta-check-s3-open-lambda-function",
         Description:
           "Function Triggered from Trusted Advisor to Block public access to an S3 Bucket",
         Environment: {

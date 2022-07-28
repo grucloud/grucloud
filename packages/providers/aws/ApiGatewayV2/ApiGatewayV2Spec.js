@@ -178,7 +178,7 @@ module.exports = pipe([
                         group: "CognitoIdentityServiceProvider",
                         providerName: config.providerName,
                       }),
-                    filter(eq(get("live.Id"), Id)),
+                    find(eq(get("live.Id"), Id)),
                   ])(),
               ]),
             ]),
