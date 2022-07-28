@@ -48,7 +48,6 @@ exports.createResources = () => [
   {
     type: "Layer",
     group: "Lambda",
-    name: "lambda-layer",
     properties: ({}) => ({
       LayerName: "lambda-layer",
       Description: "My Layer",

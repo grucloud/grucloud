@@ -108,7 +108,6 @@ exports.createResources = () => [
   {
     type: "Layer",
     group: "Lambda",
-    name: "xraylayerF67027DB",
     properties: ({}) => ({
       LayerName: "xraylayerF67027DB",
       Description: "Lambda Layer containing Xray SDK Python Library",

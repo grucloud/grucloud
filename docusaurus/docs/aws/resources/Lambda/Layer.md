@@ -12,73 +12,12 @@ Provides an [Lambda Layer](https://console.aws.amazon.com/lambda/home?/layers)
 ```js
 exports.createResources = () => [
   {
-    type: "Role",
-    group: "IAM",
-    name: "lambda-role",
-    properties: ({}) => ({
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "lambda.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: () => ({
-      policies: ["lambda-policy"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    name: "lambda-policy",
-    properties: ({}) => ({
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["logs:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow logs",
-    }),
-  },
-  {
     type: "Layer",
     group: "Lambda",
-    name: "lambda-layer",
     properties: ({}) => ({
       LayerName: "lambda-layer",
       Description: "My Layer",
       CompatibleRuntimes: ["nodejs"],
-    }),
-  },
-  {
-    type: "Function",
-    group: "Lambda",
-    name: "lambda-hello-world",
-    properties: ({}) => ({
-      Handler: "helloworld.handler",
-      PackageType: "Zip",
-      Runtime: "nodejs14.x",
-      Description: "",
-      Timeout: 3,
-      MemorySize: 128,
-    }),
-    dependencies: () => ({
-      layers: ["lambda-layer"],
-      role: "lambda-role",
     }),
   },
 ];
@@ -86,15 +25,12 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [hello world lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Lambda/nodejs/hellowork)
+- [hello world lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/Lambda/nodejs/helloworld)
+- [serverless-patterns lamdba-layer-terraform](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/lambda-layer-terraform)
 
 ## Properties
 
 - [PublishLayerVersionCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-lambda/interfaces/publishlayerversioncommandinput.html)
-
-## Dependencies
-
-- [Iam Role](../IAM/Role.md)
 
 ## UsedBy
 
@@ -102,7 +38,7 @@ exports.createResources = () => [
 
 ## List
 
-The list of functions can be displayed and filtered with the type **Layer**:
+The list of layers can be displayed and filtered with the type **Layer**:
 
 ```sh
 gc list -t Layer

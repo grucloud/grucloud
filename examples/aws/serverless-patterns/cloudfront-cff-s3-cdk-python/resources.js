@@ -215,7 +215,6 @@ exports.createResources = () => [
   {
     type: "Layer",
     group: "Lambda",
-    name: "myDeploymentAwsCliLayerEF6B12EC",
     properties: ({}) => ({
       LayerName: "myDeploymentAwsCliLayerEF6B12EC",
       Description: "/opt/awscli/aws",

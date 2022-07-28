@@ -7,7 +7,6 @@ const logger = require("@grucloud/core/logger")({
   prefix: "Layer",
 });
 
-const { tos } = require("@grucloud/core/tos");
 const { AwsClient } = require("../AwsClient");
 
 const { compareAws, throwIfNotAwsError } = require("../AwsCommon");

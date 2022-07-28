@@ -6,25 +6,20 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/lambda/lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-c8VHz1jOeFFc",
-    properties: ({}) => ({
-      retentionInDays: 1,
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/test-lambdaFunction",
-    properties: ({}) => ({
-      retentionInDays: 7,
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
     name: "testlambdatest-",
     properties: ({}) => ({
       retentionInDays: 30,
+    }),
+  },
+  {
+    type: "LogStream",
+    group: "CloudWatchLogs",
+    properties: ({}) => ({
+      logStreamName:
+        "log_stream_created_by_aws_to_validate_log_delivery_subscriptions",
+    }),
+    dependencies: ({}) => ({
+      cloudWatchLogGroup: "testlambdatest-",
     }),
   },
   {

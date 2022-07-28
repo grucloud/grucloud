@@ -66,6 +66,7 @@ module.exports = pipe([
     {
       type: "Layer",
       Client: Layer,
+      inferName: get("properties.LayerName"),
       compare: compareLayer,
       displayResource: () => pipe([omit(["Content.Data", "Content.ZipFile"])]),
       filterLive:
@@ -323,7 +324,6 @@ module.exports = pipe([
           group: "KMS",
           dependencyId: () => get("Configuration.KMSKeyArn"),
         },
-
         subnets: {
           type: "Subnet",
           group: "EC2",

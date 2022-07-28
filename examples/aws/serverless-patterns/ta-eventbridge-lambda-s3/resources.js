@@ -210,7 +210,6 @@ exports.createResources = () => [
   {
     type: "Layer",
     group: "Lambda",
-    name: "dependenciesLayerA5D47028",
     properties: ({}) => ({
       LayerName: "dependenciesLayerA5D47028",
       CompatibleRuntimes: ["python3.8"],

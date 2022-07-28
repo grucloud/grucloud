@@ -4,7 +4,6 @@
 
 ## Aws
 
-- inferName Lambda layer
 - inferName OpenIDConnectProvider
 - CognitoIdentityServiceProvider inferName
 - CloudWatchEventApiDestination inferName

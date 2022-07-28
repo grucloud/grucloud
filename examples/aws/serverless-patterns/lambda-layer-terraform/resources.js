@@ -87,7 +87,6 @@ exports.createResources = () => [
   {
     type: "Layer",
     group: "Lambda",
-    name: "mysql-connector-python",
     properties: ({}) => ({
       LayerName: "mysql-connector-python",
       CompatibleRuntimes: ["python3.8"],
