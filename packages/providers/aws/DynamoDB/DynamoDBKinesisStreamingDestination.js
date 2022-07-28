@@ -59,6 +59,7 @@ exports.DynamoDBKinesisStreamingDestination = ({ spec, config }) =>
         ({ table, stream }) => `table-kinesis-stream::${table}::${stream}`,
       ])(),
     findId,
+    //TODO getListWithParent
     getList:
       ({ endpoint }) =>
       ({ lives }) =>

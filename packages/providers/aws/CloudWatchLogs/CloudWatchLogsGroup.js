@@ -41,7 +41,9 @@ exports.CloudWatchLogGroup = ({ spec, config }) => {
     (logGroupName) =>
       pipe([
         () => [
-          "/aws/apigateway/" /*, "/aws/lambda/"*/,
+          "API-Gateway-Execution-Logs",
+          "/aws/apigateway/",
+          "/aws/lambda/",
           "/ecs/",
           "RDSOSMetrics",
         ],

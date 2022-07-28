@@ -12,7 +12,7 @@ const {
   pick,
   assign,
 } = require("rubico");
-const { defaultsDeep, isEmpty, size } = require("rubico/x");
+const { defaultsDeep, isEmpty, size, when } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ECSCluster" });
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -120,7 +120,7 @@ exports.ECSCluster = ({ spec, config }) => {
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: { capacityProviders = [] },
+    dependencies: { capacityProviders = [], kmsKey },
   }) =>
     pipe([
       () => otherProps,
@@ -137,6 +137,14 @@ exports.ECSCluster = ({ spec, config }) => {
           tags,
         }),
       }),
+      when(
+        () => kmsKey,
+        defaultsDeep({
+          configuration: {
+            executeCommandConfiguration: { kmsKeyId: getField(kmsKey, "Arn") },
+          },
+        })
+      ),
     ])();
 
   const create = client.create({

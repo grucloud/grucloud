@@ -16,7 +16,7 @@ const { defaultsDeep, first, callProp, last } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EC2RouteTable" });
 const { tos } = require("@grucloud/core/tos");
-const { getByIdCore, buildTags } = require("../AwsCommon");
+const { getByIdCore, buildTags, throwIfNotAwsError } = require("../AwsCommon");
 const { findNameInTagsOrId, findNamespaceInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
@@ -73,13 +73,12 @@ exports.EC2RouteTable = ({ spec, config }) => {
             tap((Route) => {
               assert(Route);
             }),
-            //TODO ipv6
-            ({ DestinationCidrBlock }) => ({
-              RouteTableId: live.RouteTableId,
-              DestinationCidrBlock: DestinationCidrBlock,
-            }),
-            // TODO InvalidRoute.NotFound
-            endpoint().deleteRoute,
+            pick(["DestinationCidrBlock", "DestinationIpv6CidrBlock"]),
+            defaultsDeep({ RouteTableId: live.RouteTableId }),
+            tryCatch(
+              endpoint().deleteRoute,
+              throwIfNotAwsError("InvalidRoute.NotFound")
+            ),
           ]),
           (error, Route) =>
             pipe([

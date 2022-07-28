@@ -130,8 +130,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "sam-app-websocket_connections",
     properties: ({}) => ({
+      TableName: "sam-app-websocket_connections",
       AttributeDefinitions: [
         {
           AttributeName: "connectionId",

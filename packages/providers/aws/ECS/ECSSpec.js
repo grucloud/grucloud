@@ -34,6 +34,14 @@ const tagsKey = "tags";
 
 const compareECS = compareAws({ tagsKey, key: "key" });
 
+const dependencyTargetGroups = {
+  type: "TargetGroup",
+  group: "ElasticLoadBalancingV2",
+  list: true,
+  dependencyIds: ({ lives, config }) =>
+    pipe([get("loadBalancers"), pluck("targetGroupArn")]),
+};
+
 const isOurMinion = isOurMinionFactory({
   key: "key",
   value: "value",
@@ -79,6 +87,7 @@ module.exports = pipe([
         "statistics",
         "attachments",
         "attachmentsStatus",
+        "configuration.executeCommandConfiguration.kmsKeyId",
       ],
       propertiesDefault: { defaultCapacityProviderStrategy: [] },
       compare: compareECS({}),
@@ -111,6 +120,22 @@ module.exports = pipe([
           group: "KMS",
           dependencyId: ({ lives, config }) =>
             get("configuration.executeCommandConfiguration.kmsKeyId"),
+        },
+        s3Bucket: {
+          type: "Bucket",
+          group: "S3",
+          dependencyId: ({ lives, config }) =>
+            get(
+              "configuration.executeCommandConfiguration.logConfiguration.s3BucketName"
+            ),
+        },
+        cloudWatchLogGroup: {
+          type: "LogGroup",
+          group: "CloudWatchLogs",
+          dependencyId: ({ lives, config }) =>
+            get(
+              "configuration.executeCommandConfiguration.logConfiguration.cloudWatchLogGroupName"
+            ),
         },
       },
     },
@@ -335,29 +360,7 @@ module.exports = pipe([
           dependencyIds: ({ lives, config }) =>
             get("networkConfiguration.awsvpcConfiguration.securityGroups"),
         },
-        loadBalancers: {
-          type: "LoadBalancer",
-          group: "ElasticLoadBalancingV2",
-          list: true,
-          dependencyId: ({ lives, config }) =>
-            pipe([
-              (live) =>
-                lives.getByName({
-                  providerName: config.providerName,
-                  name: live.loadBalancerName,
-                  type: "LoadBalancer",
-                  group: "ElasticLoadBalancingV2",
-                }),
-              get("id"),
-            ]),
-        },
-        targetGroups: {
-          type: "TargetGroup",
-          group: "ElasticLoadBalancingV2",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([get("loadBalancers"), pluck("targetGroupArn")]),
-        },
+        targetGroups: dependencyTargetGroups,
       },
     },
     {
@@ -374,6 +377,12 @@ module.exports = pipe([
           parent: true,
           dependencyId: ({ lives, config }) => get("serviceArn"),
         },
+        taskDefinition: {
+          type: "TaskDefinition",
+          group: "ECS",
+          dependencyId: ({ lives, config }) => get("taskDefinitionArn"),
+        },
+        targetGroups: dependencyTargetGroups,
       },
       Client: ECSTaskSet,
       compare: compareECS({}),
@@ -396,40 +405,6 @@ module.exports = pipe([
           group: "ECS",
           dependencyId: ({ lives, config }) => get("taskDefinitionArn"),
         },
-        // service: {
-        //   type: "Service",
-        //   group: "ECS",
-        //   dependencyId: ({ lives, config }) =>
-        //     pipe([
-        //       get("group"),
-        //       when(
-        //         callProp("startsWith", "service:"),
-        //         pipe([
-        //           callProp("replace", "service:", ""),
-        //           (name) =>
-        //             lives.getByName({
-        //               name,
-        //               type: "Service",
-        //               group: "ECS",
-        //               providerName: config.providerName,
-        //             }),
-        //           get("id"),
-        //         ])
-        //       ),
-        //     ]),
-        // },
-        // subnets: {
-        //   type: "Subnet",
-        //   group: "EC2",
-        //   list: true,
-        //   dependencyIds: ({ lives, config }) => get(""),
-        // },
-        // securityGroups: {
-        //   type: "SecurityGroup",
-        //   group: "EC2",
-        //   list: true,
-        //   dependencyIds: ({ lives, config }) => get(""),
-        // },
       },
     },
     {

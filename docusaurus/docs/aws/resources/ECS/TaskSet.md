@@ -3,7 +3,7 @@ id: Task
 title: Task
 ---
 
-Manages an [ECS Task](https://console.aws.amazon.com/ecs/home?#).
+Manages an [ECS TaskSet](https://console.aws.amazon.com/ecs/home?#).
 
 ## Sample code
 
@@ -15,6 +15,13 @@ exports.createResources = () => [{}];
 
 - [RunTaskCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecs/interfaces/runtaskcommandinput.html)
 
+## Dependencies
+
+- [Cluster](./Cluster.md)
+- [Service](./Service.md)
+- [TaskDefinition](./TaskDefinition.md)
+- [ElasticLoadBalancingV2 TargetGroup](../ElasticLoadBalancingV2/TargetGroup.md)
+
 ## Used By
 
 - [CloudWatchEvent Target](../CloudWatchEvents/Target.md)
@@ -23,8 +30,8 @@ exports.createResources = () => [{}];
 
 ## List
 
-The ECS tasks can be filtered with the _Task_ type:
+The ECS task sets can be filtered with the _TaskSet_ type:
 
 ```sh
-gc l -t Task
+gc l -t TaskSet
 ```

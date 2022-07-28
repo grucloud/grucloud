@@ -25,28 +25,12 @@ module.exports = pipe([
           dependencyIds: ({ lives, config }) =>
             pipe([get("AvailabilityZones"), pluck("SubnetId")]),
         },
-        // internetGateway: {
-        //   type: "InternetGateway",
-        //   group: "EC2",
-        //   dependencyId: ({ lives, config }) => get(""),
-        // },
         securityGroups: {
           type: "SecurityGroup",
           group: "EC2",
           list: true,
           dependencyIds: ({ lives, config }) => get("SecurityGroups"),
         },
-        // TODO
-        // role: {
-        //   type: "Role",
-        //   group: "IAM",
-        //   dependencyId: ({ lives, config }) => get(""),
-        // },
-        // key: {
-        //   type: "Key",
-        //   group: "KMS",
-        //   dependencyId: ({ lives, config }) => get(""),
-        // },
       },
       Client: ELBLoadBalancerV2,
       omitProperties: [

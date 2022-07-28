@@ -103,8 +103,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
     properties: ({}) => ({
+      TableName: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
       AttributeDefinitions: [
         {
           AttributeName: "id",

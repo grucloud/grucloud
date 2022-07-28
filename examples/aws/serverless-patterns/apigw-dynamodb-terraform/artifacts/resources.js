@@ -194,20 +194,10 @@ exports.createResources = () => [
     name: "/aws/APIGW/terraform20220714213227146600000001",
   },
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "API-Gateway-Execution-Logs_73703skrm9/v1",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "API-Gateway-Execution-Logs_fl46irphu6/v1",
-  },
-  {
     type: "Table",
     group: "DynamoDB",
-    name: "Pets",
     properties: ({}) => ({
+      TableName: "Pets",
       AttributeDefinitions: [
         {
           AttributeName: "PetType",

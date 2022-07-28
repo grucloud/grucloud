@@ -149,8 +149,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "ApiDynamoStack-ApiDynamoTable66095DD3-1B90VIOP8H5XN",
     properties: ({}) => ({
+      TableName: "ApiDynamoStack-ApiDynamoTable66095DD3-1B90VIOP8H5XN",
       AttributeDefinitions: [
         {
           AttributeName: "pk",

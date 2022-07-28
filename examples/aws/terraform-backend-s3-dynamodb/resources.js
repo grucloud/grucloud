@@ -6,8 +6,8 @@ exports.createResources = (xxx) => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: ({ config }) => config.dynamoDBTableName,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      TableName: config.dynamoDBTableName,
       AttributeDefinitions: [
         {
           AttributeName: "LockID",

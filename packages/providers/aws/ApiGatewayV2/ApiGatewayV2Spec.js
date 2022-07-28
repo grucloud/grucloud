@@ -302,7 +302,7 @@ module.exports = pipe([
                     group: "ElasticLoadBalancingV2",
                     providerName: config.providerName,
                   }),
-                filter(eq(get("id"), live.IntegrationUri)),
+                find(eq(get("id"), live.IntegrationUri)),
               ])(),
         }, //Integration name depends on listener name
         vpcLink: {
@@ -318,7 +318,7 @@ module.exports = pipe([
                     group: "ApiGatewayV2",
                     providerName: config.providerName,
                   }),
-                filter(eq(get("id"), live.ConnectionId)),
+                find(eq(get("id"), live.ConnectionId)),
               ])(),
         },
         lambdaFunction: {

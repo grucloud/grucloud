@@ -64,10 +64,17 @@ exports.createResources = () => [
 
 ## Used By
 
+- [CloudTrail Trail](../CloudTrail/Trail.md)
+- [CloudWatchLogs LogGroup](../CloudWatchLogs/LogGroup.md)
+- [DynamoDB Table](../DynamoDB/Table.md)
+- [ECR Repository](../ECR/Repository.md)
+- [ECS Cluster](../ECS/Cluster.md)
 - [EKS Cluster](../EKS/Cluster.md)
-- [CloudWatch LogGroup](../CloudWatchLogs/LogGroup.md)
-- [SNS Topic](../SNS/Topic.md)
+- [Lambda Function](../Lambda/Function.md)
+- [RDS DBInstance](../RDS/DBInstance.md)
 - [SecretsManager Secret](../SecretsManager/Secret.md)
+- [SNS Topic](../SNS/Topic.md)
+- [SSM Parameter](../SSM/Parameter.md)
 
 ## List
 

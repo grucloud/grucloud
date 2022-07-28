@@ -55,9 +55,13 @@ exports.createResources = () => [
 
 - [Cluster](./Cluster.md)
 - [TaskDefinition](./TaskDefinition.md)
+- [ElasticLoadBalancingV2 TargetGroup](../ElasticLoadBalancingV2/TargetGroup.md)
+- [Security Group](../EC2/SecurityGroup.md)
+- [Subnet](../EC2/Subnet.md)
 
 ## Used By
 
+- [ECS TaskSet](./TaskSet.md)
 - [CodeDeploy DeploymentGroup](../CodeDeploy/DeploymentGroup.md)
 
 ## Full Examples
@@ -72,6 +76,7 @@ exports.createResources = () => [
 - [serverless-patterns/fargate-aurora-serverless-cdk]((https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/fargate-aurora-serverless-cdk)
 
 - [serverless-patterns/fargate-eventbridge]((https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/fargate-eventbridge)
+
 ## List
 
 The ECS services can be filtered with the _Service_ type:

@@ -28,18 +28,13 @@ const {
   prepend,
   isObject,
   size,
-  uniq,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "RestApi",
 });
 
-const {
-  getByNameCore,
-  buildTagsObject,
-  flattenObject,
-} = require("@grucloud/core/Common");
+const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 
 const { throwIfNotAwsError } = require("../AwsCommon");

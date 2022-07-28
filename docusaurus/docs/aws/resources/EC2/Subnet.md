@@ -112,6 +112,8 @@ exports.createResources = () => [
 
 - [SecurityGroup](./SecurityGroup.md)
 - [EC2](./Instance.md)
+- [ECS Service](../ECS/Service.md)
+- [ECS TaskSet](../ECS/TaskSet.md)
 - [RouteTableAssociation](./RouteTableAssociation.md)
 - [NatGateway](./NatGateway.md)
 - [Flow Logs](./FlowLogs.md)

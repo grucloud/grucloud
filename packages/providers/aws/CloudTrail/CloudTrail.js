@@ -162,10 +162,7 @@ exports.CloudTrail = ({ spec, config }) =>
           () => snsTopic,
           defaultsDeep({ SnsTopicARN: getField(snsTopic, "TopicArn") })
         ),
-        when(
-          () => kmsKey,
-          defaultsDeep({ KmsKeyId: getField(kmsKey, "TopicArn") })
-        ),
+        when(() => kmsKey, defaultsDeep({ KmsKeyId: getField(kmsKey, "Arn") })),
         when(
           () => logGroup,
           defaultsDeep({

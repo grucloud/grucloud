@@ -14,14 +14,6 @@ exports.createResources = () => [
     name: "/aws/rds/proxy/rds-proxy",
   },
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "RDSOSMetrics",
-    properties: ({}) => ({
-      retentionInDays: 30,
-    }),
-  },
-  {
     type: "Vpc",
     group: "EC2",
     name: "sam-app-vpc",
@@ -120,7 +112,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::sam-app-vpc::sam-app-database-sg",
-      securityGroupFrom: ["sg::sam-app-vpc::sam-app-database-sg"],
     }),
   },
   {
@@ -251,7 +242,7 @@ exports.createResources = () => [
         "sam-app-vpc::sam-app-prv-sub-3",
       ],
       securityGroups: ["sg::sam-app-vpc::sam-app-database-sg"],
-      secret: ["sam-app-cluster-secret"],
+      secrets: ["sam-app-cluster-secret"],
       role: "sam-app-dbProxyRole-1BMIN3H39UUK3",
     }),
   },

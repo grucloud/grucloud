@@ -16,6 +16,7 @@ module.exports = pipe([
     {
       type: "Table",
       Client: DynamoDBTable,
+      inferName: get("properties.TableName"),
       omitProperties: [
         "TableSizeBytes",
         "ItemCount",
@@ -54,7 +55,9 @@ module.exports = pipe([
       }),
       filterLive: () =>
         pipe([
+          //TODO remove pick
           pick([
+            "TableName",
             "AttributeDefinitions",
             "KeySchema",
             "ProvisionedThroughput",
@@ -75,7 +78,7 @@ module.exports = pipe([
           type: "Key",
           group: "KMS",
           dependencyId: ({ lives, config }) =>
-            get("SSEDescription.KMSMasterKeyArn"),
+            get("SSEDescription.KMSMasterKeyId"),
         },
       },
     },

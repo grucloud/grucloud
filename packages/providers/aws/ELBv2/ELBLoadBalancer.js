@@ -112,6 +112,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     spec,
     findId,
     getByName,
+    findNamespace,
     findName,
     create,
     destroy,

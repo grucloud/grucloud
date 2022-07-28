@@ -248,7 +248,7 @@ exports.createResources = () => [
         "sam-app-vpc::sam-app-prv-sub-3",
       ],
       securityGroups: ["sg::sam-app-vpc::sam-app-database-sg"],
-      secret: ["sam-app-cluster-secret"],
+      secrets: ["sam-app-cluster-secret"],
       role: "sam-app-dbProxyRole-1BMIN3H39UUK3",
     }),
   },

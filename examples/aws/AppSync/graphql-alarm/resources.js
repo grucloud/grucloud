@@ -152,8 +152,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "MyModelTypeTable",
     properties: ({}) => ({
+      TableName: "MyModelTypeTable",
       AttributeDefinitions: [
         {
           AttributeName: "id",

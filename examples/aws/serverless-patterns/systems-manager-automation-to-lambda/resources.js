@@ -7,8 +7,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "ServerlessLandTestTable",
     properties: ({}) => ({
+      TableName: "ServerlessLandTestTable",
       AttributeDefinitions: [
         {
           AttributeName: "Album",

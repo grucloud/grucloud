@@ -1,6 +1,14 @@
 const assert = require("assert");
 const { assign, map, pipe, tap, get, and, or, switchCase } = require("rubico");
-const { defaultsDeep, when, callProp, isString, uniq } = require("rubico/x");
+const {
+  defaultsDeep,
+  when,
+  callProp,
+  isString,
+  uniq,
+  pluck,
+  find,
+} = require("rubico/x");
 const { cloneDeepWith } = require("lodash/fp");
 const { flattenObject } = require("@grucloud/core/Common");
 
@@ -92,7 +100,7 @@ module.exports = pipe([
           type: "Function",
           group: "Lambda",
           list: true,
-          dependencyId: ({ lives, config }) =>
+          dependencyIds: ({ lives, config }) =>
             pipe([
               get("definition.States"),
               flattenObject({ filterKey: (key) => key === "FunctionName" }),
