@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Registry",
     group: "ECR",
-    name: "default",
     properties: ({ config }) => ({
       policyText: {
         Version: "2012-10-17",
@@ -41,8 +40,8 @@ exports.createResources = () => [
   {
     type: "Repository",
     group: "ECR",
-    name: "starhackit/lb",
     properties: ({ config }) => ({
+      repositoryName: "starhackit/lb",
       imageTagMutability: "MUTABLE",
       imageScanningConfiguration: {
         scanOnPush: false,

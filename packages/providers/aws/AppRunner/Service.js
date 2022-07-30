@@ -1,14 +1,6 @@
 const assert = require("assert");
 const { eq, pipe, tap, get, pick, assign, tryCatch } = require("rubico");
-const {
-  defaultsDeep,
-  when,
-  unless,
-  isEmpty,
-  callProp,
-  first,
-  find,
-} = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
@@ -68,6 +60,7 @@ exports.AppRunnerService = ({ spec, config }) => {
     method: "createService",
     pickCreated: () => get("Service"),
     shouldRetryOnExceptionMessages: ["Error in assuming access"],
+    //TODO isInstanceUp
     getById,
   });
 

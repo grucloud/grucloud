@@ -6,7 +6,9 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/codebuild/starhackit",
+    properties: ({}) => ({
+      logGroupName: "/aws/codebuild/starhackit",
+    }),
   },
   {
     type: "Project",

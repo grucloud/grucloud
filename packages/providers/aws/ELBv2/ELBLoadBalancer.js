@@ -11,7 +11,7 @@ const {
 const { AwsClient } = require("../AwsClient");
 const { createELB, tagResource, untagResource } = require("./ELBCommon");
 
-const findName = get("live.LoadBalancerName");
+const findName = get("live.Name");
 const findId = get("live.LoadBalancerArn");
 const pickId = pick(["LoadBalancerArn"]);
 
@@ -21,20 +21,28 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const elb = createELB(config);
   const client = AwsClient({ spec, config })(elb);
 
-  const assignTags = unless(
-    isEmpty,
-    assign({
-      Tags: pipe([
-        ({ LoadBalancerArn }) =>
-          elb().describeTags({ ResourceArns: [LoadBalancerArn] }),
-        get("TagDescriptions"),
-        first,
-        get("Tags"),
-      ]),
-    })
-  );
+  const assignTags = ({ endpoint }) =>
+    unless(
+      isEmpty,
+      assign({
+        Tags: pipe([
+          ({ LoadBalancerArn }) => ({ ResourceArns: [LoadBalancerArn] }),
+          endpoint().describeTags,
+          get("TagDescriptions"),
+          first,
+          get("Tags"),
+        ]),
+      })
+    );
 
-  const decorate = () => pipe([assignTags]);
+  const decorate = ({ endpoint }) =>
+    pipe([
+      ({ LoadBalancerName, ...other }) => ({
+        Name: LoadBalancerName,
+        ...other,
+      }),
+      assignTags({ endpoint }),
+    ]);
 
   const managedByOther = hasKeyInTags({
     key: "elbv2.k8s.aws/cluster",
@@ -47,12 +55,18 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
   const getById = client.getById({
-    pickId: ({ LoadBalancerName }) => ({ Names: [LoadBalancerName] }),
+    pickId: pipe([
+      tap(({ Name }) => {
+        assert(Name);
+      }),
+      ({ Name }) => ({ Names: [Name] }),
+    ]),
     method: "describeLoadBalancers",
     getField: "LoadBalancers",
     ignoreErrorCodes: ["LoadBalancerNotFound"],
     decorate,
   });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
   const getList = client.getList({
     method: "describeLoadBalancers",
@@ -61,7 +75,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
-  const getByName = pipe([({ name }) => ({ LoadBalancerName: name }), getById]);
+  const getByName = pipe([({ name }) => ({ Name: name }), getById]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createLoadBalancer-property
   const configDefault = ({
@@ -77,7 +91,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       }),
       () => otherProps,
       defaultsDeep({
-        Name: name,
         Type: "application",
         Scheme: "internet-facing",
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
@@ -96,7 +109,9 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     method: "createLoadBalancer",
     getById,
     isInstanceUp: eq(get("State.Code"), "active"),
-    pickCreated: () => pipe([get("LoadBalancers"), first]),
+    isInstanceError: eq(get("State.Code"), "failed"),
+    getErrorMessage: get("State.Reason", "failed"),
+    pickCreated: ({ payload }) => pipe([() => payload]),
     config: { retryCount: 40 * 10, retryDelay: 10e3 },
   });
 

@@ -6,7 +6,9 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "spoke-vpc-1-vpc-flow-logs-20220609203327160500000008",
+    properties: ({}) => ({
+      logGroupName: "spoke-vpc-1-vpc-flow-logs-20220609203327160500000008",
+    }),
   },
   {
     type: "Table",

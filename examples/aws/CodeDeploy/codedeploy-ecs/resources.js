@@ -340,8 +340,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "cluster",
     properties: ({}) => ({
+      clusterName: "cluster",
       settings: [
         {
           name: "containerInsights",
@@ -353,7 +353,6 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    name: "first-run-task-definition",
     properties: ({ config }) => ({
       containerDefinitions: [
         {
@@ -420,7 +419,6 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "ECS",
-    name: "api",
     properties: ({ getId }) => ({
       deploymentConfiguration: {
         maximumPercent: 200,
@@ -471,8 +469,8 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "EC2Co-EcsEl-GK4BG406T8NP",
     properties: ({}) => ({
+      Name: "EC2Co-EcsEl-GK4BG406T8NP",
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",
@@ -496,8 +494,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "EC2Co-Defau-MMUISWY3DEAQ",
     properties: ({}) => ({
+      Name: "EC2Co-Defau-MMUISWY3DEAQ",
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
@@ -516,8 +514,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "tg-cluste-api-2",
     properties: ({}) => ({
+      Name: "tg-cluste-api-2",
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
@@ -530,8 +528,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "tg2",
     properties: ({}) => ({
+      Name: "tg2",
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
@@ -556,8 +554,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ecsTaskExecutionRole",
     properties: ({}) => ({
+      RoleName: "ecsTaskExecutionRole",
       AssumeRolePolicyDocument: {
         Version: "2008-10-17",
         Statement: [
@@ -583,8 +581,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "roleECSCodeDeploy",
     properties: ({}) => ({
+      RoleName: "roleECSCodeDeploy",
       Description:
         "Allows CodeDeploy to read S3 objects, invoke Lambda functions, publish to SNS topics, and update ECS services on your behalf.",
       AssumeRolePolicyDocument: {

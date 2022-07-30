@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "stf_trigger_rule",
     properties: ({}) => ({
+      Name: "stf_trigger_rule",
       ScheduleExpression: "rate(10 minutes)",
       State: "ENABLED",
     }),

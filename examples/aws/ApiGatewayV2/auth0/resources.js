@@ -104,12 +104,18 @@ exports.createResources = () => [
       stage: "my-api-stage-dev",
     }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    properties: ({}) => ({
+      logGroupName: "lg-http-test",
+    }),
+  },
   {
     type: "Role",
     group: "IAM",
-    name: "lambda-role",
     properties: ({}) => ({
+      RoleName: "lambda-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

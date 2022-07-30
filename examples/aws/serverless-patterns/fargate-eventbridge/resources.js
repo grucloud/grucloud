@@ -3,11 +3,20 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "EventBus", group: "CloudWatchEvents", name: "DemoEventBus" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "DemoEventBus",
+    }),
+  },
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N",
+    properties: ({}) => ({
+      logGroupName:
+        "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N",
+    }),
   },
   {
     type: "Vpc",
@@ -51,7 +60,8 @@ exports.createResources = () => [
     name: "Vpc8378EB38::VpcPrivateSubnet1Subnet536B997A",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.128.0/18",
+      NewBits: 2,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -63,7 +73,8 @@ exports.createResources = () => [
     name: "Vpc8378EB38::VpcPrivateSubnet2Subnet3788AAA1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.192.0/18",
+      NewBits: 2,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -75,8 +86,9 @@ exports.createResources = () => [
     name: "Vpc8378EB38::VpcPublicSubnet1Subnet5C2D37C4",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/18",
       MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -88,8 +100,9 @@ exports.createResources = () => [
     name: "Vpc8378EB38::VpcPublicSubnet2Subnet691E08A3",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.64.0/18",
       MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
@@ -373,8 +386,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "CdkStack-ClusterEB0386A7-gyqzhZkvCS5B",
     properties: ({}) => ({
+      clusterName: "CdkStack-ClusterEB0386A7-gyqzhZkvCS5B",
       settings: [
         {
           name: "containerInsights",
@@ -386,7 +399,6 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    name: "CdkStackFargateServiceTaskDef2C533A52",
     properties: ({ config }) => ({
       containerDefinitions: [
         {
@@ -481,7 +493,6 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "ECS",
-    name: "CdkStack-FargateServiceECC8084D-cPBHY3hSlGgQ",
     properties: ({ getId }) => ({
       deploymentConfiguration: {
         deploymentCircuitBreaker: {
@@ -535,8 +546,8 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "CdkSt-Farga-1U06CXLRFZ4ZC",
     properties: ({}) => ({
+      Name: "CdkSt-Farga-1U06CXLRFZ4ZC",
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",
@@ -554,8 +565,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "CdkSt-Farga-18J680K747YUS",
     properties: ({}) => ({
+      Name: "CdkSt-Farga-18J680K747YUS",
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
@@ -580,8 +591,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "CdkStack-FargateServiceTaskDefExecutionRole9194820-138OPFQCAE04H",
     properties: ({ config, getId }) => ({
+      RoleName:
+        "CdkStack-FargateServiceTaskDefExecutionRole9194820-138OPFQCAE04H",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -641,8 +653,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
     properties: ({ getId }) => ({
+      RoleName: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

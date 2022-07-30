@@ -17,6 +17,7 @@ const {
   ignoreErrorCodes,
   tagResource,
   untagResource,
+  LogGroupNameManagedByOther,
 } = require("./CloudWatchLogsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -28,25 +29,11 @@ exports.CloudWatchLogGroup = ({ spec, config }) => {
   const endpoint = createCloudWatchLogs(config);
   const client = AwsClient({ spec, config })(endpoint);
 
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Key",
-      group: "KMS",
-      ids: [live.kmsKeyId],
-    },
-  ];
-
   const managedByOther = pipe([
     get("live.logGroupName"),
     (logGroupName) =>
       pipe([
-        () => [
-          "API-Gateway-Execution-Logs",
-          "/aws/apigateway/",
-          "/aws/lambda/",
-          "/ecs/",
-          "RDSOSMetrics",
-        ],
+        () => LogGroupNameManagedByOther,
         any((prefix) => logGroupName.startsWith(prefix)),
       ])(),
   ]);
@@ -131,7 +118,6 @@ exports.CloudWatchLogGroup = ({ spec, config }) => {
     pipe([
       () => otherProps,
       defaultsDeep({
-        logGroupName: name,
         tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
       when(() => kmsKey, defaultsDeep({ kmsKeyId: getField(kmsKey, "Arn") })),
@@ -148,7 +134,6 @@ exports.CloudWatchLogGroup = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    findDependencies,
     managedByOther,
     tagResource: tagResource({ endpoint }),
     untagResource: untagResource({ endpoint }),

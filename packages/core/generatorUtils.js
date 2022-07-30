@@ -830,14 +830,15 @@ const hasResourceInDependency = (resource) =>
       //   resourceIn.id
     }),
     get("dependencies"),
-    find(
+    filter(
       and([
         eq(get("type"), resource.type),
         eq(get("group"), resource.group),
         eq(get("providerName"), resource.providerName),
       ])
     ),
-    get("ids"),
+    pluck("ids"),
+    flatten,
     map(when(isObject, get("id"))),
     includes(resource.id),
   ]);

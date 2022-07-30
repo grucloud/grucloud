@@ -13,77 +13,77 @@ exports.createResources = () => [
     type: "Pipeline",
     group: "CodePipeline",
     properties: ({}) => ({
-      artifactStore: {
-        location: "codepipeline-us-east-1-709458114120",
-        type: "S3",
+      pipeline: {
+        artifactStore: {
+          location: "codepipeline-us-east-1-149415713660",
+          type: "S3",
+        },
+        name: "my-pipeline",
+        stages: [
+          {
+            actions: [
+              {
+                actionTypeId: {
+                  category: "Source",
+                  owner: "AWS",
+                  provider: "ECR",
+                  version: "1",
+                },
+                configuration: {
+                  RepositoryName: "starhackit",
+                },
+                inputArtifacts: [],
+                name: "Source",
+                namespace: "SourceVariables",
+                outputArtifacts: [
+                  {
+                    name: "SourceArtifact",
+                  },
+                ],
+                region: "us-east-1",
+                runOrder: 1,
+              },
+            ],
+            name: "Source",
+          },
+          {
+            actions: [
+              {
+                actionTypeId: {
+                  category: "Build",
+                  owner: "AWS",
+                  provider: "CodeBuild",
+                  version: "1",
+                },
+                configuration: {
+                  ProjectName: "my-project",
+                },
+                inputArtifacts: [
+                  {
+                    name: "SourceArtifact",
+                  },
+                ],
+                name: "Build",
+                namespace: "BuildVariables",
+                outputArtifacts: [
+                  {
+                    name: "BuildArtifact",
+                  },
+                ],
+                region: "us-east-1",
+                runOrder: 1,
+              },
+            ],
+            name: "Build",
+          },
+        ],
+        version: 1,
       },
-      name: "my-pipeline",
-      stages: [
-        {
-          actions: [
-            {
-              actionTypeId: {
-                category: "Source",
-                owner: "AWS",
-                provider: "CodeStarSourceConnection",
-                version: "1",
-              },
-              configuration: {
-                BranchName: "master",
-                ConnectionArn:
-                  "arn:aws:codestar-connections:us-east-1:840541460064:connection/6ba9de29-73f2-436c-82e2-4ef7de54f063",
-                FullRepositoryId: "FredericHeem/starhackit",
-                OutputArtifactFormat: "CODE_ZIP",
-              },
-              inputArtifacts: [],
-              name: "Source",
-              namespace: "SourceVariables",
-              outputArtifacts: [
-                {
-                  name: "SourceArtifact",
-                },
-              ],
-              region: "us-east-1",
-              runOrder: 1,
-            },
-          ],
-          name: "Source",
-        },
-        {
-          actions: [
-            {
-              actionTypeId: {
-                category: "Build",
-                owner: "AWS",
-                provider: "CodeBuild",
-                version: "1",
-              },
-              configuration: {
-                ProjectName: "starhackit",
-              },
-              inputArtifacts: [
-                {
-                  name: "SourceArtifact",
-                },
-              ],
-              name: "Build",
-              namespace: "BuildVariables",
-              outputArtifacts: [
-                {
-                  name: "BuildArtifact",
-                },
-              ],
-              region: "us-east-1",
-              runOrder: 1,
-            },
-          ],
-          name: "Build",
-        },
-      ],
-      version: 1,
     }),
-    dependencies: ({ config }) => ({
-      role: `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
+    dependencies: ({}) => ({
+      role: "AWSCodePipelineServiceRole-my-pipeline",
+      codeBuildProject: ["my-project"],
+      ecrRepository: ["starhackit"],
     }),
   },
 ];
@@ -91,8 +91,10 @@ exports.createResources = () => [
 
 ## Dependencies
 
+- [IAM Role](../IAM/Role.md)
 - [CodeStarConnections Connection](../CodeStarConnections/Connection.md)
 - [CodeBuild Project](../CodeBuild/Project.md)
+- [ECR Repository](../ECR/Repository.md)
 
 ## Used By
 

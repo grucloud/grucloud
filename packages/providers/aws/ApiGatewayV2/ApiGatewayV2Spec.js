@@ -48,10 +48,11 @@ module.exports = pipe([
     {
       type: "DomainName",
       Client: DomainName,
+      inferName: get("properties.DomainName"),
       propertiesDefault: {
         ApiMappingSelectionExpression: "$request.basepath",
       },
-      omitProperties: ["DomainName", "DomainNameConfigurations"],
+      omitProperties: ["DomainNameConfigurations"],
       filterLive: () =>
         pipe([
           when(
@@ -459,6 +460,7 @@ module.exports = pipe([
     {
       type: "VpcLink",
       Client: ApiGatewayV2VpcLink,
+      inferName: get("properties.Name"),
       dependencies: {
         subnets: {
           type: "Subnet",
@@ -474,7 +476,6 @@ module.exports = pipe([
         },
       },
       omitProperties: [
-        "Name",
         "CreatedDate",
         "SecurityGroupIds",
         "SubnetIds",

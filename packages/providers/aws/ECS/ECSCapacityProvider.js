@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, switchCase, eq, pick, omit } = require("rubico");
-const { defaultsDeep, isEmpty, includes } = require("rubico/x");
+const { pipe, tap, get, eq, pick, omit } = require("rubico");
+const { defaultsDeep, includes, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { destroyAutoScalingGroupById } = require("../AwsCommon");
 const {
@@ -51,14 +51,6 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
       () => otherProps,
       defaultsDeep({
         name,
-        ...(autoScalingGroup && {
-          autoScalingGroupProvider: {
-            autoScalingGroupArn: getField(
-              autoScalingGroup,
-              "AutoScalingGroupARN"
-            ),
-          },
-        }),
         tags: buildTagsEcs({
           name,
           config,
@@ -66,9 +58,17 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
           tags,
         }),
       }),
-      tap((params) => {
-        assert(true);
-      }),
+      when(
+        () => autoScalingGroup,
+        defaultsDeep({
+          autoScalingGroupProvider: {
+            autoScalingGroupArn: getField(
+              autoScalingGroup,
+              "AutoScalingGroupARN"
+            ),
+          },
+        })
+      ),
     ])();
 
   const create = client.create({
@@ -77,6 +77,7 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
       ({ name }) =>
       () => ({ name }),
     getById,
+    isInstanceUp: eq(get("status"), "ACTIVE"),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#updateCapacityProvider-property
@@ -103,17 +104,9 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     pickId: ({ name }) => ({ capacityProvider: name }),
     preDestroy: deleteAutoScalingGroup,
     method: "deleteCapacityProvider",
-    isInstanceDown: switchCase([
-      eq(get("updateStatus"), "DELETE_FAILED"),
-      () => {
-        throw Error(`DELETE_FAILED`);
-      },
-      eq(get("updateStatus"), "DELETE_COMPLETE"),
-      () => true,
-      isEmpty,
-      () => true,
-      () => false,
-    ]),
+    isInstanceDown: eq(get("updateStatus"), "DELETE_COMPLETE"),
+    isInstanceError: eq(get("updateStatus"), "DELETE_FAILED"),
+    getErrorMessage: get("updateStatusReason", "error"),
     getById,
     ignoreErrorMessages: [
       "The specified capacity provider does not exist. Specify a valid name or ARN and try again.",

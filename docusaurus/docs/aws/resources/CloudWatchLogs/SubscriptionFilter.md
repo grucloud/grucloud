@@ -39,6 +39,7 @@ exports.createResources = () => [
 
 - [CloudWatchLogs LogGroup](./LogGroup.md)
 - [Kinesis Stream](../Kinesis/Stream.md)
+- [Firehose DeliveryStream](../Firehose/DeliveryStream.md)
 - [Lambda Function](../Lambda/Function.md)
 - [IAM Role](../IAM/Role.md)
 

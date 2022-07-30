@@ -3,11 +3,16 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "EventBus", group: "CloudWatchEvents", name: "sam-app-EventBus" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "sam-app-EventBus",
+    }),
+  },
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "sam-app-EventBusLogRule-O6HEQDLDXZKV",
     properties: ({}) => ({
       Description: "Send all events to CloudWatch Logs",
       EventPattern: {
@@ -17,6 +22,7 @@ exports.createResources = () => [
           },
         ],
       },
+      Name: "sam-app-EventBusLogRule-O6HEQDLDXZKV",
       State: "ENABLED",
     }),
     dependencies: ({}) => ({
@@ -34,7 +40,7 @@ exports.createResources = () => [
       logGroup: "/aws/events/sam-app",
     }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "/aws/events/sam-app" },
+  { type: "LogGroup", group: "CloudWatchLogs" },
   {
     type: "Role",
     group: "IAM",

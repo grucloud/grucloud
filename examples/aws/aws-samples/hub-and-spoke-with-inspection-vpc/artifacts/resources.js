@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/network-firewall/alerts",
     properties: ({}) => ({
+      logGroupName: "/aws/network-firewall/alerts",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -17,8 +17,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/network-firewall/flows",
     properties: ({}) => ({
+      logGroupName: "/aws/network-firewall/flows",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -1774,7 +1774,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "test-ssm-ec2",
+    RoleName: "test-ssm-ec2",
     properties: ({}) => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",

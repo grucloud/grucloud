@@ -14,8 +14,8 @@ exports.createResources = () => [
   {
     type: "DBInstance",
     group: "RDS",
-    name: "db-instance",
     properties: ({ config }) => ({
+      DBInstanceIdentifier: "db-instance",
       DBInstanceClass: "db.t3.micro",
       Engine: "postgres",
       EngineVersion: "12.5",

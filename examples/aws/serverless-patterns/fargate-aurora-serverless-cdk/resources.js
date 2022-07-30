@@ -6,39 +6,9 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0/error",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/cluster-postgres-stateless/postgresql",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-54U2jnJfonsp",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-r9VueUVpvwep",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-ZF99ZrezsQ4n",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "RDSOSMetrics",
     properties: ({}) => ({
-      retentionInDays: 30,
+      logGroupName:
+        "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n",
     }),
   },
   {
@@ -83,7 +53,8 @@ exports.createResources = () => [
     name: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.128.0/18",
+      NewBits: 2,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
@@ -95,7 +66,8 @@ exports.createResources = () => [
     name: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.192.0/18",
+      NewBits: 2,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
@@ -107,8 +79,9 @@ exports.createResources = () => [
     name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/18",
       MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
@@ -120,8 +93,9 @@ exports.createResources = () => [
     name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.64.0/18",
       MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
@@ -340,8 +314,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "CdkStack-ClusterEB0386A7-1MSjvijRu7By",
     properties: ({}) => ({
+      clusterName: "CdkStack-ClusterEB0386A7-1MSjvijRu7By",
       settings: [
         {
           name: "containerInsights",
@@ -353,7 +327,6 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    name: "CdkStackFargateServiceTaskDef2C533A52",
     properties: ({ config, getId }) => ({
       containerDefinitions: [
         {
@@ -452,17 +425,16 @@ exports.createResources = () => [
       requiresCompatibilities: ["FARGATE"],
     }),
     dependencies: ({}) => ({
-      secret: "aurora-user-secret",
-      rdsDbCluster: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
       taskRole: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-1HTR9O8XQQI4P",
       executionRole:
         "CdkStack-FargateServiceTaskDefExecutionRole9194820-18VY1XIQQ7L55",
+      secret: "aurora-user-secret",
+      rdsDbCluster: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
     }),
   },
   {
     type: "Service",
     group: "ECS",
-    name: "CdkStack-FargateServiceECC8084D-c9wCaLN6rjPU",
     properties: ({ getId }) => ({
       deploymentConfiguration: {
         deploymentCircuitBreaker: {
@@ -516,8 +488,8 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "CdkSt-Farga-SRS4XA0Y0M8",
     properties: ({}) => ({
+      Name: "CdkSt-Farga-SRS4XA0Y0M8",
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",
@@ -535,8 +507,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "CdkSt-Farga-1SEGM16UZSRPF",
     properties: ({}) => ({
+      Name: "CdkSt-Farga-1SEGM16UZSRPF",
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
@@ -561,8 +533,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "CdkStack-FargateServiceTaskDefExecutionRole9194820-18VY1XIQQ7L55",
     properties: ({ config, getId }) => ({
+      RoleName:
+        "CdkStack-FargateServiceTaskDefExecutionRole9194820-18VY1XIQQ7L55",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -622,8 +595,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-1HTR9O8XQQI4P",
     properties: ({ getId }) => ({
+      RoleName: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-1HTR9O8XQQI4P",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -677,8 +650,9 @@ exports.createResources = () => [
   {
     type: "DBSubnetGroup",
     group: "RDS",
-    name: "cdkstack-auroraserverlessclustersubnets734af39a-c9biv9kwphqk",
     properties: ({}) => ({
+      DBSubnetGroupName:
+        "cdkstack-auroraserverlessclustersubnets734af39a-c9biv9kwphqk",
       DBSubnetGroupDescription: "Subnets for AuroraServerlessCluster database",
     }),
     dependencies: ({}) => ({
@@ -691,10 +665,11 @@ exports.createResources = () => [
   {
     type: "DBCluster",
     group: "RDS",
-    name: "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
     properties: ({}) => ({
       BackupRetentionPeriod: 1,
       DatabaseName: "aurora_db",
+      DBClusterIdentifier:
+        "cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0",
       Engine: "aurora",
       EngineVersion: "5.6.10a",
       Port: 3306,

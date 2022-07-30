@@ -6,12 +6,12 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "terraform-20220331194511828000000002",
     properties: ({ config }) => ({
       EventPattern: {
         account: [`${config.accountId()}`],
         source: ["demo.sfn"],
       },
+      Name: "terraform-20220331194511828000000002",
       State: "ENABLED",
     }),
   },

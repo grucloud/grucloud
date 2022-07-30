@@ -82,17 +82,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskDefinition-property
 
   const getByName = ({ name }) =>
-    pipe([
-      tap(() => {
-        assert(name);
-      }),
-      () => ({ familyPrefix: name }),
-      getList,
-      tap((params) => {
-        assert(true);
-      }),
-      first,
-    ])();
+    pipe([() => ({ familyPrefix: name }), getList, first])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#registerTaskDefinition-property
   const create = client.create({

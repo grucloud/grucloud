@@ -12,8 +12,8 @@ exports.createResources = () => [
   {
     type: "DBSubnetGroup",
     group: "RDS",
-    name: "subnet-group-postgres",
     properties: ({}) => ({
+      DBSubnetGroupName: "subnet-group-postgres",
       DBSubnetGroupDescription: "db subnet group",
     }),
     dependencies: () => ({

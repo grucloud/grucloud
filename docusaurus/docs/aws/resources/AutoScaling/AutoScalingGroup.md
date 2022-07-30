@@ -15,7 +15,6 @@ exports.createResources = () => [
     type: "AutoScalingGroup",
     group: "AutoScaling",
     name: "asg-ng-1",
-    readOnly: true,
     properties: ({}) => ({
       MinSize: 1,
       MaxSize: 1,
@@ -42,16 +41,21 @@ exports.createResources = () => [
 ## Used By
 
 - [AutoScalingAttachment](./AutoScalingAttachment.md)
+- [EKS NodeGroup](../EKS/NodeGroup.md)
+- [ECS CapacityProvider](../ECS/CapacityProvider.md)
+- [Route53RecoveryReadiness ResourceSet](../Route53RecoveryReadiness/ResourceSet.md)
 
 ## Full Examples
 
 - [AutoScaling Group example](https://github.com/grucloud/grucloud/tree/main/examples/aws/AutoScaling/autoScalingGroup)
 - [AutoScalingGroup attached to a load balancer](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElasticLoadBalancingV2/load-balancer)
+- [AutoScaling Group in EKS](https://github.com/grucloud/grucloud/tree/main/examples/aws/EKS/eks-load-balancer)
 - [AutoScaling Group in ECS with Launch Configuration](https://github.com/grucloud/grucloud/tree/main/examples/aws/ECS/ecs-simple)
+- [aws-samples/aws-route53-recovery-control-config](https://github.com/grucloud/grucloud/tree/main/examples/aws/aws-samples/aws-route53-recovery-control-config)
 
 ## List
 
-The auto scaling groups can be filtered with the _AutoScalingGroup_ type:
+The auto-scaling groups can be filtered with the _AutoScalingGroup_ type:
 
 ```sh
 gc l -t AutoScalingGroup

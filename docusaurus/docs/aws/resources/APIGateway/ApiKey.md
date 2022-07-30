@@ -9,7 +9,13 @@ Manages an [API Gateway Api Key](https://console.aws.amazon.com/apigateway/main/
 
 ```js
 exports.createResources = () => [
-  { type: "ApiKey", group: "APIGateway", name: "my-key" },
+  {
+    type: "ApiKey",
+    group: "APIGateway",
+    properties: ({}) => ({
+      name: "my-key",
+    }),
+  },
 ];
 ```
 
@@ -17,9 +23,15 @@ exports.createResources = () => [
 
 - [create properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-api-gateway/interfaces/createapikeycommandinput.html)
 
+## Used By
+
+- [Usage Plan Key](./UsagePlanKey.md)
+
 ## Full Examples
 
 - [RestAPI with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/APIGateway/restapi-lambda)
+- [serverless-patterns apigw-dynamodb-terraform](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-dynamodb-terraform)
+- [wafv2-apigateway-rest](https://github.com/grucloud/grucloud/tree/main/examples/aws/WAFv2/wafv2-apigateway-rest)
 
 ## List
 

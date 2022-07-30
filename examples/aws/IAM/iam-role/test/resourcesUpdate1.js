@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "role-ec2-read-only",
     properties: ({}) => ({
+      RoleName: "role-ec2-read-only",
       Description: "Allows EC2 instances to call AWS services on your behalf.",
       Path: "/",
       AssumeRolePolicyDocument: {

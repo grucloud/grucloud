@@ -26,8 +26,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
     properties: ({ getId }) => ({
+      RoleName: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -83,7 +83,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "sam-app-DynamoTable-1TM3ILOZ1A36J",
     }),
   },
@@ -92,12 +92,12 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
         Environment: {
           Variables: {
             DatabaseTable: `sam-app-DynamoTable-1TM3ILOZ1A36J`,
           },
         },
+        FunctionName: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
         Handler: "app.handler",
         Runtime: "nodejs12.x",
       },
@@ -105,7 +105,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
       dynamoDbTables: ["sam-app-DynamoTable-1TM3ILOZ1A36J"],
     }),

@@ -67,16 +67,22 @@ exports.createResources = () => [
       stage: "$default",
     }),
   },
-  { type: "EventBus", group: "CloudWatchEvents", name: "MyEventBus" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "MyEventBus",
+    }),
+  },
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "ApiEventbridgeStack-EventLoggerRuleC0DD3E40-G6CDILDRSIPL",
     properties: ({}) => ({
       Description: "Log all events",
       EventPattern: {
         region: ["ap-southeast-2"],
       },
+      Name: "ApiEventbridgeStack-EventLoggerRuleC0DD3E40-G6CDILDRSIPL",
       State: "ENABLED",
     }),
     dependencies: ({}) => ({
@@ -97,16 +103,17 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/events/MyEventBus",
     properties: ({}) => ({
+      logGroupName: "/aws/events/MyEventBus",
       retentionInDays: 731,
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-1LXDAK3DKUOQS",
     properties: ({ getId }) => ({
+      RoleName:
+        "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-1LXDAK3DKUOQS",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

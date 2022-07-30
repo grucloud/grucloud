@@ -12,7 +12,6 @@ exports.createResources = () => [
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "MyStateMachine-SwVayjQIlTdv",
     properties: ({}) => ({
       definition: {
         StartAt: "SendCustomEvent",
@@ -33,6 +32,7 @@ exports.createResources = () => [
         includeExecutionData: false,
         level: "OFF",
       },
+      name: "MyStateMachine-SwVayjQIlTdv",
       tags: [
         {
           key: "stateMachine:createdBy",

@@ -13,7 +13,7 @@ const {
   eq,
   fork,
 } = require("rubico");
-const { defaultsDeep, when, includes, pluck } = require("rubico/x");
+const { defaultsDeep, when, includes, pluck, prepend } = require("rubico/x");
 
 const AdmZip = require("adm-zip");
 const path = require("path");
@@ -430,6 +430,25 @@ module.exports = pipe([
     {
       type: "EventSourceMapping",
       Client: EventSourceMapping,
+      //TODO
+      // `mapping-${nameFromArn(FunctionArn)}-${nameFromArn(EventSourceArn)}`,
+      // inferName: ({
+      //   dependenciesSpec: { lambdaFunction, sqsQueue, kinesisStream },
+      // }) =>
+      //   pipe([
+      //     switchCase([
+      //       () => lambdaFunction,
+      //       () => lambdaFunction,
+      //       () => sqsQueue,
+      //       () => sqsQueue,
+      //       () => kinesisStream,
+      //       () => kinesisStream,
+      //       () => {
+      //         assert(false, `missing EventSourceMapping dependency`);
+      //       },
+      //     ]),
+      //     prepend("mapping-")
+      //   ])(),
       compare: compareLambda({
         filterTarget: () =>
           pipe([

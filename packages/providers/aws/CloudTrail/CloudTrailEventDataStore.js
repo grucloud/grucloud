@@ -21,24 +21,11 @@ const model = {
   getList: {
     method: "listEventDataStores",
     getParam: "EventDataStores",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-        getById,
-      ]),
+    decorate: ({ endpoint, getById }) => pipe([getById]),
   },
   create: {
     method: "createEventDataStore",
-    pickCreated: ({ pickId }) =>
-      pipe([
-        tap((params) => {
-          assert(pickId);
-        }),
-        pickId,
-      ]),
+    pickCreated: ({ pickId }) => pipe([pickId]),
     isInstanceUp: pipe([eq(get("Status"), "ENABLED")]),
   },
   update: { method: "updateEventDataStore" },
@@ -53,22 +40,14 @@ exports.CloudTrailEventDataStore = ({ spec, config }) =>
     config,
     findName: get("live.Name"),
     findId: pipe([get("live.EventDataStoreArn")]),
-    //findDependencies: ({ live, lives }) => [],
     getByName: ({ getById }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        ({ name }) => ({ EventDataStoreArn: name }),
-        getById,
-      ]),
+      pipe([({ name }) => ({ EventDataStoreArn: name }), getById]),
     tagResource: tagResource,
     untagResource: untagResource,
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
-          Name: name,
           TagsList: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
       ])(),

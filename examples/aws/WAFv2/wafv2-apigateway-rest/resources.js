@@ -6,17 +6,23 @@ exports.createResources = () => [
   {
     type: "Account",
     group: "APIGateway",
-    name: "default",
     dependencies: ({}) => ({
       cloudwatchRole: "roleApiGatewayCloudWatch",
     }),
   },
-  { type: "ApiKey", group: "APIGateway", name: "my-key" },
+  {
+    type: "ApiKey",
+    group: "APIGateway",
+    properties: ({}) => ({
+      description: "Managed by Terraform",
+      name: "my-key",
+    }),
+  },
   {
     type: "RestApi",
     group: "APIGateway",
-    name: "PetStore",
     properties: ({ config }) => ({
+      name: "PetStore",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["REGIONAL"],
@@ -431,7 +437,13 @@ exports.createResources = () => [
       restApi: "PetStore",
     }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "restapi" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    properties: () => ({
+      logGroupName: "restapi",
+    }),
+  },
   {
     type: "Role",
     group: "IAM",

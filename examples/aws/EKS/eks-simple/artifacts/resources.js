@@ -289,8 +289,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "EKS",
-    name: "my-cluster",
     properties: ({}) => ({
+      name: "my-cluster",
       tags: {
         mykey1: "value",
       },
@@ -309,8 +309,8 @@ exports.createResources = () => [
   {
     type: "NodeGroup",
     group: "EKS",
-    name: "ng-1",
     properties: ({}) => ({
+      nodegroupName: "ng-1",
       capacityType: "ON_DEMAND",
       scalingConfig: {
         desiredSize: 1,
@@ -330,6 +330,13 @@ exports.createResources = () => [
       subnets: ["VPC::SubnetPublicUSEAST1D", "VPC::SubnetPublicUSEAST1F"],
       role: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
       launchTemplate: "eksctl-my-cluster-nodegroup-ng-1",
+    }),
+  },
+  {
+    type: "OpenIDConnectProvider",
+    group: "IAM",
+    dependencies: ({}) => ({
+      cluster: "my-cluster",
     }),
   },
   {

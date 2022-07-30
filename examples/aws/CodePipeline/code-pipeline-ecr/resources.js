@@ -151,8 +151,8 @@ exports.createResources = () => [
   {
     type: "Repository",
     group: "ECR",
-    name: "starhackit",
     properties: ({}) => ({
+      repositoryName: "starhackit",
       imageTagMutability: "MUTABLE",
       imageScanningConfiguration: {
         scanOnPush: false,
@@ -165,8 +165,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "AWSCodePipelineServiceRole-my-pipeline",
     properties: ({}) => ({
+      RoleName: "AWSCodePipelineServiceRole-my-pipeline",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -188,8 +188,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "codebuild-my-project-service-role",
     properties: ({}) => ({
+      RoleName: "codebuild-my-project-service-role",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -211,8 +211,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: ({ config }) => `cwe-role-${config.region}-my-pipeline`,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      RoleName: `cwe-role-${config.region}-my-pipeline`,
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",

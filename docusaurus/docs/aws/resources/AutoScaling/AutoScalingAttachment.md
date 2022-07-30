@@ -39,7 +39,7 @@ exports.createResources = () => [
 ## Dependencies
 
 - [AutoScalingGroup](./AutoScalingGroup.md)
-- [TargetGroup](../ElasticLoadBalancingV2/TargetGroup.md)
+- [ElasticLoadBalancingV2 TargetGroup](../ElasticLoadBalancingV2/TargetGroup.md)
 
   ## Full Examples
 

@@ -9,6 +9,7 @@
     "test-examples": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/**/iac.test.js' ",
     "test-apigateway": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/APIGateway/**/iac.test.js' ",
     "test-apigateway-v2": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ApiGatewayV2/**/iac.test.js' ",
+    "test-apprunner": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/AppRunner/**/iac.test.js' ",
     "test-appSync": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/AppSync/**/iac.test.js' ",
     "test-autoscaling": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Autoscaling/**/iac.test.js' ",
     "test-cloudfront": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/CloudFront/**/iac.test.js' ",

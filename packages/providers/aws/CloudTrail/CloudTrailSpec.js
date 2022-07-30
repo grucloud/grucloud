@@ -83,6 +83,7 @@ module.exports = pipe([
     {
       type: "EventDataStore",
       Client: CloudTrailEventDataStore,
+      inferName: get("properties.Name"),
       omitProperties: [],
       // compare: compareCloudTrail({
       //   filterTarget: () => pipe([defaultsDeep({ EventBusName: "default" })]),

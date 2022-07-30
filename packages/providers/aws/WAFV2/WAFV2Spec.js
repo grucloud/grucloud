@@ -25,6 +25,7 @@ module.exports = pipe([
     {
       type: "WebACL",
       Client: WAFV2WebACL,
+      inferName: get("properties.Name"),
       omitProperties: omitPropertiesWebACL,
       compare: compareWAFV2({
         filterLive: () => pipe([filterDescription]),
@@ -34,6 +35,7 @@ module.exports = pipe([
     {
       type: "WebACLCloudFront",
       Client: WAFV2WebACLCloudFront,
+      inferName: get("properties.Name"),
       omitProperties: omitPropertiesWebACL,
       compare: compareWAFV2({
         filterLive: () => pipe([filterDescription]),

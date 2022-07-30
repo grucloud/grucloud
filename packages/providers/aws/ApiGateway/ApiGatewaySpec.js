@@ -30,6 +30,7 @@ module.exports = pipe([
     {
       type: "Account",
       Client: Account,
+      inferName: () => "default",
       isOurMinion: ({ live, config }) => true,
       omitProperties: ["apiKeyVersion", "throttleSettings"],
       propertiesDefault: {
@@ -47,12 +48,14 @@ module.exports = pipe([
     {
       type: "ApiKey",
       Client: ApiKey,
+      inferName: get("properties.name"),
       omitProperties: ["id", "createdDate", "lastUpdatedDate", "stageKeys"],
       propertiesDefault: { enabled: true },
     },
     {
       type: "RestApi",
       Client: RestApi,
+      inferName: get("properties.name"),
       omitProperties: ["id", "createdDate", "deployments", "version"],
       propertiesDefault: { disableExecuteApiEndpoint: false },
       compare: compareAPIGateway({
@@ -241,7 +244,8 @@ module.exports = pipe([
     {
       type: "Authorizer",
       Client: Authorizer,
-      omitProperties: ["id", "name", "restApiId", "providerARNs"],
+      inferName: get("properties.name"),
+      omitProperties: ["id", "restApiId", "providerARNs"],
       dependencies: {
         restApi: {
           type: "RestApi",

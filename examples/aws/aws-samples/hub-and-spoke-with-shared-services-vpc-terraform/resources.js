@@ -6,8 +6,9 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "shared-services-vpc-vpc-flow-logs-20220717111209245600000006",
     properties: ({}) => ({
+      logGroupName:
+        "shared-services-vpc-vpc-flow-logs-20220717111209245600000006",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -17,8 +18,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "spoke-vpc-1-vpc-flow-logs-20220717111207772600000001",
     properties: ({}) => ({
+      logGroupName: "spoke-vpc-1-vpc-flow-logs-20220717111207772600000001",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -28,8 +29,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "spoke-vpc-2-vpc-flow-logs-20220717111208892800000005",
     properties: ({}) => ({
+      logGroupName: "spoke-vpc-2-vpc-flow-logs-20220717111208892800000005",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -968,8 +969,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ec2_ssm_role_hubspoke-shared-services",
     properties: ({}) => ({
+      RoleName: "ec2_ssm_role_hubspoke-shared-services",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -1002,8 +1003,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "shared-services-vpc-cw-access-role-20220717111209660000000007",
     properties: ({}) => ({
+      RoleName: "shared-services-vpc-cw-access-role-20220717111209660000000007",
       Description:
         "Cloudwatch permissions role for shared-services-vpc with vpc-flow-logs",
       AssumeRolePolicyDocument: {
@@ -1029,8 +1030,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "spoke-vpc-1-cw-access-role-20220717111209704200000008",
     properties: ({}) => ({
+      RoleName: "spoke-vpc-1-cw-access-role-20220717111209704200000008",
       Description:
         "Cloudwatch permissions role for spoke-vpc-1 with vpc-flow-logs",
       AssumeRolePolicyDocument: {
@@ -1054,8 +1055,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "spoke-vpc-2-cw-access-role-20220717111209913100000009",
     properties: ({}) => ({
+      RoleName: "spoke-vpc-2-cw-access-role-20220717111209913100000009",
       Description:
         "Cloudwatch permissions role for spoke-vpc-2 with vpc-flow-logs",
       AssumeRolePolicyDocument: {
@@ -1079,8 +1080,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "vpc-flowlog-role-hubspoke-shared-services",
     properties: ({ config }) => ({
+      RoleName: "vpc-flowlog-role-hubspoke-shared-services",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

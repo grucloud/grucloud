@@ -4,15 +4,11 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/LambdaLayerXRayStackStack-BucketNotificationsHandl-1XcDZ1JQT7M7",
-  },
-  {
     type: "Role",
     group: "IAM",
-    name: "LambdaLayerXRayStackStack-BucketNotificationsHandl-LMJ0SRM09GES",
     properties: ({}) => ({
+      RoleName:
+        "LambdaLayerXRayStackStack-BucketNotificationsHandl-LMJ0SRM09GES",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -53,8 +49,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "LambdaLayerXRayStackStack-Lambdarole1548FC71-15YPKGUKW0B06",
     properties: ({}) => ({
+      RoleName: "LambdaLayerXRayStackStack-Lambdarole1548FC71-15YPKGUKW0B06",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

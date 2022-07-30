@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "cdk-notes-appsync-api",
     properties: ({}) => ({
+      name: "cdk-notes-appsync-api",
       authenticationType: "API_KEY",
       xrayEnabled: true,
       apiKeys: [
@@ -24,8 +24,8 @@ exports.createResources = () => [
   {
     type: "DataSource",
     group: "AppSync",
-    name: "lambdaDatasource",
     properties: ({}) => ({
+      name: "lambdaDatasource",
       type: "AWS_LAMBDA",
     }),
     dependencies: ({}) => ({
@@ -224,7 +224,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "AppsyncCdkAppStack-AppSyncNotesHandlerServiceRole3-V8HWDRIU57TV",
-      dynamoDbTable: "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
+      dynamoDbTables: [
+        "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
+      ],
     }),
   },
 ];

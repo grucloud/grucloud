@@ -4,18 +4,10 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/sqs-lambda-demo",
-    properties: ({}) => ({
-      retentionInDays: 365,
-    }),
-  },
-  {
     type: "Role",
     group: "IAM",
-    name: "sqs_lambda_demo_functionrole",
     properties: ({}) => ({
+      RoleName: "sqs_lambda_demo_functionrole",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -37,8 +29,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "sqs-lambda-demo-lambdapolicy",
     properties: ({ config, getId }) => ({
+      PolicyName: "sqs-lambda-demo-lambdapolicy",
       PolicyDocument: {
         Statement: [
           {
@@ -69,7 +61,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       queue: "sqs-lambda-demo",
-      logGroups: ["/aws/lambda/sqs-lambda-demo"],
     }),
   },
   {
@@ -77,12 +68,12 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sqs-lambda-demo",
         Environment: {
           Variables: {
             POWERTOOLS_SERVICE_NAME: `sqs-lambda-demo`,
           },
         },
+        FunctionName: "sqs-lambda-demo",
         Handler: "app.lambda_handler",
         Runtime: "python3.9",
       },
@@ -104,5 +95,11 @@ exports.createResources = () => [
       sqsQueue: "sqs-lambda-demo",
     }),
   },
-  { type: "Queue", group: "SQS", name: "sqs-lambda-demo" },
+  {
+    type: "Queue",
+    group: "SQS",
+    properties: ({}) => ({
+      QueueName: "sqs-lambda-demo",
+    }),
+  },
 ];

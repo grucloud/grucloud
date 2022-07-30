@@ -16,8 +16,9 @@ const { throwIfNotAwsError } = require("../AwsCommon");
 
 const findId = get("live.Attributes.QueueArn");
 const pickId = pick(["QueueUrl"]);
-const findName = pipe([
-  get("live.QueueUrl"),
+
+const queueUrlToName = pipe([
+  get("QueueUrl"),
   tap((QueueUrl) => {
     assert(QueueUrl);
   }),
@@ -27,6 +28,8 @@ const findName = pipe([
     assert(name);
   }),
 ]);
+
+const findName = pipe([get("live"), queueUrlToName]);
 
 const ignoreErrorCodes = ["AWS.SimpleQueueService.NonExistentQueue"];
 
@@ -53,6 +56,7 @@ exports.SQSQueue = ({ spec, config }) => {
         })
       ),
       (Attributes) => ({ ...live, Attributes }),
+      assign({ QueueName: pipe([queueUrlToName]) }),
       assignTags,
     ]);
 

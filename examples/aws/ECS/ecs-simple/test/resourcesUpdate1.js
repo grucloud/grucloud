@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "CapacityProvider",
     group: "ECS",
-    name: "cp",
     properties: () => ({
+      name: "cp",
       autoScalingGroupProvider: {
         managedScaling: {
           status: "ENABLED",
@@ -27,8 +27,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "cluster",
     properties: () => ({
+      clusterName: "cluster",
       settings: [
         {
           name: "containerInsights",
@@ -44,7 +44,6 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    name: "nginx",
     properties: () => ({
       containerDefinitions: [
         {
@@ -73,7 +72,6 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "ECS",
-    name: "service-nginx",
     properties: () => ({
       launchType: "EC2",
       desiredCount: 2,

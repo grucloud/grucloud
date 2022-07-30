@@ -150,8 +150,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-HelloEfsFunctionRole-15LXBM09R2ILE",
     properties: ({ getId }) => ({
+      RoleName: "sam-app-HelloEfsFunctionRole-15LXBM09R2ILE",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

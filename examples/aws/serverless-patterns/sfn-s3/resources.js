@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-WorkflowExecutionRole-7I137IX4DEEI",
     properties: ({}) => ({
+      RoleName: "sam-app-WorkflowExecutionRole-7I137IX4DEEI",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -27,7 +27,7 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["s3:PutObject"],
-                Resource: "arn:aws:s3:::gc-my-sfn-bucket-destination/*",
+                Resource: `arn:aws:s3:::gc-my-sfn-bucket-destination/*`,
                 Effect: "Allow",
               },
             ],
@@ -41,7 +41,6 @@ exports.createResources = () => [
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "MyStateMachine-SwVayjQIlTdv",
     properties: ({}) => ({
       definition: {
         StartAt: "SendCustomEvent",
@@ -58,6 +57,7 @@ exports.createResources = () => [
           },
         },
       },
+      name: "MyStateMachine-SwVayjQIlTdv",
       tags: [
         {
           key: "stateMachine:createdBy",

@@ -3,17 +3,23 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "EventBus", group: "CloudWatchEvents", name: "bus-test" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "bus-test",
+    }),
+  },
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "rule-test",
     properties: ({}) => ({
       Description: "testing rule",
       EventPattern: {
         source: ["aws.ec2"],
         "detail-type": ["EC2 Instance State-change Notification"],
       },
+      Name: "rule-test",
       State: "ENABLED",
       Tags: [
         {
@@ -26,12 +32,12 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "rule-test-ec2",
     properties: ({}) => ({
       EventPattern: {
         source: ["aws.acm"],
         "detail-type": ["ACM Certificate Approaching Expiration"],
       },
+      Name: "rule-test-ec2",
       State: "ENABLED",
       Tags: [
         {

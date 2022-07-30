@@ -6,8 +6,9 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "shared-services-vpc-vpc-flow-logs-20220717111209245600000006",
     properties: ({}) => ({
+      logGroupName:
+        "shared-services-vpc-vpc-flow-logs-20220717111209245600000006",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -17,8 +18,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "spoke-vpc-1-vpc-flow-logs-20220717111207772600000001",
     properties: ({}) => ({
+      logGroupName: "spoke-vpc-1-vpc-flow-logs-20220717111207772600000001",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -28,8 +29,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "spoke-vpc-2-vpc-flow-logs-20220717111208892800000005",
     properties: ({}) => ({
+      logGroupName: "spoke-vpc-2-vpc-flow-logs-20220717111208892800000005",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({

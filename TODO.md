@@ -4,26 +4,50 @@
 
 ## Aws
 
-- inferName OpenIDConnectProvider
-- CognitoIdentityServiceProvider inferName
-- CloudWatchEventApiDestination inferName
-- inferName Route Table
+[WARNING] Docs markdown link couldn't be resolved: (./resources/CloudFormation/Stack.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
+[WARNING] Docs markdown link couldn't be resolved: (./resources/CloudFront/CachePolicy.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
+[WARNING] Docs markdown link couldn't be resolved: (./resources/CloudFront/Function.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
+[WARNING] Docs markdown link couldn't be resolved: (./resources/EC2/ManagedPrefixList.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
+[WARNING] Docs markdown link couldn't be resolved: (./resources/EC2/TransitGatewayAttachment.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
+[WARNING] Docs markdown link couldn't be resolved: (./resources/ECS/ContainerInstance.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
+[WARNING] Docs markdown link couldn't be resolved: (./resources/NetworkFirewall/Policy.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
+[WARNING] Docs markdown link couldn't be resolved: (./resources/Organisations/Root.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
+[WARNING] Docs markdown link couldn't be resolved: (./resources/Organisations/OrganisationalUnit.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
+[WARNING] Docs markdown link couldn't be resolved: (../EC2/TransitGatewayConnectPeer.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/resources/NetworkManager/TransitGatewayConnectPeerAssociation.md for version current
+[WARNING] Docs markdown link couldn't be resolved: (../Route53RecovertControlConfig/RoutingControl.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/resources/Route53/HealthCheck.md for version current
 
-- EKS kms key
-- ECSTaskSet
+- EventSourceMapping inferName
+- DBProxy doc: list
+- DBCluster doc list
+- DBProxyTargetGroup doc
+- Network Manager docs
+- SSM Document doc
+
+- Firewall deps
 - ECSTask dependency check
-- UserPoolDomain 0/1 User pool us-east-1_nYU3O67V1 does not exist.
 - CodeDeployDeploymentGroup configDefault with other dependencies
 - WebAclDependencies dependencies refactor
 - RAMPrincipalAssociation findName
 - SNSSubscription deps sqs queue
 - flow logs s3 destination
 - PrincipalAssociation replace associatedEntity from config
-
 - ipamPoolIpv6
+- HostedZone name with vpc
+- omit AWSLogs S3 Objects
+- elb target group getByName
+- apprunner //TODO isInstanceUp
+- apprunner example npm test
 
-omit AWSLogs S3 Objects
+- RDS DBCluster AvailabilityZones
+- Nat gateway handle deleting
+- resource schema
+- document create key pair
+- UserData: ec2 update and displayResource
+- s3 analytics configuration
+- s3 object gencode is missing ACL:public-read
 
+- ECSTaskSet
+- EventDataStore doc
 - AWS::AmazonMQ::Broker
 - AWS::Cognito::IdentityPool
 - AWS::Cognito::IdentityPoolRoleAttachment
@@ -38,16 +62,6 @@ omit AWSLogs S3 Objects
 - Amazon MQ and RabbitMQ
 - Amazon MSK
 - Apache Kafka
-
-- apprunner example npm test
-
-- RDS DBCluster AvailabilityZones
-- Nat gateway handle deleting
-- resource schema
-- document create key pair
-- UserData: ec2 update and displayResource
-- s3 analytics configuration
-- s3 object gencode is missing ACL:public-read
 
 ## Refactoring
 

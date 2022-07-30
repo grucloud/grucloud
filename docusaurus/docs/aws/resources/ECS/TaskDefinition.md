@@ -12,29 +12,81 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    name: "nginx",
-    properties: () => ({
+    properties: ({ config }) => ({
       containerDefinitions: [
         {
-          name: "nginx",
-          image: "nginx",
+          command: [],
           cpu: 0,
-          memory: 512,
+          dnsSearchDomains: [],
+          dnsServers: [],
+          dockerLabels: {},
+          dockerSecurityOptions: [],
+          entryPoint: [],
+          environment: [],
+          environmentFiles: [],
+          essential: true,
+          extraHosts: [],
+          image: "amazon/amazon-ecs-sample",
+          links: [],
+          logConfiguration: {
+            logDriver: "awslogs",
+            options: {
+              "awslogs-group":
+                "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
+              "awslogs-region": `${config.region}`,
+              "awslogs-stream-prefix": "ECSServiceStack",
+            },
+            secretOptions: [],
+          },
+          mountPoints: [],
+          name: "web",
           portMappings: [
             {
-              containerPort: 81,
+              containerPort: 80,
               hostPort: 80,
               protocol: "tcp",
             },
           ],
-          essential: true,
-          environment: [],
-          mountPoints: [],
+          secrets: [],
+          systemControls: [],
+          ulimits: [],
           volumesFrom: [],
         },
       ],
-      placementConstraints: [],
-      requiresCompatibilities: ["EC2"],
+      cpu: "512",
+      family: "ECSServiceStackamazonecssampleTaskDef499685C5",
+      memory: "1024",
+      networkMode: "awsvpc",
+      requiresAttributes: [
+        {
+          name: "com.amazonaws.ecs.capability.logging-driver.awslogs",
+        },
+        {
+          name: "ecs.capability.execution-role-awslogs",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.19",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.17",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.task-iam-role",
+        },
+        {
+          name: "com.amazonaws.ecs.capability.docker-remote-api.1.18",
+        },
+        {
+          name: "ecs.capability.task-eni",
+        },
+      ],
+      requiresCompatibilities: ["FARGATE"],
+    }),
+    dependencies: ({}) => ({
+      taskRole:
+        "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1JLMLL2357T0V",
+      executionRole:
+        "ECSServiceStack-amazonecssampleTaskDefExecutionRol-1391KZSJLULK2",
     }),
   },
 ];
@@ -46,9 +98,9 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [SecretsManager Secret](../SecretsManager/Secret.md)
 - [IAM Role](../IAM/Role.md)
 - [RDS DBCluster](../RDS/DBCluster.md)
+- [SecretsManager Secret](../SecretsManager/Secret.md)
 
 ## Used By
 

@@ -25,6 +25,7 @@ const {
   isDeepEqual,
   append,
   pluck,
+  when,
 } = require("rubico/x");
 const util = require("util");
 const { omitIfEmpty } = require("@grucloud/core/Common");
@@ -208,28 +209,22 @@ const SecurityGroupRuleBase = ({ config }) => {
 
   const securityFromConfig = ({ securityGroupFrom }) =>
     pipe([
-      () => securityGroupFrom,
-      switchCase([
-        isEmpty,
-        () => ({}),
-        Array.isArray,
-        pipe([
-          map((sg) => ({
-            UserIdGroupPairs: [{ GroupId: getField(sg, "GroupId") }],
-          })),
-          (IpPermissions) => ({ IpPermissions }),
-        ]),
-        () => ({
-          IpPermissions: [
-            {
-              UserIdGroupPairs: [
-                { GroupId: getField(securityGroupFrom, "GroupId") },
-              ],
-            },
-          ],
-        }),
-      ]),
-    ])();
+      when(
+        () => securityGroupFrom,
+        defaultsDeep(
+          pipe([
+            tap((params) => {
+              assert(Array.isArray(securityGroupFrom));
+            }),
+            () => securityGroupFrom,
+            map((sg) => ({
+              UserIdGroupPairs: [{ GroupId: getField(sg, "GroupId") }],
+            })),
+            (IpPermissions) => ({ IpPermissions }),
+          ])()
+        )
+      ),
+    ]);
 
   const configDefault = ({
     name,
@@ -241,7 +236,8 @@ const SecurityGroupRuleBase = ({ config }) => {
       tap(() => {
         assert(securityGroup, "missing securityGroup dependency");
       }),
-      () => securityFromConfig({ securityGroupFrom }),
+      () => ({}),
+      securityFromConfig({ securityGroupFrom }),
       defaultsDeep(otherProps),
       defaultsDeep({
         GroupId: getField(securityGroup, "GroupId"),
@@ -252,9 +248,6 @@ const SecurityGroupRuleBase = ({ config }) => {
             Tags: buildTags({ config, namespace, UserTags: Tags }),
           },
         ],
-      }),
-      tap((params) => {
-        assert(true);
       }),
     ])();
 

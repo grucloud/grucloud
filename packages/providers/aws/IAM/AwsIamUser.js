@@ -45,7 +45,7 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const findId = get("live.Arn");
   const pickId = pick(["UserName"]);
-  const findName = findNameInTagsOrId({ findId });
+  const findName = get("live.UserName");
 
   const fetchLoginProfile = tryCatch(
     pipe([pick(["UserName"]), iam().getLoginProfile, get("LoginProfile")]),
@@ -125,7 +125,6 @@ exports.AwsIamUser = ({ spec, config }) => {
       defaultsDeep(otherProps),
       defaultsDeep({
         UserName: name,
-        Path: "/",
         Tags: buildTags({
           name,
           config,

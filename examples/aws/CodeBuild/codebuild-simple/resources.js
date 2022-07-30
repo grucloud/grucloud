@@ -44,8 +44,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "codebuild-my-project-service-role",
     properties: ({}) => ({
+      RoleName: "codebuild-my-project-service-role",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",

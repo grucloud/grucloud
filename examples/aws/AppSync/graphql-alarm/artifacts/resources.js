@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "My AppSync App",
     properties: ({}) => ({
+      name: "My AppSync App",
       authenticationType: "API_KEY",
       xrayEnabled: false,
       apiKeys: [{}],
@@ -17,8 +17,8 @@ exports.createResources = () => [
   {
     type: "DataSource",
     group: "AppSync",
-    name: "MyModelTypeTable",
     properties: ({ config }) => ({
+      name: "MyModelTypeTable",
       description: "DynamoDB table backing the MyModelType object type.",
       type: "AMAZON_DYNAMODB",
       dynamodbConfig: {

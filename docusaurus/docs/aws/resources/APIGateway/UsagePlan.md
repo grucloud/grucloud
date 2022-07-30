@@ -35,7 +35,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      stages: ["v1"],
+      stages: ["APIGW DynamoDB Serverless Pattern Demo::v1"],
     }),
   },
 ];
@@ -56,7 +56,7 @@ exports.createResources = () => [
 
 ## List
 
-The usage plan can be filtered with the _APIGateway::UsagePlan_ type:
+The usage plans can be filtered with the _APIGateway::UsagePlan_ type:
 
 ```sh
 gc l -t APIGateway::UsagePlan

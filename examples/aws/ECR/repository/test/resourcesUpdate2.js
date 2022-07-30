@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Registry",
     group: "ECR",
-    name: "default",
     properties: ({ config }) => ({
       policyText: {
         Version: "2012-10-17",

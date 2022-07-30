@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Account",
     group: "APIGateway",
-    name: "default",
     dependencies: ({}) => ({
       cloudwatchRole:
         "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-1HLKDWM5HWYRZ",
@@ -15,7 +14,6 @@ exports.createResources = () => [
   {
     type: "RestApi",
     group: "APIGateway",
-    name: "ApiDynamoRestApi",
     properties: ({ config }) => ({
       name: "ApiDynamoRestApi",
       apiKeySource: "HEADER",
@@ -165,8 +163,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-1HLKDWM5HWYRZ",
     properties: ({}) => ({
+      RoleName:
+        "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-1HLKDWM5HWYRZ",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -191,8 +190,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX",
     properties: ({ getId }) => ({
+      RoleName: "ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

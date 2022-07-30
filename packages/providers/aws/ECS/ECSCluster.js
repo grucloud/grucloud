@@ -5,7 +5,6 @@ const {
   tap,
   tryCatch,
   get,
-  switchCase,
   eq,
   or,
   omit,
@@ -34,12 +33,7 @@ const {
 
 const findName = get("live.clusterName");
 const findId = get("live.clusterArn");
-const pickId = pipe([
-  tap(({ clusterName }) => {
-    assert(clusterName);
-  }),
-  ({ clusterName }) => ({ clusters: [clusterName] }),
-]);
+const pickId = pipe([({ clusterName }) => ({ clusters: [clusterName] })]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSCluster = ({ spec, config }) => {
@@ -125,7 +119,6 @@ exports.ECSCluster = ({ spec, config }) => {
     pipe([
       () => otherProps,
       defaultsDeep({
-        clusterName: name,
         capacityProviders: pipe([
           () => capacityProviders,
           map((capacityProvider) => getField(capacityProvider, "name")),

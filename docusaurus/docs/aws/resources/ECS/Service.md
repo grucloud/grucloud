@@ -12,8 +12,8 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "ECS",
-    name: "service-nginx",
     properties: () => ({
+      serviceName: "service-nginx",
       launchType: "EC2",
       desiredCount: 2,
       deploymentConfiguration: {
@@ -82,7 +82,7 @@ exports.createResources = () => [
 The ECS services can be filtered with the _Service_ type:
 
 ```sh
-gc l -t Service
+gc l -t ECS::Service
 ```
 
 ```txt

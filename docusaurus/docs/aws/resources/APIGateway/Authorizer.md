@@ -10,28 +10,12 @@ Manages an [API Gateway Authorizer](https://console.aws.amazon.com/apigateway/ma
 ```js
 exports.createResources = () => [
   {
-    type: "RestApi",
-    group: "APIGateway",
-    name: "PetStore",
-    properties: ({}) => ({
-      apiKeySource: "HEADER",
-      endpointConfiguration: {
-        types: ["REGIONAL"],
-      },
-      schemaFile: "PetStore.oas30.json",
-      deployment: {
-        stageName: "dev",
-      },
-    }),
-  },
-  {
     type: "Authorizer",
     group: "APIGateway",
-    name: "my-authorizer-stage-dev",
     dependencies: () => ({
       restApi: "PetStore",
     }),
-    properties: ({}) => ({}),
+    properties: ({}) => ({ name: "my-authorizer-stage-dev" }),
   },
 ];
 ```
@@ -45,8 +29,6 @@ exports.createResources = () => [
 - [RestAPI](./RestApi.md)
 
 ## Full Examples
-
-- [RestAPI with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/APIGateway/restapi-lambda)
 
 ## List
 

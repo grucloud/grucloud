@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "DBSubnetGroup",
     group: "RDS",
-    name: "subnet-group-postgres",
     properties: ({}) => ({
+      DBSubnetGroupName: "subnet-group-postgres",
       DBSubnetGroupDescription: "db subnet group",
       Tags: [
         {
@@ -23,7 +23,6 @@ exports.createResources = () => [
   {
     type: "DBInstance",
     group: "RDS",
-    name: "db-instance",
     properties: ({ config }) => ({
       DBInstanceClass: "db.t3.micro",
       Engine: "postgres",

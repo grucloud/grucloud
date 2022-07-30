@@ -4,15 +4,10 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/aurora-test-cluster/error",
-  },
-  {
     type: "Role",
     group: "IAM",
-    name: "sam-app-LambdaFunctionRole-11TTATG2VDRQ2",
     properties: ({ config }) => ({
+      RoleName: "sam-app-LambdaFunctionRole-11TTATG2VDRQ2",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -106,10 +101,10 @@ exports.createResources = () => [
   {
     type: "DBCluster",
     group: "RDS",
-    name: "aurora-test-cluster",
     properties: ({}) => ({
       BackupRetentionPeriod: 1,
       DatabaseName: "aurora_test_db",
+      DBClusterIdentifier: "aurora-test-cluster",
       Engine: "aurora",
       EngineVersion: "5.6.10a",
       Port: 3306,

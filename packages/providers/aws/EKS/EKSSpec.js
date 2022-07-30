@@ -1,5 +1,6 @@
+const { replaceWithName } = require("@grucloud/core/Common");
 const assert = require("assert");
-const { pipe, map, pick, omit, tap, not, get, eq } = require("rubico");
+const { pipe, map, pick, omit, tap, not, get, eq, assign } = require("rubico");
 const { defaultsDeep, when, pluck, find } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
@@ -15,10 +16,21 @@ const tagsKey = "tags";
 
 const compareEKS = compareAws({ tagsKey });
 
+const omitLaunchTemplateProps = pipe([
+  when(get("launchTemplate"), omit(["instanceTypes", "amiType", "diskSize"])),
+  omit(["launchTemplate"]),
+]);
+
 module.exports = pipe([
   () => [
     {
       type: "Cluster",
+      inferName: pipe([
+        get("properties.name"),
+        tap((name) => {
+          assert(name);
+        }),
+      ]),
       Client: EKSCluster,
       dependencies: {
         subnets: {
@@ -55,10 +67,12 @@ module.exports = pipe([
           group: "IAM",
           dependencyId: ({ lives, config }) => get("roleArn"),
         },
-        key: {
+        kmsKeys: {
           type: "Key",
           group: "KMS",
-          dependencyId: ({ lives, config }) => get("SecurityGroups"),
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("encryptionConfig"), pluck("provider.keyArn")]),
         },
       },
       propertiesDefault: {
@@ -69,7 +83,6 @@ module.exports = pipe([
       },
       omitProperties: [
         "arn",
-        "encryptionConfig",
         "createdAt",
         "endpoint",
         "resourcesVpcConfig.clusterSecurityGroupId",
@@ -87,10 +100,40 @@ module.exports = pipe([
         "platformVersion",
       ],
       compare: compareEKS({}),
-      filterLive: () => pick(["version"]),
+      filterLive: ({ providerConfig, lives }) =>
+        pipe([
+          pick(["name", "version", "encryptionConfig"]),
+          when(
+            get("encryptionConfig"),
+            assign({
+              encryptionConfig: pipe([
+                get("encryptionConfig"),
+                map(
+                  assign({
+                    provider: pipe([
+                      get("provider"),
+                      assign({
+                        keyArn: pipe([
+                          get("keyArn"),
+                          replaceWithName({
+                            groupType: "KMS::Key",
+                            path: "id",
+                            providerConfig,
+                            lives,
+                          }),
+                        ]),
+                      }),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
+        ]),
     },
     {
       type: "NodeGroup",
+      inferName: get("properties.nodegroupName"),
       dependencies: {
         cluster: {
           type: "Cluster",
@@ -170,16 +213,13 @@ module.exports = pipe([
               "diskSize",
               "launchTemplate",
             ]),
-            when(
-              get("launchTemplate"),
-              omit(["instanceTypes", "amiType", "diskSize"])
-            ),
-            omit(["launchTemplate"]),
+            omitLaunchTemplateProps,
           ]),
       }),
       filterLive: () =>
         pipe([
           pick([
+            "nodegroupName",
             "capacityType",
             "scalingConfig",
             "instanceTypes",
@@ -188,11 +228,7 @@ module.exports = pipe([
             "diskSize",
             "launchTemplate",
           ]),
-          when(
-            get("launchTemplate"),
-            omit(["instanceTypes", "amiType", "diskSize"])
-          ),
-          omit(["launchTemplate"]),
+          omitLaunchTemplateProps,
         ]),
     },
   ],

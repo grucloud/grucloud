@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/network-firewall/alerts",
     properties: ({}) => ({
+      logGroupName: "/aws/network-firewall/alerts",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -17,8 +17,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/network-firewall/flows",
     properties: ({}) => ({
+      logGroupName: "/aws/network-firewall/flows",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -28,8 +28,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "dns_vpc",
     properties: ({}) => ({
+      logGroupName: "dns_vpc",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -39,8 +39,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "endpoint_vpc",
     properties: ({}) => ({
+      logGroupName: "endpoint_vpc",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -50,8 +50,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "inspection_vpc",
     properties: ({}) => ({
+      logGroupName: "inspection_vpc",
       retentionInDays: 7,
     }),
     dependencies: ({}) => ({
@@ -61,12 +61,16 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "spoke-vpc-1-vpc-flow-logs-20220717111207772600000001",
+    properties: ({}) => ({
+      logGroupName: "spoke-vpc-1-vpc-flow-logs-20220717111207772600000001",
+    }),
   },
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "spoke-vpc-2-vpc-flow-logs-20220717111208892800000005",
+    properties: ({}) => ({
+      logGroupName: "spoke-vpc-2-vpc-flow-logs-20220717111208892800000005",
+    }),
   },
   {
     type: "DhcpOptions",
@@ -2447,8 +2451,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "dev_endpoint_vpc_flow_logs",
     properties: ({}) => ({
+      RoleName: "dev_endpoint_vpc_flow_logs",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -2488,8 +2492,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "dev_network_automation_role",
     properties: ({ getId }) => ({
+      RoleName: "dev_network_automation_role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

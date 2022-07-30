@@ -14,8 +14,8 @@ exports.createResources = () => [
   {
     type: "DBProxy",
     group: "RDS",
-    name: "rds-proxy",
     properties: ({ getId }) => ({
+      DBProxyName: "rds-proxy",
       EngineFamily: "MYSQL",
       Auth: [
         {

@@ -87,7 +87,6 @@ exports.createResources = () => [
   {
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
-    name: "UserPool-3Fx2HozhHSsp",
     properties: ({}) => ({
       Name: "UserPool-3Fx2HozhHSsp",
       Policies: {
@@ -104,12 +103,12 @@ exports.createResources = () => [
   {
     type: "UserPoolClient",
     group: "CognitoIdentityServiceProvider",
-    name: "UserPoolClient-9x4glkNVEYDn",
     properties: ({}) => ({
       AllowedOAuthFlows: ["code"],
       AllowedOAuthFlowsUserPoolClient: true,
       AllowedOAuthScopes: ["email", "openid", "profile"],
       CallbackURLs: ["https://myapp.com"],
+      ClientName: "UserPoolClient-9x4glkNVEYDn",
       LogoutURLs: ["https://myapp.com"],
       SupportedIdentityProviders: ["COGNITO"],
     }),
@@ -120,7 +119,9 @@ exports.createResources = () => [
   {
     type: "UserPoolDomain",
     group: "CognitoIdentityServiceProvider",
-    name: "myauth840541460064",
+    properties: ({}) => ({
+      Domain: "myauth840541460064",
+    }),
     dependencies: ({}) => ({
       userPool: "UserPool-3Fx2HozhHSsp",
     }),

@@ -9,6 +9,19 @@ exports.createCloudWatchLogs = createEndpoint(
 
 exports.ignoreErrorCodes = ["ResourceNotFoundException"];
 
+exports.LogGroupNameManagedByOther = [
+  "/aws/APIGW",
+  "API-Gateway-Execution-Logs",
+  "/aws/apigateway/",
+  "/aws/lambda/",
+  "/aws/ecs/",
+  "/aws-glue/jobs/",
+  "/ecs/",
+  "/aws/rds/",
+  "RDSOSMetrics",
+  "/aws/apprunner",
+];
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchLogs.html#tagLogGroup-property
 exports.tagResource =
   ({ endpoint }) =>

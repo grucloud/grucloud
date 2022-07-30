@@ -7,7 +7,6 @@ exports.createResources = () => [
     type: "Trail",
     group: "CloudTrail",
     properties: ({ config }) => ({
-      Name: "CloudTrailForS3ImagePushEvents",
       EventSelectors: [
         {
           DataResources: [
@@ -25,6 +24,7 @@ exports.createResources = () => [
       IncludeGlobalServiceEvents: true,
       IsMultiRegionTrail: true,
       IsOrganizationTrail: false,
+      Name: "CloudTrailForS3ImagePushEvents",
     }),
     dependencies: ({}) => ({
       bucket: "gc-s3-eventbridge-cloudtrail",
@@ -33,7 +33,6 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "sam-app-S3NewImageEvent-WQBVMJ27U1IW",
     properties: ({}) => ({
       Description:
         "This rule will trigger lambda when an image is uploaded into S3",
@@ -48,6 +47,7 @@ exports.createResources = () => [
           eventName: ["PutObject", "CopyObject", "CompleteMultipartUpload"],
         },
       },
+      Name: "sam-app-S3NewImageEvent-WQBVMJ27U1IW",
       State: "ENABLED",
     }),
   },
@@ -141,7 +141,6 @@ exports.createResources = () => [
   {
     type: "Queue",
     group: "SQS",
-    name: "sam-app-NewImageEventQueue-xg4G9e9EBenI",
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
@@ -160,6 +159,7 @@ exports.createResources = () => [
           ],
         },
       },
+      QueueName: "sam-app-NewImageEventQueue-xg4G9e9EBenI",
     }),
   },
 ];

@@ -6,16 +6,16 @@ exports.createResources = () => [
   {
     type: "Connection",
     group: "AppRunner",
-    name: "github",
     properties: ({}) => ({
+      ConnectionName: "github",
       ProviderType: "GITHUB",
     }),
   },
   {
     type: "Service",
     group: "AppRunner",
-    name: "mock-server",
     properties: ({}) => ({
+      ServiceName: "mock-server",
       SourceConfiguration: {
         CodeRepository: {
           RepositoryUrl: "https://github.com/grucloud/grucloud",

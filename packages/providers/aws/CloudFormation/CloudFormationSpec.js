@@ -20,6 +20,7 @@ module.exports = pipe([
           dependencyId: ({ lives, config }) => get("RoleARN"),
         },
       },
+      inferName: get("properties.StackName"),
       Client: CloudFormationStack,
       isOurMinion,
       ignoreResource: () => () => true,

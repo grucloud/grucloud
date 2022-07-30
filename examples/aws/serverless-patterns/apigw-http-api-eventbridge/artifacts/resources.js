@@ -75,11 +75,11 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "sam-app-MyTriggeredLambdaEventBridgeTrigger-1CZB0M0XR00UH",
     properties: ({}) => ({
       EventPattern: {
         source: ["WebApp"],
       },
+      Name: "sam-app-MyTriggeredLambdaEventBridgeTrigger-1CZB0M0XR00UH",
       State: "ENABLED",
     }),
   },
@@ -97,8 +97,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-MyHttpApiRole-KV1DOMSBSRDO",
     properties: ({ getId }) => ({
+      RoleName: "sam-app-MyHttpApiRole-KV1DOMSBSRDO",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -135,8 +135,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-MyTriggeredLambdaRole-PFCAXLPPKQG8",
     properties: ({}) => ({
+      RoleName: "sam-app-MyTriggeredLambdaRole-PFCAXLPPKQG8",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

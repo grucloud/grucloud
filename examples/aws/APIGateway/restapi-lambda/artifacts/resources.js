@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Account",
     group: "APIGateway",
-    name: "default",
     dependencies: ({}) => ({
       cloudwatchRole: "roleApiGatewayCloudWatch",
     }),
@@ -14,7 +13,6 @@ exports.createResources = () => [
   {
     type: "ApiKey",
     group: "APIGateway",
-    name: "my-key",
     properties: ({}) => ({
       name: "my-key",
     }),
@@ -22,7 +20,6 @@ exports.createResources = () => [
   {
     type: "RestApi",
     group: "APIGateway",
-    name: "PetStore",
     properties: ({ config }) => ({
       name: "PetStore",
       apiKeySource: "HEADER",
@@ -452,7 +449,13 @@ exports.createResources = () => [
       account: "default",
     }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "restapi" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    properties: ({}) => ({
+      logGroupName: "restapi",
+    }),
+  },
   {
     type: "Role",
     group: "IAM",

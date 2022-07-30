@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Connection",
     group: "CloudWatchEvents",
-    name: "MyZendeskConnection-72YzHuvunzIi",
     properties: ({}) => ({
       AuthParameters: {
         BasicAuthParameters: {
@@ -16,8 +15,15 @@ exports.createResources = () => [
       },
       AuthorizationType: "BASIC",
       Description: "My connection with a username and password",
+      Name: "MyZendeskConnection-72YzHuvunzIi",
     }),
   },
-  { type: "EventBus", group: "CloudWatchEvents", name: "MyZendeskEventBus" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "MyZendeskEventBus",
+    }),
+  },
   { type: "Queue", group: "SQS", name: "sam-app-MyDLQueue-CW2qOFZz1Ml3" },
 ];

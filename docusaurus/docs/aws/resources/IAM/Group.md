@@ -12,9 +12,8 @@ exports.createResources = () => [
   {
     type: "User",
     group: "IAM",
-    name: "Alice",
     properties: ({}) => ({
-      Path: "/",
+      UserName: "Alice",
     }),
     dependencies: () => ({
       iamGroups: ["Admin"],
@@ -24,9 +23,8 @@ exports.createResources = () => [
   {
     type: "Group",
     group: "IAM",
-    name: "Admin",
     properties: ({}) => ({
-      Path: "/",
+      GroupName: "Admin",
     }),
     dependencies: () => ({
       policies: ["myPolicy-to-group"],
@@ -35,8 +33,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "myPolicy-to-user",
     properties: ({}) => ({
+      PolicyName: "myPolicy-to-user",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [

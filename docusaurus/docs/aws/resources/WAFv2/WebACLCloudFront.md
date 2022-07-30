@@ -14,7 +14,6 @@ exports.createResources = () => [
   {
     type: "WebACL",
     group: "WAFv2",
-    name: "my-waf",
     properties: ({}) => ({
       Capacity: 1,
       DefaultAction: {
@@ -72,7 +71,7 @@ gc l -t WAFv2::WebACL
 
 ```txt
 Listing resources on 1 provider: aws
-✓ aws us-east-1 
+✓ aws us-east-1
   ✓ Initialising
   ✓ Listing 1/1
 ┌───────────────────────────────────────────────────────────────────────────────────────────┐

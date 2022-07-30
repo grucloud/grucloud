@@ -8,12 +8,6 @@ exports.createAPIGateway = createEndpoint("api-gateway", "APIGateway");
 
 exports.ignoreErrorCodes = ["NotFoundException"];
 
-exports.findDependenciesRestApi = ({ live, lives }) => ({
-  type: "RestApi",
-  group: "APIGateway",
-  ids: [live.restApiId],
-});
-
 exports.buildPayloadDescriptionTags = pipe([
   tap((params) => {
     assert(true);

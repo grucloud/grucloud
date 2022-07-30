@@ -13,6 +13,9 @@ exports.createResources = () => [
     type: "DomainName",
     group: "ApiGatewayV2",
     name: "grucloud.org",
+    properties: () => ({
+      DomainName: "grucloud.org",
+    }),
     dependencies: () => ({
       certificate: "grucloud.org",
     }),

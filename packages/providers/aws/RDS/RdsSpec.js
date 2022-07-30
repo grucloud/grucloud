@@ -61,9 +61,9 @@ module.exports = pipe([
     {
       type: "DBProxy",
       Client: DBProxy,
+      inferName: get("properties.DBProxyName"),
       omitProperties: [
         "DBProxyArn",
-        "DBProxyName",
         "VpcSubnetIds",
         "VpcSecurityGroupIds",
         "RoleArn",
@@ -137,6 +137,7 @@ module.exports = pipe([
     {
       type: "DBProxyTargetGroup",
       Client: DBProxyTargetGroup,
+      inferName: get("properties.TargetGroupName"),
       omitProperties: [
         "DBClusterIdentifiers",
         "TargetGroupArn",
@@ -184,6 +185,7 @@ module.exports = pipe([
     {
       type: "DBSubnetGroup",
       Client: DBSubnetGroup,
+      inferName: get("properties.DBSubnetGroupName"),
       omitProperties: [
         "SubnetIds",
         "VpcId",
@@ -193,7 +195,7 @@ module.exports = pipe([
       ],
       propertiesDefault: { SupportedNetworkTypes: ["IPV4"] },
       ignoreResource: () => pipe([get("isDefault")]),
-      filterLive: () => pick(["DBSubnetGroupDescription"]),
+      filterLive: () => pick(["DBSubnetGroupName", "DBSubnetGroupDescription"]),
       dependencies: {
         subnets: {
           type: "Subnet",
@@ -207,6 +209,7 @@ module.exports = pipe([
     {
       type: "DBCluster",
       Client: DBCluster,
+      inferName: get("properties.DBClusterIdentifier"),
       dependencies: {
         dbSubnetGroup: {
           type: "DBSubnetGroup",
@@ -251,7 +254,6 @@ module.exports = pipe([
         },
       },
       omitProperties: [
-        "DBClusterIdentifier",
         "SubnetIds",
         "VpcSecurityGroupIds",
         "MasterUserPassword",
@@ -337,6 +339,7 @@ module.exports = pipe([
     {
       type: "DBInstance",
       Client: DBInstance,
+      inferName: get("properties.DBInstanceIdentifier"),
       dependencies: {
         dbSubnetGroup: {
           type: "DBSubnetGroup",

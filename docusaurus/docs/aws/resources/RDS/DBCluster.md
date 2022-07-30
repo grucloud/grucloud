@@ -12,9 +12,9 @@ exports.createResources = () => [
   {
     type: "DBCluster",
     group: "RDS",
-    name: "cluster-postgres-stateless",
     properties: ({ config }) => ({
       DatabaseName: "dev",
+      DBClusterIdentifier: "cluster-postgres-stateless",
       Engine: "aurora-postgresql",
       EngineVersion: "10.14",
       EngineMode: "serverless",

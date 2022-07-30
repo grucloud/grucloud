@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "flowlog",
     properties: ({}) => ({
+      logGroupName: "flowlog",
       retentionInDays: 1,
     }),
   },

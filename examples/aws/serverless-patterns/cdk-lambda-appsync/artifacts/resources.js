@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "TriggeredByLambda",
     properties: ({}) => ({
+      name: "TriggeredByLambda",
       authenticationType: "AWS_IAM",
       xrayEnabled: false,
       apiKeys: [],
@@ -17,8 +17,8 @@ exports.createResources = () => [
   {
     type: "DataSource",
     group: "AppSync",
-    name: "NONE",
     properties: ({}) => ({
+      name: "NONE",
       type: "NONE",
     }),
     dependencies: ({}) => ({

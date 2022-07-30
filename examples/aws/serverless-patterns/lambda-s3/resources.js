@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-PutObjectFunctionRole-TFR4FTCB12K2",
     properties: ({}) => ({
+      RoleName: "sam-app-PutObjectFunctionRole-TFR4FTCB12K2",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -37,8 +37,8 @@ exports.createResources = () => [
                   "s3:DeleteObject",
                 ],
                 Resource: [
-                  "arn:aws:s3:::gc-destination-example",
-                  "arn:aws:s3:::gc-destination-example/*",
+                  `arn:aws:s3:::gc-destination-example`,
+                  `arn:aws:s3:::gc-destination-example/*`,
                 ],
                 Effect: "Allow",
               },
@@ -67,7 +67,6 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({ getId }) => ({
       Configuration: {
-        FunctionName: "sam-app-PutObjectFunction-UHg0AjQBqco2",
         Environment: {
           Variables: {
             DestinationBucketName: `${getId({
@@ -77,6 +76,7 @@ exports.createResources = () => [
             })}`,
           },
         },
+        FunctionName: "sam-app-PutObjectFunction-UHg0AjQBqco2",
         Handler: "app.lambda_handler",
         Runtime: "python3.8",
       },
@@ -84,7 +84,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-PutObjectFunctionRole-TFR4FTCB12K2",
       s3Buckets: ["gc-destination-example"],
     }),

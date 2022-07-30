@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
-    name: "my-user-pool",
     properties: () => ({
+      Name: "my-user-pool",
       Policies: {
         PasswordPolicy: {
           MinimumLength: 8,
@@ -22,8 +22,8 @@ exports.createResources = () => [
   {
     type: "UserPoolClient",
     group: "CognitoIdentityServiceProvider",
-    name: "my-userpool-client",
     properties: ({}) => ({
+      ClientName: "my-userpool-client",
       IdTokenValidity: 50,
       ExplicitAuthFlows: [
         "ALLOW_REFRESH_TOKEN_AUTH",

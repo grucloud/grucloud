@@ -1,7 +1,6 @@
 const assert = require("assert");
-
 const { map, pipe, tap, get, not, eq, omit, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { tos } = require("@grucloud/core/tos");
@@ -128,7 +127,6 @@ exports.EKSCluster = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/eks/latest/APIReference/API_DeleteCluster.html
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteCluster-property
-
   const destroy = client.destroy({
     pickId,
     method: "deleteCluster",
@@ -142,12 +140,13 @@ exports.EKSCluster = ({ spec, config }) => {
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: { subnets, securityGroups, role, key },
+    dependencies: { subnets, securityGroups, role },
   }) =>
     pipe([
       tap(() => {
         assert(subnets, "missing 'subnets' dependency");
         assert(securityGroups, "missing 'securityGroups' dependency");
+        assert(name);
       }),
       () => otherProps,
       defaultsDeep({
@@ -157,19 +156,9 @@ exports.EKSCluster = ({ spec, config }) => {
           ),
           subnetIds: map((subnet) => getField(subnet, "SubnetId"))(subnets),
         },
-        //TODO when
-        ...(role && { roleArn: getField(role, "Arn") }),
-        ...(key && {
-          encryptionConfig: [
-            {
-              provider: { keyArn: getField(key, "Arn") },
-              resources: ["secrets"],
-            },
-          ],
-        }),
-        name,
         tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
+      when(() => role, defaultsDeep({ roleArn: getField(role, "Arn") })),
     ])();
 
   return {

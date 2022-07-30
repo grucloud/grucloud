@@ -12,8 +12,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "cdk-notes-appsync-api",
     properties: ({}) => ({
+      name: "cdk-notes-appsync-api",
       authenticationType: "API_KEY",
       xrayEnabled: true,
       apiKeys: [
@@ -41,6 +41,10 @@ exports.createResources = () => [
 ## Full Examples
 
 - [Simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/AppSync/graphql)
+- [serverless-patterns appsync-eventbridge](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/appsync-eventbridge)
+- [serverless-patterns appsync-sqs](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/appsync-sqs)
+- [serverless-patterns cdk-lambda-appsync](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/cdk-lambda-appsync)
+- [wafv2-graphql](https://github.com/grucloud/grucloud/tree/main/examples/aws/WAFv2/wafv2-graphql)
 
 ## List
 

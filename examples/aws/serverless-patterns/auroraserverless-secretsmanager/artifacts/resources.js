@@ -4,11 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/aurora-serverless/error",
-  },
-  {
     type: "Vpc",
     group: "EC2",
     name: "Vpc8378EB38",

@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-LambdaFunctionRole-1C9B4X0VUWW95",
     properties: ({ getId }) => ({
+      RoleName: "sam-app-LambdaFunctionRole-1C9B4X0VUWW95",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -52,7 +52,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       ssmParameters: ["ExampleParameterName"],
     }),
   },
@@ -61,12 +61,12 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "sam-app-LambdaFunction-0c5CYs3DOq13",
         Environment: {
           Variables: {
             SSMParameterName: `ExampleParameterName`,
           },
         },
+        FunctionName: "sam-app-LambdaFunction-0c5CYs3DOq13",
         Handler: "app.handler",
         Runtime: "nodejs14.x",
         Timeout: 15,
@@ -75,7 +75,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-LambdaFunctionRole-1C9B4X0VUWW95",
       ssmParameters: ["ExampleParameterName"],
     }),
@@ -83,8 +83,8 @@ exports.createResources = () => [
   {
     type: "Parameter",
     group: "SSM",
-    name: "ExampleParameterName",
     properties: ({}) => ({
+      Name: "ExampleParameterName",
       Type: "String",
       Value: '{"key1":"value1"}',
       DataType: "text",

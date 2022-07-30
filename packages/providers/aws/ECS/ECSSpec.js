@@ -53,6 +53,7 @@ module.exports = pipe([
     {
       type: "CapacityProvider",
       Client: ECSCapacityProvider,
+      inferName: get("properties.name"),
       omitProperties: [
         "capacityProviderArn",
         "status",
@@ -77,6 +78,7 @@ module.exports = pipe([
     {
       type: "Cluster",
       Client: ECSCluster,
+      inferName: get("properties.clusterName"),
       omitProperties: [
         "clusterArn",
         "status",
@@ -92,7 +94,9 @@ module.exports = pipe([
       propertiesDefault: { defaultCapacityProviderStrategy: [] },
       compare: compareECS({}),
       filterLive: () =>
-        pipe([pick(["settings", "defaultCapacityProviderStrategy"])]),
+        pipe([
+          pick(["clusterName", "settings", "defaultCapacityProviderStrategy"]),
+        ]),
       dependencies: {
         capacityProviders: {
           type: "CapacityProvider",
@@ -141,6 +145,8 @@ module.exports = pipe([
     },
     {
       type: "TaskDefinition",
+      Client: ECSTaskDefinition,
+      inferName: get("properties.family"),
       dependencies: {
         taskRole: {
           type: "Role",
@@ -183,7 +189,6 @@ module.exports = pipe([
           }),
         },
       },
-      Client: ECSTaskDefinition,
       omitProperties: [
         "taskDefinitionArn",
         "taskRoleArn",
@@ -212,9 +217,6 @@ module.exports = pipe([
                     assign({
                       image: pipe([
                         get("image"),
-                        tap((params) => {
-                          assert(true);
-                        }),
                         replaceRegion({ providerConfig }),
                       ]),
                     })
@@ -276,6 +278,7 @@ module.exports = pipe([
     {
       type: "Service",
       Client: ECSService,
+      inferName: get("properties.serviceName"),
       omitProperties: [
         "taskDefinition",
         "clusterArn",

@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "TriggeredByLambda",
     properties: ({}) => ({
+      name: "TriggeredByLambda",
       authenticationType: "AWS_IAM",
       xrayEnabled: false,
       apiKeys: [],
@@ -17,8 +17,8 @@ exports.createResources = () => [
   {
     type: "DataSource",
     group: "AppSync",
-    name: "NONE",
     properties: ({}) => ({
+      name: "NONE",
       type: "NONE",
     }),
     dependencies: ({}) => ({
@@ -44,8 +44,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "CdkLambdaCallAppSyncStack-triggerServiceRole07E9AB-5S1U4A7Y9DDX",
     properties: ({ config }) => ({
+      RoleName:
+        "CdkLambdaCallAppSyncStack-triggerServiceRole07E9AB-5S1U4A7Y9DDX",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

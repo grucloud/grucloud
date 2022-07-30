@@ -204,8 +204,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "my-cluster",
     properties: ({}) => ({
+      clusterName: "my-cluster",
       settings: [
         {
           name: "containerInsights",
@@ -217,8 +217,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-TERDPQNAO5Q2",
     properties: ({}) => ({
+      RoleName: "amazon-ecs-cli-setup-my-cluster-EcsInstanceRole-TERDPQNAO5Q2",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

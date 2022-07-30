@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-SimpleFunctionRole-QY12848QLJZP",
     properties: ({}) => ({
+      RoleName: "sam-app-SimpleFunctionRole-QY12848QLJZP",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -49,7 +49,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-SimpleFunctionRole-QY12848QLJZP",
     }),
   },

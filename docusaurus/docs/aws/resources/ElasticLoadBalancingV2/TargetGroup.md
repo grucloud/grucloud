@@ -14,8 +14,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "target-group-rest",
     properties: ({}) => ({
+      Name: "target-group-rest",
       Protocol: "HTTP",
       Port: 30020,
       HealthCheckProtocol: "HTTP",
@@ -57,11 +57,11 @@ The list of properties are the parameter of [CreateTargetGroupCommandInput](http
 ## Dependencies
 
 - [VPC](../EC2/Vpc.md)
-- [EKS NodeGroup](../EKS/NodeGroup.md)
 
 ## Used By
 
-- [AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
+- [Listener](./Listener.md)
+- [AutoScalingGroup AutoScalingAttachment](../AutoScaling/AutoScalingAttachment.md)
 - [CodeDeploy DeploymentGroup](../CodeDeploy/DeploymentGroup.md)
 - [ECS Service](../ECS/Service.md)
 - [ECS TaskSet](../ECS/TaskSet.md)

@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "read-kinesis-stream-role-wmuwr9bv",
     properties: ({}) => ({
+      RoleName: "read-kinesis-stream-role-wmuwr9bv",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",

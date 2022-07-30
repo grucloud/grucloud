@@ -4,11 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/aurora-test-cluster/error",
-  },
-  {
     type: "Role",
     group: "IAM",
     name: "sam-app-LambdaFunctionRole-11TTATG2VDRQ2",

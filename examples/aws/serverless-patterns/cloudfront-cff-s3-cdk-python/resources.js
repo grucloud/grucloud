@@ -148,11 +148,6 @@ exports.createResources = () => [
     name: "Identity for CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
   },
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-fRgMn9FyLO2d",
-  },
-  {
     type: "Role",
     group: "IAM",
     name: "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-1VYB8Q83IK84K",

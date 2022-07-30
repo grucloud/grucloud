@@ -33,7 +33,6 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "sam-app-S3NewImageEvent-WQBVMJ27U1IW",
     properties: ({}) => ({
       Description:
         "This rule will trigger lambda when an image is uploaded into S3",
@@ -48,6 +47,7 @@ exports.createResources = () => [
           eventName: ["PutObject", "CopyObject", "CompleteMultipartUpload"],
         },
       },
+      Name: "sam-app-S3NewImageEvent-WQBVMJ27U1IW",
       State: "ENABLED",
     }),
   },

@@ -46,6 +46,7 @@ const {
   ignoreResourceCdk,
   assignPolicyDocumentAccountAndRegion,
   assignPolicyAccountAndRegion,
+  replaceRegion,
 } = require("../AwsCommon");
 
 const GROUP = "IAM";
@@ -72,6 +73,18 @@ module.exports = pipe([
     {
       type: "OpenIDConnectProvider",
       Client: AwsIamOpenIDConnectProvider,
+      inferName: ({ properties, dependenciesSpec: { cluster } }) =>
+        pipe([
+          switchCase([
+            () => cluster,
+            () => `eks-cluster::${cluster}`,
+            pipe([
+              () => properties,
+              get("Url"),
+              callProp("replace", "https://", ""),
+            ]),
+          ]),
+        ])(),
       compare: compareIAM({
         filterLive: () =>
           pipe([
@@ -109,7 +122,7 @@ module.exports = pipe([
           }),
           switchCase([
             get("cluster"),
-            pipe([get("cluster"), prepend("EKS::Cluster::")]),
+            pipe([get("cluster"), prepend("eks-cluster::")]),
             pipe([
               () => properties,
               get("Url"),
@@ -130,6 +143,8 @@ module.exports = pipe([
     {
       type: "User",
       Client: AwsIamUser,
+      inferName: get("properties.UserName"),
+      propertiesDefault: { Path: "/" },
       compare: compareIAM({
         filterLive: () =>
           pipe([
@@ -146,7 +161,7 @@ module.exports = pipe([
       }),
       filterLive: ({ lives }) =>
         pipe([
-          pick(["Path", "AttachedPolicies"]),
+          pick(["UserName", "Path", "AttachedPolicies"]),
           filterAttachedPolicies({ lives }),
         ]),
       dependencies: {
@@ -168,6 +183,8 @@ module.exports = pipe([
     {
       type: "Group",
       Client: AwsIamGroup,
+      inferName: get("properties.GroupName"),
+      propertiesDefault: { Path: "/" },
       isOurMinion: isOurMinionIamGroup,
       compare: compareIAM({
         filterLive: () =>
@@ -175,7 +192,7 @@ module.exports = pipe([
       }),
       filterLive: ({ lives }) =>
         pipe([
-          pick(["Path", "AttachedPolicies"]),
+          pick(["GroupName", "Path", "AttachedPolicies"]),
           filterAttachedPolicies({ lives }),
         ]),
       dependencies: {
@@ -191,6 +208,7 @@ module.exports = pipe([
     {
       type: "Role",
       Client: AwsIamRole,
+      inferName: get("properties.RoleName"),
       propertiesDefault: { Path: "/" },
       compare: compareIAM({
         filterAll: () => pipe([pick(["AssumeRolePolicyDocument"])]),
@@ -232,12 +250,19 @@ module.exports = pipe([
             assert(resource);
           }),
           pick([
+            "RoleName",
             "Description",
             "Path",
             "AssumeRolePolicyDocument",
             "Policies",
             "AttachedPolicies",
           ]),
+          assign({
+            RoleName: pipe([
+              get("RoleName"),
+              replaceRegion({ lives, providerConfig }),
+            ]),
+          }),
           when(
             get("AttachedPolicies"),
             assign({
@@ -319,13 +344,11 @@ module.exports = pipe([
     {
       type: "Policy",
       Client: AwsIamPolicy,
+      inferName: get("properties.PolicyName"),
       isOurMinion: isOurMinionIamPolicy,
       compare: compareIAM({
         filterAll: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             //TODO description
             pick(["PolicyDocument"]),
           ]),
@@ -335,7 +358,7 @@ module.exports = pipe([
         () => pick(["Arn"]),
         ({ providerConfig, lives }) =>
           pipe([
-            pick(["PolicyDocument", "Path", "Description"]),
+            pick(["PolicyName", "PolicyDocument", "Path", "Description"]),
             assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
           ]),
       ]),

@@ -101,22 +101,15 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/lambda/my-function",
-  },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "RDSOSMetrics",
     properties: ({}) => ({
-      retentionInDays: 30,
+      logGroupName: "lg-http-test",
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "lambda-role",
     properties: ({}) => ({
+      RoleName: "lambda-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

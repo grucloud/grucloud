@@ -1,9 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, fork, switchCase, any } = require("rubico");
-const { defaultsDeep, callProp } = require("rubico/x");
+const { pipe, tap, get, pick, fork, switchCase, any, map } = require("rubico");
+const { defaultsDeep, callProp, prepend } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
+
+const { LogGroupNameManagedByOther } = require("./CloudWatchLogsCommon");
 
 const findId = pipe([get("live.arn")]);
 
@@ -26,11 +28,8 @@ const managedByOther = pipe([
   get("live.arn"),
   (logGroupName) =>
     pipe([
-      () => [
-        "log-group:RDSOSMetrics",
-        "log-group:/aws/lambda/",
-        "log-group:/aws/rds/cluster/",
-      ],
+      () => LogGroupNameManagedByOther,
+      map(prepend("log-group:")),
       any((prefix) => logGroupName.includes(prefix)),
     ])(),
 ]);

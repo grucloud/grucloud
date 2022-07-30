@@ -3,7 +3,13 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "LogGroup", group: "CloudWatchLogs", name: "my-log-group" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    properties: () => ({
+      logGroupName: "my-log-group",
+    }),
+  },
   {
     type: "LogStream",
     group: "CloudWatchLogs",
@@ -30,8 +36,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "receive-cloudwatch-log-group-role-cv4x40qb",
     properties: ({}) => ({
+      RoleName: "receive-cloudwatch-log-group-role-cv4x40qb",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -83,8 +89,8 @@ exports.createResources = () => [
     type: "Function",
     group: "Lambda",
     properties: ({ config, getId }) => ({
-      FunctionName: "receive-cloudwatch-log-group",
       Configuration: {
+        FunctionName: "receive-cloudwatch-log-group",
         Handler: "index.handler",
         Runtime: "nodejs16.x",
       },

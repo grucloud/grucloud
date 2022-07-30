@@ -9,12 +9,7 @@ const { AwsClient } = require("../AwsClient");
 const { createLambda, tagResource, untagResource } = require("./LambdaCommon");
 
 const findId = get("live.UUID");
-const pickId = pipe([
-  tap(({ UUID }) => {
-    assert(UUID);
-  }),
-  pick(["UUID"]),
-]);
+const pickId = pipe([pick(["UUID"])]);
 
 const nameFromArn = pipe([callProp("split", ":"), last]);
 
@@ -24,6 +19,7 @@ const findName = pipe([
     assert(FunctionArn);
     assert(EventSourceArn);
   }),
+  //TODO :: instead of -
   ({ FunctionArn, EventSourceArn }) =>
     `mapping-${nameFromArn(FunctionArn)}-${nameFromArn(EventSourceArn)}`,
 ]);

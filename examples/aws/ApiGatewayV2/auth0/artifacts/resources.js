@@ -14,7 +14,9 @@ exports.createResources = () => [
   {
     type: "DomainName",
     group: "ApiGatewayV2",
-    name: "grucloud.org",
+    properties: ({}) => ({
+      DomainName: "grucloud.org",
+    }),
     dependencies: ({}) => ({
       certificate: "grucloud.org",
     }),
@@ -104,7 +106,13 @@ exports.createResources = () => [
       stage: "my-api-stage-dev",
     }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    properties: ({}) => ({
+      logGroupName: "lg-http-test",
+    }),
+  },
   {
     type: "Role",
     group: "IAM",

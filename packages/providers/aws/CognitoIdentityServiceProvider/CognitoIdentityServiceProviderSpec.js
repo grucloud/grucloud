@@ -33,6 +33,7 @@ module.exports = pipe([
   () => [
     {
       type: "IdentityProvider",
+      inferName: get("properties.ProviderName"),
       dependencies: {
         userPool: {
           type: "UserPool",
@@ -46,6 +47,7 @@ module.exports = pipe([
     {
       type: "UserPool",
       Client: UserPool,
+      inferName: get("properties.Name"),
       isOurMinion: ({ live, config }) =>
         isOurMinionObject({ tags: live.UserPoolTags, config }),
       omitProperties: [
@@ -83,7 +85,6 @@ module.exports = pipe([
         },
         LambdaConfig: {},
         MfaConfiguration: "OFF",
-        Name: "my-user-pool",
         Policies: {
           PasswordPolicy: {
             MinimumLength: 8,
@@ -109,9 +110,9 @@ module.exports = pipe([
     {
       type: "UserPoolClient",
       Client: UserPoolClient,
+      inferName: get("properties.ClientName"),
       omitProperties: [
         "ClientId",
-        "ClientName",
         "UserPoolId",
         "CreationDate",
         "LastModifiedDate",
@@ -142,11 +143,11 @@ module.exports = pipe([
     {
       type: "UserPoolDomain",
       Client: UserPoolDomain,
+      inferName: get("properties.Domain"),
       omitProperties: [
         "AWSAccountId",
         "CloudFrontDistribution",
         "S3Bucket",
-        "Domain",
         "Status",
         "UserPoolId",
         "Version",

@@ -12,7 +12,9 @@ exports.createResources = () => [
   {
     type: "VpcLink",
     group: "ApiGatewayV2",
-    name: "APIGWVpcLinkToPrivateHTTPEndpoint",
+    properties: () => ({
+      Name: "APIGWVpcLinkToPrivateHTTPEndpoint",
+    }),
     dependencies: () => ({
       subnets: [
         "vpclink-ex-subnet-private1-us-east-1a",
@@ -34,7 +36,9 @@ exports.createResources = () => [
 
 ## Full Examples
 
-- [apigw-vpclink-pvt-alb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-vpclink-pvt-alb)
+- [serverless-patterns apigw-fargate-cdk](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-fargate-cdk)
+
+- [serverless-patterns apigw-vpclink-pvt-alb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-vpclink-pvt-alb)
 
 ## List
 

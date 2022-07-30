@@ -4,24 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/sam-app-mysql-cluster/error",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/proxy/rds-proxy",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "RDSOSMetrics",
-    properties: ({}) => ({
-      retentionInDays: 30,
-    }),
-  },
-  {
     type: "Vpc",
     group: "EC2",
     name: "sam-app-vpc",
@@ -36,7 +18,8 @@ exports.createResources = () => [
     name: "sam-app-vpc::sam-app-prv-sub-1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "172.31.0.0/24",
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "sam-app-vpc",
@@ -48,7 +31,8 @@ exports.createResources = () => [
     name: "sam-app-vpc::sam-app-prv-sub-2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "172.31.1.0/24",
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "sam-app-vpc",
@@ -60,7 +44,8 @@ exports.createResources = () => [
     name: "sam-app-vpc::sam-app-prv-sub-3",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
-      CidrBlock: "172.31.2.0/24",
+      NewBits: 8,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "sam-app-vpc",
@@ -157,8 +142,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-dbProxyRole-1BMIN3H39UUK3",
     properties: ({ config }) => ({
+      RoleName: "sam-app-dbProxyRole-1BMIN3H39UUK3",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -195,8 +180,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: ({ config }) => `sam-app-monitor-${config.region}`,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      RoleName: `sam-app-monitor-${config.region}`,
       Description:
         "Allows your Aurora DB cluster to deliver Enhanced Monitoring metrics.",
       AssumeRolePolicyDocument: {
@@ -223,8 +208,8 @@ exports.createResources = () => [
   {
     type: "DBProxy",
     group: "RDS",
-    name: "rds-proxy",
     properties: ({ getId }) => ({
+      DBProxyName: "rds-proxy",
       EngineFamily: "MYSQL",
       Auth: [
         {
@@ -255,8 +240,8 @@ exports.createResources = () => [
   {
     type: "DBSubnetGroup",
     group: "RDS",
-    name: "sam-app-db-subnet-group",
     properties: ({}) => ({
+      DBSubnetGroupName: "sam-app-db-subnet-group",
       DBSubnetGroupDescription: "subnets allowed for deploying DB instances",
     }),
     dependencies: ({}) => ({
@@ -270,10 +255,10 @@ exports.createResources = () => [
   {
     type: "DBCluster",
     group: "RDS",
-    name: "sam-app-mysql-cluster",
     properties: ({}) => ({
       BackupRetentionPeriod: 1,
       DatabaseName: "mylab",
+      DBClusterIdentifier: "sam-app-mysql-cluster",
       Engine: "aurora-mysql",
       EngineVersion: "5.7.mysql_aurora.2.09.1",
       Port: 3306,
@@ -297,7 +282,6 @@ exports.createResources = () => [
   {
     type: "DBInstance",
     group: "RDS",
-    name: "sam-app-mysql-node-1",
     properties: ({}) => ({
       DBInstanceIdentifier: "sam-app-mysql-node-1",
       DBInstanceClass: "db.r5.large",

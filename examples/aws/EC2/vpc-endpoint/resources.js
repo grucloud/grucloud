@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/ecs/containerinsights/service-cluster/performance",
     properties: ({}) => ({
+      logGroupName: "/aws/ecs/containerinsights/service-cluster/performance",
       retentionInDays: 1,
     }),
   },

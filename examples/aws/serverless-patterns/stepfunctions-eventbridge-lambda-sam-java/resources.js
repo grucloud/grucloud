@@ -3,7 +3,13 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "EventBus", group: "CloudWatchEvents", name: "OrdersEventBus" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "OrdersEventBus",
+    }),
+  },
   {
     type: "Rule",
     group: "CloudWatchEvents",

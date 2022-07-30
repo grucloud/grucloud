@@ -12,8 +12,8 @@ exports.createResources = () => [
   {
     type: "UserPoolClient",
     group: "CognitoIdentityServiceProvider",
-    name: "my-user-pool-client",
     properties: ({}) => ({
+      ClientName: "my-user-pool-client",
       IdTokenValidity: 60,
       ExplicitAuthFlows: [
         "ALLOW_REFRESH_TOKEN_AUTH",
@@ -76,6 +76,7 @@ exports.createResources = () => [
 ## Full Examples
 
 - [Simple user pool](https://github.com/grucloud/grucloud/tree/main/examples/aws/CognitoIdentityServiceProvider/identity-provider)
+- [serverless-patterns cognito-httpapi](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/cognito-httpapi)
 
 ## List
 

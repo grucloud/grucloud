@@ -14,8 +14,8 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "AppRunner",
-    name: "mock-server",
     properties: ({ getId }) => ({
+      ServiceName: "mock-server",
       SourceConfiguration: {
         ImageRepository: {
           ImageIdentifier: `${getId({

@@ -3,36 +3,7 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/cdkstack-auroraserverlessclusterb4a18ef1-apxidhewyaz0/error",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/cluster-postgres-stateless/postgresql",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-54U2jnJfonsp",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-r9VueUVpvwep",
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-ZF99ZrezsQ4n",
-  },
+  { type: "LogGroup", group: "CloudWatchLogs" },
   {
     type: "Vpc",
     group: "EC2",

@@ -9,6 +9,17 @@ Manages an [API Gateway Usage Plan](https://console.aws.amazon.com/apigateway/ma
 
 ```js
 exports.createResources = () => [
+  {
+    type: "UsagePlanKey",
+    group: "APIGateway",
+    properties: ({}) => ({
+      name: "apigw-dynamodb-terraform-api-key",
+    }),
+    dependencies: ({}) => ({
+      usagePlan: "apigw-dynamodb-terraform-usage-plan",
+      apiKey: "apigw-dynamodb-terraform-api-key",
+    }),
+  },
 ];
 ```
 
@@ -19,6 +30,7 @@ exports.createResources = () => [
 ## Dependencies
 
 - [Usage Plan](./UsagePlan.md)
+- [Api Key](./ApiKey.md)
 
 ## Full Examples
 
@@ -33,4 +45,32 @@ gc l -t APIGateway::UsagePlanKey
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 2/2
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 APIGateway::UsagePlanKey from aws                                                   │
+├───────────────────────────────────────────────────────────────────────────────────────┤
+│ name: apigw-dynamodb-terraform-api-key                                                │
+│ managedByUs: Yes                                                                      │
+│ live:                                                                                 │
+│   keyId: jpbzsnsj3g                                                                   │
+│   keyType: API_KEY                                                                    │
+│   id: MdD7yuZNMRtDSMQ8zdaT2jfd4MdPaXY7gsA4MyFd                                        │
+│   name: apigw-dynamodb-terraform-api-key                                              │
+│   usagePlanId: 51i8nl                                                                 │
+│                                                                                       │
+└───────────────────────────────────────────────────────────────────────────────────────┘
+
+
+List Summary:
+Provider: aws
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                  │
+├──────────────────────────┬───────────────────────────────────────────────────────────┤
+│ APIGateway::UsagePlanKey │ apigw-dynamodb-terraform-api-key                          │
+└──────────────────────────┴───────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t APIGateway::UsagePlanKey" executed in 7s, 109 MB
 ```

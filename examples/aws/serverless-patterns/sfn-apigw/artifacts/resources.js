@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "RestApi",
     group: "APIGateway",
-    name: "sam-app",
     properties: ({ config }) => ({
       name: "sam-app",
       apiKeySource: "HEADER",

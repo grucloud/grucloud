@@ -35,6 +35,7 @@ exports.createResources = () => [
 
 ## Used By
 
+- [CloudWatchLogs SubscriptionFilter](../CloudWatchLogs/SubscriptionFilter.md)
 - [DynamoDB KinesisStreamingDestination](../DynamoDB/KinesisStreamingDestination.md)
 - [Lambda EventSourceMapping](../Lambda/EventSourceMapping.md)
 

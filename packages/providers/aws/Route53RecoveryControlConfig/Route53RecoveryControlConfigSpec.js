@@ -1,7 +1,7 @@
 const { replaceWithName } = require("@grucloud/core/Common");
 const assert = require("assert");
 const { tap, pipe, map, get, assign, switchCase } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { isOurMinion, compareAws, replaceRegion } = require("../AwsCommon");
 const {

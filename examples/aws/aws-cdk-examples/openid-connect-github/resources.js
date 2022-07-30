@@ -4,11 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-Wc2cf40Nu4bv",
-  },
-  {
     type: "OpenIDConnectProvider",
     group: "IAM",
     properties: ({}) => ({
@@ -19,16 +14,17 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "exampleGitHubDeployRole",
     dependencies: ({}) => ({
+      RoleName: "exampleGitHubDeployRole",
       openIdConnectProvider: "oidp::token.actions.githubusercontent.com",
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-ZLQBGMP1PWSP",
     properties: ({}) => ({
+      RoleName:
+        "GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-ZLQBGMP1PWSP",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

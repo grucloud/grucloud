@@ -117,8 +117,8 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "alb1",
     properties: ({}) => ({
+      Name: "alb1",
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",
@@ -134,8 +134,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "tg1",
     properties: ({}) => ({
+      Name: "tg1",
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
@@ -161,7 +161,7 @@ exports.createResources = () => [
     type: "HostedZone",
     group: "Route53",
     properties: ({}) => ({
-      Name:  "grucloud.org.",
+      Name: "grucloud.org.",
     }),
     dependencies: ({}) => ({
       domain: "grucloud.org",

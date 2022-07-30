@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "sam-app-MySnsTopic-7ZOEL49PL4BA",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       Attributes: {
         DisplayName: "",
         DeliveryPolicy: {
@@ -30,7 +30,6 @@ exports.createResources = () => [
   {
     type: "Queue",
     group: "SQS",
-    name: "sam-app-MySqsQueue-KMqXSqHYypds",
     properties: ({ config }) => ({
       Attributes: {
         Policy: {
@@ -57,8 +56,9 @@ exports.createResources = () => [
           ],
         },
       },
+      QueueName: "sam-app-MySqsQueue-KMqXSqHYypds",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       snsTopics: ["sam-app-MySnsTopic-7ZOEL49PL4BA"],
     }),
   },

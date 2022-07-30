@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "role-4-policies",
     properties: ({}) => ({
+      RoleName: "role-4-policies",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

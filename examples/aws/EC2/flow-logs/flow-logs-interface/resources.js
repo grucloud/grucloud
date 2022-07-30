@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "flowlog",
     properties: ({}) => ({
+      logGroupName: "flowlog",
       retentionInDays: 1,
     }),
   },
@@ -143,8 +143,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "flow-role",
     properties: ({}) => ({
+      RoleName: "flow-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

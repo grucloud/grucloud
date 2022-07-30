@@ -6,7 +6,9 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/kinesisfirehose/my-deliverrt-stream",
+    properties: ({}) => ({
+      logGroupName: "/aws/kinesisfirehose/my-deliverrt-stream",
+    }),
   },
   {
     type: "LogStream",
@@ -31,7 +33,6 @@ exports.createResources = () => [
   {
     type: "DeliveryStream",
     group: "Firehose",
-    name: "my-deliverrt-stream",
     properties: ({ config, getId }) => ({
       DeliveryStreamEncryptionConfiguration: {
         Status: "DISABLED",
@@ -172,9 +173,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: ({ config }) =>
-      `KinesisFirehoseServiceRole-my-deliverrt--${config.region}-1658565467200`,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      RoleName: `KinesisFirehoseServiceRole-my-deliverrt--${config.region}-1658565467200`,
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -198,8 +198,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "my-firehose-transform-role-n1caari0",
     properties: ({}) => ({
+      RoleName: "my-firehose-transform-role-n1caari0",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",

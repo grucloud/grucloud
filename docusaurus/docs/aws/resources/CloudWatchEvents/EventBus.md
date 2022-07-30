@@ -9,7 +9,13 @@ Manages an Event Bridge [Event Bus](https://console.aws.amazon.com/events/home?#
 
 ```js
 exports.createResources = () => [
-  { type: "EventBus", group: "CloudWatchEvents", name: "bus-test" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "OrdersEventBus",
+    }),
+  },
 ];
 ```
 
@@ -25,6 +31,13 @@ exports.createResources = () => [
 ## Full Examples
 
 - [simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatchEvent/event)
+- [serverless-patterns apigw-http-api-eventbridge](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-http-api-eventbridge)
+- [serverless-patterns apigw-rest-api-eventbridge-terraform](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-rest-api-eventbridge-terraform)
+- [serverless-patterns appsync-eventbridge](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/appsync-eventbridge)
+- [serverless-patterns webhook-site](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/eventbridge-api-destinations/1-webhook-site)
+- [serverless-patterns zendesk](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/eventbridge-api-destinations/5-zendesk)
+- [serverless-patterns fargate-eventbridge](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/fargate-eventbridge)
+- [serverless-patterns sfn-eventbridge](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/sfn-eventbridge)
 
 ## List
 

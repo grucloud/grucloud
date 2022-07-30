@@ -6,16 +6,9 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/ecs/containerinsights/service-cluster/performance",
     properties: ({}) => ({
-      retentionInDays: 1,
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
-    properties: ({}) => ({
+      logGroupName:
+        "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
       retentionInDays: 365,
     }),
   },
@@ -371,8 +364,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "service-cluster",
     properties: ({}) => ({
+      clusterName: "service-cluster",
       settings: [
         {
           name: "containerInsights",
@@ -384,7 +377,6 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    name: "ECSServiceStackamazonecssampleTaskDef499685C5",
     properties: ({ config }) => ({
       containerDefinitions: [
         {
@@ -465,7 +457,6 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "ECS",
-    name: "ECSServiceStack-amazonecssampleService537E3215-6H3vkrpqYP3l",
     properties: ({ getId }) => ({
       deploymentConfiguration: {
         deploymentCircuitBreaker: {
@@ -520,8 +511,8 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "ECSSe-amazo-NBIYVNWJ9TTY",
     properties: ({}) => ({
+      Name: "ECSSe-amazo-NBIYVNWJ9TTY",
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",
@@ -539,8 +530,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "ECSSe-amazo-1HU1HZ8BFKNTJ",
     properties: ({}) => ({
+      Name: "ECSSe-amazo-1HU1HZ8BFKNTJ",
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
@@ -565,8 +556,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ECSServiceStack-amazonecssampleTaskDefExecutionRol-1391KZSJLULK2",
     properties: ({ getId }) => ({
+      RoleName:
+        "ECSServiceStack-amazonecssampleTaskDefExecutionRol-1391KZSJLULK2",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -609,8 +601,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1JLMLL2357T0V",
     properties: ({}) => ({
+      RoleName:
+        "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1JLMLL2357T0V",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

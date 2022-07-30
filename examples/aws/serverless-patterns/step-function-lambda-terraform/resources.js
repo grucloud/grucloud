@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "stf_trigger_rule",
     properties: ({}) => ({
+      Name: "stf_trigger_rule",
       ScheduleExpression: "rate(10 minutes)",
       State: "ENABLED",
     }),
@@ -25,15 +25,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/aws_lambda_example",
-  },
-  {
     type: "Role",
     group: "IAM",
-    name: "aws-events-invoke-StepFunction",
     properties: ({ getId }) => ({
+      RoleName: "aws-events-invoke-StepFunction",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -75,8 +70,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "aws-lambda-role-example",
     properties: ({}) => ({
+      RoleName: "aws-lambda-role-example",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -102,8 +97,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "aws-stf-role",
     properties: ({ config }) => ({
+      RoleName: "aws-stf-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -141,13 +136,13 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "aws_lambda_example",
         Environment: {
           Variables: {
             application_name: `aws_lambda_example`,
             env: `dev`,
           },
         },
+        FunctionName: "aws_lambda_example",
         Handler: "lambda.lambda_handler",
         Runtime: "python3.7",
       },
@@ -159,7 +154,6 @@ exports.createResources = () => [
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "aws-step-function-workflow",
     properties: ({ config }) => ({
       definition: {
         Comment: "A description of my state machine",
@@ -209,6 +203,7 @@ exports.createResources = () => [
           },
         },
       },
+      name: "aws-step-function-workflow",
     }),
     dependencies: ({}) => ({
       role: "aws-stf-role",

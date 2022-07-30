@@ -27,13 +27,15 @@ module.exports = pipe([
     {
       type: "Connection",
       Client: AppRunnerConnection,
+      inferName: get("properties.ConnectionName"),
       isOurMinion,
       omitProperties: ["ConnectionArn", "Status", "CreatedAt"],
-      filterLive: () => pipe([pick(["ProviderType"])]),
+      filterLive: () => pipe([pick(["ConnectionName", "ProviderType"])]),
     },
     {
       type: "Service",
       Client: AppRunnerService,
+      inferName: get("properties.ServiceName"),
       dependencies: {
         connection: {
           type: "Connection",
@@ -97,6 +99,7 @@ module.exports = pipe([
       filterLive: ({ lives, providerConfig }) =>
         pipe([
           pick([
+            "ServiceName",
             "SourceConfiguration",
             "InstanceConfiguration",
             "HealthCheckConfiguration",
