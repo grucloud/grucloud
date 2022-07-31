@@ -18,8 +18,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "Vpc::subnet-private",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc",

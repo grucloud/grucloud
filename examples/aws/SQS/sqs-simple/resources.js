@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Queue",
     group: "SQS",
-    name: "my-queue",
     properties: ({}) => ({
+      QueueName: "my-queue",
       tags: {
         "my-tag": "my-value",
       },

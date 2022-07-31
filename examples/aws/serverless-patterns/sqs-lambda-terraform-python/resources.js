@@ -29,7 +29,7 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       PolicyName: "sqs-lambda-demo-lambdapolicy",
       PolicyDocument: {
         Statement: [
@@ -47,11 +47,9 @@ exports.createResources = () => [
           {
             Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
             Effect: "Allow",
-            Resource: `${getId({
-              type: "LogGroup",
-              group: "CloudWatchLogs",
-              name: "/aws/lambda/sqs-lambda-demo",
-            })}-840541460064:*:*`,
+            Resource: `arn:aws:logs:${
+              config.region
+            }:${config.accountId()}:log-group:/aws/lambda/sqs-lambda-demo-${config.accountId()}:*:*`,
           },
         ],
         Version: "2012-10-17",

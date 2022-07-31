@@ -211,18 +211,14 @@ const SecurityGroupRuleBase = ({ config }) => {
     pipe([
       when(
         () => securityGroupFrom,
-        defaultsDeep(
-          pipe([
-            tap((params) => {
-              assert(Array.isArray(securityGroupFrom));
-            }),
+        defaultsDeep({
+          IpPermissions: pipe([
             () => securityGroupFrom,
             map((sg) => ({
               UserIdGroupPairs: [{ GroupId: getField(sg, "GroupId") }],
             })),
-            (IpPermissions) => ({ IpPermissions }),
-          ])()
-        )
+          ])(),
+        })
       ),
     ]);
 

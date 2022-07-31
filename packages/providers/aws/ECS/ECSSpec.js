@@ -63,7 +63,7 @@ module.exports = pipe([
       compare: compareECS({}),
       filterLive: () =>
         pipe([
-          pick(["autoScalingGroupProvider"]),
+          pick(["name", "autoScalingGroupProvider"]),
           omit(["autoScalingGroupProvider.autoScalingGroupArn"]),
         ]),
       dependencies: {

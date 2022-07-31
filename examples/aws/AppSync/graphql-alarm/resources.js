@@ -129,12 +129,12 @@ exports.createResources = () => [
       Statistic: "Average",
       Dimensions: [
         {
-          Name: "GraphQLAPIId",
           Value: `${getId({
             type: "GraphqlApi",
             group: "AppSync",
             name: "My AppSync App",
           })}`,
+          Name: "GraphQLAPIId",
         },
       ],
       Period: 300,
@@ -196,8 +196,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
     properties: ({ getId }) => ({
+      PolicyName: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [

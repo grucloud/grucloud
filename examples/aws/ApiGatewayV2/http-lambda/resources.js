@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Certificate",
     group: "ACM",
-    name: "grucloud.org",
     properties: ({}) => ({
       DomainName: "grucloud.org",
       SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
@@ -15,8 +14,8 @@ exports.createResources = () => [
   {
     type: "DomainName",
     group: "ApiGatewayV2",
-    name: "grucloud.org",
     properties: ({}) => ({
+      DomainName: "grucloud.org",
       Tags: {
         mykey1: "value",
       },
@@ -131,8 +130,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "lambda-policy",
     properties: ({}) => ({
+      PolicyName: "lambda-policy",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [

@@ -41,7 +41,7 @@ exports.createResources = () => [
 - [AutoScalingGroup](./AutoScalingGroup.md)
 - [ElasticLoadBalancingV2 TargetGroup](../ElasticLoadBalancingV2/TargetGroup.md)
 
-  ## Full Examples
+## Full Examples
 
 - [AutoScalingGroup attached to a load balancer](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElasticLoadBalancingV2/load-balancer)
 

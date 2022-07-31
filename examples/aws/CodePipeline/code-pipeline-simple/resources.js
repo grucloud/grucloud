@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    properties: () => ({
+    properties: ({}) => ({
       logGroupName: "/aws/codebuild/starhackit",
     }),
   },
@@ -187,9 +187,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: ({ config }) =>
-      `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      PolicyName: `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
       PolicyDocument: {
         Statement: [
           {
@@ -359,8 +358,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: ({ config }) => `CodeBuildBasePolicy-starhackit-${config.region}`,
     properties: ({ config, getId }) => ({
+      PolicyName: `CodeBuildBasePolicy-starhackit-${config.region}`,
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [

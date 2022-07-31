@@ -35,8 +35,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "policy-allow-ec2",
     properties: ({}) => ({
+      PolicyName: "policy-allow-ec2",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [

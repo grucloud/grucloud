@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "lambda-role",
     properties: ({}) => ({
+      RoleName: "lambda-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -29,8 +29,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "lambda-policy",
     properties: ({}) => ({
+      PolicyName: "lambda-policy",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -80,8 +80,8 @@ exports.createResources = () => [
   {
     type: "Queue",
     group: "SQS",
-    name: "my-queue-lambda",
     properties: ({}) => ({
+      QueueName: "my-queue-lambda",
       tags: {
         "my-tag": "my-value",
       },

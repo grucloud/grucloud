@@ -18,9 +18,6 @@ const {
   omit,
 } = require("rubico");
 const {
-  pluck,
-  last,
-  callProp,
   size,
   isEmpty,
   isDeepEqual,

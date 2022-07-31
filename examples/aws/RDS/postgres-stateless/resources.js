@@ -291,8 +291,8 @@ exports.createResources = () => [
   {
     type: "DBSubnetGroup",
     group: "RDS",
-    name: "subnet-group-postgres-stateless",
     properties: ({}) => ({
+      DBSubnetGroupName: "subnet-group-postgres-stateless",
       DBSubnetGroupDescription: "db subnet group",
     }),
     dependencies: ({}) => ({
@@ -302,10 +302,10 @@ exports.createResources = () => [
   {
     type: "DBCluster",
     group: "RDS",
-    name: "cluster-postgres-stateless",
     properties: ({}) => ({
       BackupRetentionPeriod: 1,
       DatabaseName: "dev",
+      DBClusterIdentifier: "cluster-postgres-stateless",
       Engine: "aurora-postgresql",
       EngineVersion: "10.18",
       MasterUsername: process.env.CLUSTER_POSTGRES_STATELESS_MASTER_USERNAME,

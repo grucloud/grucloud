@@ -27,7 +27,8 @@ exports.createResources = () => [
     name: "vpc-postgres::subnet-1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "192.168.0.0/19",
+      NewBits: 3,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-postgres",
@@ -39,7 +40,8 @@ exports.createResources = () => [
     name: "vpc-postgres::subnet-2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "192.168.32.0/19",
+      NewBits: 3,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-postgres",
@@ -118,8 +120,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "lambda-policy",
     properties: ({}) => ({
+      PolicyName: "lambda-policy",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -142,8 +144,8 @@ exports.createResources = () => [
   {
     type: "DBSubnetGroup",
     group: "RDS",
-    name: "subnet-group-postgres",
     properties: ({}) => ({
+      DBSubnetGroupName: "subnet-group-postgres",
       DBSubnetGroupDescription: "db subnet group",
       Tags: [
         {
@@ -159,7 +161,6 @@ exports.createResources = () => [
   {
     type: "DBInstance",
     group: "RDS",
-    name: "db-instance",
     properties: ({}) => ({
       DBInstanceIdentifier: "db-instance",
       DBInstanceClass: "db.t3.micro",

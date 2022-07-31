@@ -20,7 +20,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: () => ({
-      snsTopic: "sam-app-SNSTopic-15XRP2Y8B6PO1",
+      snsTopics: ["sam-app-SNSTopic-15XRP2Y8B6PO1"],
     }),
   },
   {
@@ -35,7 +35,7 @@ exports.createResources = () => [
             {
               Effect: "Allow",
               Principal: {
-                Service: "s3.amazonaws.com",
+                Service: `s3.amazonaws.com`,
               },
               Action: "sns:Publish",
               Resource: `arn:aws:sns:${
@@ -46,7 +46,7 @@ exports.createResources = () => [
                   "aws:SourceAccount": `${config.accountId()}`,
                 },
                 ArnEquals: {
-                  "aws:SourceArn": "arn:aws:s3:::grucloud-s3-sns-test",
+                  "aws:SourceArn": `arn:aws:s3:::grucloud-s3-sns-test`,
                 },
               },
             },

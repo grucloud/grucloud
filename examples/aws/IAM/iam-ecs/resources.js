@@ -15,7 +15,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: "ec2.amazonaws.com",
+              Service: `ec2.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },
@@ -34,7 +34,7 @@ exports.createResources = () => [
     type: "InstanceProfile",
     group: "IAM",
     name: "ecsInstanceRole",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       roles: ["ecsInstanceRole"],
     }),
   },

@@ -1124,8 +1124,9 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "shared-services-vpc-cw-access-policy-20220717111207838000000002",
     properties: ({}) => ({
+      PolicyName:
+        "shared-services-vpc-cw-access-policy-20220717111207838000000002",
       PolicyDocument: {
         Statement: [
           {
@@ -1151,8 +1152,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "spoke-vpc-1-cw-access-policy-20220717111208786100000004",
     properties: ({}) => ({
+      PolicyName: "spoke-vpc-1-cw-access-policy-20220717111208786100000004",
       PolicyDocument: {
         Statement: [
           {
@@ -1178,8 +1179,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "spoke-vpc-2-cw-access-policy-20220717111208293100000003",
     properties: ({}) => ({
+      PolicyName: "spoke-vpc-2-cw-access-policy-20220717111208293100000003",
       PolicyDocument: {
         Statement: [
           {

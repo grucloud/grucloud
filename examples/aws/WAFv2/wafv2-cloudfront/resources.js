@@ -103,7 +103,6 @@ exports.createResources = () => [
   {
     type: "WebACLCloudFront",
     group: "WAFv2",
-    name: "webacl-cloudfront",
     properties: ({}) => ({
       Capacity: 0,
       DefaultAction: {

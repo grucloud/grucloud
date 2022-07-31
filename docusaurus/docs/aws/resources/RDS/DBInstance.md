@@ -39,6 +39,8 @@ exports.createResources = () => [
 ## Code Examples
 
 - [postgres](https://github.com/grucloud/grucloud/blob/main/examples/aws/RDS/postgres)
+- [aurora-v2](https://github.com/grucloud/grucloud/blob/main/examples/aws/RDS/aurora-v2)
+- [apigw-http-api-lambda-rds-proxy](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-http-api-lambda-rds-proxy)
 
 ## Properties
 

@@ -25,11 +25,20 @@ exports.createResources = () => [
 
 ## Code Examples
 
+- [aurora-v2](https://github.com/grucloud/grucloud/blob/main/examples/aws/RDS/aurora-v2)
+- [postgres](https://github.com/grucloud/grucloud/blob/main/examples/aws/RDS/postgres)
 - [stateless postgres](https://github.com/grucloud/grucloud/blob/main/examples/aws/RDS/postgres-stateless)
+- [apigw-http-api-lambda-rds-proxy](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-http-api-lambda-rds-proxy)
+- [auroraserverless-secretsmanager](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/auroraserverless-secretsmanager)
+- [fargate-aurora-serverless-cdk](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/fargate-aurora-serverless-cdk)
 
 ## Properties
 
 - [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBSubnetGroup-property)
+
+## Dependencies
+
+- [EC2 Subnet](../EC2/Subnet.md)
 
 ## Used By
 

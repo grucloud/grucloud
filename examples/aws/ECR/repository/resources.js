@@ -4,10 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Registry",
-    group: "ECR",
-  },
-  {
     type: "Repository",
     group: "ECR",
     properties: ({ config }) => ({

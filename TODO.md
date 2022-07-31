@@ -17,9 +17,6 @@
 [WARNING] Docs markdown link couldn't be resolved: (../Route53RecovertControlConfig/RoutingControl.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/resources/Route53/HealthCheck.md for version current
 
 - EventSourceMapping inferName
-- DBProxy doc: list
-- DBCluster doc list
-- DBProxyTargetGroup doc
 - Network Manager docs
 - SSM Document doc
 

@@ -10,8 +10,8 @@ const {
 //TODO Host
 
 const GROUP = "CodeStarConnections";
-
-const compareCodeStarConnection = compareAws({ tagsKey: "tags" });
+const tagsKey = "tags";
+const compareCodeStarConnection = compareAws({ tagsKey });
 
 module.exports = pipe([
   () => [
@@ -34,6 +34,7 @@ module.exports = pipe([
     defaultsDeep({
       group: GROUP,
       isOurMinion,
+      tagsKey,
       compare: compareCodeStarConnection({}),
     })
   ),

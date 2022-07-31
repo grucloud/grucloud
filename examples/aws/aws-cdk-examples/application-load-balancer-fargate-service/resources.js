@@ -50,7 +50,8 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "172.31.32.0/20",
+      NewBits: 4,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -62,7 +63,8 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "172.31.48.0/20",
+      NewBits: 4,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -74,7 +76,8 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "172.31.64.0/20",
+      NewBits: 4,
+      NetworkNumber: 4,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -86,7 +89,8 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "172.31.80.0/20",
+      NewBits: 4,
+      NetworkNumber: 5,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -98,8 +102,9 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "172.31.0.0/20",
       MapPublicIpOnLaunch: true,
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -111,8 +116,9 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "172.31.16.0/20",
       MapPublicIpOnLaunch: true,
+      NewBits: 4,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",

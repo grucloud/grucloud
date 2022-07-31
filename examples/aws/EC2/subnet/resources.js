@@ -36,7 +36,8 @@ exports.createResources = () => [
       `project-vpc::project-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.128.0/20",
+      NewBits: 4,
+      NetworkNumber: 8,
     }),
     dependencies: ({}) => ({
       vpc: "project-vpc",
@@ -49,7 +50,8 @@ exports.createResources = () => [
       `project-vpc::project-subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.144.0/20",
+      NewBits: 4,
+      NetworkNumber: 9,
     }),
     dependencies: ({}) => ({
       vpc: "project-vpc",
@@ -62,7 +64,8 @@ exports.createResources = () => [
       `project-vpc::project-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/20",
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "project-vpc",
@@ -75,7 +78,8 @@ exports.createResources = () => [
       `project-vpc::project-subnet-public2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.16.0/20",
+      NewBits: 4,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "project-vpc",

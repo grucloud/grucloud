@@ -6,9 +6,8 @@ exports.createResources = () => [
   {
     type: "Group",
     group: "IAM",
-    name: "my-group",
     properties: ({}) => ({
-      Path: "/",
+      GroupName: "my-group",
       AttachedPolicies: [
         {
           PolicyName: "AmazonEC2ReadOnlyAccess",

@@ -11,15 +11,11 @@ exports.createResources = () => [
       CidrBlock: "192.168.0.0/16",
     }),
   },
-  {
-    type: "InternetGateway",
-    group: "EC2",
-    name: "internet-gateway",
-  },
+  { type: "InternetGateway", group: "EC2", name: "internet-gateway" },
   {
     type: "InternetGatewayAttachment",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
       internetGateway: "internet-gateway",
     }),
@@ -29,10 +25,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpc::subnet-a",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 3,
+      NetworkNumber: 0,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -41,10 +38,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpc::subnet-b",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 3,
+      NetworkNumber: 1,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
@@ -53,14 +51,14 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpc::rt-default",
     isDefault: true,
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "vpc::rt-default",
       subnet: "vpc::subnet-a",
     }),
@@ -68,7 +66,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "vpc::rt-default",
       subnet: "vpc::subnet-b",
     }),
@@ -79,7 +77,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       DestinationCidrBlock: "0.0.0.0/0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "vpc::rt-default",
       ig: "internet-gateway",
     }),

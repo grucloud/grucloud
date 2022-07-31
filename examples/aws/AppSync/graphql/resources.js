@@ -213,12 +213,12 @@ exports.createResources = () => [
     group: "Lambda",
     properties: ({}) => ({
       Configuration: {
-        FunctionName: "lambda-fns",
         Environment: {
           Variables: {
             NOTES_TABLE: `AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R`,
           },
         },
+        FunctionName: "lambda-fns",
         Handler: "main.handler",
         MemorySize: 1024,
         Runtime: "nodejs12.x",

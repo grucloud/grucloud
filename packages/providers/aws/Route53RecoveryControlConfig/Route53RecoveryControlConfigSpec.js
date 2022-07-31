@@ -140,7 +140,7 @@ module.exports = pipe([
           type: "RoutingControl",
           group: GROUP,
           list: true,
-          dependencyId:
+          dependencyIds:
             ({ lives, config }) =>
             (live) =>
               pipe([

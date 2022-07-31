@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    properties: () => ({
+    properties: ({}) => ({
       logGroupName: "my-log-group",
     }),
   },
@@ -61,8 +61,9 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "AWSLambdaBasicExecutionRole-1bf0f6d5-a5f9-44cf-917b-b5d3085e3c1e",
     properties: ({ config }) => ({
+      PolicyName:
+        "AWSLambdaBasicExecutionRole-1bf0f6d5-a5f9-44cf-917b-b5d3085e3c1e",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [

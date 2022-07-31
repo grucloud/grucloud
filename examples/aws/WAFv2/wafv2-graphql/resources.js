@@ -24,7 +24,6 @@ exports.createResources = () => [
   {
     type: "WebACL",
     group: "WAFv2",
-    name: "my-waf",
     properties: ({}) => ({
       Capacity: 1,
       DefaultAction: {

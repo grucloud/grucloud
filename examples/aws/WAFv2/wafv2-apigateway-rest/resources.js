@@ -435,20 +435,21 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       restApi: "PetStore",
+      account: "default",
     }),
   },
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    properties: () => ({
+    properties: ({}) => ({
       logGroupName: "restapi",
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "roleApiGatewayCloudWatch",
     properties: ({}) => ({
+      RoleName: "roleApiGatewayCloudWatch",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -474,13 +475,11 @@ exports.createResources = () => [
   {
     type: "WebACL",
     group: "WAFv2",
-    name: "my-webacl",
     properties: ({}) => ({
       Capacity: 1,
       DefaultAction: {
         Allow: {},
       },
-      //LabelNamespace: "awswaf:840541460064:webacl:my-webacl:",
       ManagedByFirewallManager: false,
       Name: "my-webacl",
       Rules: [

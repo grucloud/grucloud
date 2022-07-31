@@ -359,6 +359,12 @@ module.exports = pipe([
         ({ providerConfig, lives }) =>
           pipe([
             pick(["PolicyName", "PolicyDocument", "Path", "Description"]),
+            assign({
+              PolicyName: pipe([
+                get("PolicyName"),
+                replaceRegion({ lives, providerConfig }),
+              ]),
+            }),
             assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
           ]),
       ]),
