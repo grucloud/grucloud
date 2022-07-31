@@ -4,10 +4,6 @@
 
 ## Aws
 
-[WARNING] Docs markdown link couldn't be resolved: (./resources/CloudFormation/Stack.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
-[WARNING] Docs markdown link couldn't be resolved: (./resources/CloudFront/CachePolicy.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
-[WARNING] Docs markdown link couldn't be resolved: (./resources/CloudFront/Function.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
-[WARNING] Docs markdown link couldn't be resolved: (./resources/EC2/ManagedPrefixList.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
 [WARNING] Docs markdown link couldn't be resolved: (./resources/EC2/TransitGatewayAttachment.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
 [WARNING] Docs markdown link couldn't be resolved: (./resources/ECS/ContainerInstance.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
 [WARNING] Docs markdown link couldn't be resolved: (./resources/NetworkFirewall/Policy.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current

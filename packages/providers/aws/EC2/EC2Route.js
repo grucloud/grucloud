@@ -20,8 +20,9 @@ const {
   size,
   append,
   callProp,
-  when,
   prepend,
+  identity,
+  when,
 } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
@@ -49,8 +50,6 @@ exports.EC2Route = ({ spec, config }) => {
     pipe([
       tap(() => {
         assert(live.RouteTableId);
-        assert(lives);
-        //logger.debug(`route findId ${JSON.stringify(live)}`);
       }),
       () =>
         lives.getById({
@@ -106,7 +105,25 @@ exports.EC2Route = ({ spec, config }) => {
           assert(false, "invalid route target");
         },
       ]),
-      appendCidrSuffix(live),
+      switchCase([
+        () => live.DestinationPrefixListId,
+        (id) =>
+          pipe([
+            () =>
+              lives.getById({
+                id: live.DestinationPrefixListId,
+                type: "ManagedPrefixList",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            get("name"),
+            tap((name) => {
+              assert(name);
+            }),
+            prepend(`${id}-`),
+          ])(),
+        appendCidrSuffix(live),
+      ]),
       tap((params) => {
         assert(true);
       }),
@@ -177,20 +194,14 @@ exports.EC2Route = ({ spec, config }) => {
     ]),
     method: "describeRouteTables",
     getField: "RouteTables",
-    decorate: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      get("live"),
-      findRoute,
-    ]),
+    decorate: pipe([get("live"), findRoute]),
     ignoreErrorCodes,
   });
 
   const getListFromLive = ({ lives }) =>
     pipe([
       tap(() => {
-        logger.debug(`getListFromLive`);
+        //logger.debug(`getListFromLive`);
       }),
       () =>
         lives.getByType({
@@ -201,7 +212,7 @@ exports.EC2Route = ({ spec, config }) => {
       flatMap((resource) =>
         pipe([
           tap(() => {
-            logger.debug(`getList resource ${resource.name}`);
+            //logger.debug(`getList resource ${resource.name}`);
           }),
           () => resource,
           get("live"),
@@ -273,9 +284,6 @@ exports.EC2Route = ({ spec, config }) => {
     ])();
 
   const create = pipe([
-    tap((params) => {
-      assert(true);
-    }),
     switchCase([
       and([
         get("payload.VpcEndpointId"),
@@ -304,9 +312,6 @@ exports.EC2Route = ({ spec, config }) => {
           resolvedDependencies,
         }) =>
           pipe([
-            tap((params) => {
-              assert(resolvedDependencies);
-            }),
             () =>
               retryCall({
                 name: `create route ${name}, is up ? `,
@@ -316,9 +321,6 @@ exports.EC2Route = ({ spec, config }) => {
                       lives,
                       resolvedDependencies,
                     }),
-                  tap((params) => {
-                    assert(true);
-                  }),
                   findRoute(payload),
                 ]),
                 config: { retryCount: 12 * 5, retryDelay: 5e3 },
@@ -333,9 +335,6 @@ exports.EC2Route = ({ spec, config }) => {
   const destroy = switchCase([
     ({ live, lives }) =>
       pipe([
-        tap((params) => {
-          assert(lives);
-        }),
         and([
           pipe([
             () => live,
@@ -350,28 +349,15 @@ exports.EC2Route = ({ spec, config }) => {
                 group: "EC2",
                 providerName: config.providerName,
               }),
-            tap((params) => {
-              assert(true);
-            }),
             eq(get("live.VpcEndpointType"), "Gateway"),
-            tap((params) => {
-              assert(true);
-            }),
           ]),
         ]),
       ])(),
     ({ live: { GatewayId, RouteTableId } }) =>
       pipe([
-        tap(() => {
-          assert(GatewayId);
-          assert(RouteTableId);
-        }),
         () => ({
           VpcEndpointId: GatewayId,
           RemoveRouteTableIds: [RouteTableId],
-        }),
-        tap(({ VpcEndpointId }) => {
-          assert(VpcEndpointId);
         }),
         ec2().modifyVpcEndpoint,
       ])(),
@@ -401,6 +387,7 @@ exports.EC2Route = ({ spec, config }) => {
       vpcEndpoint,
       transitGateway,
       egressOnlyInternetGateway,
+      prefixList,
     },
   }) =>
     pipe([
@@ -420,38 +407,38 @@ exports.EC2Route = ({ spec, config }) => {
         RouteTableId: getField(routeTable, "RouteTableId"),
       }),
       when(
+        () => prefixList,
+        defaultsDeep({
+          DestinationPrefixListId: getField(prefixList, "PrefixListId"),
+        })
+      ),
+      switchCase([
         () => natGateway,
         defaultsDeep({
           NatGatewayId: getField(natGateway, "NatGatewayId"),
-        })
-      ),
-      when(
+        }),
         () => ig,
         defaultsDeep({
           GatewayId: getField(ig, "InternetGatewayId"),
-        })
-      ),
-      when(
+        }),
         () => vpcEndpoint,
         defaultsDeep({
           VpcEndpointId: getField(vpcEndpoint, "VpcEndpointId"),
-        })
-      ),
-      when(
+        }),
         () => transitGateway,
         defaultsDeep({
           TransitGatewayId: getField(transitGateway, "TransitGatewayId"),
-        })
-      ),
-      when(
+        }),
         () => egressOnlyInternetGateway,
         defaultsDeep({
           EgressOnlyInternetGatewayId: getField(
             egressOnlyInternetGateway,
             "EgressOnlyInternetGatewayId"
           ),
-        })
-      ),
+        }),
+
+        identity,
+      ]),
     ])();
 
   return {

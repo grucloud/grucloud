@@ -1384,6 +1384,7 @@ module.exports = pipe([
           natGateway,
           vpcEndpoint,
           transitGateway,
+          prefixList,
           egressOnlyInternetGateway,
         },
       }) =>
@@ -1405,7 +1406,11 @@ module.exports = pipe([
             pipe([append(`-eogw`)]),
             pipe([append("-local")]),
           ]),
-          appendCidrSuffix(properties),
+          switchCase([
+            () => prefixList,
+            append(`-${prefixList}`),
+            appendCidrSuffix(properties),
+          ]),
         ])(),
       includeDefaultDependencies: true,
       dependencies: {
@@ -1436,6 +1441,12 @@ module.exports = pipe([
           group: "EC2",
           parent: true,
           dependencyId: ({ lives, config }) => get("NatGatewayId"),
+        },
+        prefixList: {
+          type: "ManagedPrefixList",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("DestinationPrefixListId"),
         },
         vpcEndpoint: {
           type: "VpcEndpoint",
@@ -2107,11 +2118,27 @@ module.exports = pipe([
       type: "ManagedPrefixList",
       dependencies: {},
       Client: EC2ManagedPrefixList,
+      inferName: get("properties.PrefixListName"),
       compare: compareEC2({
-        filterTarget: () => pipe([pick([])]),
-        filterLive: () => pipe([pick([])]),
+        filterAll: () => pipe([pick(["Entries", "MaxEntries"])]),
       }),
-      filterLive: () => pipe([pick(["AddressFamily"])]),
+      omitProperties: [
+        "PrefixListId",
+        "State",
+        "PrefixListArn",
+        "Version",
+        "OwnerId",
+      ],
+      filterLive: ({ providerConfig, lives }) =>
+        pipe([
+          pick(["PrefixListName", "AddressFamily", "MaxEntries", "Entries"]),
+          assign({
+            PrefixListName: pipe([
+              get("PrefixListName"),
+              replaceRegion({ providerConfig }),
+            ]),
+          }),
+        ]),
     },
     {
       type: "PlacementGroup",

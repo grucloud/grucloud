@@ -425,7 +425,10 @@ const AwsClient =
               () => created,
               pickCreated({ pickId, payload, name, resolvedDependencies }),
               tap((params) => {
-                assert(isObject(params));
+                assert(
+                  isObject(params),
+                  `create pickCreated should return an object`
+                );
                 // logger.debug(
                 //   `create isUpById: ${name}, ${JSON.stringify(params)}`
                 // );

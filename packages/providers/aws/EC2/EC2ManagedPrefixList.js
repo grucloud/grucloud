@@ -1,114 +1,142 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
-const { getByNameCore } = require("@grucloud/core/Common");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  eq,
+  assign,
+  fork,
+  switchCase,
+} = require("rubico");
+const { defaultsDeep, first, values } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
-const { AwsClient } = require("../AwsClient");
-const {
-  createEC2,
-  tagResource,
-  untagResource,
-  findDependenciesVpc,
-} = require("./EC2Common");
+const { createAwsResource } = require("../AwsClient");
+const { tagResource, untagResource } = require("./EC2Common");
 
 const findId = get("live.PrefixListId");
+const pickId = pick(["PrefixListId"]);
 const findName = get("live.PrefixListName");
+
 const ignoreErrorCodes = ["InvalidPrefixListID.NotFound"];
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
-exports.EC2ManagedPrefixList = ({ spec, config }) => {
-  const ec2 = createEC2(config);
-  const client = AwsClient({ spec, config })(ec2);
+const cannotBeDeleted = eq(get("live.OwnerId"), "AWS");
 
-  const findDependencies = ({ live, lives, config }) => [
-    findDependenciesVpc({ live }),
-  ];
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#getManagedPrefixListEntries-property
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      Entries: pipe([
+        pickId,
+        pick(["PrefixListId"]),
+        endpoint().getManagedPrefixListEntries,
+        get("Entries"),
+      ]),
+    }),
+  ]);
 
+const createModel = () => ({
+  package: "ec2",
+  client: "EC2",
+  ignoreErrorCodes,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeManagedPrefixLists-property
-  const getList = client.getList({
-    method: "describeManagedPrefixLists",
-    getParam: "PrefixLists",
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeManagedPrefixLists-property
-  const getById = client.getById({
-    pickId: pipe([
-      tap(({ PrefixListId }) => {
-        assert(PrefixListId);
-      }),
-      ({ PrefixListId }) => ({ PrefixListIds: [PrefixListId] }),
-    ]),
+  getById: {
+    pickId: pipe([({ PrefixListId }) => ({ PrefixListIds: [PrefixListId] })]),
     method: "describeManagedPrefixLists",
     getField: "PrefixLists",
     ignoreErrorCodes,
-  });
-
-  const getByName = getByNameCore({ getList, findName });
-
+    decorate,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeManagedPrefixLists-property
+  getList: {
+    method: "describeManagedPrefixLists",
+    getParam: "PrefixLists",
+    decorate,
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createManagedPrefixList-property
-  const create = client.create({
+  create: {
     method: "createManagedPrefixList",
-    pickCreated: () => pipe([get("ManagedPrefixList")]),
+    pickCreated: () => pipe([get("PrefixList")]),
     isInstanceUp: eq(get("State"), "create-complete"),
-    getById,
-  });
-
+    isInstanceError: eq(get("State"), "create-failed"),
+    getErrorMessage: get("StateMessage", "create-failed"),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifyManagedPrefixList-property
-  const update = client.update({
+  update: {
     method: "modifyManagedPrefixList",
-    getById,
-  });
-
-  // TODO isInstanceDown ?
-  // State "delete-complete"
+    filterParams: ({ payload, live, diff }) =>
+      pipe([
+        () => diff,
+        switchCase([
+          get("liveDiff.updated.MaxEntries"),
+          fork({ MaxEntries: () => payload.MaxEntries }),
+          fork({
+            CurrentVersion: () => live.Version,
+            AddEntries: pipe([get("liveDiff.updated.Entries", {}), values]),
+            RemoveEntries: pipe([
+              get("targetDiff.updated.Entries", {}),
+              values,
+            ]),
+          }),
+        ]),
+        assign({ PrefixListId: () => live.PrefixListId }),
+      ])(),
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteManagedPrefixList-property
-  const destroy = client.destroy({
-    pickId: pick(["PrefixListId"]),
+  destroy: {
+    pickId,
     method: "deleteManagedPrefixList",
-    getById,
+    isInstanceError: eq(get("State"), "delete-failed"),
+    getErrorMessage: get("StateMessage", "delete-failed"),
     ignoreErrorCodes,
     ignoreErrorMessages: [
       "The action is not supported for an AWS-managed prefix list",
     ],
-  });
+  },
+});
 
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies,
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        PrefixListName: name,
-        TagSpecifications: [
-          {
-            ResourceType: "prefix-list",
-            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-          },
-        ],
-      }),
-    ])();
-
-  const cannotBeDeleted = eq(get("live.OwnerId"), "AWS");
-
-  return {
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
+exports.EC2ManagedPrefixList = ({ spec, config }) =>
+  createAwsResource({
+    model: createModel({ config }),
     spec,
-    findId,
-    findDependencies,
-    getByName,
-    getById,
-    findName,
-    create,
-    update,
-    destroy,
-    getList,
-    configDefault,
+    config,
     managedByOther: cannotBeDeleted,
     cannotBeDeleted: cannotBeDeleted,
-    tagResource: tagResource({ endpoint: ec2 }),
-    untagResource: untagResource({ endpoint: ec2 }),
-  };
-};
+    findName,
+    findId,
+    getByName: ({ endpoint }) =>
+      pipe([
+        ({ name }) => ({
+          Filters: [
+            {
+              Name: "prefix-list-name",
+              Values: [name],
+            },
+          ],
+        }),
+        endpoint().describeManagedPrefixLists,
+        get("PrefixLists"),
+        first,
+      ]),
+    tagResource: tagResource,
+    untagResource: untagResource,
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      dependencies,
+    }) =>
+      pipe([
+        () => otherProps,
+        defaultsDeep({
+          TagSpecifications: [
+            {
+              ResourceType: "prefix-list",
+              Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+            },
+          ],
+        }),
+      ])(),
+  });

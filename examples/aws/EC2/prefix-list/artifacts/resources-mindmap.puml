@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project prefix-list
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ ManagedPrefixList (1)
+@endmindmap

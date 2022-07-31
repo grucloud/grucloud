@@ -71,9 +71,10 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [Route Table](./RouteTable.md)
-- [Internet Gateway](./InternetGateway.md)
-- [Nat Gateway](./NatGateway.md)
-- [Vpc Endpoint](./VpcEndpoint.md)
-- [Transit Gateway](./TransitGateway.md)
 - [EgressOnlyInternetGateway](./EgressOnlyInternetGateway.md)
+- [Internet Gateway](./InternetGateway.md)
+- [Managed Prefix List](./ManagedPrefixList.md)
+- [Nat Gateway](./NatGateway.md)
+- [Route Table](./RouteTable.md)
+- [Transit Gateway](./TransitGateway.md)
+- [Vpc Endpoint](./VpcEndpoint.md)
