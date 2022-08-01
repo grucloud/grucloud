@@ -19,7 +19,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       snsTopics: ["sam-app-SNSTopic-15XRP2Y8B6PO1"],
     }),
   },

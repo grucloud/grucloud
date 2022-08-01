@@ -533,7 +533,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       RoleName:
         "CdkStack-FargateServiceTaskDefExecutionRole9194820-18VY1XIQQ7L55",
       AssumeRolePolicyDocument: {
@@ -573,11 +573,9 @@ exports.createResources = () => [
               },
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-                Resource: `${getId({
-                  type: "LogGroup",
-                  group: "CloudWatchLogs",
-                  name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n",
-                })}:*`,
+                Resource: `arn:aws:logs:${
+                  config.region
+                }:${config.accountId()}:log-group:CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n:*`,
                 Effect: "Allow",
               },
             ],

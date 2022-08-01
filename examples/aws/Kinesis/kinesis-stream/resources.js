@@ -95,6 +95,7 @@ exports.createResources = () => [
       BatchSize: 100,
       MaximumBatchingWindowInSeconds: 0,
       ParallelizationFactor: 1,
+      MaximumRecordAgeInSeconds: -1,
       BisectBatchOnFunctionError: false,
       MaximumRetryAttempts: -1,
       TumblingWindowInSeconds: 0,

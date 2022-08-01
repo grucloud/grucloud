@@ -192,28 +192,6 @@ const securityGroupRulePickProperties = pipe([
     ]),
 ]);
 
-const ec2InstanceDependencies = {
-  placementGroup: {
-    type: "PlacementGroup",
-    group: "EC2",
-    dependencyId: ({ lives, config }) =>
-      pipe([
-        get("Placement.GroupName"),
-        (name) =>
-          pipe([
-            () =>
-              lives.getByName({
-                name,
-                type: "PlacementGroup",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("id"),
-          ])(),
-      ]),
-  },
-};
-
 const buildAvailabilityZone = pipe([
   get("AvailabilityZone"),
   last,
@@ -240,6 +218,8 @@ const securityGroupRuleDependencies = {
           pluck("GroupId"),
         ])(),
   },
+
+  //TODO ManagedPrefixList
 };
 
 const sortByFromPort = pipe([
@@ -1446,7 +1426,13 @@ module.exports = pipe([
           type: "ManagedPrefixList",
           group: "EC2",
           parent: true,
-          dependencyId: ({ lives, config }) => get("DestinationPrefixListId"),
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              unless(
+                pipe([get("GatewayId", ""), callProp("startsWith", "vpce-")]),
+                get("DestinationPrefixListId")
+              ),
+            ]),
         },
         vpcEndpoint: {
           type: "VpcEndpoint",

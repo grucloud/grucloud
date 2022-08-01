@@ -468,7 +468,6 @@ module.exports = pipe([
               "LastModified",
               "LastProcessingResult",
               "StateTransitionReason",
-              //"MaximumRecordAgeInSeconds",
               "State",
             ]),
             omitIfEmpty([
@@ -498,7 +497,7 @@ module.exports = pipe([
               "DestinationConfig",
               "Topics",
               "Queues",
-              //"MaximumRecordAgeInSeconds",
+              "MaximumRecordAgeInSeconds",
               "BisectBatchOnFunctionError",
               "MaximumRetryAttempts",
               "TumblingWindowInSeconds",

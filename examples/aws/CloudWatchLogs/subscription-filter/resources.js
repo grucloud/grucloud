@@ -89,7 +89,7 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       Configuration: {
         FunctionName: "receive-cloudwatch-log-group",
         Handler: "index.handler",
@@ -114,11 +114,9 @@ exports.createResources = () => [
                 "AWS:SourceAccount": `${config.accountId()}`,
               },
               ArnLike: {
-                "AWS:SourceArn": `${getId({
-                  type: "LogGroup",
-                  group: "CloudWatchLogs",
-                  name: "my-log-group",
-                })}:*`,
+                "AWS:SourceArn": `arn:aws:logs:${
+                  config.region
+                }:${config.accountId()}:log-group:my-log-group:*`,
               },
             },
           },

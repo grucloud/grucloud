@@ -29,8 +29,9 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [sqs feeding lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Lambda/nodejs/sqs-lambda/resources.js)
-- [kinesis stream feeding lambda](https://github.com/grucloud/grucloud/blob/main/example/aws/Kinesis/kinesis-stream)
+- [sqs feeding lambda](https://github.com/grucloud/grucloud/blob/main/examples/aws/Lambda/nodejs/sqs-lambda/)
+- [kinesis stream feeding lambda](https://github.com/grucloud/grucloud/blob/main/examples/aws/Kinesis/kinesis-stream)
+- [serverless-patterns sqs-lambda-terraform-python](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/sqs-lambda-terraform-python)
 
 ## Properties
 

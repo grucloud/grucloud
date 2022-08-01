@@ -106,6 +106,12 @@ exports.EC2Route = ({ spec, config }) => {
         },
       ]),
       switchCase([
+        pipe([
+          () => live,
+          get("GatewayId", ""),
+          callProp("startsWith", "vpce"),
+        ]),
+        identity,
         () => live.DestinationPrefixListId,
         (id) =>
           pipe([
@@ -436,7 +442,6 @@ exports.EC2Route = ({ spec, config }) => {
             "EgressOnlyInternetGatewayId"
           ),
         }),
-
         identity,
       ]),
     ])();

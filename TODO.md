@@ -12,6 +12,8 @@
 [WARNING] Docs markdown link couldn't be resolved: (../EC2/TransitGatewayConnectPeer.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/resources/NetworkManager/TransitGatewayConnectPeerAssociation.md for version current
 [WARNING] Docs markdown link couldn't be resolved: (../Route53RecovertControlConfig/RoutingControl.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/resources/Route53/HealthCheck.md for version current
 
+- security group and prefix list
+- route to InstanceId, NetworkInterfaceId, VpcPeeringConnectionId
 - EventSourceMapping inferName
 - Network Manager docs
 - SSM Document doc
