@@ -11,7 +11,7 @@ const {
   filter,
   and,
 } = require("rubico");
-const { when, isEmpty, includes } = require("rubico/x");
+const { isEmpty, includes } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const logger = require("@grucloud/core/logger")({
@@ -54,9 +54,6 @@ const createModel = ({ config }) => ({
     method: "describeVpcPeeringConnections",
     getField: "VpcPeeringConnections",
     pickId: pipe([
-      tap(({ VpcPeeringConnectionId }) => {
-        assert(VpcPeeringConnectionId);
-      }),
       ({ VpcPeeringConnectionId }) => ({
         VpcPeeringConnectionIds: [VpcPeeringConnectionId],
       }),
@@ -75,13 +72,6 @@ const createModel = ({ config }) => ({
           ])
         ),
       ]),
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpcPeeringConnection-property
   create: {
@@ -89,7 +79,7 @@ const createModel = ({ config }) => ({
     pickCreated: ({ payload }) => pipe([get("VpcPeeringConnection")]),
     configIsUp: { retryCount: 20 * 10, retryDelay: 5e3 },
     isInstanceError: eq(get("Status.Code"), "failed"),
-    getErrorMessage: get("Status.Message", "error"),
+    getErrorMessage: get("Status.Message", "failed"),
     isInstanceUp: pipe([
       tap(({ Status }) => {
         logger.debug(`VpcPeeringConnection State: ${JSON.stringify(Status)}`);
@@ -102,22 +92,12 @@ const createModel = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteVpcPeeringConnection-property
   destroy: {
     method: "deleteVpcPeeringConnection",
-    pickId: pipe([
-      tap(({ VpcPeeringConnectionId }) => {
-        assert(VpcPeeringConnectionId);
-      }),
-      pick(["VpcPeeringConnectionId"]),
-    ]),
+    pickId: pipe([pick(["VpcPeeringConnectionId"])]),
     isInstanceDown,
   },
 });
 
-const findId = pipe([
-  get("live.VpcPeeringConnectionId"),
-  tap((VpcPeeringConnectionId) => {
-    assert(VpcPeeringConnectionId);
-  }),
-]);
+const findId = pipe([get("live.VpcPeeringConnectionId")]);
 
 const findName =
   ({ config }) =>

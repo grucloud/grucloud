@@ -4,7 +4,8 @@
 
 ## Aws
 
-- route to InstanceId, NetworkInterfaceId, VpcPeeringConnectionId
+- VpcPeeringConnection doc
+- route to NetworkInterfaceId
 - EventSourceMapping inferName
 - Network Manager docs
 - SSM Document doc

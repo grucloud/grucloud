@@ -24,6 +24,7 @@ exports.testEnd2End = ({
   programOptions,
   title,
   listOptions,
+  outputDir = "",
   steps = [],
   doGraph = !process.env.CONTINUOUS_INTEGRATION,
   destroyAll = true,
@@ -100,23 +101,23 @@ exports.testEnd2End = ({
             cli.genCode({
               commandOptions: {
                 inventory: "artifacts/inventory.json",
-                outputDir: "artifacts",
+                outputDir,
                 outputEnv: "default.template.env",
                 prompt: false,
               },
             }),
-          () =>
-            cli.list({
-              programOptions: {
-                json: "artifacts/inventory.json",
-                noOpen: true,
-              },
-              commandOptions: {
-                graph: true,
-                our: true,
-                ...listOptions,
-              },
-            }),
+          // () =>
+          //   cli.list({
+          //     programOptions: {
+          //       json: "artifacts/inventory.json",
+          //       noOpen: true,
+          //     },
+          //     commandOptions: {
+          //       graph: true,
+          //       //our: true,
+          //       ...listOptions,
+          //     },
+          //   }),
           () => steps,
           callProp("splice", 1),
           tap((params) => {

@@ -1340,7 +1340,15 @@ module.exports = pipe([
         getLiveTags: () => [],
       })({
         filterAll: () =>
-          pipe([omit(["Origin", "State", "DestinationPrefixListId"])]),
+          pipe([
+            omit([
+              "Origin",
+              "State",
+              "DestinationPrefixListId",
+              "InstanceOwnerId",
+            ]),
+            when(get("InstanceId"), omit(["NetworkInterfaceId"])),
+          ]),
         filterTarget:
           () =>
           ({ VpcEndpointId, ...others }) =>
@@ -1357,13 +1365,15 @@ module.exports = pipe([
       inferName: ({
         properties,
         dependenciesSpec: {
-          routeTable,
+          ec2Instance,
+          egressOnlyInternetGateway,
           ig,
           natGateway,
-          vpcEndpoint,
-          transitGateway,
           prefixList,
-          egressOnlyInternetGateway,
+          transitGateway,
+          routeTable,
+          vpcEndpoint,
+          vpcPeeringConnection,
         },
       }) =>
         pipe([
@@ -1382,6 +1392,10 @@ module.exports = pipe([
             pipe([append(`-tgw`)]),
             () => egressOnlyInternetGateway,
             pipe([append(`-eogw`)]),
+            () => ec2Instance,
+            pipe([append(`::${ec2Instance}`)]),
+            () => vpcPeeringConnection,
+            pipe([append(`::pcx`)]),
             pipe([append("-local")]),
           ]),
           switchCase([
@@ -1392,11 +1406,17 @@ module.exports = pipe([
         ])(),
       includeDefaultDependencies: true,
       dependencies: {
-        routeTable: {
-          type: "RouteTable",
+        ec2Instance: {
+          type: "Instance",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("InstanceId"),
+        },
+        egressOnlyInternetGateway: {
+          type: "EgressOnlyInternetGateway",
           group: "EC2",
           parent: true,
-          dependencyId: ({ lives, config }) => get("RouteTableId"),
+          dependencyId: ({ lives, config }) =>
+            get("EgressOnlyInternetGatewayId"),
         },
         ig: {
           type: "InternetGateway",
@@ -1432,6 +1452,18 @@ module.exports = pipe([
               ),
             ]),
         },
+        routeTable: {
+          type: "RouteTable",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("RouteTableId"),
+        },
+        transitGateway: {
+          type: "TransitGateway",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("TransitGatewayId"),
+        },
         vpcEndpoint: {
           type: "VpcEndpoint",
           group: "EC2",
@@ -1448,18 +1480,11 @@ module.exports = pipe([
               get("id"),
             ]),
         },
-        transitGateway: {
-          type: "TransitGateway",
+        vpcPeeringConnection: {
+          type: "VpcPeeringConnection",
           group: "EC2",
           parent: true,
-          dependencyId: ({ lives, config }) => get("TransitGatewayId"),
-        },
-        egressOnlyInternetGateway: {
-          type: "EgressOnlyInternetGateway",
-          group: "EC2",
-          parent: true,
-          dependencyId: ({ lives, config }) =>
-            get("EgressOnlyInternetGatewayId"),
+          dependencyId: ({ lives, config }) => get("VpcPeeringConnectionId"),
         },
       },
     },

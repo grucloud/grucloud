@@ -14,6 +14,26 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "RouteTable",
+    group: "EC2",
+    name: "vpc-default::rt-default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "vpc-default",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "0.0.0.0/0",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "vpc-default::rt-default",
+      ec2Instance: "my-instance",
+    }),
+  },
+  {
     type: "SecurityGroup",
     group: "EC2",
     name: "sg::vpc-default::default",
@@ -25,20 +45,15 @@ exports.createResources = () => [
   {
     type: "Instance",
     group: "EC2",
-    name: "web-server-ec2-simple",
+    name: "my-instance",
     properties: ({ config }) => ({
       InstanceType: "t2.micro",
       Placement: {
         AvailabilityZone: `${config.region}d`,
       },
-      Tags: [
-        {
-          Key: "mykey",
-          Value: "myvalue",
-        },
-      ],
       Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220606.1 x86_64 HVM gp2",
       },
     }),
     dependencies: ({}) => ({

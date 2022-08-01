@@ -94,6 +94,26 @@ exports.EC2Route = ({ spec, config }) => {
             get("name", live.GatewayId),
             prepend(`${rt}-`),
           ])(),
+        // Instance
+        () => live.InstanceId,
+        (rt) =>
+          pipe([
+            () =>
+              lives.getById({
+                type: "Instance",
+                group: "EC2",
+                providerName: config.providerName,
+                id: live.InstanceId,
+              }),
+            get("name", live.InstanceId),
+            prepend(`${rt}::`),
+          ])(),
+        // Vpc Peering Connection
+        () => live.VpcPeeringConnectionId,
+        pipe([append(`::pcx`)]),
+        // Network Interface
+        () => live.NetworkInterfaceId,
+        pipe([append(`-eni`)]),
         // Transit Gateway
         () => live.TransitGatewayId,
         pipe([append(`-tgw`)]),
@@ -150,11 +170,13 @@ exports.EC2Route = ({ spec, config }) => {
     pipe([() => live, eq(get("GatewayId"), "local")])();
 
   const findRoute = ({
+    EgressOnlyInternetGatewayId,
     GatewayId,
+    InstanceId,
     NatGatewayId,
     TransitGatewayId,
     VpcEndpointId,
-    EgressOnlyInternetGatewayId,
+    VpcPeeringConnectionId,
   }) =>
     pipe([
       tap((rt) => {
@@ -166,7 +188,7 @@ exports.EC2Route = ({ spec, config }) => {
         logger.debug(
           `findRoute #Routes ${size(
             Routes
-          )}, GatewayId ${GatewayId}, NatGatewayId ${NatGatewayId}, TransitGatewayId ${TransitGatewayId}, VpcEndpointId: ${VpcEndpointId}, EgressOnlyInternetGatewayId: ${EgressOnlyInternetGatewayId}`
+          )}, GatewayId ${GatewayId}, NatGatewayId ${NatGatewayId}, TransitGatewayId ${TransitGatewayId}, VpcEndpointId: ${VpcEndpointId}, EgressOnlyInternetGatewayId: ${EgressOnlyInternetGatewayId}, InstanceId: ${InstanceId}`
         );
         logger.debug(JSON.stringify(Routes));
       }),
@@ -182,6 +204,10 @@ exports.EC2Route = ({ spec, config }) => {
             () => VpcEndpointId,
             eq(get("GatewayId"), VpcEndpointId),
             () => EgressOnlyInternetGatewayId,
+            eq(get("InstanceId"), InstanceId),
+            () => VpcPeeringConnectionId,
+            eq(get("VpcPeeringConnectionId"), VpcPeeringConnectionId),
+            () => InstanceId,
             eq(get("EgressOnlyInternetGatewayId"), EgressOnlyInternetGatewayId),
             //
             () => {
@@ -390,8 +416,10 @@ exports.EC2Route = ({ spec, config }) => {
       routeTable,
       natGateway,
       ig,
+      ec2Instance,
       vpcEndpoint,
       transitGateway,
+      vpcPeeringConnection,
       egressOnlyInternetGateway,
       prefixList,
     },
@@ -404,8 +432,10 @@ exports.EC2Route = ({ spec, config }) => {
             natGateway ||
             vpcEndpoint ||
             transitGateway ||
-            egressOnlyInternetGateway,
-          "Route needs the dependency 'ig', or 'natGateway' or 'vpcEndpoint', or 'transitGateway' or 'egressOnlyInternetGateway'"
+            egressOnlyInternetGateway ||
+            ec2Instance ||
+            vpcPeeringConnection,
+          "Route needs the dependency 'ig', or 'natGateway' or 'vpcEndpoint', or 'transitGateway' or 'egressOnlyInternetGateway' or 'ec2Instance', or 'vpcPeeringConnection'"
         );
       }),
       () => properties,
@@ -427,9 +457,20 @@ exports.EC2Route = ({ spec, config }) => {
         defaultsDeep({
           GatewayId: getField(ig, "InternetGatewayId"),
         }),
+        () => ec2Instance,
+        defaultsDeep({
+          InstanceId: getField(ec2Instance, "InstanceId"),
+        }),
         () => vpcEndpoint,
         defaultsDeep({
           VpcEndpointId: getField(vpcEndpoint, "VpcEndpointId"),
+        }),
+        () => vpcPeeringConnection,
+        defaultsDeep({
+          VpcPeeringConnectionId: getField(
+            vpcPeeringConnection,
+            "VpcPeeringConnectionId"
+          ),
         }),
         () => transitGateway,
         defaultsDeep({

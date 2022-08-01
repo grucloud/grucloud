@@ -32,6 +32,8 @@ exports.createResources = () => [
 ## Examples
 
 - [Managed Prefix List simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/prefix-list)
+- [route with prefix list](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/route-prefix-list)
+- [security group with prefix list](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/security-group-prefix-list)
 
 ## Properties
 

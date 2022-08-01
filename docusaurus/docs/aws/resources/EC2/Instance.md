@@ -57,9 +57,10 @@ exports.createResources = () => [
 
 ### Used By
 
-- [Elastic IpAddress Association](./ElasticIpAddressAssociation.md)
-- [Volume Attachment](./VolumeAttachment.md)
 - [CloudWatch Metric Alarm](../CloudWatch/MetricAlarm.md)
+- [EC2 Elastic IpAddress Association](./ElasticIpAddressAssociation.md)
+- [EC2 Route](./Route.md)
+- [EC2 Volume Attachment](./VolumeAttachment.md)
 
 ### Update
 
