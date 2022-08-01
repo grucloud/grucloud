@@ -36,6 +36,10 @@ exports.createResources = () => [
 - [Transit Gateway](./TransitGateway.md)
 - [Customer Gateway](./CustomerGateway.md)
 
+### Used By
+
+- [TransitGatewayAttachment](./TransitGatewayAttachment.md)
+
 ### List
 
 ```sh

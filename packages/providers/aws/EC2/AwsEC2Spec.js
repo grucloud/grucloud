@@ -2439,6 +2439,7 @@ module.exports = pipe([
           group: "EC2",
           dependencyId: ({ lives, config }) => get("TransitGatewayId"),
         },
+        //TODO do we need vpc ?
         vpc: {
           type: "Vpc",
           group: "EC2",

@@ -41,7 +41,7 @@ exports.createResources = () => [
 
 - [Vpc](../EC2/Vpc.md)
 - [Subnet](../EC2/Subnet.md)
-- [Firewall Policy](./FirewallPolicy.md)
+- [Firewall Policy](./Policy.md)
 
 ### Used By
 

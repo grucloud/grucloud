@@ -92,7 +92,7 @@ exports.createResources = () => [
 
 ### Used By
 
-- [Firewall Policy](./FirewallPolicy.md)
+- [Firewall Policy](./Policy.md)
 
 ### List
 

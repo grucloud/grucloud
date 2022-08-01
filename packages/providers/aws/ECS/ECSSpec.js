@@ -27,7 +27,8 @@ const {
   findDependenciesInEnvironment,
 } = require("./ECSTaskDefinition");
 const { ECSTask } = require("./ECSTask");
-const { ECSContainerInstance } = require("./ECSContainerInstance");
+
+//const { ECSContainerInstance } = require("./ECSContainerInstance");
 
 const GROUP = "ECS";
 const tagsKey = "tags";
@@ -410,23 +411,18 @@ module.exports = pipe([
         },
       },
     },
-    {
-      type: "ContainerInstance",
-      dependencies: {
-        cluster: {
-          type: "Cluster",
-          group: "ECS",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("clusterArn"),
-        },
-        // ec2Instance: {
-        //   type: "Instance",
-        //   group: "EC2",
-        //   dependencyId: ({ lives, config }) => get("ec2InstanceId"),
-        // },
-      },
-      Client: ECSContainerInstance,
-    },
+    // {
+    //   type: "ContainerInstance",
+    //   dependencies: {
+    //     cluster: {
+    //       type: "Cluster",
+    //       group: "ECS",
+    //       parent: true,
+    //       dependencyId: ({ lives, config }) => get("clusterArn"),
+    //     },
+    //   },
+    //   Client: ECSContainerInstance,
+    // },
   ],
   map(defaultsDeep({ group: GROUP, tagsKey, isOurMinion })),
 ]);

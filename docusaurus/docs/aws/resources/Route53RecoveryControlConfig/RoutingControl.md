@@ -36,6 +36,8 @@ exports.createResources = () => [
 
 ## Used By
 
+- [Route53 Health Check](../Route53/HealthCheck.md)
+
 ## List
 
 List the endpoints with the **Route53RecoveryControlConfig::RoutingControl** filter:

@@ -4,15 +4,6 @@
 
 ## Aws
 
-[WARNING] Docs markdown link couldn't be resolved: (./resources/EC2/TransitGatewayAttachment.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
-[WARNING] Docs markdown link couldn't be resolved: (./resources/ECS/ContainerInstance.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
-[WARNING] Docs markdown link couldn't be resolved: (./resources/NetworkFirewall/Policy.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
-[WARNING] Docs markdown link couldn't be resolved: (./resources/Organisations/Root.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
-[WARNING] Docs markdown link couldn't be resolved: (./resources/Organisations/OrganisationalUnit.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/AwsResources.md for version current
-[WARNING] Docs markdown link couldn't be resolved: (../EC2/TransitGatewayConnectPeer.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/resources/NetworkManager/TransitGatewayConnectPeerAssociation.md for version current
-[WARNING] Docs markdown link couldn't be resolved: (../Route53RecovertControlConfig/RoutingControl.md) in /Users/fredericheem/grucloud_azure/docusaurus/docs/aws/resources/Route53/HealthCheck.md for version current
-
-- security group and prefix list
 - route to InstanceId, NetworkInterfaceId, VpcPeeringConnectionId
 - EventSourceMapping inferName
 - Network Manager docs
