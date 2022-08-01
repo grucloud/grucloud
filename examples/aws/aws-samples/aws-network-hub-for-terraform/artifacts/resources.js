@@ -1663,17 +1663,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 53,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "10.0.0.0/10",
-            Description: "Allow 53 traffic across org to dns endpoints",
-          },
-        ],
-        ToPort: 53,
-      },
+      FromPort: 53,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "10.0.0.0/10",
+          Description: "Allow 53 traffic across org to dns endpoints",
+        },
+      ],
+      ToPort: 53,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::dns_vpc::Network-DNS-Traffic-SG",
@@ -1683,17 +1681,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 53,
-        IpProtocol: "udp",
-        IpRanges: [
-          {
-            CidrIp: "10.0.0.0/10",
-            Description: "Allow 53 traffic across org to dns endpoints",
-          },
-        ],
-        ToPort: 53,
-      },
+      FromPort: 53,
+      IpProtocol: "udp",
+      IpRanges: [
+        {
+          CidrIp: "10.0.0.0/10",
+          Description: "Allow 53 traffic across org to dns endpoints",
+        },
+      ],
+      ToPort: 53,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::dns_vpc::Network-DNS-Traffic-SG",
@@ -1703,17 +1699,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 443,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "10.0.0.0/10",
-            Description: "Allow 443 traffic across org to vpc endpoints",
-          },
-        ],
-        ToPort: 443,
-      },
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "10.0.0.0/10",
+          Description: "Allow 443 traffic across org to vpc endpoints",
+        },
+      ],
+      ToPort: 443,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::endpoint_vpc::MGMT-VPC-Endpoints-Traffic-SG",

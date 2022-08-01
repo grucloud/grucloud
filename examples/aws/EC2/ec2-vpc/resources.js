@@ -98,21 +98,17 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: -1,
-        IpProtocol: "icmp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: -1,
-      },
+      IpProtocol: "icmp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      Ipv6Ranges: [
+        {
+          CidrIpv6: "::/0",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-ec2-example::security-group",
@@ -122,21 +118,19 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 22,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: 22,
-      },
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      Ipv6Ranges: [
+        {
+          CidrIpv6: "::/0",
+        },
+      ],
+      ToPort: 22,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-ec2-example::security-group",

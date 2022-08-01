@@ -61,9 +61,9 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
           providerName,
         }),
       tap((vpc) => {
-        assert(vpc);
+        //assert(vpc);
       }),
-      get("name"),
+      get("name", live.VpcId),
       tap((vpcName) => {
         assert(vpcName);
       }),

@@ -104,6 +104,7 @@ const {
   AwsSecurityGroupRuleEgress,
   compareSecurityGroupRule,
   inferNameSecurityGroupRule,
+  addIcmpPorts,
 } = require("./AwsSecurityGroupRule");
 const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const {
@@ -186,7 +187,7 @@ const securityGroupRulePickProperties = pipe([
         () => hasDependency({ type: "SecurityGroup", group: "EC2" })(resource),
         omit(["IpPermission.UserIdGroupPairs"])
       ),
-      pick(["IpPermission"]),
+      omit(["GroupId", "GroupName", "UserIdGroupPairs", "PrefixListIds"]),
       omitPort({ port: "FromPort" }),
       omitPort({ port: "ToPort" }),
     ]),
@@ -212,14 +213,15 @@ const securityGroupRuleDependencies = {
     dependencyIds:
       ({ lives, config }) =>
       (live) =>
-        pipe([
-          () => live,
-          get("IpPermission.UserIdGroupPairs", []),
-          pluck("GroupId"),
-        ])(),
+        pipe([() => live, get("UserIdGroupPairs", []), pluck("GroupId")])(),
   },
-
-  //TODO ManagedPrefixList
+  prefixLists: {
+    type: "ManagedPrefixList",
+    group: "EC2",
+    list: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([get("PrefixListIds"), pluck("PrefixListId")]),
+  },
 };
 
 const sortByFromPort = pipe([
@@ -281,11 +283,7 @@ const getIpPermissions =
         )
       ),
       map(({ properties }) =>
-        pipe([
-          () => properties({}),
-          get("IpPermission"),
-          omit(["UserIdGroupPairs"]),
-        ])()
+        pipe([() => properties({}), addIcmpPorts, omit(["UserIdGroupPairs"])])()
       ),
       sortByFromPort,
     ])();

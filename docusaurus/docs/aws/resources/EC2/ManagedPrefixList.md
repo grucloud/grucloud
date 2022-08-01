@@ -42,6 +42,8 @@ exports.createResources = () => [
 ## Used By
 
 - [EC2 Route](../EC2/Route.md)
+- [EC2 SecurityGroupRuleIngress](../EC2/SecurityGroupRuleIngress.md)
+- [EC2 SecurityGroupRuleEgress](../EC2/SecurityGroupRuleEgress.md)
 
 ## List
 

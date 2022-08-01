@@ -14,6 +14,7 @@ const {
   pick,
   flatMap,
   omit,
+  assign,
 } = require("rubico");
 const {
   size,
@@ -35,7 +36,7 @@ const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { buildTags, findEksCluster } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { createEC2 } = require("./EC2Common");
 
 const protocolFromToPortToName = ({ IpProtocol, FromPort, ToPort }) =>
@@ -76,7 +77,7 @@ const groupNameFromId = ({ GroupId, lives, config }) =>
 
 const ruleDefaultToName =
   ({ kind, lives, config }) =>
-  ({ GroupId, IpPermission }) =>
+  ({ GroupId, ...IpPermission }) =>
     pipe([
       tap((params) => {
         assert(kind);
@@ -104,10 +105,17 @@ const ruleDefaultToName =
       }),
     ])();
 
+const addIcmpPorts = when(
+  eq(get("IpProtocol"), "icmp"),
+  defaultsDeep({ ToPort: -1, FromPort: -1 })
+);
+
+exports.addIcmpPorts = addIcmpPorts;
+
 exports.inferNameSecurityGroupRule =
   ({ kind }) =>
   ({
-    properties: { IpPermission },
+    properties: { ...IpPermission },
     dependenciesSpec: { securityGroup, securityGroupFrom },
   }) =>
     pipe([
@@ -132,7 +140,7 @@ const findName =
   ({ live, lives }) =>
     pipe([
       tap(() => {
-        assert(live.IpPermission, `no IpPermission in ${tos(live)}`);
+        //assert(live.IpPermission, `no IpPermission in ${tos(live)}`);
         assert(lives);
       }),
       //TODO
@@ -162,7 +170,7 @@ const SecurityGroupRuleBase = ({ config }) => {
         and([
           pipe([
             () => live,
-            get("IpPermission.UserIdGroupPairs"),
+            get("UserIdGroupPairs"),
             and([
               lte(size, 1),
               pipe([first, or([isEmpty, eq(get("GroupId"), live.GroupId)])]),
@@ -186,13 +194,10 @@ const SecurityGroupRuleBase = ({ config }) => {
           // Ingress
           pipe([
             () => live,
-            get("IpPermission"),
             pick(["IpProtocol", "FromPort", "ToPort"]),
             (IpPermission) =>
               isDeepEqual(IpPermission, {
                 IpProtocol: "-1",
-                //FromPort: -1,
-                //ToPort: -1,
               }),
           ]),
         ]),
@@ -225,26 +230,39 @@ const SecurityGroupRuleBase = ({ config }) => {
   const configDefault = ({
     name,
     namespace,
-    properties: { Tags, IpPermission, ...otherProps },
-    dependencies: { securityGroup, securityGroupFrom },
+    properties: { Tags, ...IpPermission },
+    dependencies: { securityGroup, securityGroupFrom, prefixLists },
   }) =>
     pipe([
       tap(() => {
         assert(securityGroup, "missing securityGroup dependency");
       }),
-      () => ({}),
-      securityFromConfig({ securityGroupFrom }),
-      defaultsDeep(otherProps),
-      defaultsDeep({
-        GroupId: getField(securityGroup, "GroupId"),
-        IpPermissions: [IpPermission],
-        TagSpecifications: [
-          {
-            ResourceType: "security-group-rule",
-            Tags: buildTags({ config, namespace, UserTags: Tags }),
-          },
-        ],
-      }),
+      () => IpPermission,
+      addIcmpPorts,
+      when(
+        () => prefixLists,
+        assign({
+          PrefixListIds: pipe([
+            () => prefixLists,
+            map((pl) => ({ PrefixListId: getField(pl, "PrefixListId") })),
+          ]),
+        })
+      ),
+      (IpPermissionWithPrefix) =>
+        pipe([
+          () => ({}),
+          securityFromConfig({ securityGroupFrom }),
+          defaultsDeep({
+            GroupId: getField(securityGroup, "GroupId"),
+            IpPermissions: [IpPermissionWithPrefix],
+            TagSpecifications: [
+              {
+                ResourceType: "security-group-rule",
+                Tags: buildTags({ config, namespace, UserTags: Tags }),
+              },
+            ],
+          }),
+        ])(),
     ])();
 
   const findNamespace = ({ live, lives }) =>
@@ -271,10 +289,7 @@ const SecurityGroupRuleBase = ({ config }) => {
           map(
             pipe([
               omitIfEmpty(["PrefixListIds", "IpRanges", "Ipv6Ranges"]),
-              tap((params) => {
-                assert(true);
-              }),
-              (IpPermission) => ({ IpPermission, GroupId, GroupName }),
+              (IpPermission) => ({ GroupId, GroupName, ...IpPermission }),
             ])
           ),
         ])()
@@ -286,9 +301,6 @@ const SecurityGroupRuleBase = ({ config }) => {
     ({ IsEgress = false }) =>
     ({ resources = [], lives } = {}) =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
         () =>
           lives.getByType({
             type: "SecurityGroup",
@@ -401,7 +413,7 @@ const SecurityGroupRuleBase = ({ config }) => {
           logger.debug(`${kind} ${name}: ${JSON.stringify(live)}`);
         }),
         () => live,
-        ({ GroupId, IpPermission }) => ({
+        ({ GroupId, ...IpPermission }) => ({
           GroupId,
           ...(IpPermission && {
             IpPermissions: [IpPermission],
@@ -478,7 +490,7 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
         assert(true);
       }),
       get("live"),
-      ({ GroupId, IpPermission }) =>
+      ({ GroupId, ...IpPermission }) =>
         `ingress::${GroupId}::${JSON.stringify(IpPermission)}`,
       tap((params) => {
         assert(true);
@@ -561,19 +573,14 @@ exports.compareSecurityGroupRule = compareAws({
   getLiveTags: () => [],
 })({
   filterAll: () =>
-    pipe([
-      omit([
-        "IpPermission.UserIdGroupPairs",
-        "SecurityGroupRuleId",
-        "GroupName",
-      ]),
-    ]),
+    pipe([omit(["UserIdGroupPairs", "SecurityGroupRuleId", "GroupName"])]),
   filterTarget: () =>
     pipe([
-      ({ GroupId, IpPermissions }) => ({
+      ({ GroupId, PrefixListIds, IpPermissions }) => ({
         GroupId,
-        IpPermission: IpPermissions[0],
+        PrefixListIds,
+        ...IpPermissions[0],
       }),
     ]),
-  filterLive: () => pipe([omit(["IpPermission.UserIdGroupPairs", "Tags"])]),
+  filterLive: () => pipe([omit(["UserIdGroupPairs", "Tags"])]),
 });

@@ -185,16 +185,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 5432,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "92.147.31.54/32",
-          },
-        ],
-        ToPort: 5432,
-      },
+      FromPort: 5432,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "92.147.31.54/32",
+        },
+      ],
+      ToPort: 5432,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::pg-vpc::pg",

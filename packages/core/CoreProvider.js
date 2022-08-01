@@ -1251,7 +1251,6 @@ function CoreProvider({
       }),
       assign({ providerName: () => providerName }),
       tap(({ results }) => {
-        //getLives().setByProvider({ providerName, livesPerProvider: results });
         logger.debug(
           `listLives provider ${providerName}, ${size(
             results

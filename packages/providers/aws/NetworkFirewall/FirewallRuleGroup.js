@@ -16,6 +16,7 @@ const createModel = ({ config }) => ({
     "ResourceNotFoundException",
     "InvalidRuleGroupID.NotFound",
   ],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkFirewall.html#describeRuleGroup-property
   getById: {
     method: "describeRuleGroup",
     pickId,

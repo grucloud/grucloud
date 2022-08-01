@@ -17,44 +17,43 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      FromPort: 22,
+      FromPort: 0,
       IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      Ipv6Ranges: [
-        {
-          CidrIpv6: "::/0",
-        },
-      ],
-      ToPort: 22,
+      ToPort: 0,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-default::default",
+      prefixLists: ["my-prefix-list"],
     }),
   },
   {
     type: "SecurityGroupRuleEgress",
     group: "EC2",
     properties: ({}) => ({
-      FromPort: 1024,
+      FromPort: 0,
       IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      Ipv6Ranges: [
-        {
-          CidrIpv6: "::/0",
-        },
-      ],
       ToPort: 65535,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-default::default",
+      prefixLists: ["my-prefix-list"],
+    }),
+  },
+  {
+    type: "ManagedPrefixList",
+    group: "EC2",
+    properties: ({}) => ({
+      PrefixListName: "my-prefix-list",
+      AddressFamily: "IPv4",
+      MaxEntries: 4,
+      Entries: [
+        {
+          Cidr: "10.0.0.0/16",
+        },
+        {
+          Cidr: "10.1.0.0/16",
+        },
+      ],
     }),
   },
 ];

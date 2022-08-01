@@ -27,9 +27,7 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-      },
+      IpProtocol: "-1",
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::VPC::ClusterSharedNode",

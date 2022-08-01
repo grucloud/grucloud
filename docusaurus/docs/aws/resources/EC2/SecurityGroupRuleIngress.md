@@ -17,16 +17,14 @@ exports.createResources = () => [
     group: "EC2",
     name: "EcsSecurityGroup-rule-ingress-tcp-80-v4",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "tcp",
-        FromPort: 80,
-        ToPort: 80,
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-      },
+      IpProtocol: "tcp",
+      FromPort: 80,
+      ToPort: 80,
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
     }),
     dependencies: () => ({
       securityGroup: "sg::Vpc::EcsSecurityGroup",
@@ -41,7 +39,8 @@ exports.createResources = () => [
 
 ### Dependencies
 
-- [SecurityGroup](./SecurityGroup.md)
+- [EC2 SecurityGroup](./SecurityGroup.md)
+- [EC2 ManagedPrefixList](./ManagedPrefixList.md)
 
 ## Listing
 

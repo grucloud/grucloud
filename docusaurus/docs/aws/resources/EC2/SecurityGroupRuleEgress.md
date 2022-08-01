@@ -16,40 +16,38 @@ exports.createResources = () => [
     type: "SecurityGroupRuleEgress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "tcp",
-        FromPort: 1024,
-        ToPort: 65535,
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-      },
+      IpProtocol: "tcp",
+      FromPort: 1024,
+      ToPort: 65535,
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      Ipv6Ranges: [
+        {
+          CidrIpv6: "::/0",
+        },
+      ],
     }),
     dependencies: () => ({
       securityGroup: "sg::Vpc::security-group-cluster-test",
     }),
   },
 ];
-];
 ```
 
 ### Dependencies
 
-- [SecurityGroup](./SecurityGroup.md)
+- [EC2 SecurityGroup](./SecurityGroup.md)
+- [EC2 ManagedPrefixList](./ManagedPrefixList.md)
 
 ## Listing
 
 List only the ingress rules with the filter `SecurityGroupRuleEgress`
 
 ```sh
-gc l -t SecurityGroupRuleEgress
+gc l -t EC2::SecurityGroupRuleEgress
 ```
 
 ```sh
