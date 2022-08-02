@@ -65,17 +65,17 @@ exports.EC2Route = ({ spec, config }) => {
       switchCase([
         // Nat Gateway
         () => live.NatGatewayId,
-        append("-nat-gateway"),
+        append("::nat-gateway"),
         // Local route
         () => live.GatewayId === "local",
-        append("-local"),
+        append("::local"),
         // Internet Gateway
         pipe([
           () => live,
           get("GatewayId", ""),
           callProp("startsWith", "igw-"),
         ]),
-        pipe([append("-igw")]),
+        pipe([append("::igw")]),
         // Vpc Endpoint
         pipe([
           () => live,
@@ -92,7 +92,7 @@ exports.EC2Route = ({ spec, config }) => {
                 id: live.GatewayId,
               }),
             get("name", live.GatewayId),
-            prepend(`${rt}-`),
+            prepend(`${rt}::`),
           ])(),
         // Instance
         () => live.InstanceId,
@@ -113,13 +113,13 @@ exports.EC2Route = ({ spec, config }) => {
         pipe([append(`::pcx`)]),
         // Network Interface
         () => live.NetworkInterfaceId,
-        pipe([append(`-eni`)]),
+        pipe([append(`::eni`)]),
         // Transit Gateway
         () => live.TransitGatewayId,
-        pipe([append(`-tgw`)]),
+        pipe([append(`::tgw`)]),
         // Egress Only Internet Gateway
         () => live.EgressOnlyInternetGatewayId,
-        pipe([append(`-eogw`)]),
+        pipe([append(`::eogw`)]),
         // Other
         () => {
           assert(false, "invalid route target");
@@ -128,11 +128,11 @@ exports.EC2Route = ({ spec, config }) => {
       switchCase([
         pipe([
           () => live,
-          get("GatewayId", ""),
-          callProp("startsWith", "vpce"),
+          and([
+            get("DestinationPrefixListId"),
+            not(pipe([get("GatewayId", ""), callProp("startsWith", "vpce")])),
+          ]),
         ]),
-        identity,
-        () => live.DestinationPrefixListId,
         (id) =>
           pipe([
             () =>
@@ -146,7 +146,7 @@ exports.EC2Route = ({ spec, config }) => {
             tap((name) => {
               assert(name);
             }),
-            prepend(`${id}-`),
+            prepend(`${id}::`),
           ])(),
         appendCidrSuffix(live),
       ]),
