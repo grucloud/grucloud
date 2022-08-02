@@ -4,14 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/ecs/containerinsights/service-cluster/performance",
-    properties: ({}) => ({
-      retentionInDays: 1,
-    }),
-  },
-  {
     type: "Vpc",
     group: "EC2",
     name: "project-vpc",
@@ -34,8 +26,9 @@ exports.createResources = () => [
     name: ({ config }) =>
       `project-vpc::project-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.128.0/20",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 8,
     }),
     dependencies: ({}) => ({
       vpc: "project-vpc",
@@ -47,8 +40,9 @@ exports.createResources = () => [
     name: ({ config }) =>
       `project-vpc::project-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/20",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "project-vpc",

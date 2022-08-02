@@ -204,8 +204,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "my-cluster",
     properties: ({}) => ({
+      clusterName: "my-cluster",
       settings: [
         {
           name: "containerInsights",

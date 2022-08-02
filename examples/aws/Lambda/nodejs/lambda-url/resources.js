@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "my-function-url-role-t2xxsa8e",
     properties: ({}) => ({
+      RoleName: "my-function-url-role-t2xxsa8e",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -31,8 +31,9 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "AWSLambdaBasicExecutionRole-9c3ecdb3-2e09-4c84-b290-82222512354a",
     properties: ({ config }) => ({
+      PolicyName:
+        "AWSLambdaBasicExecutionRole-9c3ecdb3-2e09-4c84-b290-82222512354a",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -58,9 +59,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "my-function-url",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "my-function-url",
         Handler: "index.handler",
         Runtime: "nodejs14.x",
       },

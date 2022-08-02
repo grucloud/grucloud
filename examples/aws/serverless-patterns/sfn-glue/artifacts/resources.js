@@ -6,9 +6,9 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "stf_trigger_rule",
     properties: ({}) => ({
       Description: "Sample Event for Glue terraform example",
+      Name: "stf_trigger_rule",
       ScheduleExpression: "rate(10 minutes)",
       State: "ENABLED",
     }),
@@ -25,9 +25,6 @@ exports.createResources = () => [
       sfnStateMachine: "aws-step-function-workflow",
     }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "/aws-glue/jobs/error" },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "/aws-glue/jobs/logs-v2" },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "/aws-glue/jobs/output" },
   {
     type: "Job",
     group: "Glue",
@@ -231,7 +228,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "aws-stf-role",
-      glueJob: "sample-glue-job-terraform",
     }),
   },
 ];

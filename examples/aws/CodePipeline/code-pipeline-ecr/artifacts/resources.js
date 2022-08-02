@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "codepipeline-starha-latest-615512-rule",
     properties: ({}) => ({
       Description:
         "Amazon CloudWatch Events rule to automatically start your pipeline when a change occurs in the Amazon ECR image tag. Deleting this may prevent changes from being detected in that pipeline. Read more: http://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-about-starting.html",
@@ -20,6 +19,7 @@ exports.createResources = () => [
         },
         "detail-type": ["ECR Image Action"],
       },
+      Name: "codepipeline-starha-latest-615512-rule",
       State: "ENABLED",
     }),
   },
@@ -151,8 +151,8 @@ exports.createResources = () => [
   {
     type: "Repository",
     group: "ECR",
-    name: "starhackit",
     properties: ({}) => ({
+      repositoryName: "starhackit",
       imageTagMutability: "MUTABLE",
       imageScanningConfiguration: {
         scanOnPush: false,

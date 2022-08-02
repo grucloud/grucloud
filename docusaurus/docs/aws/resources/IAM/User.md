@@ -10,31 +10,11 @@ exports.createResources = () => [
   {
     type: "User",
     group: "IAM",
-    name: "Alice",
     properties: ({}) => ({
-      Path: "/",
+      UserName: "Alice",
     }),
     dependencies: () => ({
       policies: ["myPolicy-to-user"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    name: "myPolicy-to-user",
-    properties: ({}) => ({
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["s3:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow ec2:Describe",
     }),
   },
 ];
@@ -47,43 +27,12 @@ exports.createResources = () => [
   {
     type: "User",
     group: "IAM",
-    name: "Alice",
     properties: ({}) => ({
-      Path: "/",
+      UserName: "Alice",
     }),
     dependencies: () => ({
       iamGroups: ["Admin"],
       policies: ["myPolicy-to-user"],
-    }),
-  },
-  {
-    type: "Group",
-    group: "IAM",
-    name: "Admin",
-    properties: ({}) => ({
-      Path: "/",
-    }),
-    dependencies: () => ({
-      policies: ["myPolicy-to-group"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    name: "myPolicy-to-user",
-    properties: ({}) => ({
-      PolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: ["s3:*"],
-            Effect: "Allow",
-            Resource: "*",
-          },
-        ],
-      },
-      Path: "/",
-      Description: "Allow ec2:Describe",
     }),
   },
 ];

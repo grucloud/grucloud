@@ -6,8 +6,7 @@ exports.createResources = () => [
   {
     type: "Account",
     group: "APIGateway",
-    name: "default",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       cloudwatchRole:
         "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-1HLKDWM5HWYRZ",
     }),
@@ -15,8 +14,8 @@ exports.createResources = () => [
   {
     type: "RestApi",
     group: "APIGateway",
-    name: "ApiDynamoRestApi",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
+      name: "ApiDynamoRestApi",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
@@ -47,11 +46,7 @@ exports.createResources = () => [
                 },
               },
               "x-amazon-apigateway-integration": {
-                credentials: `${getId({
-                  type: "Role",
-                  group: "IAM",
-                  name: "ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX",
-                })}`,
+                credentials: `arn:aws:iam::${config.accountId()}:role/ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX`,
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_TEMPLATES",
                 requestParameters: {
@@ -87,11 +82,7 @@ exports.createResources = () => [
                 },
               },
               "x-amazon-apigateway-integration": {
-                credentials: `${getId({
-                  type: "Role",
-                  group: "IAM",
-                  name: "ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX",
-                })}`,
+                credentials: `arn:aws:iam::${config.accountId()}:role/ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX`,
                 httpMethod: "POST",
                 passthroughBehavior: "WHEN_NO_TEMPLATES",
                 requestTemplates: {
@@ -134,16 +125,19 @@ exports.createResources = () => [
         stageName: "prod",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       roles: ["ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX"],
     }),
   },
   {
     type: "Stage",
     group: "APIGateway",
-    properties: ({}) => ({ stageName: "prod" }),
-    dependencies: () => ({
+    properties: ({}) => ({
+      stageName: "prod",
+    }),
+    dependencies: ({}) => ({
       restApi: "ApiDynamoRestApi",
+      account: "default",
     }),
   },
   {
@@ -169,8 +163,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-1HLKDWM5HWYRZ",
     properties: ({}) => ({
+      RoleName:
+        "ApiDynamoStack-ApiDynamoRestApiCloudWatchRole8BD3C-1HLKDWM5HWYRZ",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -195,8 +190,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX",
     properties: ({ getId }) => ({
+      RoleName: "ApiDynamoStack-IntegrationRole35EAE287-X92O12RZGAJX",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -243,7 +238,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "ApiDynamoStack-ApiDynamoTable66095DD3-1B90VIOP8H5XN",
     }),
   },

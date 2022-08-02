@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, switchCase, assign, pick, not } = require("rubico");
+const { pipe, tap, get, switchCase, assign, pick, not, eq } = require("rubico");
 const { defaultsDeep, isEmpty, find, prepend, callProp } = require("rubico/x");
 const tls = require("tls");
 
@@ -20,7 +20,9 @@ const {
 const formatThumbPrint = pipe([
   get("fingerprint"),
   (fingerprint) => fingerprint.replace(/:/g, ""),
-  (fingerprint) => fingerprint.toLowerCase(),
+  //TODO check
+  //callProp("replace", /:/g, ""),
+  callProp("toLowerCase"),
 ]);
 
 const getLastCertificate = (certificate) => {
@@ -92,12 +94,26 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const findId = get("live.Arn");
   const pickId = pipe([({ Arn }) => ({ OpenIDConnectProviderArn: Arn })]);
 
-  //TODO look for cluster name
-  const findName = ({ live }) =>
+  const findName = ({ live, lives, config }) =>
     pipe([
       () => live,
       get("Url"),
-      callProp("replace", "https://", ""),
+      (Url) =>
+        pipe([
+          () =>
+            lives.getByType({
+              providerName: config.providerName,
+              type: "Cluster",
+              group: "EKS",
+            }),
+          find(eq(get("live.identity.oidc.issuer"), `https://${Url}`)),
+          get("name"),
+          switchCase([
+            isEmpty,
+            pipe([() => Url, callProp("replace", "https://", "")]),
+            prepend("eks-cluster::"),
+          ]),
+        ])(),
       prepend("oidp::"),
     ])();
 
@@ -153,7 +169,8 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
         tap(() => {
           assert(payload.Url);
         }),
-        () => fetchThumbprint({ Url: payload.Url }),
+        () => ({ Url: payload.Url }),
+        fetchThumbprint,
         (thumbprint) => defaultsDeep({ ThumbprintList: [thumbprint] })(payload),
       ])(),
     pickCreated: ({ payload }) =>
@@ -171,20 +188,6 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
-  const clusterProperties = ({ cluster }) =>
-    pipe([
-      () => cluster,
-      switchCase([
-        isEmpty,
-        () => ({}),
-        pipe([
-          () => ({
-            Url: getField(cluster, "identity.oidc.issuer"),
-          }),
-        ]),
-      ]),
-    ])();
-
   const configDefault = ({
     name,
     namespace,
@@ -197,10 +200,17 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
       }),
       () => otherProps,
       defaultsDeep({
-        Url: `https://${Url}`,
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
-      defaultsDeep(clusterProperties({ cluster })),
+      switchCase([
+        () => cluster,
+        defaultsDeep({
+          Url: getField(cluster, "identity.oidc.issuer"),
+        }),
+        defaultsDeep({
+          Url: `https://${Url}`,
+        }),
+      ]),
       defaultsDeep({ ClientIDList: ["sts.amazonaws.com"] }),
     ])();
 

@@ -6,12 +6,12 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "terraform-20220331194511828000000002",
     properties: ({ config }) => ({
       EventPattern: {
         account: [`${config.accountId()}`],
         source: ["demo.sfn"],
       },
+      Name: "terraform-20220331194511828000000002",
       State: "ENABLED",
     }),
   },
@@ -30,13 +30,16 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/vendedlogs/states/StateMachine-terraform-20220331194511828000000001",
+    properties: ({}) => ({
+      logGroupName:
+        "/aws/vendedlogs/states/StateMachine-terraform-20220331194511828000000001",
+    }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "terraform-20220331194511828100000004",
     properties: ({}) => ({
+      RoleName: "terraform-20220331194511828100000004",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -57,8 +60,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "terraform-20220331194511828200000005",
     properties: ({}) => ({
+      RoleName: "terraform-20220331194511828200000005",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -79,8 +82,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "terraform-20220331194511828000000003",
     properties: ({}) => ({
+      PolicyName: "terraform-20220331194511828000000003",
       PolicyDocument: {
         Statement: [
           {
@@ -106,8 +109,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "terraform-20220331194525123300000007",
     properties: ({ getId }) => ({
+      PolicyName: "terraform-20220331194525123300000007",
       PolicyDocument: {
         Statement: [
           {
@@ -131,7 +134,6 @@ exports.createResources = () => [
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "eventbridge-state-machine-demo-840541460064",
     properties: ({ getId }) => ({
       definition: {
         Comment: "Simple State Machine with Choice",
@@ -181,6 +183,7 @@ exports.createResources = () => [
         includeExecutionData: true,
         level: "ALL",
       },
+      name: "eventbridge-state-machine-demo-840541460064",
     }),
     dependencies: ({}) => ({
       role: "terraform-20220331194511828100000004",

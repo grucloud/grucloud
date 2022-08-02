@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "AppRunner",
-    name: "mock-server",
     properties: ({ getId }) => ({
+      ServiceName: "mock-server",
       SourceConfiguration: {
         AutoDeploymentsEnabled: false,
         ImageRepository: {
@@ -42,7 +42,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       accessRole: "AppRunnerECRAccessRole",
       repository: "grucloud/mock-server",
     }),
@@ -50,8 +50,8 @@ exports.createResources = () => [
   {
     type: "Repository",
     group: "ECR",
-    name: "grucloud/mock-server",
     properties: ({}) => ({
+      repositoryName: "grucloud/mock-server",
       imageTagMutability: "MUTABLE",
       imageScanningConfiguration: {
         scanOnPush: false,
@@ -64,8 +64,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "AppRunnerECRAccessRole",
     properties: ({}) => ({
+      RoleName: "AppRunnerECRAccessRole",
       Description: "This role gives App Runner permission to access ECR",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
@@ -74,7 +74,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: "build.apprunner.amazonaws.com",
+              Service: `build.apprunner.amazonaws.com`,
             },
             Action: "sts:AssumeRole",
           },

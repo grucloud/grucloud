@@ -133,9 +133,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-LambdaFunction-XmYCD2eSMech",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-LambdaFunction-XmYCD2eSMech",
         Handler: "app.handler",
         Runtime: "python3.7",
         Timeout: 60,

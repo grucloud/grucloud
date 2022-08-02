@@ -25,6 +25,7 @@ const model = {
     method: "createVpcLink",
     getErrorMessage: get("VpcLinkStatusMessage", "error"),
     isInstanceError: eq(get("VpcLinkStatus"), "FAILED"),
+    getErrorMessage: get("VpcLinkStatusMessage", "FAILED"),
     isInstanceUp: eq(get("VpcLinkStatus"), "AVAILABLE"),
   },
   update: { method: "updateVpcLink" },

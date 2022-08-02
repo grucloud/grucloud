@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, map, assign } = require("rubico");
-const { defaultsDeep, pluck } = require("rubico/x");
+const { defaultsDeep, identity } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -41,7 +41,7 @@ const createModel = ({ config }) => ({
     decorate: ({ getById }) => pipe([getById]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkFirewall.html#createFirewall-property
-  create: { method: "createFirewall" },
+  create: { method: "createFirewall", pickCreated: () => get("Firewall") },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkFirewall.html#deleteFirewall-property
   destroy: {
     method: "deleteFirewall",
@@ -72,13 +72,13 @@ exports.Firewall = ({ spec, config }) =>
     }) =>
       pipe([
         tap((params) => {
+          assert(otherProps.FirewallName);
           assert(vpc);
           assert(subnets);
           assert(firewallPolicy);
         }),
         () => otherProps,
         defaultsDeep({
-          FirewallName: name,
           VpcId: getField(vpc, "VpcId"),
           SubnetMappings: pipe([
             () => subnets,

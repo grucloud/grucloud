@@ -12,7 +12,6 @@ exports.createResources = () => [
   {
     type: "Connection",
     group: "CloudWatchEvents",
-    name: "MyConnection-dvMVGg2stExz",
     properties: ({}) => ({
       AuthParameters: {
         ApiKeyAuthParameters: {
@@ -22,6 +21,7 @@ exports.createResources = () => [
       },
       AuthorizationType: "API_KEY",
       Description: "My connection with an API key",
+      Name: "MyConnection-dvMVGg2stExz",
     }),
   },
 ];
@@ -40,10 +40,11 @@ exports.createResources = () => [
 ## Full Examples
 
 - [eventbridge-api-destinations webhook-site](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/eventbridge-api-destinations/1-webhook-site)
+- [eventbridge-api-destinations zendesk](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/eventbridge-api-destinations/5-zendesk)
 
 ## List
 
-The connections can be filtered with the _Connections_ type:
+The connections can be filtered with the _Connection_ type:
 
 ```sh
 gc l -t Connection

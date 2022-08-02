@@ -3,11 +3,16 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "EventBus", group: "CloudWatchEvents", name: "sam-app-EventBus" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "sam-app-EventBus",
+    }),
+  },
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "sam-app-EventBusLogRule-O6HEQDLDXZKV",
     properties: ({}) => ({
       Description: "Send all events to CloudWatch Logs",
       EventPattern: {
@@ -17,6 +22,7 @@ exports.createResources = () => [
           },
         ],
       },
+      Name: "sam-app-EventBusLogRule-O6HEQDLDXZKV",
       State: "ENABLED",
     }),
     dependencies: ({}) => ({
@@ -34,12 +40,18 @@ exports.createResources = () => [
       logGroup: "/aws/events/sam-app",
     }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "/aws/events/sam-app" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    properties: ({}) => ({
+      logGroupName: "/aws/events/sam-app",
+    }),
+  },
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-WorkflowExecutionRole-WM87YTOPGZ2D",
     properties: ({ getId }) => ({
+      RoleName: "sam-app-WorkflowExecutionRole-WM87YTOPGZ2D",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -79,7 +91,6 @@ exports.createResources = () => [
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "MyStateMachine-nfd2eDd0064T",
     properties: ({}) => ({
       definition: {
         StartAt: "SendCustomEvent",
@@ -103,6 +114,7 @@ exports.createResources = () => [
           },
         },
       },
+      name: "MyStateMachine-nfd2eDd0064T",
       tags: [
         {
           key: "stateMachine:createdBy",

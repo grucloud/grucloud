@@ -77,15 +77,25 @@ exports.createResources = () => [
 
 ## Used By
 
+- [CloudTrail Trail](../CloudTrail/Trail.md)
+- [CloudWatch MetricAlarm](../CloudWatch/MetricAlarm.md)
+- [CloudWatchEvent Target](../CloudWatchEvents/Target.md)
 - [SNS Subscription](./Subscription.md)
+- [SQS Queue](../SQS/Queue.md)
 - [StepFunctions StateMachine](../StepFunctions/StateMachine.md)
 - [S3 Bucket](../S3/Bucket.md)
 
 ## Full Examples
 
 - [Simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/SNS/sns-simple)
-- [SNS with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/SNS/sns-lambda)
-- [SNS with SQS](https://github.com/grucloud/grucloud/tree/main/examples/aws/SNS/sns-sqs)
+- [graphql-alarm](https://github.com/grucloud/grucloud/tree/main/examples/aws/AppSync/graphql-alarm)
+- [alarm-stop-ec2](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatch/alarm-stop-ec2)
+- [Route53 health check](https://github.com/grucloud/grucloud/tree/main/examples/aws/Route53/health-check)
+- [s3 sns](https://github.com/grucloud/grucloud/tree/main/examples/aws/S3/s3-sns)
+- [serverless-patterns sfn-sns](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/sfn-sns)
+- [serverless-patterns sns-lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/sns-lambda)
+- [serverless-patterns sns-sqs](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/sns-sqs)
+- [serverless-patterns ta-eventbridge-lambda-s3](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/ta-eventbridge-lambda-s3)
 
 ## List
 

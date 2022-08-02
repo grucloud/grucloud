@@ -110,13 +110,14 @@ exports.createResources = () => [
 
 ## Used By
 
-- [SecurityGroup](./SecurityGroup.md)
-- [EC2](./Instance.md)
+- [EC2 SecurityGroup](./SecurityGroup.md)
+- [EC2 Instance](./Instance.md)
+- [EC2 RouteTableAssociation](./RouteTableAssociation.md)
+- [EC2 NatGateway](./NatGateway.md)
+- [EC2 Flow Logs](./FlowLogs.md)
 - [ECS Service](../ECS/Service.md)
 - [ECS TaskSet](../ECS/TaskSet.md)
-- [RouteTableAssociation](./RouteTableAssociation.md)
-- [NatGateway](./NatGateway.md)
-- [Flow Logs](./FlowLogs.md)
+- [RDS DBSubnetGroup](../RDS/DBSubnetGroup.md)
 
 ## Listing
 

@@ -6,10 +6,10 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "sam-app",
     properties: ({}) => ({
       Description:
         "An Amazon API Gateway WebSocket API and an AWS Lambda function.",
+      Name: "sam-app",
       ProtocolType: "WEBSOCKET",
       RouteSelectionExpression: "$request.body.action",
     }),
@@ -17,15 +17,15 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "prod",
     properties: ({}) => ({
       DefaultRouteSettings: {
         DataTraceEnabled: false,
         LoggingLevel: "OFF",
       },
       Description: "Prod Stage",
+      StageName: "prod",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
     }),
   },
@@ -42,7 +42,7 @@ exports.createResources = () => [
       RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       lambdaFunction: "sam-app-onconnect-function",
     }),
@@ -60,7 +60,7 @@ exports.createResources = () => [
       RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       lambdaFunction: "sam-app-ondisconnect-function",
     }),
@@ -78,7 +78,7 @@ exports.createResources = () => [
       RequestTemplates: {},
       TimeoutInMillis: 29000,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       lambdaFunction: "sam-app-post-function",
     }),
@@ -90,7 +90,7 @@ exports.createResources = () => [
       OperationName: "OnConnectRoute",
       RouteKey: "$connect",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       integration: "integration::sam-app::sam-app-onconnect-function",
     }),
@@ -102,7 +102,7 @@ exports.createResources = () => [
       OperationName: "OnDisconnectRoute",
       RouteKey: "$disconnect",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       integration: "integration::sam-app::sam-app-ondisconnect-function",
     }),
@@ -114,7 +114,7 @@ exports.createResources = () => [
       OperationName: "PostRoute",
       RouteKey: "post",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       integration: "integration::sam-app::sam-app-post-function",
     }),
@@ -122,7 +122,7 @@ exports.createResources = () => [
   {
     type: "Deployment",
     group: "ApiGatewayV2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       stage: "prod",
     }),
@@ -153,8 +153,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-OnConnectLambdaFunctionRole-BWZIV6IR9OMV",
     properties: ({ getId }) => ({
+      RoleName: "sam-app-OnConnectLambdaFunctionRole-BWZIV6IR9OMV",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -217,15 +217,15 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "sam-app-websocket_connections",
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-OnDisconnectLambdaFunctionRole-1K1VHGSO99JHS",
     properties: ({ getId }) => ({
+      RoleName: "sam-app-OnDisconnectLambdaFunctionRole-1K1VHGSO99JHS",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -288,15 +288,15 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "sam-app-websocket_connections",
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-PostLambdaFunctionRole-1DAT8LSZH0D2Y",
     properties: ({ config, getId }) => ({
+      RoleName: "sam-app-PostLambdaFunctionRole-1DAT8LSZH0D2Y",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -375,14 +375,13 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "sam-app-websocket_connections",
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-onconnect-function",
     properties: ({}) => ({
       Configuration: {
         Environment: {
@@ -390,6 +389,7 @@ exports.createResources = () => [
             TABLE_NAME: `sam-app-websocket_connections`,
           },
         },
+        FunctionName: "sam-app-onconnect-function",
         Handler: "onconnect.handler",
         MemorySize: 256,
         Runtime: "nodejs14.x",
@@ -399,15 +399,14 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-OnConnectLambdaFunctionRole-BWZIV6IR9OMV",
-      dynamoDbTable: "sam-app-websocket_connections",
+      dynamoDbTables: ["sam-app-websocket_connections"],
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-ondisconnect-function",
     properties: ({}) => ({
       Configuration: {
         Environment: {
@@ -415,6 +414,7 @@ exports.createResources = () => [
             TABLE_NAME: `sam-app-websocket_connections`,
           },
         },
+        FunctionName: "sam-app-ondisconnect-function",
         Handler: "ondisconnect.handler",
         MemorySize: 256,
         Runtime: "nodejs14.x",
@@ -424,15 +424,14 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-OnDisconnectLambdaFunctionRole-1K1VHGSO99JHS",
-      dynamoDbTable: "sam-app-websocket_connections",
+      dynamoDbTables: ["sam-app-websocket_connections"],
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-post-function",
     properties: ({}) => ({
       Configuration: {
         Environment: {
@@ -440,6 +439,7 @@ exports.createResources = () => [
             TABLE_NAME: `sam-app-websocket_connections`,
           },
         },
+        FunctionName: "sam-app-post-function",
         Handler: "post.handler",
         MemorySize: 256,
         Runtime: "nodejs14.x",
@@ -449,9 +449,9 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-PostLambdaFunctionRole-1DAT8LSZH0D2Y",
-      dynamoDbTable: "sam-app-websocket_connections",
+      dynamoDbTables: ["sam-app-websocket_connections"],
     }),
   },
 ];

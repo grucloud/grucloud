@@ -6,20 +6,19 @@ exports.createResources = () => [
   {
     type: "ApiDestination",
     group: "CloudWatchEvents",
-    name: "my-api",
     properties: ({}) => ({
       HttpMethod: "POST",
       InvocationEndpoint: "https://grucloud.com",
       InvocationRateLimitPerSecond: 300,
+      Name: "my-api",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       connection: "MyConnection-dvMVGg2stExz",
     }),
   },
   {
     type: "Connection",
     group: "CloudWatchEvents",
-    name: "MyConnection-dvMVGg2stExz",
     properties: ({}) => ({
       AuthParameters: {
         ApiKeyAuthParameters: {
@@ -29,7 +28,14 @@ exports.createResources = () => [
       },
       AuthorizationType: "API_KEY",
       Description: "My connection with an API key",
+      Name: "MyConnection-dvMVGg2stExz",
     }),
   },
-  { type: "EventBus", group: "CloudWatchEvents", name: "MyEventBus" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "MyEventBus",
+    }),
+  },
 ];

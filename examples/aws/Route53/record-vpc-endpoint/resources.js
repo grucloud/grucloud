@@ -18,7 +18,8 @@ exports.createResources = () => [
     name: "vpc-4-record-vpc-endpoint::subnet-public",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
-      CidrBlock: "10.0.0.0/24",
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-4-record-vpc-endpoint",

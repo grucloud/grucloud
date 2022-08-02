@@ -14,8 +14,8 @@ exports.createResources = () => [
   {
     type: "DBInstance",
     group: "RDS",
-    name: "db-instance",
     properties: ({ config }) => ({
+      DBInstanceIdentifier: "db-instance",
       DBInstanceClass: "db.t3.micro",
       Engine: "postgres",
       EngineVersion: "12.5",
@@ -39,6 +39,8 @@ exports.createResources = () => [
 ## Code Examples
 
 - [postgres](https://github.com/grucloud/grucloud/blob/main/examples/aws/RDS/postgres)
+- [aurora-v2](https://github.com/grucloud/grucloud/blob/main/examples/aws/RDS/aurora-v2)
+- [apigw-http-api-lambda-rds-proxy](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-http-api-lambda-rds-proxy)
 
 ## Properties
 

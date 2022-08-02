@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-PutMetricFunctionRole-1KQOW6MUXF48I",
     properties: ({}) => ({
+      RoleName: "sam-app-PutMetricFunctionRole-1KQOW6MUXF48I",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -52,9 +52,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-PutMetricFunction-IRljDZikgnoj",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-PutMetricFunction-IRljDZikgnoj",
         Handler: "app.lambdaHandler",
         Runtime: "nodejs14.x",
       },
@@ -62,7 +62,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-PutMetricFunctionRole-1KQOW6MUXF48I",
     }),
   },

@@ -6,7 +6,10 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/flowlogs-vpv-connection",
+    properties: ({}) => ({
+      logGroupName: "/aws/flowlogs-vpv-connection",
+      retentionInDays: 1,
+    }),
   },
   {
     type: "CustomerGateway",

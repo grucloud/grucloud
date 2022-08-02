@@ -3,11 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/cluster-postgres-stateless/postgresql",
-  },
   { type: "KeyPair", group: "EC2", name: "kp-postgres-stateless" },
   {
     type: "Vpc",

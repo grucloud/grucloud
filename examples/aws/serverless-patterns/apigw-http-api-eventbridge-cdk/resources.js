@@ -3,15 +3,21 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Api", group: "ApiGatewayV2", name: "MyHttpApi" },
+  {
+    type: "Api",
+    group: "ApiGatewayV2",
+    properties: ({}) => ({
+      Name: "MyHttpApi",
+    }),
+  },
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "$default",
     properties: ({}) => ({
       AutoDeploy: true,
+      StageName: "$default",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
     }),
   },
@@ -31,7 +37,7 @@ exports.createResources = () => [
       RequestTemplates: {},
       TimeoutInMillis: 10000,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
       eventBus: "MyEventBus",
       role: "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-1LXDAK3DKUOQS",
@@ -43,7 +49,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       RouteKey: "POST /",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
       integration: "integration::MyHttpApi::MyEventBus",
     }),
@@ -56,24 +62,30 @@ exports.createResources = () => [
         "Automatic deployment triggered by changes to the Api configuration",
       AutoDeployed: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "MyHttpApi",
       stage: "$default",
     }),
   },
-  { type: "EventBus", group: "CloudWatchEvents", name: "MyEventBus" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "MyEventBus",
+    }),
+  },
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "ApiEventbridgeStack-EventLoggerRuleC0DD3E40-G6CDILDRSIPL",
     properties: ({}) => ({
       Description: "Log all events",
       EventPattern: {
         region: ["ap-southeast-2"],
       },
+      Name: "ApiEventbridgeStack-EventLoggerRuleC0DD3E40-G6CDILDRSIPL",
       State: "ENABLED",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "MyEventBus",
     }),
   },
@@ -83,7 +95,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Id: "Target0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       rule: "ApiEventbridgeStack-EventLoggerRuleC0DD3E40-G6CDILDRSIPL",
       logGroup: "/aws/events/MyEventBus",
     }),
@@ -91,16 +103,17 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/events/MyEventBus",
     properties: ({}) => ({
+      logGroupName: "/aws/events/MyEventBus",
       retentionInDays: 731,
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-1LXDAK3DKUOQS",
     properties: ({ getId }) => ({
+      RoleName:
+        "ApiEventbridgeStack-EventBridgeIntegrationRoleB322-1LXDAK3DKUOQS",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -133,7 +146,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "MyEventBus",
     }),
   },

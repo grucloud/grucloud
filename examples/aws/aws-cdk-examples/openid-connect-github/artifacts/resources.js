@@ -4,11 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/GitHubOpenIDConnect-CustomAWSCDKOpenIdConnectProvi-Wc2cf40Nu4bv",
-  },
-  {
     type: "OpenIDConnectProvider",
     group: "IAM",
     properties: ({}) => ({

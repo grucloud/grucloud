@@ -6,18 +6,18 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "ApigwFargate",
     properties: ({}) => ({
       Description:
         "Integration between apigw and Application Load-Balanced Fargate Service",
+      Name: "ApigwFargate",
     }),
   },
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "$default",
     properties: ({}) => ({
       AutoDeploy: true,
+      StageName: "$default",
     }),
     dependencies: ({}) => ({
       api: "ApigwFargate",
@@ -68,7 +68,9 @@ exports.createResources = () => [
   {
     type: "VpcLink",
     group: "ApiGatewayV2",
-    name: "V2 VPC Link",
+    properties: ({}) => ({
+      Name: "V2 VPC Link",
+    }),
     dependencies: ({}) => ({
       subnets: [
         "CdkStack/MyVpc::CdkStack/MyVpc/PrivateSubnet1",
@@ -79,7 +81,10 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-0cga6xIMrwPR",
+    properties: ({}) => ({
+      logGroupName:
+        "CdkStack-MyFargateServiceTaskDefwebLogGroup4A6C44E8-0cga6xIMrwPR",
+    }),
   },
   {
     type: "Vpc",
@@ -123,7 +128,8 @@ exports.createResources = () => [
     name: "CdkStack/MyVpc::CdkStack/MyVpc/PrivateSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.128.0/18",
+      NewBits: 2,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
@@ -135,7 +141,8 @@ exports.createResources = () => [
     name: "CdkStack/MyVpc::CdkStack/MyVpc/PrivateSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.192.0/18",
+      NewBits: 2,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
@@ -147,8 +154,9 @@ exports.createResources = () => [
     name: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/18",
       MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
@@ -160,8 +168,9 @@ exports.createResources = () => [
     name: "CdkStack/MyVpc::CdkStack/MyVpc/PublicSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "10.0.64.0/18",
       MapPublicIpOnLaunch: true,
+      NewBits: 2,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "CdkStack/MyVpc",
@@ -369,8 +378,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "CdkStack-MyCluster4C1BA579-fZi4x9tf2fSV",
     properties: ({}) => ({
+      clusterName: "CdkStack-MyCluster4C1BA579-fZi4x9tf2fSV",
       settings: [
         {
           name: "containerInsights",
@@ -382,7 +391,6 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    name: "CdkStackMyFargateServiceTaskDef846A07DE",
     properties: ({ config }) => ({
       containerDefinitions: [
         {
@@ -469,7 +477,6 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "ECS",
-    name: "CdkStack-MyFargateServiceF490C034-ChqvqbMg0Rkx",
     properties: ({ getId }) => ({
       deploymentConfiguration: {
         deploymentCircuitBreaker: {
@@ -523,8 +530,8 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "CdkSt-MyFar-RZX6AW5H3B08",
     properties: ({}) => ({
+      Name: "CdkSt-MyFar-RZX6AW5H3B08",
       Scheme: "internal",
       Type: "application",
       IpAddressType: "ipv4",
@@ -542,8 +549,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "CdkSt-MyFar-JZPHMT1E0V5K",
     properties: ({}) => ({
+      Name: "CdkSt-MyFar-JZPHMT1E0V5K",
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
@@ -568,8 +575,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "CdkStack-MyFargateServiceTaskDefExecutionRoleD6305-1DPVFNV7DEJTX",
     properties: ({ config, getId }) => ({
+      RoleName:
+        "CdkStack-MyFargateServiceTaskDefExecutionRoleD6305-1DPVFNV7DEJTX",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -630,8 +638,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "CdkStack-MyFargateServiceTaskDefTaskRole62C7D397-1ESH968PSU9BX",
     properties: ({}) => ({
+      RoleName:
+        "CdkStack-MyFargateServiceTaskDefTaskRole62C7D397-1ESH968PSU9BX",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

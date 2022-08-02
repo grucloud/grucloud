@@ -13,7 +13,7 @@ const {
   eq,
   fork,
 } = require("rubico");
-const { defaultsDeep, when, includes, pluck } = require("rubico/x");
+const { defaultsDeep, when, includes, pluck, prepend } = require("rubico/x");
 
 const AdmZip = require("adm-zip");
 const path = require("path");
@@ -66,6 +66,7 @@ module.exports = pipe([
     {
       type: "Layer",
       Client: Layer,
+      inferName: get("properties.LayerName"),
       compare: compareLayer,
       displayResource: () => pipe([omit(["Content.Data", "Content.ZipFile"])]),
       filterLive:
@@ -116,6 +117,7 @@ module.exports = pipe([
       type: "Function",
       Client: Function,
       compare: compareFunction,
+      inferName: get("properties.Configuration.FunctionName"),
       displayResource: () => pipe([omit(["Code.Data", "Code.ZipFile"])]),
       ignoreResource: () =>
         pipe([
@@ -131,7 +133,6 @@ module.exports = pipe([
         "Configuration.Code",
         "Configuration.CodeSize",
         "Configuration.FunctionArn",
-        "Configuration.FunctionName",
         "Configuration.LastModified",
         "Configuration.LastUpdateStatus",
         "Configuration.LastUpdateStatusReason",
@@ -323,7 +324,6 @@ module.exports = pipe([
           group: "KMS",
           dependencyId: () => get("Configuration.KMSKeyArn"),
         },
-
         subnets: {
           type: "Subnet",
           group: "EC2",
@@ -336,14 +336,14 @@ module.exports = pipe([
           list: true,
           dependencyIds: () => get("Configuration.VpcConfig.SecurityGroupIds"),
         },
-        //TODO
-        // s3Bucket: {
-        //   type: "Bucket",
-        //   group: "S3",
-        //   parent: true,
-        //   ignoreOnDestroy: true,
-        // },
-        efsAccessPoint: {
+        s3Buckets: {
+          type: "Bucket",
+          group: "S3",
+          parent: true,
+          list: true,
+          ignoreOnDestroy: true,
+        },
+        efsAccessPoints: {
           type: "AccessPoint",
           group: "EFS",
           list: true,
@@ -354,46 +354,51 @@ module.exports = pipe([
           type: "Secret",
           group: "SecretsManager",
           parent: true,
+          list: true,
           // dependencyIds: findDependenciesInEnvironment({
           //   pathLive: "live.ARN",
           //   type: "Secret",
           //   group: "SecretsManager",
           // }),
         },
-        graphqlApi: {
+        graphqlApis: {
           type: "GraphqlApi",
           group: "AppSync",
           parent: true,
+          list: true,
           // dependencyIds: findDependenciesInEnvironment({
           //   pathLive: "live.ARN",
           //   type: "GraphqlApi",
           //   group: "AppSync",
           // }),
         },
-        dynamoDbTable: {
+        dynamoDbTables: {
           type: "Table",
           group: "DynamoDB",
           parent: true,
+          list: true,
           // dependencyIds: findDependenciesInEnvironment({
           //   pathLive: "live.ARN",
           //   type: "GraphqlApi",
           //   group: "AppSync",
           // }),
         },
-        snsTopic: {
+        snsTopics: {
           type: "Topic",
           group: "SNS",
           parent: true,
+          list: true,
           // dependencyIds: findDependenciesInEnvironment({
           //   pathLive: "live.ARN",
           //   type: "GraphqlApi",
           //   group: "AppSync",
           // }),
         },
-        dbCluster: {
+        dbClusters: {
           type: "DBCluster",
           group: "RDS",
           parent: true,
+          list: true,
           // dependencyIds: findDependenciesInEnvironment({
           //   pathLive: "live.ARN",
           //   type: "GraphqlApi",
@@ -425,6 +430,25 @@ module.exports = pipe([
     {
       type: "EventSourceMapping",
       Client: EventSourceMapping,
+      //TODO
+      // `mapping-${nameFromArn(FunctionArn)}-${nameFromArn(EventSourceArn)}`,
+      // inferName: ({
+      //   dependenciesSpec: { lambdaFunction, sqsQueue, kinesisStream },
+      // }) =>
+      //   pipe([
+      //     switchCase([
+      //       () => lambdaFunction,
+      //       () => lambdaFunction,
+      //       () => sqsQueue,
+      //       () => sqsQueue,
+      //       () => kinesisStream,
+      //       () => kinesisStream,
+      //       () => {
+      //         assert(false, `missing EventSourceMapping dependency`);
+      //       },
+      //     ]),
+      //     prepend("mapping-")
+      //   ])(),
       compare: compareLambda({
         filterTarget: () =>
           pipe([

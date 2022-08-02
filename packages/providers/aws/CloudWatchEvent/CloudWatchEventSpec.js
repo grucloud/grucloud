@@ -28,7 +28,7 @@ module.exports = pipe([
   () => [
     {
       type: "ApiDestination",
-      //TODO inferName
+      inferName: get("properties.Name"),
       Client: CloudWatchEventApiDestination,
       dependencies: {
         connection: {
@@ -39,7 +39,6 @@ module.exports = pipe([
         },
       },
       omitProperties: [
-        "Name",
         "ConnectionArn",
         "ApiDestinationArn",
         "ApiDestinationState",
@@ -50,6 +49,7 @@ module.exports = pipe([
     {
       type: "Connection",
       Client: CloudWatchEventConnection,
+      inferName: get("properties.Name"),
       dependencies: {
         secret: {
           type: "Secret",
@@ -58,7 +58,6 @@ module.exports = pipe([
         },
       },
       omitProperties: [
-        "Name",
         "ConnectionArn",
         "CreationTime",
         "LastAuthorizedTime",
@@ -134,13 +133,15 @@ module.exports = pipe([
     {
       type: "EventBus",
       Client: CloudWatchEventBus,
+      inferName: get("properties.Name"),
       omitProperties: ["Arn"],
-      filterLive: () => pipe([pick([])]),
+      filterLive: () => pipe([pick(["Name"])]),
     },
     {
       type: "Rule",
       Client: CloudWatchEventRule,
-      omitProperties: ["Name", "Arn", "CreatedBy", "EventBusName"],
+      inferName: get("properties.Name"),
+      omitProperties: ["Arn", "CreatedBy", "EventBusName"],
       compare: compareCloudWatchEvent({
         filterTarget: () => pipe([defaultsDeep({ EventBusName: "default" })]),
         filterLive: () => pipe([omit(["Arn", "CreatedBy"])]),

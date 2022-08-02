@@ -4,14 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/sqs-lambda-demo",
-    properties: ({}) => ({
-      retentionInDays: 365,
-    }),
-  },
-  {
     type: "Role",
     group: "IAM",
     name: "sqs_lambda_demo_functionrole",
@@ -69,13 +61,11 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       queue: "sqs-lambda-demo",
-      logGroups: ["/aws/lambda/sqs-lambda-demo"],
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    name: "sqs-lambda-demo",
     properties: ({}) => ({
       Configuration: {
         Environment: {
@@ -83,6 +73,7 @@ exports.createResources = () => [
             POWERTOOLS_SERVICE_NAME: `sqs-lambda-demo`,
           },
         },
+        FunctionName: "sqs-lambda-demo",
         Handler: "app.lambda_handler",
         Runtime: "python3.9",
       },

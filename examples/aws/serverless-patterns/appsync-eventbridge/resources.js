@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "AppSyncEventBridgeAPI",
     properties: ({}) => ({
+      name: "AppSyncEventBridgeAPI",
       authenticationType: "API_KEY",
       xrayEnabled: true,
       logConfig: {
@@ -17,7 +17,7 @@ exports.createResources = () => [
       apiKeys: [{}],
       schemaFile: "AppSyncEventBridgeAPI.graphql",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       cloudWatchLogsRole:
         "AppsyncEventbridgeStack-ApiApiLogsRole90293F72-7E0RPUK5AGTI",
     }),
@@ -25,8 +25,8 @@ exports.createResources = () => [
   {
     type: "DataSource",
     group: "AppSync",
-    name: "events",
     properties: ({ config }) => ({
+      name: "events",
       type: "HTTP",
       httpConfig: {
         authorizationConfig: {
@@ -39,7 +39,7 @@ exports.createResources = () => [
         endpoint: `https://events.${config.region}.amazonaws.com/`,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "AppSyncEventBridgeAPI",
       serviceRole:
         "AppsyncEventbridgeStack-ApieventsServiceRole531FB6-1OV5AQSZ4CWBK",
@@ -57,17 +57,23 @@ exports.createResources = () => [
         "## Raise a GraphQL field error in case of a datasource invocation error\n#if($ctx.error)\n  $util.error($ctx.error.message, $ctx.error.type)\n#end\n## if the response status code is not 200, then return an error. Else return the body **\n#if($ctx.result.statusCode == 200)\n    ## If response is 200, return the body.\n\t$ctx.result.body\n#else\n    ## If response is not 200, append the response to error block.\n    $utils.appendError($ctx.result.body, $ctx.result.statusCode)\n#end\n",
       kind: "UNIT",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "AppSyncEventBridgeAPI",
       dataSource: "events",
     }),
   },
-  { type: "EventBus", group: "CloudWatchEvents", name: "AppSyncEventBus" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "AppSyncEventBus",
+    }),
+  },
   {
     type: "Role",
     group: "IAM",
-    name: "AppsyncEventbridgeStack-ApiApiLogsRole90293F72-7E0RPUK5AGTI",
     properties: ({}) => ({
+      RoleName: "AppsyncEventbridgeStack-ApiApiLogsRole90293F72-7E0RPUK5AGTI",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -92,8 +98,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "AppsyncEventbridgeStack-ApieventsServiceRole531FB6-1OV5AQSZ4CWBK",
     properties: ({ getId }) => ({
+      RoleName:
+        "AppsyncEventbridgeStack-ApieventsServiceRole531FB6-1OV5AQSZ4CWBK",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -126,15 +133,16 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       eventBus: "AppSyncEventBus",
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "AppsyncEventbridgeStack-AppSyncEventBridgeRoleE2F3-1A2KOXUYDW21",
     properties: ({}) => ({
+      RoleName:
+        "AppsyncEventbridgeStack-AppSyncEventBridgeRoleE2F3-1A2KOXUYDW21",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

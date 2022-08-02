@@ -4,11 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/aurora-serverless/error",
-  },
-  {
     type: "Vpc",
     group: "EC2",
     name: "Vpc8378EB38",
@@ -22,10 +17,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "Vpc8378EB38::VpcauroraisolatedSubnet1Subnet5370B90B",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/17",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 1,
+      NetworkNumber: 0,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
   },
@@ -34,10 +30,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "Vpc8378EB38::VpcauroraisolatedSubnet2SubnetCB56E2A8",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.128.0/17",
       AvailabilityZone: `${config.region}b`,
+      NewBits: 1,
+      NetworkNumber: 1,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
   },
@@ -45,7 +42,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "Vpc8378EB38::VpcauroraisolatedSubnet1RouteTableA8F6E99C",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
   },
@@ -53,14 +50,14 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: "Vpc8378EB38::VpcauroraisolatedSubnet2RouteTableBF363B67",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
   },
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "Vpc8378EB38::VpcauroraisolatedSubnet1RouteTableA8F6E99C",
       subnet: "Vpc8378EB38::VpcauroraisolatedSubnet1Subnet5370B90B",
     }),
@@ -68,7 +65,7 @@ exports.createResources = () => [
   {
     type: "RouteTableAssociation",
     group: "EC2",
-    dependencies: () => ({
+    dependencies: ({}) => ({
       routeTable: "Vpc8378EB38::VpcauroraisolatedSubnet2RouteTableBF363B67",
       subnet: "Vpc8378EB38::VpcauroraisolatedSubnet2SubnetCB56E2A8",
     }),
@@ -76,11 +73,11 @@ exports.createResources = () => [
   {
     type: "DBSubnetGroup",
     group: "RDS",
-    name: "aurora-serverless-subnet-group",
     properties: ({}) => ({
+      DBSubnetGroupName: "aurora-serverless-subnet-group",
       DBSubnetGroupDescription: "Subnet group to access aurora",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       subnets: [
         "Vpc8378EB38::VpcauroraisolatedSubnet1Subnet5370B90B",
         "Vpc8378EB38::VpcauroraisolatedSubnet2SubnetCB56E2A8",
@@ -90,10 +87,10 @@ exports.createResources = () => [
   {
     type: "DBCluster",
     group: "RDS",
-    name: "aurora-serverless",
     properties: ({}) => ({
       BackupRetentionPeriod: 1,
       DatabaseName: "dbname",
+      DBClusterIdentifier: "aurora-serverless",
       Engine: "aurora",
       EngineVersion: "5.6.10a",
       Port: 3306,
@@ -114,7 +111,7 @@ exports.createResources = () => [
       },
       MasterUserPassword: process.env.AURORA_SERVERLESS_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       dbSubnetGroup: "aurora-serverless-subnet-group",
       secret: "demordsservice-demostage-credentials",
     }),

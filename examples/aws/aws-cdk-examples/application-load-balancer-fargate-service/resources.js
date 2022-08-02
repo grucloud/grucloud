@@ -6,16 +6,9 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/ecs/containerinsights/service-cluster/performance",
     properties: ({}) => ({
-      retentionInDays: 1,
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
-    properties: ({}) => ({
+      logGroupName:
+        "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
       retentionInDays: 365,
     }),
   },
@@ -57,7 +50,8 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "172.31.32.0/20",
+      NewBits: 4,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -69,7 +63,8 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "172.31.48.0/20",
+      NewBits: 4,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -81,7 +76,8 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "172.31.64.0/20",
+      NewBits: 4,
+      NetworkNumber: 4,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -93,7 +89,8 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "172.31.80.0/20",
+      NewBits: 4,
+      NetworkNumber: 5,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -105,8 +102,9 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "172.31.0.0/20",
       MapPublicIpOnLaunch: true,
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -118,8 +116,9 @@ exports.createResources = () => [
     name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
-      CidrBlock: "172.31.16.0/20",
       MapPublicIpOnLaunch: true,
+      NewBits: 4,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
@@ -371,8 +370,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "service-cluster",
     properties: ({}) => ({
+      clusterName: "service-cluster",
       settings: [
         {
           name: "containerInsights",
@@ -384,7 +383,6 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    name: "ECSServiceStackamazonecssampleTaskDef499685C5",
     properties: ({ config }) => ({
       containerDefinitions: [
         {
@@ -465,7 +463,6 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "ECS",
-    name: "ECSServiceStack-amazonecssampleService537E3215-6H3vkrpqYP3l",
     properties: ({ getId }) => ({
       deploymentConfiguration: {
         deploymentCircuitBreaker: {
@@ -520,8 +517,8 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "ECSSe-amazo-NBIYVNWJ9TTY",
     properties: ({}) => ({
+      Name: "ECSSe-amazo-NBIYVNWJ9TTY",
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",
@@ -539,8 +536,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "ECSSe-amazo-1HU1HZ8BFKNTJ",
     properties: ({}) => ({
+      Name: "ECSSe-amazo-1HU1HZ8BFKNTJ",
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
@@ -565,8 +562,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ECSServiceStack-amazonecssampleTaskDefExecutionRol-1391KZSJLULK2",
     properties: ({ getId }) => ({
+      RoleName:
+        "ECSServiceStack-amazonecssampleTaskDefExecutionRol-1391KZSJLULK2",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -609,8 +607,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1JLMLL2357T0V",
     properties: ({}) => ({
+      RoleName:
+        "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1JLMLL2357T0V",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

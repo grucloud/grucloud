@@ -6,9 +6,9 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "stf_trigger_rule",
     properties: ({}) => ({
       Description: "Sample Event for Glue terraform example",
+      Name: "stf_trigger_rule",
       ScheduleExpression: "rate(10 minutes)",
       State: "ENABLED",
     }),
@@ -25,13 +25,9 @@ exports.createResources = () => [
       sfnStateMachine: "aws-step-function-workflow",
     }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "/aws-glue/jobs/error" },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "/aws-glue/jobs/logs-v2" },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "/aws-glue/jobs/output" },
   {
     type: "Job",
     group: "Glue",
-    name: "sample-glue-job-terraform",
     properties: ({}) => ({
       Command: {
         Name: "glueetl",
@@ -63,8 +59,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "aws-events-invoke-StepFunction",
     properties: ({ getId }) => ({
+      RoleName: "aws-events-invoke-StepFunction",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -106,8 +102,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "aws-stf-role",
     properties: ({ config }) => ({
+      RoleName: "aws-stf-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -148,8 +144,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sample-glue-role",
     properties: ({}) => ({
+      RoleName: "sample-glue-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -177,8 +173,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "sample-glue-s3-access-policy",
     properties: ({ config }) => ({
+      PolicyName: "sample-glue-s3-access-policy",
       PolicyDocument: {
         Statement: [
           {
@@ -207,7 +203,6 @@ exports.createResources = () => [
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "aws-step-function-workflow",
     properties: ({}) => ({
       definition: {
         Comment:
@@ -228,10 +223,10 @@ exports.createResources = () => [
           },
         },
       },
+      name: "aws-step-function-workflow",
     }),
     dependencies: ({}) => ({
       role: "aws-stf-role",
-      glueJob: "sample-glue-job-terraform",
     }),
   },
 ];

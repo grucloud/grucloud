@@ -24,6 +24,7 @@ module.exports = pipe([
     {
       type: "Repository",
       Client: EcrRepository,
+      inferName: get("properties.repositoryName"),
       compare: compareECR({
         filterLive: () =>
           pipe([
@@ -35,6 +36,7 @@ module.exports = pipe([
       filterLive: ({ providerConfig }) =>
         pipe([
           pick([
+            "repositoryName",
             "imageTagMutability",
             "imageScanningConfiguration",
             "encryptionConfiguration",
@@ -74,6 +76,7 @@ module.exports = pipe([
     {
       type: "Registry",
       Client: EcrRegistry,
+      inferName: () => "default",
       compare: compareECR({
         filterLive: () => pipe([omit(["registryId"])]),
       }),

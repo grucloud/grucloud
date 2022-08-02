@@ -12,8 +12,8 @@ exports.createResources = () => [
   {
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
-    name: "my-user-pool",
     properties: () => ({
+      Name: "my-user-pool",
       UserPoolTags: {
         mykey1: "myvalue",
       },
@@ -37,6 +37,7 @@ exports.createResources = () => [
 ## Full Examples
 
 - [Simple user pool](https://github.com/grucloud/grucloud/tree/main/examples/aws/CognitoIdentityServiceProvider/identity-provider)
+- [serverless-patterns cognito-httpapi](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/cognito-httpapi)
 
 ## List
 

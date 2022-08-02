@@ -12,8 +12,9 @@ exports.createResources = () => [
   {
     type: "LaunchConfiguration",
     group: "AutoScaling",
-    name: "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-S7O7EVIS98IV",
     properties: ({}) => ({
+      LaunchConfigurationName:
+        "amazon-ecs-cli-setup-my-cluster-EcsInstanceLc-S7O7EVIS98IV",
       InstanceType: "t2.small",
       ImageId: "ami-0e43fd2a4ef14f476",
       UserData:

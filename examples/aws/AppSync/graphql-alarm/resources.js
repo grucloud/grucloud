@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "My AppSync App",
     properties: ({}) => ({
+      name: "My AppSync App",
       authenticationType: "API_KEY",
       xrayEnabled: false,
       apiKeys: [{}],
@@ -17,8 +17,8 @@ exports.createResources = () => [
   {
     type: "DataSource",
     group: "AppSync",
-    name: "MyModelTypeTable",
     properties: ({ config }) => ({
+      name: "MyModelTypeTable",
       description: "DynamoDB table backing the MyModelType object type.",
       type: "AMAZON_DYNAMODB",
       dynamodbConfig: {
@@ -129,12 +129,12 @@ exports.createResources = () => [
       Statistic: "Average",
       Dimensions: [
         {
-          Name: "GraphQLAPIId",
           Value: `${getId({
             type: "GraphqlApi",
             group: "AppSync",
             name: "My AppSync App",
           })}`,
+          Name: "GraphQLAPIId",
         },
       ],
       Period: 300,
@@ -172,8 +172,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
     properties: ({}) => ({
+      RoleName: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
       Description: "Allows the AWS AppSync service to access your data source.",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
@@ -196,8 +196,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
     properties: ({ getId }) => ({
+      PolicyName: "appsync-ds-ddb-f7ekj4-MyModelTypeTable",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [

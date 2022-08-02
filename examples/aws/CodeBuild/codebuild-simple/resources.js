@@ -44,8 +44,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "codebuild-my-project-service-role",
     properties: ({}) => ({
+      RoleName: "codebuild-my-project-service-role",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -67,8 +67,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: ({ config }) => `CodeBuildBasePolicy-my-project-${config.region}`,
     properties: ({ config }) => ({
+      PolicyName: `CodeBuildBasePolicy-my-project-${config.region}`,
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [

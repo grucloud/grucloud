@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "RestApi",
     group: "APIGateway",
-    name: "sam-app",
     properties: ({ config }) => ({
+      name: "sam-app",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["EDGE"],
@@ -47,7 +47,9 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    properties: ({}) => ({ stageName: "Prod" }),
+    properties: ({}) => ({
+      stageName: "Prod",
+    }),
     dependencies: ({}) => ({
       restApi: "sam-app",
     }),
@@ -55,7 +57,9 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    properties: ({}) => ({ stageName: "Stage" }),
+    properties: ({}) => ({
+      stageName: "Stage",
+    }),
     dependencies: ({}) => ({
       restApi: "sam-app",
     }),
@@ -63,13 +67,15 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "stepfunctions/StateMachinetoAPIGW",
+    properties: ({}) => ({
+      logGroupName: "stepfunctions/StateMachinetoAPIGW",
+    }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-ExampleLambdaFunctionRole-10XK3921W9OPT",
     properties: ({}) => ({
+      RoleName: "sam-app-ExampleLambdaFunctionRole-10XK3921W9OPT",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -100,8 +106,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-StatesExecutionRole-VZMKU2P2QBYH",
     properties: ({ config }) => ({
+      RoleName: "sam-app-StatesExecutionRole-VZMKU2P2QBYH",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -149,9 +155,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT",
         Handler: "app.handler",
         Runtime: "nodejs12.x",
       },
@@ -166,7 +172,6 @@ exports.createResources = () => [
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "StateMachinetoAPIGW-uB4wAPaxm1sp",
     properties: ({ config, getId }) => ({
       definition: {
         Comment:
@@ -210,6 +215,7 @@ exports.createResources = () => [
         ],
         level: "ALL",
       },
+      name: "StateMachinetoAPIGW-uB4wAPaxm1sp",
       tags: [
         {
           key: "stateMachine:createdBy",

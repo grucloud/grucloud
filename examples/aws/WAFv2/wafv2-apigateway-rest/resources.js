@@ -6,17 +6,23 @@ exports.createResources = () => [
   {
     type: "Account",
     group: "APIGateway",
-    name: "default",
     dependencies: ({}) => ({
       cloudwatchRole: "roleApiGatewayCloudWatch",
     }),
   },
-  { type: "ApiKey", group: "APIGateway", name: "my-key" },
+  {
+    type: "ApiKey",
+    group: "APIGateway",
+    properties: ({}) => ({
+      description: "Managed by Terraform",
+      name: "my-key",
+    }),
+  },
   {
     type: "RestApi",
     group: "APIGateway",
-    name: "PetStore",
     properties: ({ config }) => ({
+      name: "PetStore",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["REGIONAL"],
@@ -429,14 +435,21 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       restApi: "PetStore",
+      account: "default",
     }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "restapi" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    properties: ({}) => ({
+      logGroupName: "restapi",
+    }),
+  },
   {
     type: "Role",
     group: "IAM",
-    name: "roleApiGatewayCloudWatch",
     properties: ({}) => ({
+      RoleName: "roleApiGatewayCloudWatch",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -462,13 +475,11 @@ exports.createResources = () => [
   {
     type: "WebACL",
     group: "WAFv2",
-    name: "my-webacl",
     properties: ({}) => ({
       Capacity: 1,
       DefaultAction: {
         Allow: {},
       },
-      //LabelNamespace: "awswaf:840541460064:webacl:my-webacl:",
       ManagedByFirewallManager: false,
       Name: "my-webacl",
       Rules: [

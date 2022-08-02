@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "cdk-notes-appsync-api",
     properties: ({}) => ({
+      name: "cdk-notes-appsync-api",
       authenticationType: "API_KEY",
       xrayEnabled: true,
       apiKeys: [

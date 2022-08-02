@@ -4,14 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/ecs/containerinsights/service-cluster/performance",
-    properties: ({}) => ({
-      retentionInDays: 1,
-    }),
-  },
-  {
     type: "Vpc",
     group: "EC2",
     name: "project-vpc",

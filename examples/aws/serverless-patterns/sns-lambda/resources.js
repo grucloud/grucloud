@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-TopicConsumerFunction1Role-1CWCD3G6QCTG6",
     properties: ({}) => ({
+      RoleName: "sam-app-TopicConsumerFunction1Role-1CWCD3G6QCTG6",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -38,9 +38,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-TopicConsumerFunction1-OL7tADpZDByC",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-TopicConsumerFunction1-OL7tADpZDByC",
         Handler: "app.handler",
         Runtime: "nodejs12.x",
       },
@@ -48,7 +48,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-TopicConsumerFunction1Role-1CWCD3G6QCTG6",
     }),
   },
@@ -56,7 +56,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "sam-app-MySnsTopic-1Q2VS8SMOPR20",
-    properties: ({ config, getId }) => ({
+    properties: ({}) => ({
       Attributes: {
         DisplayName: "",
         DeliveryPolicy: {
@@ -84,7 +84,7 @@ exports.createResources = () => [
       PendingConfirmation: "false",
       ConfirmationWasAuthenticated: "true",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       snsTopic: "sam-app-MySnsTopic-1Q2VS8SMOPR20",
       lambdaFunction: "sam-app-TopicConsumerFunction1-OL7tADpZDByC",
     }),

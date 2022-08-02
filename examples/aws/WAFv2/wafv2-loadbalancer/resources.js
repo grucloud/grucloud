@@ -94,8 +94,8 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "alb",
     properties: ({}) => ({
+      Name: "alb",
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",
@@ -111,8 +111,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "tg1",
     properties: ({}) => ({
+      Name: "tg1",
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
@@ -137,7 +137,6 @@ exports.createResources = () => [
   {
     type: "WebACL",
     group: "WAFv2",
-    name: "my-webacl",
     properties: ({}) => ({
       Capacity: 0,
       DefaultAction: {

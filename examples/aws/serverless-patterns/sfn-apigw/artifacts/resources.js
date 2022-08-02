@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "RestApi",
     group: "APIGateway",
-    name: "sam-app",
     properties: ({ config }) => ({
       name: "sam-app",
       apiKeySource: "HEADER",
@@ -154,9 +153,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-ExampleLambdaFunction-DjN0ovBJ6PsT",
         Handler: "app.handler",
         Runtime: "nodejs12.x",
       },

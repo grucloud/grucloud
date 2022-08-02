@@ -9,6 +9,37 @@ Manages an [Glue Job](https://console.aws.amazon.com/gluestudio/home?#/jobs).
 
 ```js
 exports.createResources = () => [
+  {
+    type: "Job",
+    group: "Glue",
+    properties: ({}) => ({
+      Command: {
+        Name: "glueetl",
+        PythonVersion: "3",
+        ScriptLocation:
+          "s3://sample-bucket-glue-scripts-terraform-840541460064/glue_script.py",
+      },
+      DefaultArguments: {
+        "--TempDir":
+          "s3://sample-bucket-glue-scripts-terraform-840541460064/tmp/",
+        "--job-bookmark-option": "job-bookmark-disable",
+        "--job-language": "python",
+      },
+      Description: "AWS Glue Job terraform example",
+      ExecutionProperty: {
+        MaxConcurrentRuns: 5,
+      },
+      GlueVersion: "3.0",
+      MaxRetries: 0,
+      Name: "sample-glue-job-terraform",
+      NumberOfWorkers: 2,
+      Timeout: 2880,
+      WorkerType: "G.1X",
+    }),
+    dependencies: ({}) => ({
+      role: "sample-glue-role",
+    }),
+  },
 ];
 ```
 
@@ -34,7 +65,7 @@ gc l -t Job
 
 ```txt
 Listing resources on 1 provider: aws
-✓ aws us-east-1 
+✓ aws us-east-1
   ✓ Initialising
   ✓ Listing 1/1
 ┌──────────────────────────────────────────────────────────────────────────────┐

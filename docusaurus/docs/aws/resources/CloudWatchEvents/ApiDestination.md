@@ -12,11 +12,11 @@ exports.createResources = () => [
   {
     type: "ApiDestination",
     group: "CloudWatchEvents",
-    name: "my-api",
     properties: ({}) => ({
       HttpMethod: "POST",
       InvocationEndpoint: "https://grucloud.com",
       InvocationRateLimitPerSecond: 300,
+      Name: "my-api",
     }),
     dependencies: () => ({
       connection: "MyConnection-dvMVGg2stExz",

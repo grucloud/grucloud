@@ -39,6 +39,7 @@ exports.createResources = () => [
 ## Full Examples
 
 - [simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudTrail/cloudtrail-simple)
+- [serverless-patterns s3-eventbridge](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/s3-eventbridge)
 
 ## List
 

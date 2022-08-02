@@ -148,11 +148,6 @@ exports.createResources = () => [
     name: "Identity for CloudfrontCffS3CdkPythonStackMyDistributionOrigin128091E74",
   },
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-fRgMn9FyLO2d",
-  },
-  {
     type: "Role",
     group: "IAM",
     name: "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-1VYB8Q83IK84K",
@@ -215,7 +210,6 @@ exports.createResources = () => [
   {
     type: "Layer",
     group: "Lambda",
-    name: "myDeploymentAwsCliLayerEF6B12EC",
     properties: ({}) => ({
       LayerName: "myDeploymentAwsCliLayerEF6B12EC",
       Description: "/opt/awscli/aws",
@@ -224,9 +218,10 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-fRgMn9FyLO2d",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "CloudfrontCffS3CdkPythonS-CustomCDKBucketDeploymen-fRgMn9FyLO2d",
         Handler: "index.handler",
         Runtime: "python3.7",
         Timeout: 900,

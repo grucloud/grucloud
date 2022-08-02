@@ -38,9 +38,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-TopicConsumerFunction1-OL7tADpZDByC",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "sam-app-TopicConsumerFunction1-OL7tADpZDByC",
         Handler: "app.handler",
         Runtime: "nodejs12.x",
       },

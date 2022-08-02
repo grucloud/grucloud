@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "lambda-role",
     properties: ({}) => ({
+      RoleName: "lambda-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -29,8 +29,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "lambda-policy",
     properties: ({}) => ({
+      PolicyName: "lambda-policy",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -48,7 +48,6 @@ exports.createResources = () => [
   {
     type: "Layer",
     group: "Lambda",
-    name: "lambda-layer",
     properties: ({}) => ({
       LayerName: "lambda-layer",
       Description: "My Layer",
@@ -58,9 +57,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "lambda-hello-world",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "lambda-hello-world",
         Handler: "helloworld.handler",
         Runtime: "nodejs14.x",
       },

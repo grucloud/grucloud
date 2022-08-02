@@ -23,6 +23,7 @@ module.exports = pipe([
     {
       type: "Queue",
       Client: SQSQueue,
+      inferName: get("properties.QueueName"),
       propertiesDefault: {
         Attributes: {
           VisibilityTimeout: "30",
@@ -47,7 +48,6 @@ module.exports = pipe([
         },
       },
       omitProperties: [
-        "QueueName",
         "QueueUrl",
         "Attributes.QueueArn",
         "Attributes.ApproximateNumberOfMessages",

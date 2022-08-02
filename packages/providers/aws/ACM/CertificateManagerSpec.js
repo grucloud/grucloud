@@ -45,7 +45,7 @@ module.exports = pipe([
         //TODO recreate
         filterLive: () => pipe([pick([])]),
       }),
-      ignoreResource: ({ lives }) => pipe([get("live.InUseBy"), isEmpty]),
+      ignoreResource: ({ lives }) => pipe([get("usedBy"), isEmpty]),
       inferName: pipe([
         get("properties"),
         switchCase([

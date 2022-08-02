@@ -22,7 +22,6 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EcrRegistry" });
-const { AwsClient } = require("../AwsClient");
 const { throwIfNotAwsError } = require("../AwsCommon");
 
 const { createECR, tagResource, untagResource } = require("./ECRCommon");

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, tap } = require("rubico");
+const { map, pipe, get, tap } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { isOurMinion, compareAws } = require("../AwsCommon");
@@ -16,6 +16,7 @@ module.exports = pipe([
     {
       type: "Job",
       Client: GlueJob,
+      inferName: get("properties.Name"),
       omitProperties: [
         "CreatedOn",
         "LastModifiedOn",

@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-MyStateMachineExecutionRole-QOU5CX1BS6DH",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
+      RoleName: "sam-app-MyStateMachineExecutionRole-QOU5CX1BS6DH",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -27,11 +27,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["sqs:SendMessage"],
-                Resource: `${getId({
-                  type: "Queue",
-                  group: "SQS",
-                  name: "sam-app-MyQueue-AqSTiBlPUT32",
-                })}`,
+                Resource: `arn:aws:sqs:${
+                  config.region
+                }:${config.accountId()}:sam-app-MyQueue-AqSTiBlPUT32`,
                 Effect: "Allow",
               },
             ],
@@ -40,14 +38,20 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       queue: "sam-app-MyQueue-AqSTiBlPUT32",
+    }),
+  },
+  {
+    type: "Queue",
+    group: "SQS",
+    properties: ({}) => ({
+      QueueName: "sam-app-MyQueue-AqSTiBlPUT32",
     }),
   },
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "StateMachinetoSQS-Fy79sSx0sTLU",
     properties: ({ config }) => ({
       definition: {
         StartAt: "SendToMyQueue",
@@ -65,6 +69,7 @@ exports.createResources = () => [
           },
         },
       },
+      name: "StateMachinetoSQS-Fy79sSx0sTLU",
       tags: [
         {
           key: "stateMachine:createdBy",
@@ -72,10 +77,9 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-MyStateMachineExecutionRole-QOU5CX1BS6DH",
       sqsQueues: ["sam-app-MyQueue-AqSTiBlPUT32"],
     }),
   },
-  { type: "Queue", group: "SQS", name: "sam-app-MyQueue-AqSTiBlPUT32" },
 ];

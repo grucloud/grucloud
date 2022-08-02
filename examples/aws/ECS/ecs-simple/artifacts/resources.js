@@ -163,7 +163,6 @@ exports.createResources = () => [
   {
     type: "CapacityProvider",
     group: "ECS",
-    name: "cp",
     properties: ({}) => ({
       autoScalingGroupProvider: {
         managedScaling: {
@@ -189,8 +188,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "cluster",
     properties: ({}) => ({
+      clusterName: "cluster",
       settings: [
         {
           name: "containerInsights",
@@ -211,7 +210,6 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    name: "nginx",
     properties: ({}) => ({
       containerDefinitions: [
         {
@@ -245,7 +243,6 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "ECS",
-    name: "service-nginx",
     properties: ({}) => ({
       deploymentConfiguration: {
         deploymentCircuitBreaker: {
@@ -287,8 +284,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ecsInstanceRole",
     properties: ({}) => ({
+      RoleName: "ecsInstanceRole",
       AssumeRolePolicyDocument: {
         Version: "2008-10-17",
         Statement: [

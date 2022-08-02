@@ -388,7 +388,9 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "EKS",
-    name: "my-cluster",
+    properties: ({}) => ({
+      name: "my-cluster",
+    }),
     dependencies: ({}) => ({
       subnets: [
         "VPC::SubnetPrivateUSEAST1D",
@@ -403,8 +405,8 @@ exports.createResources = () => [
   {
     type: "NodeGroup",
     group: "EKS",
-    name: "ng-1",
     properties: ({}) => ({
+      nodegroupName: "ng-1",
       capacityType: "ON_DEMAND",
       scalingConfig: {
         desiredSize: 1,
@@ -426,8 +428,8 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "load-balancer",
     properties: ({}) => ({
+      Name: "load-balancer",
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",
@@ -440,8 +442,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "target-group-rest",
     properties: ({}) => ({
+      Name: "target-group-rest",
       Protocol: "HTTP",
       Port: 30020,
       HealthCheckProtocol: "HTTP",
@@ -454,8 +456,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "target-group-web",
     properties: ({}) => ({
+      Name: "target-group-web",
       Protocol: "HTTP",
       Port: 30010,
       HealthCheckProtocol: "HTTP",
@@ -556,8 +558,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     properties: ({}) => ({
+      RoleName: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -617,8 +619,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
     properties: ({}) => ({
+      RoleName:
+        "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -665,6 +668,13 @@ exports.createResources = () => [
   {
     type: "Record",
     group: "Route53",
+    properties: ({}) => ({
+      Name: "grucloud.org.",
+      Type: "A",
+      AliasTarget: {
+        EvaluateTargetHealth: true,
+      },
+    }),
     dependencies: ({}) => ({
       hostedZone: "grucloud.org.",
       loadBalancer: "load-balancer",

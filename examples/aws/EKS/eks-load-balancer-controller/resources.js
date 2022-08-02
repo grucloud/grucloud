@@ -329,8 +329,8 @@ exports.createResources = () => [
   {
     type: "NodeGroup",
     group: "EKS",
-    name: "ng-1",
     properties: ({}) => ({
+      nodegroupName: "ng-1",
       capacityType: "ON_DEMAND",
       scalingConfig: {
         minSize: 1,
@@ -352,8 +352,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
     properties: ({}) => ({
+      RoleName: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
       Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -414,9 +414,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
     properties: ({}) => ({
-      Path: "/",
+      RoleName:
+        "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

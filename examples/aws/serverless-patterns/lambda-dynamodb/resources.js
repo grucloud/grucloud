@@ -26,8 +26,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
     properties: ({ getId }) => ({
+      RoleName: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -83,14 +83,13 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       table: "sam-app-DynamoTable-1TM3ILOZ1A36J",
     }),
   },
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
     properties: ({}) => ({
       Configuration: {
         Environment: {
@@ -98,6 +97,7 @@ exports.createResources = () => [
             DatabaseTable: `sam-app-DynamoTable-1TM3ILOZ1A36J`,
           },
         },
+        FunctionName: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",
         Handler: "app.handler",
         Runtime: "nodejs12.x",
       },
@@ -105,9 +105,9 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-LambdaPutDynamoDBRole-1JME1YWZ5JTDV",
-      dynamoDbTable: "sam-app-DynamoTable-1TM3ILOZ1A36J",
+      dynamoDbTables: ["sam-app-DynamoTable-1TM3ILOZ1A36J"],
     }),
   },
 ];

@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "codepipeline-starha-latest-615512-rule",
     properties: ({}) => ({
       Description:
         "Amazon CloudWatch Events rule to automatically start your pipeline when a change occurs in the Amazon ECR image tag. Deleting this may prevent changes from being detected in that pipeline. Read more: http://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-about-starting.html",
@@ -20,6 +19,7 @@ exports.createResources = () => [
         },
         "detail-type": ["ECR Image Action"],
       },
+      Name: "codepipeline-starha-latest-615512-rule",
       State: "ENABLED",
     }),
   },
@@ -151,8 +151,8 @@ exports.createResources = () => [
   {
     type: "Repository",
     group: "ECR",
-    name: "starhackit",
     properties: ({}) => ({
+      repositoryName: "starhackit",
       imageTagMutability: "MUTABLE",
       imageScanningConfiguration: {
         scanOnPush: false,
@@ -165,8 +165,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "AWSCodePipelineServiceRole-my-pipeline",
     properties: ({}) => ({
+      RoleName: "AWSCodePipelineServiceRole-my-pipeline",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -188,8 +188,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "codebuild-my-project-service-role",
     properties: ({}) => ({
+      RoleName: "codebuild-my-project-service-role",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -211,8 +211,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: ({ config }) => `cwe-role-${config.region}-my-pipeline`,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      RoleName: `cwe-role-${config.region}-my-pipeline`,
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -234,9 +234,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: ({ config }) =>
-      `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      PolicyName: `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
       PolicyDocument: {
         Statement: [
           {
@@ -406,8 +405,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: ({ config }) => `CodeBuildBasePolicy-my-project-${config.region}`,
     properties: ({ config }) => ({
+      PolicyName: `CodeBuildBasePolicy-my-project-${config.region}`,
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -462,9 +461,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: ({ config }) =>
-      `start-pipeline-execution-${config.region}-my-pipeline`,
     properties: ({ config }) => ({
+      PolicyName: `start-pipeline-execution-${config.region}-my-pipeline`,
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [

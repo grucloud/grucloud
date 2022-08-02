@@ -14,8 +14,8 @@ exports.createResources = () => [
   {
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
-    name: "my-user-pool",
     properties: ({}) => ({
+      Name: "my-user-pool",
       Policies: {
         PasswordPolicy: {
           MinimumLength: 10,
@@ -30,12 +30,12 @@ exports.createResources = () => [
   {
     type: "UserPoolClient",
     group: "CognitoIdentityServiceProvider",
-    name: "my-userpool-client",
     properties: ({}) => ({
       AllowedOAuthFlows: ["code"],
       AllowedOAuthFlowsUserPoolClient: true,
       AllowedOAuthScopes: ["openid"],
       CallbackURLs: ["https://localhost:3000/login_callback"],
+      ClientName: "my-userpool-client",
       ExplicitAuthFlows: [
         "ALLOW_REFRESH_TOKEN_AUTH",
         "ALLOW_USER_PASSWORD_AUTH",
@@ -90,7 +90,9 @@ exports.createResources = () => [
   {
     type: "UserPoolDomain",
     group: "CognitoIdentityServiceProvider",
-    name: "auth.grucloud.org",
+    properties: ({}) => ({
+      Domain: "auth.grucloud.org",
+    }),
     dependencies: ({}) => ({
       userPool: "my-user-pool",
       certificate: "grucloud.org",

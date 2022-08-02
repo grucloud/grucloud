@@ -482,8 +482,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "codedeploy-service-role",
     properties: ({}) => ({
+      RoleName: "codedeploy-service-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -508,8 +508,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "terraform-20220708211444285600000001",
     properties: ({}) => ({
+      RoleName: "terraform-20220708211444285600000001",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -530,8 +530,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "terraform-20220708211446759600000005",
     properties: ({}) => ({
+      RoleName: "terraform-20220708211446759600000005",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -549,8 +549,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "tf-arc-us-east-2-app-role",
     properties: ({}) => ({
+      RoleName: "tf-arc-us-east-2-app-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -583,8 +583,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: ({ config }) => `tf-arc-${config.region}-app-role`,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      RoleName: `tf-arc-${config.region}-app-role`,
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

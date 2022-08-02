@@ -12,8 +12,9 @@ exports.createResources = () => [
   {
     type: "CapacityProvider",
     group: "ECS",
-    name: "cp",
+
     properties: () => ({
+      name: "cp",
       autoScalingGroupProvider: {
         managedScaling: {
           status: "ENABLED",

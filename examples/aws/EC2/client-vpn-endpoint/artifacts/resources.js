@@ -17,7 +17,13 @@ exports.createResources = () => [
       DomainName: "server",
     }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "/client-vpn" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    properties: ({}) => ({
+      logGroupName: "/client-vpn",
+    }),
+  },
   {
     type: "LogStream",
     group: "CloudWatchLogs",

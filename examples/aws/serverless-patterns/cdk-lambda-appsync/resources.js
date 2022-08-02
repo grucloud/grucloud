@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "TriggeredByLambda",
     properties: ({}) => ({
+      name: "TriggeredByLambda",
       authenticationType: "AWS_IAM",
       xrayEnabled: false,
       apiKeys: [],
@@ -17,11 +17,11 @@ exports.createResources = () => [
   {
     type: "DataSource",
     group: "AppSync",
-    name: "NONE",
     properties: ({}) => ({
+      name: "NONE",
       type: "NONE",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "TriggeredByLambda",
     }),
   },
@@ -36,7 +36,7 @@ exports.createResources = () => [
       responseMappingTemplate: "$util.toJson($context.result)",
       kind: "UNIT",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "TriggeredByLambda",
       dataSource: "NONE",
     }),
@@ -44,8 +44,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "CdkLambdaCallAppSyncStack-triggerServiceRole07E9AB-5S1U4A7Y9DDX",
     properties: ({ config }) => ({
+      RoleName:
+        "CdkLambdaCallAppSyncStack-triggerServiceRole07E9AB-5S1U4A7Y9DDX",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -87,7 +88,6 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "CdkLambdaCallAppSyncStack-trigger73DC69F8-Fn5wBU5v76VC",
     properties: ({ getId }) => ({
       Configuration: {
         Environment: {
@@ -101,13 +101,14 @@ exports.createResources = () => [
             })}`,
           },
         },
+        FunctionName: "CdkLambdaCallAppSyncStack-trigger73DC69F8-Fn5wBU5v76VC",
         Handler: "index.handler",
         Runtime: "nodejs14.x",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "CdkLambdaCallAppSyncStack-triggerServiceRole07E9AB-5S1U4A7Y9DDX",
-      graphqlApi: "TriggeredByLambda",
+      graphqlApis: ["TriggeredByLambda"],
     }),
   },
 ];

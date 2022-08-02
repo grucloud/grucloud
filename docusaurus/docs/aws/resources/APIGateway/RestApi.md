@@ -12,8 +12,8 @@ exports.createResources = () => [
   {
     type: "RestApi",
     group: "APIGateway",
-    name: "PetStore",
     properties: ({}) => ({
+      name: "PetStore",
       apiKeySource: "HEADER",
       endpointConfiguration: {
         types: ["REGIONAL"],
@@ -46,12 +46,10 @@ The remaining input properties:
 ## Full Examples
 
 - [restapi-lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/APIGateway/restapi-lambda)
-- [apigw-rest-api-dynamodb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-rest-api-dynamodb)
-- [apigw-rest-api-eventbridge-terraform ](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-rest-api-eventbridge-terraform)
-- [sfn-apigw](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/sfn-apigw)
+- [serverless-patterns apigw-rest-api-dynamodb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-rest-api-dynamodb)
+- [serverless-patterns apigw-rest-api-eventbridge-terraform](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-rest-api-eventbridge-terraform)
+- [serverless-patterns sfn-apigw](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/sfn-apigw)
 - [wafv2-apigateway-rest](https://github.com/grucloud/grucloud/tree/main/examples/aws/WAFv2/wafv2-apigateway-rest)
-
-
 
 ## List
 

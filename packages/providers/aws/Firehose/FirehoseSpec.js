@@ -11,7 +11,7 @@ const {
   filter,
 } = require("rubico");
 const { defaultsDeep, pluck, flatten, identity } = require("rubico/x");
-const { replaceWithName, s } = require("@grucloud/core/Common");
+const { replaceWithName } = require("@grucloud/core/Common");
 const { isOurMinion, compareAws } = require("../AwsCommon");
 const { FirehoseDeliveryStream } = require("./FirehoseDeliveryStream");
 
@@ -26,6 +26,7 @@ module.exports = pipe([
     {
       type: "DeliveryStream",
       Client: FirehoseDeliveryStream,
+      inferName: get("properties.DeliveryStreamName"),
       omitProperties: [],
       propertiesDefault: {},
       compare: compareAws({ filterTarget: () => pipe([omit([])]) }),

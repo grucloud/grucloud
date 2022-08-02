@@ -16,7 +16,18 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({ config }) => ({
       AccepterVpcInfo: {
+        CidrBlock: "10.1.0.0/16",
+        CidrBlockSet: [
+          {
+            CidrBlock: "10.1.0.0/16",
+          },
+        ],
         OwnerId: `${config.accountId()}`,
+        PeeringOptions: {
+          AllowDnsResolutionFromRemoteVpc: false,
+          AllowEgressFromLocalClassicLinkToRemoteVpc: false,
+          AllowEgressFromLocalVpcToRemoteClassicLink: false,
+        },
         Region: config.regionSecondary,
       },
       RequesterVpcInfo: {

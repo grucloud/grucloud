@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "stf_trigger_rule",
     properties: ({}) => ({
+      Name: "stf_trigger_rule",
       ScheduleExpression: "rate(10 minutes)",
       State: "ENABLED",
     }),
@@ -23,11 +23,6 @@ exports.createResources = () => [
       role: "aws-events-invoke-StepFunction",
       sfnStateMachine: "aws-step-function-workflow",
     }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/aws_lambda_example",
   },
   {
     type: "Role",
@@ -139,7 +134,6 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "aws_lambda_example",
     properties: ({}) => ({
       Configuration: {
         Environment: {
@@ -148,6 +142,7 @@ exports.createResources = () => [
             env: `dev`,
           },
         },
+        FunctionName: "aws_lambda_example",
         Handler: "lambda.lambda_handler",
         Runtime: "python3.7",
       },

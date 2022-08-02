@@ -18,7 +18,7 @@ exports.createResources = () => [
       GroupName: "security-group-cluster-test",
       Description: "Managed By GruCloud",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-test-sg",
     }),
   },
@@ -29,7 +29,7 @@ exports.createResources = () => [
       GroupName: "security-group-node-group-test",
       Description: "Managed By GruCloud",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "vpc-test-sg",
     }),
   },
@@ -53,7 +53,7 @@ exports.createResources = () => [
         ToPort: 22,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpc-test-sg::security-group-cluster-test",
     }),
   },
@@ -77,7 +77,7 @@ exports.createResources = () => [
         ToPort: 65535,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpc-test-sg::security-group-node-group-test",
       securityGroupFrom: ["sg::vpc-test-sg::security-group-cluster-test"],
     }),
@@ -102,7 +102,7 @@ exports.createResources = () => [
         ToPort: 65535,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup: "sg::vpc-test-sg::security-group-cluster-test",
     }),
   },

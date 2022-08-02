@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "testlambdatest-",
     properties: ({}) => ({
+      logGroupName: "testlambdatest-",
       retentionInDays: 30,
     }),
   },
@@ -375,8 +375,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-130PK942BIJRK",
     properties: ({}) => ({
+      RoleName:
+        "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-130PK942BIJRK",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -420,8 +421,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "lambdaStack-testLambdaServiceRole955E2289-1GZAHWTU2CITG",
     properties: ({ config }) => ({
+      RoleName: "lambdaStack-testLambdaServiceRole955E2289-1GZAHWTU2CITG",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -474,8 +475,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sfnStack-testtestMachineFlowRoleE75B9154-Y7HS9EGY2IQE",
     properties: ({ config }) => ({
+      RoleName: "sfnStack-testtestMachineFlowRoleE75B9154-Y7HS9EGY2IQE",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -529,9 +530,10 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-c8VHz1jOeFFc",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "lambdaStack-LogRetentionaae0aa3c5b4d4f87b02d85b201-c8VHz1jOeFFc",
         Handler: "index.handler",
         Runtime: "nodejs14.x",
       },
@@ -543,10 +545,10 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "test-lambdaFunction",
     properties: ({}) => ({
       Configuration: {
         Architectures: ["arm64"],
+        FunctionName: "test-lambdaFunction",
         Handler: "app.lambdaHandler",
         MemorySize: 512,
         Runtime: "nodejs14.x",
@@ -564,7 +566,6 @@ exports.createResources = () => [
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "test-testMachineFlow",
     properties: ({ config, getId }) => ({
       definition: {
         StartAt: "test-stepLambda",
@@ -609,6 +610,7 @@ exports.createResources = () => [
         ],
         level: "ALL",
       },
+      name: "test-testMachineFlow",
     }),
     dependencies: ({}) => ({
       role: "sfnStack-testtestMachineFlowRoleE75B9154-Y7HS9EGY2IQE",

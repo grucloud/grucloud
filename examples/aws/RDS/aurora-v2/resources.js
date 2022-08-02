@@ -208,8 +208,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "rds-monitoring-role",
     properties: ({}) => ({
+      RoleName: "rds-monitoring-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -235,8 +235,8 @@ exports.createResources = () => [
   {
     type: "DBSubnetGroup",
     group: "RDS",
-    name: "default-vpc-07c0392e5e3359f2e",
     properties: ({}) => ({
+      DBSubnetGroupName: "default-vpc-07c0392e5e3359f2e",
       DBSubnetGroupDescription: "Created from the RDS Management Console",
     }),
     dependencies: ({ config }) => ({
@@ -251,10 +251,10 @@ exports.createResources = () => [
   {
     type: "DBCluster",
     group: "RDS",
-    name: "database-1",
     properties: ({}) => ({
       BackupRetentionPeriod: 7,
       DatabaseName: "mydb",
+      DBClusterIdentifier: "database-1",
       Engine: "aurora-postgresql",
       EngineVersion: "13.6",
       MasterUsername: process.env.DATABASE_1_MASTER_USERNAME,
@@ -279,7 +279,6 @@ exports.createResources = () => [
   {
     type: "DBInstance",
     group: "RDS",
-    name: "database-1-instance-1",
     properties: ({}) => ({
       DBInstanceIdentifier: "database-1-instance-1",
       DBInstanceClass: "db.serverless",

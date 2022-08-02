@@ -14,8 +14,8 @@ exports.createResources = () => [
   {
     type: "NodeGroup",
     group: "EKS",
-    name: "ng-1",
     properties: ({}) => ({
+      nodegroupName: "ng-1",
       capacityType: "ON_DEMAND",
       scalingConfig: {
         minSize: 1,
@@ -52,6 +52,7 @@ exports.createResources = () => [
 - [Subnet](../EC2/Subnet.md)
 - [LaunchTemplate](../EC2/LaunchTemplate.md)
 - [Role](../IAM/Role.md)
+- [Autoscaling Group](../AutoScaling/AutoScalingGroup.md)
 
 ## Listing
 

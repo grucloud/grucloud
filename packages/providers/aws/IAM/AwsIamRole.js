@@ -422,8 +422,8 @@ exports.AwsIamRole = ({ spec, config }) => {
       () => otherProps,
       defaultsDeep(openIdConnectProviderProperties({ openIdConnectProvider })),
       defaultsDeep({
+        //TODO remove
         RoleName: name,
-        Path: "/",
         Tags: buildTags({
           name,
           config,

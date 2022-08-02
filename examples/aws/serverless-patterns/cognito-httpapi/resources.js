@@ -6,38 +6,38 @@ exports.createResources = () => [
   {
     type: "Api",
     group: "ApiGatewayV2",
-    name: "sam-app",
     properties: ({}) => ({
       CorsConfiguration: {
         AllowMethods: ["GET"],
         AllowOrigins: ["https://myapp.com"],
       },
       Description: "Cognito to HTTP API demo",
+      Name: "sam-app",
     }),
   },
   {
     type: "Stage",
     group: "ApiGatewayV2",
-    name: "$default",
     properties: ({}) => ({
       AutoDeploy: true,
+      StageName: "$default",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
     }),
   },
   {
     type: "Authorizer",
     group: "ApiGatewayV2",
-    name: "OAuth2Authorizer",
     properties: ({}) => ({
+      Name: "OAuth2Authorizer",
       AuthorizerType: "JWT",
       IdentitySource: ["$request.header.Authorization"],
       JwtConfiguration: {
         Audience: ["1mo18647lsr5iee4ghabm54v7e"],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       userPool: "UserPool-3Fx2HozhHSsp",
     }),
@@ -51,7 +51,7 @@ exports.createResources = () => [
       IntegrationType: "AWS_PROXY",
       PayloadFormatVersion: "2.0",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       lambdaFunction: "sam-app-AppFunction-gKUxwsmxX2fK",
     }),
@@ -65,7 +65,7 @@ exports.createResources = () => [
       RequestParameters: {},
       RouteKey: "GET /",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       integration: "integration::sam-app::sam-app-AppFunction-gKUxwsmxX2fK",
       authorizer: "OAuth2Authorizer",
@@ -79,7 +79,7 @@ exports.createResources = () => [
         "Automatic deployment triggered by changes to the Api configuration",
       AutoDeployed: true,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       api: "sam-app",
       stage: "$default",
     }),
@@ -87,7 +87,6 @@ exports.createResources = () => [
   {
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
-    name: "UserPool-3Fx2HozhHSsp",
     properties: ({}) => ({
       Name: "UserPool-3Fx2HozhHSsp",
       Policies: {
@@ -104,32 +103,34 @@ exports.createResources = () => [
   {
     type: "UserPoolClient",
     group: "CognitoIdentityServiceProvider",
-    name: "UserPoolClient-9x4glkNVEYDn",
     properties: ({}) => ({
       AllowedOAuthFlows: ["code"],
       AllowedOAuthFlowsUserPoolClient: true,
       AllowedOAuthScopes: ["email", "openid", "profile"],
       CallbackURLs: ["https://myapp.com"],
+      ClientName: "UserPoolClient-9x4glkNVEYDn",
       LogoutURLs: ["https://myapp.com"],
       SupportedIdentityProviders: ["COGNITO"],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       userPool: "UserPool-3Fx2HozhHSsp",
     }),
   },
   {
     type: "UserPoolDomain",
     group: "CognitoIdentityServiceProvider",
-    name: "myauth840541460064",
-    dependencies: () => ({
+    properties: ({}) => ({
+      Domain: "myauth840541460064",
+    }),
+    dependencies: ({}) => ({
       userPool: "UserPool-3Fx2HozhHSsp",
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-AppFunctionRole-BXPIJ03LGY2Y",
     properties: ({}) => ({
+      RoleName: "sam-app-AppFunctionRole-BXPIJ03LGY2Y",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -160,9 +161,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-AppFunction-gKUxwsmxX2fK",
     properties: ({ config, getId }) => ({
       Configuration: {
+        FunctionName: "sam-app-AppFunction-gKUxwsmxX2fK",
         Handler: "app.handler",
         Runtime: "nodejs14.x",
       },
@@ -193,7 +194,7 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-AppFunctionRole-BXPIJ03LGY2Y",
       apiGatewayV2s: ["sam-app"],
     }),

@@ -102,9 +102,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "lambda-role",
     properties: ({}) => ({
-      Path: "/",
+      RoleName: "lambda-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -150,8 +149,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "role-ecs",
     properties: ({}) => ({
+      RoleName: "role-ecs",
       Path: "/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -199,6 +198,7 @@ exports.createResources = () => [
 ### Used By
 
 - [IamInstanceProfile](./InstanceProfile.md)
+- [Glue Job](../Glue/Job.md)
 
 ### List
 

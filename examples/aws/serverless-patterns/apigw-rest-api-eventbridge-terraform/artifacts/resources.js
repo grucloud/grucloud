@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "RestApi",
     group: "APIGateway",
-    name: "rest-api-eb-fOaf",
     properties: ({ config }) => ({
       name: "rest-api-eb-fOaf",
       apiKeySource: "HEADER",
@@ -116,17 +115,19 @@ exports.createResources = () => [
   {
     type: "EventBus",
     group: "CloudWatchEvents",
-    name: "MyIntegrationCustomBus",
+    properties: ({}) => ({
+      Name: "MyIntegrationCustomBus",
+    }),
   },
   {
     type: "Rule",
     group: "CloudWatchEvents",
-    name: "catch_all",
     properties: ({ config }) => ({
       Description: "default catch all",
       EventPattern: {
         account: [`${config.accountId()}`],
       },
+      Name: "catch_all",
       State: "ENABLED",
     }),
     dependencies: ({}) => ({
@@ -148,16 +149,17 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/events/MyIntegrationCustomBus/MyIntegrationCustomBus-catch_all",
     properties: ({}) => ({
+      logGroupName:
+        "/aws/events/MyIntegrationCustomBus/MyIntegrationCustomBus-catch_all",
       retentionInDays: 7,
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "ApiGatewayEventBridgeRole",
     properties: ({}) => ({
+      RoleName: "ApiGatewayEventBridgeRole",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -179,8 +181,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "EBPutEvents",
     properties: ({ getId }) => ({
+      PolicyName: "EBPutEvents",
       PolicyDocument: {
         Statement: [
           {

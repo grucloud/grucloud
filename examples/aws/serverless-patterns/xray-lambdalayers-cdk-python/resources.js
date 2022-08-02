@@ -4,15 +4,11 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/lambda/LambdaLayerXRayStackStack-BucketNotificationsHandl-1XcDZ1JQT7M7",
-  },
-  {
     type: "Role",
     group: "IAM",
-    name: "LambdaLayerXRayStackStack-BucketNotificationsHandl-LMJ0SRM09GES",
     properties: ({}) => ({
+      RoleName:
+        "LambdaLayerXRayStackStack-BucketNotificationsHandl-LMJ0SRM09GES",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -53,8 +49,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "LambdaLayerXRayStackStack-Lambdarole1548FC71-15YPKGUKW0B06",
     properties: ({}) => ({
+      RoleName: "LambdaLayerXRayStackStack-Lambdarole1548FC71-15YPKGUKW0B06",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -108,7 +104,6 @@ exports.createResources = () => [
   {
     type: "Layer",
     group: "Lambda",
-    name: "xraylayerF67027DB",
     properties: ({}) => ({
       LayerName: "xraylayerF67027DB",
       Description: "Lambda Layer containing Xray SDK Python Library",
@@ -118,9 +113,10 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "LambdaLayerXRayStackStack-BucketNotificationsHandl-1XcDZ1JQT7M7",
     properties: ({}) => ({
       Configuration: {
+        FunctionName:
+          "LambdaLayerXRayStackStack-BucketNotificationsHandl-1XcDZ1JQT7M7",
         Description:
           'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
         Handler: "index.handler",
@@ -135,9 +131,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "xray-handler",
     properties: ({ config }) => ({
       Configuration: {
+        FunctionName: "xray-handler",
         Handler: "lambda-handler.lambda_handler",
         Runtime: "python3.8",
         TracingConfig: {

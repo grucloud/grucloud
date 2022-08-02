@@ -7,7 +7,6 @@ const {
   get,
   filter,
   fork,
-  eq,
   assign,
   pick,
   or,
@@ -17,7 +16,6 @@ const {
   flatMap,
 } = require("rubico");
 const {
-  find,
   includes,
   defaultsDeep,
   size,
@@ -55,12 +53,7 @@ const untagResource = untagResourceIam({
   method: "untagPolicy",
 });
 
-const pickId = pipe([
-  tap(({ Arn }) => {
-    assert(Arn, "Arn");
-  }),
-  ({ Arn }) => ({ PolicyArn: Arn }),
-]);
+const pickId = pipe([({ Arn }) => ({ PolicyArn: Arn })]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamPolicy = ({ spec, config }) => {

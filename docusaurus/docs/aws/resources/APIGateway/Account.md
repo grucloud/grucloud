@@ -14,42 +14,8 @@ exports.createResources = () => [
   {
     type: "Account",
     group: "APIGateway",
-    name: "default",
     dependencies: () => ({
       cloudwatchRole: "roleApiGatewayCloudWatch",
-    }),
-  },
-  {
-    type: "Role",
-    group: "IAM",
-    name: "roleApiGatewayCloudWatch",
-    properties: ({}) => ({
-      Path: "/",
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Sid: "",
-            Effect: "Allow",
-            Principal: {
-              Service: "apigateway.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-    dependencies: () => ({
-      policies: ["AmazonAPIGatewayPushToCloudWatchLogs"],
-    }),
-  },
-  {
-    type: "Policy",
-    group: "IAM",
-    name: "AmazonAPIGatewayPushToCloudWatchLogs",
-    readOnly: true,
-    properties: ({}) => ({
-      Arn: "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
     }),
   },
 ];
@@ -62,6 +28,9 @@ exports.createResources = () => [
 ## Full Examples
 
 - [RestAPI with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/APIGateway/restapi-lambda)
+- [serverless-patterns apigw-dynamodb-terraform](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-dynamodb-terraform)
+- [serverless-patterns apigw-rest-api-dynamodb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-rest-api-dynamodb)
+- [wafv2-apigateway-rest](https://github.com/grucloud/grucloud/tree/main/examples/aws/WAFv2/wafv2-apigateway-rest)
 
 ## List
 

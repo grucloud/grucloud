@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "flowlog",
     properties: ({}) => ({
+      logGroupName: "flowlog",
       retentionInDays: 1,
     }),
   },
@@ -62,7 +62,8 @@ exports.createResources = () => [
       `project-vpc::project-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
-      CidrBlock: "10.0.0.0/20",
+      NewBits: 4,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "project-vpc",
@@ -143,8 +144,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "flow-role",
     properties: ({}) => ({
+      RoleName: "flow-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

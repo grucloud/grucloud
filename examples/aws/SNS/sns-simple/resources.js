@@ -7,7 +7,7 @@ exports.createResources = () => [
     type: "Topic",
     group: "SNS",
     name: "my-topic",
-    properties: ({ config }) => ({
+    properties: ({}) => ({
       Attributes: {
         DisplayName: "My Topic",
         DeliveryPolicy: {

@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "ToSqSApi",
     properties: ({}) => ({
+      name: "ToSqSApi",
       authenticationType: "API_KEY",
       xrayEnabled: false,
       apiKeys: [{}],
@@ -17,8 +17,8 @@ exports.createResources = () => [
   {
     type: "DataSource",
     group: "AppSync",
-    name: "sqs",
     properties: ({ config }) => ({
+      name: "sqs",
       type: "HTTP",
       httpConfig: {
         authorizationConfig: {

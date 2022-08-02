@@ -3,7 +3,13 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "LogGroup", group: "CloudWatchLogs", name: "my-log-group" },
+  {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    properties: ({}) => ({
+      logGroupName: "my-log-group",
+    }),
+  },
   {
     type: "LogStream",
     group: "CloudWatchLogs",

@@ -4,15 +4,10 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/aurora-test-cluster/error",
-  },
-  {
     type: "Role",
     group: "IAM",
-    name: "sam-app-LambdaFunctionRole-11TTATG2VDRQ2",
     properties: ({ config }) => ({
+      RoleName: "sam-app-LambdaFunctionRole-11TTATG2VDRQ2",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -73,7 +68,6 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "aurora-test-cluster-function",
     properties: ({ config, getId }) => ({
       Configuration: {
         Environment: {
@@ -89,6 +83,7 @@ exports.createResources = () => [
             DBName: `aurora_test_db`,
           },
         },
+        FunctionName: "aurora-test-cluster-function",
         Handler: "app.handler",
         Runtime: "nodejs14.x",
         Timeout: 30,
@@ -97,19 +92,19 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-LambdaFunctionRole-11TTATG2VDRQ2",
-      secret: "DBSecret",
-      dbCluster: "aurora-test-cluster",
+      secrets: ["DBSecret"],
+      dbClusters: ["aurora-test-cluster"],
     }),
   },
   {
     type: "DBCluster",
     group: "RDS",
-    name: "aurora-test-cluster",
     properties: ({}) => ({
       BackupRetentionPeriod: 1,
       DatabaseName: "aurora_test_db",
+      DBClusterIdentifier: "aurora-test-cluster",
       Engine: "aurora",
       EngineVersion: "5.6.10a",
       Port: 3306,
@@ -130,7 +125,7 @@ exports.createResources = () => [
       },
       MasterUserPassword: process.env.AURORA_TEST_CLUSTER_MASTER_USER_PASSWORD,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       secret: "DBSecret",
     }),
   },

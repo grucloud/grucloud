@@ -14,8 +14,8 @@ exports.createResources = () => [
   {
     type: "DomainName",
     group: "ApiGatewayV2",
-    name: "grucloud.org",
     properties: ({}) => ({
+      DomainName: "grucloud.org",
       Tags: {
         mykey1: "value",
       },
@@ -100,9 +100,10 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/lambda/my-function",
+    properties: ({}) => ({
+      logGroupName: "lg-http-test",
+    }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
   {
     type: "Role",
     group: "IAM",
@@ -148,9 +149,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "my-function",
     properties: ({ config, getId }) => ({
       Configuration: {
+        FunctionName: "my-function",
         Handler: "my-function.handler",
         Runtime: "nodejs14.x",
       },

@@ -14,8 +14,8 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "load-balancer",
     properties: ({}) => ({
+      Name: "load-balancer",
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",

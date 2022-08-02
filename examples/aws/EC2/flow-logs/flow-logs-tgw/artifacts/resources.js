@@ -6,16 +6,16 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/flowlog/tgw",
     properties: ({}) => ({
+      logGroupName: "/aws/flowlog/tgw",
       retentionInDays: 1,
     }),
   },
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/flowlog/tgw-vpc-attachment",
     properties: ({}) => ({
+      logGroupName: "/aws/flowlog/tgw-vpc-attachment",
       retentionInDays: 1,
     }),
   },

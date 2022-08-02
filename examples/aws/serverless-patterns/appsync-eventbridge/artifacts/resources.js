@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "AppSyncEventBridgeAPI",
     properties: ({}) => ({
+      name: "AppSyncEventBridgeAPI",
       authenticationType: "API_KEY",
       xrayEnabled: true,
       logConfig: {
@@ -25,8 +25,8 @@ exports.createResources = () => [
   {
     type: "DataSource",
     group: "AppSync",
-    name: "events",
     properties: ({ config }) => ({
+      name: "events",
       type: "HTTP",
       httpConfig: {
         authorizationConfig: {
@@ -62,7 +62,13 @@ exports.createResources = () => [
       dataSource: "events",
     }),
   },
-  { type: "EventBus", group: "CloudWatchEvents", name: "AppSyncEventBus" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "AppSyncEventBus",
+    }),
+  },
   {
     type: "Role",
     group: "IAM",

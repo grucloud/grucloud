@@ -26,8 +26,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-MyStateMachineExecutionRole-ZVCE4J344HAN",
     properties: ({ config, getId }) => ({
+      RoleName: "sam-app-MyStateMachineExecutionRole-ZVCE4J344HAN",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -67,7 +67,6 @@ exports.createResources = () => [
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "StateMachinetoDDB-OZxx41bNDei3",
     properties: ({}) => ({
       definition: {
         StartAt: "SendToDDB",
@@ -100,6 +99,7 @@ exports.createResources = () => [
           },
         },
       },
+      name: "StateMachinetoDDB-OZxx41bNDei3",
       tags: [
         {
           key: "stateMachine:createdBy",

@@ -17,6 +17,8 @@ module.exports = pipe([
   () => [
     {
       type: "LoadBalancer",
+      Client: ELBLoadBalancerV2,
+      inferName: get("properties.Name"),
       dependencies: {
         subnets: {
           type: "Subnet",
@@ -32,9 +34,7 @@ module.exports = pipe([
           dependencyIds: ({ lives, config }) => get("SecurityGroups"),
         },
       },
-      Client: ELBLoadBalancerV2,
       omitProperties: [
-        "Name",
         "Subnets",
         "LoadBalancerArn",
         "DNSName",
@@ -46,23 +46,18 @@ module.exports = pipe([
         "AvailabilityZones",
       ],
       includeDefaultDependencies: true,
-      filterLive: () => pick(["Scheme", "Type", "IpAddressType"]),
+      filterLive: () => pick(["Name", "Scheme", "Type", "IpAddressType"]),
     },
     {
       type: "TargetGroup",
       Client: ELBTargetGroup,
+      inferName: get("properties.Name"),
       dependencies: {
         vpc: {
           type: "Vpc",
           group: "EC2",
           dependencyId: ({ lives, config }) => get("VpcId"),
         },
-        //TODO
-        // nodeGroup: {
-        //   type: "NodeGroup",
-        //   group: "EKS",
-        //   dependencyId: ({ lives, config }) => get(""),
-        // },
         //TODO autoScalingGroup
       },
       propertiesDefault: {
@@ -78,14 +73,10 @@ module.exports = pipe([
         ProtocolVersion: "HTTP1",
         IpAddressType: "ipv4",
       },
-      omitProperties: [
-        "Name",
-        "TargetGroupArn",
-        "TargetGroupName",
-        "LoadBalancerArns",
-      ],
+      omitProperties: ["TargetGroupArn", "LoadBalancerArns"],
       filterLive: () =>
         pick([
+          "Name",
           "Protocol",
           "Port",
           "HealthCheckProtocol",

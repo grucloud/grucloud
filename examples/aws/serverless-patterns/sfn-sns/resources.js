@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",
     properties: ({ config }) => ({
+      RoleName: "sam-app-StatesExecutionRole-NOZF6W7MEIVB",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -70,7 +70,6 @@ exports.createResources = () => [
   {
     type: "StateMachine",
     group: "StepFunctions",
-    name: "StateMachineExpressSynctoSNS-s4flfbpCO2tF",
     properties: ({ config }) => ({
       definition: {
         Comment: "An example of the Amazon States Language using AWS SNS",
@@ -92,6 +91,7 @@ exports.createResources = () => [
           },
         },
       },
+      name: "StateMachineExpressSynctoSNS-s4flfbpCO2tF",
       type: "EXPRESS",
       tags: [
         {

@@ -65,7 +65,9 @@ exports.createResources = () => [
   {
     type: "VpcLink",
     group: "ApiGatewayV2",
-    name: "APIGWVpcLinkToPrivateHTTPEndpoint",
+    properties: ({}) => ({
+      Name: "APIGWVpcLinkToPrivateHTTPEndpoint",
+    }),
     dependencies: ({ config }) => ({
       subnets: [
         `vpclink-ex-vpc::vpclink-ex-subnet-private1-${config.region}a`,
@@ -223,8 +225,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "sam-app-ECSFargateCluster-iqHkBgW4h6Go",
     properties: ({}) => ({
+      clusterName: "sam-app-ECSFargateCluster-iqHkBgW4h6Go",
       settings: [
         {
           name: "containerInsights",
@@ -236,7 +238,6 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    name: "sam-app-ECSServiceTaskDefinition-7P836RFsrg3O",
     properties: ({}) => ({
       containerDefinitions: [
         {
@@ -296,7 +297,6 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "ECS",
-    name: "sam-app-ECSService-dVx4w3SfxVcU",
     properties: ({ getId }) => ({
       deploymentConfiguration: {
         deploymentCircuitBreaker: {
@@ -350,8 +350,8 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "sam-a-LoadB-EC9ZTKNG2RSH",
     properties: ({}) => ({
+      Name: "sam-a-LoadB-EC9ZTKNG2RSH",
       Scheme: "internal",
       Type: "application",
       IpAddressType: "ipv4",
@@ -369,8 +369,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "sam-a-LoadB-29TIQLVPQQY9",
     properties: ({}) => ({
+      Name: "sam-a-LoadB-29TIQLVPQQY9",
       Protocol: "HTTP",
       Port: 80,
       HealthCheckProtocol: "HTTP",
@@ -395,8 +395,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-ECSTaskExecutionRole-PMX4OZKH4A2P",
     properties: ({}) => ({
+      RoleName: "sam-app-ECSTaskExecutionRole-PMX4OZKH4A2P",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -414,8 +414,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-ECSTaskRole-1PCVBVKCZRWS2",
     properties: ({}) => ({
+      RoleName: "sam-app-ECSTaskRole-1PCVBVKCZRWS2",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

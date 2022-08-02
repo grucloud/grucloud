@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { assign, map, pipe, tap, get, and, or, switchCase } = require("rubico");
+const {
+  assign,
+  map,
+  pipe,
+  tap,
+  get,
+  and,
+  or,
+  switchCase,
+  eq,
+} = require("rubico");
 const {
   defaultsDeep,
   when,
@@ -30,13 +40,8 @@ module.exports = pipe([
     {
       type: "StateMachine",
       Client: StepFunctionsStateMachine,
-      omitProperties: [
-        "name",
-        "roleArn",
-        "creationDate",
-        "stateMachineArn",
-        "status",
-      ],
+      inferName: get("properties.name"),
+      omitProperties: ["roleArn", "creationDate", "stateMachineArn", "status"],
       propertiesDefault: {
         type: "STANDARD",
         loggingConfiguration: { includeExecutionData: false, level: "OFF" },
@@ -131,7 +136,7 @@ module.exports = pipe([
           type: "Queue",
           group: "SQS",
           list: true,
-          dependencyId: ({ lives, config }) =>
+          dependencyIds: ({ lives, config }) =>
             pipe([
               get("definition.States"),
               flattenObject({ filterKey: (key) => key === "QueueUrl" }),

@@ -6,8 +6,9 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "EKS",
-    name: "my-cluster",
+
     properties: ({ config }) => ({
+      name: "my-cluster",
       version: "1.20",
       resourcesVpcConfig: {
         endpointPublicAccess: false,
@@ -29,8 +30,8 @@ exports.createResources = () => [
   {
     type: "NodeGroup",
     group: "EKS",
-    name: "ng-1",
     properties: ({ config }) => ({
+      nodegroupName: "ng-1",
       capacityType: "ON_DEMAND",
       scalingConfig: {
         minSize: 1,

@@ -65,7 +65,6 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-PutObjectFunction-UHg0AjQBqco2",
     properties: ({ getId }) => ({
       Configuration: {
         Environment: {
@@ -77,6 +76,7 @@ exports.createResources = () => [
             })}`,
           },
         },
+        FunctionName: "sam-app-PutObjectFunction-UHg0AjQBqco2",
         Handler: "app.lambda_handler",
         Runtime: "python3.8",
       },
@@ -86,7 +86,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       role: "sam-app-PutObjectFunctionRole-TFR4FTCB12K2",
-      s3Bucket: "gc-destination-example",
+      s3Buckets: ["gc-destination-example"],
     }),
   },
   { type: "Bucket", group: "S3", name: "gc-destination-example" },

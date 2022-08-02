@@ -59,7 +59,6 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-LambdaFunction-0c5CYs3DOq13",
     properties: ({}) => ({
       Configuration: {
         Environment: {
@@ -67,6 +66,7 @@ exports.createResources = () => [
             SSMParameterName: `ExampleParameterName`,
           },
         },
+        FunctionName: "sam-app-LambdaFunction-0c5CYs3DOq13",
         Handler: "app.handler",
         Runtime: "nodejs14.x",
         Timeout: 15,

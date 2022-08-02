@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Certificate",
     group: "ACM",
-    name: "grucloud.org",
     properties: ({}) => ({
       DomainName: "grucloud.org",
       SubjectAlternativeNames: ["grucloud.org", "*.grucloud.org"],
@@ -15,8 +14,8 @@ exports.createResources = () => [
   {
     type: "DomainName",
     group: "ApiGatewayV2",
-    name: "grucloud.org",
     properties: ({}) => ({
+      DomainName: "grucloud.org",
       Tags: {
         mykey1: "value",
       },
@@ -101,22 +100,15 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/lambda/my-function",
-  },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "RDSOSMetrics",
     properties: ({}) => ({
-      retentionInDays: 30,
+      logGroupName: "lg-http-test",
     }),
   },
   {
     type: "Role",
     group: "IAM",
-    name: "lambda-role",
     properties: ({}) => ({
+      RoleName: "lambda-role",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -138,8 +130,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "lambda-policy",
     properties: ({}) => ({
+      PolicyName: "lambda-policy",
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -157,9 +149,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "my-function",
     properties: ({ config, getId }) => ({
       Configuration: {
+        FunctionName: "my-function",
         Handler: "my-function.handler",
         Runtime: "nodejs14.x",
       },

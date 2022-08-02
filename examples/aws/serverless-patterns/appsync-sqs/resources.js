@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "GraphqlApi",
     group: "AppSync",
-    name: "ToSqSApi",
     properties: ({}) => ({
+      name: "ToSqSApi",
       authenticationType: "API_KEY",
       xrayEnabled: false,
       apiKeys: [{}],
@@ -17,8 +17,8 @@ exports.createResources = () => [
   {
     type: "DataSource",
     group: "AppSync",
-    name: "sqs",
     properties: ({ config }) => ({
+      name: "sqs",
       type: "HTTP",
       httpConfig: {
         authorizationConfig: {
@@ -31,7 +31,7 @@ exports.createResources = () => [
         endpoint: `https://sqs.${config.region}.amazonaws.com`,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "ToSqSApi",
       serviceRole: "CdkAppSyncSqSStack-ApisqsServiceRole50810242-HDLGB9CWGUOH",
     }),
@@ -48,7 +48,7 @@ exports.createResources = () => [
         '\n#if($ctx.result.statusCode == 200)\n    ##if response is 200\n    ## Because the response is of type XML, we are going to convert\n    ## the result body as a map and only get the User object.\n    $utils.toJson($utils.xml.toMap($ctx.result.body).SendMessageResponse.SendMessageResult)\n#else\n    ##if response is not 200, append the response to error block.\n    $utils.appendError($ctx.result.body, "$ctx.result.statusCode")\n    null\n#end\n',
       kind: "UNIT",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       graphqlApi: "ToSqSApi",
       dataSource: "sqs",
     }),
@@ -56,8 +56,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "CdkAppSyncSqSStack-ApisqsServiceRole50810242-HDLGB9CWGUOH",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
+      RoleName: "CdkAppSyncSqSStack-ApisqsServiceRole50810242-HDLGB9CWGUOH",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -81,11 +81,9 @@ exports.createResources = () => [
                   "sqs:GetQueueAttributes",
                   "sqs:GetQueueUrl",
                 ],
-                Resource: `${getId({
-                  type: "Queue",
-                  group: "SQS",
-                  name: "CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6",
-                })}`,
+                Resource: `arn:aws:sqs:${
+                  config.region
+                }:${config.accountId()}:CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6`,
                 Effect: "Allow",
               },
             ],
@@ -94,13 +92,15 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       queue: "CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6",
     }),
   },
   {
     type: "Queue",
     group: "SQS",
-    name: "CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6",
+    properties: ({}) => ({
+      QueueName: "CdkAppSyncSqSStack-queue276F7297-CwCYIMaMj4A6",
+    }),
   },
 ];

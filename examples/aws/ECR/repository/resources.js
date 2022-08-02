@@ -4,15 +4,10 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Registry",
-    group: "ECR",
-    name: "default",
-  },
-  {
     type: "Repository",
     group: "ECR",
-    name: "starhackit/lb",
     properties: ({ config }) => ({
+      repositoryName: "starhackit/lb",
       imageTagMutability: "MUTABLE",
       imageScanningConfiguration: {
         scanOnPush: false,

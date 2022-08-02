@@ -10,7 +10,7 @@ const {
   tryCatch,
   eq,
 } = require("rubico");
-const { when, defaultsDeep, callProp } = require("rubico/x");
+const { when, defaultsDeep } = require("rubico/x");
 
 const fs = require("fs").promises;
 const path = require("path");
@@ -81,6 +81,7 @@ module.exports = pipe([
     {
       type: "GraphqlApi",
       Client: AppSyncGraphqlApi,
+      inferName: get("properties.name"),
       omitProperties: [
         "apiId",
         "arn",
@@ -102,7 +103,13 @@ module.exports = pipe([
           () => input,
           tap(writeGraphqlSchema(input)),
           () => live,
-          pick(["authenticationType", "xrayEnabled", "logConfig", "apiKeys"]),
+          pick([
+            "name",
+            "authenticationType",
+            "xrayEnabled",
+            "logConfig",
+            "apiKeys",
+          ]),
           assign({
             schemaFile: () => `${live.name}.graphql`,
             apiKeys: pipe([get("apiKeys"), map(pick(["description"]))]),
@@ -120,6 +127,7 @@ module.exports = pipe([
     {
       type: "DataSource",
       Client: AppSyncDataSource,
+      inferName: get("properties.name"),
       omitProperties: [
         "apiId",
         "serviceRoleArn",
@@ -134,6 +142,7 @@ module.exports = pipe([
       filterLive: ({ providerConfig }) =>
         pipe([
           pick([
+            "name",
             "description",
             "type",
             "dynamodbConfig",

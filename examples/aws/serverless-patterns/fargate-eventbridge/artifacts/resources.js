@@ -3,11 +3,20 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "EventBus", group: "CloudWatchEvents", name: "DemoEventBus" },
+  {
+    type: "EventBus",
+    group: "CloudWatchEvents",
+    properties: ({}) => ({
+      Name: "DemoEventBus",
+    }),
+  },
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N",
+    properties: ({}) => ({
+      logGroupName:
+        "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N",
+    }),
   },
   {
     type: "Vpc",
@@ -377,8 +386,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "ECS",
-    name: "CdkStack-ClusterEB0386A7-gyqzhZkvCS5B",
     properties: ({}) => ({
+      clusterName: "CdkStack-ClusterEB0386A7-gyqzhZkvCS5B",
       settings: [
         {
           name: "containerInsights",
@@ -390,7 +399,6 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    name: "CdkStackFargateServiceTaskDef2C533A52",
     properties: ({ config }) => ({
       containerDefinitions: [
         {
@@ -485,7 +493,6 @@ exports.createResources = () => [
   {
     type: "Service",
     group: "ECS",
-    name: "CdkStack-FargateServiceECC8084D-cPBHY3hSlGgQ",
     properties: ({ getId }) => ({
       deploymentConfiguration: {
         deploymentCircuitBreaker: {

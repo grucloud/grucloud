@@ -19,11 +19,6 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       Ipv6Native: true,
-      //TODO
-      // PrivateDnsNameOptionsOnLaunch: {
-      //   HostnameType: "resource-name",
-      //   EnableResourceNameDnsAAAARecord: true,
-      // },
       Ipv6SubnetPrefix: "01",
     }),
     dependencies: ({}) => ({

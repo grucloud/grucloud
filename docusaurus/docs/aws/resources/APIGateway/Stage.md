@@ -10,21 +10,6 @@ Manages an [API Gateway Stage](https://console.aws.amazon.com/apigateway/main/ap
 ```js
 exports.createResources = () => [
   {
-    type: "RestApi",
-    group: "APIGateway",
-    name: "PetStore",
-    properties: ({}) => ({
-      apiKeySource: "HEADER",
-      endpointConfiguration: {
-        types: ["REGIONAL"],
-      },
-      schemaFile: "PetStore.oas30.json",
-      deployment: {
-        stageName: "dev",
-      },
-    }),
-  },
-  {
     type: "Stage",
     group: "APIGateway",
     properties: ({}) => ({
@@ -55,7 +40,6 @@ exports.createResources = () => [
   {
     type: "Stage",
     group: "APIGateway",
-    name: "prod",
     properties: ({}) => ({
       stageName: "prod",
       description: "prod",
@@ -85,13 +69,18 @@ exports.createResources = () => [
 ## Full Examples
 
 - [RestAPI with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/APIGateway/restapi-lambda)
+- [serverless-patterns apigw-dynamodb-terraform](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-dynamodb-terraform)
+- [serverless-patterns rest-api-dynamodb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-rest-api-dynamodb)
+- [serverless-patterns apigw-rest-api-eventbridge-terraform](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-rest-api-eventbridge-terraform)
+- [serverless-patterns sfn-apigw](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/sfn-apigw)
+- [wafv2-apigateway-rest](https://github.com/grucloud/grucloud/tree/main/examples/aws/WAFv2/wafv2-apigateway-rest)
 
 ## List
 
-The Stages can be filtered with the _Stage_ type:
+The Stages can be filtered with the _APIGateway::Stage_ type:
 
 ```sh
-gc l -t Stage
+gc l -t APIGateway::Stage
 ```
 
 ```txt

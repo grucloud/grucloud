@@ -27,7 +27,7 @@ exports.createResources = () => [
     properties: ({}) => ({
       Category: "VPN",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       customerGateway: "cgw",
       vpnGateway: "vpw",
     }),

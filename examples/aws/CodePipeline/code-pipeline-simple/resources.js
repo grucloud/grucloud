@@ -6,7 +6,9 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/codebuild/starhackit",
+    properties: ({}) => ({
+      logGroupName: "/aws/codebuild/starhackit",
+    }),
   },
   {
     type: "Project",
@@ -139,9 +141,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: ({ config }) =>
-      `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      RoleName: `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -163,8 +164,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "codebuild-starhackit-service-role",
     properties: ({}) => ({
+      RoleName: "codebuild-starhackit-service-role",
       Path: "/service-role/",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -186,9 +187,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: ({ config }) =>
-      `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      PolicyName: `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
       PolicyDocument: {
         Statement: [
           {
@@ -358,8 +358,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: ({ config }) => `CodeBuildBasePolicy-starhackit-${config.region}`,
     properties: ({ config, getId }) => ({
+      PolicyName: `CodeBuildBasePolicy-starhackit-${config.region}`,
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [

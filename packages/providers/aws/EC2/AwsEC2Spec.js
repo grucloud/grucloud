@@ -238,7 +238,6 @@ const securityGroupRuleDependencies = {
           () => live,
           get("IpPermission.UserIdGroupPairs", []),
           pluck("GroupId"),
-          filter(not(includes(live.GroupId))),
         ])(),
   },
 };
@@ -1855,6 +1854,8 @@ module.exports = pipe([
           group: "EC2",
           //TODO no list
           list: true,
+          //TODO
+          omitDefaultDependencies: true,
           dependencyId: ({ lives, config }) => get("SubnetId"),
         },
         keyPair: {
@@ -1882,6 +1883,8 @@ module.exports = pipe([
           type: "SecurityGroup",
           group: "EC2",
           list: true,
+          //TODO
+          omitDefaultDependencies: true,
           dependencyIds: ({ lives, config }) =>
             pipe([get("SecurityGroups"), pluck("GroupId")]),
         },

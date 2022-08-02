@@ -16,10 +16,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "EfsLambdaVpc::EfsLambdaSubnetA",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.0.0/24",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "EfsLambdaVpc",
     }),
   },
@@ -28,10 +29,11 @@ exports.createResources = () => [
     group: "EC2",
     name: "EfsLambdaVpc::EfsLambdaSubnetB",
     properties: ({ config }) => ({
-      CidrBlock: "10.0.1.0/24",
       AvailabilityZone: `${config.region}b`,
+      NewBits: 8,
+      NetworkNumber: 1,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "EfsLambdaVpc",
     }),
   },
@@ -42,7 +44,7 @@ exports.createResources = () => [
       GroupName: "sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
       Description: "EFS + Lambda on SAM Security Group",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       vpc: "EfsLambdaVpc",
     }),
   },
@@ -61,7 +63,7 @@ exports.createResources = () => [
         ToPort: 65535,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
     }),
@@ -81,7 +83,7 @@ exports.createResources = () => [
         ToPort: 65535,
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       securityGroup:
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
     }),
@@ -115,7 +117,7 @@ exports.createResources = () => [
         Path: "/lambda",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       fileSystem: "fs-0c95a09faadb73087",
     }),
   },
@@ -125,7 +127,7 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       AvailabilityZoneName: `${config.region}a`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       fileSystem: "fs-0c95a09faadb73087",
       subnet: "EfsLambdaVpc::EfsLambdaSubnetA",
       securityGroups: [
@@ -139,7 +141,7 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       AvailabilityZoneName: `${config.region}b`,
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       fileSystem: "fs-0c95a09faadb73087",
       subnet: "EfsLambdaVpc::EfsLambdaSubnetB",
       securityGroups: [
@@ -150,8 +152,8 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "sam-app-HelloEfsFunctionRole-15LXBM09R2ILE",
     properties: ({ getId }) => ({
+      RoleName: "sam-app-HelloEfsFunctionRole-15LXBM09R2ILE",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -213,7 +215,7 @@ exports.createResources = () => [
         },
       ],
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       efsFileSystems: ["fs-0c95a09faadb73087"],
       efsAccessPoints: ["fsap-0ef29121aa02af8f7"],
     }),
@@ -221,7 +223,6 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "sam-app-HelloEfsFunction-kAB4qyDAUDSl",
     properties: ({ getId }) => ({
       Configuration: {
         FileSystemConfigs: [
@@ -234,6 +235,7 @@ exports.createResources = () => [
             LocalMountPath: "/mnt/msg",
           },
         ],
+        FunctionName: "sam-app-HelloEfsFunction-kAB4qyDAUDSl",
         Handler: "app.lambda_handler",
         Runtime: "python3.8",
         Timeout: 15,
@@ -242,7 +244,7 @@ exports.createResources = () => [
         "lambda:createdBy": "SAM",
       },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       role: "sam-app-HelloEfsFunctionRole-15LXBM09R2ILE",
       subnets: [
         "EfsLambdaVpc::EfsLambdaSubnetA",
@@ -251,7 +253,7 @@ exports.createResources = () => [
       securityGroups: [
         "sg::EfsLambdaVpc::sam-app-EfsLambdaSecurityGroup-NQDR9AKM2HY",
       ],
-      efsAccessPoint: ["fsap-0ef29121aa02af8f7"],
+      efsAccessPoints: ["fsap-0ef29121aa02af8f7"],
     }),
   },
 ];

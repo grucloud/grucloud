@@ -6,16 +6,9 @@ exports.createResources = () => [
   {
     type: "LogGroup",
     group: "CloudWatchLogs",
-    name: "/aws/ecs/containerinsights/service-cluster/performance",
     properties: ({}) => ({
-      retentionInDays: 1,
-    }),
-  },
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
-    properties: ({}) => ({
+      logGroupName:
+        "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
       retentionInDays: 365,
     }),
   },
@@ -615,8 +608,9 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    name: "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1JLMLL2357T0V",
     properties: ({}) => ({
+      RoleName:
+        "ECSServiceStack-amazonecssampleTaskDefTaskRole527D-1JLMLL2357T0V",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [

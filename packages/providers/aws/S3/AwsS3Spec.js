@@ -93,10 +93,11 @@ module.exports = pipe([
               ),
             ]),
         },
-        snsTopic: {
+        snsTopics: {
           type: "Topic",
           group: "SNS",
-          dependencyId: ({ lives, config }) =>
+          list: true,
+          dependencyIds: ({ lives, config }) =>
             pipe([
               get("NotificationConfiguration.TopicConfigurations"),
               pluck("TopicArn"),

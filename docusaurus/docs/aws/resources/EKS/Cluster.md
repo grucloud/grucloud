@@ -26,8 +26,8 @@ exports.createResources = () => [
   {
     type: "Cluster",
     group: "EKS",
-    name: "my-cluster",
     properties: ({}) => ({
+      name: "my-cluster",
       version: "1.20",
     }),
     dependencies: () => ({
@@ -74,10 +74,10 @@ kubectl config delete-cluster arn:aws:eks:eu-west-2:840541460064:cluster/myClust
 
 ## Dependencies
 
-- [Subnet](../EC2/Subnet.md)
-- [SecurityGroup](../EC2/SecurityGroup.md)
-- [Role](../IAM/Role.md)
-- [Key](../KMS/Key.md)
+- [EC2 Subnet](../EC2/Subnet.md)
+- [EC2 SecurityGroup](../EC2/SecurityGroup.md)
+- [IAM Role](../IAM/Role.md)
+- [KMS Key](../KMS/Key.md)
 
 ## List
 

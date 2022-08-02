@@ -13,9 +13,8 @@ const {
 const { AwsClient } = require("../AwsClient");
 const { createELB, tagResource, untagResource } = require("./ELBCommon");
 
-const findName = get("live.TargetGroupName");
+const findName = get("live.Name");
 const findId = get("live.TargetGroupArn");
-const pickId = pick(["TargetGroupArn"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 exports.ELBTargetGroup = ({ spec, config }) => {
@@ -31,31 +30,42 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     key: "elbv2.k8s.aws/cluster",
   });
 
-  const assignTags = unless(
-    isEmpty,
-    assign({
-      Tags: pipe([
-        ({ TargetGroupArn }) =>
-          elb().describeTags({ ResourceArns: [TargetGroupArn] }),
-        get("TagDescriptions"),
-        first,
-        get("Tags"),
-      ]),
-    })
-  );
+  const assignTags = ({ endpoint }) =>
+    unless(
+      isEmpty,
+      assign({
+        Tags: pipe([
+          ({ TargetGroupArn }) =>
+            endpoint().describeTags({ ResourceArns: [TargetGroupArn] }),
+          get("TagDescriptions"),
+          first,
+          get("Tags"),
+        ]),
+      })
+    );
+
+  const decorate = ({ endpoint }) =>
+    pipe([
+      ({ TargetGroupName, ...other }) => ({ Name: TargetGroupName, ...other }),
+      assignTags({ endpoint }),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeTargetGroups-property
   const getList = client.getList({
     method: "describeTargetGroups",
     getParam: "TargetGroups",
-    decorate: () => pipe([assignTags]),
+    decorate,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeTargetGroups-property
+  //TODO use describeTargetGroups
   const getByName = getByNameCore({ getList, findName });
 
   const getById = client.getById({
-    pickId: ({ TargetGroupArn }) => ({ TargetGroupArns: [TargetGroupArn] }),
+    pickId: ({ TargetGroupArn, Names }) => ({
+      TargetGroupArns: [TargetGroupArn],
+      Names,
+    }),
     method: "describeTargetGroups",
     getField: "TargetGroups",
     ignoreErrorCodes: ["TargetGroupNotFound"],
@@ -70,7 +80,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteTargetGroup-property
   const destroy = client.destroy({
-    pickId,
+    pickId: pick(["TargetGroupArn"]),
     method: "deleteTargetGroup",
     ignoreErrorCodes: ["TargetGroupNotFound"],
     getById,
@@ -89,7 +99,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
       }),
       () => otherProps,
       defaultsDeep({
-        Name: name,
+        //TODO move to propertiesDefault
         Protocol: "HTTP",
         VpcId: getField(vpc, "VpcId"),
         Tags: buildTags({ name, namespace, config, UserTags: Tags }),
