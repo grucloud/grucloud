@@ -936,6 +936,7 @@ exports.ResourceMaker = ({
   return {
     type,
     group,
+    groupType: `${group}::${type}`,
     provider,
     get name() {
       return getResourceName();

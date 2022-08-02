@@ -251,24 +251,7 @@ function CoreProvider({
       }),
     ])();
 
-  const getTargetGroupTypes = pipe([
-    () => [...mapTypeToResources.keys()],
-    tap((params) => {
-      assert(true);
-    }),
-    map(
-      pipe([
-        JSON.parse,
-        ({ group, type }) => `${group}::${type}`,
-        tap((params) => {
-          assert(true);
-        }),
-      ])
-    ),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+  const getTargetGroupTypes = pipe([() => [...mapTypeToResources.keys()]]);
 
   const targetResourcesAdd = (resource) =>
     pipe([
@@ -302,10 +285,11 @@ function CoreProvider({
 
     const resourcesByType = getResourcesByType(resource);
     assert(resourcesByType);
-    mapTypeToResources.set(
-      JSON.stringify({ type: resource.type, group: resource.group }),
-      [...filter(not(eq(get("name"), name)))(resourcesByType), resource]
-    );
+
+    mapTypeToResources.set(resource.groupType, [
+      ...filter(not(eq(get("name"), name)))(resourcesByType),
+      resource,
+    ]);
 
     tap.if(get("hook"), (client) =>
       hookAdd({
@@ -395,7 +379,7 @@ function CoreProvider({
         assert(type);
         //assert(group);
       }),
-      () => mapTypeToResources.get(JSON.stringify({ type, group })) || [],
+      () => mapTypeToResources.get(`${group}::${type}`) || [],
       tap((params) => {
         assert(true);
       }),
