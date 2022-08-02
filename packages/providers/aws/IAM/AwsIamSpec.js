@@ -335,11 +335,6 @@ module.exports = pipe([
         },
         ...dependenciesPolicy,
       },
-      hasNoProperty: ({ resource }) =>
-        pipe([
-          () => resource,
-          or([hasDependency({ type: "OpenIDConnectProvider", group: "IAM" })]),
-        ])(),
     },
     {
       type: "Policy",

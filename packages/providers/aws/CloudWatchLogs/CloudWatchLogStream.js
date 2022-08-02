@@ -28,7 +28,10 @@ const managedByOther = pipe([
   get("live.arn"),
   (logGroupName) =>
     pipe([
-      () => LogGroupNameManagedByOther,
+      () => [
+        ...LogGroupNameManagedByOther,
+        "log_stream_created_by_aws_to_validate_log_delivery_subscriptions",
+      ],
       map(prepend("log-group:")),
       any((prefix) => logGroupName.includes(prefix)),
     ])(),

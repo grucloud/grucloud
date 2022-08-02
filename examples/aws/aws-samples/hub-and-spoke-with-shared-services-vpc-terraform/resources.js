@@ -534,7 +534,6 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      FromPort: -1,
       IpProtocol: "icmp",
       IpRanges: [
         {
@@ -542,7 +541,6 @@ exports.createResources = () => [
           Description: "Allowing ICMP traffic",
         },
       ],
-      ToPort: -1,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-1::instance_sg",
@@ -570,7 +568,6 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      FromPort: -1,
       IpProtocol: "icmp",
       IpRanges: [
         {
@@ -578,7 +575,6 @@ exports.createResources = () => [
           Description: "Allowing ICMP traffic",
         },
       ],
-      ToPort: -1,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-2::instance_sg",

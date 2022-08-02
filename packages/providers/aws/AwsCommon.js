@@ -1102,6 +1102,11 @@ const replaceStatement = ({ providerConfig, lives }) =>
           get("Principal"),
           replacePrincipal({ providerConfig, lives, principalKind: "Service" }),
           replacePrincipal({ providerConfig, lives, principalKind: "AWS" }),
+          replacePrincipal({
+            providerConfig,
+            lives,
+            principalKind: "Federated",
+          }),
         ]),
       })
     ),

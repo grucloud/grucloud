@@ -87,9 +87,9 @@ exports.appendCidrSuffix = ({
   pipe([
     switchCase([
       () => DestinationCidrBlock,
-      append(`-${DestinationCidrBlock}`),
+      append(`::${DestinationCidrBlock}`),
       () => DestinationIpv6CidrBlock,
-      append(`-${DestinationIpv6CidrBlock}`),
+      append(`::${DestinationIpv6CidrBlock}`),
       identity, // Vpc Endpoint
     ]),
   ]);

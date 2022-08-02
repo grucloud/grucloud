@@ -755,8 +755,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
       natGateway: `inspection-vpc-${config.region}a`,
+      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
     }),
   },
   {
@@ -788,8 +788,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
       ig: "inspection-vpc",
+      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
     }),
   },
   {
