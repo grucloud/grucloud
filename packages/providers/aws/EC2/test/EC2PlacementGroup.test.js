@@ -8,7 +8,7 @@ describe("PlacementGroup", async function () {
   let placementGroup;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     placementGroup = provider.getClient({
       groupType: "EC2::PlacementGroup",
     });

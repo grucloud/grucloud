@@ -7,6 +7,7 @@
   "scripts": {
     "test": "dotenv -e ../../../secrets/default.env -- mocha  './{,!(node_modules)/**}/*.test.js' ",
     "test-examples": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/**/iac.test.js' ",
+    "test-acm": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ACM/**/iac.test.js' ",
     "test-apigateway": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/APIGateway/**/iac.test.js' ",
     "test-apigateway-v2": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ApiGatewayV2/**/iac.test.js' ",
     "test-apprunner": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/AppRunner/**/iac.test.js' ",
@@ -109,6 +110,7 @@
     "@aws-sdk/client-sts": "3.130.0",
     "@aws-sdk/client-wafv2": "3.130.0",
     "@aws-sdk/credential-providers": "3.130.0",
+    "@aws-sdk/node-config-provider": "3.127.0",
     "@aws-sdk/s3-request-presigner": "3.130.0",
     "@grucloud/core": "^8.0.0",
     "adm-zip": "0.5.9",

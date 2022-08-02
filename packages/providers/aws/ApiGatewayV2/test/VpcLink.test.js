@@ -8,7 +8,7 @@ describe("Api GatewayV2 VpcLink", async function () {
   let vpcLink;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     vpcLink = provider.getClient({
       groupType: "ApiGatewayV2::VpcLink",
     });

@@ -8,7 +8,7 @@ describe("NetworkManager Device", async function () {
   let site;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     site = provider.getClient({
       groupType: "NetworkManager::Device",
     });

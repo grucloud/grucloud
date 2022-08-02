@@ -139,7 +139,7 @@ exports.createSpec =
   ({ config, defaultOptions = { group: "" } }) =>
   (spec) =>
     pipe([
-      () => spec,
+      () => ({ ...SpecDefault(config), ...spec }),
       defaultsDeep(defaultOptions),
       assign({
         groupType: buildGroupType,
@@ -177,7 +177,6 @@ exports.createSpec =
           map(buildGroupType),
         ]),
       }),
-      defaultsDeep(SpecDefault(config)),
       tap((params) => {
         assert(true);
       }),

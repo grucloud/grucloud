@@ -8,7 +8,7 @@ describe("GlueJob", async function () {
   let job;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     job = provider.getClient({ groupType: "Glue::Job" });
     await provider.start();
   });

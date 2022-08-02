@@ -6,7 +6,7 @@ describe("EC2NatGateway", async function () {
   let provider;
   let natGateway;
   before(async function () {
-    provider = AwsProvider({
+    provider = await AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
     natGateway = provider.getClient({ groupType: "EC2::NatGateway" });

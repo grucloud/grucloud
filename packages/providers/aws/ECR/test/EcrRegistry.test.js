@@ -8,7 +8,7 @@ describe("EcrRegistry", async function () {
   let registry;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     registry = provider.getClient({
       groupType: "ECR::Registry",
     });

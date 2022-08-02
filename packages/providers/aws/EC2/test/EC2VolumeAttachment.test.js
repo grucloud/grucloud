@@ -8,7 +8,7 @@ describe("EC2 VolumeAttachment", async function () {
   let volumeAttachment;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     volumeAttachment = provider.getClient({
       groupType: "EC2::VolumeAttachment",
     });

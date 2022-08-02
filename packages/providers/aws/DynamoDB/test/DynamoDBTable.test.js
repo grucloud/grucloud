@@ -8,7 +8,7 @@ describe("DynamoDBTable", async function () {
   let table;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     table = provider.getClient({ groupType: "DynamoDB::Table" });
     await provider.start();
   });

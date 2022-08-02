@@ -8,7 +8,7 @@ describe("EC2VpcPeeringConnection", async function () {
   let vpcPeeringConnection;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     vpcPeeringConnection = provider.getClient({
       groupType: "EC2::VpcPeeringConnection",
     });

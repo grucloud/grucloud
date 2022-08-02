@@ -11,3 +11,4 @@ test-results.xml
 list.svg
 inventory*.json
 mochawesome-report
+.clinic

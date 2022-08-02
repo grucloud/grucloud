@@ -8,7 +8,7 @@ describe("Function", async function () {
   let fun;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     fun = provider.getClient({ groupType: "Lambda::Function" });
     await provider.start();
   });

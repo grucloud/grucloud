@@ -4,7 +4,7 @@ exports.createStack = async ({ createProvider }) => {
   return {
     stacks: [
       {
-        provider: createProvider(AwsProvider, {
+        provider: await createProvider(AwsProvider, {
           config: () => ({ region: process.env.AWS_REGION }),
         }),
       },

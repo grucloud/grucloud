@@ -8,7 +8,7 @@ describe("EC2 Ipam", async function () {
   let ipam;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     ipam = provider.getClient({
       groupType: "EC2::Ipam",
     });

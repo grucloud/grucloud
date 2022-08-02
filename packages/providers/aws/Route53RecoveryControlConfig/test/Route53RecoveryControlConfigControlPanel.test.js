@@ -8,7 +8,7 @@ describe("Route53RecoveryControlConfigControlPanel", async function () {
   let controlPanel;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     controlPanel = provider.getClient({
       groupType: "Route53RecoveryControlConfig::ControlPanel",
     });

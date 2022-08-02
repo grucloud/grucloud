@@ -8,7 +8,7 @@ describe("AppSyncResolver", async function () {
   let resolver;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     resolver = provider.getClient({ groupType: "AppSync::Resolver" });
     await provider.start();
   });

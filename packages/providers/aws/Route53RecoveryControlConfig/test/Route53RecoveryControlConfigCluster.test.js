@@ -8,7 +8,7 @@ describe("Route53RecoveryControlConfigCluster", async function () {
   let cluster;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     cluster = provider.getClient({
       groupType: "Route53RecoveryControlConfig::Cluster",
     });

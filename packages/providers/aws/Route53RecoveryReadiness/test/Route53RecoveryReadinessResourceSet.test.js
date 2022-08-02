@@ -8,7 +8,7 @@ describe("Route53RecoveryReadinessResourceSet", async function () {
   let resourceSet;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     resourceSet = provider.getClient({
       groupType: "Route53RecoveryReadiness::ResourceSet",
     });

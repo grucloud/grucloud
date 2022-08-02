@@ -8,7 +8,7 @@ describe("EC2 IpamPoolCidr", async function () {
   let ipamPoolCidr;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     ipamPoolCidr = provider.getClient({
       groupType: "EC2::IpamPoolCidr",
     });

@@ -8,7 +8,7 @@ describe("KinesisStream", async function () {
   let stream;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     stream = provider.getClient({ groupType: "Kinesis::Stream" });
     await provider.start();
   });

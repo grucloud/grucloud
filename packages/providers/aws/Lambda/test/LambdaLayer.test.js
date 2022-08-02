@@ -8,7 +8,7 @@ describe("Layer", async function () {
   let layer;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     layer = provider.getClient({ groupType: "Lambda::Layer" });
     await provider.start();
   });

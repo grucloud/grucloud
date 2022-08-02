@@ -8,7 +8,7 @@ describe("EC2VpnGateway", async function () {
   let vpnGateway;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     vpnGateway = provider.getClient({
       groupType: "EC2::VpnGateway",
     });

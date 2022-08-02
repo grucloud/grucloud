@@ -8,7 +8,7 @@ describe("Route53ResolverRuleAssociation", async function () {
   let ruleAssociation;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     ruleAssociation = provider.getClient({
       groupType: "Route53Resolver::RuleAssociation",
     });

@@ -8,7 +8,7 @@ describe("NetworkFirewall RuleGroup", async function () {
   let ruleGroup;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     ruleGroup = provider.getClient({
       groupType: "NetworkFirewall::RuleGroup",
     });

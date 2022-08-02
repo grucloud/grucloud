@@ -8,7 +8,7 @@ describe("CodeDeployDeploymentGroup", async function () {
   let deploymentGroup;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     deploymentGroup = provider.getClient({
       groupType: "CodeDeploy::DeploymentGroup",
     });

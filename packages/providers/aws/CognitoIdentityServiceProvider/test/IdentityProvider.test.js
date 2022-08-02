@@ -8,7 +8,7 @@ describe("IdentityProvider", async function () {
   let identityProvider;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     identityProvider = provider.getClient({
       groupType: "CognitoIdentityServiceProvider::IdentityProvider",
     });

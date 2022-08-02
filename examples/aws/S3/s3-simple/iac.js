@@ -1,6 +1,5 @@
 const path = require("path");
 const { AwsProvider } = require("@grucloud/provider-aws");
-const hook = require("./hook");
 
 const namespace = "My namespace"; // Optional
 
@@ -44,12 +43,11 @@ const createResources = ({ provider }) => {
 
 exports.createResources = createResources;
 
-exports.createStack = ({ createProvider }) => {
+exports.createStack = async ({ createProvider }) => {
   return {
-    provider: createProvider(AwsProvider, {
+    provider: await createProvider(AwsProvider, {
       createResources,
       config: require("./config"),
     }),
-    hooks: [hook],
   };
 };

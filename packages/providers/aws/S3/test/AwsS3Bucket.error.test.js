@@ -14,7 +14,7 @@ describe("AwsS3BucketErrors", async function () {
 
   //TODO
   it.skip("s3Bucket already exist", async function () {
-    const provider = AwsProvider({
+    const provider = await AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
 
@@ -44,7 +44,7 @@ describe("AwsS3BucketErrors", async function () {
   });
 
   it("s3Bucket acl error", async function () {
-    const provider = AwsProvider({
+    const provider = await AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
     const cli = await Cli({

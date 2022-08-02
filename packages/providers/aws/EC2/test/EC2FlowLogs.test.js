@@ -8,7 +8,7 @@ describe("EC2 FlowLogs", async function () {
   let flowLog;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     flowLog = provider.getClient({
       groupType: "EC2::FlowLogs",
     });

@@ -8,7 +8,7 @@ describe("OrganisationsOrganisation", async function () {
   let organisation;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     organisation = provider.getClient({
       groupType: "Organisations::Organisation",
     });

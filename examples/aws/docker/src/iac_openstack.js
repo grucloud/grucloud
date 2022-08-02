@@ -4,7 +4,7 @@ exports.createStack = async ({ createProvider }) => {
   return {
     stacks: [
       {
-        provider: createProvider(OpenStackProvider, {
+        provider: await createProvider(OpenStackProvider, {
           config: () => ({}),
         }),
       },

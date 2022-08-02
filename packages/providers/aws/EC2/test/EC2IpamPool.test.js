@@ -8,7 +8,7 @@ describe("EC2 IpamPool", async function () {
   let ipamPool;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     ipamPool = provider.getClient({
       groupType: "EC2::IpamPool",
     });

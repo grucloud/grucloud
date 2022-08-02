@@ -8,7 +8,7 @@ describe("EFSAccessPoint", async function () {
   let accessPoint;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     accessPoint = provider.getClient({ groupType: "EFS::AccessPoint" });
     await provider.start();
   });

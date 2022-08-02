@@ -8,7 +8,7 @@ describe("SNS Topic", async function () {
   let topic;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     topic = provider.getClient({ groupType: "SNS::Topic" });
     await provider.start();
   });

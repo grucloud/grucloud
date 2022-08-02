@@ -8,7 +8,7 @@ describe("ELB LoadBalancer", async function () {
   let loadBalancer;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     loadBalancer = provider.getClient({
       groupType: "ElasticLoadBalancingV2::LoadBalancer",
     });
@@ -29,6 +29,7 @@ describe("ELB LoadBalancer", async function () {
       () =>
         loadBalancer.destroy({
           live: {
+            Name: "alb",
             LoadBalancerArn:
               "arn:aws:elasticloadbalancing:us-east-1:840541460064:loadbalancer/app/load-balancer/e6f97c90654062f0",
           },

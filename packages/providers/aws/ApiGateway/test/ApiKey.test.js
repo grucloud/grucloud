@@ -8,7 +8,7 @@ describe("Api Gateway ApiKey", async function () {
   let apiKey;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     apiKey = provider.getClient({ groupType: "APIGateway::ApiKey" });
     await provider.start();
   });

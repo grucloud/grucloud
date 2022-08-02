@@ -8,7 +8,7 @@ describe("Secrets Manager Secret", async function () {
   let secret;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     secret = provider.getClient({ groupType: "SecretsManager::Secret" });
     await provider.start();
   });

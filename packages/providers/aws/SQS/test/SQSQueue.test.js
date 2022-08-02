@@ -8,7 +8,7 @@ describe("SQSQueue", async function () {
   let queue;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     queue = provider.getClient({ groupType: "SQS::Queue" });
     await provider.start();
   });

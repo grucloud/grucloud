@@ -4,7 +4,7 @@ exports.createStack = async ({ createProvider }) => {
   return {
     stacks: [
       {
-        provider: createProvider(AzureProvider, {
+        provider: await createProvider(AzureProvider, {
           config: () => ({
             location: process.env.LOCATION,
           }),

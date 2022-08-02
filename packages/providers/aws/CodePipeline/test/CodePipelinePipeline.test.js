@@ -8,7 +8,7 @@ describe("CodePipelinePipeline", async function () {
   let pipeline;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     pipeline = provider.getClient({
       groupType: "CodePipeline::Pipeline",
     });

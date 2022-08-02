@@ -8,7 +8,7 @@ describe("CloudFrontFunction", async function () {
   let functionEdge;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     functionEdge = provider.getClient({
       groupType: "CloudFront::Function",
     });

@@ -6,7 +6,7 @@ describe("EC2VpcEndpoint", async function () {
   let provider;
   let vpcEndpoint;
   before(async function () {
-    provider = AwsProvider({
+    provider = await AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
     vpcEndpoint = provider.getClient({ groupType: "EC2::VpcEndpoint" });

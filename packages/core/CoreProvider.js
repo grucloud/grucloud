@@ -39,6 +39,8 @@ const {
   prepend,
   values,
 } = require("rubico/x");
+const { memoize } = require("lodash");
+
 const fs = require("fs").promises;
 const logger = require("./logger")({ prefix: "CoreProvider" });
 const { tos } = require("./tos");
@@ -375,14 +377,17 @@ function CoreProvider({
 
   const getResource = createGetResource({ mapGloblalNameToResource });
 
-  const getSpecs = pipe([
-    getProviderConfig,
-    fnSpecs,
-    map(createSpec({ config: getProviderConfig() })),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
+  const getSpecs = memoize(
+    pipe([
+      getProviderConfig,
+      fnSpecs,
+      map(createSpec({ config: getProviderConfig() })),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
+    () => "k"
+  );
 
   const getResourcesByType = ({ type, group }) =>
     pipe([

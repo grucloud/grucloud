@@ -8,7 +8,7 @@ describe("CloudWatchMetricAlarm", async function () {
   let alarm;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     alarm = provider.getClient({
       groupType: "CloudWatch::MetricAlarm",
     });

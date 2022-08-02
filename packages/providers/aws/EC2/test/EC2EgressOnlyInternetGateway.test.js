@@ -8,7 +8,7 @@ describe("EC2 EgressOnlyInternetGateway", async function () {
   let eoig;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     eoig = provider.getClient({
       groupType: "EC2::EgressOnlyInternetGateway",
     });

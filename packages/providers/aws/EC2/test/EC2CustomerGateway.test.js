@@ -8,7 +8,7 @@ describe("EC2CustomerGateway", async function () {
   let customerGateway;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     customerGateway = provider.getClient({
       groupType: "EC2::CustomerGateway",
     });

@@ -8,7 +8,7 @@ describe("CloudFrontDistribution", async function () {
   let distribution;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     distribution = provider.getClient({
       groupType: "CloudFront::Distribution",
     });

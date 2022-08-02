@@ -8,7 +8,7 @@ describe("DBSubnetGroup", async function () {
   let subnetGroup;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     subnetGroup = provider.getClient({ groupType: "RDS::DBSubnetGroup" });
     await provider.start();
   });

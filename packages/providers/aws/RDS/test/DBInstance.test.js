@@ -8,7 +8,7 @@ describe("DBInstance", async function () {
   let dbInstance;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     dbInstance = provider.getClient({ groupType: "RDS::DBInstance" });
     await provider.start();
   });

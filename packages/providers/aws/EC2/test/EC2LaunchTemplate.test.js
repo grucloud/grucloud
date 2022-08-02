@@ -8,7 +8,7 @@ describe("EC2LaunchTemplate", async function () {
   let launchtemplate;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     launchtemplate = provider.getClient({ groupType: "EC2::LaunchTemplate" });
     await provider.start();
   });

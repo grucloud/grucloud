@@ -8,7 +8,7 @@ describe("EKSCluster", async function () {
   let cluster;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     cluster = provider.getClient({ groupType: "EKS::Cluster" });
     await provider.start();
   });

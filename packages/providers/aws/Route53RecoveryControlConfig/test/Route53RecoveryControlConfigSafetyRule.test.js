@@ -8,7 +8,7 @@ describe("Route53RecoveryControlConfigSafetyRule", async function () {
   let safetyRule;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     safetyRule = provider.getClient({
       groupType: "Route53RecoveryControlConfig::SafetyRule",
     });

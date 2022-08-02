@@ -8,7 +8,7 @@ describe("Api GatewayV2 Stage", async function () {
   let stage;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     stage = provider.getClient({ groupType: "ApiGatewayV2::Stage" });
     await provider.start();
   });

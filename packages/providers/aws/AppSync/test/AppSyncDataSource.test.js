@@ -8,7 +8,7 @@ describe("AppSyncDataSource", async function () {
   let dataSource;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     dataSource = provider.getClient({ groupType: "AppSync::DataSource" });
     await provider.start();
   });

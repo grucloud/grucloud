@@ -8,7 +8,7 @@ describe("ECSContainerInstance", async function () {
   let containerinstance;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     containerinstance = provider.getClient({
       groupType: "ECS::ContainerInstance",
     });

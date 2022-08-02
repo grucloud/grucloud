@@ -8,7 +8,7 @@ describe("CloudTrail EventDataStore", async function () {
   let eventDataStore;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     eventDataStore = provider.getClient({
       groupType: "CloudTrail::EventDataStore",
     });

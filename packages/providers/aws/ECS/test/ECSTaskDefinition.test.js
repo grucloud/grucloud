@@ -8,7 +8,7 @@ describe("ECSTaskDefinition", async function () {
   let taskdefinition;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     taskdefinition = provider.getClient({ groupType: "ECS::TaskDefinition" });
     await provider.start();
   });

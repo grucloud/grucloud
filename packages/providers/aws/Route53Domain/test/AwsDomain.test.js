@@ -10,7 +10,7 @@ describe("AwsDomain", async function () {
   const domainName = "grucloud.org";
 
   const createProvider = async ({ config }) => {
-    const provider = AwsProvider({
+    const provider = await AwsProvider({
       config: () => ({}),
     });
 

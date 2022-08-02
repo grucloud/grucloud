@@ -26,7 +26,7 @@ describe("AwsCertificate", async function () {
   let certificate;
 
   before(async function () {
-    provider = AwsProvider({
+    provider = await AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
     await provider.start();

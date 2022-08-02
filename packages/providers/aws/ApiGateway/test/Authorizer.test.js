@@ -8,7 +8,7 @@ describe("Api Gateway Authorizer", async function () {
   let autorizer;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     autorizer = provider.getClient({ groupType: "APIGateway::Authorizer" });
     await provider.start();
   });

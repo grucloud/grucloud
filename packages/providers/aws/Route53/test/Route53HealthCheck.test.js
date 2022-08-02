@@ -8,7 +8,7 @@ describe("Route53HealthCheck", async function () {
   let healthCheck;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     healthCheck = provider.getClient({
       groupType: "Route53::HealthCheck",
     });

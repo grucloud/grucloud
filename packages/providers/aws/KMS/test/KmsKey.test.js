@@ -8,7 +8,7 @@ describe("KMSKey", async function () {
   let key;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     key = provider.getClient({ groupType: "KMS::Key" });
     await provider.start();
   });

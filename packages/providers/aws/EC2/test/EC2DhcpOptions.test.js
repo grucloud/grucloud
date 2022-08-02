@@ -8,7 +8,7 @@ describe("EC2 DhcpOptions", async function () {
   let dhcpOptions;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     await provider.start();
     dhcpOptions = provider.getClient({
       groupType: "EC2::DhcpOptions",
@@ -49,7 +49,7 @@ describe("EC2 DhcpOptions", async function () {
       () =>
         dhcpOptions.getByName({
           name: "a123",
-          config: {}
+          config: {},
         }),
     ])
   );

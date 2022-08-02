@@ -8,7 +8,7 @@ describe("DBProxyTargetGroup", async function () {
   let dbProxyTargetGroup;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     dbProxyTargetGroup = provider.getClient({
       groupType: "RDS::DBProxyTargetGroup",
     });

@@ -8,7 +8,7 @@ describe("Api Gateway V2 DomainName", async function () {
   let domainName;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     domainName = provider.getClient({ groupType: "ApiGatewayV2::DomainName" });
     await provider.start();
   });

@@ -8,7 +8,7 @@ describe("EC2ClientVpnAuthorizationRule", async function () {
   let rule;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     rule = provider.getClient({
       groupType: "EC2::ClientVpnAuthorizationRule",
     });

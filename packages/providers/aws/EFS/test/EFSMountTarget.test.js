@@ -8,7 +8,7 @@ describe("EFSMountTarget", async function () {
   let fileSystem;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     fileSystem = provider.getClient({ groupType: "EFS::MountTarget" });
     await provider.start();
   });

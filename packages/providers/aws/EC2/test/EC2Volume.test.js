@@ -8,7 +8,7 @@ describe("EC2 Volume", async function () {
   let volume;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     volume = provider.getClient({
       groupType: "EC2::Volume",
     });

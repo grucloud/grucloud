@@ -8,7 +8,7 @@ describe("Route53ResolverEndpoint", async function () {
   let endpoint;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     endpoint = provider.getClient({ groupType: "Route53Resolver::Endpoint" });
     await provider.start();
   });
