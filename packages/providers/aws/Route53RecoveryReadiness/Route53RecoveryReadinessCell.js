@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, omit, pick } = require("rubico");
+const { pipe, tap, get, omit, pick, assign, map } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
@@ -8,13 +8,9 @@ const {
   tagResource,
   untagResource,
 } = require("./Route53RecoveryReadinessCommon");
+const { getField } = require("../../../core/ProviderCommon");
 
-const pickId = pipe([
-  pick(["CellName"]),
-  tap(({ CellName }) => {
-    assert(CellName);
-  }),
-]);
+const pickId = pipe([pick(["CellName"])]);
 
 const model = ({ config }) => ({
   package: "route53-recovery-readiness",
@@ -60,21 +56,29 @@ exports.Route53RecoveryReadinessCell = ({ spec, config }) =>
     findName: pipe([get("live.CellName")]),
     findId: pipe([get("live.CellArn")]),
     getByName: ({ getList, endpoint, getById }) =>
-      pipe([
-        ({ name }) => ({ CellName: name }),
-        getById,
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
+      pipe([({ name }) => ({ CellName: name }), getById]),
     tagResource: tagResource,
     untagResource: untagResource,
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      dependencies: { cells },
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
           CellName: name,
           Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
         }),
+        when(
+          () => cells,
+          assign({
+            Cells: pipe([
+              () => cells,
+              map((cell) => getField(cell, "CellArn")),
+            ]),
+          })
+        ),
       ])(),
   });

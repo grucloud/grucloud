@@ -1,5 +1,4 @@
 const { get, pipe, tap } = require("rubico");
-const { findDependenciesVpc, findDependenciesSubnet } = require("./EC2Common");
 
 const { findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
@@ -13,12 +12,9 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
   const findName = findNameInTagsOrId({ findId });
   const isDefault = get("live.IsDefault");
 
-  // findDependencies for NetworkAcl
-  const findDependencies = ({ live }) => [
-    findDependenciesVpc({ live }),
-    findDependenciesSubnet({ live }),
-  ];
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createNetworkAcl-property
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeNetworkAcls-property
   const getList = client.getList({
     method: "describeNetworkAcls",
     getParam: "NetworkAcls",
@@ -29,7 +25,6 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
     findId,
     isDefault,
     findName,
-    findDependencies,
     getList,
     tagResource: tagResource({ endpoint: ec2 }),
     untagResource: untagResource({ endpoint: ec2 }),

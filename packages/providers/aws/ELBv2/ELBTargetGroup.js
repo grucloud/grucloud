@@ -26,17 +26,6 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     key: "elbv2.k8s.aws/cluster",
   });
 
-  // TODO findDependencies
-  const findDependencies = ({ live }) => [
-    { type: "Vpc", group: "EC2", ids: [live.VpcId] },
-    {
-      type: "LoadBalancer",
-      group: "ElasticLoadBalancingV2",
-      ids: live.LoadBalancerArns,
-    },
-    // TODO eks.NodeGroup
-  ];
-
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,
     key: "elbv2.k8s.aws/cluster",
@@ -46,9 +35,6 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     isEmpty,
     assign({
       Tags: pipe([
-        tap(({ TargetGroupArn }) => {
-          assert(TargetGroupArn);
-        }),
         ({ TargetGroupArn }) =>
           elb().describeTags({ ResourceArns: [TargetGroupArn] }),
         get("TagDescriptions"),
@@ -114,7 +100,6 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     spec,
     findId,
     findNamespace,
-    findDependencies,
     getByName,
     findName,
     create,

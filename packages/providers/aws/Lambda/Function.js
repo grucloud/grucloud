@@ -55,13 +55,8 @@ const dependenciesPoliciesKind = [
 const compareLambda = compareAws({});
 const findId = get("live.Configuration.FunctionArn");
 const findName = get("live.Configuration.FunctionName");
+
 const pickId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  tap(({ Configuration }) => {
-    assert(Configuration);
-  }),
   ({ Configuration: { FunctionArn } }) => ({
     FunctionName: FunctionArn,
   }),

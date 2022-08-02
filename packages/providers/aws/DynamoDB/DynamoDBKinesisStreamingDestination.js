@@ -41,35 +41,6 @@ exports.DynamoDBKinesisStreamingDestination = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Table",
-        group: "DynamoDB",
-        ids: [
-          pipe([
-            tap(() => {
-              assert(live.TableName);
-            }),
-            () =>
-              lives.getByName({
-                name: live.TableName,
-                type: "Table",
-                group: "DynamoDB",
-                providerName: config.providerName,
-              }),
-            get("id"),
-            tap((id) => {
-              assert(id);
-            }),
-          ])(),
-        ],
-      },
-      {
-        type: "Stream",
-        group: "Kinesis",
-        ids: [live.StreamArn],
-      },
-    ],
     findName: ({ live, lives }) =>
       pipe([
         fork({
@@ -88,6 +59,7 @@ exports.DynamoDBKinesisStreamingDestination = ({ spec, config }) =>
         ({ table, stream }) => `table-kinesis-stream::${table}::${stream}`,
       ])(),
     findId,
+    //TODO getListWithParent
     getList:
       ({ endpoint }) =>
       ({ lives }) =>

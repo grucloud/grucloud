@@ -1,23 +1,14 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, pick } = require("rubico");
+const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
-const {
-  tagResource,
-  untagResource,
-  findDependenciesFileSystem,
-} = require("./EFSCommon");
+const { tagResource, untagResource } = require("./EFSCommon");
 
-const pickId = pipe([
-  tap(({ AccessPointId }) => {
-    assert(AccessPointId);
-  }),
-  pick(["AccessPointId"]),
-]);
+const pickId = pipe([pick(["AccessPointId"])]);
 
 const model = {
   package: "efs",
@@ -27,15 +18,10 @@ const model = {
     method: "describeAccessPoints",
     pickId,
     getParam: "AccessPoints",
-    decorate: ({ endpoint }) => pipe([assign({})]),
   },
   getList: {
     method: "describeAccessPoints",
     getParam: "AccessPoints",
-    decorate:
-      ({ endpoint, getById }) =>
-      (live) =>
-        pipe([() => live])(),
   },
   create: { method: "createAccessPoint" },
   update: {
@@ -53,9 +39,6 @@ exports.EFSAccessPoint = ({ spec, config }) =>
     config,
     findName: findNameInTagsOrId({ findId: get("live.AccessPointId") }),
     findId: pipe([get("live.AccessPointArn")]),
-    findDependencies: ({ live, lives }) => [
-      findDependenciesFileSystem({ live, lives, config }),
-    ],
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

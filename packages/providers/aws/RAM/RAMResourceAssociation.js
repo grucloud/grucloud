@@ -5,14 +5,59 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
 
+const findDependencyFromEntity =
+  ({ type, group, arnKey }) =>
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap((params) => {
+        assert(arnKey);
+      }),
+      () => lives.getByType({ type, group, providerName: config.providerName }),
+      find(eq(get(`live.${arnKey}`), live.associatedEntity)),
+      get("id"),
+    ])();
+
 const RamResourceDependencies = {
-  subnet: { type: "Subnet", group: "EC2", arnKey: "SubnetArn" },
-  ipamPool: { type: "IpamPool", group: "EC2", arnKey: "IpamPoolArn" },
-  resolverRule: { type: "Rule", group: "Route53Resolver", arnKey: "Arn" },
+  subnet: {
+    type: "Subnet",
+    group: "EC2",
+    arnKey: "SubnetArn",
+    dependencyId: findDependencyFromEntity({
+      type: "Subnet",
+      group: "EC2",
+      arnKey: "SubnetArn",
+    }),
+  },
+  ipamPool: {
+    type: "IpamPool",
+    group: "EC2",
+    arnKey: "IpamPoolArn",
+    dependencyId: findDependencyFromEntity({
+      type: "IpamPool",
+      group: "EC2",
+      arnKey: "IpamPoolArn",
+    }),
+  },
+  resolverRule: {
+    type: "Rule",
+    group: "Route53Resolver",
+    arnKey: "Arn",
+    dependencyId: findDependencyFromEntity({
+      type: "Rule",
+      group: "EC2",
+      arnKey: "Arn",
+    }),
+  },
   transitGateway: {
     type: "TransitGateway",
     group: "EC2",
     arnKey: "TransitGatewayArn",
+    dependencyId: findDependencyFromEntity({
+      type: "Rule",
+      group: "EC2",
+      arnKey: "TransitGatewayArn",
+    }),
   },
 };
 
@@ -41,27 +86,6 @@ const findResoureName = ({ live, lives, config }) =>
     find(not(isEmpty)),
   ])();
 
-const findDependencyFromEntity =
-  ({ live, lives, config }) =>
-  ({ type, group, arnKey }) =>
-    pipe([
-      tap((params) => {
-        assert(arnKey);
-      }),
-      () => lives.getByType({ type, group, providerName: config.providerName }),
-      find(eq(get(`live.${arnKey}`), live.associatedEntity)),
-      get("id"),
-      switchCase([isEmpty, () => [], (id) => [id]]),
-      (ids) => pipe([() => ({ type, group, ids })])(),
-    ])();
-
-const findDependenciesFromEntity = ({ live, lives, config }) =>
-  pipe([
-    () => RamResourceDependencies,
-    values,
-    map(pipe([findDependencyFromEntity({ live, lives, config })])),
-  ])();
-
 const associatedEntityArn = ({ resourceDependencies }) =>
   pipe([
     () => resourceDependencies,
@@ -80,13 +104,6 @@ const model = ({ config }) => ({
     method: "getResourceShareAssociations",
     getField: "resourceShareAssociations",
     pickId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      tap(({ resourceShareArn, associatedEntity }) => {
-        assert(resourceShareArn);
-        assert(associatedEntity);
-      }),
       ({ resourceShareArn, associatedEntity }) => ({
         resourceShareArns: [resourceShareArn],
         associationType: "RESOURCE",
@@ -101,12 +118,6 @@ const model = ({ config }) => ({
     getParam: "resourceShareAssociations",
     transformListPre: () =>
       pipe([filter(not(eq(get("status"), "DISASSOCIATED")))]),
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RAM.html#associateResourceShare-property
   create: {
@@ -155,14 +166,6 @@ exports.RAMResourceAssociation = ({ spec, config }) =>
       ({ resourceShareArn, associatedEntity }) =>
         `${resourceShareArn}::${associatedEntity}`,
     ]),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "ResourceShare",
-        group: "RAM",
-        ids: [live.resourceShareArn],
-      },
-      ...findDependenciesFromEntity({ live, lives, config }),
-    ],
     getByName: ({ getList, endpoint }) =>
       pipe([
         ({ name }) => ({ name, resourceShareStatus: "ACTIVE" }),

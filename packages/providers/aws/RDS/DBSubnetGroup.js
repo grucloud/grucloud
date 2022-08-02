@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { map, pipe, tap, get, eq, not, assign, pick, omit } = require("rubico");
-const { defaultsDeep, pluck } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -29,14 +29,6 @@ exports.DBSubnetGroup = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(rds);
 
   const isDefault = pipe([eq(get("live.DBSubnetGroupName"), "default")]);
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: pipe([() => live, get("Subnets"), pluck("SubnetIdentifier")])(),
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBSubnetGroups-property
   const getList = client.getList({
@@ -110,7 +102,6 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    findDependencies,
     isDefault,
     managedByOther: isDefault,
     tagResource: tagResource({ endpoint: rds }),

@@ -18,9 +18,6 @@ const createModel = ({ config }) => ({
     method: "describeClientVpnEndpoints",
     getField: "ClientVpnEndpoints",
     pickId: pipe([
-      tap(({ ClientVpnEndpointId }) => {
-        assert(ClientVpnEndpointId);
-      }),
       ({ ClientVpnEndpointId }) => ({
         ClientVpnEndpointIds: [ClientVpnEndpointId],
       }),
@@ -29,13 +26,6 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeClientVpnEndpoints",
     getParam: "ClientVpnEndpoints",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createClientVpnEndpoint-property
   create: {
@@ -56,75 +46,6 @@ exports.EC2ClientVpnEndpoint = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [live.VpcId],
-      },
-      {
-        type: "SecurityGroup",
-        group: "EC2",
-        ids: live.SecurityGroupIds,
-      },
-      {
-        type: "LogGroup",
-        group: "CloudWatchLogs",
-        ids: [
-          pipe([
-            () => live,
-            get("ConnectionLogOptions.CloudwatchLogGroup"),
-            (name) =>
-              lives.getByName({
-                name,
-                providerName: config.providerName,
-                type: "LogGroup",
-                group: "CloudWatchLogs",
-              }),
-            get("id"),
-          ])(),
-        ],
-      },
-      {
-        type: "LogStream",
-        group: "CloudWatchLogs",
-        ids: [
-          pipe([
-            () => live,
-            get("ConnectionLogOptions.CloudwatchLogStream"),
-            (logStream) =>
-              pipe([
-                () =>
-                  lives.getByType({
-                    providerName: config.providerName,
-                    type: "LogStream",
-                    group: "CloudWatchLogs",
-                  }),
-                find(pipe([eq(get("live.logStreamName"), logStream)])),
-                get("id"),
-              ])(),
-          ])(),
-        ],
-      },
-      {
-        type: "Certificate",
-        group: "ACM",
-        ids: [
-          pipe([() => live, get("ServerCertificateArn")])(),
-          ...pipe([
-            () => live,
-            get("AuthenticationOptions", []),
-            tap((params) => {
-              assert(true);
-            }),
-            map(pipe([get("MutualAuthentication.ClientRootCertificateChain")])),
-            tap((params) => {
-              assert(true);
-            }),
-          ])(),
-        ],
-      },
-    ],
     findName: findNameInTagsOrId({ findId }),
     findId,
     cannotBeDeleted: eq(get("live.Status.Code"), "deleted"),

@@ -28,9 +28,15 @@ module.exports = pipe([
   () => [
     {
       type: "ApiDestination",
+      //TODO inferName
       Client: CloudWatchEventApiDestination,
       dependencies: {
-        connection: { type: "Connection", group: GROUP, parent: true },
+        connection: {
+          type: "Connection",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("ConnectionArn"),
+        },
       },
       omitProperties: [
         "Name",
@@ -40,18 +46,16 @@ module.exports = pipe([
         "CreationTime",
         "LastModifiedTime",
       ],
-      filterLive: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
     },
     {
       type: "Connection",
       Client: CloudWatchEventConnection,
       dependencies: {
-        //secret: { type: "Secret", group: "SecretsManager", autoCreated:true },
+        secret: {
+          type: "Secret",
+          group: "SecretsManager",
+          dependencyId: ({ lives, config }) => get("SecretArn"),
+        },
       },
       omitProperties: [
         "Name",
@@ -167,7 +171,23 @@ module.exports = pipe([
           ),
         ]),
       dependencies: {
-        eventBus: { type: "EventBus", group: "CloudWatchEvents", parent: true },
+        eventBus: {
+          type: "EventBus",
+          group: "CloudWatchEvents",
+          parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("EventBusName"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  type: "EventBus",
+                  group: "CloudWatchEvents",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
       },
     },
     {
@@ -194,8 +214,28 @@ module.exports = pipe([
           ),
         ]),
       dependencies: {
-        rule: { type: "Rule", group: "CloudWatchEvents", parent: true },
-        role: { type: "Role", group: "IAM" },
+        rule: {
+          type: "Rule",
+          group: "CloudWatchEvents",
+          parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("Rule"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  type: "Rule",
+                  group: "CloudWatchEvents",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
+        role: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("RoleArn"),
+        },
         //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putTargets-property
         ...EventTargetDependencies,
       },

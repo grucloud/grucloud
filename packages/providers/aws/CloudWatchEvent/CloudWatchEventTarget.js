@@ -33,26 +33,78 @@ const {
 // SSM OpsItem
 // SSM Run Command
 
+const findTargetDependency =
+  ({ type, group }) =>
+  ({ config, lives }) =>
+    pipe([
+      get("Arn"),
+      tap((Arn) => {
+        assert(Arn);
+      }),
+      (Arn) =>
+        lives.getById({
+          id: Arn,
+          type,
+          group,
+          providerName: config.providerName,
+        }),
+    ]);
+
 const EventTargetDependencies = {
-  rule: { type: "Rule", group: "CloudWatchEvents", parent: true },
-  role: { type: "Role", group: "IAM" },
+  // rule: {
+  //   type: "Rule",
+  //   group: "CloudWatchEvents",
+  //   parent: true,
+  //   dependencyId: findTargetDependency({
+  //     type: "Rule",
+  //     group: "CloudWatchEvents",
+  //   }),
+  // },
+  // role: {
+  //   type: "Role",
+  //   group: "IAM",
+  //   dependencyId: findTargetDependency({
+  //     type: "Role",
+  //     group: "IAM",
+  //   }),
+  // },
   //TODO https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putTargets-property
   apiDestination: {
     type: "ApiDestination",
     group: "CloudWatchEvents",
     buildArn: () => get("ApiDestinationArn"),
+    dependencyId: findTargetDependency({
+      type: "ApiDestination",
+      group: "CloudWatchEvents",
+    }),
   },
   logGroup: {
     type: "LogGroup",
     group: "CloudWatchLogs",
     buildArn: () => get("arn"),
+    dependencyId: findTargetDependency({
+      type: "LogGroup",
+      group: "CloudWatchLogs",
+    }),
   },
   sqsQueue: {
     type: "Queue",
     group: "SQS",
     buildArn: () => get("Attributes.QueueArn"),
+    dependencyId: findTargetDependency({
+      type: "Queue",
+      group: "SQS",
+    }),
   },
-  snsTopic: { type: "Topic", group: "SNS", buildArn: () => get("TopicArn") },
+  snsTopic: {
+    type: "Topic",
+    group: "SNS",
+    buildArn: () => get("TopicArn"),
+    dependencyId: findTargetDependency({
+      type: "Topic",
+      group: "SNS",
+    }),
+  },
   apiGatewayRest: {
     type: "RestApi",
     group: "APIGateway",
@@ -60,6 +112,10 @@ const EventTargetDependencies = {
       () =>
       ({ id }) =>
         `arn:aws:apigateway:${config.region}::/restapis/${id}`,
+    dependencyId: findTargetDependency({
+      type: "RestApi",
+      group: "APIGateway",
+    }),
   },
   eventBus: {
     type: "EventBus",
@@ -70,39 +126,64 @@ const EventTargetDependencies = {
         `arn:aws:events:${
           config.region
         }:${config.accountId()}:event-bus/${Name}`,
+    dependencyId: findTargetDependency({
+      type: "EventBus",
+      group: "CloudWatchEvents",
+    }),
   },
-  ecsTask: { type: "Task", group: "ECS", buildArn: () => get("taskArn") },
+  ecsTask: {
+    type: "Task",
+    group: "ECS",
+    buildArn: () => get("taskArn"),
+    dependencyId: findTargetDependency({
+      type: "Task",
+      group: "ECS",
+    }),
+  },
   lambdaFunction: {
     type: "Function",
     group: "Lambda",
     buildArn: () => get("Configuration.FunctionArn"),
+    dependencyId: findTargetDependency({
+      type: "Function",
+      group: "Lambda",
+    }),
   },
   sfnStateMachine: {
     type: "StateMachine",
     group: "StepFunctions",
     buildArn: () => get("stateMachineArn"),
+    dependencyId: findTargetDependency({
+      type: "StateMachine",
+      group: "StepFunctions",
+    }),
   },
   codePipeline: {
     type: "Pipeline",
     group: "CodePipeline",
     buildArn: () => get("metadata.pipelineArn"),
+    dependencyId: findTargetDependency({
+      type: "Pipeline",
+      group: "CodePipeline",
+    }),
   },
   codeBuildProject: {
     type: "Project",
     group: "CodeBuild",
     buildArn: () => get("arn"),
+    dependencyId: findTargetDependency({
+      type: "Project",
+      group: "CodeBuild",
+    }),
   },
 };
 
 exports.EventTargetDependencies = EventTargetDependencies;
 
 const findId = get("live.Id");
+
 const findName = pipe([
   get("live"),
-  tap(({ Id, Rule }) => {
-    assert(Id);
-    assert(Rule);
-  }),
   ({ Id, Rule }) => `target::${Rule}::${Id}`,
 ]);
 
@@ -114,66 +195,6 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     get("live.Arn"),
     callProp("startsWith", "arn:aws:autoscaling"),
   ]);
-
-  const findTargetDependency =
-    ({ live, lives }) =>
-    ({ type, group }) => ({
-      type,
-      group,
-      ids: [
-        pipe([
-          () => live,
-          get("Arn"),
-          tap((Arn) => {
-            assert(Arn);
-          }),
-          (Arn) =>
-            lives.getById({
-              id: Arn,
-              type,
-              group,
-              providerName: config.providerName,
-            }),
-        ])(),
-      ],
-    });
-
-  const findTargetDependenciesEventTarget = ({ live, lives }) =>
-    pipe([
-      () => EventTargetDependencies,
-      values,
-      map(findTargetDependency({ live, lives })),
-    ])();
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Rule",
-      group: "CloudWatchEvents",
-      ids: [
-        pipe([
-          () => live,
-          get("Rule"),
-          tap((Rule) => {
-            assert(Rule);
-          }),
-          (name) =>
-            lives.getByName({
-              name,
-              type: "Rule",
-              group: "CloudWatchEvents",
-              providerName: config.providerName,
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    {
-      type: "Role",
-      group: "IAM",
-      ids: [live.RoleArn],
-    },
-    ...findTargetDependenciesEventTarget({ live, lives }),
-  ];
 
   const decorate = ({ parent }) =>
     pipe([
@@ -202,7 +223,7 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     ({ Rule, Id }) =>
       pipe([() => ({ lives }), getList, find(and([eq(get("Id"), Id)]))])();
 
-  const getByName = ({ name, lives, dependencies = () => ({}) }) =>
+  const getByName = ({ name, lives }) =>
     pipe([
       () => name,
       callProp("split", "::"),
@@ -296,7 +317,6 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    findDependencies,
     managedByOther: managedByOther,
     cannotBeDeleted: managedByOther,
   };

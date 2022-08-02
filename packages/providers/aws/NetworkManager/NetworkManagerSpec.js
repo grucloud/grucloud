@@ -43,7 +43,13 @@ module.exports = pipe([
         "Edges",
         "PolicyVersionId",
       ],
-      dependencies: { globalNetwork: { type: "GlobalNetwork", group: GROUP } },
+      dependencies: {
+        globalNetwork: {
+          type: "GlobalNetwork",
+          group: GROUP,
+          dependencyId: ({ lives, config }) => get("GlobalNetworkId"),
+        },
+      },
     },
     {
       type: "Site",
@@ -56,7 +62,12 @@ module.exports = pipe([
         "State",
       ],
       dependencies: {
-        globalNetwork: { type: "GlobalNetwork", group: GROUP, parent: true },
+        globalNetwork: {
+          type: "GlobalNetwork",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("GlobalNetworkId"),
+        },
       },
     },
     {
@@ -71,8 +82,18 @@ module.exports = pipe([
         "State",
       ],
       dependencies: {
-        globalNetwork: { type: "GlobalNetwork", group: GROUP, parent: true },
-        site: { type: "Site", group: GROUP, parent: true },
+        globalNetwork: {
+          type: "GlobalNetwork",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("GlobalNetworkId"),
+        },
+        site: {
+          type: "Site",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("SiteId"),
+        },
       },
     },
     {
@@ -87,8 +108,18 @@ module.exports = pipe([
         "LinkId",
       ],
       dependencies: {
-        globalNetwork: { type: "GlobalNetwork", group: GROUP, parent: true },
-        site: { type: "Site", group: GROUP, parent: true },
+        globalNetwork: {
+          type: "GlobalNetwork",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("GlobalNetworkId"),
+        },
+        site: {
+          type: "Site",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("SiteId"),
+        },
       },
     },
     {
@@ -104,8 +135,29 @@ module.exports = pipe([
         }),
       ]),
       dependencies: {
-        globalNetwork: { type: "GlobalNetwork", group: GROUP, parent: true },
-        transitGateway: { type: "TransitGateway", group: "EC2" },
+        globalNetwork: {
+          type: "GlobalNetwork",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("GlobalNetworkId"),
+        },
+        transitGateway: {
+          type: "TransitGateway",
+          group: "EC2",
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "TransitGateway",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
+                find(eq(get("live.TransitGatewayArn"), live.TransitGatewayArn)),
+                get("id"),
+              ])(),
+        },
       },
     },
   ],

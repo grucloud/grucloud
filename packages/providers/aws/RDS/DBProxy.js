@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { map, pipe, tap, get, pick, assign, tryCatch } = require("rubico");
-const { defaultsDeep, when, pluck } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
@@ -59,28 +59,6 @@ exports.DBProxy = ({ spec, config }) =>
     config,
     findName: get("live.DBProxyName"),
     findId: get("live.DBProxyArn"),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Secret",
-        group: "SecretsManager",
-        ids: pipe([() => live, get("Auth"), pluck("SecretArn")])(),
-      },
-      {
-        type: "Subnet",
-        group: "EC2",
-        ids: live.VpcSubnetIds,
-      },
-      {
-        type: "SecurityGroup",
-        group: "EC2",
-        ids: live.VpcSecurityGroupIds,
-      },
-      {
-        type: "Role",
-        group: "IAM",
-        ids: [live.RoleArn],
-      },
-    ],
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ DBProxyName: name }), getById]),
     tagResource: tagResource,

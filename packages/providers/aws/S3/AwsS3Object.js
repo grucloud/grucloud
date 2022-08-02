@@ -86,14 +86,6 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   const findNamespace = findNamespaceInTags(config);
 
-  const findDependencies = ({ live }) => [
-    {
-      type: "Bucket",
-      group: "S3",
-      ids: pipe([() => live, get("Bucket"), (bucket) => [bucket]])(),
-    },
-  ];
-
   const getBucket = ({ name, dependencies }) => {
     assert(name);
     assert(dependencies, "missing dependencies");
@@ -368,7 +360,6 @@ exports.AwsS3Object = ({ spec, config }) => {
     config: clientConfig,
     findNamespace,
     findId,
-    findDependencies,
     getByName,
     findName,
     create,

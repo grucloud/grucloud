@@ -7,7 +7,6 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 const {
   createAppSync,
-  findDependenciesGraphqlApi,
   ignoreErrorCodes,
   tagResource,
   untagResource,
@@ -16,62 +15,13 @@ const {
 const findId = get("live.dataSourceArn");
 const findName = get("live.name");
 
-const pickId = pipe([
-  tap(({ apiId }) => {
-    assert(apiId);
-  }),
-  pick(["apiId", "name"]),
-]);
+const pickId = pipe([pick(["apiId", "name"])]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html
 exports.AppSyncDataSource = ({ spec, config }) => {
   const appSync = createAppSync(config);
 
   const client = AwsClient({ spec, config })(appSync);
-
-  // findDependencies for AppSyncDataSource
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesGraphqlApi({ live, lives, config }),
-    {
-      type: "Role",
-      group: "IAM",
-      ids: [live.serviceRoleArn],
-    },
-    {
-      type: "Function",
-      group: "Lambda",
-      ids: [get("lambdaConfig.lambdaFunctionArn")(live)],
-    },
-    {
-      type: "DBCluster",
-      group: "RDS",
-      ids: [
-        get(
-          "relationalDatabaseConfig.rdsHttpEndpointConfig.dbClusterIdentifier"
-        )(live),
-      ],
-    },
-    {
-      type: "Table",
-      group: "DynamoDB",
-      ids: [
-        pipe([
-          () => live,
-          get("dynamodbConfig.tableName"),
-          (name) =>
-            lives.getByName({
-              name,
-              type: "Table",
-              group: "DynamoDB",
-              providerName: config.providerName,
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-  ];
-
-  const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppSync.html#listDataSources-property
   const getList = client.getListWithParent({
@@ -146,8 +96,6 @@ exports.AppSyncDataSource = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace,
-    findDependencies,
     getByName,
     getById,
     findName,

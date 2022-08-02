@@ -47,19 +47,6 @@ exports.AwsIamUser = ({ spec, config }) => {
   const pickId = pick(["UserName"]);
   const findName = findNameInTagsOrId({ findId });
 
-  const findDependencies = ({ live }) => [
-    {
-      type: "Policy",
-      group: "IAM",
-      ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
-    },
-    {
-      type: "Group",
-      group: "IAM",
-      ids: pipe([() => live, get("Groups")])(),
-    },
-  ];
-
   const fetchLoginProfile = tryCatch(
     pipe([pick(["UserName"]), iam().getLoginProfile, get("LoginProfile")]),
     throwIfNotAwsError("NoSuchEntity")
@@ -305,7 +292,6 @@ exports.AwsIamUser = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     getByName,
     findName,
     create,

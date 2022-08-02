@@ -36,22 +36,13 @@ const model = {
     getParam: "Subscriptions",
     decorate: ({ endpoint, getById }) =>
       pipe([
-        tap(({ SubscriptionArn }) => {
-          assert(SubscriptionArn);
-        }),
         unless(eq(get("SubscriptionArn"), "PendingConfirmation"), getById),
       ]),
   },
   create: {
     method: "subscribe",
     filterPayload: pipe([defaultsDeep({ ReturnSubscriptionArn: true })]),
-    pickCreated: () =>
-      pipe([
-        tap(({ SubscriptionArn }) => {
-          assert(SubscriptionArn);
-        }),
-        pick(["SubscriptionArn"]),
-      ]),
+    pickCreated: () => pipe([pick(["SubscriptionArn"])]),
   },
   destroy: { method: "unsubscribe", pickId },
 };
@@ -72,59 +63,12 @@ exports.SNSSubscription = ({ spec, config }) =>
       ({ topic, protocol, endpoint }) =>
         `subscription::${topic}::${protocol}::${endpoint}`,
     ]),
-    findId: pipe([
-      get("live.SubscriptionArn"),
-      tap((SubscriptionArn) => {
-        assert(SubscriptionArn);
-      }),
-    ]),
-    //TODO firehose
-    findDependencies: ({ live }) => [
-      {
-        type: "Topic",
-        group: "SNS",
-        ids: [pipe([() => live, get("TopicArn")])()],
-      },
-      {
-        type: "Function",
-        group: "Lambda",
-        ids: [
-          pipe([
-            () => live,
-            tap((params) => {
-              assert(true);
-            }),
-            switchCase([
-              eq(get("Protocol"), "lambda"),
-              get("Endpoint"),
-              () => undefined,
-            ]),
-            tap((params) => {
-              assert(true);
-            }),
-          ])(),
-        ],
-      },
-      {
-        type: "Queue",
-        group: "SQS",
-        ids: [
-          pipe([
-            () => live,
-            switchCase([
-              eq(get("Protocol"), "sqs"),
-              get("Endpoint"),
-              () => undefined,
-            ]),
-          ])(),
-        ],
-      },
-    ],
+    findId: pipe([get("live.SubscriptionArn")]),
     getByName: getByNameCore,
     configDefault: ({
       name,
       properties,
-      dependencies: { snsTopic, lambdaFunction },
+      dependencies: { snsTopic, lambdaFunction, sqsQueue },
     }) =>
       pipe([
         tap((params) => {
@@ -141,9 +85,13 @@ exports.SNSSubscription = ({ spec, config }) =>
             Endpoint: getField(lambdaFunction, "Configuration.FunctionArn"),
           })
         ),
-        tap((params) => {
-          assert(true);
-        }),
+        when(
+          () => sqsQueue,
+          defaultsDeep({
+            Protocol: "sqs",
+            Endpoint: getField(sqsQueue, "Attributes.QueueArn"),
+          })
+        ),
       ])(),
     cannotBeDeleted: eq(get("live.SubscriptionArn"), "PendingConfirmation"),
   });

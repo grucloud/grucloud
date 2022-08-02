@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { map, pipe, tap, get, eq, pick, assign } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
@@ -10,6 +10,7 @@ const {
   tagResource,
   untagResource,
 } = require("./DynamoDBCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 const findName = get("live.TableName");
 const findId = get("live.TableArn");
 const pickId = pick(["TableName"]);
@@ -18,16 +19,6 @@ const pickId = pick(["TableName"]);
 exports.DynamoDBTable = ({ spec, config }) => {
   const dynamoDB = createDynamoDB(config);
   const client = AwsClient({ spec, config })(dynamoDB);
-
-  const findDependencies = ({ live }) => [
-    {
-      type: "Key",
-      group: "KMS",
-      ids: [get("SSEDescription.KMSMasterKeyArn")(live)],
-    },
-  ];
-
-  const findNamespace = pipe([() => ""]);
 
   const tableArn = ({ TableName, config }) =>
     `arn:aws:dynamodb:${
@@ -96,21 +87,24 @@ exports.DynamoDBTable = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: {},
+    dependencies: { kmsKey },
   }) =>
     pipe([
       () => otherProps,
       defaultsDeep({
-        TableName: name,
         Tags: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
+      when(
+        () => kmsKey,
+        defaultsDeep({
+          SSEDescription: { KMSMasterKeyId: getField(kmsKey, "Arn") },
+        })
+      ),
     ])();
 
   return {
     spec,
     findId,
-    findNamespace,
-    findDependencies,
     getByName,
     findName,
     create,

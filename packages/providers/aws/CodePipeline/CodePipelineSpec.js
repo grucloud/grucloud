@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { tap, pipe, map, get, assign } = require("rubico");
+const { tap, pipe, map, get, assign, flatMap, filter, eq } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 const { replaceWithName } = require("@grucloud/core/Common");
 
@@ -17,14 +17,94 @@ module.exports = pipe([
       Client: CodePipelinePipeline,
       inferName: pipe([get("properties.pipeline.name")]),
       dependencies: {
-        role: { type: "Role", group: "IAM" },
+        role: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("pipeline.roleArn"),
+        },
         connections: {
           type: "Connection",
           group: "CodeStarConnections",
           list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("pipeline.stages"),
+              flatMap(
+                pipe([
+                  pipe([
+                    get("actions"),
+                    filter(
+                      eq(
+                        get("actionTypeId.provider"),
+                        "CodeStarSourceConnection"
+                      )
+                    ),
+                    map(get("configuration.ConnectionArn")),
+                  ]),
+                ])
+              ),
+            ]),
         },
-        codeBuildProject: { type: "Project", group: "CodeBuild", list: true },
-        ecrRepository: { type: "Repository", group: "ECR", list: true },
+        codeBuildProject: {
+          type: "Project",
+          group: "CodeBuild",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("pipeline.stages"),
+              flatMap(
+                pipe([
+                  pipe([
+                    get("actions"),
+                    filter(eq(get("actionTypeId.provider"), "CodeBuild")),
+                    map(
+                      pipe([
+                        get("configuration.ProjectName"),
+                        (name) =>
+                          lives.getByName({
+                            name,
+                            type: "Project",
+                            group: "CodeBuild",
+                            providerName: config.providerName,
+                          }),
+                        get("id"),
+                      ])
+                    ),
+                  ]),
+                ])
+              ),
+            ]),
+        },
+        ecrRepository: {
+          type: "Repository",
+          group: "ECR",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("pipeline.stages"),
+              flatMap(
+                pipe([
+                  pipe([
+                    get("actions"),
+                    filter(eq(get("actionTypeId.provider"), "ECR")),
+                    map(
+                      pipe([
+                        get("configuration.RepositoryName"),
+                        (name) =>
+                          lives.getByName({
+                            name,
+                            type: "Repository",
+                            group: "ECR",
+                            providerName: config.providerName,
+                          }),
+                        get("id"),
+                      ])
+                    ),
+                  ]),
+                ])
+              ),
+            ]),
+        },
       },
       omitProperties: ["metadata", "pipeline.roleArn"],
       propertiesDefault: {},

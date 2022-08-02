@@ -1,22 +1,61 @@
 const assert = require("assert");
 const { pipe, tap, map, get, omit, filter, eq, assign } = require("rubico");
-const { defaultsDeep, pluck, callProp, values } = require("rubico/x");
+const { defaultsDeep, pluck, callProp, find } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./CloudWatchCommon");
 
+const findDependencyDimension =
+  ({ type, group, dimensionId }) =>
+  ({ lives, config }) =>
+    pipe([
+      get("Dimensions"),
+      filter(eq(get("Name"), dimensionId)),
+      pluck("Value"),
+      (id) =>
+        pipe([
+          () =>
+            lives.getByType({
+              type,
+              group,
+              providerName: config.providerName,
+            }),
+          find(pipe([get("id"), callProp("endsWith", id)])),
+          get("id"),
+        ])(),
+    ]);
+
 const AlarmDependenciesDimensions = {
-  ec2Instance: { type: "Instance", group: "EC2", dimensionId: "InstanceId" },
+  ec2Instance: {
+    type: "Instance",
+    group: "EC2",
+    dimensionId: "InstanceId",
+    dependencyId: findDependencyDimension({
+      type: "Instance",
+      group: "EC2",
+      dimensionId: "InstanceId",
+    }),
+  },
   appSyncGraphqlApi: {
     type: "GraphqlApi",
     group: "AppSync",
     dimensionId: "GraphQLAPIId",
+    dependencyId: findDependencyDimension({
+      type: "GraphqlApi",
+      group: "AppSync",
+      dimensionId: "GraphQLAPIId",
+    }),
   },
   route53HealhCheck: {
     type: "HealthCheck",
     group: "Route53",
     dimensionId: "HealthCheckId",
+    dependencyId: findDependencyDimension({
+      type: "HealthCheck",
+      group: "Route53",
+      dimensionId: "HealthCheckId",
+    }),
   },
 };
 
@@ -81,33 +120,6 @@ const model = ({ config }) => ({
   },
 });
 
-const findDependenciesDimension = ({ live, lives, config }) =>
-  pipe([
-    () => AlarmDependenciesDimensions,
-    values,
-    map(({ type, group, dimensionId }) => ({
-      type,
-      group,
-      ids: pipe([
-        () => live,
-        get("Dimensions"),
-        filter(eq(get("Name"), dimensionId)),
-        pluck("Value"),
-        (id) =>
-          pipe([
-            () =>
-              lives.getByType({
-                type,
-                group,
-                providerName: config.providerName,
-              }),
-            filter(pipe([get("id"), callProp("endsWith", id)])),
-            pluck("id"),
-          ])(),
-      ])(),
-    })),
-  ])();
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html
 exports.CloudWatchMetricAlarm = ({ spec, config }) =>
   createAwsResource({
@@ -117,18 +129,6 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) =>
     findName: pipe([get("live.AlarmName")]),
     findId: pipe([get("live.AlarmArn")]),
     managedByOther,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Topic",
-        group: "SNS",
-        ids: pipe([
-          () => live,
-          get("AlarmActions"),
-          filter(callProp("startsWith", "arn:aws:sns")),
-        ])(),
-      },
-      ...findDependenciesDimension({ live, lives, config }),
-    ],
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ AlarmName: name }), getById]),
     tagResource: tagResource,

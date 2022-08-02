@@ -9,23 +9,18 @@ const {
   tryCatch,
   pick,
   switchCase,
-  filter,
 } = require("rubico");
-const { defaultsDeep, callProp, last, when, includes } = require("rubico/x");
+const { defaultsDeep, callProp, last, when } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({
   prefix: "IntegrationV2",
 });
 
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { throwIfNotAwsError, lambdaAddPermission } = require("../AwsCommon");
+const { throwIfNotAwsError } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const {
-  createApiGatewayV2,
-  findDependenciesApi,
-  ignoreErrorCodes,
-} = require("./ApiGatewayCommon");
+const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 const { createLambda } = require("../Lambda/LambdaCommon");
 
 const findId = get("live.IntegrationId");
@@ -68,9 +63,6 @@ exports.Integration = ({ spec, config }) => {
   const findName = ({ live, lives }) =>
     pipe([
       () => live,
-      tap((params) => {
-        assert(true);
-      }),
       fork({
         apiName: pipe([({ ApiName }) => `integration::${ApiName}::`]),
         integration: switchCase([
@@ -87,77 +79,8 @@ exports.Integration = ({ spec, config }) => {
           () => "NO-INTEGRATION",
         ]),
       }),
-      tap((params) => {
-        assert(true);
-      }),
       ({ apiName, integration }) => `${apiName}${integration}`,
     ])();
-
-  // Integration findDependencies
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesApi({ live, config }),
-    {
-      type: "Function",
-      group: "Lambda",
-      ids: pipe([
-        () =>
-          lives.getByType({
-            type: "Function",
-            group: "Lambda",
-            providerName: config.providerName,
-          }),
-        filter(pipe([get("id"), (id) => includes(id)(live.IntegrationUri)])),
-      ])(),
-    },
-    {
-      type: "Listener",
-      group: "ElasticLoadBalancingV2",
-      ids: pipe([
-        () =>
-          lives.getByType({
-            type: "Listener",
-            group: "ElasticLoadBalancingV2",
-            providerName: config.providerName,
-          }),
-        tap((params) => {
-          assert(true);
-        }),
-        filter(eq(get("id"), live.IntegrationUri)),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-    },
-    {
-      type: "VpcLink",
-      group: "ApiGatewayV2",
-      ids: pipe([
-        () =>
-          lives.getByType({
-            type: "VpcLink",
-            group: "ApiGatewayV2",
-            providerName: config.providerName,
-          }),
-        tap((params) => {
-          assert(true);
-        }),
-        filter(eq(get("id"), live.ConnectionId)),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-    },
-    {
-      type: "EventBus",
-      group: "CloudWatchEvents",
-      ids: [pipe([() => live, get("RequestParameters.EventBusName")])()],
-    },
-    {
-      type: "Role",
-      group: "IAM",
-      ids: [live.CredentialsArn],
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getIntegration-property
   const getById = client.getById({
@@ -187,25 +110,6 @@ exports.Integration = ({ spec, config }) => {
     pickCreated: ({ payload }) =>
       pipe([defaultsDeep({ ApiId: payload.ApiId })]),
     getById,
-    postCreate: ({ resolvedDependencies: { api, lambdaFunction } }) =>
-      pipe([
-        tap(() => {
-          assert(api);
-        }),
-        // when(
-        //   () => lambdaFunction,
-        //   lambdaAddPermission({
-        //     lambda,
-        //     lambdaFunction,
-        //     SourceArn: () =>
-        //       `arn:aws:execute-api:${
-        //         config.region
-        //       }:${config.accountId()}:${getField(api, "ApiId")}/*/*/${
-        //         lambdaFunction.resource.name
-        //       }`,
-        //   })
-        // ),
-      ]),
   });
 
   const update = client.update({
@@ -217,9 +121,6 @@ exports.Integration = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#removePermission-property
   const lambdaRemovePermission = ({ live }) =>
     pipe([
-      tap(() => {
-        assert(true);
-      }),
       () => live,
       tap.if(
         and([
@@ -311,6 +212,5 @@ exports.Integration = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    findDependencies,
   };
 };

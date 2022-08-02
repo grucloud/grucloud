@@ -36,23 +36,23 @@ exports.createResources = () => [
 
 - [Capacity Provider](./CapacityProvider.md)
 - [KMS Key](../KMS/Key.md)
+- [CloudWatchLogs LogGroup](../CloudWatchLogs/LogGroup.md)
+- [S3 Bucket](../S3/Bucket.md)
 
 ## Used By
 
+- [ECS TaskSet](./TaskSet.md)
 - [CodeDeploy DeploymentGroup](../CodeDeploy/DeploymentGroup.md)
 
 ## Full Examples
 
 - [Simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/ECS/ecs-simple)
 - [aws-cdk-examples/application-load-balancer-fargate-service]((https://github.com/grucloud/grucloud/tree/main/examples/aws/aws-cdk-examples/application-load-balancer-fargate-service)
-
 - [serverless-patterns/apigw-fargate-cdk]((https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-fargate-cdk)
-
 - [serverless-patterns/apigw-vpclink-pvt-alb]((https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-vpclink-pvt-alb)
-
 - [serverless-patterns/fargate-aurora-serverless-cdk]((https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/fargate-aurora-serverless-cdk)
-
 - [serverless-patterns/fargate-eventbridge]((https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/fargate-eventbridge)
+
 ## List
 
 The clusters can be filtered with the _ECS::Cluster_ type:

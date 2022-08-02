@@ -42,6 +42,7 @@ exports.createResources = () => [
 - [Network Firewall Logging Configuration](../NetworkFirewall/LoggingConfiguration.md)
 - [Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
 - [Log Stream](./LogStream.md)
+- [ECS Cluster](../ECS/Cluster.md)
 
 ## List
 

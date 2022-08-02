@@ -1,6 +1,16 @@
 const assert = require("assert");
-const { map, pipe, tap, assign, eq, get, omit, switchCase } = require("rubico");
-const { defaultsDeep, size, when, find, identity } = require("rubico/x");
+const {
+  map,
+  pipe,
+  tap,
+  assign,
+  eq,
+  get,
+  omit,
+  switchCase,
+  filter,
+} = require("rubico");
+const { defaultsDeep, pluck, flatten, identity } = require("rubico/x");
 const { replaceWithName, s } = require("@grucloud/core/Common");
 const { isOurMinion, compareAws } = require("../AwsCommon");
 const { FirehoseDeliveryStream } = require("./FirehoseDeliveryStream");
@@ -134,71 +144,101 @@ module.exports = pipe([
           }),
         ]),
       dependencies: {
-        kinesisStream: { type: "Stream", group: "Kinesis" },
+        kinesisStream: {
+          type: "Stream",
+          group: "Kinesis",
+          dependencyId: ({ lives, config }) => get("TODO"),
+        },
         s3BucketDestination: {
           type: "Bucket",
           group: "S3",
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                () => resource,
-                tap((params) => {
-                  assert(dependency);
-                }),
-                get("live.Destinations"),
-                find(
-                  pipe([
-                    eq(
-                      get("S3DestinationDescription.BucketARN"),
-                      `arn:aws:s3:::${dependency.live.Name}`
-                    ),
-                  ])
-                ),
-              ])(),
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("Destinations"),
+              pluck("S3DestinationDescription.BucketARN"),
+            ]),
         },
         s3BucketBackup: {
           type: "Bucket",
           group: "S3",
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                () => resource,
-                tap((params) => {
-                  assert(dependency);
-                }),
-                get("live.Destinations"),
-                tap((params) => {
-                  assert(true);
-                }),
-                find(
-                  pipe([
-                    eq(
-                      get(
-                        "ExtendedS3DestinationDescription.S3BackupDescription.BucketARN"
-                      ),
-                      `arn:aws:s3:::${dependency.live.Name}`
-                    ),
-                  ])
-                ),
-                tap((params) => {
-                  assert(true);
-                }),
-              ])(),
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("Destinations"),
+              pluck(
+                "ExtendedS3DestinationDescription.S3BackupDescription.BucketARN"
+              ),
+            ]),
         },
-        kmsKey: { type: "Key", group: "KMS" },
-        lambdaFunction: { type: "Function", group: "Lambda" },
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          dependencyIds: () =>
+            get("DeliveryStreamEncryptionConfiguration.KeyARN"),
+        },
+        lambdaFunction: {
+          type: "Function",
+          group: "Lambda",
+          lits: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              () => live,
+              get("Destinations"),
+              pluck("ExtendedS3DestinationDescription"),
+              pluck("ProcessingConfiguration"),
+              pluck("Processors"),
+              flatten,
+              pluck("Parameters"),
+              flatten,
+              filter(eq(get("ParameterName"), "LambdaArn")),
+              pluck("ParameterValue"),
+              map(callProp("replace", ":$LATEST", "")),
+            ]),
+        },
         cloudWatchLogStreams: {
           type: "LogStream",
           group: "CloudWatchLogs",
           list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("Destinations"),
+              pluck("ExtendedS3DestinationDescription"),
+              pluck("CloudWatchLoggingOptions"),
+              map(
+                pipe([
+                  tap(({ LogGroupName, LogStreamName }) => {
+                    assert(LogGroupName);
+                    assert(LogStreamName);
+                  }),
+                  ({ LogGroupName, LogStreamName }) =>
+                    lives.getByName({
+                      name: `${LogGroupName}::${LogStreamName}`,
+                      providerName: config.providerName,
+                      type: "LogStream",
+                      group: "CloudWatchLogs",
+                    }),
+                  get("id"),
+                ])
+              ),
+            ]),
         },
+        //TODO
         cloudWatchLogStreamLogError: {
           type: "LogStream",
           group: "CloudWatchLogs",
         },
-        roles: { type: "Role", group: "IAM", list: true },
+        roles: {
+          type: "Role",
+          group: "IAM",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("Destinations"),
+              pluck("S3DestinationDescription"),
+              pluck("RoleARN"),
+            ]),
+        },
         // Redshift
       },
     },

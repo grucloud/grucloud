@@ -1,16 +1,5 @@
 const assert = require("assert");
-const {
-  assign,
-  pipe,
-  tap,
-  get,
-  pick,
-  tryCatch,
-  set,
-  not,
-  flatMap,
-  map,
-} = require("rubico");
+const { assign, pipe, tap, get, pick, tryCatch, set, not } = require("rubico");
 const {
   isEmpty,
   defaultsDeep,
@@ -24,8 +13,6 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
 const { createSQS, tagResource, untagResource } = require("./SQSCommon");
 const { throwIfNotAwsError } = require("../AwsCommon");
-
-const { findInStatement } = require("../IAM/AwsIamCommon");
 
 const findId = get("live.Attributes.QueueArn");
 const pickId = pick(["QueueUrl"]);
@@ -41,40 +28,13 @@ const findName = pipe([
   }),
 ]);
 
-const dependenciesPoliciesKind = [{ type: "Topic", group: "SNS" }];
-
 const ignoreErrorCodes = ["AWS.SimpleQueueService.NonExistentQueue"];
-
-const findDependencyPolicyCommon = ({ type, group, live, lives, config }) => ({
-  type,
-  group,
-  ids: pipe([
-    () => live,
-    get("Attributes.Policy.Statement", []),
-    flatMap(findInStatement({ type, group, lives, config })),
-  ])(),
-});
-
-const findDependenciesPolicyCommon = ({ live, lives, config }) =>
-  pipe([
-    () => dependenciesPoliciesKind,
-    map(({ type, group }) =>
-      findDependencyPolicyCommon({ type, group, live, lives, config })
-    ),
-  ])();
 
 exports.SQSQueue = ({ spec, config }) => {
   const sqs = createSQS(config);
   const client = AwsClient({ spec, config })(sqs);
 
-  const findDependencies = ({ live, lives }) => [
-    ...findDependenciesPolicyCommon({ live, lives, config }),
-  ];
-
   const assignTags = pipe([
-    tap((params) => {
-      assert(true);
-    }),
     assign({
       tags: pipe([
         pickId,
@@ -86,10 +46,6 @@ exports.SQSQueue = ({ spec, config }) => {
 
   const decorate = ({ live }) =>
     pipe([
-      tap((input) => {
-        assert(input);
-        assert(live);
-      }),
       when(
         get("Policy"),
         assign({
@@ -114,26 +70,13 @@ exports.SQSQueue = ({ spec, config }) => {
   const getList = client.getList({
     method: "listQueues",
     getParam: "QueueUrls",
-    decorate: () =>
-      pipe([
-        tap((QueueUrl) => {
-          assert(QueueUrl);
-        }),
-        (QueueUrl) => ({ QueueUrl }),
-        getById,
-      ]),
+    decorate: () => pipe([(QueueUrl) => ({ QueueUrl }), getById]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueUrl-property
   const getByName = pipe([
     tryCatch(
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        ({ name }) => sqs().getQueueUrl({ QueueName: name }),
-        getById,
-      ]),
+      pipe([({ name }) => sqs().getQueueUrl({ QueueName: name }), getById]),
       throwIfNotAwsError("AWS.SimpleQueueService.NonExistentQueue")
     ),
   ]);
@@ -223,7 +166,6 @@ exports.SQSQueue = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    findDependencies,
     tagResource: tagResource({ sqs }),
     untagResource: untagResource({ sqs }),
   };

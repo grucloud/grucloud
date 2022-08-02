@@ -26,12 +26,6 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeEgressOnlyInternetGateways",
     getParam: "EgressOnlyInternetGateways",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
   },
   create: {
     method: "createEgressOnlyInternetGateway",

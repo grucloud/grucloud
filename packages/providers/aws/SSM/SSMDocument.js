@@ -15,36 +15,17 @@ const model = ({ config }) => ({
   getById: {
     method: "describeDocument",
     getField: "Document",
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
     pickId,
   },
   getList: {
     method: "listDocuments",
     enhanceParams: () =>
       pipe([
-        tap((params) => {
-          assert(true);
-        }),
         assign({
           Filters: () => [{ Key: "Owner", Values: ["Self"] }],
         }),
-        tap((params) => {
-          assert(true);
-        }),
       ]),
     getParam: "DocumentIdentifiers",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
   },
   create: {
     method: "createDocument",
@@ -69,23 +50,6 @@ exports.SSMDocument = ({ spec, config }) =>
       (Name) =>
         `arn:aws:ssm:${config.region}:${config.accountId()}:document/${Name}`,
     ]),
-    findDependencies: ({ live }) => [
-      {
-        type: "Function",
-        group: "Lambda",
-        ids: pipe([
-          () => live,
-          get("Content.mainSteps"),
-          pluck("inputs"),
-          pluck("FunctionName"),
-        ])(),
-      },
-      {
-        type: "Role",
-        group: "IAM",
-        ids: [pipe([() => live, get("Content.assumeRole")])()],
-      },
-    ],
     getByName: ({ getById }) => pipe([({ name }) => ({ Name: name }), getById]),
     tagResource: tagResource({ ResourceType: "Document" }),
     untagResource: untagResource({ ResourceType: "Document" }),

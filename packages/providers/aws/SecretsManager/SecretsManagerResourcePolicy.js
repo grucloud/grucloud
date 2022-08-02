@@ -84,7 +84,4 @@ exports.SecretsManagerResourcePolicy = ({ spec, config }) =>
             config,
           }),
       ])(),
-    findDependencies: ({ live }) => [
-      { type: "Secret", group: "SecretsManager", ids: [live.ARN] },
-    ],
   });

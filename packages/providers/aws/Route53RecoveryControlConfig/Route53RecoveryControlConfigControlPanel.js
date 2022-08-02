@@ -107,13 +107,6 @@ exports.Route53RecoveryControlConfigControlPanel = ({ spec, config }) =>
     getByName: getByNameCore,
     tagResource: tagResource({ findId }),
     untagResource: untagResource({ findId }),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Cluster",
-        group: "Route53RecoveryControlConfig",
-        ids: [live.ClusterArn],
-      },
-    ],
     configDefault: ({
       name,
       namespace,

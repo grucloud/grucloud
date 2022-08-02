@@ -7,7 +7,6 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const {
   createApiGatewayV2,
-  findDependenciesApi,
   ignoreErrorCodes,
   tagResource,
   untagResource,
@@ -25,15 +24,6 @@ exports.Stage = ({ spec, config }) => {
   const findName = get("live.StageName");
 
   const pickId = pick(["ApiId", "StageName"]);
-
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesApi({ live, config }),
-    {
-      type: "LogGroup",
-      group: "CloudWatchLogs",
-      ids: [pipe([() => live, get("AccessLogSettings.DestinationArn")])()],
-    },
-  ];
 
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getStage-property
   const getById = client.getById({
@@ -127,7 +117,6 @@ exports.Stage = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    findDependencies,
     tagResource: tagResource({ buildResourceArn })({ endpoint: apiGateway }),
     untagResource: untagResource({ buildResourceArn })({
       endpoint: apiGateway,

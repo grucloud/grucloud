@@ -50,7 +50,10 @@ exports.createResources = () => [
 
 ## Dependencies
 
+- [KMS Key](../KMS/Key.md)
+
 ## Used By
+
 - [Resource Policy](./ResourcePolicy.md)
 - [CloudWatchEvent Connection](../CloudWatchEvents/Connection.md)
 - [ECS TaskDefinition](../ECS/TaskDefinition.md)
@@ -69,7 +72,7 @@ gc list -t Secret
 
 ```txt
 Listing resources on 1 provider: aws
-✓ aws us-east-1 
+✓ aws us-east-1
   ✓ Initialising
   ✓ Listing 1/1
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐

@@ -47,18 +47,6 @@ exports.EC2InternetGatewayAttachment = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live }) => [
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [live.VpcId],
-      },
-      {
-        type: "InternetGateway",
-        group: "EC2",
-        ids: [live.InternetGatewayId],
-      },
-    ],
     findName: ({ live, lives }) =>
       pipe([
         fork({

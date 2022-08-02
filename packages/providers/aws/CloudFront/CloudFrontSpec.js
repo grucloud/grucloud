@@ -11,7 +11,16 @@ const {
   switchCase,
   omit,
 } = require("rubico");
-const { isEmpty, find, when, first } = require("rubico/x");
+const {
+  isEmpty,
+  find,
+  when,
+  first,
+  last,
+  pluck,
+  callProp,
+  includes,
+} = require("rubico/x");
 const {
   buildGetId,
   replaceWithName,
@@ -45,15 +54,74 @@ module.exports = () =>
     {
       type: "Distribution",
       dependencies: {
-        buckets: { type: "Bucket", group: "S3", list: true },
-        certificate: { type: "Certificate", group: "ACM" },
-        functions: { type: "Function", group: "CloudFront", list: true },
+        buckets: {
+          type: "Bucket",
+          group: "S3",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("Origins.Items", []),
+              pluck("DomainName"),
+              map((domainName) =>
+                pipe([
+                  () =>
+                    lives.getByType({
+                      type: "Bucket",
+                      group: "S3",
+                      providerName: config.providerName,
+                    }),
+                  find(({ id }) => pipe([() => domainName, includes(id)])()),
+                  get("id"),
+                ])()
+              ),
+            ]),
+        },
+        certificate: {
+          type: "Certificate",
+          group: "ACM",
+          dependencyId: ({ lives, config }) =>
+            get("ViewerCertificate.ACMCertificateArn"),
+        },
+        functions: {
+          type: "Function",
+          group: "CloudFront",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("DefaultCacheBehavior.FunctionAssociations.Items", []),
+              pluck("FunctionARN"),
+            ]),
+        },
         originAccessIdentities: {
           type: "OriginAccessIdentity",
           group: "CloudFront",
           list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("Origins.Items", []),
+              pluck("S3OriginConfig"),
+              pluck("OriginAccessIdentity"),
+              map(
+                pipe([
+                  callProp("split", "/"),
+                  last,
+                  (id) =>
+                    lives.getById({
+                      id,
+                      type: "OriginAccessIdentity",
+                      group: "CloudFront",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])
+              ),
+            ]),
         },
-        webAcl: { type: "WebACLCloudFront", group: "WAFv2" },
+        webAcl: {
+          type: "WebACLCloudFront",
+          group: "WAFv2",
+          dependencyId: ({ lives, config }) => get("WebACLId"),
+        },
       },
       Client: CloudFrontDistribution,
       inferName: ({ properties }) =>
@@ -176,9 +244,6 @@ module.exports = () =>
                                   path: "id",
                                   providerConfig,
                                   lives,
-                                }),
-                                tap((params) => {
-                                  assert(true);
                                 }),
                               ]),
                             }),

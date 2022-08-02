@@ -18,10 +18,29 @@ module.exports = pipe([
       Client: CodeBuildProject,
       inferName: pipe([get("properties.name")]),
       dependencies: {
-        serviceRole: { type: "Role", group: "IAM" },
-        vpc: { type: "Vpc", group: "EC2" },
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        serviceRole: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("serviceRole"),
+        },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("vpcConfig.vpcId", []),
+        },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("vpcConfig.subnets", []),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            get("vpcConfig.securityGroupIds", []),
+        },
       },
       omitProperties: [
         "arn",
@@ -54,7 +73,7 @@ module.exports = pipe([
     defaultsDeep({
       group: GROUP,
       isOurMinion,
-      tagsKey: "tags",
+      tagsKey,
       compare: compareCodeBuild({}),
     })
   ),

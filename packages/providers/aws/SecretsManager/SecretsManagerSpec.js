@@ -18,7 +18,13 @@ module.exports = pipe([
     {
       type: "Secret",
       Client: SecretsManagerSecret,
-      dependencies: { kmsKey: { type: "Key", group: "KMS" } },
+      dependencies: {
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: ({ lives, config }) => get("KmsKeyId"),
+        },
+      },
       inferName: get("properties.Name"),
       ignoreResource: () => pipe([get("live.OwningService")]),
       omitProperties: [
@@ -61,7 +67,14 @@ module.exports = pipe([
       type: "ResourcePolicy",
       Client: SecretsManagerResourcePolicy,
       inferName: get("dependenciesSpec.secret"),
-      dependencies: { secret: { type: "Secret", group: GROUP, parent: true } },
+      dependencies: {
+        secret: {
+          type: "Secret",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) => get("ARN"),
+        },
+      },
       omitProperties: ["ARN", "Name"],
       compare: compareSecretsManager({
         filterAll: () => pipe([omit(["SecretId", "Name"])]),

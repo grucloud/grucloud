@@ -201,8 +201,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "Pets",
     properties: ({}) => ({
+      TableName: "Pets",
       AttributeDefinitions: [
         {
           AttributeName: "PetType",

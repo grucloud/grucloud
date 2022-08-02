@@ -104,14 +104,6 @@ exports.createResources = () => [
   },
   { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
   {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "RDSOSMetrics",
-    properties: ({}) => ({
-      retentionInDays: 30,
-    }),
-  },
-  {
     type: "Role",
     group: "IAM",
     name: "lambda-role",

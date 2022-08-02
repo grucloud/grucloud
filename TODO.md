@@ -4,7 +4,21 @@
 
 ## Aws
 
+- inferName Lambda layer
+- inferName OpenIDConnectProvider
+- CognitoIdentityServiceProvider inferName
+- CloudWatchEventApiDestination inferName
+- inferName Route Table
 
+- EKS kms key
+- ECSTaskSet
+- ECSTask dependency check
+- UserPoolDomain 0/1 User pool us-east-1_nYU3O67V1 does not exist.
+- CodeDeployDeploymentGroup configDefault with other dependencies
+- WebAclDependencies dependencies refactor
+- RAMPrincipalAssociation findName
+- SNSSubscription deps sqs queue
+- flow logs s3 destination
 - PrincipalAssociation replace associatedEntity from config
 
 - ipamPoolIpv6
@@ -20,17 +34,15 @@ omit AWSLogs S3 Objects
 - aws_route53_delegation_set
 - CodeStarConnections Host
 - createOrganizationalUnit
-Lambda EventSourceMapping: 
+  Lambda EventSourceMapping:
 - Amazon DynamoDB Streams
 - Amazon MQ and RabbitMQ
 - Amazon MSK
 - Apache Kafka
 
 - apprunner example npm test
-- inferName Lambda layer
-- inferName OpenIDConnectProvider
+
 - RDS DBCluster AvailabilityZones
-- inferName Route Table
 - Nat gateway handle deleting
 - resource schema
 - document create key pair

@@ -6,12 +6,7 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource, assignTags } = require("./KinesisCommon");
 
-const pickId = pipe([
-  pick(["StreamName"]),
-  tap(({ StreamName }) => {
-    assert(StreamName);
-  }),
-]);
+const pickId = pipe([pick(["StreamName"])]);
 
 const model = ({ config }) => ({
   package: "kinesis",

@@ -4,7 +4,7 @@ const { defaultsDeep, first, when, pluck } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { buildTags, findNamespaceInTags } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { tagResource, untagResource } = require("./ELBCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
@@ -171,27 +171,6 @@ exports.ELBListener = ({ spec, config }) =>
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "LoadBalancer",
-        group: "ElasticLoadBalancingV2",
-        ids: [live.LoadBalancerArn],
-      },
-      {
-        type: "TargetGroup",
-        group: "ElasticLoadBalancingV2",
-        ids: pipe([
-          () => live,
-          get("DefaultActions"),
-          pluck("TargetGroupArn"),
-        ])(),
-      },
-      {
-        type: "Certificate",
-        group: "ACM",
-        ids: pipe([() => live, get("Certificates"), pluck("CertificateArn")])(),
-      },
-    ],
     configDefault: ({
       name,
       namespace,

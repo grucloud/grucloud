@@ -1,9 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, tryCatch, switchCase, pick } = require("rubico");
-const { pluck, defaultsDeep, includes } = require("rubico/x");
-const logger = require("@grucloud/core/logger")({
-  prefix: "DomainNameV2",
-});
+const { pipe, tap, get, pick } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { tos } = require("@grucloud/core/tos");
 const { buildTagsObject } = require("@grucloud/core/Common");
@@ -18,32 +15,12 @@ const {
 
 const findId = get("live.DomainName");
 const findName = get("live.DomainName");
-const pickId = pipe([
-  tap(({ DomainName }) => {
-    assert(DomainName);
-  }),
-  pick(["DomainName"]),
-]);
+const pickId = pipe([pick(["DomainName"])]);
 
 exports.DomainName = ({ spec, config }) => {
   const apiGateway = createApiGatewayV2(config);
 
   const client = AwsClient({ spec, config })(apiGateway);
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Certificate",
-      group: "ACM",
-      ids: pipe([
-        () => live,
-        get("DomainNameConfigurations"),
-        pluck("CertificateArn"),
-        tap((params) => {
-          assert(true);
-        }),
-      ])(),
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getDomainNames-property
   const getList = client.getList({
@@ -121,7 +98,6 @@ exports.DomainName = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    findDependencies,
     tagResource: tagResource({ buildResourceArn })({ endpoint: apiGateway }),
     untagResource: untagResource({ buildResourceArn })({
       endpoint: apiGateway,

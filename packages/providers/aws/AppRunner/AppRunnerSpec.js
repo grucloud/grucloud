@@ -1,6 +1,14 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, pick, get } = require("rubico");
-const { when, defaultsDeep } = require("rubico/x");
+const { pipe, assign, map, omit, tap, pick, get, eq } = require("rubico");
+const {
+  when,
+  defaultsDeep,
+  unless,
+  isEmpty,
+  callProp,
+  first,
+  find,
+} = require("rubico/x");
 
 const { compareAws, isOurMinion } = require("../AwsCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
@@ -27,9 +35,48 @@ module.exports = pipe([
       type: "Service",
       Client: AppRunnerService,
       dependencies: {
-        connection: { type: "Connection", group: "AppRunner" },
-        accessRole: { type: "Role", group: "IAM" },
-        repository: { type: "Repository", group: "ECR" },
+        connection: {
+          type: "Connection",
+          group: "AppRunner",
+          dependencyId: ({ lives, config }) =>
+            get(
+              "SourceConfiguration.AuthenticationConfiguration.ConnectionArn"
+            ),
+        },
+        accessRole: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) =>
+            get(
+              "SourceConfiguration.AuthenticationConfiguration.AccessRoleArn"
+            ),
+        },
+        repository: {
+          type: "Repository",
+          group: "ECR",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("SourceConfiguration.ImageRepository.ImageIdentifier"),
+              unless(
+                isEmpty,
+                pipe([
+                  callProp("split", ":"),
+                  first,
+                  (repositoryUri) =>
+                    pipe([
+                      () =>
+                        lives.getByType({
+                          type: "Repository",
+                          group: "ECR",
+                          providerName: config.providerName,
+                        }),
+                      find(eq(get("live.repositoryUri"), repositoryUri)),
+                    ])(),
+                  get("id"),
+                ])
+              ),
+            ]),
+        },
       },
       propertiesDefault: {
         NetworkConfiguration: {

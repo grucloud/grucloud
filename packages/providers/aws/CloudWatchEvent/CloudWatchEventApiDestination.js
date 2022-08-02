@@ -39,21 +39,6 @@ exports.CloudWatchEventApiDestination = ({ spec, config }) =>
     config,
     findName: pipe([get("live.Name")]),
     findId: get("live.ApiDestinationArn"),
-    findDependencies: ({ live }) => [
-      {
-        type: "Connection",
-        group: "CloudWatchEvents",
-        ids: [
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            () => live,
-            get("ConnectionArn"),
-          ])(),
-        ],
-      },
-    ],
     getByName: getByNameCore,
     getList: ({ client, endpoint, getById, config }) =>
       pipe([
@@ -66,21 +51,9 @@ exports.CloudWatchEventApiDestination = ({ spec, config }) =>
         () =>
           client.getListWithParent({
             parent: { type: "Connection", group: "CloudWatchEvents" },
-            pickKey: pipe([
-              tap(({ ConnectionArn }) => {
-                assert(ConnectionArn);
-              }),
-              pick(["ConnectionArn"]),
-            ]),
+            pickKey: pipe([pick(["ConnectionArn"])]),
             method: "listApiDestinations",
             getParam: "ApiDestinations",
-            decorate: ({ lives, parent }) =>
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                defaultsDeep({}),
-              ]),
             config,
           }),
       ])(),

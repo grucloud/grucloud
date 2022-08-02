@@ -32,12 +32,12 @@ exports.createResources = () => [
 ## Dependencies
 
 - [SNS Topic](./Topic.md)
+- [SQS Queue](../SQS/Queue.md)
+- [Lambda Function](../Lambda/Function.md)
 
 ## Full Examples
 
-- [Simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/SNS/sns-simple)
-- [SNS with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/SNS/sns-lambda)
-- [SNS with SQS](https://github.com/grucloud/grucloud/tree/main/examples/aws/SNS/sns-sqs)
+- [SNS with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/sns-lambda)
 
 ## List
 

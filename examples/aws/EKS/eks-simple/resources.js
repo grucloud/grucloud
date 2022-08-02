@@ -36,13 +36,14 @@ exports.createResources = () => [
     name: "VPC::SubnetPrivateUSEAST1D",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
-      CidrBlock: "192.168.96.0/19",
       Tags: [
         {
           Key: "kubernetes.io/role/internal-elb",
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",
@@ -54,13 +55,14 @@ exports.createResources = () => [
     name: "VPC::SubnetPrivateUSEAST1F",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}f`,
-      CidrBlock: "192.168.64.0/19",
       Tags: [
         {
           Key: "kubernetes.io/role/internal-elb",
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 2,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",
@@ -72,7 +74,6 @@ exports.createResources = () => [
     name: "VPC::SubnetPublicUSEAST1D",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
-      CidrBlock: "192.168.32.0/19",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -80,6 +81,8 @@ exports.createResources = () => [
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",
@@ -91,7 +94,6 @@ exports.createResources = () => [
     name: "VPC::SubnetPublicUSEAST1F",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}f`,
-      CidrBlock: "192.168.0.0/19",
       MapPublicIpOnLaunch: true,
       Tags: [
         {
@@ -99,6 +101,8 @@ exports.createResources = () => [
           Value: "1",
         },
       ],
+      NewBits: 3,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "VPC",

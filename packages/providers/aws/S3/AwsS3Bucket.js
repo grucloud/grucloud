@@ -54,52 +54,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const findId = findName;
   const findNamespace = findNamespaceInTags(config);
 
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Topic",
-      group: "SNS",
-      ids: pipe([
-        () => live,
-        get("NotificationConfiguration.TopicConfigurations"),
-        pluck("TopicArn"),
-      ])(),
-    },
-    {
-      type: "Function",
-      group: "Lambda",
-      ids: pipe([
-        () => live,
-        get("NotificationConfiguration.LambdaFunctionConfigurations"),
-        pluck("LambdaFunctionArn"),
-      ])(),
-    },
-    {
-      type: "OriginAccessIdentity",
-      group: "CloudFront",
-      ids: pipe([
-        () => live,
-        get("Policy.Statement", []),
-        pluck("Principal"),
-        pluck("AWS"),
-        filter(not(isEmpty)),
-        map(
-          pipe([
-            callProp("split", " "),
-            last,
-            (id) =>
-              lives.getById({
-                id,
-                type: "OriginAccessIdentity",
-                group: "CloudFront",
-                providerName: config.providerName,
-              }),
-            get("id"),
-          ])
-        ),
-      ])(),
-    },
-  ];
-
   const getAccelerateConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
@@ -814,7 +768,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   return {
     spec,
     config: clientConfig,
-    findDependencies,
     findNamespace,
     findId,
     getByName,

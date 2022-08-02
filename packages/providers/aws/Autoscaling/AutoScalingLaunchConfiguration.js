@@ -22,12 +22,7 @@ const ResourceType = "launch-configuration";
 const findName = get("live.LaunchConfigurationName");
 const findId = get("live.LaunchConfigurationARN");
 
-const pickId = pipe([
-  tap(({ LaunchConfigurationName }) => {
-    assert(LaunchConfigurationName);
-  }),
-  pick(["LaunchConfigurationName"]),
-]);
+const pickId = pipe([pick(["LaunchConfigurationName"])]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
@@ -35,52 +30,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
   const ec2 = createEC2(config);
 
   const client = AwsClient({ spec, config })(autoScaling);
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "KeyPair",
-      group: "EC2",
-      ids: [live.KeyName],
-    },
-    {
-      type: "SecurityGroup",
-      group: "EC2",
-      ids: live.SecurityGroups,
-    },
-    {
-      type: "InstanceProfile",
-      group: "IAM",
-      ids: [
-        pipe([
-          () => live.IamInstanceProfile,
-          switchCase([
-            isEmpty,
-            () => undefined,
-            callProp("startsWith", "arn"),
-            pipe([
-              () =>
-                lives.getById({
-                  id: live.IamInstanceProfile,
-                  type: "InstanceProfile",
-                  group: "IAM",
-                  providerName: config.providerName,
-                }),
-              get("id"),
-            ]),
-            pipe([
-              () =>
-                lives.getByName({
-                  name: live.IamInstanceProfile,
-                  type: "InstanceProfile",
-                  group: "IAM",
-                  providerName: config.providerName,
-                }),
-              get("id"),
-            ]),
-          ]),
-        ])(),
-      ],
-    },
-  ];
+
   const decorate = ({}) =>
     pipe([
       assign({
@@ -165,7 +115,6 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     getByName,
     getById,
     findName,

@@ -84,18 +84,6 @@ exports.Route53VpcAssociationAuthorization = ({ spec, config }) =>
       get("live"),
       ({ HostedZoneId, VPC: { VPCId } }) => `${HostedZoneId}::${VPCId}`,
     ]),
-    findDependencies: ({ live }) => [
-      {
-        type: "HostedZone",
-        group: "Route53",
-        ids: [live.HostedZoneId],
-      },
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [pipe([() => live, get("VPC.VPCId")])()],
-      },
-    ],
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listVPCAssociationAuthorizations-property
     getList: ({ client, endpoint, config }) =>
       pipe([
@@ -174,9 +162,6 @@ exports.Route53VpcAssociationAuthorization = ({ spec, config }) =>
             VPCId: getField(vpc, "VpcId"),
             VPCRegion: get("resource.provider.config.region")(vpc),
           },
-        }),
-        tap((params) => {
-          assert(true);
         }),
       ])(),
   });

@@ -48,28 +48,6 @@ exports.CodeBuildProject = ({ spec, config }) =>
     config,
     findName: pipe([get("live.name")]),
     findId: pipe([get("live.arn")]),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Role",
-        group: "IAM",
-        ids: [pipe([() => live.serviceRole])()],
-      },
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [pipe([() => live, get("vpcConfig.vpcId")])()],
-      },
-      {
-        type: "Subnet",
-        group: "EC2",
-        ids: pipe([() => live, get("vpcConfig.subnets", [])])(),
-      },
-      {
-        type: "SecurityGroup",
-        group: "EC2",
-        ids: pipe([() => live, get("vpcConfig.securityGroupIds", [])])(),
-      },
-    ],
     getByName: ({ getById }) => pipe([getById]),
     configDefault: ({
       name,

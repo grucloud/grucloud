@@ -16,6 +16,7 @@ module.exports = pipe([
     {
       type: "Table",
       Client: DynamoDBTable,
+      inferName: get("properties.TableName"),
       omitProperties: [
         "TableSizeBytes",
         "ItemCount",
@@ -54,7 +55,9 @@ module.exports = pipe([
       }),
       filterLive: () =>
         pipe([
+          //TODO remove pick
           pick([
+            "TableName",
             "AttributeDefinitions",
             "KeySchema",
             "ProvisionedThroughput",
@@ -71,7 +74,12 @@ module.exports = pipe([
           ),
         ]),
       dependencies: {
-        kmsKey: { type: "Key", group: "KMS" },
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: ({ lives, config }) =>
+            get("SSEDescription.KMSMasterKeyId"),
+        },
       },
     },
     {
@@ -84,8 +92,30 @@ module.exports = pipe([
           `table-kinesis-stream::${table}::${kinesisStream}`,
       ]),
       dependencies: {
-        table: { type: "Table", group: "DynamoDB", parent: true },
-        kinesisStream: { type: "Stream", group: "Kinesis" },
+        table: {
+          type: "Table",
+          group: "DynamoDB",
+          parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              (live) =>
+                lives.getByName({
+                  name: live.TableName,
+                  type: "Table",
+                  group: "DynamoDB",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+              tap((id) => {
+                assert(id);
+              }),
+            ]),
+        },
+        kinesisStream: {
+          type: "Stream",
+          group: "Kinesis",
+          dependencyId: ({ lives, config }) => get("StreamArn"),
+        },
       },
     },
   ],

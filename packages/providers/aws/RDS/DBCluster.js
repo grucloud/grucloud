@@ -17,12 +17,7 @@ const {
 const ignoreErrorCodes = ["DBClusterNotFoundFault"];
 
 const findId = get("live.DBClusterArn");
-const pickId = pipe([
-  tap(({ DBClusterIdentifier }) => {
-    assert(DBClusterIdentifier);
-  }),
-  pick(["DBClusterIdentifier"]),
-]);
+const pickId = pipe([pick(["DBClusterIdentifier"])]);
 const findName = get("live.DBClusterIdentifier");
 const isInstanceUp = pipe([eq(get("Status"), "available")]);
 
@@ -35,52 +30,6 @@ exports.DBCluster = ({ spec, config }) => {
 
   const client = AwsClient({ spec, config })(rds);
 
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesSecret({
-      live,
-      lives,
-      config,
-      secretField: "username",
-      rdsUsernameField: "MasterUsername",
-    }),
-    {
-      type: "DBSubnetGroup",
-      group: "RDS",
-      ids: [
-        pipe([
-          () => live,
-          get("DBSubnetGroup"),
-          (name) =>
-            lives.getByName({
-              name,
-              providerName: config.providerName,
-              type: "DBSubnetGroup",
-              group: "RDS",
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    {
-      type: "SecurityGroup",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("VpcSecurityGroups"),
-        pluck("VpcSecurityGroupId"),
-      ])(),
-    },
-    {
-      type: "Key",
-      group: "KMS",
-      ids: [get("KmsKeyId")(live)],
-    },
-    {
-      type: "Role",
-      group: "IAM",
-      ids: [live.MonitoringRoleArn],
-    },
-  ];
   const decorate = () => pipe([renameTagList]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBClusters-property
@@ -204,7 +153,6 @@ exports.DBCluster = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    findDependencies,
     tagResource: tagResource({ endpoint: rds }),
     untagResource: untagResource({ endpoint: rds }),
   };

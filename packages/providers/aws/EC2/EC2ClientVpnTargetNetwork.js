@@ -21,13 +21,6 @@ const createModel = ({ config }) => ({
     method: "describeClientVpnTargetNetworks",
     getField: "ClientVpnTargetNetworks",
     pickId: pipe([
-      tap((params) => {
-        assert(params);
-      }),
-      tap(({ ClientVpnEndpointId, AssociationId }) => {
-        assert(ClientVpnEndpointId);
-        assert(AssociationId);
-      }),
       ({ AssociationId, ClientVpnEndpointId }) => ({
         AssociationIds: [AssociationId],
         ClientVpnEndpointId,
@@ -39,9 +32,6 @@ const createModel = ({ config }) => ({
     method: "associateClientVpnTargetNetwork",
     pickCreated: ({ payload }) =>
       pipe([
-        tap((params) => {
-          assert(payload);
-        }),
         ({ AssociationId }) => ({
           AssociationId,
           ClientVpnEndpointId: payload.ClientVpnEndpointId,
@@ -58,13 +48,7 @@ const createModel = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateClientVpnTargetNetwork-property
   destroy: {
     method: "disassociateClientVpnTargetNetwork",
-    pickId: pipe([
-      tap(({ ClientVpnEndpointId, AssociationId }) => {
-        assert(ClientVpnEndpointId);
-        assert(AssociationId);
-      }),
-      pick(["ClientVpnEndpointId", "AssociationId"]),
-    ]),
+    pickId: pipe([pick(["ClientVpnEndpointId", "AssociationId"])]),
     isInstanceDown: pipe([
       tap(({ Status }) => {
         logger.debug(
@@ -82,18 +66,6 @@ exports.EC2ClientVpnTargetNetwork = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live }) => [
-      {
-        type: "ClientVpnEndpoint",
-        group: "EC2",
-        ids: [live.ClientVpnEndpointId],
-      },
-      {
-        type: "Subnet",
-        group: "EC2",
-        ids: [live.SubnetId],
-      },
-    ],
     findName: ({ live, lives }) =>
       pipe([
         fork({
@@ -143,9 +115,6 @@ exports.EC2ClientVpnTargetNetwork = ({ spec, config }) =>
             config,
             decorate: () =>
               pipe([
-                tap((params) => {
-                  assert(true);
-                }),
                 ({ TargetNetworkId, ...other }) => ({
                   SubnetId: TargetNetworkId,
                   ...other,

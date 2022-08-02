@@ -30,33 +30,12 @@ const buildArn =
 const assignEvenPattern = assign({
   EventPattern: pipe([get("EventPattern"), JSON.stringify]),
 });
+
 const parseEventPattern = pipe([get("EventPattern", "{}"), JSON.parse]);
 
 exports.CloudWatchEventRule = ({ spec, config }) => {
   const cloudWatchEvents = createCloudWatchEvents(config);
   const client = AwsClient({ spec, config })(cloudWatchEvents);
-
-  // findDependencies for CloudWatchEventRule
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "EventBus",
-      group: "CloudWatchEvents",
-      ids: [
-        pipe([
-          () => live,
-          get("EventBusName"),
-          (name) =>
-            lives.getByName({
-              name,
-              type: "EventBus",
-              group: "CloudWatchEvents",
-              providerName: config.providerName,
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-  ];
 
   const decorate = () =>
     pipe([
@@ -164,7 +143,6 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    findDependencies,
     cannotBeDeleted,
     managedByOther: cannotBeDeleted,
     tagResource: tagResource({ cloudWatchEvents }),

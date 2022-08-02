@@ -15,8 +15,11 @@ const buildArn =
       config.region
     }:${config.accountId()}:application:${applicationName}`;
 
-const decorate = ({ endpoint }) =>
+const decorate = ({ endpoint, config }) =>
   pipe([
+    tap((params) => {
+      assert(config);
+    }),
     assign({
       tags: pipe([
         buildArn({ config }),

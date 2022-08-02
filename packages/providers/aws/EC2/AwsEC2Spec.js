@@ -15,8 +15,10 @@ const {
   switchCase,
   filter,
   fork,
+  flatMap,
 } = require("rubico");
 const {
+  pluck,
   includes,
   first,
   size,
@@ -30,6 +32,7 @@ const {
   isDeepEqual,
   callProp,
   identity,
+  flatten,
 } = require("rubico/x");
 const {
   omitIfEmpty,
@@ -45,7 +48,9 @@ const {
   replaceRegionAll,
   replaceOwner,
   replaceAccountAndRegion,
+  findEksCluster,
 } = require("../AwsCommon");
+const { findInStatement } = require("../IAM/AwsIamCommon");
 
 const {
   hasDependency,
@@ -188,19 +193,25 @@ const securityGroupRulePickProperties = pipe([
 ]);
 
 const ec2InstanceDependencies = {
-  subnets: {
-    type: "Subnet",
+  placementGroup: {
+    type: "PlacementGroup",
     group: "EC2",
-    list: true,
+    dependencyId: ({ lives, config }) =>
+      pipe([
+        get("Placement.GroupName"),
+        (name) =>
+          pipe([
+            () =>
+              lives.getByName({
+                name,
+                type: "PlacementGroup",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            get("id"),
+          ])(),
+      ]),
   },
-  keyPair: { type: "KeyPair", group: "EC2" },
-  iamInstanceProfile: { type: "InstanceProfile", group: "IAM" },
-  securityGroups: {
-    type: "SecurityGroup",
-    group: "EC2",
-    list: true,
-  },
-  placementGroup: { type: "PlacementGroup", group: "EC2" },
 };
 
 const buildAvailabilityZone = pipe([
@@ -214,29 +225,20 @@ const securityGroupRuleDependencies = {
     type: "SecurityGroup",
     group: "EC2",
     parent: true,
-    filterDependency:
-      ({ resource }) =>
-      (dependency) =>
-        pipe([
-          () => resource,
-          eq(get("live.GroupId"), dependency.live.GroupId),
-        ])(),
+    dependencyId: ({ lives, config }) => get("GroupId"),
   },
   securityGroupFrom: {
     type: "SecurityGroup",
     group: "EC2",
     list: true,
-    filterDependency:
-      ({ resource }) =>
-      (dependency) =>
+    dependencyIds:
+      ({ lives, config }) =>
+      (live) =>
         pipe([
-          () => resource,
-          tap(() => {
-            assert(dependency.live.GroupId);
-            assert(resource.live.GroupId);
-          }),
-          get("live.IpPermission.UserIdGroupPairs"),
-          any(eq(get("GroupId"), dependency.live.GroupId)),
+          () => live,
+          get("IpPermission.UserIdGroupPairs", []),
+          pluck("GroupId"),
+          filter(not(includes(live.GroupId))),
         ])(),
   },
 };
@@ -410,7 +412,11 @@ module.exports = pipe([
           }),
         ]),
       dependencies: {
-        certificate: { type: "Certificate", group: "ACM" },
+        certificate: {
+          type: "Certificate",
+          group: "ACM",
+          dependencyId: ({ lives, config }) => get("CertificateArn"),
+        },
       },
     },
     {
@@ -438,6 +444,7 @@ module.exports = pipe([
           type: "ClientVpnEndpoint",
           group: "EC2",
           parent: true,
+          dependencyId: ({ lives, config }) => get("ClientVpnEndpointId"),
         },
       },
     },
@@ -516,39 +523,65 @@ module.exports = pipe([
           }),
         ]),
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2" },
-        securityGroups: { type: "SecurityGroup", group: "EC2" },
-        cloudWatchLogGroup: { type: "LogGroup", group: "CloudWatchLogs" },
-        cloudWatchLogStream: { type: "LogStream", group: "CloudWatchLogs" },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("VpcId"),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          dependencyIds: ({ lives, config }) => get("SecurityGroupIds"),
+        },
+        cloudWatchLogGroup: {
+          type: "LogGroup",
+          group: "CloudWatchLogs",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("ConnectionLogOptions.CloudwatchLogGroup"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  providerName: config.providerName,
+                  type: "LogGroup",
+                  group: "CloudWatchLogs",
+                }),
+              get("id"),
+            ]),
+        },
+        cloudWatchLogStream: {
+          type: "LogStream",
+          group: "CloudWatchLogs",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("ConnectionLogOptions.CloudwatchLogStream"),
+              (logStream) =>
+                pipe([
+                  () =>
+                    lives.getByType({
+                      providerName: config.providerName,
+                      type: "LogStream",
+                      group: "CloudWatchLogs",
+                    }),
+                  find(pipe([eq(get("live.logStreamName"), logStream)])),
+                  get("id"),
+                ])(),
+            ]),
+        },
         serverCertificate: {
           type: "Certificate",
           group: "ACM",
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                () => resource,
-                eq(
-                  get("live.ServerCertificateArn"),
-                  dependency.live.CertificateArn
-                ),
-              ])(),
+          dependencyId: ({ lives, config }) => get("ServerCertificateArn"),
         },
         clientCertificate: {
           type: "Certificate",
           group: "ACM",
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                () => resource,
-                eq(
-                  get(
-                    "live.AuthenticationOptions[0].MutualAuthentication.ClientRootCertificateChain"
-                  ),
-                  dependency.live.CertificateArn
-                ),
-              ])(),
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("AuthenticationOptions"),
+              find(get("MutualAuthentication.ClientRootCertificateChain")),
+              get("MutualAuthentication.ClientRootCertificateChain"),
+            ]),
         },
       },
     },
@@ -575,19 +608,18 @@ module.exports = pipe([
       ]),
       propertiesDefault: {},
       compare: compareEC2({ filterAll: () => pick([]) }),
-      filterLive: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
       dependencies: {
         clientVpnEndpoint: {
           type: "ClientVpnEndpoint",
           group: "EC2",
           parent: true,
+          dependencyId: ({ lives, config }) => get("ClientVpnEndpointId"),
         },
-        subnet: { type: "Subnet", group: "EC2" },
+        subnet: {
+          type: "Subnet",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("SubnetId"),
+        },
       },
     },
     {
@@ -602,8 +634,18 @@ module.exports = pipe([
       inferName: ({ dependenciesSpec: { vpc, dhcpOptions } }) =>
         pipe([() => `dhcp-options-assoc::${vpc}::${dhcpOptions}`])(),
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2", parent: true },
-        dhcpOptions: { type: "DhcpOptions", group: "EC2", parent: true },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("VpcId"),
+        },
+        dhcpOptions: {
+          type: "DhcpOptions",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("DhcpOptionsId"),
+        },
       },
     },
     {
@@ -627,9 +669,32 @@ module.exports = pipe([
       ],
       dependencies: {
         ...FlowLogsDependencies,
-        iamRole: { type: "Role", group: "IAM" },
-        cloudWatchLogGroup: { type: "LogGroup", group: "CloudWatchLogs" },
-        s3Bucket: { type: "Bucket", group: "S3" },
+        iamRole: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("DeliverLogsPermissionArn"),
+        },
+        cloudWatchLogGroup: {
+          type: "LogGroup",
+          group: "CloudWatchLogs",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              (live) =>
+                lives.getByName({
+                  name: live.LogGroupName,
+                  type: "LogGroup",
+                  group: "CloudWatchLogs",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
+        //TODO
+        // s3Bucket: {
+        //   type: "Bucket",
+        //   group: "S3",
+        //   dependencyId: ({ lives, config }) => get(""),
+        //},
       },
       includeDefaultDependencies: true,
       compare: compareEC2({
@@ -654,7 +719,6 @@ module.exports = pipe([
               ]),
             }),
           ]),
-
           when(
             eq(get("LogDestinationType"), "s3"),
             pipe([
@@ -723,7 +787,23 @@ module.exports = pipe([
           assignIpamRegion({ providerConfig }),
         ]),
       dependencies: {
-        ipam: { type: "Ipam", group: "EC2" },
+        ipam: {
+          type: "Ipam",
+          group: "EC2",
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "Ipam",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
+                find(eq(get("live.IpamArn"), live.IpamArn)),
+                get("id"),
+              ])(),
+        },
       },
     },
     {
@@ -752,8 +832,31 @@ module.exports = pipe([
           assignLocale({ providerConfig }),
         ]),
       dependencies: {
-        ipamPoolSource: { type: "IpamPool", group: "EC2" },
-        ipamScope: { type: "IpamScope", group: "EC2" },
+        ipamPoolSource: {
+          type: "IpamPool",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("SourceIpamPoolId"),
+        },
+        ipamScope: {
+          type: "IpamScope",
+          group: "EC2",
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "IpamScope",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
+                find(eq(get("live.IpamScopeArn"), live.IpamScopeArn)),
+                get("id"),
+                tap((id) => {
+                  assert(id);
+                }),
+              ])(),
+        },
       },
     },
     {
@@ -762,7 +865,12 @@ module.exports = pipe([
       omitProperties: ["IpamPoolId", "State", "FailureReason"],
       inferName: pipe([get("properties.Cidr")]),
       dependencies: {
-        ipamPool: { type: "IpamPool", group: "EC2", parent: true },
+        ipamPool: {
+          type: "IpamPool",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("IpamPoolId"),
+        },
       },
     },
     {
@@ -778,15 +886,30 @@ module.exports = pipe([
       omitProperties: ["Attachment", ""],
       filterLive: () => pipe([pick(["Description"])]),
       dependencies: {
-        instance: { type: "Instance", group: "EC2" },
+        instance: {
+          type: "Instance",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("Attachment.InstanceId"),
+              (id) =>
+                lives.getById({
+                  providerName: config.providerName,
+                  type: "Instance",
+                  group: "EC2",
+                  id,
+                }),
+              get("id"),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
+        },
       },
     },
     {
       type: "Volume",
       Client: AwsVolume,
-      dependencies: {
-        instance: { type: "Instance", group: "EC2", parent: true },
-      },
       omitProperties: [
         "Attachments",
         "CreateTime",
@@ -842,8 +965,18 @@ module.exports = pipe([
       type: "VolumeAttachment",
       Client: EC2VolumeAttachment,
       dependencies: {
-        volume: { type: "Volume", group: "EC2", parent: true },
-        instance: { type: "Instance", group: "EC2", parent: true },
+        volume: {
+          type: "Volume",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("VolumeId"),
+        },
+        instance: {
+          type: "Instance",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("InstanceId"),
+        },
       },
       isOurMinion: () => true,
       compare: compareAws({ getLiveTags: () => [], getTargetTags: () => [] })({
@@ -879,6 +1012,27 @@ module.exports = pipe([
         ipamPoolIpv4: {
           type: "IpamPool",
           group: "EC2",
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "IpamPool",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
+                find(
+                  and([
+                    eq(get("live.AddressFamily"), "ipv4"),
+                    pipe([
+                      get("live.Allocations"),
+                      find(eq(get("ResourceId"), live.VpcId)),
+                    ]),
+                  ])
+                ),
+                get("live.IpamPoolId"),
+              ])(),
           filterDependency:
             ({ resource }) =>
             (dependency) =>
@@ -942,9 +1096,6 @@ module.exports = pipe([
                 })
               ),
               omit(["CidrBlock"]),
-              tap((params) => {
-                assert(true);
-              }),
             ])
           ),
           // TODO ipv6
@@ -956,9 +1107,6 @@ module.exports = pipe([
             ]),
             assign({ AmazonProvidedIpv6CidrBlock: () => true })
           ),
-          tap((params) => {
-            assert(true);
-          }),
         ]),
     },
     {
@@ -973,11 +1121,17 @@ module.exports = pipe([
       inferName: ({ dependenciesSpec: { vpc, internetGateway } }) =>
         `ig-attach::${internetGateway}::${vpc}`,
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2", parent: true },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("VpcId"),
+        },
         internetGateway: {
           type: "InternetGateway",
           group: "EC2",
           parent: true,
+          dependencyId: ({ lives, config }) => get("InternetGatewayId"),
         },
       },
     },
@@ -991,7 +1145,12 @@ module.exports = pipe([
         "VpcId",
       ],
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2" },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            pipe([get("Attachments"), first, get("VpcId")]),
+        },
       },
     },
     {
@@ -1011,8 +1170,33 @@ module.exports = pipe([
       ],
       filterLive: () => pick([]),
       dependencies: {
-        subnet: { type: "Subnet", group: "EC2" },
-        eip: { type: "ElasticIpAddress", group: "EC2" },
+        subnet: {
+          type: "Subnet",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("SubnetId"),
+        },
+        eip: {
+          type: "ElasticIpAddress",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("NatGatewayAddresses"),
+              pluck("AllocationId"),
+              map((AllocationId) =>
+                pipe([
+                  () =>
+                    lives.getByType({
+                      type: "ElasticIpAddress",
+                      group: "EC2",
+                      providerName: config.providerName,
+                    }),
+                  find(eq(get("live.AllocationId"), AllocationId)),
+                  get("id"),
+                ])()
+              ),
+              first,
+            ]),
+        },
       },
       //TODO remove ?
       ignoreResource: () => get("isDefault"),
@@ -1092,8 +1276,11 @@ module.exports = pipe([
           }),
         ])(),
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2" },
-        internetGateway: { type: "InternetGateway", group: "EC2" },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("VpcId"),
+        },
       },
     },
     {
@@ -1125,7 +1312,12 @@ module.exports = pipe([
           ]),
         ]),
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2", parent: true },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("VpcId"),
+        },
       },
     },
     {
@@ -1149,8 +1341,17 @@ module.exports = pipe([
       filterLive: () => pick([]),
       includeDefaultDependencies: true,
       dependencies: {
-        routeTable: { type: "RouteTable", group: "EC2", parent: true },
-        subnet: { type: "Subnet", group: "EC2" },
+        routeTable: {
+          type: "RouteTable",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("RouteTableId"),
+        },
+        subnet: {
+          type: "Subnet",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("SubnetId"),
+        },
       },
     },
     {
@@ -1209,15 +1410,62 @@ module.exports = pipe([
         ])(),
       includeDefaultDependencies: true,
       dependencies: {
-        routeTable: { type: "RouteTable", group: "EC2", parent: true },
-        ig: { type: "InternetGateway", group: "EC2", parent: true },
-        natGateway: { type: "NatGateway", group: "EC2", parent: true },
-        vpcEndpoint: { type: "VpcEndpoint", group: "EC2", parent: true },
-        transitGateway: { type: "TransitGateway", group: "EC2", parent: true },
+        routeTable: {
+          type: "RouteTable",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("RouteTableId"),
+        },
+        ig: {
+          type: "InternetGateway",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              (live) =>
+                lives.getById({
+                  id: live.GatewayId,
+                  type: "InternetGateway",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
+        natGateway: {
+          type: "NatGateway",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("NatGatewayId"),
+        },
+        vpcEndpoint: {
+          type: "VpcEndpoint",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              (live) =>
+                lives.getById({
+                  id: live.GatewayId,
+                  type: "VpcEndpoint",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
+        transitGateway: {
+          type: "TransitGateway",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("TransitGatewayId"),
+        },
         egressOnlyInternetGateway: {
           type: "EgressOnlyInternetGateway",
           group: "EC2",
           parent: true,
+          dependencyId: ({ lives, config }) =>
+            get("EgressOnlyInternetGatewayId"),
         },
       },
     },
@@ -1289,12 +1537,39 @@ module.exports = pipe([
           ]),
         ])(),
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2" },
-        subnet: { type: "Subnet", group: "EC2" },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("VpcId"),
+        },
+        //TODO
+        // subnet: {
+        //   type: "Subnet",
+        //   group: "EC2",
+        //   dependencyId: ({ lives, config }) => get(""),
+        // },
+        // securityGroups: {
+        //   type: "SecurityGroup",
+        //   group: "EC2",
+        //   list: true,
+        //   dependencyIds: ({ lives, config }) =>
+        //     pipe([
+        //       get("IpPermissions"),
+        //       pluck("UserIdGroupPairs"),
+        //       flatten,
+        //       pluck("GroupId"),
+        //     ]),
+        // },
         eksCluster: {
           type: "Cluster",
           group: "EKS",
           ignoreOnDestroy: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              (live) => ({ live, lives }),
+              findEksCluster({ config }),
+              get("id"),
+            ]),
         },
       },
       addCode: ({ resource, lives }) =>
@@ -1352,9 +1627,14 @@ module.exports = pipe([
     },
     {
       type: "ElasticIpAddress",
-      dependencies: {
-        internetGateway: { type: "InternetGateway", group: "EC2" },
-      },
+      // TODO
+      // dependencies: {
+      //   internetGateway: {
+      //     type: "InternetGateway",
+      //     group: "EC2",
+      //     dependencyId: ({ lives, config }) => get(""),
+      //   },
+      // },
       Client: AwsElasticIpAddress,
       omitProperties: [
         "InstanceId",
@@ -1373,8 +1653,18 @@ module.exports = pipe([
       type: "ElasticIpAddressAssociation",
       Client: EC2ElasticIpAddressAssociation,
       dependencies: {
-        eip: { type: "ElasticIpAddress", group: "EC2", parent: true },
-        instance: { type: "Instance", group: "EC2", parent: true },
+        eip: {
+          type: "ElasticIpAddress",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("AllocationId"),
+        },
+        instance: {
+          type: "Instance",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("InstanceId"),
+        },
       },
       omitProperties: ["InstanceId", "AllocationId", "AssociationId"],
       inferName: ({ properties, dependenciesSpec: { eip, instance } }) =>
@@ -1560,8 +1850,65 @@ module.exports = pipe([
             }),
           ])(),
       dependencies: {
-        ...ec2InstanceDependencies,
-        launchTemplate: { type: "LaunchTemplate", group: "EC2" },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          //TODO no list
+          list: true,
+          dependencyId: ({ lives, config }) => get("SubnetId"),
+        },
+        keyPair: {
+          type: "KeyPair",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("KeyName"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  type: "KeyPair",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
+        iamInstanceProfile: {
+          type: "InstanceProfile",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("IamInstanceProfile.Arn"),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("SecurityGroups"), pluck("GroupId")]),
+        },
+        launchTemplate: {
+          type: "LaunchTemplate",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => getLaunchTemplateIdFromTags,
+        },
+        placementGroup: {
+          type: "PlacementGroup",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("Placement.GroupName"),
+              (name) =>
+                pipe([
+                  () =>
+                    lives.getByName({
+                      name,
+                      type: "PlacementGroup",
+                      group: "EC2",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])(),
+            ]),
+        },
       },
     },
     {
@@ -1646,13 +1993,112 @@ module.exports = pipe([
             ]),
           }),
         ]),
-      dependencies: ec2InstanceDependencies,
+      dependencies: {
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("LaunchTemplateData.NetworkInterfaces", []),
+              pluck("SubnetId"),
+            ]),
+        },
+        keyPair: {
+          type: "KeyPair",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("LaunchTemplateData.KeyName"),
+              (KeyName) =>
+                lives.getByName({
+                  name: KeyName,
+                  type: "KeyPair",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
+        iamInstanceProfile: {
+          type: "InstanceProfile",
+          group: "IAM",
+          dependencyIds:
+            ({ lives, config }) =>
+            (live) =>
+              [
+                pipe([
+                  () => live,
+                  get("LaunchTemplateData.IamInstanceProfile.Arn"),
+                ])(),
+                pipe([
+                  () => live,
+                  get("LaunchTemplateData.IamInstanceProfile.Name"),
+                  (name) =>
+                    lives.getByName({
+                      name,
+                      type: "InstanceProfile",
+                      group: "IAM",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])(),
+              ],
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              fork({
+                fromMain: get("LaunchTemplateData.SecurityGroupIds"),
+                fromInterfaces: pipe([
+                  get("LaunchTemplateData.NetworkInterfaces"),
+                  pluck("Groups"),
+                  flatten,
+                ]),
+              }),
+              ({ fromMain = [], fromInterfaces = [] }) => [
+                ...fromMain,
+                ...fromInterfaces,
+              ],
+            ]),
+        },
+        placementGroup: {
+          type: "PlacementGroup",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("LaunchTemplateData.Placement.GroupName"),
+              (name) =>
+                pipe([
+                  () =>
+                    lives.getByName({
+                      name,
+                      type: "PlacementGroup",
+                      group: "EC2",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])(),
+            ]),
+        },
+      },
     },
     {
       type: "NetworkAcl",
       Client: AwsNetworkAcl,
       listOnly: true,
       ignoreResource: () => pipe([() => true]),
+      dependencies: {
+        vpc: { type: "Vpc", group: "EC2", dependencyId: () => get("VpcId") },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          dependencyIds: () => pipe([get("Associations"), pluck("SubnetId")]),
+        },
+      },
     },
     {
       type: "ManagedPrefixList",
@@ -1670,25 +2116,57 @@ module.exports = pipe([
       Client: EC2PlacementGroup,
       omitProperties: ["State", "GroupId", "GroupArn", "PartitionCount"],
       inferName: pipe([get("properties.GroupName")]),
-      //filterLive: () => pipe([]),
     },
     {
       type: "VpcEndpoint",
       dependencies: {
-        vpc: { type: "Vpc", group: "EC2" },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("VpcId"),
+        },
         // Interface endpoint
-        subnets: { type: "Subnet", group: "EC2", list: true },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("SubnetIds"),
+        },
         // Gateway endpoint
-        routeTables: { type: "RouteTable", group: "EC2", list: true },
+        routeTables: {
+          type: "RouteTable",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("RouteTableIds"),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("Groups"), pluck("GroupId")]),
+        },
         // NetworkInterfaceIds ?
-        // SecurityGroup ?
         firewall: {
           type: "Firewall",
           group: "NetworkFirewall",
           parent: true,
           ignoreOnDestroy: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([get("Tags"), find(eq(get("Key"), "Firewall")), get("Value")]),
         },
-        iamRoles: { type: "Role", group: "IAM", list: true },
+        iamRoles: {
+          type: "Role",
+          group: "IAM",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("PolicyDocument.Statement", []),
+              flatMap(
+                findInStatement({ type: "Role", group: "IAM", lives, config })
+              ),
+              pluck("id"),
+            ]),
+        },
       },
       Client: EC2VpcEndpoint,
       compare: compareEC2({
@@ -1770,25 +2248,13 @@ module.exports = pipe([
           type: "Vpc",
           group: "EC2",
           parent: true,
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                () => resource,
-                eq(get("live.RequesterVpcInfo.VpcId"), dependency.live.VpcId),
-              ])(),
+          dependencyId: ({ lives, config }) => get("RequesterVpcInfo.VpcId"),
         },
         vpcPeer: {
           type: "Vpc",
           group: "EC2",
           parent: true,
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                () => resource,
-                eq(get("live.AccepterVpcInfo.VpcId"), dependency.live.VpcId),
-              ])(),
+          dependencyId: ({ lives, config }) => get("AccepterVpcInfo.VpcId"),
         },
       },
     },
@@ -1823,6 +2289,7 @@ module.exports = pipe([
           type: "VpcPeeringConnection",
           group: "EC2",
           parent: true,
+          dependencyId: ({ lives, config }) => get("VpcPeeringConnectionId"),
         },
       },
     },
@@ -1875,7 +2342,11 @@ module.exports = pipe([
         "State",
       ],
       dependencies: {
-        transitGateway: { type: "TransitGateway", group: "EC2" },
+        transitGateway: {
+          type: "TransitGateway",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("TransitGatewayId"),
+        },
       },
     },
     {
@@ -1909,46 +2380,18 @@ module.exports = pipe([
         transitGateway: {
           type: "TransitGateway",
           group: "EC2",
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                tap((params) => {
-                  assert(dependency);
-                }),
-                () => resource,
-                eq(
-                  get("live.RequesterTgwInfo.TransitGatewayId"),
-                  dependency.live.TransitGatewayId
-                ),
-              ])(),
+          dependencyId: ({ lives, config }) =>
+            get("RequesterTgwInfo.TransitGatewayId"),
         },
         transitGatewayPeer: {
           type: "TransitGateway",
           group: "EC2",
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([
-                tap((params) => {
-                  assert(dependency);
-                }),
-                () => resource,
-                eq(
-                  get("live.AccepterTgwInfo.TransitGatewayId"),
-                  dependency.live.TransitGatewayId
-                ),
-                tap((params) => {
-                  assert(true);
-                }),
-              ])(),
+          dependencyId: ({ lives, config }) =>
+            get("AccepterTgwInfo.TransitGatewayId"),
         },
       },
       filterLive: ({ providerConfig }) =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           assign({
             RequesterTgwInfo: replacePeeringInfo({
               resourceType: "RequesterTgwInfo",
@@ -1980,9 +2423,18 @@ module.exports = pipe([
         transitGateway: {
           type: "TransitGateway",
           group: "EC2",
+          dependencyId: ({ lives, config }) => get("TransitGatewayId"),
         },
-        vpc: { type: "Vpc", group: "EC2" },
-        vpnConnection: { type: "VpnConnection", group: "EC2" },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("ResourceId"),
+        },
+        vpnConnection: {
+          type: "VpnConnection",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("ResourceId"),
+        },
       },
     },
     {
@@ -2004,14 +2456,25 @@ module.exports = pipe([
         transitGateway: {
           type: "TransitGateway",
           group: "EC2",
+          dependencyId: ({ lives, config }) => get("TransitGatewayId"),
         },
-        vpc: { type: "Vpc", group: "EC2" },
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        transitGatewayRouteTables: {
-          type: "TransitGatewayRouteTable",
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("VpcId"),
+        },
+        subnets: {
+          type: "Subnet",
           group: "EC2",
           list: true,
+          dependencyIds: ({ lives, config }) => get("SubnetIds"),
         },
+        //TODO remove ?
+        // transitGatewayRouteTables: {
+        //   type: "TransitGatewayRouteTable",
+        //   group: "EC2",
+        //   list: true,
+        // },
       },
     },
     {
@@ -2032,6 +2495,8 @@ module.exports = pipe([
           type: "TransitGatewayRouteTable",
           group: "EC2",
           parent: true,
+          dependencyId: ({ lives, config }) =>
+            get("TransitGatewayRouteTableId"),
         },
         ...transitGatewayAttachmentDependencies,
       },
@@ -2057,6 +2522,8 @@ module.exports = pipe([
           type: "TransitGatewayRouteTable",
           group: "EC2",
           parent: true,
+          dependencyId: ({ lives, config }) =>
+            get("TransitGatewayRouteTableId"),
         },
         ...transitGatewayAttachmentDependencies,
         // TODO add other attachment type
@@ -2099,9 +2566,21 @@ module.exports = pipe([
         },
       },
       dependencies: {
-        customerGateway: { type: "CustomerGateway", group: "EC2" },
-        vpnGateway: { type: "VpnGateway", group: "EC2" },
-        transitGateway: { type: "TransitGateway", group: "EC2" },
+        customerGateway: {
+          type: "CustomerGateway",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("CustomerGatewayId"),
+        },
+        vpnGateway: {
+          type: "VpnGateway",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("VpnGatewayId"),
+        },
+        transitGateway: {
+          type: "TransitGateway",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("TransitGatewayId"),
+        },
       },
     },
   ],

@@ -58,46 +58,6 @@ exports.FirewallLoggingConfiguration = ({ spec, config }) =>
     findName: get("live.FirewallName"),
     findId: pipe([get("live.FirewallArn")]),
     pickId: pipe([pick(["FirewallArn"])]),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Firewall",
-        group: "NetworkFirewall",
-        ids: [
-          pipe([
-            () =>
-              lives.getByName({
-                name: live.FirewallName,
-                type: "Firewall",
-                group: "NetworkFirewall",
-                providerName: config.providerName,
-              }),
-            get("id"),
-          ])(),
-        ],
-      },
-      {
-        type: "LogGroup",
-        group: "CloudWatchLogs",
-        ids: pipe([
-          () => live,
-          get("LoggingConfiguration.LogDestinationConfigs"),
-          pluck("LogDestination"),
-          pluck("logGroup"),
-          map((logGroup) =>
-            pipe([
-              () =>
-                lives.getByName({
-                  name: logGroup,
-                  type: "LogGroup",
-                  group: "CloudWatchLogs",
-                  providerName: config.providerName,
-                }),
-              get("id"),
-            ])()
-          ),
-        ])(),
-      },
-    ],
     getList: ({ client, endpoint, getById, config }) =>
       pipe([
         tap((params) => {

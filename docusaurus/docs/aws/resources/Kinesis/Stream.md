@@ -14,7 +14,6 @@ exports.createResources = () => [
   {
     type: "Stream",
     group: "Kinesis",
-    name: "my-stream",
     properties: ({}) => ({
       StreamModeDetails: {
         StreamMode: "ON_DEMAND",
@@ -28,6 +27,7 @@ exports.createResources = () => [
 ## Code Examples
 
 - [simple stream](https://github.com/grucloud/grucloud/blob/main/examples/aws/kinesis/kinesis-stream)
+- [sererless-patterns dynamodb-kinesis](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/dynamodb-kinesis)
 
 ## Properties
 
@@ -35,6 +35,7 @@ exports.createResources = () => [
 
 ## Used By
 
+- [DynamoDB KinesisStreamingDestination](../DynamoDB/KinesisStreamingDestination.md)
 - [Lambda EventSourceMapping](../Lambda/EventSourceMapping.md)
 
 ## List

@@ -1,13 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, not, assign, map, pick } = require("rubico");
-const {
-  defaultsDeep,
-  first,
-  find,
-  when,
-  unless,
-  callProp,
-} = require("rubico/x");
+const { defaultsDeep, first, when, unless, callProp } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { ipToInt32 } = require("@grucloud/core/ipUtils");
@@ -25,12 +18,7 @@ const cannotBeDeleted =
   (live) =>
     pipe([() => live, not(eq(get("live.OwnerId"), config.accountId()))])();
 
-const pickId = pipe([
-  ({ Id }) => ({ ResolverRuleId: Id }),
-  tap(({ ResolverRuleId }) => {
-    assert(ResolverRuleId);
-  }),
-]);
+const pickId = pipe([({ Id }) => ({ ResolverRuleId: Id })]);
 
 const decorate =
   ({ config }) =>
@@ -96,24 +84,6 @@ exports.Route53ResolverRule = ({ spec, config }) =>
     managedByOther: cannotBeDeleted({ config }),
     findName: pipe([get("live.Name")]),
     findId: pipe([get("live.Arn")]),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Endpoint",
-        group: "Route53Resolver",
-        ids: [
-          pipe([
-            () =>
-              lives.getByType({
-                type: "Endpoint",
-                group: "Route53Resolver",
-                providerName: config.providerName,
-              }),
-            find(eq(get("live.Id"), live.ResolverEndpointId)),
-            get("id"),
-          ])(),
-        ],
-      },
-    ],
     getByName: ({ endpoint }) =>
       pipe([
         ({ name }) => ({ Filters: [{ Name: "Name", Values: [name] }] }),

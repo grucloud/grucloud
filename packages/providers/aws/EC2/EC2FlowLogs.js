@@ -72,24 +72,11 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeFlowLogs",
     getParam: "FlowLogs",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
   },
   create: {
     method: "createFlowLogs",
     pickCreated: ({ payload }) =>
-      pipe([
-        get("FlowLogIds"),
-        first,
-        tap((FlowLogId) => {
-          assert(FlowLogId);
-        }),
-        (FlowLogId) => ({ FlowLogId }),
-      ]),
+      pipe([get("FlowLogIds"), first, (FlowLogId) => ({ FlowLogId })]),
   },
   destroy: {
     method: "deleteFlowLogs",
@@ -166,22 +153,13 @@ const findDependenciesFlowLog = ({ live, lives, config }) =>
     ),
     find(not(isEmpty)),
   ])();
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2FlowLogs = ({ spec, config }) =>
   createAwsResource({
     model: createModel({ config }),
     spec,
     config,
-    findName: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      findNameInTagsOrId({ findId: findNameInDependencies }),
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
+    findName: pipe([findNameInTagsOrId({ findId: findNameInDependencies })]),
     findId,
     findDependencies: ({ live, lives }) => [
       findDependenciesFlowLog({ live, lives, config }),

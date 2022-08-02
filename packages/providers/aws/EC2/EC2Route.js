@@ -126,62 +126,6 @@ exports.EC2Route = ({ spec, config }) => {
   const isDefault = ({ live, lives }) =>
     pipe([() => live, eq(get("GatewayId"), "local")])();
 
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "RouteTable",
-      group: "EC2",
-      ids: [live.RouteTableId],
-    },
-    {
-      type: "InternetGateway",
-      group: "EC2",
-      //must start with igw-
-      ids: [
-        pipe([
-          () =>
-            lives.getById({
-              id: live.GatewayId,
-              type: "InternetGateway",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    {
-      type: "VpcEndpoint",
-      group: "EC2",
-      ids: [
-        pipe([
-          () =>
-            lives.getById({
-              id: live.GatewayId,
-              type: "VpcEndpoint",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    {
-      type: "NatGateway",
-      group: "EC2",
-      ids: [live.NatGatewayId],
-    },
-    {
-      type: "TransitGateway",
-      group: "EC2",
-      ids: [live.TransitGatewayId],
-    },
-    {
-      type: "EgressOnlyInternetGateway",
-      group: "EC2",
-      ids: [live.EgressOnlyInternetGatewayId],
-    },
-  ];
-
   const findRoute = ({
     GatewayId,
     NatGatewayId,
@@ -227,9 +171,6 @@ exports.EC2Route = ({ spec, config }) => {
 
   const getById = client.getById({
     pickId: pipe([
-      tap(({ RouteTableId }) => {
-        assert(RouteTableId);
-      }),
       ({ RouteTableId }) => ({
         RouteTableIds: [RouteTableId],
       }),
@@ -286,12 +227,7 @@ exports.EC2Route = ({ spec, config }) => {
 
   const getList = pipe([getListFromLive]);
 
-  const getByName = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    getByNameCore({ getList, findName }),
-  ]);
+  const getByName = pipe([getByNameCore({ getList, findName })]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRoute-property
   // Create vpc endpoint route with https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifyVpcEndpoint-property
@@ -521,7 +457,6 @@ exports.EC2Route = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
     findName,

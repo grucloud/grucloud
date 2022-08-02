@@ -12,40 +12,17 @@ const createModel = ({ config }) => ({
   client: "EC2",
   ignoreErrorCodes: ["InvalidIpamId.NotFound"],
   getById: {
-    pickId: pipe([
-      tap(({ IpamId }) => {
-        assert(IpamId);
-      }),
-      ({ IpamId }) => ({ IpamIds: [IpamId] }),
-    ]),
+    pickId: pipe([({ IpamId }) => ({ IpamIds: [IpamId] })]),
     method: "describeIpams",
     getField: "Ipams",
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(endpoint);
-        }),
-      ]),
   },
   getList: {
     method: "describeIpams",
     getParam: "Ipams",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
   },
   create: {
     method: "createIpam",
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        get("Ipam"),
-      ]),
+    pickCreated: ({ payload }) => pipe([get("Ipam")]),
     isInstanceUp: eq(get("State"), "create-complete"),
   },
   destroy: {

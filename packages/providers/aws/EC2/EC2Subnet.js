@@ -58,7 +58,7 @@ const SubnetAttributes = [
   "MapCustomerOwnedIpOnLaunch",
   "MapPublicIpOnLaunch",
   "AssignIpv6AddressOnCreation",
-  "EnableDns64"
+  "EnableDns64",
 ];
 
 const omitAssignIpv6AddressOnCreationIfIpv6Native = when(
@@ -162,8 +162,6 @@ exports.EC2Subnet = ({ spec, config }) => {
     ({ vpcName, subnetName }) => `${vpcName}::${subnetName}`,
   ]);
 
-  const findDependencies = ({ live }) => [findDependenciesVpc({ live })];
-
   const getList = client.getList({
     method: "describeSubnets",
     getParam: "Subnets",
@@ -233,9 +231,6 @@ exports.EC2Subnet = ({ spec, config }) => {
       ({ payload }) =>
       ({ SubnetId }) =>
         pipe([
-          tap(() => {
-            assert(SubnetId);
-          }),
           () => payload,
           pick(SubnetAttributes),
           filter(identity),
@@ -310,9 +305,6 @@ exports.EC2Subnet = ({ spec, config }) => {
         () => Ipv6SubnetPrefix,
         assign({
           Ipv6CidrBlock: pipe([
-            tap((params) => {
-              assert(true);
-            }),
             () => vpc,
             get("live.Ipv6CidrBlockAssociationSet"),
             unless(
@@ -323,9 +315,6 @@ exports.EC2Subnet = ({ spec, config }) => {
                 cidrSubnetV6({
                   subnetPrefix: Ipv6SubnetPrefix,
                   prefixLength: "64",
-                }),
-                tap((params) => {
-                  assert(true);
                 }),
               ])
             ),
@@ -341,7 +330,6 @@ exports.EC2Subnet = ({ spec, config }) => {
     managedByOther,
     findId,
     findName,
-    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
     getList,

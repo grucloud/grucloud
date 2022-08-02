@@ -49,14 +49,6 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
   const appSync = createAppSync(config);
   const client = AwsClient({ spec, config })(appSync);
 
-  const findDependencies = ({ live }) => [
-    {
-      type: "Role",
-      group: "IAM",
-      ids: [pipe([() => live, get("logConfig.cloudWatchLogsRoleArn")])()],
-    },
-  ];
-
   const getIntrospectionSchema = tryCatch(
     pipe([
       pick(["apiId"]),
@@ -117,6 +109,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
           }),
         () => ({ apiId }),
         getIntrospectionSchema,
+        //TODO do not write if empty
         (content) =>
           fs.writeFile(
             resolveSchemaFile({
@@ -152,6 +145,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
         pipe([
           tap(() => {
             assert(apiId);
+            assert(payload);
             assert(payload.schema);
           }),
           () => createApiKeys({ apiId, apiKeys: payload.apiKeys }),
@@ -250,15 +244,14 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
             )(),
         ]),
       }),
-      tap((params) => {
-        assert(true);
+      tap(({ schema }) => {
+        assert(schema, `empty graphql schema`);
       }),
     ])();
 
   return {
     spec,
     findId,
-    findDependencies,
     getByName,
     getById,
     findName,

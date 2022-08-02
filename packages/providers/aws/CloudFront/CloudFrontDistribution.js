@@ -67,72 +67,6 @@ const findName = pipe([
 exports.CloudFrontDistribution = ({ spec, config }) => {
   const cloudFront = createCloudFront(config);
   const client = AwsClient({ spec, config })(cloudFront);
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Certificate",
-      group: "ACM",
-      ids: [pipe([() => live, get("ViewerCertificate.ACMCertificateArn")])()],
-    },
-    {
-      type: "WebACLCloudFront",
-      group: "WAFv2",
-      ids: [pipe([() => live, get("WebACLId")])()],
-    },
-    {
-      type: "Function",
-      group: "CloudFront",
-      ids: pipe([
-        () => live,
-        get("DefaultCacheBehavior.FunctionAssociations.Items"),
-        pluck("FunctionARN"),
-      ])(),
-    },
-    {
-      type: "Bucket",
-      group: "S3",
-      ids: pipe([
-        () => live,
-        get("Origins.Items", []),
-        pluck("DomainName"),
-        map((domainName) =>
-          pipe([
-            () =>
-              lives.getByType({
-                type: "Bucket",
-                group: "S3",
-                providerName: config.providerName,
-              }),
-            find(({ id }) => pipe([() => domainName, includes(id)])()),
-            get("id"),
-          ])()
-        ),
-      ])(),
-    },
-    {
-      type: "OriginAccessIdentity",
-      group: "CloudFront",
-      ids: pipe([
-        () => live,
-        get("Origins.Items", []),
-        pluck("S3OriginConfig"),
-        pluck("OriginAccessIdentity"),
-        map(
-          pipe([
-            callProp("split", "/"),
-            last,
-            (id) =>
-              lives.getById({
-                id,
-                type: "OriginAccessIdentity",
-                group: "CloudFront",
-                providerName: config.providerName,
-              }),
-            get("id"),
-          ])
-        ),
-      ])(),
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#listDistributions-property
   const getList = client.getList({
@@ -163,15 +97,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#getDistribution-property
-  const pickId = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    pick(["Id"]),
-    tap(({ Id }) => {
-      assert(Id);
-    }),
-  ]);
+  const pickId = pipe([pick(["Id"])]);
 
   const getById = client.getById({
     pickId,
@@ -363,7 +289,6 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
     getById,

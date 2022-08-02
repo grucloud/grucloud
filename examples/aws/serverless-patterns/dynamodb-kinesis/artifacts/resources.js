@@ -37,7 +37,6 @@ exports.createResources = () => [
   {
     type: "Stream",
     group: "Kinesis",
-    name: "sam-app-KinesisStream-i22fijDM7MAY",
     properties: ({}) => ({
       StreamModeDetails: {
         StreamMode: "PROVISIONED",

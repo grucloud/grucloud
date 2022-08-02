@@ -5,39 +5,15 @@ const { defaultsDeep, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const {
-  createAPIGateway,
-  findDependenciesRestApi,
-  ignoreErrorCodes,
-} = require("./ApiGatewayCommon");
+const { createAPIGateway, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findId = get("live.id");
 const findName = get("live.name");
-const pickId = pipe([
-  tap(({ restApiId, id }) => {
-    assert(restApiId);
-    assert(id);
-  }),
-  ({ restApiId, id }) => ({ restApiId, authorizerId: id }),
-]);
+const pickId = pipe([({ restApiId, id }) => ({ restApiId, authorizerId: id })]);
 
 exports.Authorizer = ({ spec, config }) => {
   const apiGateway = createAPIGateway(config);
   const client = AwsClient({ spec, config })(apiGateway);
-
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesRestApi({ live }),
-    {
-      type: "Function",
-      group: "Lambda",
-      ids: [live.authorizerUri],
-    },
-    {
-      type: "UserPool",
-      group: "CognitoIdentityServiceProvider",
-      ids: live.providerARNs,
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getAuthorizer-property
   const getById = client.getById({
@@ -118,6 +94,5 @@ exports.Authorizer = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    findDependencies,
   };
 };

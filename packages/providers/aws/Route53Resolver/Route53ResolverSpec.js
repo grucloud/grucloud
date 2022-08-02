@@ -56,11 +56,14 @@ module.exports = pipe([
           type: "SecurityGroup",
           group: "EC2",
           list: true,
+          dependencyIds: ({ lives, config }) => get("SecurityGroupIds"),
         },
         subnets: {
           type: "Subnet",
           group: "EC2",
           list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("IpAddresses"), pluck("SubnetId")]),
         },
       },
       filterLive: ({ lives, providerConfig }) =>
@@ -95,7 +98,23 @@ module.exports = pipe([
       type: "Rule",
       Client: Route53ResolverRule,
       dependencies: {
-        resolverEndpoint: { type: "Endpoint", group: "Route53Resolver" },
+        resolverEndpoint: {
+          type: "Endpoint",
+          group: "Route53Resolver",
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "Endpoint",
+                    group: "Route53Resolver",
+                    providerName: config.providerName,
+                  }),
+                find(eq(get("live.Id"), live.ResolverEndpointId)),
+                get("id"),
+              ])(),
+        },
       },
       omitProperties: [
         "Id",
@@ -153,8 +172,30 @@ module.exports = pipe([
       type: "RuleAssociation",
       Client: Route53ResolverRuleAssociation,
       dependencies: {
-        resolverRule: { type: "Rule", group: "Route53Resolver", parent: true },
-        vpc: { type: "Vpc", group: "EC2", parent: true },
+        resolverRule: {
+          type: "Rule",
+          group: "Route53Resolver",
+          parent: true,
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "Rule",
+                    group: "Route53Resolver",
+                    providerName: config.providerName,
+                  }),
+                find(eq(get("live.Id"), live.ResolverRuleId)),
+                get("id"),
+              ])(),
+        },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("VPCId"),
+        },
       },
       inferName: ({ properties, dependenciesSpec: { resolverRule, vpc } }) =>
         pipe([() => `rule-assoc::${resolverRule}::${vpc}`])(),

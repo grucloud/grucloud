@@ -1,12 +1,26 @@
 const assert = require("assert");
-const { pipe, map, omit, tap, eq, get, pick, switchCase } = require("rubico");
 const {
+  pipe,
+  map,
+  omit,
+  tap,
+  eq,
+  get,
+  pick,
+  switchCase,
+  and,
+  filter,
+} = require("rubico");
+const {
+  pluck,
   when,
   defaultsDeep,
   append,
   callProp,
   find,
   isEmpty,
+  last,
+  includes,
 } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { compareAws, isOurMinionObject } = require("../AwsCommon");
@@ -23,6 +37,11 @@ const { ApiGatewayV2VpcLink } = require("./ApiGatewayV2VpcLink");
 const GROUP = "ApiGatewayV2";
 
 const compareApiGatewayV2 = compareAws({});
+
+const dependencyIdApi =
+  ({ lives, config }) =>
+  (live) =>
+    `arn:aws:execute-api:${config.region}:${config.accountId()}:${live.ApiId}`;
 
 module.exports = pipe([
   () => [
@@ -41,7 +60,12 @@ module.exports = pipe([
           ),
         ]),
       dependencies: {
-        certificate: { type: "Certificate", group: "ACM" },
+        certificate: {
+          type: "Certificate",
+          group: "ACM",
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("DomainNameConfigurations"), pluck("CertificateArn")]),
+        },
       },
     },
     {
@@ -89,8 +113,18 @@ module.exports = pipe([
       ],
       filterLive: () => pipe([omitIfEmpty(["StageVariables"])]),
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2", parent: true },
-        logGroup: { type: "LogGroup", group: "CloudWatchLogs" },
+        api: {
+          type: "Api",
+          group: "ApiGatewayV2",
+          parent: true,
+          dependencyId: dependencyIdApi,
+        },
+        logGroup: {
+          type: "LogGroup",
+          group: "CloudWatchLogs",
+          dependencyId: ({ lives, config }) =>
+            get("AccessLogSettings.DestinationArn"),
+        },
       },
     },
     {
@@ -119,8 +153,36 @@ module.exports = pipe([
           ),
         ]),
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2", parent: true },
-        userPool: { type: "UserPool", group: "CognitoIdentityServiceProvider" },
+        api: {
+          type: "Api",
+          group: "ApiGatewayV2",
+          parent: true,
+          dependencyId: dependencyIdApi,
+        },
+        userPool: {
+          type: "UserPool",
+          group: "CognitoIdentityServiceProvider",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("JwtConfiguration.Issuer", ""),
+              callProp("split", "/"),
+              last,
+              switchCase([
+                isEmpty,
+                () => undefined,
+                (Id) =>
+                  pipe([
+                    () =>
+                      lives.getByType({
+                        type: "UserPool",
+                        group: "CognitoIdentityServiceProvider",
+                        providerName: config.providerName,
+                      }),
+                    filter(eq(get("live.Id"), Id)),
+                  ])(),
+              ]),
+            ]),
+        },
       },
     },
     {
@@ -143,9 +205,43 @@ module.exports = pipe([
       omitProperties: ["ApiMappingId", "ApiName"],
       filterLive: () => pipe([pick(["ApiMappingKey"])]),
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2", parent: true },
-        domainName: { type: "DomainName", group: "ApiGatewayV2", parent: true },
-        stage: { type: "Stage", group: "ApiGatewayV2" },
+        api: {
+          type: "Api",
+          group: "ApiGatewayV2",
+          parent: true,
+          dependencyId: dependencyIdApi,
+        },
+        domainName: {
+          type: "DomainName",
+          group: "ApiGatewayV2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("DomainName"),
+        },
+        stage: {
+          type: "Stage",
+          group: "ApiGatewayV2",
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    providerName: config.providerName,
+                    type: "Stage",
+                    group: "ApiGatewayV2",
+                  }),
+                tap((params) => {
+                  assert(true);
+                }),
+                find(
+                  and([
+                    eq(get("live.StageName"), live.Stage),
+                    eq(get("live.ApiId"), live.ApiId),
+                  ])
+                ),
+                get("id"),
+              ])(),
+        },
       },
     },
     {
@@ -186,16 +282,74 @@ module.exports = pipe([
         "ApiId",
       ],
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2", parent: true },
+        api: {
+          type: "Api",
+          group: "ApiGatewayV2",
+          parent: true,
+          dependencyId: dependencyIdApi,
+        },
         listener: {
           type: "Listener",
           group: "ElasticLoadBalancingV2",
           parent: true,
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "Listener",
+                    group: "ElasticLoadBalancingV2",
+                    providerName: config.providerName,
+                  }),
+                find(eq(get("id"), live.IntegrationUri)),
+              ])(),
         }, //Integration name depends on listener name
-        vpcLink: { type: "VpcLink", group: "ApiGatewayV2" },
-        lambdaFunction: { type: "Function", group: "Lambda" },
-        eventBus: { type: "EventBus", group: "CloudWatchEvents" },
-        role: { type: "Role", group: "IAM" },
+        vpcLink: {
+          type: "VpcLink",
+          group: "ApiGatewayV2",
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "VpcLink",
+                    group: "ApiGatewayV2",
+                    providerName: config.providerName,
+                  }),
+                find(eq(get("id"), live.ConnectionId)),
+              ])(),
+        },
+        lambdaFunction: {
+          type: "Function",
+          group: "Lambda",
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "Function",
+                    group: "Lambda",
+                    providerName: config.providerName,
+                  }),
+                find(
+                  pipe([get("id"), (id) => includes(id)(live.IntegrationUri)])
+                ),
+              ])(),
+        },
+        eventBus: {
+          type: "EventBus",
+          group: "CloudWatchEvents",
+          dependencyId: ({ lives, config }) =>
+            get("RequestParameters.EventBusName"),
+        },
+        role: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("CredentialsArn"),
+        },
       },
     },
     {
@@ -217,13 +371,24 @@ module.exports = pipe([
         ])(),
       omitProperties: ["RouteId", "ApiName", "ApiId", "Target", "AuthorizerId"],
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2", parent: true },
+        api: {
+          type: "Api",
+          group: "ApiGatewayV2",
+          parent: true,
+          dependencyId: dependencyIdApi,
+        },
         integration: {
           type: "Integration",
           group: "ApiGatewayV2",
           parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([get("Target", ""), callProp("replace", "integrations/", "")]),
         },
-        authorizer: { type: "Authorizer", group: "ApiGatewayV2" },
+        authorizer: {
+          type: "Authorizer",
+          group: "ApiGatewayV2",
+          dependencyId: ({ lives, config }) => get("AuthorizerId"),
+        },
       },
     },
     {
@@ -255,8 +420,30 @@ module.exports = pipe([
       propertiesDefault: { AutoDeployed: false, Description: "" },
       filterLive: () => pick(["Description", "AutoDeployed"]),
       dependencies: {
-        api: { type: "Api", group: "ApiGatewayV2", parent: true },
-        stage: { type: "Stage", group: "ApiGatewayV2", parent: true },
+        api: {
+          type: "Api",
+          group: "ApiGatewayV2",
+          parent: true,
+          dependencyId: dependencyIdApi,
+        },
+        stage: {
+          type: "Stage",
+          group: "ApiGatewayV2",
+          parent: true,
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    providerName: config.providerName,
+                    type: "Stage",
+                    group: "ApiGatewayV2",
+                  }),
+                find(eq(get("live.DeploymentId"), live.DeploymentId)),
+                get("id"),
+              ])(),
+        },
         route: {
           type: "Route",
           group: "ApiGatewayV2",
@@ -273,8 +460,18 @@ module.exports = pipe([
       type: "VpcLink",
       Client: ApiGatewayV2VpcLink,
       dependencies: {
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("SubnetIds"),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("SecurityGroupIds"),
+        },
       },
       omitProperties: [
         "Name",
@@ -286,12 +483,6 @@ module.exports = pipe([
         "VpcLinkStatusMessage",
         "VpcLinkVersion",
       ],
-      filterLive: () =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
     },
   ],
   map(

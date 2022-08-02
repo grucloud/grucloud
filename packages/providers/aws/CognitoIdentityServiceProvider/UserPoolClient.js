@@ -7,29 +7,19 @@ const { findNamespaceInTagsObject } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const {
   createCognitoIdentityProvider,
-  findDependenciesUserPool,
   ignoreErrorCodes,
 } = require("./CognitoIdentityServiceProviderCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findId = get("live.ClientId");
 const findName = get("live.ClientName");
-const pickId = pipe([
-  tap(({ UserPoolId, ClientId }) => {
-    assert(UserPoolId);
-    assert(ClientId);
-  }),
-  ({ ClientId, UserPoolId }) => ({ ClientId, UserPoolId }),
-]);
+const pickId = pipe([({ ClientId, UserPoolId }) => ({ ClientId, UserPoolId })]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html
 exports.UserPoolClient = ({ spec, config }) => {
   const cognitoIdentityServiceProvider = createCognitoIdentityProvider(config);
   const client = AwsClient({ spec, config })(cognitoIdentityServiceProvider);
 
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesUserPool({ live, lives, config }),
-  ];
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#describeUserPoolClient-property
   const getById = client.getById({
     pickId,
@@ -95,7 +85,6 @@ exports.UserPoolClient = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     findNamespace: findNamespaceInTagsObject(config),
     getByName,
     getById,

@@ -29,60 +29,6 @@ exports.AppRunnerService = ({ spec, config }) => {
   const appRunner = createAppRunner(config);
   const client = AwsClient({ spec, config })(appRunner);
 
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Connection",
-      group: "AppRunner",
-      ids: [
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => live,
-          get("SourceConfiguration.AuthenticationConfiguration.ConnectionArn"),
-        ])(),
-      ],
-    },
-    {
-      type: "Repository",
-      group: "ECR",
-      ids: [
-        pipe([
-          () => live,
-          get("SourceConfiguration.ImageRepository.ImageIdentifier"),
-          unless(
-            isEmpty,
-            pipe([
-              callProp("split", ":"),
-              first,
-              (repositoryUri) =>
-                pipe([
-                  () =>
-                    lives.getByType({
-                      type: "Repository",
-                      group: "ECR",
-                      providerName: config.providerName,
-                    }),
-                  find(eq(get("live.repositoryUri"), repositoryUri)),
-                ])(),
-              get("id"),
-            ])
-          ),
-        ])(),
-      ],
-    },
-    {
-      type: "Role",
-      group: "IAM",
-      ids: [
-        pipe([
-          () => live,
-          get("SourceConfiguration.AuthenticationConfiguration.AccessRoleArn"),
-        ])(),
-      ],
-    },
-  ];
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#listTagsForResource-property
   const decorate = () =>
     pipe([
@@ -173,7 +119,6 @@ exports.AppRunnerService = ({ spec, config }) => {
     spec,
     getById,
     findId,
-    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
     findName,

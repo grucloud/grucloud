@@ -12,12 +12,7 @@ const { findDependenciesTransitGateway } = require("./EC2TransitGatewayCommon");
 
 const managedByOther = get("live.DefaultAssociationRouteTable");
 
-const findId = pipe([
-  get("live.TransitGatewayRouteTableId"),
-  tap((TransitGatewayRouteTableId) => {
-    assert(TransitGatewayRouteTableId);
-  }),
-]);
+const findId = pipe([get("live.TransitGatewayRouteTableId")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -30,13 +25,6 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeTransitGatewayRouteTables",
     getParam: "TransitGatewayRouteTables",
-    decorate: ({ endpoint, getById }) =>
-      pipe([
-        tap((params) => {
-          assert(getById);
-          assert(endpoint);
-        }),
-      ]),
   },
   create: {
     method: "createTransitGatewayRouteTable",
@@ -45,12 +33,7 @@ const createModel = ({ config }) => ({
   },
   destroy: {
     method: "deleteTransitGatewayRouteTable",
-    pickId: pipe([
-      tap(({ TransitGatewayRouteTableId }) => {
-        assert(TransitGatewayRouteTableId);
-      }),
-      pick(["TransitGatewayRouteTableId"]),
-    ]),
+    pickId: pipe([pick(["TransitGatewayRouteTableId"])]),
     shouldRetryOnExceptionMessages: ["has associated attachments"],
     isInstanceDown: pipe([eq(get("State"), "deleted")]),
   },
@@ -64,7 +47,6 @@ exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
     config,
     managedByOther,
     cannotBeDeleted: managedByOther,
-    findDependencies: ({ live }) => [findDependenciesTransitGateway({ live })],
     findName: pipe([
       switchCase([
         get("live.DefaultAssociationRouteTable"),

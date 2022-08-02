@@ -3,7 +3,7 @@ id: TargetGroup
 title: Target Group
 ---
 
-Manages an [ELB Target Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html).
+Manages an [ELB Target Group](https://console.aws.amazon.com/ec2/v2/home?#TargetGroups:).
 
 A target group can be attached directly to an AutoScaling Group or an AutoScaling Group created by an EKS Node Group.
 
@@ -44,7 +44,15 @@ The list of properties are the parameter of [CreateTargetGroupCommandInput](http
 
 ## Source Code
 
-- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ElasticLoadBalancingV2/load-balancer/resources.js)
+- [Load Balancer simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/ElasticLoadBalancingV2/load-balancer)
+- [code deploy ecs](https://github.com/grucloud/grucloud/blob/main/examples/aws/CodeDeploy/codedeploy-ecs)
+- [EKS with load balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/EKS/eks-load-balancer)
+- [Route53 failover policy](https://github.com/grucloud/grucloud/blob/main/examples/aws/Route53/routing-failover-policy)
+- [serverless-patterns apigw-fargate-cdk](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/apigw-fargate-cdk)
+- [serverless-patterns apigw-vpclink-pvt-alb](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/apigw-vpclink-pvt-alb)
+- [serverless-patterns fargate-aurora-serverless-cdk](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/fargate-aurora-serverless-cdk)
+- [serverless-patterns fargate-eventbridge](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/fargate-eventbridge)
+- [wafv2-loadbalancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/WAFv2/wafv2-loadbalancer)
 
 ## Dependencies
 
@@ -55,6 +63,8 @@ The list of properties are the parameter of [CreateTargetGroupCommandInput](http
 
 - [AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
 - [CodeDeploy DeploymentGroup](../CodeDeploy/DeploymentGroup.md)
+- [ECS Service](../ECS/Service.md)
+- [ECS TaskSet](../ECS/TaskSet.md)
 
 ## List
 

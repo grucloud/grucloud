@@ -6,11 +6,10 @@ const { retryCall } = require("@grucloud/core/Retry");
 const logger = require("@grucloud/core/logger")({
   prefix: "RouteTableAssociation",
 });
-const { tos } = require("@grucloud/core/tos");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createEC2, tagResource, untagResource } = require("./EC2Common");
+const { createEC2 } = require("./EC2Common");
 
 exports.EC2RouteTableAssociation = ({ spec, config }) => {
   const ec2 = createEC2(config);
@@ -49,15 +48,6 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
       }),
     ])();
 
-  const findDependencies = ({ live }) => [
-    { type: "RouteTable", group: "EC2", ids: [live.RouteTableId] },
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: [live.SubnetId],
-    },
-  ];
-
   const getList = ({ lives }) =>
     pipe([
       tap(() => {
@@ -70,9 +60,6 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
           providerName: config.providerName,
         }),
       flatMap(pipe([get("live.Associations"), filter(not(get("Main")))])),
-      tap((params) => {
-        assert(true);
-      }),
     ])();
 
   const getByName = getByNameCore({ getList, findName });
@@ -103,9 +90,6 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
           fn: pipe([
             () => ({ lives, resolvedDependencies }),
             dependencies().routeTable.getLive,
-            tap((params) => {
-              assert(true);
-            }),
             get("Associations"),
             find(eq(get("SubnetId"), payload.SubnetId)),
             eq(get("AssociationState.State"), "associated"),
@@ -157,7 +141,6 @@ exports.EC2RouteTableAssociation = ({ spec, config }) => {
     spec,
     findId,
     findName,
-    findDependencies,
     getByName,
     getList,
     create,

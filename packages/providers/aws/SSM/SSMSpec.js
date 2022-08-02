@@ -36,8 +36,21 @@ module.exports = pipe([
         "SchemaVersion",
       ],
       dependencies: {
-        role: { type: "Role", group: "IAM" },
-        lambdaFunction: { type: "Function", group: "Lambda" },
+        role: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("Content.assumeRole"),
+        },
+        lambdaFunction: {
+          type: "Function",
+          group: "Lambda",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("Content.mainSteps"),
+              pluck("inputs"),
+              pluck("FunctionName"),
+            ]),
+        },
       },
       filterLive: ({ providerConfig, lives }) =>
         pipe([
@@ -60,7 +73,13 @@ module.exports = pipe([
       Client: SSMParameter,
       ignoreResource: () =>
         pipe([get("name"), callProp("startsWith", "/cdk-bootstrap/")]),
-      dependencies: { kmsKey: { type: "Key", group: "KMS" } },
+      dependencies: {
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: ({ lives, config }) => get("KeyId"),
+        },
+      },
       omitProperties: [
         "Version",
         "LastModifiedDate",

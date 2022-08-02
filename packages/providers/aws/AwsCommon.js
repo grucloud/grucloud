@@ -59,6 +59,7 @@ const isAwsError = (code) =>
     }),
     eq(get("name"), code),
   ]);
+
 exports.isAwsError = isAwsError;
 
 const throwIfNotAwsError = (code) =>

@@ -3,7 +3,7 @@ const { get, pipe, tap, pick, switchCase } = require("rubico");
 const { isEmpty, first, unless, pluck, prepend } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
-  prefix: "AwsNetworkInterface",
+  prefix: "EC2NetworkInterface",
 });
 
 const { AwsClient } = require("../AwsClient");
@@ -63,54 +63,48 @@ exports.EC2NetworkInterface = ({ spec, config }) => {
       }),
     ])();
 
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "SecurityGroup",
-      group: "EC2",
-      ids: pipe([() => live, get("Groups"), pluck("GroupId")])(),
-    },
-    {
-      type: "Vpc",
-      group: "EC2",
-      ids: [live.VpcId],
-    },
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: [live.SubnetId],
-    },
-    {
-      type: "Instance",
-      group: "EC2",
-      ids: [
-        pipe([
-          () => live,
-          get("Attachment.InstanceId"),
-          (id) =>
-            lives.getById({
-              providerName: config.providerName,
-              type: "Instance",
-              group: "EC2",
-              id,
-            }),
-          get("id"),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
-      ],
-    },
-  ];
+  // const findDependencies = ({ live, lives }) => [
+  //   {
+  //     type: "SecurityGroup",
+  //     group: "EC2",
+  //     ids: pipe([() => live, get("Groups"), pluck("GroupId")])(),
+  //   },
+  //   {
+  //     type: "Vpc",
+  //     group: "EC2",
+  //     ids: [live.VpcId],
+  //   },
+  //   {
+  //     type: "Subnet",
+  //     group: "EC2",
+  //     ids: [live.SubnetId],
+  //   },
+  //   {
+  //     type: "Instance",
+  //     group: "EC2",
+  //     ids: [
+  //       pipe([
+  //         () => live,
+  //         get("Attachment.InstanceId"),
+  //         (id) =>
+  //           lives.getById({
+  //             providerName: config.providerName,
+  //             type: "Instance",
+  //             group: "EC2",
+  //             id,
+  //           }),
+  //         get("id"),
+  //         tap((params) => {
+  //           assert(true);
+  //         }),
+  //       ])(),
+  //     ],
+  //   },
+  // ];
 
   const getList = client.getList({
     method: "describeNetworkInterfaces",
     getParam: "NetworkInterfaces",
-    decorate: () =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
   });
 
   const destroy = client.destroy({
@@ -125,7 +119,6 @@ exports.EC2NetworkInterface = ({ spec, config }) => {
     spec,
     managedByOther: () => true,
     cannotBeDeleted: () => true,
-    findDependencies,
     findNamespace,
     findId,
     findName,

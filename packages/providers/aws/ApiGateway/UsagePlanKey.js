@@ -103,18 +103,6 @@ exports.UsagePlanKey = ({ spec, config }) =>
               ])(),
         }),
       ]),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "UsagePlan",
-        group: "APIGateway",
-        ids: [pipe([() => live, get("usagePlanId")])()],
-      },
-      {
-        type: "ApiKey",
-        group: "APIGateway",
-        ids: [pipe([() => live, get("keyId")])()],
-      },
-    ],
     tagResource: tagResource({
       buildResourceArn: buildResourceArn({ config }),
     }),
@@ -128,7 +116,6 @@ exports.UsagePlanKey = ({ spec, config }) =>
           assert(apiKey);
         }),
         () => properties,
-
         defaultsDeep({
           usagePlanId: getField(usagePlan, "id"),
           keyId: getField(apiKey, "id"),

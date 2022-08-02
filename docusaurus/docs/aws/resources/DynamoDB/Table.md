@@ -12,8 +12,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "myTable",
     properties: ({}) => ({
+      TableName: "myTable"
       AttributeDefinitions: [
         {
           AttributeName: "Id",
@@ -52,6 +52,10 @@ exports.createResources = () => [
 ## Full Examples
 
 - [Simple table](https://github.com/grucloud/grucloud/tree/main/examples/aws/DynamoDB/table)
+- [appsync graphql](https://github.com/grucloud/grucloud/tree/main/examples/aws/AppSync/graphql)
+- [serverless-patterns/lambda-dynamodb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/lambda-dynamodb)
+- [serverless-patterns/sfn-dynamodb](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/sfns-dynamodb)
+- [serverless-patterns/dynamodb-kinesis](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/dynamodb-kinesis)
 
 ## List
 

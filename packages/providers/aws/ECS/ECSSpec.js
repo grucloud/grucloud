@@ -10,7 +10,7 @@ const {
   tap,
   switchCase,
 } = require("rubico");
-const { defaultsDeep, when, includes, identity } = require("rubico/x");
+const { defaultsDeep, when, pluck, identity } = require("rubico/x");
 const {
   compareAws,
   isOurMinionFactory,
@@ -22,7 +22,10 @@ const { ECSCluster } = require("./ECSCluster");
 const { ECSCapacityProvider } = require("./ECSCapacityProvider");
 const { ECSService } = require("./ECSService");
 const { ECSTaskSet } = require("./ECSTaskSet");
-const { ECSTaskDefinition } = require("./ECSTaskDefinition");
+const {
+  ECSTaskDefinition,
+  findDependenciesInEnvironment,
+} = require("./ECSTaskDefinition");
 const { ECSTask } = require("./ECSTask");
 const { ECSContainerInstance } = require("./ECSContainerInstance");
 
@@ -30,6 +33,14 @@ const GROUP = "ECS";
 const tagsKey = "tags";
 
 const compareECS = compareAws({ tagsKey, key: "key" });
+
+const dependencyTargetGroups = {
+  type: "TargetGroup",
+  group: "ElasticLoadBalancingV2",
+  list: true,
+  dependencyIds: ({ lives, config }) =>
+    pipe([get("loadBalancers"), pluck("targetGroupArn")]),
+};
 
 const isOurMinion = isOurMinionFactory({
   key: "key",
@@ -55,7 +66,12 @@ module.exports = pipe([
           omit(["autoScalingGroupProvider.autoScalingGroupArn"]),
         ]),
       dependencies: {
-        autoScalingGroup: { type: "AutoScalingGroup", group: "AutoScaling" },
+        autoScalingGroup: {
+          type: "AutoScalingGroup",
+          group: "AutoScaling",
+          dependencyId: ({ lives, config }) =>
+            get("autoScalingGroupProvider.autoScalingGroupArn"),
+        },
       },
     },
     {
@@ -71,6 +87,7 @@ module.exports = pipe([
         "statistics",
         "attachments",
         "attachmentsStatus",
+        "configuration.executeCommandConfiguration.kmsKeyId",
       ],
       propertiesDefault: { defaultCapacityProviderStrategy: [] },
       compare: compareECS({}),
@@ -81,21 +98,54 @@ module.exports = pipe([
           type: "CapacityProvider",
           group: "ECS",
           list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("capacityProviders"),
+              map(
+                pipe([
+                  (name) =>
+                    lives.getByName({
+                      name,
+                      type: "CapacityProvider",
+                      group: "ECS",
+                      providerName: config.providerName,
+                    }),
+                  get("id"),
+                ])
+              ),
+            ]),
         },
         kmsKey: {
           type: "Key",
           group: "KMS",
+          dependencyId: ({ lives, config }) =>
+            get("configuration.executeCommandConfiguration.kmsKeyId"),
+        },
+        s3Bucket: {
+          type: "Bucket",
+          group: "S3",
+          dependencyId: ({ lives, config }) =>
+            get(
+              "configuration.executeCommandConfiguration.logConfiguration.s3BucketName"
+            ),
+        },
+        cloudWatchLogGroup: {
+          type: "LogGroup",
+          group: "CloudWatchLogs",
+          dependencyId: ({ lives, config }) =>
+            get(
+              "configuration.executeCommandConfiguration.logConfiguration.cloudWatchLogGroupName"
+            ),
         },
       },
     },
     {
       type: "TaskDefinition",
       dependencies: {
-        secret: { type: "Secret", group: "SecretsManager" },
-        rdsDbCluster: { type: "DBCluster", group: "RDS" },
         taskRole: {
           type: "Role",
           group: "IAM",
+          dependencyId: ({ lives, config }) => get("taskRoleArn"),
           filterDependency:
             ({ resource }) =>
             (dependency) =>
@@ -107,6 +157,7 @@ module.exports = pipe([
         executionRole: {
           type: "Role",
           group: "IAM",
+          dependencyId: ({ lives, config }) => get("executionRoleArn"),
           filterDependency:
             ({ resource }) =>
             (dependency) =>
@@ -114,6 +165,22 @@ module.exports = pipe([
                 () => resource,
                 eq(get("live.executionRoleArn"), dependency.live.Arn),
               ])(),
+        },
+        secret: {
+          type: "Secret",
+          group: "SecretsManager",
+          dependencyId: findDependenciesInEnvironment({
+            type: "Secret",
+            group: "SecretsManager",
+          }),
+        },
+        rdsDbCluster: {
+          type: "DBCluster",
+          group: "RDS",
+          dependencyId: findDependenciesInEnvironment({
+            type: "DBCluster",
+            group: "RDS",
+          }),
         },
       },
       Client: ECSTaskDefinition,
@@ -268,27 +335,54 @@ module.exports = pipe([
           when(eq(get("propagateTags"), "NONE"), omit(["propagateTags"])),
         ]),
       dependencies: {
-        cluster: { type: "Cluster", group: "ECS", parent: true },
-        taskDefinition: { type: "TaskDefinition", group: "ECS" },
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
-        loadBalancers: {
-          type: "LoadBalancer",
-          group: "ElasticLoadBalancingV2",
-          list: true,
+        cluster: {
+          type: "Cluster",
+          group: "ECS",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("clusterArn"),
         },
-        targetGroups: {
-          type: "TargetGroup",
-          group: "ElasticLoadBalancingV2",
-          list: true,
+        taskDefinition: {
+          type: "TaskDefinition",
+          group: "ECS",
+          dependencyId: ({ lives, config }) => get("taskDefinition"),
         },
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            get("networkConfiguration.awsvpcConfiguration.subnets"),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            get("networkConfiguration.awsvpcConfiguration.securityGroups"),
+        },
+        targetGroups: dependencyTargetGroups,
       },
     },
     {
       type: "TaskSet",
       dependencies: {
-        cluster: { type: "Cluster", group: "ECS" },
-        service: { type: "Service", group: "ECS", parent: true },
+        cluster: {
+          type: "Cluster",
+          group: "ECS",
+          dependencyId: ({ lives, config }) => get("clusterArn"),
+        },
+        service: {
+          type: "Service",
+          group: "ECS",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("serviceArn"),
+        },
+        taskDefinition: {
+          type: "TaskDefinition",
+          group: "ECS",
+          dependencyId: ({ lives, config }) => get("taskDefinitionArn"),
+        },
+        targetGroups: dependencyTargetGroups,
       },
       Client: ECSTaskSet,
       compare: compareECS({}),
@@ -300,16 +394,33 @@ module.exports = pipe([
       filterLive: () =>
         pick(["enableExecuteCommand", "launchType", "overrides"]),
       dependencies: {
-        cluster: { type: "Cluster", group: "ECS", parent: true },
-        taskDefinition: { type: "TaskDefinition", group: "ECS" },
-        subnets: { type: "Subnet", group: "EC2", list: true },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        cluster: {
+          type: "Cluster",
+          group: "ECS",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("clusterArn"),
+        },
+        taskDefinition: {
+          type: "TaskDefinition",
+          group: "ECS",
+          dependencyId: ({ lives, config }) => get("taskDefinitionArn"),
+        },
       },
     },
     {
       type: "ContainerInstance",
       dependencies: {
-        cluster: { type: "Cluster", group: "ECS", parent: true },
+        cluster: {
+          type: "Cluster",
+          group: "ECS",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("clusterArn"),
+        },
+        // ec2Instance: {
+        //   type: "Instance",
+        //   group: "EC2",
+        //   dependencyId: ({ lives, config }) => get("ec2InstanceId"),
+        // },
       },
       Client: ECSContainerInstance,
     },

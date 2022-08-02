@@ -111,31 +111,6 @@ exports.Route53HealthCheck = ({ spec, config }) =>
         }),
       ])(),
     findId: pipe([get("live.Id")]),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Alarm",
-        group: "CloudWatch",
-        ids: [
-          pipe([
-            () => live,
-            get("AlarmIdentifier.Name"),
-            (name) =>
-              lives.getByName({
-                name,
-                type: "Alarm",
-                group: "CloudWatch",
-                config: config.providerName,
-              }),
-            get("id"),
-          ])(),
-        ],
-      },
-      {
-        type: "RoutingControl",
-        group: "Route53RecoveryControlConfig",
-        ids: [pipe([() => live, get("HealthCheckConfig.RoutingControlArn")])()],
-      },
-    ],
     getByName: getByNameCore,
     tagResource: tagResource({ ResourceType }),
     untagResource: untagResource({ ResourceType }),

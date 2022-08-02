@@ -5,11 +5,7 @@ const { defaultsDeep, find } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const {
-  createApiGatewayV2,
-  findDependenciesApi,
-  ignoreErrorCodes,
-} = require("./ApiGatewayCommon");
+const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findId = get("live.ApiMappingId");
 const findName = pipe([
@@ -29,39 +25,6 @@ const pickId = pick(["ApiMappingId", "DomainName"]);
 exports.ApiMapping = ({ spec, config }) => {
   const apiGateway = createApiGatewayV2(config);
   const client = AwsClient({ spec, config })(apiGateway);
-
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesApi({ live, config }),
-    {
-      type: "DomainName",
-      group: "ApiGatewayV2",
-      ids: [live.DomainName],
-    },
-    {
-      type: "Stage",
-      group: "ApiGatewayV2",
-      ids: [
-        pipe([
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type: "Stage",
-              group: "ApiGatewayV2",
-            }),
-          tap((params) => {
-            assert(true);
-          }),
-          find(
-            and([
-              eq(get("live.StageName"), live.Stage),
-              eq(get("live.ApiId"), live.ApiId),
-            ])
-          ),
-          get("id"),
-        ])(),
-      ],
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getApiMapping-property
   const getById = client.getById({
@@ -156,6 +119,5 @@ exports.ApiMapping = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    findDependencies,
   };
 };

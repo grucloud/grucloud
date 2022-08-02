@@ -33,7 +33,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::VPC::ClusterSharedNode",
-      securityGroupFrom: ["sg::VPC::ClusterSharedNode"],
     }),
   },
 ];

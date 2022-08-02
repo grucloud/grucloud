@@ -20,10 +20,8 @@ const {
 
 const findId = get("live.taskDefinitionArn");
 const findName = get("live.family");
+
 const pickId = pipe([
-  tap(({ taskDefinitionArn }) => {
-    assert(taskDefinitionArn);
-  }),
   ({ taskDefinitionArn }) => ({
     taskDefinition: taskDefinitionArn,
   }),
@@ -31,67 +29,33 @@ const pickId = pipe([
 
 const ignoreErrorMessages = ["The specified task definition does not exist."];
 
+exports.findDependenciesInEnvironment =
+  ({ type, group }) =>
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      () =>
+        lives.getByType({
+          type,
+          group,
+          providerName: config.providerName,
+        }),
+      find(({ id }) =>
+        pipe([
+          () => live,
+          get("containerDefinitions"),
+          pluck("environment"),
+          flatten,
+          pluck("value"),
+          any(includes(id)),
+        ])()
+      ),
+    ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSTaskDefinition = ({ spec, config }) => {
   const ecs = createECS(config);
   const client = AwsClient({ spec, config })(ecs);
-
-  const findDependenciesInEnvironment = ({
-    type,
-    group,
-    lives,
-    live,
-    config,
-  }) => ({
-    type,
-    group,
-    ids: [
-      pipe([
-        () =>
-          lives.getByType({
-            type,
-            group,
-            providerName: config.providerName,
-          }),
-        find(({ id }) =>
-          pipe([
-            () => live,
-            get("containerDefinitions"),
-            pluck("environment"),
-            flatten,
-            pluck("value"),
-            any(includes(id)),
-          ])()
-        ),
-      ])(),
-    ],
-  });
-
-  const findDependencies = ({ live, lives }) => [
-    // efsVolumeConfiguration
-    // fsxWindowsFileServerVolumeConfiguration
-    {
-      type: "Role",
-      group: "IAM",
-      ids: [live.taskRoleArn, live.executionRoleArn],
-    },
-    findDependenciesInEnvironment({
-      type: "Secret",
-      group: "SecretsManager",
-      live,
-      lives,
-      config,
-    }),
-    findDependenciesInEnvironment({
-      type: "DBCluster",
-      group: "RDS",
-      live,
-      lives,
-      config,
-    }),
-  ];
-
-  const findNamespace = pipe([() => ""]);
 
   const getById = client.getById({
     pickId: pipe([
@@ -166,6 +130,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     pipe([
       tap(() => {}),
       () => otherProps,
+      //TODO when
       defaultsDeep({
         family: name,
         ...(taskRole && { taskRoleArn: getField(taskRole, "Arn") }),
@@ -184,8 +149,6 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace,
-    findDependencies,
     getByName,
     findName,
     create,

@@ -32,7 +32,7 @@ const { AwsClient } = require("../AwsClient");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsEc2" });
-const { getByNameCore, compare } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const {
@@ -51,7 +51,6 @@ const {
   createEC2,
   tagResource,
   untagResource,
-  findDependenciesVpc,
   fetchImageIdFromDescription,
   imageDescriptionFromId,
   assignUserDataToBase64,
@@ -162,108 +161,108 @@ exports.EC2Instance = ({ spec, config }) => {
     }),
   ]);
 
-  const findDependencies = ({ live, lives, config }) => [
-    findDependenciesVpc({ live }),
-    {
-      type: "Image",
-      group: "EC2",
-      ids: pipe([
-        () => lives.getByType({ type: "Image", group: "EC2", providerName }),
-        filter(eq(get("id"), live.ImageId)),
-        pluck("id"),
-      ])(),
-    },
-    {
-      type: "KeyPair",
-      group: "EC2",
-      ids: [
-        pipe([
-          () =>
-            lives.getByName({
-              name: live.KeyName,
-              type: "KeyPair",
-              group: "EC2",
-              providerName,
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    {
-      type: "LaunchTemplate",
-      group: "EC2",
-      ids: [pipe([() => live, getLaunchTemplateIdFromTags])()],
-    },
-    { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
-    {
-      type: "Volume",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("BlockDeviceMappings"),
-        pluck("Ebs.VolumeId"),
-      ])(),
-    },
-    {
-      type: "NetworkInterface",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("NetworkInterfaces"),
-        pluck("NetworkInterfaceId"),
-      ])(),
-    },
-    {
-      type: "ElasticIpAddress",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("PublicIpAddress"),
-        (PublicIpAddress) =>
-          pipe([
-            () =>
-              lives.getByType({
-                type: "ElasticIpAddress",
-                group: "EC2",
-                providerName,
-              }),
-            filter(eq(get("live.PublicIp"), PublicIpAddress)),
-            pluck("id"),
-          ])(),
-      ])(),
-    },
-    {
-      type: "SecurityGroup",
-      group: "EC2",
-      ids: pipe([() => live, get("SecurityGroups"), pluck("GroupId")])(),
-    },
-    {
-      type: "InstanceProfile",
-      group: "IAM",
-      ids: [pipe([() => live, get("IamInstanceProfile.Arn")])()],
-    },
-    {
-      type: "PlacementGroup",
-      group: "EC2",
-      ids: [
-        pipe([
-          () => live,
-          get("Placement.GroupName"),
-          (name) =>
-            pipe([
-              () =>
-                lives.getByName({
-                  name,
-                  type: "PlacementGroup",
-                  group: "EC2",
-                  providerName,
-                }),
-              get("id"),
-            ])(),
-        ])(),
-      ],
-    },
-  ];
+  // const findDependencies = ({ live, lives, config }) => [
+  //   findDependenciesVpc({ live }),
+  //   {
+  //     type: "Image",
+  //     group: "EC2",
+  //     ids: pipe([
+  //       () => lives.getByType({ type: "Image", group: "EC2", providerName }),
+  //       filter(eq(get("id"), live.ImageId)),
+  //       pluck("id"),
+  //     ])(),
+  //   },
+  //   {
+  //     type: "KeyPair",
+  //     group: "EC2",
+  //     ids: [
+  //       pipe([
+  //         () =>
+  //           lives.getByName({
+  //             name: live.KeyName,
+  //             type: "KeyPair",
+  //             group: "EC2",
+  //             providerName,
+  //           }),
+  //         get("id"),
+  //       ])(),
+  //     ],
+  //   },
+  //   {
+  //     type: "LaunchTemplate",
+  //     group: "EC2",
+  //     ids: [pipe([() => live, getLaunchTemplateIdFromTags])()],
+  //   },
+  //   { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
+  //   {
+  //     type: "Volume",
+  //     group: "EC2",
+  //     ids: pipe([
+  //       () => live,
+  //       get("BlockDeviceMappings"),
+  //       pluck("Ebs.VolumeId"),
+  //     ])(),
+  //   },
+  //   {
+  //     type: "NetworkInterface",
+  //     group: "EC2",
+  //     ids: pipe([
+  //       () => live,
+  //       get("NetworkInterfaces"),
+  //       pluck("NetworkInterfaceId"),
+  //     ])(),
+  //   },
+  //   {
+  //     type: "ElasticIpAddress",
+  //     group: "EC2",
+  //     ids: pipe([
+  //       () => live,
+  //       get("PublicIpAddress"),
+  //       (PublicIpAddress) =>
+  //         pipe([
+  //           () =>
+  //             lives.getByType({
+  //               type: "ElasticIpAddress",
+  //               group: "EC2",
+  //               providerName,
+  //             }),
+  //           filter(eq(get("live.PublicIp"), PublicIpAddress)),
+  //           pluck("id"),
+  //         ])(),
+  //     ])(),
+  //   },
+  //   {
+  //     type: "SecurityGroup",
+  //     group: "EC2",
+  //     ids: pipe([() => live, get("SecurityGroups"), pluck("GroupId")])(),
+  //   },
+  //   {
+  //     type: "InstanceProfile",
+  //     group: "IAM",
+  //     ids: [pipe([() => live, get("IamInstanceProfile.Arn")])()],
+  //   },
+  //   {
+  //     type: "PlacementGroup",
+  //     group: "EC2",
+  //     ids: [
+  //       pipe([
+  //         () => live,
+  //         get("Placement.GroupName"),
+  //         (name) =>
+  //           pipe([
+  //             () =>
+  //               lives.getByName({
+  //                 name,
+  //                 type: "PlacementGroup",
+  //                 group: "EC2",
+  //                 providerName,
+  //               }),
+  //             get("id"),
+  //           ])(),
+  //       ])(),
+  //     ],
+  //   },
+  // ];
 
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,
@@ -480,7 +479,7 @@ exports.EC2Instance = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
+    //findDependencies,
     findNamespace,
     getByName,
     findName,

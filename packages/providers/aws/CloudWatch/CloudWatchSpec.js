@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { tap, pipe, map, assign, eq, get, switchCase } = require("rubico");
-const { defaultsDeep, find, isEmpty, values } = require("rubico/x");
+const { defaultsDeep, find, isEmpty, values, callProp } = require("rubico/x");
 const { replaceWithName } = require("@grucloud/core/Common");
 
 const {
@@ -55,7 +55,15 @@ module.exports = pipe([
         "StateUpdatedTimestamp",
       ],
       dependencies: {
-        snsTopic: { type: "Topic", group: "SNS" },
+        snsTopic: {
+          type: "Topic",
+          group: "SNS",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("AlarmActions"),
+              find(callProp("startsWith", "arn:aws:sns")),
+            ]),
+        },
         ...AlarmDependenciesDimensions,
       },
       propertiesDefault: {

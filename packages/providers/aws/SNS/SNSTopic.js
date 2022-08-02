@@ -1,11 +1,12 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, omit } = require("rubico");
-const { defaultsDeep, callProp, last } = require("rubico/x");
+const { defaultsDeep, callProp, last, when } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./SNSCommon");
+const { getField } = require("../../../core/ProviderCommon");
 
 const pickId = pipe([get("Attributes"), pick(["TopicArn"])]);
 
@@ -35,17 +36,20 @@ const model = {
   package: "sns",
   client: "SNS",
   ignoreErrorCodes: ["NotFound"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#getTopicAttributes-property
   getById: {
     method: "getTopicAttributes",
     pickId,
     decorate,
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#listTopics-property
   getList: {
     method: "listTopics",
     getParam: "Topics",
     decorate: ({ endpoint, getById }) =>
       pipe([({ TopicArn }) => ({ Attributes: { TopicArn } }), getById]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#createTopic-property
   create: {
     method: "createTopic",
     filterPayload: pipe([
@@ -61,6 +65,7 @@ const model = {
     ]),
     pickCreated: () => pipe([({ TopicArn }) => ({ Attributes: { TopicArn } })]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#deleteTopic-property
   destroy: { method: "deleteTopic", pickId },
 };
 
@@ -79,17 +84,26 @@ exports.SNSTopic = ({ spec, config }) =>
       last,
     ]),
     findId: pipe([get("live.Attributes.TopicArn")]),
-    //TODO
-    //findDependencies: ({ live }) => [{ type: "Key", group: "KMS", ids: [live.KmsMasterKeyId] }],
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,
-    configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
+    configDefault: ({
+      name,
+      namespace,
+      properties: { Tags, ...otherProps },
+      dependencies: { kmsKey },
+    }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
           Name: name,
           Tags: buildTags({ name, config, namespace, UserTags: Tags }),
         }),
+        when(
+          () => kmsKey,
+          defaultsDeep({
+            Attributes: { KmsMasterKeyId: getField(kmsKey, "Arn") },
+          })
+        ),
       ])(),
   });

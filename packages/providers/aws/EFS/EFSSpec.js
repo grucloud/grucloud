@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, map, tap, omit, assign, get } = require("rubico");
-const { defaultsDeep, prepend, last } = require("rubico/x");
+const { pipe, map, tap, omit, assign, get, eq } = require("rubico");
+const { defaultsDeep, prepend, last, find } = require("rubico/x");
 
 const { compareAws, replaceAccountAndRegion } = require("../AwsCommon");
 const { EFSFileSystem } = require("./EFSFileSystem");
@@ -11,6 +11,20 @@ const { EFSMountTarget } = require("./EFSMountTarget");
 const GROUP = "EFS";
 
 const compareEFS = compareAws({});
+
+const dependencyIdFileSystem =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      () =>
+        lives.getByType({
+          type: "FileSystem",
+          group: "EFS",
+          providerName: config.providerName,
+        }),
+      find(eq(get("live.FileSystemId"), live.FileSystemId)),
+      get("id"),
+    ])();
 
 module.exports = pipe([
   () => [
@@ -31,17 +45,17 @@ module.exports = pipe([
       compare: compareEFS({
         filterAll: () => pipe([omit([])]),
       }),
-      filterLive: ({ providerConfig }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
     },
     {
       type: "AccessPoint",
       Client: EFSAccessPoint,
-      dependencies: { fileSystem: { type: "FileSystem", group: "EFS" } },
+      dependencies: {
+        fileSystem: {
+          type: "FileSystem",
+          group: "EFS",
+          dependencyId: dependencyIdFileSystem,
+        },
+      },
       omitProperties: [
         "ClientToken",
         "AccessPointId",
@@ -54,12 +68,6 @@ module.exports = pipe([
       compare: compareEFS({
         filterAll: () => pipe([omit([])]),
       }),
-      filterLive: ({ providerConfig }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
     },
     {
       type: "MountTarget",
@@ -80,9 +88,23 @@ module.exports = pipe([
           prepend("mount-target::"),
         ])(),
       dependencies: {
-        fileSystem: { type: "FileSystem", group: "EFS", parent: true },
-        subnet: { type: "Subnet", group: "EC2" },
-        securityGroups: { type: "SecurityGroup", group: "EC2", list: true },
+        fileSystem: {
+          type: "FileSystem",
+          group: "EFS",
+          parent: true,
+          dependencyId: dependencyIdFileSystem,
+        },
+        subnet: {
+          type: "Subnet",
+          group: "EC2",
+          dependencyId: ({ lives, config }) => get("SubnetId"),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("SecurityGroups"),
+        },
       },
       omitProperties: [
         "ClientToken",

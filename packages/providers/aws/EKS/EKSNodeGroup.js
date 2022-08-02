@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { map, pipe, tap, get, switchCase, pick, eq } = require("rubico");
-const { defaultsDeep, pluck, find } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 const { AwsClient } = require("../AwsClient");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSNodeGroup" });
@@ -25,53 +25,6 @@ const ignoreErrorCodes = ["ResourceNotFoundException"];
 exports.EKSNodeGroup = ({ spec, config }) => {
   const eks = createEKS(config);
   const client = AwsClient({ spec, config })(eks);
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Cluster",
-      group: "EKS",
-      ids: [
-        pipe([
-          () =>
-            lives.getByName({
-              name: live.clusterName,
-              type: "Cluster",
-              group: "EKS",
-              providerName: config.providerName,
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    { type: "Subnet", group: "EC2", ids: live.subnets },
-    {
-      type: "AutoScalingGroup",
-      group: "AutoScaling",
-      ids: pipe([
-        () => live,
-        get("resources.autoScalingGroups"),
-        pluck("name"),
-        map((name) =>
-          pipe([
-            () =>
-              lives.getByType({
-                type: "AutoScalingGroup",
-                group: "AutoScaling",
-                providerName: config.providerName,
-              }),
-            find(eq(get("live.AutoScalingGroupName"), name)),
-            get("id"),
-          ])()
-        ),
-      ])(),
-    },
-    { type: "Role", group: "IAM", ids: [live.nodeRole] },
-    {
-      type: "LaunchTemplate",
-      group: "EC2",
-      ids: [pipe([() => live, get("launchTemplate.id")])()],
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeNodegroup-property
   const getById = client.getById({
@@ -211,7 +164,6 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     findNamespace: findNamespaceInTagsObject(config),
     getById,
     getByName,

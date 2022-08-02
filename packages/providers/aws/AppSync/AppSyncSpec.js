@@ -22,6 +22,8 @@ const {
   replaceRegion,
 } = require("../AwsCommon");
 
+const { findDependenciesGraphqlId } = require("./AppSyncCommon");
+
 const { AppSyncGraphqlApi } = require("./AppSyncGraphqlApi");
 const { AppSyncDataSource } = require("./AppSyncDataSource");
 const { AppSyncResolver } = require("./AppSyncResolver");
@@ -107,7 +109,12 @@ module.exports = pipe([
           }),
         ])(),
       dependencies: {
-        cloudWatchLogsRole: { type: "Role", group: "IAM" },
+        cloudWatchLogsRole: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) =>
+            get("logConfig.cloudWatchLogsRoleArn"),
+        },
       },
     },
     {
@@ -185,13 +192,49 @@ module.exports = pipe([
           //TODO omit elasticsearchConfig.xxx ?
         ]),
       dependencies: {
-        graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
-        serviceRole: { type: "Role", group: "IAM" },
-        dbCluster: { type: "DBCluster", group: "RDS" },
-        lambdaFunction: { type: "Function", group: "Lambda" },
+        graphqlApi: {
+          type: "GraphqlApi",
+          group: "AppSync",
+          parent: true,
+          dependencyId: findDependenciesGraphqlId,
+        },
+        serviceRole: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) => get("serviceRoleArn"),
+        },
+        dbCluster: {
+          type: "DBCluster",
+          group: "RDS",
+          dependencyId: ({ lives, config }) =>
+            get(
+              "relationalDatabaseConfig.rdsHttpEndpointConfig.dbClusterIdentifier"
+            ),
+        },
+        lambdaFunction: {
+          type: "Function",
+          group: "Lambda",
+          dependencyId: ({ lives, config }) =>
+            get("lambdaConfig.lambdaFunctionArn"),
+        },
         //TODO
         //elasticsearch => opensearch
-        dynamoDbTable: { type: "Table", group: "DynamoDB" },
+        dynamoDbTable: {
+          type: "Table",
+          group: "DynamoDB",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("dynamodbConfig.tableName"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  type: "Table",
+                  group: "DynamoDB",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
       },
     },
     {
@@ -231,10 +274,33 @@ module.exports = pipe([
           omitMaxBatchSize,
         ]),
       dependencies: {
-        graphqlApi: { type: "GraphqlApi", group: "AppSync", parent: true },
-        type: { type: "Type", group: "AppSync" },
-        dataSource: { type: "DataSource", group: "AppSync" },
-        dynamoDbTable: { type: "Table", group: "DynamoDB" },
+        graphqlApi: {
+          type: "GraphqlApi",
+          group: "AppSync",
+          parent: true,
+          dependencyId: findDependenciesGraphqlId,
+        },
+        //TODO
+        type: {
+          type: "Type",
+          group: "AppSync",
+          dependencyId: ({ lives, config }) => get("typeName"),
+        },
+        dataSource: {
+          type: "DataSource",
+          group: "AppSync",
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              (live) =>
+                lives.getByName({
+                  name: live.dataSourceName,
+                  type: "DataSource",
+                  group: "AppSync",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
+        },
       },
     },
   ],

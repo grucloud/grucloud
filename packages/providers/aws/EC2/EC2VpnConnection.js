@@ -52,19 +52,6 @@ exports.EC2VpnConnection = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live }) => [
-      { type: "CustomerGateway", group: "EC2", ids: [live.CustomerGatewayId] },
-      {
-        type: "VpnGateway",
-        group: "EC2",
-        ids: [live.VpnGatewayId],
-      },
-      {
-        type: "TransitGateway",
-        group: "EC2",
-        ids: [live.TransitGatewayId],
-      },
-    ],
     findName: findNameInTagsOrId({ findId }),
     findId,
     cannotBeDeleted: eq(get("live.State"), "deleted"),

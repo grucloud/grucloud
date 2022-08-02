@@ -28,6 +28,7 @@ exports.createResources = () => [
 ## Used By
 
 - [CloudFront Distribution](./Distribution.md)
+- [S3 Bucket](../S3/Bucket.md)
 
 ## List
 

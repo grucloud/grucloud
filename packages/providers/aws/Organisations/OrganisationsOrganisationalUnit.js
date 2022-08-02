@@ -70,18 +70,6 @@ exports.OrganisationsOrganisationalUnit = ({ spec, config }) =>
     findId: pipe([get("live.Arn")]),
     managedByOther: () => true,
     cannotBeDeleted: () => true,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Root",
-        group: "Organisations",
-        ids: [live.ParentId],
-      },
-      {
-        type: "OrganisationalUnit",
-        group: "Organisations",
-        ids: [live.ParentId],
-      },
-    ],
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listOrganizationalUnitsForParent-property
     getList:
       ({ endpoint }) =>

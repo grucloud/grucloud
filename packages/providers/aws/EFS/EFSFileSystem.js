@@ -7,12 +7,7 @@ const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EFSCommon");
 
-const pickId = pipe([
-  tap(({ FileSystemId }) => {
-    assert(FileSystemId);
-  }),
-  pick(["FileSystemId"]),
-]);
+const pickId = pipe([pick(["FileSystemId"])]);
 
 const model = {
   package: "efs",
@@ -22,7 +17,6 @@ const model = {
   getList: {
     method: "describeFileSystems",
     getParam: "FileSystems",
-    decorate: ({ endpoint }) => pipe([assign({})]),
   },
   create: {
     method: "createFileSystem",

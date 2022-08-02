@@ -3,7 +3,7 @@ id: LoadBalancer
 title: Load Balancer
 ---
 
-Manage an AWS Load Balancer.
+Manage an [AWS Load Balancer](https://console.aws.amazon.com/ec2/v2/home?#LoadBalancers:).
 
 ## Example:
 
@@ -62,7 +62,15 @@ exports.createResources = () => [
 
 ## Source Code
 
-- [Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ElasticLoadBalancingV2/load-balancer/resources.js)
+- [Load Balancer simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/ElasticLoadBalancingV2/load-balancer)
+- [code deploy ecs](https://github.com/grucloud/grucloud/blob/main/examples/aws/CodeDeploy/codedeploy-ecs)
+- [EKS with load balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/EKS/eks-load-balancer)
+- [Route53 failover policy](https://github.com/grucloud/grucloud/blob/main/examples/aws/Route53/routing-failover-policy)
+- [serverless-patterns apigw-fargate-cdk](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/apigw-fargate-cdk)
+- [serverless-patterns apigw-vpclink-pvt-alb](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/apigw-vpclink-pvt-alb)
+- [serverless-patterns fargate-aurora-serverless-cdk](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/fargate-aurora-serverless-cdk)
+- [serverless-patterns fargate-eventbridge](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/fargate-eventbridge)
+- [wafv2-loadbalancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/WAFv2/wafv2-loadbalancer)
 
 ## Properties
 
@@ -72,6 +80,10 @@ The list of properties are defined in [CreateLoadBalancerCommandInput](https://d
 
 - [Subnet](../EC2/Subnet.md)
 - [SecurityGroup](../EC2/SecurityGroup.md)
+
+## Used By
+
+- [Route53 Record](../Route53/Record.md)
 
 ## List
 

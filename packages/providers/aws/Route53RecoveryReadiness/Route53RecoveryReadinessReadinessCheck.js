@@ -82,30 +82,6 @@ exports.Route53RecoveryReadinessReadinessCheck = ({ spec, config }) =>
           assert(true);
         }),
       ]),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "ResourceSet",
-        group: "Route53RecoveryReadiness",
-        ids: [
-          pipe([
-            tap((params) => {
-              assert(live.ResourceSetName);
-            }),
-            () =>
-              lives.getByName({
-                name: live.ResourceSetName,
-                type: "ResourceSet",
-                group: "Route53RecoveryReadiness",
-                config: config.providerName,
-              }),
-            get("id"),
-            tap((id) => {
-              assert(id);
-            }),
-          ])(),
-        ],
-      },
-    ],
     tagResource: tagResource,
     untagResource: untagResource,
     configDefault: ({

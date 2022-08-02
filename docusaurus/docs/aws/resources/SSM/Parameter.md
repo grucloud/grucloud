@@ -39,6 +39,10 @@ exports.createResources = () => [
 
 - [PutParameterCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ssm/interfaces/putparametercommandinput.html)
 
+## Dependencies
+
+- [KMS Key](../KMS/Key.md)
+
 ## List
 
 ```sh

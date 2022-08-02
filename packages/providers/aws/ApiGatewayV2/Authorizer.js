@@ -1,15 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick, filter, switchCase } = require("rubico");
-const { defaultsDeep, isEmpty, callProp, last, when } = require("rubico/x");
+const { pipe, tap, get, pick } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const {
-  createApiGatewayV2,
-  findDependenciesApi,
-  ignoreErrorCodes,
-} = require("./ApiGatewayCommon");
+const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findId = get("live.AuthorizerId");
 const findName = get("live.Name");
@@ -19,34 +15,6 @@ exports.Authorizer = ({ spec, config }) => {
   const apiGateway = createApiGatewayV2(config);
 
   const client = AwsClient({ spec, config })(apiGateway);
-
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesApi({ live, config }),
-    {
-      type: "UserPool",
-      group: "CognitoIdentityServiceProvider",
-      ids: pipe([
-        () => live,
-        get("JwtConfiguration.Issuer", ""),
-        callProp("split", "/"),
-        last,
-        switchCase([
-          isEmpty,
-          () => undefined,
-          (Id) =>
-            pipe([
-              () =>
-                lives.getByType({
-                  type: "UserPool",
-                  group: "CognitoIdentityServiceProvider",
-                  providerName: config.providerName,
-                }),
-              filter(eq(get("live.Id"), Id)),
-            ])(),
-        ]),
-      ])(),
-    },
-  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#getAuthorizer-property
   const getById = client.getById({
@@ -130,6 +98,5 @@ exports.Authorizer = ({ spec, config }) => {
     getById,
     getList,
     configDefault,
-    findDependencies,
   };
 };

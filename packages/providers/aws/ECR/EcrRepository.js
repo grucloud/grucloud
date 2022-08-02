@@ -16,9 +16,6 @@ exports.EcrRepository = ({ spec, config }) => {
   const ecr = createECR(config);
   const client = AwsClient({ spec, config })(ecr);
 
-  const findDependencies = ({ live }) => [];
-  const findNamespace = pipe([() => ""]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#getRepositoryPolicy-property
   const getRepositoryPolicy = tryCatch(
     pipe([
@@ -152,8 +149,6 @@ exports.EcrRepository = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace,
-    findDependencies,
     getByName,
     findName,
     create,

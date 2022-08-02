@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "myTable",
     properties: ({}) => ({
+      TableName: "myTable",
       AttributeDefinitions: [
         {
           AttributeName: "Id",

@@ -110,19 +110,6 @@ exports.EC2TransitGatewayVpcAttachment = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live, lives }) => [
-      findDependenciesTransitGateway({ live, lives, config }),
-      {
-        type: "Vpc",
-        group: "EC2",
-        ids: [live.VpcId],
-      },
-      {
-        type: "Subnet",
-        group: "EC2",
-        ids: live.SubnetIds,
-      },
-    ],
     findName: findNameInTagsOrId({ findId: findNameInDependency }),
     pickId: pipe([
       tap(({ TransitGatewayAttachmentId }) => {

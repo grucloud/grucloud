@@ -16,17 +16,11 @@ const { defaultsDeep, first, callProp, last } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EC2RouteTable" });
 const { tos } = require("@grucloud/core/tos");
-const { getByIdCore, buildTags } = require("../AwsCommon");
+const { getByIdCore, buildTags, throwIfNotAwsError } = require("../AwsCommon");
 const { findNameInTagsOrId, findNamespaceInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const {
-  createEC2,
-  findDependenciesVpc,
-  findDependenciesSubnet,
-  tagResource,
-  untagResource,
-} = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 const extractRouteTableName = pipe([callProp("split", "::"), last]);
 
@@ -68,11 +62,6 @@ exports.EC2RouteTable = ({ spec, config }) => {
     ({ vpcName, rtbName }) => `${vpcName}::${rtbName}`,
   ]);
 
-  const findDependencies = ({ live }) => [
-    findDependenciesVpc({ live }),
-    findDependenciesSubnet({ live }),
-  ];
-
   const routesDelete = ({ live }) =>
     pipe([
       () => live,
@@ -84,12 +73,12 @@ exports.EC2RouteTable = ({ spec, config }) => {
             tap((Route) => {
               assert(Route);
             }),
-            //TODO ipv6
-            ({ DestinationCidrBlock }) => ({
-              RouteTableId: live.RouteTableId,
-              DestinationCidrBlock: DestinationCidrBlock,
-            }),
-            endpoint().deleteRoute,
+            pick(["DestinationCidrBlock", "DestinationIpv6CidrBlock"]),
+            defaultsDeep({ RouteTableId: live.RouteTableId }),
+            tryCatch(
+              endpoint().deleteRoute,
+              throwIfNotAwsError("InvalidRoute.NotFound")
+            ),
           ]),
           (error, Route) =>
             pipe([
@@ -109,12 +98,6 @@ exports.EC2RouteTable = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeRouteTables",
     getParam: "RouteTables",
-    decorate: () =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
   });
 
   const getByName = ({ name, isDefault, resolvedDependencies }) =>
@@ -208,7 +191,6 @@ exports.EC2RouteTable = ({ spec, config }) => {
     managedByOther: isDefault,
     findId,
     findName,
-    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
     getById,

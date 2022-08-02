@@ -2,7 +2,6 @@ const assert = require("assert");
 const { map, pipe, tap, get, or, pick, assign } = require("rubico");
 const {
   defaultsDeep,
-  pluck,
   isEmpty,
   callProp,
   unless,
@@ -27,21 +26,10 @@ const {
 const ResourceType = "auto-scaling-group";
 
 const findId = get("live.AutoScalingGroupARN");
-const pickId = pipe([
-  tap(({ AutoScalingGroupName }) => {
-    assert(AutoScalingGroupName);
-  }),
-  pick(["AutoScalingGroupName"]),
-]);
+const pickId = pipe([pick(["AutoScalingGroupName"])]);
 
 const findNameEks = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   get("live"),
-  tap((live) => {
-    assert(live);
-  }),
   findValueInTags({ key: "eks:nodegroup-name" }),
   unless(isEmpty, prepend("asg-")),
 ]);
@@ -69,58 +57,6 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
       key: "eks:cluster-name",
     }),
   ]);
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "LaunchConfiguration",
-      group: "AutoScaling",
-      ids: [
-        pipe([
-          () => live,
-          tap((params) => {
-            assert(true);
-          }),
-          get("LaunchConfigurationName"),
-          (name) =>
-            lives.getByName({
-              name,
-              providerName: config.providerName,
-              type: "LaunchConfiguration",
-              group: "AutoScaling",
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    {
-      type: "LaunchTemplate",
-      group: "EC2",
-      ids: [
-        pipe([() => live, get("LaunchTemplate.LaunchTemplateId")])(),
-        pipe([
-          () => live,
-          get(
-            "MixedInstancesPolicy.LaunchTemplate.LaunchTemplateSpecification.LaunchTemplateId"
-          ),
-        ])(),
-      ],
-    },
-    {
-      type: "Instance",
-      group: "EC2",
-      ids: pipe([() => live, get("Instances"), pluck("InstanceId")])(),
-    },
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("VPCZoneIdentifier"),
-        callProp("split", ","),
-      ])(),
-    },
-    { type: "Role", group: "IAM", ids: [live.ServiceLinkedRoleARN] },
-  ];
 
   const findNamespace = pipe([
     findNamespaceInTagsOrEksCluster({
@@ -238,7 +174,6 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findDependencies,
     findNamespace,
     findName,
     getByName,

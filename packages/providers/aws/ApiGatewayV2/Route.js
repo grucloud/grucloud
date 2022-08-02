@@ -1,15 +1,11 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, not, filter, pick } = require("rubico");
-const { callProp, defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, pick } = require("rubico");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const {
-  createApiGatewayV2,
-  findDependenciesApi,
-  ignoreErrorCodes,
-} = require("./ApiGatewayCommon");
+const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findId = get("live.RouteId");
 const findName = pipe([
@@ -22,25 +18,6 @@ const pickId = pick(["ApiId", "RouteId"]);
 exports.Route = ({ spec, config }) => {
   const apiGateway = createApiGatewayV2(config);
   const client = AwsClient({ spec, config })(apiGateway);
-
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesApi({ live, config }),
-    {
-      type: "Integration",
-      group: "ApiGatewayV2",
-      ids: pipe([
-        () => live,
-        get("Target", ""),
-        callProp("replace", "integrations/", ""),
-        (target) => [target],
-      ])(),
-    },
-    {
-      type: "Authorizer",
-      group: "ApiGatewayV2",
-      ids: [live.AuthorizerId],
-    },
-  ];
 
   const getById = client.getById({
     pickId,
@@ -130,6 +107,5 @@ exports.Route = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    findDependencies,
   };
 };

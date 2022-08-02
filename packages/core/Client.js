@@ -17,6 +17,7 @@ const {
 } = require("rubico");
 
 const {
+  when,
   uniq,
   isEmpty,
   isString,
@@ -140,15 +141,87 @@ const decorateLive =
                 config,
               }),
             tap((ids) => {
-              assert(Array.isArray(ids));
+              assert(
+                Array.isArray(ids),
+                `no ids in findDependencies for ${client.spec.groupType}`
+              );
             }),
             filter(not(isEmpty)),
+            when(
+              and([isEmpty, () => !isEmpty(client.spec.dependencies)]),
+              pipe([
+                () => client.spec,
+                get("dependencies", {}),
+                tap((params) => {
+                  assert(true);
+                }),
+                Object.entries,
+                map(
+                  ([
+                    dependencyKey,
+                    { dependencyId, dependencyIds, type, group },
+                  ]) =>
+                    pipe([
+                      tap(() => {
+                        assert(dependencyKey);
+                        assert(type);
+                        // assert(
+                        //   isFunction(dependencyId) || isFunction(dependencyIds)
+                        // );
+                      }),
+                      () => live,
+                      switchCase([
+                        () => dependencyId,
+                        pipe([
+                          dependencyId
+                            ? dependencyId({
+                                lives,
+                                config,
+                              })
+                            : () => false,
+                          tap((id) => {
+                            // assert(isObject(id));
+                          }),
+                          (id) => [id],
+                        ]),
+                        () => dependencyIds,
+                        pipe([
+                          dependencyIds
+                            ? dependencyIds({
+                                lives,
+                                config,
+                              })
+                            : () => false,
+                          tap((ids) => {
+                            // assert(
+                            //   Array.isArray(ids),
+                            //   `ids not an array for type: ${type}, ${client.spec.groupType}`
+                            // );
+                          }),
+                        ]),
+                        () => {
+                          // assert(
+                          //   false,
+                          //   `missing dependencyId or  dependencyIds`
+                          // );
+                        },
+                      ]),
+                      (ids) => ({ type, group, dependencyKey, ids }),
+                    ])()
+                ),
+              ])
+            ),
+            filter(pipe([get("ids", []), filter(not(isEmpty))])),
             map(
               pipe([
-                tap(({ type, group }) => {
+                tap(({ type, group, ids }) => {
                   if (!type) {
                     assert(type);
                   }
+                  // assert(
+                  //   Array.isArray(ids),
+                  //   `no ids in dependency type ${type}, client ${client.spec.groupType}`
+                  // );
                   //assert(group);
                 }),
                 assign({

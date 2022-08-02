@@ -16,15 +16,7 @@ const pickId = pipe([
 ]);
 
 const decorate = ({ endpoint }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    tap((params) => {
-      assert(true);
-    }),
-    ({ Name, ...other }) => ({ RoutingControlName: Name, ...other }),
-  ]);
+  pipe([({ Name, ...other }) => ({ RoutingControlName: Name, ...other })]);
 
 const model = ({ config }) => ({
   package: "route53-recovery-control-config",
@@ -84,13 +76,6 @@ exports.Route53RecoveryControlConfigRoutingControl = ({ spec, config }) =>
           }),
       ])(),
     getByName: getByNameCore,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "ControlPanel",
-        group: "Route53RecoveryControlConfig",
-        ids: [live.ControlPanelArn],
-      },
-    ],
     configDefault: ({
       name,
       namespace,

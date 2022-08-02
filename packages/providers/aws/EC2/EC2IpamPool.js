@@ -36,12 +36,6 @@ const createModel = ({ config }) => ({
     ]),
     method: "describeIpamPools",
     getField: "IpamPools",
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(endpoint);
-        }),
-      ]),
   },
   getList: {
     method: "describeIpamPools",
@@ -69,14 +63,8 @@ const createModel = ({ config }) => ({
     filterParams: ({ pickId, payload, live }) =>
       pipe([
         () => payload,
-        tap((params) => {
-          assert(pickId);
-        }),
         omit(["TagSpecifications"]),
         defaultsDeep(pickId(live)),
-        tap((params) => {
-          assert(true);
-        }),
       ])(),
     isInstanceUp: eq(get("State"), "create-complete"),
   },
@@ -96,32 +84,6 @@ exports.EC2IpamPool = ({ spec, config }) =>
     config,
     findName,
     findId,
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "IpamScope",
-        group: "EC2",
-        ids: [
-          pipe([
-            () =>
-              lives.getByType({
-                type: "IpamScope",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            find(eq(get("live.IpamScopeArn"), live.IpamScopeArn)),
-            get("id"),
-            tap((id) => {
-              assert(id);
-            }),
-          ])(),
-        ],
-      },
-      {
-        type: "IpamPool",
-        group: "EC2",
-        ids: [pipe([() => live.SourceIpamPoolId])()],
-      },
-    ],
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

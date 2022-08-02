@@ -15,12 +15,7 @@ const {
 } = require("./RDSCommon");
 
 const findId = get("live.DBInstanceArn");
-const pickId = pipe([
-  tap(({ DBInstanceIdentifier }) => {
-    assert(DBInstanceIdentifier);
-  }),
-  pick(["DBInstanceIdentifier"]),
-]);
+const pickId = pipe([pick(["DBInstanceIdentifier"])]);
 const findName = get("live.DBInstanceIdentifier");
 const isInstanceUp = pipe([eq(get("DBInstanceStatus"), "available")]);
 
@@ -32,66 +27,66 @@ exports.DBInstance = ({ spec, config }) => {
     "SecretsManager"
   )(config);
 
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesSecret({
-      live,
-      lives,
-      config,
-      secretField: "username",
-      rdsUsernameField: "MasterUsername",
-    }),
-    {
-      type: "DBCluster",
-      group: "RDS",
-      ids: [
-        pipe([
-          () => live,
-          get("DBClusterIdentifier"),
-          (name) =>
-            lives.getByName({
-              name,
-              providerName: config.providerName,
-              type: "DBCluster",
-              group: "RDS",
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    {
-      type: "DBSubnetGroup",
-      group: "RDS",
-      ids: [
-        pipe([
-          () => live,
-          get("DBSubnetGroup.DBSubnetGroupName"),
-          (name) =>
-            lives.getByName({
-              name,
-              providerName: config.providerName,
-              type: "DBSubnetGroup",
-              group: "RDS",
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    {
-      type: "SecurityGroup",
-      group: "EC2",
-      ids: pipe([get("VpcSecurityGroups"), pluck("VpcSecurityGroupId")])(live),
-    },
-    {
-      type: "Role",
-      group: "IAM",
-      ids: [live.MonitoringRoleArn],
-    },
-    {
-      type: "Key",
-      group: "KMS",
-      ids: [live.KmsKeyId],
-    },
-  ];
+  // const findDependencies = ({ live, lives }) => [
+  //   findDependenciesSecret({
+  //     live,
+  //     lives,
+  //     config,
+  //     secretField: "username",
+  //     rdsUsernameField: "MasterUsername",
+  //   }),
+  //   {
+  //     type: "DBCluster",
+  //     group: "RDS",
+  //     ids: [
+  //       pipe([
+  //         () => live,
+  //         get("DBClusterIdentifier"),
+  //         (name) =>
+  //           lives.getByName({
+  //             name,
+  //             providerName: config.providerName,
+  //             type: "DBCluster",
+  //             group: "RDS",
+  //           }),
+  //         get("id"),
+  //       ])(),
+  //     ],
+  //   },
+  //   {
+  //     type: "DBSubnetGroup",
+  //     group: "RDS",
+  //     ids: [
+  //       pipe([
+  //         () => live,
+  //         get("DBSubnetGroup.DBSubnetGroupName"),
+  //         (name) =>
+  //           lives.getByName({
+  //             name,
+  //             providerName: config.providerName,
+  //             type: "DBSubnetGroup",
+  //             group: "RDS",
+  //           }),
+  //         get("id"),
+  //       ])(),
+  //     ],
+  //   },
+  //   {
+  //     type: "SecurityGroup",
+  //     group: "EC2",
+  //     ids: pipe([get("VpcSecurityGroups"), pluck("VpcSecurityGroupId")])(live),
+  //   },
+  //   {
+  //     type: "Role",
+  //     group: "IAM",
+  //     ids: [live.MonitoringRoleArn],
+  //   },
+  //   {
+  //     type: "Key",
+  //     group: "KMS",
+  //     ids: [live.KmsKeyId],
+  //   },
+  // ];
 
   const decorate = () => pipe([renameTagList]);
 
@@ -244,7 +239,7 @@ exports.DBInstance = ({ spec, config }) => {
     getByName,
     getList,
     configDefault,
-    findDependencies,
+    //findDependencies,
     tagResource: tagResource({ endpoint: rds }),
     untagResource: untagResource({ endpoint: rds }),
   };

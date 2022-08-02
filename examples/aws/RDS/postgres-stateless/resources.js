@@ -3,11 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  {
-    type: "LogGroup",
-    group: "CloudWatchLogs",
-    name: "/aws/rds/cluster/cluster-postgres-stateless/postgresql",
-  },
   { type: "KeyPair", group: "EC2", name: "kp-postgres-stateless" },
   {
     type: "Vpc",
@@ -40,8 +35,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpc::subnet-private-a",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.96.0/19",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 3,
+      NetworkNumber: 3,
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -52,8 +48,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpc::subnet-private-b",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.128.0/19",
       AvailabilityZone: `${config.region}b`,
+      NewBits: 3,
+      NetworkNumber: 4,
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -64,8 +61,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpc::subnet-public-a",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.0.0/19",
       AvailabilityZone: `${config.region}a`,
+      NewBits: 3,
+      NetworkNumber: 0,
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -76,8 +74,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "vpc::subnet-public-b",
     properties: ({ config }) => ({
-      CidrBlock: "192.168.32.0/19",
       AvailabilityZone: `${config.region}b`,
+      NewBits: 3,
+      NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -259,8 +258,8 @@ exports.createResources = () => [
     name: "bastion",
     properties: ({ config, getId }) => ({
       InstanceType: "t2.micro",
-      Image: {
-        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
       },
       NetworkInterfaces: [
         {
@@ -279,8 +278,8 @@ exports.createResources = () => [
           })}`,
         },
       ],
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
+      Image: {
+        Description: "Amazon Linux 2 AMI 2.0.20211001.1 x86_64 HVM gp2",
       },
     }),
     dependencies: ({}) => ({

@@ -55,8 +55,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "nodejs-tutorial",
     properties: ({}) => ({
+      TableName: "nodejs-tutorial",
       AttributeDefinitions: [
         {
           AttributeName: "email",

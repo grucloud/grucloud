@@ -25,17 +25,21 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
 
+//TODO dependencyId use lives.getById
+
 const WebAclDependencies = {
   loadBalancer: {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
     parent: true,
+    dependencyId: ({ lives, config }) => get("ResourceArn"),
     buildArn: () => get("LoadBalancerArn"),
   },
   apiGatewayStage: {
     type: "Stage",
     group: "APIGateway",
     parent: true,
+    dependencyId: ({ lives, config }) => get("ResourceArn"),
     buildArn:
       ({ config }) =>
       ({ restApiId, stageName }) =>
@@ -54,6 +58,7 @@ const WebAclDependencies = {
     type: "GraphqlApi",
     group: "AppSync",
     parent: true,
+    dependencyId: ({ lives, config }) => get("ResourceArn"),
     buildArn: () => get("arn"),
   },
 };
@@ -82,31 +87,12 @@ const findId = pipe([
   ({ WebACLArn, ResourceArn }) => `webacl-assoc::${WebACLArn}::${ResourceArn}`,
 ]);
 
-const findDependenciesWaf = ({ live }) =>
-  pipe([
-    () => WebAclDependencies,
-    values,
-    map(({ type, group }) => ({
-      type,
-      group,
-      ids: [live.ResourceArn],
-    })),
-  ])();
-
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html
 exports.WAFV2WebACLAssociation = ({ spec, config }) =>
   createAwsResource({
     model: createModel({ config }),
     spec,
     config,
-    findDependencies: ({ live }) => [
-      {
-        type: "WebACL",
-        group: "WAFv2",
-        ids: [live.WebACLArn],
-      },
-      ...findDependenciesWaf({ live }),
-    ],
     findName: ({ live, lives }) =>
       pipe([
         tap((params) => {

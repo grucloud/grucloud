@@ -93,17 +93,6 @@ exports.CloudTrail = ({ spec, config }) =>
     config,
     findName: get("live.Name"),
     findId: pipe([get("live.TrailARN")]),
-    findDependencies: ({ live, lives }) => [
-      { type: "Bucket", group: "S3", ids: [live.S3BucketName] },
-      {
-        type: "LogsGroup",
-        group: "CloudWatchLogs",
-        ids: [live.CloudWatchLogsLogGroupArn],
-      },
-      { type: "role", group: "IAM", ids: [live.CloudWatchLogsRoleArn] },
-      { type: "Key", group: "KMS", ids: [live.KmsKeyId] },
-      { type: "Topic", group: "SNS", ids: [live.SnsTopicARN] },
-    ],
     getByName: ({ getById }) => pipe([({ name }) => ({ Name: name }), getById]),
     tagResource: tagResource,
     untagResource: untagResource,
@@ -173,10 +162,7 @@ exports.CloudTrail = ({ spec, config }) =>
           () => snsTopic,
           defaultsDeep({ SnsTopicARN: getField(snsTopic, "TopicArn") })
         ),
-        when(
-          () => kmsKey,
-          defaultsDeep({ KmsKeyId: getField(kmsKey, "TopicArn") })
-        ),
+        when(() => kmsKey, defaultsDeep({ KmsKeyId: getField(kmsKey, "Arn") })),
         when(
           () => logGroup,
           defaultsDeep({

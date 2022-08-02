@@ -64,7 +64,6 @@ exports.createResources = () => [
   {
     type: "Stream",
     group: "Kinesis",
-    name: "my-stream",
     properties: ({}) => ({
       StreamModeDetails: {
         StreamMode: "ON_DEMAND",

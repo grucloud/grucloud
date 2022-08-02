@@ -52,7 +52,8 @@ exports.createResources = () => [
 
 ## Used By
 
-- [Service](./Service.md)
+- [ECS Service](./Service.md)
+- [ECS TaskSet](./TaskSet.md)
 
 ## Full Examples
 

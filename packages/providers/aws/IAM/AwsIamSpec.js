@@ -15,6 +15,7 @@ const {
   any,
 } = require("rubico");
 const {
+  pluck,
   when,
   isString,
   prepend,
@@ -80,7 +81,25 @@ module.exports = pipe([
       }),
       filterLive: () => pick(["ClientIDList", "Url"]),
       dependencies: {
-        cluster: { type: "Cluster", group: "EKS" },
+        cluster: {
+          type: "Cluster",
+          group: "EKS",
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "Cluster",
+                    group: "EKS",
+                    providerName: config.providerName,
+                  }),
+                find(
+                  eq(get("live.identity.oidc.issuer"), `https://${live.Url}`)
+                ),
+                get("id"),
+              ])(),
+        },
       },
       inferName: ({ properties, dependenciesSpec }) =>
         pipe([
@@ -131,8 +150,19 @@ module.exports = pipe([
           filterAttachedPolicies({ lives }),
         ]),
       dependencies: {
-        iamGroups: { type: "Group", group: "IAM", list: true },
-        policies: { type: "Policy", group: "IAM", list: true },
+        iamGroups: {
+          type: "Group",
+          group: "IAM",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("Groups"),
+        },
+        policies: {
+          type: "Policy",
+          group: "IAM",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("AttachedPolicies"), pluck("PolicyArn")]),
+        },
       },
     },
     {
@@ -149,7 +179,13 @@ module.exports = pipe([
           filterAttachedPolicies({ lives }),
         ]),
       dependencies: {
-        policies: { type: "Policy", group: "IAM", list: true },
+        policies: {
+          type: "Policy",
+          group: "IAM",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("AttachedPolicies"), pluck("PolicyArn")]),
+        },
       },
     },
     {

@@ -1,12 +1,12 @@
 const assert = require("assert");
 const { map, pipe, tap, get, pick, assign, eq } = require("rubico");
-const { defaultsDeep, pluck, find, uniq } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./StepFunctionsCommon");
-const { getByNameCore, flattenObject } = require("@grucloud/core/Common");
+const { getByNameCore } = require("@grucloud/core/Common");
 
 const pickId = pick(["stateMachineArn"]);
 
@@ -59,111 +59,6 @@ exports.StepFunctionsStateMachine = ({ spec, config }) =>
     config,
     findName: get("live.name"),
     findId: get("live.stateMachineArn"),
-    findDependencies: ({ live, lives }) => [
-      {
-        type: "Role",
-        group: "IAM",
-        ids: [live.roleArn],
-      },
-      {
-        type: "Function",
-        group: "Lambda",
-        ids: pipe([
-          () => live,
-          get("definition.States"),
-          flattenObject({ filterKey: (key) => key === "FunctionName" }),
-          map(
-            pipe([
-              (id) =>
-                lives.getById({
-                  id,
-                  type: "Function",
-                  group: "Lambda",
-                  providerName: config.providerName,
-                }),
-              get("id"),
-            ])
-          ),
-          //TODO move uniq to flattenObject
-          uniq,
-        ])(),
-      },
-      {
-        type: "Job",
-        group: "Glue",
-        ids: pipe([
-          () => live,
-          get("definition.States"),
-          flattenObject({ filterKey: (key) => key === "JobName" }),
-          map(
-            pipe([
-              (id) =>
-                lives.getById({
-                  id,
-                  type: "Job",
-                  group: "Glue",
-                  providerName: config.providerName,
-                }),
-              get("id"),
-            ])
-          ),
-          //TODO move uniq to flattenObject
-          uniq,
-        ])(),
-      },
-      {
-        type: "Queue",
-        group: "SQS",
-        ids: pipe([
-          () => live,
-          get("definition.States"),
-          flattenObject({ filterKey: (key) => key === "QueueUrl" }),
-          map((QueueUrl) =>
-            pipe([
-              () =>
-                lives.getByType({
-                  type: "Queue",
-                  group: "SQS",
-                  providerName: config.providerName,
-                }),
-              find(eq(get("live.QueueUrl"), QueueUrl)),
-              get("id"),
-            ])()
-          ),
-          //TODO move uniq to flattenObject
-          uniq,
-        ])(),
-      },
-      {
-        type: "LogGroup",
-        group: "CloudWatchLogs",
-        ids: pipe([
-          () => live,
-          get("loggingConfiguration.destinations"),
-          pluck("cloudWatchLogsLogGroup"),
-          pluck("logGroupArn"),
-          map((logGroupArn) =>
-            pipe([
-              tap((params) => {
-                assert(logGroupArn);
-              }),
-              () =>
-                lives.getByType({
-                  type: "LogGroup",
-                  group: "CloudWatchLogs",
-                  providerName: config.providerName,
-                }),
-              find(({ id }) => logGroupArn.includes(id)),
-              get("id"),
-            ])()
-          ),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
-      },
-    ],
-
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

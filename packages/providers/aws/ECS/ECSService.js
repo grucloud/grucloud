@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { assign, pipe, tap, get, eq, or, omit, map } = require("rubico");
-const { defaultsDeep, isEmpty, when, pluck } = require("rubico/x");
+const { defaultsDeep, isEmpty, when } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -8,7 +8,6 @@ const { AwsClient } = require("../AwsClient");
 const {
   createECS,
   buildTagsEcs,
-  findDependenciesCluster,
   tagResource,
   untagResource,
 } = require("./ECSCommon");
@@ -21,62 +20,9 @@ exports.ECSService = ({ spec, config }) => {
   const ecs = createECS(config);
   const client = AwsClient({ spec, config })(ecs);
 
-  // findDependencies for ECSService
-  const findDependencies = ({ live, lives }) => [
-    findDependenciesCluster({ live }),
-    {
-      type: "TaskDefinition",
-      group: "ECS",
-      ids: [live.taskDefinition],
-    },
-    {
-      type: "LoadBalancer",
-      group: "ElasticLoadBalancingV2",
-      ids: [
-        pipe([
-          () =>
-            lives.getByName({
-              providerName: config.providerName,
-              name: live.loadBalancerName,
-              type: "LoadBalancer",
-              group: "ElasticLoadBalancingV2",
-            }),
-          get("id"),
-        ]),
-      ],
-    },
-    {
-      type: "TargetGroup",
-      group: "ElasticLoadBalancingV2",
-      ids: pluck("targetGroupArn")(live.loadBalancers),
-    },
-    {
-      type: "Subnet",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("networkConfiguration.awsvpcConfiguration.subnets"),
-      ])(),
-    },
-    {
-      type: "SecurityGroup",
-      group: "EC2",
-      ids: pipe([
-        () => live,
-        get("networkConfiguration.awsvpcConfiguration.securityGroups"),
-      ])(),
-    },
-  ];
-
-  const findNamespace = pipe([() => ""]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeServices-property
   const getById = client.getById({
     pickId: pipe([
-      tap(({ clusterArn, serviceName }) => {
-        assert(clusterArn);
-        assert(serviceName);
-      }),
       ({ clusterArn, serviceName }) => ({
         cluster: clusterArn,
         services: [serviceName],
@@ -97,9 +43,6 @@ exports.ECSService = ({ spec, config }) => {
     config,
     decorate: ({ lives, parent: { clusterArn } }) =>
       pipe([
-        tap((params) => {
-          assert(clusterArn);
-        }),
         pipe([
           (serviceArn) => ({ clusterArn, serviceName: serviceArn }),
           getById,
@@ -134,11 +77,6 @@ exports.ECSService = ({ spec, config }) => {
   const update = client.update({
     filterParams: ({ payload, live }) =>
       pipe([
-        tap((param) => {
-          assert(live);
-          assert(live.clusterArn);
-          assert(payload.serviceName);
-        }),
         () => payload,
         assign({
           service: get("serviceName"),
@@ -224,8 +162,6 @@ exports.ECSService = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace,
-    findDependencies,
     getByName,
     getById,
     findName,

@@ -20,15 +20,7 @@ const {
   assignTags,
 } = require("./Route53ResolverCommon");
 
-const pickId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  tap(({ Id }) => {
-    assert(Id);
-  }),
-  ({ Id }) => ({ ResolverEndpointId: Id }),
-]);
+const pickId = pipe([({ Id }) => ({ ResolverEndpointId: Id })]);
 
 const decorate = ({ endpoint }) =>
   pipe([
@@ -94,18 +86,6 @@ exports.Route53ResolverEndpoint = ({ spec, config }) =>
     config,
     findName: pipe([get("live.Name")]),
     findId: pipe([get("live.Arn")]),
-    findDependencies: ({ live }) => [
-      {
-        type: "SecurityGroup",
-        group: "EC2",
-        ids: live.SecurityGroupIds,
-      },
-      {
-        type: "Subnet",
-        group: "EC2",
-        ids: pipe([() => live, get("IpAddresses"), pluck("SubnetId")])(),
-      },
-    ],
     getByName: ({ getList, endpoint }) =>
       pipe([
         tap((params) => {
@@ -130,7 +110,8 @@ exports.Route53ResolverEndpoint = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: { securityGroups },
+      // TODO subnets
+      dependencies: { securityGroups, subnets },
     }) =>
       pipe([
         () => otherProps,

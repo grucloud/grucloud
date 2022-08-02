@@ -2,7 +2,6 @@ const assert = require("assert");
 const { pipe, tap, get, omit, pick, map, flatMap } = require("rubico");
 const { defaultsDeep, callProp, last } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
 const {
@@ -39,12 +38,7 @@ const ResourceSetDependencies = {
 
 exports.ResourceSetDependencies = ResourceSetDependencies;
 
-const pickId = pipe([
-  pick(["ResourceSetName"]),
-  tap(({ ResourceSetName }) => {
-    assert(ResourceSetName);
-  }),
-]);
+const pickId = pipe([pick(["ResourceSetName"])]);
 
 const model = ({ config }) => ({
   package: "route53-recovery-readiness",
