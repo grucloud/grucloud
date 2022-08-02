@@ -211,8 +211,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "ECS cluster - VPC::ECS cluster - RouteTable",
       ig: "ECS cluster - InternetGateway",
+      routeTable: "ECS cluster - VPC::ECS cluster - RouteTable",
     }),
   },
   {

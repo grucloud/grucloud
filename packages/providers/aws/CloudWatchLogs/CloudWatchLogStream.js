@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, fork, switchCase, any, map } = require("rubico");
-const { defaultsDeep, callProp, prepend } = require("rubico/x");
+const { defaultsDeep, callProp, prepend, append } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
@@ -28,11 +28,11 @@ const managedByOther = pipe([
   get("live.arn"),
   (logGroupName) =>
     pipe([
-      () => [
-        ...LogGroupNameManagedByOther,
-        "log_stream_created_by_aws_to_validate_log_delivery_subscriptions",
-      ],
+      () => LogGroupNameManagedByOther,
       map(prepend("log-group:")),
+      append(
+        "log_stream_created_by_aws_to_validate_log_delivery_subscriptions"
+      ),
       any((prefix) => logGroupName.includes(prefix)),
     ])(),
 ]);
