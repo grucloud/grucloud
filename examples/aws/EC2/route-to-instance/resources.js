@@ -29,8 +29,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "vpc-default::rt-default",
       ec2Instance: "my-instance",
+      routeTable: "vpc-default::rt-default",
     }),
   },
   {

@@ -4,7 +4,6 @@
 
 ## Aws
 
-- VpcPeeringConnection doc
 - route to NetworkInterfaceId
 - EventSourceMapping inferName
 - Network Manager docs

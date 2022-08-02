@@ -1243,7 +1243,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1256,7 +1256,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1269,7 +1269,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1282,6 +1282,22 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
+      vpc: "shared-services-vpc",
+    }),
+  },
+  {
+    type: "ZoneVpcAssociation",
+    group: "Route53",
+    dependencies: ({ config }) => ({
+      hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "ZoneVpcAssociation",
+    group: "Route53",
+    dependencies: ({ config }) => ({
+      hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
       vpc: "spoke-vpc-2",
     }),
   },
@@ -1289,30 +1305,6 @@ exports.createResources = () => [
     type: "ZoneVpcAssociation",
     group: "Route53",
     dependencies: ({ config }) => ({
-      hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
-      vpc: "shared-services-vpc",
-    }),
-  },
-  {
-    type: "ZoneVpcAssociation",
-    group: "Route53",
-    dependencies: ({ config }) => ({
-      hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
-      vpc: "spoke-vpc-1",
-    }),
-  },
-  {
-    type: "ZoneVpcAssociation",
-    group: "Route53",
-    dependencies: ({ config }) => ({
-      hostedZone: `s3.${config.region}.amazonaws.com.`,
-      vpc: "shared-services-vpc",
-    }),
-  },
-  {
-    type: "ZoneVpcAssociation",
-    group: "Route53",
-    dependencies: ({ config }) => ({
       hostedZone: `s3.${config.region}.amazonaws.com.`,
       vpc: "spoke-vpc-1",
     }),
@@ -1321,8 +1313,8 @@ exports.createResources = () => [
     type: "ZoneVpcAssociation",
     group: "Route53",
     dependencies: ({ config }) => ({
-      hostedZone: `ssm.${config.region}.amazonaws.com.`,
-      vpc: "shared-services-vpc",
+      hostedZone: `s3.${config.region}.amazonaws.com.`,
+      vpc: "spoke-vpc-2",
     }),
   },
   {
@@ -1337,8 +1329,8 @@ exports.createResources = () => [
     type: "ZoneVpcAssociation",
     group: "Route53",
     dependencies: ({ config }) => ({
-      hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
-      vpc: "shared-services-vpc",
+      hostedZone: `ssm.${config.region}.amazonaws.com.`,
+      vpc: "spoke-vpc-2",
     }),
   },
   {
@@ -1347,6 +1339,14 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
       vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "ZoneVpcAssociation",
+    group: "Route53",
+    dependencies: ({ config }) => ({
+      hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
+      vpc: "spoke-vpc-2",
     }),
   },
   {

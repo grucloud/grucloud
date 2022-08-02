@@ -86,6 +86,7 @@ const vpc = provider.EC2.makeVpc({
 - [Route53 HostedZone](../Route53/HostedZone.md)
 - [CodeBuild Project](../CodeBuild/Project.md)
 - [Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
+- [Vpc Peering Connection](./VpcPeeringConnection.md)
 
 ## List
 

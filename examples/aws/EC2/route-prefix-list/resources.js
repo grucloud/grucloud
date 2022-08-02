@@ -23,9 +23,9 @@ exports.createResources = () => [
     type: "Route",
     group: "EC2",
     dependencies: ({}) => ({
-      routeTable: "vpc-default::rt-default",
       ig: "ig-default",
       prefixList: "my-prefix",
+      routeTable: "vpc-default::rt-default",
     }),
   },
   {

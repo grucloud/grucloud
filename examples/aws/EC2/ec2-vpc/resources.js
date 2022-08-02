@@ -79,8 +79,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "vpc-ec2-example::route-table",
       ig: "ig",
+      routeTable: "vpc-ec2-example::route-table",
     }),
   },
   {

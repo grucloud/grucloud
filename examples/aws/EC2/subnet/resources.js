@@ -148,8 +148,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `project-vpc::project-rtb-private1-${config.region}a`,
       natGateway: `project-nat-public1-${config.region}a`,
+      routeTable: `project-vpc::project-rtb-private1-${config.region}a`,
     }),
   },
   {
@@ -159,8 +159,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `project-vpc::project-rtb-private2-${config.region}b`,
       natGateway: `project-nat-public1-${config.region}a`,
+      routeTable: `project-vpc::project-rtb-private2-${config.region}b`,
     }),
   },
   {
@@ -170,8 +170,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "project-vpc::project-rtb-public",
       ig: "project-igw",
+      routeTable: "project-vpc::project-rtb-public",
     }),
   },
   {

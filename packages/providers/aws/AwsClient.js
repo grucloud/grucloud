@@ -718,7 +718,7 @@ const AwsClient =
                   ]),
                 }),
             ]),
-            (error, params) =>
+            (error = {}, params) =>
               pipe([
                 tap(() => {
                   logger.info(

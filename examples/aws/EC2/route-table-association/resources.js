@@ -78,8 +78,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "vpc::rt-default",
       ig: "internet-gateway",
+      routeTable: "vpc::rt-default",
     }),
   },
 ];

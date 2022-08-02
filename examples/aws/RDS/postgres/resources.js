@@ -78,8 +78,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "vpc-postgres::route-table-public",
       ig: "ig-postgres",
+      routeTable: "vpc-postgres::route-table-public",
     }),
   },
   {

@@ -5,7 +5,6 @@ const {
   tap,
   tryCatch,
   get,
-  switchCase,
   filter,
   assign,
   flatMap,
@@ -19,7 +18,6 @@ const {
 const {
   callProp,
   groupBy,
-  first,
   find,
   pluck,
   defaultsDeep,
@@ -142,7 +140,6 @@ exports.Route53HostedZone = ({ spec, config }) => {
   const route53 = createRoute53(config);
   const route53Domains = createRoute53Domains(config);
   const client = AwsClient({ spec, config })(route53);
-  const { providerName } = config;
 
   //Check for the final dot
   const findName = get("live.Name");
@@ -171,6 +168,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
                   group: "EC2",
                   providerName: config.providerName,
                 }),
+              callProp("sort", (a, b) => a.name.localeCompare(b.name)),
               pluck("live"),
               flatMap(({ VpcId /*Region */ }) =>
                 pipe([

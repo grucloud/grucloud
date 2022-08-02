@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, fork, switchCase, any, map } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  fork,
+  switchCase,
+  any,
+  map,
+  or,
+} = require("rubico");
 const { defaultsDeep, callProp, prepend, append } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -7,6 +17,10 @@ const { createAwsResource } = require("../AwsClient");
 
 const { LogGroupNameManagedByOther } = require("./CloudWatchLogsCommon");
 
+const LogStreamNameManagedByOther = [
+  "eni-",
+  "log_stream_created_by_aws_to_validate_log_delivery_subscriptions",
+];
 const findId = pipe([get("live.arn")]);
 
 const logGroupNameFromArn = pipe([
@@ -25,16 +39,20 @@ const logStreamNameFromArn = pipe([
 ]);
 
 const managedByOther = pipe([
-  get("live.arn"),
-  (logGroupName) =>
-    pipe([
-      () => LogGroupNameManagedByOther,
-      map(prepend("log-group:")),
-      append(
-        "log_stream_created_by_aws_to_validate_log_delivery_subscriptions"
-      ),
-      any((prefix) => logGroupName.includes(prefix)),
-    ])(),
+  get("live"),
+  or([
+    ({ logStreamName }) =>
+      pipe([
+        () => LogStreamNameManagedByOther,
+        any((prefix) => logStreamName.includes(prefix)),
+      ])(),
+    ({ arn }) =>
+      pipe([
+        () => LogGroupNameManagedByOther,
+        map(prepend("log-group:")),
+        any((prefix) => arn.includes(prefix)),
+      ])(),
+  ]),
 ]);
 
 const createModel = ({ config }) => ({

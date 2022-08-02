@@ -159,8 +159,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "Vpc::RouteViaIgw",
       ig: "InternetGateway",
+      routeTable: "Vpc::RouteViaIgw",
     }),
   },
   {

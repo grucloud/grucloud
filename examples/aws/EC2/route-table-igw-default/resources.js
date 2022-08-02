@@ -26,8 +26,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "vpc-default::rt-default",
       ig: "ig-default",
+      routeTable: "vpc-default::rt-default",
     }),
   },
 ];

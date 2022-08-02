@@ -147,8 +147,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "nat-gateway",
       routeTable: "vpc::route-table-private-a",
-      natGateway: "nat-gateway",
     }),
   },
   {
@@ -158,8 +158,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "nat-gateway",
       routeTable: "vpc::route-table-private-b",
-      natGateway: "nat-gateway",
     }),
   },
   {
@@ -169,8 +169,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "vpc::rt-default",
       ig: "internet-gateway",
+      routeTable: "vpc::rt-default",
     }),
   },
   { type: "ElasticIpAddress", group: "EC2", name: "eip" },

@@ -116,10 +116,6 @@ const retryCall = async ({
       ),
       catchError(
         pipe([
-          tap(({ error }) => {
-            // beware, shouldRetryOnException could throw an exception, any missing require ?
-            assert(error);
-          }),
           switchCase([
             and([not(get("hasMaxCount")), eq(get("error.code"), 503)]),
             ({ error }) => of(error.result),
