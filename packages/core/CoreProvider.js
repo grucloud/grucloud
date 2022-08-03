@@ -40,7 +40,7 @@ const {
   values,
 } = require("rubico/x");
 const { memoize } = require("lodash");
-
+const util = require("util");
 const fs = require("fs").promises;
 const logger = require("./logger")({ prefix: "CoreProvider" });
 const { tos } = require("./tos");
@@ -1433,35 +1433,37 @@ function CoreProvider({
       map.pool(
         mapPoolSize,
         tryCatch(
-          //TODO rubico
-          async (resource) => {
-            onStateChange({
-              context: contextFromResource({
-                operation: TitleQuery,
-                resource: resource.toJSON(),
+          (resource) =>
+            pipe([
+              tap(() => {
+                onStateChange({
+                  context: contextFromResource({
+                    operation: TitleQuery,
+                    resource: resource.toJSON(),
+                  }),
+                  nextState: "RUNNING",
+                });
               }),
-              nextState: "RUNNING",
-            });
-            const actions = await resource.planUpsert({
-              resource,
-              targetResources: getTargetResources(),
-              lives: getLives(),
-            });
-            onStateChange({
-              context: contextFromResource({
-                operation: TitleQuery,
-                resource: resource.toJSON(),
+              () => ({
+                resource,
+                targetResources: getTargetResources(),
+                lives: getLives(),
               }),
-              nextState: "DONE",
-            });
-            return actions;
-          },
+              resource.planUpsert,
+              tap((params) => {
+                onStateChange({
+                  context: contextFromResource({
+                    operation: TitleQuery,
+                    resource: resource.toJSON(),
+                  }),
+                  nextState: "DONE",
+                });
+              }),
+            ])(),
           (error, resource) => {
             logger.error(`error query resource ${resource.toString()}`);
-            logger.error(JSON.stringify(error, null, 4));
-            logger.error(error.toString());
+            logger.error(util.inspect(error, { depth: 8 }));
             error.stack && logger.error(error.stack);
-
             onStateChange({
               context: contextFromResource({
                 operation: TitleQuery,
@@ -1476,21 +1478,18 @@ function CoreProvider({
       ),
       filter(not(isEmpty)),
       flatten,
-      tap((result) => {
-        assert(result);
-      }),
       tap((plans) =>
         onStateChange({
           context: contextFromPlanner({ providerName, title: TitleQuery }),
           nextState: nextStateOnError(hasResultError(plans)),
         })
       ),
-      tap((result) => {
-        logger.info(`planUpsert done`);
-      }),
       callProp("sort", (a, b) =>
         a.resource.groupType.localeCompare(b.resource.groupType)
       ),
+      tap((result) => {
+        logger.info(`planUpsert done`);
+      }),
     ])();
 
   const planQuery = ({

@@ -12,17 +12,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "LogStream",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logStreamName:
-        "log_stream_created_by_aws_to_validate_log_delivery_subscriptions",
-    }),
-    dependencies: ({}) => ({
-      cloudWatchLogGroup: "testlambdatest-",
-    }),
-  },
-  {
     type: "Vpc",
     group: "EC2",
     name: "vpcStack/test-VPC",
@@ -245,8 +234,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
+      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
       routeTable: `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}a`,
-      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
     }),
   },
   {
@@ -256,8 +245,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
+      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
       routeTable: `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}b`,
-      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
     }),
   },
   {
@@ -267,8 +256,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
+      ig: "vpcStack/test-VPC",
       routeTable: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
-      ig: "vpcStack/test-VPC",
     }),
   },
   {
@@ -278,8 +267,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}b`,
       ig: "vpcStack/test-VPC",
+      routeTable: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}b`,
     }),
   },
   {

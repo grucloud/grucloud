@@ -543,7 +543,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
       tap((params) => {
         assert(true);
       }),
-      ({ GroupId, IpPermission }) =>
+      ({ GroupId, ...IpPermission }) =>
         `egress::${GroupId}::${JSON.stringify(IpPermission)}`,
     ]),
     findName: findName({ kind: "egress", config }),

@@ -59,12 +59,6 @@ exports.DBProxyTargetGroup = ({ spec, config }) =>
     findId: get("live.TargetGroupArn"),
     getList: ({ client, endpoint, getById, config }) =>
       pipe([
-        tap((params) => {
-          assert(client);
-          assert(endpoint);
-          assert(getById);
-          assert(config);
-        }),
         () =>
           client.getListWithParent({
             parent: { type: "DBProxy", group: "RDS" },
@@ -74,9 +68,6 @@ exports.DBProxyTargetGroup = ({ spec, config }) =>
             decorate,
             config,
           }),
-        tap((params) => {
-          assert(true);
-        }),
       ])(),
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ TargetGroupName: name }), getById]),

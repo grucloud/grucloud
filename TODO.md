@@ -28,7 +28,6 @@
 - Nat gateway handle deleting
 - resource schema
 - document create key pair
-- UserData: ec2 update and displayResource
 - s3 analytics configuration
 - s3 object gencode is missing ACL:public-read
 

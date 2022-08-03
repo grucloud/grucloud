@@ -244,12 +244,11 @@ exports.ResourceMaker = ({
         assert(true);
       }),
       get("live"),
-      tap((live) => {
+      tap.if(isEmpty, (live) => {
         logger.debug(
-          `findLive ${JSON.stringify({
+          `findLive no live for ${JSON.stringify({
             type,
             resourceName: getResourceName(),
-            hasLive: !!live,
           })}`
         );
       }),

@@ -239,9 +239,9 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
       routeTable:
         "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
-      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
     }),
   },
   {
@@ -251,9 +251,9 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
       routeTable:
         "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
-      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
     }),
   },
   {
@@ -263,9 +263,9 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      ig: "ECSServiceStack/SkeletonVpc",
       routeTable:
         "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
-      ig: "ECSServiceStack/SkeletonVpc",
     }),
   },
   {
@@ -275,9 +275,9 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      ig: "ECSServiceStack/SkeletonVpc",
       routeTable:
         "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
-      ig: "ECSServiceStack/SkeletonVpc",
     }),
   },
   {

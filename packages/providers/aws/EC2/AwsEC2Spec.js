@@ -1701,6 +1701,8 @@ module.exports = pipe([
       includeDefaultDependencies: true,
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
       propertiesDefault: {
+        DisableApiStop: false,
+        DisableApiTermination: false,
         MaxCount: 1,
         MinCount: 1,
         Placement: { GroupName: "", Tenancy: "default" },

@@ -78,8 +78,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "wafv2-vpc::wafv2-rtb-public",
       ig: "wafv2-igw",
+      routeTable: "wafv2-vpc::wafv2-rtb-public",
     }),
   },
   {

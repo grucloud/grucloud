@@ -9,5 +9,4 @@ exports.createStack = assign({
       createResources: [createResourcesS3Object, createResources],
       config: require("./config"),
     }),
-  hooks: [require("./hook")],
 });

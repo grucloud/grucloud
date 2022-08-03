@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Table",
     group: "DynamoDB",
-    name: "terraform-state-locking",
     properties: ({}) => ({
+      TableName: "terraform-state-locking",
       AttributeDefinitions: [
         {
           AttributeName: "LockID",

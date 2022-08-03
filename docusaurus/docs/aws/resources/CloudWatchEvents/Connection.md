@@ -33,6 +33,8 @@ exports.createResources = () => [
 
 ## Dependencies
 
+- [SecretsManager Secret](../SecretsManager/Secret.md)
+
 ## Used By
 
 - [ApiDestination](./ApiDestination.md)
