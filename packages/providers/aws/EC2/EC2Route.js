@@ -63,6 +63,8 @@ exports.EC2Route = ({ spec, config }) => {
       }),
       get("name", "no-route-table-id"),
       switchCase([
+        () => live.CoreNetworkArn,
+        append("::core-network"),
         // Nat Gateway
         () => live.NatGatewayId,
         append("::nat-gateway"),
@@ -170,6 +172,7 @@ exports.EC2Route = ({ spec, config }) => {
     pipe([() => live, eq(get("GatewayId"), "local")])();
 
   const findRoute = ({
+    CoreNetworkArn,
     EgressOnlyInternetGatewayId,
     GatewayId,
     InstanceId,
@@ -188,13 +191,15 @@ exports.EC2Route = ({ spec, config }) => {
         logger.debug(
           `findRoute #Routes ${size(
             Routes
-          )}, GatewayId ${GatewayId}, NatGatewayId ${NatGatewayId}, TransitGatewayId ${TransitGatewayId}, VpcEndpointId: ${VpcEndpointId}, EgressOnlyInternetGatewayId: ${EgressOnlyInternetGatewayId}, InstanceId: ${InstanceId}`
+          )}, GatewayId ${GatewayId}, NatGatewayId ${NatGatewayId}, TransitGatewayId ${TransitGatewayId}, VpcEndpointId: ${VpcEndpointId}, EgressOnlyInternetGatewayId: ${EgressOnlyInternetGatewayId}, InstanceId: ${InstanceId}, CoreNetworkArn: ${CoreNetworkArn}`
         );
         logger.debug(JSON.stringify(Routes));
       }),
       find(
         pipe([
           switchCase([
+            () => CoreNetworkArn,
+            eq(get("CoreNetworkArn"), CoreNetworkArn),
             () => GatewayId,
             eq(get("GatewayId"), GatewayId),
             () => NatGatewayId,
@@ -413,6 +418,7 @@ exports.EC2Route = ({ spec, config }) => {
     namespace,
     properties = {},
     dependencies: {
+      coreNetwork,
       routeTable,
       natGateway,
       ig,
@@ -449,6 +455,10 @@ exports.EC2Route = ({ spec, config }) => {
         })
       ),
       switchCase([
+        () => coreNetwork,
+        defaultsDeep({
+          CoreNetworkArn: getField(coreNetwork, "CoreNetworkArn"),
+        }),
         () => natGateway,
         defaultsDeep({
           NatGatewayId: getField(natGateway, "NatGatewayId"),

@@ -117,180 +117,166 @@ exports.createResources = () => [
 - [EC2 Flow Logs](./FlowLogs.md)
 - [ECS Service](../ECS/Service.md)
 - [ECS TaskSet](../ECS/TaskSet.md)
+- [NetworkManager VpcAttachment](../NetworkManager/VpcAttachment.md)
 - [RDS DBSubnetGroup](../RDS/DBSubnetGroup.md)
 
 ## Listing
 
-List the subnets filtering by the type `Subnet`
+List the subnets filtering by the type `EC2::Subnet`
 
 ```sh
-gc list --types Subnet
+gc list --types EC2::Subnet
 ```
 
-```sh
+```txt
 Listing resources on 1 provider: aws
-✓ aws
+✓ aws us-west-2 oregon
   ✓ Initialising
   ✓ Listing 2/2
-┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 5 Subnet from aws                                                                                    │
-├──────────────────┬────────────────────────────────────────────────────────────────────────────┬──────┤
-│ Name             │ Data                                                                       │ Our  │
-├──────────────────┼────────────────────────────────────────────────────────────────────────────┼──────┤
-│ subnet-public-1  │ AvailabilityZone: eu-west-2a                                               │ Yes  │
-│                  │ AvailabilityZoneId: euw2-az2                                               │      │
-│                  │ AvailableIpAddressCount: 8186                                              │      │
-│                  │ CidrBlock: 192.168.0.0/19                                                  │      │
-│                  │ DefaultForAz: false                                                        │      │
-│                  │ MapPublicIpOnLaunch: true                                                  │      │
-│                  │ MapCustomerOwnedIpOnLaunch: false                                          │      │
-│                  │ State: available                                                           │      │
-│                  │ SubnetId: subnet-0bc901f569ce3e55c                                         │      │
-│                  │ VpcId: vpc-06d8eb1ddef9ed0f1                                               │      │
-│                  │ OwnerId: 840541460064                                                      │      │
-│                  │ AssignIpv6AddressOnCreation: false                                         │      │
-│                  │ Ipv6CidrBlockAssociationSet: []                                            │      │
-│                  │ Tags:                                                                      │      │
-│                  │   - Key: kubernetes.io/role/elb                                            │      │
-│                  │     Value: 1                                                               │      │
-│                  │   - Key: ManagedBy                                                         │      │
-│                  │     Value: GruCloud                                                        │      │
-│                  │   - Key: Name                                                              │      │
-│                  │     Value: subnet-public-1                                                 │      │
-│                  │   - Key: stage                                                             │      │
-│                  │     Value: dev                                                             │      │
-│                  │   - Key: CreatedByProvider                                                 │      │
-│                  │     Value: aws                                                             │      │
-│                  │   - Key: projectName                                                       │      │
-│                  │     Value: @grucloud/example-module-aws-eks                                │      │
-│                  │   - Key: kubernetes.io/cluster/cluster                                     │      │
-│                  │     Value: shared                                                          │      │
-│                  │ SubnetArn: arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0bc901f569ce3… │      │
-│                  │                                                                            │      │
-├──────────────────┼────────────────────────────────────────────────────────────────────────────┼──────┤
-│ subnet-private-2 │ AvailabilityZone: eu-west-2b                                               │ Yes  │
-│                  │ AvailabilityZoneId: euw2-az3                                               │      │
-│                  │ AvailableIpAddressCount: 8187                                              │      │
-│                  │ CidrBlock: 192.168.128.0/19                                                │      │
-│                  │ DefaultForAz: false                                                        │      │
-│                  │ MapPublicIpOnLaunch: false                                                 │      │
-│                  │ MapCustomerOwnedIpOnLaunch: false                                          │      │
-│                  │ State: available                                                           │      │
-│                  │ SubnetId: subnet-0335cd853ab7b2cd1                                         │      │
-│                  │ VpcId: vpc-06d8eb1ddef9ed0f1                                               │      │
-│                  │ OwnerId: 840541460064                                                      │      │
-│                  │ AssignIpv6AddressOnCreation: false                                         │      │
-│                  │ Ipv6CidrBlockAssociationSet: []                                            │      │
-│                  │ Tags:                                                                      │      │
-│                  │   - Key: ManagedBy                                                         │      │
-│                  │     Value: GruCloud                                                        │      │
-│                  │   - Key: projectName                                                       │      │
-│                  │     Value: @grucloud/example-module-aws-eks                                │      │
-│                  │   - Key: kubernetes.io/cluster/cluster                                     │      │
-│                  │     Value: shared                                                          │      │
-│                  │   - Key: CreatedByProvider                                                 │      │
-│                  │     Value: aws                                                             │      │
-│                  │   - Key: Name                                                              │      │
-│                  │     Value: subnet-private-2                                                │      │
-│                  │   - Key: kubernetes.io/role/internal-elb                                   │      │
-│                  │     Value: 1                                                               │      │
-│                  │   - Key: stage                                                             │      │
-│                  │     Value: dev                                                             │      │
-│                  │ SubnetArn: arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0335cd853ab7b… │      │
-│                  │                                                                            │      │
-├──────────────────┼────────────────────────────────────────────────────────────────────────────┼──────┤
-│ subnet-private-1 │ AvailabilityZone: eu-west-2a                                               │ Yes  │
-│                  │ AvailabilityZoneId: euw2-az2                                               │      │
-│                  │ AvailableIpAddressCount: 8187                                              │      │
-│                  │ CidrBlock: 192.168.96.0/19                                                 │      │
-│                  │ DefaultForAz: false                                                        │      │
-│                  │ MapPublicIpOnLaunch: false                                                 │      │
-│                  │ MapCustomerOwnedIpOnLaunch: false                                          │      │
-│                  │ State: available                                                           │      │
-│                  │ SubnetId: subnet-0e600c9492fbf10c7                                         │      │
-│                  │ VpcId: vpc-06d8eb1ddef9ed0f1                                               │      │
-│                  │ OwnerId: 840541460064                                                      │      │
-│                  │ AssignIpv6AddressOnCreation: false                                         │      │
-│                  │ Ipv6CidrBlockAssociationSet: []                                            │      │
-│                  │ Tags:                                                                      │      │
-│                  │   - Key: projectName                                                       │      │
-│                  │     Value: @grucloud/example-module-aws-eks                                │      │
-│                  │   - Key: ManagedBy                                                         │      │
-│                  │     Value: GruCloud                                                        │      │
-│                  │   - Key: kubernetes.io/cluster/cluster                                     │      │
-│                  │     Value: shared                                                          │      │
-│                  │   - Key: Name                                                              │      │
-│                  │     Value: subnet-private-1                                                │      │
-│                  │   - Key: CreatedByProvider                                                 │      │
-│                  │     Value: aws                                                             │      │
-│                  │   - Key: kubernetes.io/role/internal-elb                                   │      │
-│                  │     Value: 1                                                               │      │
-│                  │   - Key: stage                                                             │      │
-│                  │     Value: dev                                                             │      │
-│                  │ SubnetArn: arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0e600c9492fbf… │      │
-│                  │                                                                            │      │
-├──────────────────┼────────────────────────────────────────────────────────────────────────────┼──────┤
-│ subnet-public-2  │ AvailabilityZone: eu-west-2b                                               │ Yes  │
-│                  │ AvailabilityZoneId: euw2-az3                                               │      │
-│                  │ AvailableIpAddressCount: 8187                                              │      │
-│                  │ CidrBlock: 192.168.32.0/19                                                 │      │
-│                  │ DefaultForAz: false                                                        │      │
-│                  │ MapPublicIpOnLaunch: true                                                  │      │
-│                  │ MapCustomerOwnedIpOnLaunch: false                                          │      │
-│                  │ State: available                                                           │      │
-│                  │ SubnetId: subnet-0a56a7f4e874f99fc                                         │      │
-│                  │ VpcId: vpc-06d8eb1ddef9ed0f1                                               │      │
-│                  │ OwnerId: 840541460064                                                      │      │
-│                  │ AssignIpv6AddressOnCreation: false                                         │      │
-│                  │ Ipv6CidrBlockAssociationSet: []                                            │      │
-│                  │ Tags:                                                                      │      │
-│                  │   - Key: kubernetes.io/role/elb                                            │      │
-│                  │     Value: 1                                                               │      │
-│                  │   - Key: CreatedByProvider                                                 │      │
-│                  │     Value: aws                                                             │      │
-│                  │   - Key: stage                                                             │      │
-│                  │     Value: dev                                                             │      │
-│                  │   - Key: kubernetes.io/cluster/cluster                                     │      │
-│                  │     Value: shared                                                          │      │
-│                  │   - Key: projectName                                                       │      │
-│                  │     Value: @grucloud/example-module-aws-eks                                │      │
-│                  │   - Key: ManagedBy                                                         │      │
-│                  │     Value: GruCloud                                                        │      │
-│                  │   - Key: Name                                                              │      │
-│                  │     Value: subnet-public-2                                                 │      │
-│                  │ SubnetArn: arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0a56a7f4e874f… │      │
-│                  │                                                                            │      │
-├──────────────────┼────────────────────────────────────────────────────────────────────────────┼──────┤
-│ default          │ AvailabilityZone: eu-west-2a                                               │ NO   │
-│                  │ AvailabilityZoneId: euw2-az2                                               │      │
-│                  │ AvailableIpAddressCount: 4091                                              │      │
-│                  │ CidrBlock: 172.31.0.0/20                                                   │      │
-│                  │ DefaultForAz: true                                                         │      │
-│                  │ MapPublicIpOnLaunch: true                                                  │      │
-│                  │ MapCustomerOwnedIpOnLaunch: false                                          │      │
-│                  │ State: available                                                           │      │
-│                  │ SubnetId: subnet-0f6f085fc384bf8ce                                         │      │
-│                  │ VpcId: vpc-bbbafcd3                                                        │      │
-│                  │ OwnerId: 840541460064                                                      │      │
-│                  │ AssignIpv6AddressOnCreation: false                                         │      │
-│                  │ Ipv6CidrBlockAssociationSet: []                                            │      │
-│                  │ Tags: []                                                                   │      │
-│                  │ SubnetArn: arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0f6f085fc384b… │      │
-│                  │                                                                            │      │
-└──────────────────┴────────────────────────────────────────────────────────────────────────────┴──────┘
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│ 5 EC2::Subnet from aws                                                            │
+├───────────────────────────────────────────────────────────────────────────────────┤
+│ name: vpc-default::subnet-default-a                                               │
+│ managedByUs: NO                                                                   │
+│ live:                                                                             │
+│   AvailabilityZone: us-west-2a                                                    │
+│   AvailabilityZoneId: usw2-az2                                                    │
+│   AvailableIpAddressCount: 4091                                                   │
+│   CidrBlock: 172.31.16.0/20                                                       │
+│   DefaultForAz: true                                                              │
+│   MapPublicIpOnLaunch: true                                                       │
+│   MapCustomerOwnedIpOnLaunch: false                                               │
+│   State: available                                                                │
+│   SubnetId: subnet-fe3a088a                                                       │
+│   VpcId: vpc-5a011238                                                             │
+│   OwnerId: 840541460064                                                           │
+│   AssignIpv6AddressOnCreation: false                                              │
+│   Ipv6CidrBlockAssociationSet: []                                                 │
+│   SubnetArn: arn:aws:ec2:us-west-2:840541460064:subnet/subnet-fe3a088a            │
+│   EnableDns64: false                                                              │
+│   Ipv6Native: false                                                               │
+│   PrivateDnsNameOptionsOnLaunch:                                                  │
+│     HostnameType: ip-name                                                         │
+│     EnableResourceNameDnsARecord: false                                           │
+│     EnableResourceNameDnsAAAARecord: false                                        │
+│                                                                                   │
+├───────────────────────────────────────────────────────────────────────────────────┤
+│ name: vpc-default::subnet-default-b                                               │
+│ managedByUs: NO                                                                   │
+│ live:                                                                             │
+│   AvailabilityZone: us-west-2b                                                    │
+│   AvailabilityZoneId: usw2-az1                                                    │
+│   AvailableIpAddressCount: 4091                                                   │
+│   CidrBlock: 172.31.32.0/20                                                       │
+│   DefaultForAz: true                                                              │
+│   MapPublicIpOnLaunch: true                                                       │
+│   MapCustomerOwnedIpOnLaunch: false                                               │
+│   State: available                                                                │
+│   SubnetId: subnet-832a39e1                                                       │
+│   VpcId: vpc-5a011238                                                             │
+│   OwnerId: 840541460064                                                           │
+│   AssignIpv6AddressOnCreation: false                                              │
+│   Ipv6CidrBlockAssociationSet: []                                                 │
+│   SubnetArn: arn:aws:ec2:us-west-2:840541460064:subnet/subnet-832a39e1            │
+│   EnableDns64: false                                                              │
+│   Ipv6Native: false                                                               │
+│   PrivateDnsNameOptionsOnLaunch:                                                  │
+│     HostnameType: ip-name                                                         │
+│     EnableResourceNameDnsARecord: false                                           │
+│     EnableResourceNameDnsAAAARecord: false                                        │
+│                                                                                   │
+├───────────────────────────────────────────────────────────────────────────────────┤
+│ name: vpc-default::subnet-default-c                                               │
+│ managedByUs: NO                                                                   │
+│ live:                                                                             │
+│   AvailabilityZone: us-west-2c                                                    │
+│   AvailabilityZoneId: usw2-az3                                                    │
+│   AvailableIpAddressCount: 4091                                                   │
+│   CidrBlock: 172.31.0.0/20                                                        │
+│   DefaultForAz: true                                                              │
+│   MapPublicIpOnLaunch: true                                                       │
+│   MapCustomerOwnedIpOnLaunch: false                                               │
+│   State: available                                                                │
+│   SubnetId: subnet-49faa70f                                                       │
+│   VpcId: vpc-5a011238                                                             │
+│   OwnerId: 840541460064                                                           │
+│   AssignIpv6AddressOnCreation: false                                              │
+│   Ipv6CidrBlockAssociationSet: []                                                 │
+│   SubnetArn: arn:aws:ec2:us-west-2:840541460064:subnet/subnet-49faa70f            │
+│   EnableDns64: false                                                              │
+│   Ipv6Native: false                                                               │
+│   PrivateDnsNameOptionsOnLaunch:                                                  │
+│     HostnameType: ip-name                                                         │
+│     EnableResourceNameDnsARecord: false                                           │
+│     EnableResourceNameDnsAAAARecord: false                                        │
+│                                                                                   │
+├───────────────────────────────────────────────────────────────────────────────────┤
+│ name: vpc-default::subnet-default-d                                               │
+│ managedByUs: NO                                                                   │
+│ live:                                                                             │
+│   AvailabilityZone: us-west-2d                                                    │
+│   AvailabilityZoneId: usw2-az4                                                    │
+│   AvailableIpAddressCount: 4091                                                   │
+│   CidrBlock: 172.31.48.0/20                                                       │
+│   DefaultForAz: true                                                              │
+│   MapPublicIpOnLaunch: true                                                       │
+│   MapCustomerOwnedIpOnLaunch: false                                               │
+│   State: available                                                                │
+│   SubnetId: subnet-fdeb42d6                                                       │
+│   VpcId: vpc-5a011238                                                             │
+│   OwnerId: 840541460064                                                           │
+│   AssignIpv6AddressOnCreation: false                                              │
+│   Ipv6CidrBlockAssociationSet: []                                                 │
+│   SubnetArn: arn:aws:ec2:us-west-2:840541460064:subnet/subnet-fdeb42d6            │
+│   EnableDns64: false                                                              │
+│   Ipv6Native: false                                                               │
+│   PrivateDnsNameOptionsOnLaunch:                                                  │
+│     HostnameType: ip-name                                                         │
+│     EnableResourceNameDnsARecord: false                                           │
+│     EnableResourceNameDnsAAAARecord: false                                        │
+│                                                                                   │
+├───────────────────────────────────────────────────────────────────────────────────┤
+│ name: vpc::subnet-private1-us-west-2a                                             │
+│ managedByUs: NO                                                                   │
+│ live:                                                                             │
+│   AvailabilityZone: us-west-2a                                                    │
+│   AvailabilityZoneId: usw2-az2                                                    │
+│   AvailableIpAddressCount: 4091                                                   │
+│   CidrBlock: 10.0.128.0/20                                                        │
+│   DefaultForAz: false                                                             │
+│   MapPublicIpOnLaunch: false                                                      │
+│   MapCustomerOwnedIpOnLaunch: false                                               │
+│   State: available                                                                │
+│   SubnetId: subnet-00c4b54c3723210d3                                              │
+│   VpcId: vpc-02867070ad049645c                                                    │
+│   OwnerId: 840541460064                                                           │
+│   AssignIpv6AddressOnCreation: false                                              │
+│   Ipv6CidrBlockAssociationSet: []                                                 │
+│   Tags:                                                                           │
+│     - Key: Name                                                                   │
+│       Value: subnet-private1-us-west-2a                                           │
+│   SubnetArn: arn:aws:ec2:us-west-2:840541460064:subnet/subnet-00c4b54c3723210d3   │
+│   EnableDns64: false                                                              │
+│   Ipv6Native: false                                                               │
+│   PrivateDnsNameOptionsOnLaunch:                                                  │
+│     HostnameType: ip-name                                                         │
+│     EnableResourceNameDnsARecord: false                                           │
+│     EnableResourceNameDnsAAAARecord: false                                        │
+│                                                                                   │
+└───────────────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
 Provider: aws
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                                 │
-├────────────────────┬────────────────────────────────────────────────────────────────────────────────┤
-│ Subnet             │ subnet-public-1                                                                │
-│                    │ subnet-private-2                                                               │
-│                    │ subnet-private-1                                                               │
-│                    │ subnet-public-2                                                                │
-│                    │ default                                                                        │
-└────────────────────┴────────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                              │
+├─────────────┬────────────────────────────────────────────────────────────────────┤
+│ EC2::Subnet │ vpc-default::subnet-default-a                                      │
+│             │ vpc-default::subnet-default-b                                      │
+│             │ vpc-default::subnet-default-c                                      │
+│             │ vpc-default::subnet-default-d                                      │
+│             │ vpc::subnet-private1-us-west-2a                                    │
+└─────────────┴────────────────────────────────────────────────────────────────────┘
 5 resources, 1 type, 1 provider
-Command "gc list --types Subnet" executed in 5s
+Command "gc list --types EC2::Subnet" executed in 6s, 105 MB
 ```

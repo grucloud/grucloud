@@ -4,6 +4,8 @@
 
 ## Aws
 
+- cloudwan vpc attachment
+- route to core network
 - fix gc l -t
 - Network Manager docs
 - SSM Document doc

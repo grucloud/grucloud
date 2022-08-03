@@ -37,8 +37,8 @@ exports.createResources = () => [
 
 ### Used By
 
-- [EC2](./Instance.md)
-- [SecurityGroupRuleIngress](./SecurityGroupRuleIngress.md)
-- [SecurityGroupRuleEgress](./SecurityGroupRuleEgress.md)
-- [Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
+- [EC2 Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
+- [EC2 Instance](./Instance.md)
+- [EC2 SecurityGroup Rule Ingress](./SecurityGroupRuleIngress.md)
+- [EC2 SecurityGroup Rule Egress](./SecurityGroupRuleEgress.md)
 - [ECS Service](../ECS/Service.md)

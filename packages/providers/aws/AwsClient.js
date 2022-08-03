@@ -423,7 +423,13 @@ const AwsClient =
           (created) =>
             pipe([
               () => created,
-              pickCreated({ pickId, payload, name, resolvedDependencies }),
+              pickCreated({
+                endpoint,
+                pickId,
+                payload,
+                name,
+                resolvedDependencies,
+              }),
               tap((params) => {
                 assert(
                   isObject(params),

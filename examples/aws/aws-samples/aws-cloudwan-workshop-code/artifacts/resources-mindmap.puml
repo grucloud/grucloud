@@ -1,0 +1,33 @@
+@startmindmap
+title Resources for project aws-cloudwan-workshop-code
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ EC2
+++++ Vpc (3)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ NatGateway (2)
+++++ Subnet (8)
+++++ RouteTable (8)
+++++ RouteTableAssociation (8)
+++++ Route (4)
+++++ ElasticIpAddress (2)
++++ NetworkManager
+++++ GlobalNetwork (1)
+++++ CoreNetwork (1)
+-- aws-secondary
+--- EC2
+---- Vpc (3)
+---- InternetGateway (1)
+---- InternetGatewayAttachment (1)
+---- NatGateway (2)
+---- Subnet (8)
+---- RouteTable (8)
+---- RouteTableAssociation (8)
+---- Route (4)
+---- ElasticIpAddress (2)
+--- NetworkManager
+---- GlobalNetwork (1)
+---- CoreNetwork (1)
+@endmindmap

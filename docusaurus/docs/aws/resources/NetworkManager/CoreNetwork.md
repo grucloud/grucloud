@@ -81,6 +81,8 @@ exports.createResources = () => [
 
 ### Used By
 
+- [EC2 Route](../EC2/Route.md)
+
 ### List
 
 ```sh

@@ -19,7 +19,6 @@ const assignPolicyDocument = assign({
 const createModel = ({ config }) => ({
   package: "networkmanager",
   client: "NetworkManager",
-  region: "us-west-2",
   ignoreErrorCodes: ["ResourceNotFoundException"],
   getById: {
     method: "getCoreNetwork",
@@ -54,6 +53,23 @@ const createModel = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#deleteCoreNetwork-property
   destroy: {
+    // TODO
+    // preDestroy: ({ endpoint, live }) =>
+    //   pipe([
+    //     tap((params) => {
+    //       assert(true);
+    //     }),
+    //     () => live,
+    //     pick(["CoreNetworkId"]),
+    //     defaultsDeep({ Alias: "LATEST" }),
+    //     endpoint().getCoreNetworkPolicy,
+    //     tap((params) => {
+    //       assert(true);
+    //     }),
+    //     get("CoreNetworkPolicy"),
+    //     pick(["CoreNetworkId", "PolicyVersionId"]),
+    //     endpoint().deleteCoreNetworkPolicyVersion,
+    //   ])(),
     method: "deleteCoreNetwork",
     pickId: pipe([pick(["CoreNetworkId"])]),
   },

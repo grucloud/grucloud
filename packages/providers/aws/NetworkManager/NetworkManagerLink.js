@@ -12,7 +12,6 @@ const { tagResource, untagResource } = require("./NetworkManagerCommon");
 const createModel = ({ config }) => ({
   package: "networkmanager",
   client: "NetworkManager",
-  region: "us-west-2",
   ignoreErrorCodes: ["ResourceNotFoundException", "ValidationException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#getLinks-property
   getById: {

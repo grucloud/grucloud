@@ -14,6 +14,9 @@ const {
 const { NetworkManagerSite } = require("./NetworkManagerSite");
 const { NetworkManagerDevice } = require("./NetworkManagerDevice");
 const { NetworkManagerLink } = require("./NetworkManagerLink");
+const {
+  NetworkManagerVpcAttachment,
+} = require("./NetworkManagerVpcAttachment");
 
 const GROUP = "NetworkManager";
 const compareNetworkManager = compareAws({});
@@ -157,6 +160,74 @@ module.exports = pipe([
                 find(eq(get("live.TransitGatewayArn"), live.TransitGatewayArn)),
                 get("id"),
               ])(),
+        },
+      },
+    },
+    {
+      type: "VpcAttachment",
+      Client: NetworkManagerVpcAttachment,
+      omitProperties: [
+        "CoreNetworkId",
+        "CoreNetworkArn",
+        "AttachmentId",
+        "State",
+        "ResourceArn",
+        "AttachmentPolicyRuleNumber",
+      ],
+      inferName: pipe([
+        get("dependenciesSpec"),
+        tap(({ coreNetwork, vpc }) => {
+          assert(coreNetwork);
+          assert(vpc);
+        }),
+        ({ coreNetwork, vpc }) => `vpc-attach::::${coreNetwork}::${vpc}`,
+      ]),
+      dependencies: {
+        coreNetwork: {
+          type: "CoreNetwork",
+          group: GROUP,
+          parent: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              get("CoreNetworkId"),
+              tap((CoreNetworkId) => {
+                assert(CoreNetworkId);
+              }),
+            ]),
+        },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          //TODO
+          parent: true,
+          dependencyId:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    type: "Vpc",
+                    group: "EC2",
+                    providerName: config.providerName,
+                  }),
+                find(eq(get("live.VpcArn"), live.ResourceArn)),
+                get("id"),
+                tap((id) => {
+                  assert(id);
+                }),
+              ])(),
+        },
+        subnets: {
+          type: "Vpc",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("SubnetArns"),
+              tap((SubnetArns) => {
+                assert(SubnetArns);
+              }),
+            ]),
         },
       },
     },

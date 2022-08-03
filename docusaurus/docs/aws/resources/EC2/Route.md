@@ -126,11 +126,12 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [Egress Only Internet Gateway](./EgressOnlyInternetGateway.md)
+- [EC2 Egress Only Internet Gateway](./EgressOnlyInternetGateway.md)
 - [EC2 Instance](./Instance.md)
-- [Internet Gateway](./InternetGateway.md)
-- [Managed Prefix List](./ManagedPrefixList.md)
-- [Nat Gateway](./NatGateway.md)
-- [Route Table](./RouteTable.md)
-- [Transit Gateway](./TransitGateway.md)
-- [Vpc Endpoint](./VpcEndpoint.md)
+- [EC2 Internet Gateway](./InternetGateway.md)
+- [EC2 Managed Prefix List](./ManagedPrefixList.md)
+- [EC2 Nat Gateway](./NatGateway.md)
+- [EC2 Route Table](./RouteTable.md)
+- [EC2 Transit Gateway](./TransitGateway.md)
+- [EC2 Vpc Endpoint](./VpcEndpoint.md)
+- [NetworkManager CoreNetwork](../NetworkManager/CoreNetwork.md)

@@ -983,6 +983,7 @@ module.exports = pipe([
         "CidrBlockAssociationSet",
         "IsDefault",
         "VpcId",
+        "VpcArn",
         "Ipv4IpamPoolId",
       ],
       dependencies: {
@@ -1010,10 +1011,6 @@ module.exports = pipe([
                 ),
                 get("live.IpamPoolId"),
               ])(),
-          filterDependency:
-            ({ resource }) =>
-            (dependency) =>
-              pipe([() => resource, get("live.CidrBlock")])(),
         },
         // TODO ipamPoolIpv6
         // ipamPoolIpv6: {
@@ -1256,6 +1253,9 @@ module.exports = pipe([
         vpc: {
           type: "Vpc",
           group: "EC2",
+          //TODO
+          parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) => get("VpcId"),
         },
       },
@@ -1365,6 +1365,7 @@ module.exports = pipe([
       inferName: ({
         properties,
         dependenciesSpec: {
+          coreNetwork,
           ec2Instance,
           egressOnlyInternetGateway,
           ig,
@@ -1382,6 +1383,8 @@ module.exports = pipe([
           }),
           () => routeTable,
           switchCase([
+            () => coreNetwork,
+            pipe([append("::core")]),
             () => ig,
             pipe([append("::igw")]),
             () => natGateway,
@@ -1406,6 +1409,11 @@ module.exports = pipe([
         ])(),
       includeDefaultDependencies: true,
       dependencies: {
+        coreNetwork: {
+          type: "CoreNetwork",
+          group: "NetworkManager",
+          dependencyId: ({ lives, config }) => get("CoreNetworkArn"),
+        },
         ec2Instance: {
           type: "Instance",
           group: "EC2",

@@ -10,7 +10,6 @@ const { tagResource, untagResource } = require("./NetworkManagerCommon");
 const createModel = ({ config }) => ({
   package: "networkmanager",
   client: "NetworkManager",
-  region: "us-west-2",
   ignoreErrorCodes: ["ResourceNotFoundException"],
   getById: {
     method: "describeGlobalNetworks",

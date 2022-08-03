@@ -34,7 +34,8 @@ const GROUPS = [
   ["KMS", "kms"],
   ["Lambda", "lambda"],
   ["NetworkFirewall", "network-firewall"],
-  ["NetworkManager", "networkmanager"],
+  //TODO
+  //["NetworkManager", "networkmanager"],
   ["Organisations", "organizations"],
   ["RDS", "rds"],
   ["RAM", "ram"],
@@ -53,7 +54,6 @@ const GROUPS = [
 const GROUPS_GLOBAL = [
   "Route53Domain", // always on us-east-1
   "CloudWatchLogs", // missing from the list provider by AWS
-  "NetworkManager",
   "Route53RecoveryReadiness",
 ];
 
