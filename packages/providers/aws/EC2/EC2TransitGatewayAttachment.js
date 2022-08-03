@@ -68,8 +68,20 @@ const findNameInDependency = ({ live, lives, config }) =>
             get("name", live.ResourceId),
             prepend("vpc::"),
           ]),
-          () => {
-            assert(false, "ResourceType not handled");
+          eq(get("ResourceType"), "peering"),
+          pipe([
+            ({ ResourceId }) =>
+              lives.getById({
+                id: ResourceId,
+                type: "TransitGateway",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            get("name", live.ResourceId),
+            prepend("tgw::"),
+          ]),
+          ({ ResourceType }) => {
+            assert(false, `ResourceType '${ResourceType}' not handled`);
           },
         ]),
       ]),

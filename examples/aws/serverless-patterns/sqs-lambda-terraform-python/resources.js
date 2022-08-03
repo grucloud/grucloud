@@ -83,7 +83,6 @@ exports.createResources = () => [
   {
     type: "EventSourceMapping",
     group: "Lambda",
-    name: "mapping-sqs-lambda-demo-sqs-lambda-demo",
     properties: ({}) => ({
       BatchSize: 10,
       MaximumBatchingWindowInSeconds: 0,

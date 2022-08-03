@@ -89,7 +89,6 @@ exports.createResources = () => [
   {
     type: "EventSourceMapping",
     group: "Lambda",
-    name: "mapping-read-kinesis-stream-stream/my-stream",
     properties: ({}) => ({
       StartingPosition: "LATEST",
       BatchSize: 100,

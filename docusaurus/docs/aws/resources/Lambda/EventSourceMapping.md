@@ -14,7 +14,6 @@ exports.createResources = () => [
   {
     type: "EventSourceMapping",
     group: "Lambda",
-    name: "mapping-lambda-hello-world-my-queue-lambda",
     properties: ({}) => ({
       BatchSize: 10,
       MaximumBatchingWindowInSeconds: 0,

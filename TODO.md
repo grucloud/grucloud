@@ -4,8 +4,7 @@
 
 ## Aws
 
-- route to NetworkInterfaceId
-- EventSourceMapping inferName
+- fix gc l -t
 - Network Manager docs
 - SSM Document doc
 
@@ -47,6 +46,8 @@
 - Amazon MQ and RabbitMQ
 - Amazon MSK
 - Apache Kafka
+
+- route to NetworkInterfaceId
 
 ## Refactoring
 
