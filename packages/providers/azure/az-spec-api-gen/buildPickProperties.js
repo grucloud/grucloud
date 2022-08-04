@@ -20,6 +20,7 @@ const {
   isSwaggerObject,
   findTypesByDiscriminator,
   buildParentPath,
+  getAllProperties,
 } = require("./AzureRestApiCommon");
 
 const buildPickPropertiesEnum = ({ key, swagger, parentPath, accumulator }) =>
@@ -27,10 +28,7 @@ const buildPickPropertiesEnum = ({ key, swagger, parentPath, accumulator }) =>
     fork({
       fromBase: pipe([
         pipe([
-          get("properties"),
-          tap((properties) => {
-            assert(properties);
-          }),
+          getAllProperties,
           buildPickProperties({
             swagger,
             parentPath: buildParentPath(key)(parentPath),
@@ -42,10 +40,7 @@ const buildPickPropertiesEnum = ({ key, swagger, parentPath, accumulator }) =>
         findTypesByDiscriminator({ swagger }),
         flatMap(
           pipe([
-            get("properties"),
-            tap((properties) => {
-              assert(properties);
-            }),
+            getAllProperties,
             buildPickProperties({
               swagger,
               parentPath: buildParentPath(key)(parentPath),

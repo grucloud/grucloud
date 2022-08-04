@@ -19,7 +19,7 @@ const specDir = "node_modules/azure-rest-api-specs/specification/";
 describe("AzureRestApi", function () {
   before(async function () {});
 
-  it("processSwagger compute", async function () {
+  it.skip("processSwagger compute", async function () {
     await pipe([
       () => ({
         name: "compute.json",
@@ -28,7 +28,7 @@ describe("AzureRestApi", function () {
         dir: path.resolve(
           process.cwd(),
           specDir,
-          "compute/resource-manager/Microsoft.Compute/stable/2021-07-01"
+          "compute/resource-manager/Microsoft.Compute/ComputeRP/stable/2021-07-01"
         ),
         group: "Microsoft.Compute",
         groupDir: "compute",
@@ -39,31 +39,8 @@ describe("AzureRestApi", function () {
       }),
     ])();
   });
-  it("buildDependenciesFromBody virtualMachines", async function () {
-    await pipe([
-      () =>
-        path.resolve(
-          process.cwd(),
-          specDir,
-          "compute/resource-manager/Microsoft.Compute/stable/2021-07-01",
-          "compute.json"
-        ),
-      (filename) => SwaggerParser.dereference(filename, {}),
-      get("paths"),
-      get([
-        "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}",
-      ]),
-      get("put.parameters"),
-      find(eq(get("in"), "body")),
-      get("schema.properties"),
-      buildDependenciesFromBody({}),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-  });
 
-  it("processSwagger webapp", async function () {
+  it.skip("processSwagger webapp", async function () {
     await pipe([
       () => ({
         name: "WebApps.json",
@@ -83,60 +60,6 @@ describe("AzureRestApi", function () {
       }),
     ])();
   });
-  it("processSwagger cosmos", async function () {
-    await pipe([
-      () => ({
-        name: "cosmos-db.json",
-      }),
-      processSwagger({
-        dir: path.resolve(
-          process.cwd(),
-          specDir,
-          "cosmos-db/resource-manager/Microsoft.DocumentDB/preview/2022-02-15-preview"
-        ),
-        group: "Microsoft.DocumentDB",
-        groupDir: "cosmos-db ",
-        apiVersion: "2022-02-15-preview",
-      }),
-      tap((params) => {
-        assert(true);
-      }),
-      get("resources"),
-      find(eq(get("type"), "DatabaseAccount")),
-      tap((resource) => {
-        assert(resource);
-      }),
-      get("methods.put.parameters"),
-      find(eq(get("in"), "body")),
-      get("schema"),
-      tap((schema) => {
-        assert(schema);
-      }),
-      // tap((schema) =>
-      //   pipe([
-      //     () => JSON.stringify(schema, null, 4),
-      //     (schemaString) =>
-      //       fs.writeFile(
-      //         path.resolve(
-      //           __dirname,
-      //           "fixtures",
-      //           "DatabaseAccountPutSchema.json"
-      //         ),
-      //         schemaString
-      //       ),
-      //   ])()
-      // ),
-      tap((params) => {
-        assert(true);
-      }),
-      get("properties.properties.properties"),
-      buildPickProperties({}),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-  });
-
   it("processSwaggerFiles", async function () {
     await pipe([
       tryCatch(

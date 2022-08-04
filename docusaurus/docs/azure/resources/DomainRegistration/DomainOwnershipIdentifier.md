@@ -4,9 +4,25 @@ title: DomainOwnershipIdentifier
 ---
 Provides a **DomainOwnershipIdentifier** from the **DomainRegistration** group
 ## Examples
+### Create App Service Domain OwnershipIdentifier
+```js
+exports.createResources = () => [
+  {
+    type: "DomainOwnershipIdentifier",
+    group: "DomainRegistration",
+    name: "myDomainOwnershipIdentifier",
+    properties: () => ({ properties: { ownershipId: "SampleOwnershipId" } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      domain: "myDomainOwnershipIdentifier",
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Domain](../DomainRegistration/Domain.md)
+- [DomainOwnershipIdentifier](../DomainRegistration/DomainOwnershipIdentifier.md)
 ## Swagger Schema
 ```js
 {
@@ -44,6 +60,6 @@ Provides a **DomainOwnershipIdentifier** from the **DomainRegistration** group
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.DomainRegistration/stable/2021-03-01/Domains.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.DomainRegistration/stable/2022-03-01/Domains.json).

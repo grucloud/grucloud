@@ -212,8 +212,10 @@ exports.createResources = () => [
   },
   allOf: [
     {
-      description: 'The Resource model definition.',
+      type: 'object',
+      description: 'The Resource model definition with location property as optional.',
       properties: {
+        location: { type: 'string', description: 'Resource location' },
         id: { readOnly: true, type: 'string', description: 'Resource Id' },
         name: {
           readOnly: true,
@@ -225,14 +227,12 @@ exports.createResources = () => [
           type: 'string',
           description: 'Resource type'
         },
-        location: { type: 'string', description: 'Resource location' },
         tags: {
           type: 'object',
           additionalProperties: { type: 'string' },
           description: 'Resource tags'
         }
       },
-      required: [ 'location' ],
       'x-ms-azure-resource': true
     }
   ],
@@ -240,6 +240,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/virtualMachine.json).

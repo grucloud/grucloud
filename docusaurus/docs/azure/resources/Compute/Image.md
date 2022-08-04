@@ -296,8 +296,8 @@ exports.createResources = () => [
         storageProfile: {
           osDisk: {
             osType: "Linux",
-            snapshot: {
-              id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot",
+            managedDisk: {
+              id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myManagedDisk",
             },
             diskEncryptionSet: {
               id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
@@ -331,8 +331,8 @@ exports.createResources = () => [
         storageProfile: {
           osDisk: {
             osType: "Linux",
-            managedDisk: {
-              id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/disks/myManagedDisk",
+            snapshot: {
+              id: "subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/snapshots/mySnapshot",
             },
             diskEncryptionSet: {
               id: "/subscriptions/{subscription-id}/resourceGroups/myResourceGroup/providers/Microsoft.Compute/diskEncryptionSets/{existing-diskEncryptionSet-name}",
@@ -386,7 +386,7 @@ exports.createResources = () => [
                 },
                 osState: {
                   type: 'string',
-                  description: 'The OS State.',
+                  description: 'The OS State. For managed images, use Generalized.',
                   enum: [ 'Generalized', 'Specialized' ],
                   'x-ms-enum': {
                     name: 'OperatingSystemStateTypes',
@@ -445,7 +445,8 @@ exports.createResources = () => [
                         'StandardSSD_LRS',
                         'UltraSSD_LRS',
                         'Premium_ZRS',
-                        'StandardSSD_ZRS'
+                        'StandardSSD_ZRS',
+                        'PremiumV2_LRS'
                       ],
                       'x-ms-enum': {
                         name: 'StorageAccountTypes',
@@ -529,7 +530,8 @@ exports.createResources = () => [
                           'StandardSSD_LRS',
                           'UltraSSD_LRS',
                           'Premium_ZRS',
-                          'StandardSSD_ZRS'
+                          'StandardSSD_ZRS',
+                          'PremiumV2_LRS'
                         ],
                         'x-ms-enum': {
                           name: 'StorageAccountTypes',
@@ -626,6 +628,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/image.json).

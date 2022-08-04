@@ -22,7 +22,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      roleDefinition: "myRoleDefinition",
+      sqlResourceSqlRoleDefinition: "mySqlResourceSqlRoleDefinition",
       account: "myDatabaseAccount",
     }),
   },
@@ -31,7 +31,7 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [RoleDefinition](../Authorization/RoleDefinition.md)
+- [SqlResourceSqlRoleDefinition](../DocumentDB/SqlResourceSqlRoleDefinition.md)
 - [DatabaseAccount](../DocumentDB/DatabaseAccount.md)
 ## Swagger Schema
 ```js
@@ -62,6 +62,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2022-02-15-preview`.
+The resource version is `2022-05-15`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/preview/2022-02-15-preview/rbac.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/stable/2022-05-15/rbac.json).

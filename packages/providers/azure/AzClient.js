@@ -52,6 +52,7 @@ const listExpectedExceptionMessages = [
   "Mongo User Defination is not enabled for the account",
   "This runtime stack is not yet supported on Linux", // Web::WebAppProcess
   "We are unable to serve this request due to an internal error", // ContainerService::TrustedAccessRoleBinding
+  "Preview feature", //ContainerService::TrustedAccessRoleBinding
 ];
 
 const shouldRetryOnExceptionAzure = pipe([

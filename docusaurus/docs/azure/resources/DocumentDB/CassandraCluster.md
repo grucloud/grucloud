@@ -151,8 +151,8 @@ exports.createResources = () => [
         },
         authenticationMethod: {
           type: 'string',
-          description: "Which authentication method Cassandra should use to authenticate clients. 'None' turns off authentication, so should not be used except in emergencies. 'Cassandra' is the default password based authentication. The default is 'Cassandra'. 'Ldap' is in preview.",
-          enum: [ 'None', 'Cassandra', 'Ldap' ],
+          description: "Which authentication method Cassandra should use to authenticate clients. 'None' turns off authentication, so should not be used except in emergencies. 'Cassandra' is the default password based authentication. The default is 'Cassandra'.",
+          enum: [ 'None', 'Cassandra' ],
           'x-ms-enum': { name: 'AuthenticationMethod', modelAsString: true }
         },
         initialCassandraAdminPassword: {
@@ -246,7 +246,7 @@ exports.createResources = () => [
         hoursBetweenBackups: {
           type: 'integer',
           format: 'int32',
-          description: 'Number of hours to wait between taking a backup of the cluster.'
+          description: 'Number of hours to wait between taking a backup of the cluster. To disable backups, set this property to 0.'
         },
         deallocated: {
           type: 'boolean',
@@ -262,6 +262,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2022-02-15-preview`.
+The resource version is `2022-05-15`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/preview/2022-02-15-preview/managedCassandra.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/stable/2022-05-15/managedCassandra.json).

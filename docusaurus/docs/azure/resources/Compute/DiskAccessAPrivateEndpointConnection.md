@@ -107,6 +107,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-12-01`.
+The resource version is `2022-03-02`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-12-01/disk.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/DiskRP/stable/2022-03-02/DiskRP/diskAccess.json).

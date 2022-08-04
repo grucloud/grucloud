@@ -4,6 +4,29 @@ title: AppServiceCertificateOrderCertificate
 ---
 Provides a **AppServiceCertificateOrderCertificate** from the **CertificateRegistration** group
 ## Examples
+### Create Certificate
+```js
+exports.createResources = () => [
+  {
+    type: "AppServiceCertificateOrderCertificate",
+    group: "CertificateRegistration",
+    name: "myAppServiceCertificateOrderCertificate",
+    properties: () => ({
+      location: "Global",
+      properties: {
+        keyVaultId:
+          "/subscriptions/34adfa4f-cedf-4dc0-ba29-b6d1a69ab345/resourcegroups/testrg123/providers/microsoft.keyvault/vaults/SamplevaultName",
+        keyVaultSecretName: "SampleSecretName1",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      certificateOrder: "myAppServiceCertificateOrder",
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceCertificateOrder](../CertificateRegistration/AppServiceCertificateOrder.md)
@@ -73,6 +96,6 @@ Provides a **AppServiceCertificateOrderCertificate** from the **CertificateRegis
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.CertificateRegistration/stable/2021-03-01/AppServiceCertificateOrders.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.CertificateRegistration/stable/2022-03-01/AppServiceCertificateOrders.json).

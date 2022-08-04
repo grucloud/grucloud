@@ -245,6 +245,18 @@ exports.createResources = () => [
           type: 'string',
           enum: [ 'ExpressRoute', 'VpnGateway', 'ASPath' ],
           'x-ms-enum': { name: 'HubRoutingPreference', modelAsString: true }
+        },
+        virtualRouterAutoScaleConfiguration: {
+          description: 'The VirtualHub Router autoscale configuration.',
+          type: 'object',
+          properties: {
+            minCapacity: {
+              type: 'integer',
+              format: 'int32',
+              minimum: 0,
+              description: 'The minimum number of scale units for VirtualHub Router.'
+            }
+          }
         }
       }
     },
@@ -288,6 +300,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2022-01-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/virtualWan.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2022-01-01/virtualWan.json).

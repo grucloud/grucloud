@@ -61,6 +61,41 @@ exports.createResources = () => [
 ];
 
 ```
+
+### Create a disk encryption set with key vault from a different tenant.
+```js
+exports.createResources = () => [
+  {
+    type: "DiskEncryptionSet",
+    group: "Compute",
+    name: "myDiskEncryptionSet",
+    properties: () => ({
+      location: "West US",
+      identity: {
+        type: "UserAssigned",
+        userAssignedIdentities: {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}":
+            {},
+        },
+      },
+      properties: {
+        activeKey: {
+          keyUrl:
+            "https://myvaultdifferenttenant.vault-int.azure-int.net/keys/{key}",
+        },
+        encryptionType: "EncryptionAtRestWithCustomerKey",
+        federatedClientId: "00000000-0000-0000-0000-000000000000",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      vault: "myVault",
+      key: "myKey",
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Vault](../KeyVault/Vault.md)
@@ -73,7 +108,12 @@ exports.createResources = () => [
       properties: {
         type: {
           type: 'string',
-          enum: [ 'SystemAssigned', 'None' ],
+          enum: [
+            'SystemAssigned',
+            'UserAssigned',
+            'SystemAssigned, UserAssigned',
+            'None'
+          ],
           'x-ms-enum': {
             name: 'DiskEncryptionSetIdentityType',
             modelAsString: true
@@ -89,6 +129,26 @@ exports.createResources = () => [
           readOnly: true,
           type: 'string',
           description: 'The tenant id of the Managed Identity Resource. This will be sent to the RP from ARM via the x-ms-client-tenant-id header in the PUT request if the resource has a systemAssigned(implicit) identity'
+        },
+        userAssignedIdentities: {
+          description: "The list of user identities associated with the disk encryption set. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}'.",
+          type: 'object',
+          additionalProperties: {
+            type: 'object',
+            'x-ms-client-name': 'userAssignedIdentitiesValue',
+            properties: {
+              principalId: {
+                readOnly: true,
+                type: 'string',
+                description: 'The principal id of user assigned identity.'
+              },
+              clientId: {
+                readOnly: true,
+                type: 'string',
+                description: 'The client id of user assigned identity.'
+              }
+            }
+          }
         }
       },
       description: 'The managed identity for the disk encryption set. It should be given permission on the key vault before it can be used to encrypt disks.'
@@ -209,6 +269,10 @@ exports.createResources = () => [
             },
             message: { type: 'string', description: 'The error message.' }
           }
+        },
+        federatedClientId: {
+          type: 'string',
+          description: "Multi-tenant application client id to access key vault in a different tenant. Setting the value to 'None' will clear the property."
         }
       }
     }
@@ -243,6 +307,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-12-01`.
+The resource version is `2022-03-02`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-12-01/disk.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/DiskRP/stable/2022-03-02/DiskRP/diskEncryptionSet.json).

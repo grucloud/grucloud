@@ -318,7 +318,8 @@ exports.createResources = () => [
                           },
                           adminPassword: {
                             type: 'string',
-                            description: 'Specifies the password of the administrator account. <br><br> **Minimum-length (Windows):** 8 characters <br><br> **Minimum-length (Linux):** 6 characters <br><br> **Max-length (Windows):** 123 characters <br><br> **Max-length (Linux):** 72 characters <br><br> **Complexity requirements:** 3 out of 4 conditions below need to be fulfilled <br> Has lower characters <br>Has upper characters <br> Has a digit <br> Has a special character (Regex match [\\W_]) <br><br> **Disallowed values:** "abc@123", "P@$$w0rd", "P@ssw0rd", "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1", "Password22", "iloveyou!" <br><br> For resetting the password, see [How to reset the Remote Desktop service or its login password in a Windows VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp) <br><br> For resetting root password, see [Manage users, SSH, and check or repair disks on Azure Linux VMs using the VMAccess Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)'
+                            description: 'Specifies the password of the administrator account. <br><br> **Minimum-length (Windows):** 8 characters <br><br> **Minimum-length (Linux):** 6 characters <br><br> **Max-length (Windows):** 123 characters <br><br> **Max-length (Linux):** 72 characters <br><br> **Complexity requirements:** 3 out of 4 conditions below need to be fulfilled <br> Has lower characters <br>Has upper characters <br> Has a digit <br> Has a special character (Regex match [\\W_]) <br><br> **Disallowed values:** "abc@123", "P@$$w0rd", "P@ssw0rd", "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1", "Password22", "iloveyou!" <br><br> For resetting the password, see [How to reset the Remote Desktop service or its login password in a Windows VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp) <br><br> For resetting root password, see [Manage users, SSH, and check or repair disks on Azure Linux VMs using the VMAccess Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)',
+                            'x-ms-secret': true
                           },
                           customData: {
                             type: 'string',
@@ -468,7 +469,6 @@ exports.createResources = () => [
                   },
                   consistencyMode: {
                     type: 'string',
-                    readOnly: true,
                     enum: [
                       'CrashConsistent',
                       'FileSystemConsistent',
@@ -478,7 +478,7 @@ exports.createResources = () => [
                       name: 'ConsistencyModeTypes',
                       modelAsString: true
                     },
-                    description: 'Gets the consistency mode for the restore point. Please refer to https://aka.ms/RestorePoints for more details.'
+                    description: 'ConsistencyMode of the RestorePoint. Can be specified in the input while creating a restore point. For now, only CrashConsistent is accepted as a valid input. Please refer to https://aka.ms/RestorePoints for more details.'
                   },
                   timeCreated: {
                     type: 'string',
@@ -509,13 +509,12 @@ exports.createResources = () => [
                               description: 'Disk restore point Id.'
                             },
                             replicationStatus: {
+                              description: 'The disk restore point replication status information.',
                               type: 'object',
-                              items: {
-                                type: 'object',
-                                properties: [Object],
-                                description: 'The instance view of a disk restore point.'
-                              },
-                              description: 'The disk restore point replication status information.'
+                              properties: {
+                                status: [Object],
+                                completionPercent: [Object]
+                              }
                             }
                           },
                           description: 'The instance view of a disk restore point.'
@@ -625,6 +624,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/restorePoint.json).

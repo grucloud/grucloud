@@ -92,6 +92,25 @@ exports.createResources = () => [
               },
               required: [ 'install', 'remove' ]
             },
+            settings: {
+              type: 'object',
+              properties: {
+                packageFileName: {
+                  type: 'string',
+                  description: 'Optional. The name to assign the downloaded package file on the VM. This is limited to 4096 characters. If not specified, the package file will be named the same as the Gallery Application name.'
+                },
+                configFileName: {
+                  type: 'string',
+                  description: 'Optional. The name to assign the downloaded config file on the VM. This is limited to 4096 characters. If not specified, the config file will be named the Gallery Application name appended with "_config".'
+                }
+              },
+              description: 'Additional settings for the VM app that contains the target package and config file name when it is deployed to target VM or VM scale set.'
+            },
+            advancedSettings: {
+              type: 'object',
+              additionalProperties: { type: 'string' },
+              description: 'Optional. Additional settings to pass to the vm-application-manager extension. For advanced use only.'
+            },
             enableHealthCheck: {
               type: 'boolean',
               description: 'Optional. Whether or not this application reports health.'
@@ -289,7 +308,7 @@ exports.createResources = () => [
         provisioningState: {
           readOnly: true,
           type: 'string',
-          title: 'The current state of the gallery Application Version.',
+          title: 'The current state of the gallery or gallery artifact.',
           description: 'The provisioning state, which only appears in the response.',
           enum: [
             'Creating',
@@ -298,7 +317,8 @@ exports.createResources = () => [
             'Succeeded',
             'Deleting',
             'Migrating'
-          ]
+          ],
+          'x-ms-enum': { name: 'GalleryProvisioningState', modelAsString: true }
         },
         replicationStatus: {
           readOnly: true,
@@ -385,6 +405,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-10-01`.
+The resource version is `2022-01-03`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-10-01/gallery.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/GalleryRP/stable/2022-01-03/GalleryRP/gallery.json).

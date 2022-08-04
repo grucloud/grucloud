@@ -132,7 +132,7 @@ exports.createResources = () => [
         },
         conditionVersion: {
           type: 'string',
-          description: "Version of the condition. Currently accepted value is '2.0'"
+          description: "Version of the condition. Currently the only accepted value is '2.0'"
         },
         createdOn: {
           readOnly: true,
@@ -173,4 +173,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2021-04-01-preview`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/authorization/resource-manager/Microsoft.Authorization/preview/2020-10-01-preview/authorization-RoleAssignmentsCalls.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/authorization/resource-manager/Microsoft.Authorization/stable/2022-04-01/authorization-RoleAssignmentsCalls.json).

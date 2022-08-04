@@ -15,6 +15,7 @@ exports.createResources = () => [
       location: "westus",
       properties: {
         databaseAccountOfferType: "Standard",
+        createMode: "Default",
         locations: [
           {
             failoverPriority: 0,
@@ -22,7 +23,6 @@ exports.createResources = () => [
             isZoneRedundant: false,
           },
         ],
-        createMode: "Default",
       },
     }),
     dependencies: ({}) => ({
@@ -78,7 +78,6 @@ exports.createResources = () => [
             isZoneRedundant: false,
           },
         ],
-        createMode: "Default",
         consistencyPolicy: {
           defaultConsistencyLevel: "BoundedStaleness",
           maxIntervalInSeconds: 10,
@@ -90,6 +89,7 @@ exports.createResources = () => [
         apiProperties: { serverVersion: "3.2" },
         enableAnalyticalStorage: true,
         analyticalStorageConfiguration: { schemaType: "WellDefined" },
+        createMode: "Default",
         backupPolicy: {
           type: "Periodic",
           periodicModeProperties: {
@@ -104,7 +104,6 @@ exports.createResources = () => [
           "/subscriptions/subId/resourcegroups/rgName/providers/Microsoft.Synapse/workspaces/workspaceName",
         ],
         capacity: { totalThroughputLimit: 2000 },
-        enableMaterializedViews: false,
       },
     }),
     dependencies: ({}) => ({
@@ -153,10 +152,7 @@ exports.createResources = () => [
             },
           ],
         },
-        backupPolicy: {
-          type: "Continuous",
-          continuousModeProperties: { tier: "Continuous30Days" },
-        },
+        backupPolicy: { type: "Continuous" },
         consistencyPolicy: {
           defaultConsistencyLevel: "BoundedStaleness",
           maxIntervalInSeconds: 10,
@@ -166,7 +162,6 @@ exports.createResources = () => [
         enableFreeTier: false,
         apiProperties: { serverVersion: "3.2" },
         enableAnalyticalStorage: true,
-        enableMaterializedViews: false,
       },
     }),
     dependencies: ({}) => ({
@@ -531,18 +526,6 @@ exports.createResources = () => [
           description: 'An array that contains the Resource Ids for Network Acl Bypass for the Cosmos DB account.',
           items: { type: 'string' }
         },
-        diagnosticLogSettings: {
-          type: 'object',
-          description: 'The Object representing the different Diagnostic log settings for the Cosmos DB Account.',
-          properties: {
-            enableFullTextQuery: {
-              description: 'Describe the level of detail with which queries are to be logged.',
-              type: 'string',
-              enum: [ 'None', 'True', 'False' ],
-              'x-ms-enum': { name: 'EnableFullTextQuery', modelAsString: false }
-            }
-          }
-        },
         disableLocalAuth: {
           description: 'Opt-out of local authentication and ensure only MSI and AAD can be used exclusively for authentication.',
           type: 'boolean'
@@ -588,33 +571,6 @@ exports.createResources = () => [
                   }
                 }
               }
-            },
-            gremlinDatabasesToRestore: {
-              type: 'array',
-              description: 'List of specific gremlin databases available for restore.',
-              items: {
-                type: 'object',
-                description: 'Specific Gremlin Databases to restore.',
-                properties: {
-                  databaseName: {
-                    type: 'string',
-                    description: 'The name of the gremlin database available for restore.'
-                  },
-                  graphNames: {
-                    type: 'array',
-                    description: 'The names of the graphs available for restore.',
-                    items: {
-                      type: 'string',
-                      description: 'The name of the graph.'
-                    }
-                  }
-                }
-              }
-            },
-            tablesToRestore: {
-              type: 'array',
-              description: 'List of specific tables available for restore.',
-              items: { type: 'string', description: 'The name of the table.' }
             }
           }
         },
@@ -629,10 +585,6 @@ exports.createResources = () => [
               description: 'The total throughput limit imposed on the account. A totalThroughputLimit of 2000 imposes a strict limit of max throughput that can be provisioned on that account to be 2000. A totalThroughputLimit of -1 indicates no limits on provisioning of throughput.'
             }
           }
-        },
-        enableMaterializedViews: {
-          description: 'Flag to indicate whether to enable MaterializedViews on the Cosmos DB account',
-          type: 'boolean'
         }
       },
       required: [ 'locations', 'databaseAccountOfferType' ]
@@ -666,51 +618,6 @@ exports.createResources = () => [
           type: 'object',
           additionalProperties: { type: 'string' },
           description: 'Tags are a list of key-value pairs that describe the resource. These tags can be used in viewing and grouping this resource (across resource groups). A maximum of 15 tags can be provided for a resource. Each tag must have a key no greater than 128 characters and value no greater than 256 characters. For example, the default experience for a template type is set with "defaultExperience": "Cassandra". Current "defaultExperience" values also include "Table", "Graph", "DocumentDB", and "MongoDB".'
-        },
-        identity: {
-          properties: {
-            principalId: {
-              readOnly: true,
-              type: 'string',
-              description: 'The principal id of the system assigned identity. This property will only be provided for a system assigned identity.'
-            },
-            tenantId: {
-              readOnly: true,
-              type: 'string',
-              description: 'The tenant id of the system assigned identity. This property will only be provided for a system assigned identity.'
-            },
-            type: {
-              type: 'string',
-              description: "The type of identity used for the resource. The type 'SystemAssigned,UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the service.",
-              enum: [
-                'SystemAssigned',
-                'UserAssigned',
-                'SystemAssigned,UserAssigned',
-                'None'
-              ],
-              'x-ms-enum': { name: 'ResourceIdentityType', modelAsString: false }
-            },
-            userAssignedIdentities: {
-              type: 'object',
-              additionalProperties: {
-                type: 'object',
-                properties: {
-                  principalId: {
-                    readOnly: true,
-                    type: 'string',
-                    description: 'The principal id of user assigned identity.'
-                  },
-                  clientId: {
-                    readOnly: true,
-                    type: 'string',
-                    description: 'The client id of user assigned identity.'
-                  }
-                }
-              },
-              description: "The list of user identities associated with resource. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}'."
-            }
-          },
-          description: 'Identity for the resource.'
         }
       },
       'x-ms-azure-resource': true
@@ -720,6 +627,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2022-02-15-preview`.
+The resource version is `2022-05-15`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/preview/2022-02-15-preview/cosmos-db.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/stable/2022-05-15/cosmos-db.json).

@@ -10,7 +10,7 @@
   "dependencies": {
     "@apidevtools/swagger-parser": "10.0.3",
     "@grucloud/core": "^8.0.0",
-    "azure-rest-api-specs": "https://github.com/Azure/azure-rest-api-specs.git#8c3b3aa14bc2f25fef98dbf6cd3adbc0cb4f3dd1",
+    "azure-rest-api-specs": "https://github.com/Azure/azure-rest-api-specs.git#6f0c7d58c0a923917c2b3467ee756f21dbd2f8e2",
     "change-case": "4.1.2",
     "deep-object-diff": "1.1.0",
     "pluralize": "8.0.0",

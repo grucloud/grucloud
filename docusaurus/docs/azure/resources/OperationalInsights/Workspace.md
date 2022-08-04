@@ -38,7 +38,6 @@ exports.createResources = () => [
         provisioningState: {
           type: 'string',
           description: 'The provisioning state of the workspace.',
-          readOnly: true,
           enum: [
             'Creating',
             'Succeeded',
@@ -226,7 +225,6 @@ exports.createResources = () => [
             },
             description: 'The private link scope resource reference.'
           },
-          'x-ms-identifiers': [ 'resourceId' ],
           description: 'List of linked private link scope resources.'
         },
         features: {
@@ -259,51 +257,10 @@ exports.createResources = () => [
             }
           },
           additionalProperties: true
-        },
-        defaultDataCollectionRuleResourceId: {
-          type: 'string',
-          description: 'The resource ID of the default Data Collection Rule to use for this workspace. Expected format is - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/{dcrName}.'
         }
       }
     },
-    systemData: {
-      readOnly: true,
-      description: 'Metadata pertaining to creation and last modification of the resource.',
-      type: 'object',
-      properties: {
-        createdBy: {
-          type: 'string',
-          description: 'The identity that created the resource.'
-        },
-        createdByType: {
-          type: 'string',
-          description: 'The type of identity that created the resource.',
-          enum: [ 'User', 'Application', 'ManagedIdentity', 'Key' ],
-          'x-ms-enum': { name: 'createdByType', modelAsString: true }
-        },
-        createdAt: {
-          type: 'string',
-          format: 'date-time',
-          description: 'The timestamp of resource creation (UTC).'
-        },
-        lastModifiedBy: {
-          type: 'string',
-          description: 'The identity that last modified the resource.'
-        },
-        lastModifiedByType: {
-          type: 'string',
-          description: 'The type of identity that last modified the resource.',
-          enum: [ 'User', 'Application', 'ManagedIdentity', 'Key' ],
-          'x-ms-enum': { name: 'createdByType', modelAsString: true }
-        },
-        lastModifiedAt: {
-          type: 'string',
-          format: 'date-time',
-          description: 'The timestamp of resource last modification (UTC)'
-        }
-      }
-    },
-    eTag: { type: 'string', description: 'The ETag of the workspace.' }
+    etag: { type: 'string', description: 'The etag of the workspace.' }
   },
   allOf: [
     {
@@ -355,6 +312,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-12-01-preview`.
+The resource version is `2021-06-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/preview/2021-12-01-preview/Workspaces.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/stable/2021-06-01/Workspaces.json).

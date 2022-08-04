@@ -52,13 +52,8 @@ exports.createResources = () => [
           baseImageTrigger: {
             name: "myBaseImageTrigger",
             baseImageTriggerType: "Runtime",
-            updateTriggerEndpoint:
-              "https://user:pass@mycicd.webhook.com?token=foo",
-            updateTriggerPayloadType: "Token",
           },
         },
-        isSystemTask: false,
-        logTemplate: "acr/tasks:{{.Run.OS}}",
       },
       location: "eastus",
       identity: { type: "SystemAssigned" },
@@ -122,13 +117,8 @@ exports.createResources = () => [
           baseImageTrigger: {
             name: "myBaseImageTrigger",
             baseImageTriggerType: "Runtime",
-            updateTriggerEndpoint:
-              "https://user:pass@mycicd.webhook.com?token=foo",
-            updateTriggerPayloadType: "Default",
           },
         },
-        isSystemTask: false,
-        logTemplate: null,
       },
       location: "eastus",
       identity: {
@@ -200,8 +190,6 @@ exports.createResources = () => [
             baseImageTriggerType: "Runtime",
           },
         },
-        isSystemTask: false,
-        logTemplate: null,
       },
       location: "eastus",
       identity: { type: "SystemAssigned" },
@@ -265,13 +253,8 @@ exports.createResources = () => [
           baseImageTrigger: {
             name: "myBaseImageTrigger",
             baseImageTriggerType: "Runtime",
-            updateTriggerEndpoint:
-              "https://user:pass@mycicd.webhook.com?token=foo",
-            updateTriggerPayloadType: "Default",
           },
         },
-        isSystemTask: false,
-        logTemplate: null,
       },
       location: "eastus",
       identity: {
@@ -283,33 +266,6 @@ exports.createResources = () => [
             {},
         },
       },
-      tags: { testkey: "value" },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "myResourceGroup",
-      managedIdentities: ["myUserAssignedIdentity"],
-      registry: "myRegistry",
-    }),
-  },
-];
-
-```
-
-### Tasks_Create_QuickTask
-```js
-exports.createResources = () => [
-  {
-    type: "Task",
-    group: "ContainerRegistry",
-    name: "myTask",
-    properties: () => ({
-      properties: {
-        status: "Enabled",
-        isSystemTask: true,
-        logTemplate: "acr/tasks:{{.Run.OS}}",
-      },
-      location: "eastus",
-      identity: null,
       tags: { testkey: "value" },
     }),
     dependencies: ({}) => ({
@@ -360,43 +316,6 @@ exports.createResources = () => [
           description: 'The tags of the resource.',
           type: 'object',
           additionalProperties: { type: 'string' }
-        },
-        systemData: {
-          description: 'Metadata pertaining to creation and last modification of the resource.',
-          type: 'object',
-          readOnly: true,
-          properties: {
-            createdBy: {
-              description: 'The identity that created the resource.',
-              type: 'string'
-            },
-            createdByType: {
-              description: 'The type of identity that created the resource.',
-              enum: [ 'User', 'Application', 'ManagedIdentity', 'Key' ],
-              type: 'string',
-              'x-ms-enum': { name: 'createdByType', modelAsString: true }
-            },
-            createdAt: {
-              format: 'date-time',
-              description: 'The timestamp of resource creation (UTC).',
-              type: 'string'
-            },
-            lastModifiedBy: {
-              description: 'The identity that last modified the resource.',
-              type: 'string'
-            },
-            lastModifiedByType: {
-              description: 'The type of identity that last modified the resource.',
-              enum: [ 'User', 'Application', 'ManagedIdentity', 'Key' ],
-              type: 'string',
-              'x-ms-enum': { name: 'lastModifiedByType', modelAsString: true }
-            },
-            lastModifiedAt: {
-              format: 'date-time',
-              description: 'The timestamp of resource modification (UTC).',
-              type: 'string'
-            }
-          }
         }
       },
       'x-ms-azure-resource': true
@@ -448,6 +367,7 @@ exports.createResources = () => [
     properties: {
       description: 'The properties of a task.',
       'x-ms-client-flatten': true,
+      required: [ 'platform', 'step' ],
       type: 'object',
       properties: {
         provisioningState: {
@@ -489,7 +409,7 @@ exports.createResources = () => [
             },
             architecture: {
               description: 'The OS architecture.',
-              enum: [ 'amd64', 'x86', '386', 'arm', 'arm64' ],
+              enum: [ 'amd64', 'x86', 'arm' ],
               type: 'string',
               'x-ms-enum': { name: 'Architecture', modelAsString: true }
             },
@@ -511,10 +431,6 @@ exports.createResources = () => [
               type: 'integer'
             }
           }
-        },
-        agentPoolName: {
-          description: 'The dedicated agent pool for the task.',
-          type: 'string'
         },
         timeout: {
           format: 'int32',
@@ -566,7 +482,6 @@ exports.createResources = () => [
                   }
                 }
               },
-              'x-ms-identifiers': [],
               readOnly: true
             },
             contextPath: {
@@ -608,8 +523,7 @@ exports.createResources = () => [
                     type: 'string'
                   }
                 }
-              },
-              'x-ms-identifiers': [ 'name' ]
+              }
             },
             sourceTriggers: {
               description: 'The collection of triggers based on source code repository.',
@@ -698,8 +612,7 @@ exports.createResources = () => [
                     type: 'string'
                   }
                 }
-              },
-              'x-ms-identifiers': [ 'name', 'sourceRepository/repositoryUrl' ]
+              }
             },
             baseImageTrigger: {
               description: 'The trigger based on base image dependencies.',
@@ -711,19 +624,6 @@ exports.createResources = () => [
                   enum: [ 'All', 'Runtime' ],
                   type: 'string',
                   'x-ms-enum': { name: 'BaseImageTriggerType', modelAsString: true }
-                },
-                updateTriggerEndpoint: {
-                  description: 'The endpoint URL for receiving update triggers.',
-                  type: 'string'
-                },
-                updateTriggerPayloadType: {
-                  description: 'Type of Payload body for Base image update triggers.',
-                  enum: [ 'Default', 'Token' ],
-                  type: 'string',
-                  'x-ms-enum': {
-                    name: 'UpdateTriggerPayloadType',
-                    modelAsString: true
-                  }
                 },
                 status: {
                   description: 'The current status of trigger.',
@@ -827,15 +727,6 @@ exports.createResources = () => [
               }
             }
           }
-        },
-        logTemplate: {
-          description: 'The template that describes the repository and tag information for run log artifact.',
-          type: 'string'
-        },
-        isSystemTask: {
-          description: 'The value of this property indicates whether the task resource is system task or not.',
-          default: false,
-          type: 'boolean'
         }
       }
     }
@@ -843,6 +734,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2019-06-01-preview`.
+The resource version is `2019-04-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/preview/2019-06-01-preview/containerregistry_build.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/stable/2019-04-01/containerregistry_build.json).

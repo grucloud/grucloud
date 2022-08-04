@@ -17,7 +17,7 @@ exports.createResources = () => [
         type: "SystemAssigned",
       },
       properties: {
-        kubernetesVersion: "1.21.7",
+        kubernetesVersion: "1.24.0",
         dnsPrefix: "cluster-dns",
         agentPoolProfiles: [
           {
@@ -32,7 +32,7 @@ exports.createResources = () => [
             enableAutoScaling: false,
             type: "VirtualMachineScaleSets",
             mode: "System",
-            orchestratorVersion: "1.21.7",
+            orchestratorVersion: "1.24.0",
             enableNodePublicIP: false,
             enableFIPS: false,
             name: "agentpool",

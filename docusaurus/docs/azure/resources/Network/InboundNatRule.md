@@ -457,6 +457,7 @@ exports.createResources = () => [
                               'x-ms-client-flatten': true,
                               description: 'Properties of the network security group.',
                               properties: {
+                                flushConnection: [Object],
                                 securityRules: [Object],
                                 defaultSecurityRules: [Object],
                                 networkInterfaces: [Object],
@@ -831,7 +832,7 @@ exports.createResources = () => [
                         },
                         privateEndpointNetworkPolicies: {
                           type: 'string',
-                          default: 'Enabled',
+                          default: 'Disabled',
                           description: 'Enable or Disable apply network policies on private end point in the subnet.',
                           enum: [ 'Enabled', 'Disabled' ],
                           'x-ms-enum': {
@@ -1450,6 +1451,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2022-01-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/loadBalancer.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2022-01-01/loadBalancer.json).

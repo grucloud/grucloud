@@ -25,6 +25,29 @@ exports.createResources = () => [
 ];
 
 ```
+
+### Create or update a dedicated host group with Ultra SSD support.
+```js
+exports.createResources = () => [
+  {
+    type: "DedicatedHostGroup",
+    group: "Compute",
+    name: "myDedicatedHostGroup",
+    properties: () => ({
+      location: "westus",
+      tags: { department: "finance" },
+      zones: ["1"],
+      properties: {
+        platformFaultDomainCount: 3,
+        supportAutomaticPlacement: true,
+        additionalCapabilities: { ultraSSDEnabled: true },
+      },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
@@ -141,6 +164,16 @@ exports.createResources = () => [
         supportAutomaticPlacement: {
           type: 'boolean',
           description: "Specifies whether virtual machines or virtual machine scale sets can be placed automatically on the dedicated host group. Automatic placement means resources are allocated on dedicated hosts, that are chosen by Azure, under the dedicated host group. The value is defaulted to 'false' when not provided. <br><br>Minimum api-version: 2020-06-01."
+        },
+        additionalCapabilities: {
+          type: 'object',
+          properties: {
+            ultraSSDEnabled: {
+              type: 'boolean',
+              description: "The flag that enables or disables a capability to have UltraSSD Enabled Virtual Machines on Dedicated Hosts of the Dedicated Host Group. For the Virtual Machines to be UltraSSD Enabled, UltraSSDEnabled flag for the resource needs to be set true as well. The value is defaulted to 'false' when not provided. Please refer to https://docs.microsoft.com/en-us/azure/virtual-machines/disks-enable-ultra-ssd for more details on Ultra SSD feature. <br><br>NOTE: The ultraSSDEnabled setting can only be enabled for Host Groups that are created as zonal. <br><br>Minimum api-version: 2022-03-01."
+            }
+          },
+          description: 'Enables or disables a capability on the dedicated host group.<br><br>Minimum api-version: 2022-03-01.'
         }
       },
       required: [ 'platformFaultDomainCount' ],
@@ -182,6 +215,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/dedicatedHost.json).

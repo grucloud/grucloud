@@ -4,6 +4,40 @@ title: AppServiceCertificateOrder
 ---
 Provides a **AppServiceCertificateOrder** from the **CertificateRegistration** group
 ## Examples
+### Create Certificate order
+```js
+exports.createResources = () => [
+  {
+    type: "AppServiceCertificateOrder",
+    group: "CertificateRegistration",
+    name: "myAppServiceCertificateOrder",
+    properties: () => ({
+      location: "Global",
+      properties: {
+        certificates: {
+          SampleCertName1: {
+            keyVaultId:
+              "/subscriptions/34adfa4f-cedf-4dc0-ba29-b6d1a69ab345/resourcegroups/testrg123/providers/microsoft.keyvault/vaults/SamplevaultName",
+            keyVaultSecretName: "SampleSecretName1",
+          },
+          SampleCertName2: {
+            keyVaultId:
+              "/subscriptions/34adfa4f-cedf-4dc0-ba29-b6d1a69ab345/resourcegroups/testrg123/providers/microsoft.keyvault/vaults/SamplevaultName",
+            keyVaultSecretName: "SampleSecretName2",
+          },
+        },
+        distinguishedName: "CN=SampleCustomDomain.com",
+        validityInYears: 2,
+        keySize: 2048,
+        productType: "StandardDomainValidatedSsl",
+        autoRenew: true,
+      },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
@@ -347,7 +381,8 @@ Provides a **AppServiceCertificateOrder** from the **CertificateRegistration** g
               'ExpirationNotInRenewalTimeRange',
               'SubscriptionNotActive'
             ],
-            type: 'string'
+            type: 'string',
+            'x-ms-enum': { name: 'ResourceNotRenewableReason', modelAsString: true }
           },
           readOnly: true
         },
@@ -375,6 +410,6 @@ Provides a **AppServiceCertificateOrder** from the **CertificateRegistration** g
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.CertificateRegistration/stable/2021-03-01/AppServiceCertificateOrders.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.CertificateRegistration/stable/2022-03-01/AppServiceCertificateOrders.json).

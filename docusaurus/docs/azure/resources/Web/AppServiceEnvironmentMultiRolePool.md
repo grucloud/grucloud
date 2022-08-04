@@ -4,6 +4,24 @@ title: AppServiceEnvironmentMultiRolePool
 ---
 Provides a **AppServiceEnvironmentMultiRolePool** from the **Web** group
 ## Examples
+### Create or update a multi-role pool.
+```js
+exports.createResources = () => [
+  {
+    type: "AppServiceEnvironmentMultiRolePool",
+    group: "Web",
+    name: "myAppServiceEnvironmentMultiRolePool",
+    properties: () => ({
+      properties: { workerSize: "Medium", workerCount: 3 },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      name: "myAppServiceEnvironment",
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceEnvironment](../Web/AppServiceEnvironment.md)
@@ -153,6 +171,6 @@ Provides a **AppServiceEnvironmentMultiRolePool** from the **Web** group
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-03-01/AppServiceEnvironments.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2022-03-01/AppServiceEnvironments.json).

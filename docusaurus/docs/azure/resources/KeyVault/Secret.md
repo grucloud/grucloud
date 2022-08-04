@@ -104,6 +104,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01-preview`.
+The resource version is `2022-07-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/keyvault/resource-manager/Microsoft.KeyVault/preview/2021-11-01-preview/secrets.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/keyvault/resource-manager/Microsoft.KeyVault/stable/2022-07-01/secrets.json).

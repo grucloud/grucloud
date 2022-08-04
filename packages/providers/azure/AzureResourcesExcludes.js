@@ -11,6 +11,7 @@ exports.ResourcesExcludes = [
   "Authorization::RoleEligibilityScheduleRequest",
   "Authorization::RoleManagementPolicy",
   "Authorization::RoleManagementPolicyAssignment",
+  "Authorization::ScopeAccessReviewDefaultSetting",
   "Compute::VirtualMachineScaleSetVMExtension",
   "Compute::VirtualMachineScaleSetVMRunCommand",
   "ContainerRegistry::ConnectedRegistry",

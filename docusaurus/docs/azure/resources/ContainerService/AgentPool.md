@@ -28,7 +28,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -60,7 +59,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -91,7 +89,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -119,7 +116,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -167,34 +163,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
-      resource: "myManagedCluster",
-    }),
-  },
-];
-
-```
-
-### Create Agent Pool with Windows OSSKU
-```js
-exports.createResources = () => [
-  {
-    type: "AgentPool",
-    group: "ContainerService",
-    name: "myAgentPool",
-    properties: () => ({
-      properties: {
-        orchestratorVersion: "1.23.3",
-        count: 3,
-        vmSize: "Standard_D4s_v3",
-        osType: "Windows",
-        osSKU: "Windows2022",
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "myResourceGroup",
-      proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -242,7 +210,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -270,7 +237,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -317,7 +283,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -344,7 +309,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -371,7 +335,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -398,7 +361,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -429,7 +391,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -458,36 +419,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
-      resource: "myManagedCluster",
-    }),
-  },
-];
-
-```
-
-### Create Agent Pool with Message of the Day
-```js
-exports.createResources = () => [
-  {
-    type: "AgentPool",
-    group: "ContainerService",
-    name: "myAgentPool",
-    properties: () => ({
-      properties: {
-        orchestratorVersion: "",
-        count: 3,
-        vmSize: "Standard_DS2_v2",
-        osType: "Linux",
-        osDiskSizeGB: 64,
-        mode: "User",
-        messageOfTheDay: "Zm9vCg==",
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "myResourceGroup",
-      proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -506,7 +437,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -525,35 +455,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
-      resource: "myManagedCluster",
-    }),
-  },
-];
-
-```
-
-### Associate Agent Pool with Capacity Reservation Group
-```js
-exports.createResources = () => [
-  {
-    type: "AgentPool",
-    group: "ContainerService",
-    name: "myAgentPool",
-    properties: () => ({
-      properties: {
-        orchestratorVersion: "",
-        count: 3,
-        vmSize: "Standard_DS2_v2",
-        osType: "Linux",
-        capacityReservationGroupID:
-          "/subscriptions/subid1/resourcegroups/rg1/providers//Microsoft.Compute/CapacityReservationGroups/crg1",
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "myResourceGroup",
-      proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -581,34 +482,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
-      resource: "myManagedCluster",
-    }),
-  },
-];
-
-```
-
-### Create Agent Pool with CustomCATrust enabled
-```js
-exports.createResources = () => [
-  {
-    type: "AgentPool",
-    group: "ContainerService",
-    name: "myAgentPool",
-    properties: () => ({
-      properties: {
-        orchestratorVersion: "",
-        count: 3,
-        vmSize: "Standard_DS2_v2",
-        osType: "Linux",
-        enableCustomCATrust: true,
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "myResourceGroup",
-      proximityPlacementGroup: "myProximityPlacementGroup",
-      capacityReservationGroup: "myCapacityReservationGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -618,7 +491,6 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
-- [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)
 - [ManagedCluster](../ContainerService/ManagedCluster.md)
 ## Swagger Schema
 ```js
@@ -725,11 +597,6 @@ exports.createResources = () => [
           },
           description: 'Determines the type of workload a node can run.'
         },
-        messageOfTheDay: {
-          type: 'string',
-          title: 'Message of the day for Linux nodes, base64-encoded.',
-          description: 'A base64-encoded string which will be written to /etc/motd after decoding. This allows customization of the message of the day for Linux nodes. It must not be specified for Windows nodes. It must be a static string (i.e., will be printed raw and not be executed as a script).'
-        },
         vnetSubnetID: {
           type: 'string',
           title: 'The ID of the subnet which agent pool nodes and optionally pods will join on startup.',
@@ -761,9 +628,9 @@ exports.createResources = () => [
         },
         osSKU: {
           type: 'string',
-          enum: [ 'Ubuntu', 'CBLMariner', 'Windows2019', 'Windows2022' ],
+          enum: [ 'Ubuntu', 'CBLMariner' ],
           'x-ms-enum': { name: 'OSSKU', modelAsString: true },
-          description: 'Specifies the OS SKU used by the agent pool. If not specified, the default is Ubuntu if OSType=Linux or Windows2019 if OSType=Windows. And the default Windows OSSKU will be changed to Windows2022 after Windows2019 is deprecated.'
+          description: 'Specifies an OS SKU. This value must not be specified if OSType is Windows.'
         },
         maxCount: {
           type: 'integer',
@@ -841,13 +708,13 @@ exports.createResources = () => [
         orchestratorVersion: {
           type: 'string',
           title: 'The version of Kubernetes specified by the user.',
-          description: 'Both patch version <major.minor.patch> and <major.minor> are supported. When <major.minor> is specified, the latest supported patch version is chosen automatically. Updating the agent pool with the same <major.minor> once it has been created will not trigger an upgrade, even if a newer patch version is available. As a best practice, you should upgrade all node pools in an AKS cluster to the same Kubernetes version. The node pool version must have the same major version as the control plane. The node pool minor version must be within two minor versions of the control plane version. The node pool version cannot be greater than the control plane version. For more information see [upgrading a node pool](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#upgrade-a-node-pool).'
+          description: 'Both patch version <major.minor.patch> (e.g. 1.20.13) and <major.minor> (e.g. 1.20) are supported. When <major.minor> is specified, the latest supported GA patch version is chosen automatically. Updating the cluster with the same <major.minor> once it has been created (e.g. 1.14.x -> 1.14) will not trigger an upgrade, even if a newer patch version is available. As a best practice, you should upgrade all node pools in an AKS cluster to the same Kubernetes version. The node pool version must have the same major version as the control plane. The node pool minor version must be within two minor versions of the control plane version. The node pool version cannot be greater than the control plane version. For more information see [upgrading a node pool](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#upgrade-a-node-pool).'
         },
         currentOrchestratorVersion: {
           readOnly: true,
           type: 'string',
-          title: 'The version of Kubernetes running on the Agent Pool.',
-          description: 'If orchestratorVersion was a fully specified version <major.minor.patch>, this field will be exactly equal to it. If orchestratorVersion was <major.minor>, this field will contain the full <major.minor.patch> version being used.'
+          title: 'The version of Kubernetes the Agent Pool is running.',
+          description: 'If orchestratorVersion is a fully specified version <major.minor.patch>, this field will be exactly equal to it. If orchestratorVersion is <major.minor>, this field will contain the full <major.minor.patch> version being used.'
         },
         nodeImageVersion: {
           readOnly: true,
@@ -905,11 +772,6 @@ exports.createResources = () => [
           type: 'boolean',
           title: 'Whether each node is allocated its own public IP.',
           description: 'Some scenarios may require nodes in a node pool to receive their own dedicated public IP addresses. A common scenario is for gaming workloads, where a console needs to make a direct connection to a cloud virtual machine to minimize hops. For more information see [assigning a public IP per node](https://docs.microsoft.com/azure/aks/use-multiple-node-pools#assign-a-public-ip-per-node-for-your-node-pools). The default is false.'
-        },
-        enableCustomCATrust: {
-          type: 'boolean',
-          title: 'Whether to enable Custom CA Trust feature.',
-          description: 'When set to true, AKS deploys a daemonset and host services to sync custom certificate authorities from a user-provided config map into node trust stores. Defaults to false.'
         },
         nodePublicIPPrefixID: {
           type: 'string',
@@ -1239,12 +1101,12 @@ exports.createResources = () => [
             }
           }
         },
-        capacityReservationGroupID: {
-          description: 'AKS will associate the specified agent pool with the Capacity Reservation Group.',
-          type: 'string'
-        },
         hostGroupID: {
           type: 'string',
+          format: 'arm-id',
+          'x-ms-arm-id-details': {
+            allowedResources: [ { type: 'Microsoft.Compute/hostGroups' } ]
+          },
           title: 'The fully qualified resource ID of the Dedicated Host Group to provision virtual machines from, used only in creation scenario and not allowed to changed once set.',
           description: 'This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/hostGroups/{hostGroupName}. For more information see [Azure dedicated hosts](https://docs.microsoft.com/azure/virtual-machines/dedicated-hosts).'
         }
@@ -1255,6 +1117,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2022-05-02-preview`.
+The resource version is `2022-06-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-05-02-preview/managedClusters.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/stable/2022-06-01/managedClusters.json).

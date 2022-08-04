@@ -131,6 +131,7 @@ exports.createResources = () => [
             },
             description: 'Time in a week.'
           },
+          'x-ms-identifiers': [],
           title: 'Time slots during the week when planned maintenance is allowed to proceed.',
           description: 'If two array entries specify the same day of the week, the applied configuration is the union of times in both entries.'
         },
@@ -153,6 +154,7 @@ exports.createResources = () => [
             title: 'A time range.',
             description: 'For example, between 2021-05-25T13:00:00Z and 2021-05-25T14:00:00Z.'
           },
+          'x-ms-identifiers': [],
           description: 'Time slots on which upgrade is not allowed.'
         }
       }
@@ -163,6 +165,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2022-05-02-preview`.
+The resource version is `2022-06-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-05-02-preview/managedClusters.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/stable/2022-06-01/managedClusters.json).

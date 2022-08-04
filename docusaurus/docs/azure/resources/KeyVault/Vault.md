@@ -159,7 +159,8 @@ exports.createResources = () => [
               'x-ms-enum': { name: 'SkuName', modelAsString: false }
             }
           },
-          required: [ 'name', 'family' ]
+          required: [ 'name', 'family' ],
+          type: 'object'
         },
         accessPolicies: {
           type: 'array',
@@ -274,11 +275,13 @@ exports.createResources = () => [
                     },
                     description: 'Permissions to storage accounts'
                   }
-                }
+                },
+                type: 'object'
               }
             },
             description: "An identity that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID.",
-            required: [ 'tenantId', 'objectId', 'permissions' ]
+            required: [ 'tenantId', 'objectId', 'permissions' ],
+            type: 'object'
           },
           description: "An array of 0 to 1024 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. When `createMode` is set to `recover`, access policies are not required. Otherwise, access policies are required."
         },
@@ -317,7 +320,7 @@ exports.createResources = () => [
         enableRbacAuthorization: {
           type: 'boolean',
           default: false,
-          description: 'Property that controls how data actions are authorized. When true, the key vault will use Role Based Access Control (RBAC) for authorization of data actions, and the access policies specified in vault properties will be  ignored (warning: this is a preview feature). When false, the key vault will use the access policies specified in vault properties, and any policy stored on Azure Resource Manager will be ignored. If null or not specified, the vault is created with the default value of false. Note that management actions are always authorized with RBAC.'
+          description: 'Property that controls how data actions are authorized. When true, the key vault will use Role Based Access Control (RBAC) for authorization of data actions, and the access policies specified in vault properties will be  ignored. When false, the key vault will use the access policies specified in vault properties, and any policy stored on Azure Resource Manager will be ignored. If null or not specified, the vault is created with the default value of false. Note that management actions are always authorized with RBAC.'
         },
         createMode: {
           type: 'string',
@@ -355,7 +358,8 @@ exports.createResources = () => [
                   }
                 },
                 required: [ 'value' ],
-                description: 'A rule governing the accessibility of a vault from a specific ip address or ip range.'
+                description: 'A rule governing the accessibility of a vault from a specific ip address or ip range.',
+                type: 'object'
               },
               description: 'The list of IP address rules.'
             },
@@ -373,11 +377,13 @@ exports.createResources = () => [
                   }
                 },
                 required: [ 'id' ],
-                description: 'A rule governing the accessibility of a vault from a specific virtual network.'
+                description: 'A rule governing the accessibility of a vault from a specific virtual network.',
+                type: 'object'
               },
               description: 'The list of virtual network rules.'
             }
-          }
+          },
+          type: 'object'
         },
         provisioningState: {
           type: 'string',
@@ -410,7 +416,8 @@ exports.createResources = () => [
                         type: 'string',
                         description: 'Full identifier of the private endpoint resource.'
                       }
-                    }
+                    },
+                    type: 'object'
                   },
                   privateLinkServiceConnectionState: {
                     description: 'Approval state of the private link connection.',
@@ -442,7 +449,8 @@ exports.createResources = () => [
                           modelAsString: true
                         }
                       }
-                    }
+                    },
+                    type: 'object'
                   },
                   provisioningState: {
                     description: 'Provisioning state of the private endpoint connection.',
@@ -461,10 +469,12 @@ exports.createResources = () => [
                       modelAsString: true
                     }
                   }
-                }
+                },
+                type: 'object'
               }
             },
-            description: 'Private endpoint connection item.'
+            description: 'Private endpoint connection item.',
+            type: 'object'
           },
           description: 'List of private endpoint connections associated with the key vault.'
         },
@@ -474,15 +484,17 @@ exports.createResources = () => [
           description: "Property to specify whether the vault will accept traffic from public internet. If set to 'disabled' all traffic except private endpoint traffic and that that originates from trusted services will be blocked. This will override the set firewall rules, meaning that even if the firewall rules are present we will not honor the rules."
         }
       },
-      required: [ 'tenantId', 'sku' ]
+      required: [ 'tenantId', 'sku' ],
+      type: 'object'
     }
   },
   description: 'Parameters for creating or updating a vault',
   required: [ 'location', 'properties' ],
-  'x-ms-azure-resource': true
+  'x-ms-azure-resource': true,
+  type: 'object'
 }
 ```
 ## Misc
-The resource version is `2021-11-01-preview`.
+The resource version is `2022-07-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/keyvault/resource-manager/Microsoft.KeyVault/preview/2021-11-01-preview/keyvault.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/keyvault/resource-manager/Microsoft.KeyVault/stable/2022-07-01/keyvault.json).

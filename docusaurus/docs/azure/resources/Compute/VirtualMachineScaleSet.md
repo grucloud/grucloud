@@ -2044,6 +2044,8 @@ exports.createResources = () => [
                   "/subscriptions/32c17a9e-aa7b-4ba5-a45b-e324116b6fdb/resourceGroups/myresourceGroupName2/providers/Microsoft.Compute/galleries/myGallery1/applications/MyApplication1/versions/1.0",
                 configurationReference:
                   "https://mystorageaccount.blob.core.windows.net/configurations/settings.config",
+                treatFailureAsDeploymentFailure: true,
+                enableAutomaticUpgrade: false,
               },
               {
                 packageReferenceId:
@@ -2799,6 +2801,10 @@ exports.createResources = () => [
                 disableAutomaticRollback: {
                   type: 'boolean',
                   description: 'Whether OS image rollback feature should be disabled. Default value is false.'
+                },
+                useRollingUpgradePolicy: {
+                  type: 'boolean',
+                  description: 'Indicates whether rolling upgrade policy should be used during Auto OS Upgrade. Default value is false. Auto OS Upgrade will fallback to the default policy if no policy is defined on the VMSS.'
                 }
               }
             }
@@ -2839,7 +2845,8 @@ exports.createResources = () => [
                 },
                 adminPassword: {
                   type: 'string',
-                  description: 'Specifies the password of the administrator account. <br><br> **Minimum-length (Windows):** 8 characters <br><br> **Minimum-length (Linux):** 6 characters <br><br> **Max-length (Windows):** 123 characters <br><br> **Max-length (Linux):** 72 characters <br><br> **Complexity requirements:** 3 out of 4 conditions below need to be fulfilled <br> Has lower characters <br>Has upper characters <br> Has a digit <br> Has a special character (Regex match [\\W_]) <br><br> **Disallowed values:** "abc@123", "P@$$w0rd", "P@ssw0rd", "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1", "Password22", "iloveyou!" <br><br> For resetting the password, see [How to reset the Remote Desktop service or its login password in a Windows VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp) <br><br> For resetting root password, see [Manage users, SSH, and check or repair disks on Azure Linux VMs using the VMAccess Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)'
+                  description: 'Specifies the password of the administrator account. <br><br> **Minimum-length (Windows):** 8 characters <br><br> **Minimum-length (Linux):** 6 characters <br><br> **Max-length (Windows):** 123 characters <br><br> **Max-length (Linux):** 72 characters <br><br> **Complexity requirements:** 3 out of 4 conditions below need to be fulfilled <br> Has lower characters <br>Has upper characters <br> Has a digit <br> Has a special character (Regex match [\\W_]) <br><br> **Disallowed values:** "abc@123", "P@$$w0rd", "P@ssw0rd", "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1", "Password22", "iloveyou!" <br><br> For resetting the password, see [How to reset the Remote Desktop service or its login password in a Windows VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp) <br><br> For resetting root password, see [Manage users, SSH, and check or repair disks on Azure Linux VMs using the VMAccess Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)',
+                  'x-ms-secret': true
                 },
                 customData: {
                   type: 'string',
@@ -2926,6 +2933,26 @@ exports.createResources = () => [
                             name: 'WindowsPatchAssessmentMode',
                             modelAsString: true
                           }
+                        },
+                        automaticByPlatformSettings: {
+                          description: 'Specifies additional settings for patch mode AutomaticByPlatform in VM Guest Patching on Windows.',
+                          type: 'object',
+                          properties: {
+                            rebootSetting: {
+                              type: 'string',
+                              description: 'Specifies the reboot setting for all AutomaticByPlatform patch installation operations.',
+                              enum: [
+                                'Unknown',
+                                'IfRequired',
+                                'Never',
+                                'Always'
+                              ],
+                              'x-ms-enum': {
+                                name: 'WindowsVMGuestPatchAutomaticByPlatformRebootSetting',
+                                modelAsString: true
+                              }
+                            }
+                          }
                         }
                       }
                     },
@@ -3009,6 +3036,26 @@ exports.createResources = () => [
                           'x-ms-enum': {
                             name: 'LinuxPatchAssessmentMode',
                             modelAsString: true
+                          }
+                        },
+                        automaticByPlatformSettings: {
+                          description: 'Specifies additional settings for patch mode AutomaticByPlatform in VM Guest Patching on Linux.',
+                          type: 'object',
+                          properties: {
+                            rebootSetting: {
+                              type: 'string',
+                              description: 'Specifies the reboot setting for all AutomaticByPlatform patch installation operations.',
+                              enum: [
+                                'Unknown',
+                                'IfRequired',
+                                'Never',
+                                'Always'
+                              ],
+                              'x-ms-enum': {
+                                name: 'LinuxVMGuestPatchAutomaticByPlatformRebootSetting',
+                                modelAsString: true
+                              }
+                            }
                           }
                         }
                       }
@@ -3187,7 +3234,8 @@ exports.createResources = () => [
                             'StandardSSD_LRS',
                             'UltraSSD_LRS',
                             'Premium_ZRS',
-                            'StandardSSD_ZRS'
+                            'StandardSSD_ZRS',
+                            'PremiumV2_LRS'
                           ],
                           'x-ms-enum': {
                             name: 'StorageAccountTypes',
@@ -3225,6 +3273,15 @@ exports.createResources = () => [
                             }
                           }
                         }
+                      }
+                    },
+                    deleteOption: {
+                      description: 'Specifies whether OS Disk should be deleted or detached upon VMSS Flex deletion (This feature is available for VMSS with Flexible OrchestrationMode only). <br><br> Possible values: <br><br> **Delete** If this value is used, the OS disk is deleted when VMSS Flex VM is deleted.<br><br> **Detach** If this value is used, the OS disk is retained after VMSS Flex VM is deleted. <br><br> The default value is set to **Delete**. For an Ephemeral OS Disk, the default value is set to **Delete**. User cannot change the delete option for Ephemeral OS Disk.',
+                      type: 'string',
+                      enum: [ 'Delete', 'Detach' ],
+                      'x-ms-enum': {
+                        name: 'DiskDeleteOptionTypes',
+                        modelAsString: true
                       }
                     }
                   },
@@ -3276,7 +3333,8 @@ exports.createResources = () => [
                               'StandardSSD_LRS',
                               'UltraSSD_LRS',
                               'Premium_ZRS',
-                              'StandardSSD_ZRS'
+                              'StandardSSD_ZRS',
+                              'PremiumV2_LRS'
                             ],
                             'x-ms-enum': {
                               name: 'StorageAccountTypes',
@@ -3319,6 +3377,15 @@ exports.createResources = () => [
                         type: 'integer',
                         format: 'int64',
                         description: 'Specifies the bandwidth in MB per second for the managed disk. Should be used only when StorageAccountType is UltraSSD_LRS. If not specified, a default value would be assigned based on diskSizeGB.'
+                      },
+                      deleteOption: {
+                        description: 'Specifies whether data disk should be deleted or detached upon VMSS Flex deletion (This feature is available for VMSS with Flexible OrchestrationMode only).<br><br> Possible values: <br><br> **Delete** If this value is used, the data disk is deleted when the VMSS Flex VM is deleted.<br><br> **Detach** If this value is used, the data disk is retained after VMSS Flex VM is deleted.<br><br> The default value is set to **Delete**.',
+                        type: 'string',
+                        enum: [ 'Delete', 'Detach' ],
+                        'x-ms-enum': {
+                          name: 'DiskDeleteOptionTypes',
+                          modelAsString: true
+                        }
                       }
                     },
                     required: [ 'lun', 'createOption' ],
@@ -3671,6 +3738,14 @@ exports.createResources = () => [
                       configurationReference: {
                         type: 'string',
                         description: 'Optional, Specifies the uri to an azure blob that will replace the default configuration for the package if provided'
+                      },
+                      treatFailureAsDeploymentFailure: {
+                        type: 'boolean',
+                        description: 'Optional, If true, any failure for any operation in the VmApplication will fail the deployment'
+                      },
+                      enableAutomaticUpgrade: {
+                        type: 'boolean',
+                        description: 'If set to true, when a new Gallery Application version is available in PIR/SIG, it will be automatically updated for the VM/VMSS'
                       }
                     },
                     required: [ 'packageReferenceId' ],
@@ -3682,11 +3757,11 @@ exports.createResources = () => [
               }
             },
             hardwareProfile: {
-              description: 'Specifies the hardware profile related details of a scale set. <br><br>Minimum api-version: 2021-11-01.',
+              description: 'Specifies the hardware profile related details of a scale set. <br><br>Minimum api-version: 2022-03-01.',
               type: 'object',
               properties: {
                 vmSizeProperties: {
-                  description: 'Specifies the properties for customizing the size of the virtual machine. Minimum api-version: 2021-11-01. <br><br> Please follow the instructions in [VM Customization](https://aka.ms/vmcustomization) for more details.',
+                  description: 'Specifies the properties for customizing the size of the virtual machine. Minimum api-version: 2022-03-01. <br><br> Please follow the instructions in [VM Customization](https://aka.ms/vmcustomization) for more details.',
                   type: 'object',
                   properties: {
                     vCPUsAvailable: {
@@ -3804,7 +3879,7 @@ exports.createResources = () => [
           readOnly: true,
           type: 'string',
           format: 'date-time',
-          description: 'Specifies the time at which the Virtual Machine Scale Set resource was created.<br><br>Minimum api-version: 2021-11-01.'
+          description: 'Specifies the time at which the Virtual Machine Scale Set resource was created.<br><br>Minimum api-version: 2022-03-01.'
         }
       },
       description: 'Describes the properties of a Virtual Machine Scale Set.'
@@ -3834,10 +3909,11 @@ exports.createResources = () => [
           'x-ms-enum': { name: 'ResourceIdentityType', modelAsString: false }
         },
         userAssignedIdentities: {
+          description: "The list of user identities associated with the virtual machine scale set. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}'.",
           type: 'object',
           additionalProperties: {
             type: 'object',
-            'x-ms-client-name': 'VirtualMachineScaleSetIdentityUserAssignedIdentitiesValue',
+            'x-ms-client-name': 'userAssignedIdentitiesValue',
             properties: {
               principalId: {
                 readOnly: true,
@@ -3850,8 +3926,7 @@ exports.createResources = () => [
                 description: 'The client id of user assigned identity.'
               }
             }
-          },
-          description: "The list of user identities associated with the virtual machine scale set. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}'."
+          }
         }
       }
     },
@@ -3906,6 +3981,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/virtualMachineScaleSet.json).
