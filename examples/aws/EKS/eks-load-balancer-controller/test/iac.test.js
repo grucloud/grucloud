@@ -4,7 +4,7 @@ const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
 const config = require("../config");
 
-const title = "EKS Load Balancer";
+const title = "EKS Load Balancer Controller";
 describe.skip(title, async function () {
   it("run", async function () {
     await testEnd2End({

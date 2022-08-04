@@ -171,8 +171,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "NATGateway",
       routeTable: "VPC::PrivateRouteTableUSEAST1D",
-      natGateway: "NATGateway",
     }),
   },
   {
@@ -182,8 +182,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "NATGateway",
       routeTable: "VPC::PrivateRouteTableUSEAST1F",
-      natGateway: "NATGateway",
     }),
   },
   {
@@ -193,8 +193,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "VPC::PublicRouteTable",
       ig: "InternetGateway",
+      routeTable: "VPC::PublicRouteTable",
     }),
   },
   {

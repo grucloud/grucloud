@@ -172,8 +172,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
       natGateway: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
+      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
     }),
   },
   {
@@ -183,8 +183,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
       natGateway: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
+      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
     }),
   },
   {
@@ -194,8 +194,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      ig: "CdkStack/Vpc",
       routeTable: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
-      ig: "CdkStack/Vpc",
     }),
   },
   {
@@ -205,8 +205,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
       ig: "CdkStack/Vpc",
+      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
     }),
   },
   {

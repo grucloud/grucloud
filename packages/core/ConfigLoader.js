@@ -17,7 +17,7 @@ const configFromDefault = ({ configDir }) =>
   pipe([
     () => npath.join(configDir, "config.js"),
     tryCatch(pipe([tap(checkFileExist), require]), (error) => {
-      logger.error(
+      logger.info(
         `configFromDefault error loading config: configDir: ${configDir}, error: ${util.inspect(
           error
         )}`

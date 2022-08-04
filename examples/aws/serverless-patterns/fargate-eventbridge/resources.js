@@ -179,8 +179,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "Vpc8378EB38::VpcPrivateSubnet1RouteTableB2C5B500",
       natGateway: "VpcPublicSubnet1NATGateway4D7517AA",
+      routeTable: "Vpc8378EB38::VpcPrivateSubnet1RouteTableB2C5B500",
     }),
   },
   {
@@ -190,8 +190,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "Vpc8378EB38::VpcPrivateSubnet2RouteTableA678073B",
       natGateway: "VpcPublicSubnet2NATGateway9182C01D",
+      routeTable: "Vpc8378EB38::VpcPrivateSubnet2RouteTableA678073B",
     }),
   },
   {
@@ -201,8 +201,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      ig: "VpcIGWD7BA715C",
       routeTable: "Vpc8378EB38::VpcPublicSubnet1RouteTable6C95E38E",
-      ig: "VpcIGWD7BA715C",
     }),
   },
   {
@@ -212,8 +212,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "Vpc8378EB38::VpcPublicSubnet2RouteTable94F7E489",
       ig: "VpcIGWD7BA715C",
+      routeTable: "Vpc8378EB38::VpcPublicSubnet2RouteTable94F7E489",
     }),
   },
   {

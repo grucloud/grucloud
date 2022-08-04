@@ -2172,6 +2172,9 @@ module.exports = pipe([
         vpc: {
           type: "Vpc",
           group: "EC2",
+          parent: true,
+          //TODO
+          parentForName: true,
           dependencyId: ({ lives, config }) => get("VpcId"),
         },
         // Interface endpoint
@@ -2179,6 +2182,9 @@ module.exports = pipe([
           type: "Subnet",
           group: "EC2",
           list: true,
+          parent: true,
+          //TODO
+          parentForName: true,
           dependencyIds: ({ lives, config }) => get("SubnetIds"),
         },
         // Gateway endpoint
@@ -2199,6 +2205,8 @@ module.exports = pipe([
           type: "Firewall",
           group: "NetworkFirewall",
           parent: true,
+          //TODO
+          parentForName: true,
           ignoreOnDestroy: true,
           dependencyId: ({ lives, config }) =>
             pipe([get("Tags"), find(eq(get("Key"), "Firewall")), get("Value")]),
