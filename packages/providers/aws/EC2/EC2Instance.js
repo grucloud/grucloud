@@ -213,6 +213,8 @@ exports.EC2Instance = ({ spec, config }) => {
       }),
       assign({
         Image: imageDescriptionFromId({ ec2 }),
+      }),
+      assign({
         UserData: pipe([
           ({ InstanceId }) => ({
             Attribute: "userData",
