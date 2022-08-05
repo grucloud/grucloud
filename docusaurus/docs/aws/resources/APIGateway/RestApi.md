@@ -37,6 +37,10 @@ The remaining input properties:
 
 - [CreateRestApiCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-api-gateway/interfaces/createrestapicommandinput.html)
 
+## Dependencies
+
+- [IAM Role](../IAM/Role.md)
+
 ## Used By
 
 - [Authorizer](./Authorizer.md)

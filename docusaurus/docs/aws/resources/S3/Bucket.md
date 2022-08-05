@@ -401,7 +401,9 @@ exports.createResources = () => [
 
 ## Examples Code
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/S3/s3/)
+- [S3 simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/S3/s3/)
+- [CodePipeline code-pipeline-ecr](https://github.com/grucloud/grucloud/tree/main/examples/aws/CodePipeline/code-pipeline-ecr)
+- [CloudTrail simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudTrail/cloudtrail-simple)
 
 ## Properties
 
@@ -409,13 +411,267 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [CloudFront Origin Access Identity](../CloudFront/OriginAccessIdentity.md)
-- [SNS Topic](../SNS/Topic.md)
 - [Lambda Function](../Lambda/Function.md)
+- [SNS Topic](../SNS/Topic.md)
 
 ## Used By
 
-- [Network Firewall Logging Configuration](../NetworkFirewall/LoggingConfiguration.md)
+- [CloudFront Distribution](../CloudFront/Distribution.md)
+- [CloudFront Origin Access Identity](../CloudFront/OriginAccessIdentity.md)
+- [CloudFront Distribution](../CloudFront/Distribution.md)
+- [CloudTrail Trail](../CloudTrail/Trail.md)
+- [CodePipeline Pipeline](../CodePipeline/Pipeline.md)
+- [EC2 Flow Logs](./FlowLogs.md)
+- [Lambda Function](../Lambda/Function.md)
+- [NetworkFirewall Logging Configuration](../NetworkFirewall/LoggingConfiguration.md)
+
+## List
+
+```sh
+gc l -t S3::Bucket
+```
+
+```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 1/1
+┌───────────────────────────────────────────────────────────────────────────┐
+│ 9 S3::Bucket from aws                                                     │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: grucloud-cors                                                       │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   Name: grucloud-cors                                                     │
+│   CreationDate: 2022-08-05T22:42:49.000Z                                  │
+│   Tags:                                                                   │
+│     - Key: gc-created-by-provider                                         │
+│       Value: aws                                                          │
+│     - Key: gc-managed-by                                                  │
+│       Value: grucloud                                                     │
+│     - Key: gc-project-name                                                │
+│       Value: @grucloud/example-aws-s3                                     │
+│     - Key: gc-stage                                                       │
+│       Value: dev                                                          │
+│     - Key: Name                                                           │
+│       Value: grucloud-cors                                                │
+│   CORSConfiguration:                                                      │
+│     CORSRules:                                                            │
+│       -                                                                   │
+│         AllowedHeaders:                                                   │
+│           - "Authorization"                                               │
+│         AllowedMethods:                                                   │
+│           - "GET"                                                         │
+│         AllowedOrigins:                                                   │
+│           - "*"                                                           │
+│         MaxAgeSeconds: 3000                                               │
+│                                                                           │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: grucloud-encryption                                                 │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   Name: grucloud-encryption                                               │
+│   CreationDate: 2022-08-05T22:42:49.000Z                                  │
+│   Tags:                                                                   │
+│     - Key: gc-created-by-provider                                         │
+│       Value: aws                                                          │
+│     - Key: gc-managed-by                                                  │
+│       Value: grucloud                                                     │
+│     - Key: gc-project-name                                                │
+│       Value: @grucloud/example-aws-s3                                     │
+│     - Key: gc-stage                                                       │
+│       Value: dev                                                          │
+│     - Key: Name                                                           │
+│       Value: grucloud-encryption                                          │
+│   ServerSideEncryptionConfiguration:                                      │
+│     Rules:                                                                │
+│       - ApplyServerSideEncryptionByDefault:                               │
+│           SSEAlgorithm: AES256                                            │
+│                                                                           │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: grucloud-lifecycleconfiguration                                     │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   Name: grucloud-lifecycleconfiguration                                   │
+│   CreationDate: 2022-08-05T22:42:49.000Z                                  │
+│   Tags:                                                                   │
+│     - Key: gc-created-by-provider                                         │
+│       Value: aws                                                          │
+│     - Key: gc-managed-by                                                  │
+│       Value: grucloud                                                     │
+│     - Key: gc-project-name                                                │
+│       Value: @grucloud/example-aws-s3                                     │
+│     - Key: gc-stage                                                       │
+│       Value: dev                                                          │
+│     - Key: Name                                                           │
+│       Value: grucloud-lifecycleconfiguration                              │
+│   LifecycleConfiguration:                                                 │
+│     Rules:                                                                │
+│       - Expiration:                                                       │
+│           Days: 3650                                                      │
+│         ID: TestOnly                                                      │
+│         Filter:                                                           │
+│           Prefix: documents/                                              │
+│         Status: Enabled                                                   │
+│         Transitions:                                                      │
+│           -                                                               │
+│             Days: 365                                                     │
+│             StorageClass: GLACIER                                         │
+│                                                                           │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: grucloud-log-destination                                            │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   Name: grucloud-log-destination                                          │
+│   CreationDate: 2022-08-05T22:42:49.000Z                                  │
+│   Tags:                                                                   │
+│     - Key: gc-created-by-provider                                         │
+│       Value: aws                                                          │
+│     - Key: gc-managed-by                                                  │
+│       Value: grucloud                                                     │
+│     - Key: gc-project-name                                                │
+│       Value: @grucloud/example-aws-s3                                     │
+│     - Key: gc-stage                                                       │
+│       Value: dev                                                          │
+│     - Key: Name                                                           │
+│       Value: grucloud-log-destination                                     │
+│                                                                           │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: grucloud-policy                                                     │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   Name: grucloud-policy                                                   │
+│   CreationDate: 2022-08-05T22:42:49.000Z                                  │
+│   Tags:                                                                   │
+│     - Key: gc-created-by-provider                                         │
+│       Value: aws                                                          │
+│     - Key: gc-managed-by                                                  │
+│       Value: grucloud                                                     │
+│     - Key: gc-project-name                                                │
+│       Value: @grucloud/example-aws-s3                                     │
+│     - Key: gc-stage                                                       │
+│       Value: dev                                                          │
+│     - Key: Name                                                           │
+│       Value: grucloud-policy                                              │
+│   Policy:                                                                 │
+│     Version: 2012-10-17                                                   │
+│     Statement:                                                            │
+│       - Sid: IPAllow                                                      │
+│         Effect: Deny                                                      │
+│         Principal: *                                                      │
+│         Action: s3:*                                                      │
+│         Resource: arn:aws:s3:::grucloud-policy/*                          │
+│         Condition:                                                        │
+│           IpAddress:                                                      │
+│             aws:SourceIp: 8.8.8.8/32                                      │
+│   PolicyStatus:                                                           │
+│     IsPublic: false                                                       │
+│                                                                           │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: grucloud-request-payment                                            │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   Name: grucloud-request-payment                                          │
+│   CreationDate: 2022-08-05T22:42:49.000Z                                  │
+│   Tags:                                                                   │
+│     - Key: gc-created-by-provider                                         │
+│       Value: aws                                                          │
+│     - Key: gc-managed-by                                                  │
+│       Value: grucloud                                                     │
+│     - Key: gc-project-name                                                │
+│       Value: @grucloud/example-aws-s3                                     │
+│     - Key: gc-stage                                                       │
+│       Value: dev                                                          │
+│     - Key: Name                                                           │
+│       Value: grucloud-request-payment                                     │
+│   RequestPaymentConfiguration:                                            │
+│     Payer: Requester                                                      │
+│                                                                           │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: grucloud-tag                                                        │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   Name: grucloud-tag                                                      │
+│   CreationDate: 2022-08-05T22:42:49.000Z                                  │
+│   Tags:                                                                   │
+│     - Key: gc-created-by-provider                                         │
+│       Value: aws                                                          │
+│     - Key: gc-managed-by                                                  │
+│       Value: grucloud                                                     │
+│     - Key: gc-project-name                                                │
+│       Value: @grucloud/example-aws-s3                                     │
+│     - Key: gc-stage                                                       │
+│       Value: dev                                                          │
+│     - Key: Key1                                                           │
+│       Value: Value1                                                       │
+│     - Key: Key2                                                           │
+│       Value: Value2                                                       │
+│     - Key: Name                                                           │
+│       Value: grucloud-tag                                                 │
+│                                                                           │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: grucloud-test-basic.txt                                             │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   Name: grucloud-test-basic.txt                                           │
+│   CreationDate: 2022-08-05T22:42:49.000Z                                  │
+│   Tags:                                                                   │
+│     - Key: gc-created-by-provider                                         │
+│       Value: aws                                                          │
+│     - Key: gc-managed-by                                                  │
+│       Value: grucloud                                                     │
+│     - Key: gc-project-name                                                │
+│       Value: @grucloud/example-aws-s3                                     │
+│     - Key: gc-stage                                                       │
+│       Value: dev                                                          │
+│     - Key: Name                                                           │
+│       Value: grucloud-test-basic.txt                                      │
+│                                                                           │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: grucloud-website                                                    │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   Name: grucloud-website                                                  │
+│   CreationDate: 2022-08-05T22:42:49.000Z                                  │
+│   Tags:                                                                   │
+│     - Key: gc-created-by-provider                                         │
+│       Value: aws                                                          │
+│     - Key: gc-managed-by                                                  │
+│       Value: grucloud                                                     │
+│     - Key: gc-project-name                                                │
+│       Value: @grucloud/example-aws-s3                                     │
+│     - Key: gc-stage                                                       │
+│       Value: dev                                                          │
+│     - Key: Name                                                           │
+│       Value: grucloud-website                                             │
+│   WebsiteConfiguration:                                                   │
+│     ErrorDocument:                                                        │
+│       Key: error.html                                                     │
+│     IndexDocument:                                                        │
+│       Suffix: index.html                                                  │
+│   ACL: public-read                                                        │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+
+List Summary:
+Provider: aws
+┌──────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                      │
+├────────────┬─────────────────────────────────────────────────────────────┤
+│ S3::Bucket │ grucloud-cors                                               │
+│            │ grucloud-encryption                                         │
+│            │ grucloud-lifecycleconfiguration                             │
+│            │ grucloud-log-destination                                    │
+│            │ grucloud-policy                                             │
+│            │ grucloud-request-payment                                    │
+│            │ grucloud-tag                                                │
+│            │ grucloud-test-basic.txt                                     │
+│            │ grucloud-website                                            │
+└────────────┴─────────────────────────────────────────────────────────────┘
+9 resources, 1 type, 1 provider
+Command "gc l -t Bucket" executed in 17s, 97 MB
+```
 
 ## AWS CLI
 

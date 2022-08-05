@@ -48,10 +48,11 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [DB Subnet Group](./DBSubnetGroup.md)
-- [Security Group](../EC2/SecurityGroup.md)
+- [RDS DB Subnet Group](./DBSubnetGroup.md)
+- [EC2 Security Group](../EC2/SecurityGroup.md)
+- [IAM Role](../IAM/Role.md)
 - [KMS Key](../KMS/Key.md)
-- [Secret](../SecretsManager/Secret.md)
+- [SecretsManager Secret](../SecretsManager/Secret.md)
 
 ## List
 

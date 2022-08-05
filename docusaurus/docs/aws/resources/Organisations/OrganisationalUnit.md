@@ -11,7 +11,7 @@ List an [Organisational Unit](https://console.aws.amazon.com/organizations/v2/ho
 
 ### Used By
 
-- [PrincipalAssociation](../RAM/PrincipalAssociation.md)
+- [RAM Principal Association](../RAM/PrincipalAssociation.md)
 
 ### List
 

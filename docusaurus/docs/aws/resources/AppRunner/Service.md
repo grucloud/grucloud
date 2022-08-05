@@ -70,7 +70,7 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [Iam Role](../IAM/Role.md)
+- [IAM Role](../IAM/Role.md)
 - [AppRunner Connection](./Connection.md)
 - [ECR Repository](../ECR/Repository.md)
 

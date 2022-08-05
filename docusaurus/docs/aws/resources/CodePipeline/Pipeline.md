@@ -95,6 +95,7 @@ exports.createResources = () => [
 - [CodeStarConnections Connection](../CodeStarConnections/Connection.md)
 - [CodeBuild Project](../CodeBuild/Project.md)
 - [ECR Repository](../ECR/Repository.md)
+- [S3 Bucket](../S3/Bucket.md)
 
 ## Used By
 
@@ -106,7 +107,7 @@ exports.createResources = () => [
 
 ## Full Examples
 
-- [codepipeline-simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/CodePipeline/codepipeline-simple)
+- [CodePipeline code-pipeline-ecr](https://github.com/grucloud/grucloud/tree/main/examples/aws/CodePipeline/code-pipeline-ecr)
 
 ## List
 

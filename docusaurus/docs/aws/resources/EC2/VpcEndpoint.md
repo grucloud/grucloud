@@ -91,7 +91,8 @@ exports.createResources = () => [
 
 ### Used By
 
-- [Route](./Route.md)
+- [EC2 Route](./Route.md)
+- [Route53 Record](../Route53/Record.md)
 
 ### List
 

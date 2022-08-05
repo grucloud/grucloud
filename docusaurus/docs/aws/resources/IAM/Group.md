@@ -66,6 +66,7 @@ exports.createResources = () => [
 
 - [Iam Policy](./Policy.md)
 - [Iam User](./User.md)
+- [RAM Principal Association](../RAM/PrincipalAssociation.md)
 
 ### List
 
@@ -75,35 +76,36 @@ gc l -t IAM::Group
 
 ```sh
 Listing resources on 1 provider: aws
-✓ aws
+✓ aws us-east-1
   ✓ Initialising
-  ✓ Listing 2/2
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 IamGroup from aws                                                                          │
-├──────────┬────────────────────────────────────────────────────────────────────────────┬──────┤
-│ Name     │ Data                                                                       │ Our  │
-├──────────┼────────────────────────────────────────────────────────────────────────────┼──────┤
-│ Admin    │ Path: /                                                                    │ Yes  │
-│          │ GroupName: Admin                                                           │      │
-│          │ GroupId: AGPA4HNBM2ZQAA5U7GCZY                                             │      │
-│          │ Arn: arn:aws:iam::840541460064:group/Admin                                 │      │
-│          │ CreateDate: 2021-04-19T17:38:37.000Z                                       │      │
-│          │ AttachedPolicies:                                                          │      │
-│          │   - PolicyName: myPolicy-to-group                                          │      │
-│          │     PolicyArn: arn:aws:iam::840541460064:policy/myPolicy-to-group          │      │
-│          │                                                                            │      │
-└──────────┴────────────────────────────────────────────────────────────────────────────┴──────┘
+  ✓ Listing 1/1
+┌───────────────────────────────────────────────────────────────────────────┐
+│ 1 IAM::Group from aws                                                     │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: my-group                                                            │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   Path: /                                                                 │
+│   GroupName: my-group                                                     │
+│   GroupId: AGPA4HNBM2ZQP3YGZT4ZV                                          │
+│   Arn: arn:aws:iam::840541460064:group/my-group                           │
+│   CreateDate: 2022-08-05T21:55:07.000Z                                    │
+│   AttachedPolicies:                                                       │
+│     - PolicyName: AmazonEC2ReadOnlyAccess                                 │
+│       PolicyArn: arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess          │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
 Provider: aws
-┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                         │
-├────────────────────┬────────────────────────────────────────────────────────────────────────┤
-│ IamGroup           │ Admin                                                                  │
-└────────────────────┴────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                      │
+├────────────┬─────────────────────────────────────────────────────────────┤
+│ IAM::Group │ my-group                                                    │
+└────────────┴─────────────────────────────────────────────────────────────┘
 1 resource, 1 type, 1 provider
-Command "gc l -t IamGroup" executed in 3s
+Command "gc l -t IAM::Group" executed in 6s, 100 MB
 ```
 
 ### AWS CLI

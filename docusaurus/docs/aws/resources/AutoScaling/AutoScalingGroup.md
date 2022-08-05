@@ -37,6 +37,7 @@ exports.createResources = () => [
 
 - [Subnet](../EC2/Subnet.md)
 - [Launch Configuration](./LaunchConfiguration.md) or [Launch Template](../EC2/LaunchTemplate.md)
+- [IAM Role](../IAM/Role.md)
 
 ## Used By
 

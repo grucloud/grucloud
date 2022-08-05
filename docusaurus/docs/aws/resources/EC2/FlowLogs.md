@@ -68,19 +68,13 @@ exports.createResources = () => [
 ];
 ```
 
-
 ### Examples
 
 - [flow log on vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-vpc)
-
 - [flow log on subnet](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-subnet)
-
 - [flow log on interface](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-interface)
-
 - [flow log on transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-tgw)
-
 - [aws-samples/aws-network-hub-for-terraform](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/aws-network-hub-for-terraform)
-
 - [hub-and-spoke-with-shared-services-vpc-terraform](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/hub-and-spoke-with-shared-services-vpc-terraform)
 
 ### Properties
@@ -89,14 +83,13 @@ exports.createResources = () => [
 
 ### Dependencies
 
-- [Vpc](./Vpc.md)
-- [Subnet](./Subnet.md)
-- [Network Interface](./NetworkInterface.md)
-- [TransitGateway](./TransitGateway.md)
-
-- [Iam Role](../IAM/Role.md)
+- [EC2 Vpc](./Vpc.md)
+- [EC2 Subnet](./Subnet.md)
+- [EC2 Network Interface](./NetworkInterface.md)
+- [EC2 TransitGateway](./TransitGateway.md)
+- [IAM Role](../IAM/Role.md)
 - [S3 Bucket](../S3/Bucket.md)
-- [CloudWatch LogGroup](../CloudWatchLogs/LogGroup.md)
+- [CloudWatchLogs LogGroup](../CloudWatchLogs/LogGroup.md)
 
 ## Listing
 

@@ -38,7 +38,7 @@ exports.createResources = () => [
 
 ### Used By
 
-- [PrincipalAssociation](../RAM/PrincipalAssociation.md)
+- [RAM Principal Association](../RAM/PrincipalAssociation.md)
 
 ### List
 

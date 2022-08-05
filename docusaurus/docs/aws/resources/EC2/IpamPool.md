@@ -42,6 +42,7 @@ exports.createResources = () => [
 ### Used By
 
 - [IpamPoolCidr](./IpamPoolCidr.md)
+- [RAM Resource Association](../RAM/ResourceAssociation.md)
 
 ### Listing
 

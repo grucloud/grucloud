@@ -33,7 +33,7 @@ exports.createResources = () => [
 ## Dependencies
 
 - [Route53 Hosted Zone](./HostedZone.md)
-- [Vpc](../EC2/Vpc.md)
+- [EC2 Vpc](../EC2/Vpc.md)
 
 ## List
 

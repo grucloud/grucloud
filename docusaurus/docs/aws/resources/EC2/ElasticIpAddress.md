@@ -36,8 +36,9 @@ exports.createResources = () => [
 
 ### Used By
 
-- [Elastic Ip Address Association](./ElasticIpAddressAssociation.md)
-- [Nat Gateway](./NatGateway.md)
+- [EC2 Elastic Ip Address Association](./ElasticIpAddressAssociation.md)
+- [EC2 Nat Gateway](./NatGateway.md)
+- [Route53 Record](../Route53/Record.md)
 
 ## Listing
 

@@ -33,7 +33,7 @@ exports.createResources = () => [
 ## Dependencies
 
 - [GraphqlApi](./GraphqlApi.md)
-- [Iam Role](../IAM/Role.md)
+- [IAM Role](../IAM/Role.md)
 - [Lambda Function](../Lambda/Function.md)
 
 ## Full Examples

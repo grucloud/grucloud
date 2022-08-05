@@ -4,6 +4,7 @@ title: Volume Attachment
 ---
 
 Provides an [Volume Attachment](https://console.aws.amazon.com/ec2/v2/home?#Volumes:)
+
 This resource associates a volume to an EC2 instance.
 
 ```js
@@ -26,13 +27,12 @@ exports.createResources = () => [
 ### Examples
 
 - [instance with volume](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/volume)
-
 - [instance in a VPC with volume](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
 
 ### Depenencies
 
 - [EC2 Instance](./Instance.md)
-- [Volume](./Volume.md)
+- [EC2 Volume](./Volume.md)
 
 ## Listing
 

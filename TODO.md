@@ -5,31 +5,25 @@
 ## Aws
 
 - flow logs s3 destination
-
+- CodePipeline add dependencies to S3
+- CodePipeline replace region to S3 bucket
 - API Gateway v1 Authorizer
 - ApiGatewayV2::Stage: name prefix with api
 - ELB Listener multiple target group ?
 
 - doc:
-  TransitGatewayPeeringAttachment,
-  Volume,
-  Registry,
-  EFS::AccessPoint,
   DeliveryStream,
-  IAM,
-  RAM,
-  DB Proxy Target Group,
-  Route53 Record,
-  S3 Bucket,
-  SNS Subscription,
   SSM Document doc,
-  WebACLCloudFront
 
 - cloudwan vpc attachment
 - route to core network
 - fix gc l -t
 - Network Manager docs
-
+- fix systems-manager-automation-to-lambda
+- Example with non default DB Proxy Target Group,
+- AutoScalingGroup: example with serviceLinkedRole
+- VpcEndpoint: example with serviceLinkedRole
+- ECS taskRole vs executionRole
 - Firewall deps
 - ECSTask dependency check
 - CodeDeployDeploymentGroup configDefault with other dependencies
@@ -86,20 +80,6 @@ https://rushjs.io/
 ## Kubernetes
 
 ## Azure
-
-│ response: │
-│ status: 429 │
-│ data: │
-│ Code: TooManyRequests │
-│ Message: Too many requests. Please try again later. │
-│ Target: null │
-│ Details: │
-│ - Message: Too many requests. Please try again later. │
-│ - Code: TooManyRequests │
-│ - ErrorEntity: │
-│ Code: TooManyRequests │
-│ Message: Too many requests. Please try again later. │
-│ Innererror: null
 
 - Disk vault dep vanished
 - gc d -a

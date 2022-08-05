@@ -10,7 +10,21 @@ Manage a [System Manager Document](https://console.aws.amazon.com/systems-manage
 Create a document:
 
 ```js
-exports.createResources = () => [];
+exports.createResources = () => [
+  {
+    type: "Document",
+    group: "SSM",
+    properties: pipe([
+      ({ config }) => ({
+        DocumentFormat: "JSON",
+        DocumentType: "Automation",
+        Name: `${config.accountId()}_serverlessland_automation`,
+        PlatformTypes: ["Windows", "Linux", "MacOS"],
+        SchemaVersion: "0.3",
+      }),
+    ]),
+  },
+];
 ```
 
 ## Code Examples
@@ -29,7 +43,7 @@ exports.createResources = () => [];
 ## List
 
 ```sh
-gc l -t Document
+gc l -t SSM::Document
 ```
 
 ```txt

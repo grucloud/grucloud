@@ -3,7 +3,7 @@ id: Role
 title: Role
 ---
 
-Provides an Iam Role.
+Provides an [Iam Role](https://console.aws.amazon.com/iamv2/home#/roles)
 
 ## Sampke Code
 
@@ -177,18 +177,14 @@ exports.createResources = () => [
 ];
 ```
 
-### Examples
-
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/IAM/iam)
-
 ### Properties
 
 - [CreateRoleCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-iam/interfaces/createrolecommandinput.html)
 
 ### Dependencies
 
-- [Iam Policy](./Policy.md)
-- [Iam OpenIDConnectProvider](./OpenIDConnectProvider.md)
+- [IAM Policy](./Policy.md)
+- [IAM OpenIDConnectProvider](./OpenIDConnectProvider.md)
 - [DynamoDB Table](../DynamoDB/Table.md)
 - [SQS Queue](../SQS/Queue.md)
 - [SNS Topic](../SNS/Topic.md)
@@ -197,8 +193,54 @@ exports.createResources = () => [
 
 ### Used By
 
-- [IamInstanceProfile](./InstanceProfile.md)
+- [APIGateway Account](../APIGateway/Account.md)
+- [APIGateway RestApi](../APIGateway/RestApi.md)
+- [ApiGatewayV2 Integration](../ApiGatewayV2/Integration.md)
+- [AutoScaling AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
+- [AppRunner Service](../AppRunner/Service.md)
+- [AppSync DataSource](../AppSync/DataSource.md)
+- [AppSync GraphqlApi](../AppSync/GraphqlApi.md)
+- [CloudFormation Stack](../CloudFormation/Stack.md)
+- [CloudTrail Trail](../CloudTrail/Trail.md)
+- [CloudWatchEvents Target](../CloudWatchEvents/Target.md)
+- [CloudWatchLogs SubscriptionFilter](../CloudWatchLogs/SubscriptionFilter.md)
+- [CodeBuild Project](../CodeBuild/Project.md)
+- [CodeDeploy Application](../CodeDeploy/Application.md)
+- [CodePipeline Pipeline](../CodePipeline/Pipeline.md)
+- [EC2 Flow Logs ](../EC2/FlowLogs.md)
+- [EC2 Vpc Endpoint](../EC2/VpcEndpoint.md)
+- [ECS TaskDefinition](../ECS/TaskDefinition.md)
+- [EKS Cluster](../EKS/Cluster.md)
+- [EKS NodeGroup](../EKS/NodeGroup.md)
+- [Firehose DeliveryStream](../Firehose/DeliveryStream.md)
+- [IAM Instance Profile](./InstanceProfile.md)
+- [Lambda Function](../Lambda/Function.md)
 - [Glue Job](../Glue/Job.md)
+- [RDS DBInstance](../RDS/DBInstance.md)
+- [RDS DBCluster](../RDS/DBCluster.md)
+- [RDS DBProxy](../RDS/DBProxy.md)
+- [SSM Document](../SSM/Document.md)
+- [StepFunctions StateMachine](../StepFunctions/StateMachine.md)
+
+### Examples
+
+- [APIGateway restapi-lambda](https://github.com/grucloud/grucloud/blob/main/examples/aws/APIGateway/restapi-lambda)
+- [ApiGatewayV2 http-lambda](https://github.com/grucloud/grucloud/blob/main/examples/aws/ApiGatewayV2/http-lambda)
+- [apigw-http-api-eventbridge](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-http-api-eventbridge)
+- [AppRunner apprunner-simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/AppRunner/apprunner-simple)
+- [aws-cdk-examples/application-load-balancer-fargate-service]((https://github.com/grucloud/grucloud/tree/main/examples/aws/aws-cdk-examples/application-load-balancer-fargate-service)
+- [AppSync graphql](https://github.com/grucloud/grucloud/blob/main/examples/aws/AppSync/graphql)
+- [serverless-patterns appsync-eventbridge](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/appsync-eventbridge)
+- [CodeBuild codebuild-simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/CodeBuild/codebuild-simple)
+- [Codedeploy codedeploy-ecs](https://github.com/grucloud/grucloud/tree/main/examples/aws/CodeDeploy/codedeploy-ecs)
+- [CodePipeline code-pipeline-ecr](https://github.com/grucloud/grucloud/tree/main/examples/aws/CodePipeline/code-pipeline-ecr)
+- [EC2 flow logs on vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-vpc)
+- [EKS simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/EKS/eks-simple)
+- [Step function invoking a Glue job](https://github.com/grucloud/grucloud/tree/main/examples/aws/Firehose/firehose-delivery-stream)
+- [IAM simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/IAM/iam)
+- [RDS aurora-v2](https://github.com/grucloud/grucloud/blob/main/examples/aws/RDS/aurora-v2)
+- [apigw-http-api-lambda-rds-proxy](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/apigw-http-api-lambda-rds-proxy)
+- [StepFunctions send item to dynamoDB](https://github.com/grucloud/grucloud/tree/main/examples/aws/serverless-patterns/sfn-dynamodb)
 
 ### List
 

@@ -9,7 +9,7 @@ Provides a [Network Interface](https://console.aws.amazon.com/ec2/v2/home?#NIC:)
 
 ```js
 exports.createResources = () => [
-   {
+  {
     type: "NetworkInterface",
     group: "EC2",
     name: "eni::machine",
@@ -24,14 +24,13 @@ exports.createResources = () => [
 ];
 ```
 
-
 ## Examples
 
 - [flow log on interface](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-interface)
 
 ## Used By
 
-- [Flow Logs](./FlowLogs.md)
+- [EC2 Flow Logs](./FlowLogs.md)
 
 ## Listing
 
@@ -40,9 +39,10 @@ List all of the network interfaces with the _NetworkInterface_ filter:
 ```sh
 gc l -t NetworkInterface
 ```
+
 ```txt
 Listing resources on 1 provider: aws
-✓ aws us-east-1 
+✓ aws us-east-1
   ✓ Initialising
   ✓ Listing 1/1
 ┌───────────────────────────────────────────────────────────────────────────────┐

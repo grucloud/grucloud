@@ -32,8 +32,8 @@ exports.createResources = () => [
 
 ## Used By
 
-- [AccessPoint](./AccessPoint.md)
-- [MountTarget](./MountTarget.md)
+- [EFS AccessPoint](./AccessPoint.md)
+- [EFS MountTarget](./MountTarget.md)
 
 ## List
 
