@@ -3,7 +3,7 @@ id: DBProxyTargetGroup
 title: DB Proxy Target Group
 ---
 
-Manages a [DB Proxy](https://console.aws.amazon.com/rds/home?#databases:).
+Manages a [DB Proxy Target Group](https://console.aws.amazon.com/rds/home?#databases:).
 
 ## Example
 

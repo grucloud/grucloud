@@ -1,6 +1,6 @@
 ---
 id: Connection
-title: Service
+title: Connection
 ---
 
 Provides an AppRunner Connection.

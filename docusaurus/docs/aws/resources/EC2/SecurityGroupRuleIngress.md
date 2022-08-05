@@ -44,74 +44,71 @@ exports.createResources = () => [
 
 ## Listing
 
-List only the ingress rules with the filter `SecurityGroupRuleIngress`
+List only the ingress rules with the filter `EC2::SecurityGroupRuleIngress`
 
 ```sh
-gc l -t SecurityGroupRuleIngress
+gc l -t EC2::SecurityGroupRuleIngress
 ```
 
-```sh
+```txt
 Listing resources on 1 provider: aws
-✓ aws
-  Initialising
-  ✓ Listing 2/2
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│ 2 SecurityGroupRuleIngress from aws                                                 │
-├──────────────────────┬───────────────────────────────────────────────────────┬──────┤
-│ Name                 │ Data                                                  │ Our  │
-├──────────────────────┼───────────────────────────────────────────────────────┼──────┤
-│ sg-rule-ingress-ssh  │ IpPermissions:                                        │ Yes  │
-│                      │   - FromPort: 22                                      │      │
-│                      │     IpProtocol: tcp                                   │      │
-│                      │     IpRanges:                                         │      │
-│                      │       - CidrIp: 0.0.0.0/0                             │      │
-│                      │     Ipv6Ranges:                                       │      │
-│                      │       - CidrIpv6: ::/0                                │      │
-│                      │     ToPort: 22                                        │      │
-│                      │ Tags:                                                 │      │
-│                      │   - Key: Name                                         │      │
-│                      │     Value: sg-rule-ingress-ssh                        │      │
-│                      │   - Key: ManagedBy                                    │      │
-│                      │     Value: GruCloud                                   │      │
-│                      │   - Key: CreatedByProvider                            │      │
-│                      │     Value: aws                                        │      │
-│                      │   - Key: stage                                        │      │
-│                      │     Value: dev                                        │      │
-│                      │   - Key: projectName                                  │      │
-│                      │     Value: @grucloud/example-aws-ec2-vpc              │      │
-│                      │                                                       │      │
-├──────────────────────┼───────────────────────────────────────────────────────┼──────┤
-│ sg-rule-ingress-icmp │ IpPermissions:                                        │ Yes  │
-│                      │   - FromPort: -1                                      │      │
-│                      │     IpProtocol: icmp                                  │      │
-│                      │     IpRanges:                                         │      │
-│                      │       - CidrIp: 0.0.0.0/0                             │      │
-│                      │     Ipv6Ranges:                                       │      │
-│                      │       - CidrIpv6: ::/0                                │      │
-│                      │     ToPort: -1                                        │      │
-│                      │ Tags:                                                 │      │
-│                      │   - Key: Name                                         │      │
-│                      │     Value: sg-rule-ingress-icmp                       │      │
-│                      │   - Key: ManagedBy                                    │      │
-│                      │     Value: GruCloud                                   │      │
-│                      │   - Key: CreatedByProvider                            │      │
-│                      │     Value: aws                                        │      │
-│                      │   - Key: stage                                        │      │
-│                      │     Value: dev                                        │      │
-│                      │   - Key: projectName                                  │      │
-│                      │     Value: @grucloud/example-aws-ec2-vpc              │      │
-│                      │                                                       │      │
-└──────────────────────┴───────────────────────────────────────────────────────┴──────┘
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 3/3
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│ 3 EC2::SecurityGroupRuleIngress from aws                                                 │
+├──────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: sg::vpclink-ex-vpc::default-rule-ingress-all                                       │
+│ managedByUs: NO                                                                          │
+│ live:                                                                                    │
+│   GroupId: sg-0807ac732d3e193d3                                                          │
+│   GroupName: default                                                                     │
+│   IpProtocol: -1                                                                         │
+│   UserIdGroupPairs:                                                                      │
+│     -                                                                                    │
+│       GroupId: sg-0807ac732d3e193d3                                                      │
+│       UserId: 840541460064                                                               │
+│                                                                                          │
+├──────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: sg::vpclink-ex-vpc::sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ-rule-ingress-tcp-80     │
+│ managedByUs: NO                                                                          │
+│ live:                                                                                    │
+│   GroupId: sg-0ed32b4daab4b0d89                                                          │
+│   GroupName: sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ                                      │
+│   FromPort: 80                                                                           │
+│   IpProtocol: tcp                                                                        │
+│   ToPort: 80                                                                             │
+│   UserIdGroupPairs:                                                                      │
+│     -                                                                                    │
+│       GroupId: sg-0d33d0925a8df9124                                                      │
+│       UserId: 840541460064                                                               │
+│                                                                                          │
+├──────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ4-rule-ingress-tcp-80       │
+│ managedByUs: NO                                                                          │
+│ live:                                                                                    │
+│   GroupId: sg-0d33d0925a8df9124                                                          │
+│   GroupName: sam-app-LoadBalancerSG-10GJVKU6RNTZ4                                        │
+│   FromPort: 80                                                                           │
+│   IpProtocol: tcp                                                                        │
+│   IpRanges:                                                                              │
+│     - CidrIp: 0.0.0.0/0                                                                  │
+│       Description: Allow from anyone on port 80                                          │
+│   ToPort: 80                                                                             │
+│   UserIdGroupPairs: []                                                                   │
+│                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
 Provider: aws
-┌────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                │
-├────────────────────┬───────────────────────────────────────────────────────────────┤
-│ SecurityGroupRule… │ sg-rule-ingress-ssh                                           │
-│                    │ sg-rule-ingress-icmp                                          │
-└────────────────────┴───────────────────────────────────────────────────────────────┘
-2 resources, 1 type, 1 provider
-Command "gc l -t SecurityGroupRuleIngress" executed in 3s
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                     │
+├───────────────────────────────┬─────────────────────────────────────────────────────────┤
+│ EC2::SecurityGroupRuleIngress │ sg::vpclink-ex-vpc::default-rule-ingress-all            │
+│                               │ sg::vpclink-ex-vpc::sam-app-ECSSecurityGroup-1FYEJS4ML… │
+│                               │ sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNT… │
+└───────────────────────────────┴─────────────────────────────────────────────────────────┘
+3 resources, 1 type, 1 provider
+Command "gc l -t EC2::SecurityGroupRuleIngress" executed in 4s, 106 MB
 ```

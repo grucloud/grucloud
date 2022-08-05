@@ -5,7 +5,7 @@ title: Organisational Unit
 
 List an [Organisational Unit](https://console.aws.amazon.com/organizations/v2/home?#)
 
-### Properties
+### Properties
 
 - [CreateOrganizationalUnitCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-organizations/interfaces/createorganizationalunitcommandinput.html)
 

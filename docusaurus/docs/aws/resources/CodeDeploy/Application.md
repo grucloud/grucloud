@@ -8,7 +8,17 @@ Manages an [AWS CodeDeploy Application](https://console.aws.amazon.com/codesuite
 ## Sample code
 
 ```js
-exports.createResources = () => [];
+exports.createResources = () => [
+  {
+    type: "Application",
+    group: "CodeDeploy",
+    properties: ({}) => ({
+      applicationName: "AppECS-cluster-api",
+      computePlatform: "ECS",
+      tags: [],
+    }),
+  },
+];
 ```
 
 ## Dependencies
@@ -25,7 +35,7 @@ exports.createResources = () => [];
 
 ## Full Examples
 
-- [codedeploy-simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/CodeDeploy/codedeploy-simple)
+- [codedeploy-ecs](https://github.com/grucloud/grucloud/tree/main/examples/aws/CodeDeploy/codedeploy-ecs)
 
 ## List
 

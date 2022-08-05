@@ -7,7 +7,7 @@ Manages an [Api Gateway V2 Integration](https://console.aws.amazon.com/apigatewa
 
 ## Sample code
 
-### Lambda integration
+### Lambda integration
 
 ```js
 exports.createResources = () => [
@@ -28,7 +28,7 @@ exports.createResources = () => [
 ];
 ```
 
-### Load Balancer integration
+### Load Balancer integration
 
 ```js
 exports.createResources = () => [
@@ -52,7 +52,7 @@ exports.createResources = () => [
 ];
 ```
 
-### Event Bus integration
+### Event Bus integration
 
 ```js
 exports.createResources = () => [

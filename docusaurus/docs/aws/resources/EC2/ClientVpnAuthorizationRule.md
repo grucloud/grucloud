@@ -27,7 +27,7 @@ exports.createResources = () => [
 
 - [client-vpn-endpoint](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/client-vpn-endpoint)
 
-### Properties
+### Properties
 
 - [AuthorizeClientVpnIngressCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/authorizeclientvpningresscommandinput.html)
 
@@ -43,7 +43,7 @@ gc l -t EC2::ClientVpnAuthorizationRule
 
 ```txt
 Listing resources on 1 provider: aws
-✓ aws us-east-1 
+✓ aws us-east-1
   ✓ Initialising
   ✓ Listing 2/2
 ┌────────────────────────────────────────────────────────────────────────────────────────────────┐

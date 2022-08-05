@@ -8,7 +8,36 @@ Provides [Route53 Recovery Readiness Resource Set](https://us-west-2.console.aws
 ## Examples
 
 ```js
-exports.createResources = () => [];
+exports.createResources = () => [
+  {
+    type: "ResourceSet",
+    group: "Route53RecoveryReadiness",
+    properties: ({ getId }) => ({
+      ResourceSetName: "dynamodb",
+      ResourceSetType: "AWS::DynamoDB::Table",
+      Resources: [
+        {
+          ReadinessScopes: [
+            `${getId({
+              type: "Cell",
+              group: "Route53RecoveryReadiness",
+              name: "my-recoverygroup-cell1",
+            })}`,
+          ],
+          ResourceArn: `${getId({
+            type: "Table",
+            group: "DynamoDB",
+            name: "my-table",
+          })}`,
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      cells: ["my-recoverygroup-cell1"],
+      dynamoDBTable: "my-table",
+    }),
+  },
+];
 ```
 
 ## Source Code Examples
@@ -25,8 +54,8 @@ exports.createResources = () => [];
 - [ApiGatewayV2 Stage](../ApiGatewayV2/Stage.md)
 - [AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
 - [CloudWatch MetricAlarm](../CloudWatch/MetricAlarm.md)
-- [EC2 CustomerGateway](../EC2/CustomerGateway.md)
 - [DynamoDB Table](../DynamoDB/Table.md)
+- [EC2 CustomerGateway](../EC2/CustomerGateway.md)
 - [EC2 Volume](../EC2/Volume.md)
 - [EC2 Vpc](../EC2/Vpc.md)
 - [EC2 VpnConnection](../EC2/VpnConnection.md)

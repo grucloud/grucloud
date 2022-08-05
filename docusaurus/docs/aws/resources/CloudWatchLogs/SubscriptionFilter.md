@@ -35,7 +35,7 @@ exports.createResources = () => [
 
 - [subscription filter](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatchLogs/subscription-filter)
 
-## Dependencies
+## Dependencies
 
 - [CloudWatchLogs LogGroup](./LogGroup.md)
 - [Kinesis Stream](../Kinesis/Stream.md)

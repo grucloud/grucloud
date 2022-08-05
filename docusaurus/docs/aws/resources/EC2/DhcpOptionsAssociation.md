@@ -1,6 +1,6 @@
 ---
 id: DhcpOptionsAssociation
-title: Dhcp Options
+title: Dhcp Options Association
 ---
 
 Provides a [Dhcp Options Association](https://console.aws.amazon.com/vpc/home?#dhcpOptions:)

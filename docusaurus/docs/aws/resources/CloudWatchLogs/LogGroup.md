@@ -1,6 +1,6 @@
 ---
 id: LogGroup
-title: LogGroup
+title: Log Group
 ---
 
 Manages a [Cloud Watch Log Group](https://console.aws.amazon.com/cloudwatch/home?#logsV2:log-groups).
@@ -33,7 +33,7 @@ exports.createResources = () => [
 - [logGroup with KMS key](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatchLogs/loggroup-key)
 - [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/hub-and-spoke-with-inspection-vpc)
 
-## Dependencies
+## Dependencies
 
 - [KMS Key](../KMS/Key.md)
 

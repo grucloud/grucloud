@@ -9,7 +9,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       applicationName: "AppECS-cluster-api",
       computePlatform: "ECS",
-      tags: [],
     }),
   },
   {
@@ -87,7 +86,6 @@ exports.createResources = () => [
           },
         ],
       },
-      tags: [],
     }),
     dependencies: ({}) => ({
       application: "AppECS-cluster-api",

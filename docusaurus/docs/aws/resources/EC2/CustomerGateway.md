@@ -23,7 +23,7 @@ exports.createResources = () => [
 
 - [site2site](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/site2site)
 
-### Properties
+### Properties
 
 - [CreateCustomerGatewayCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/createcustomergatewaycommandinput.html)
 

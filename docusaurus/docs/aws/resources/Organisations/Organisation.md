@@ -30,7 +30,7 @@ exports.createResources = () => [
 
 - [simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/RAM/resource-share)
 
-### Properties
+### Properties
 
 - [CreateOrganizationCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-organizations/interfaces/createorganizationcommandinput.html)
 

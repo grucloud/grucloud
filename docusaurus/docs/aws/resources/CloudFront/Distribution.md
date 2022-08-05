@@ -154,3 +154,139 @@ When some S3 objects are updated during the _gc apply_ command, a [_createInvali
 - [Certificate](../ACM/Certificate.md)
 - [OriginAccessIdentity](./OriginAccessIdentity.md)
 - [WAFv2 WebACLCloudFront](../WAFv2/WebACLCloudFront.md)
+
+### List
+
+```
+gc l -t CloudFront::Distribution
+```
+
+```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 1/1
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 CloudFront::Distribution from aws                                                   │
+├───────────────────────────────────────────────────────────────────────────────────────┤
+│ name: S3-cloudfront.aws.test.grucloud.org                                             │
+│ managedByUs: Yes                                                                      │
+│ live:                                                                                 │
+│   CallerReference: grucloud-192515cd-c5f0-42cc-93a2-1c1b249abb11                      │
+│   Aliases:                                                                            │
+│     Quantity: 1                                                                       │
+│     Items:                                                                            │
+│       - "cloudfront.aws.test.grucloud.org"                                            │
+│   DefaultRootObject: index.html                                                       │
+│   Origins:                                                                            │
+│     Quantity: 1                                                                       │
+│     Items:                                                                            │
+│       - Id: S3-cloudfront.aws.test.grucloud.org                                       │
+│         DomainName: cloudfront.aws.test.grucloud.org.s3.amazonaws.com                 │
+│         OriginPath:                                                                   │
+│         CustomHeaders:                                                                │
+│           Quantity: 0                                                                 │
+│         S3OriginConfig:                                                               │
+│           OriginAccessIdentity:                                                       │
+│         ConnectionAttempts: 3                                                         │
+│         ConnectionTimeout: 10                                                         │
+│         OriginShield:                                                                 │
+│           Enabled: false                                                              │
+│   OriginGroups:                                                                       │
+│     Quantity: 0                                                                       │
+│   DefaultCacheBehavior:                                                               │
+│     TargetOriginId: S3-cloudfront.aws.test.grucloud.org                               │
+│     TrustedSigners:                                                                   │
+│       Enabled: false                                                                  │
+│       Quantity: 0                                                                     │
+│     TrustedKeyGroups:                                                                 │
+│       Enabled: false                                                                  │
+│       Quantity: 0                                                                     │
+│     ViewerProtocolPolicy: redirect-to-https                                           │
+│     AllowedMethods:                                                                   │
+│       Quantity: 2                                                                     │
+│       Items:                                                                          │
+│         - "HEAD"                                                                      │
+│         - "GET"                                                                       │
+│       CachedMethods:                                                                  │
+│         Quantity: 2                                                                   │
+│         Items:                                                                        │
+│           - "HEAD"                                                                    │
+│           - "GET"                                                                     │
+│     SmoothStreaming: false                                                            │
+│     Compress: false                                                                   │
+│     LambdaFunctionAssociations:                                                       │
+│       Quantity: 0                                                                     │
+│     FunctionAssociations:                                                             │
+│       Quantity: 0                                                                     │
+│     FieldLevelEncryptionId:                                                           │
+│     ForwardedValues:                                                                  │
+│       QueryString: false                                                              │
+│       Cookies:                                                                        │
+│         Forward: none                                                                 │
+│       Headers:                                                                        │
+│         Quantity: 0                                                                   │
+│       QueryStringCacheKeys:                                                           │
+│         Quantity: 0                                                                   │
+│     MinTTL: 600                                                                       │
+│     DefaultTTL: 86400                                                                 │
+│     MaxTTL: 31536000                                                                  │
+│   CacheBehaviors:                                                                     │
+│     Quantity: 0                                                                       │
+│   CustomErrorResponses:                                                               │
+│     Quantity: 0                                                                       │
+│   Comment: cloudfront.aws.test.grucloud.org.s3.amazonaws.com                          │
+│   Logging:                                                                            │
+│     Enabled: false                                                                    │
+│     IncludeCookies: false                                                             │
+│     Bucket:                                                                           │
+│     Prefix:                                                                           │
+│   PriceClass: PriceClass_100                                                          │
+│   Enabled: true                                                                       │
+│   ViewerCertificate:                                                                  │
+│     CloudFrontDefaultCertificate: false                                               │
+│     ACMCertificateArn: arn:aws:acm:us-east-1:840541460064:certificate/40824773-1a98-… │
+│     SSLSupportMethod: sni-only                                                        │
+│     MinimumProtocolVersion: TLSv1.2_2019                                              │
+│     Certificate: arn:aws:acm:us-east-1:840541460064:certificate/40824773-1a98-4f70-a… │
+│     CertificateSource: acm                                                            │
+│   Restrictions:                                                                       │
+│     GeoRestriction:                                                                   │
+│       RestrictionType: none                                                           │
+│       Quantity: 0                                                                     │
+│   WebACLId:                                                                           │
+│   HttpVersion: http2                                                                  │
+│   IsIPV6Enabled: true                                                                 │
+│   Tags:                                                                               │
+│     - Key: gc-created-by-provider                                                     │
+│       Value: aws                                                                      │
+│     - Key: gc-managed-by                                                              │
+│       Value: grucloud                                                                 │
+│     - Key: gc-project-name                                                            │
+│       Value: @grucloud/example-aws-website-https                                      │
+│     - Key: gc-stage                                                                   │
+│       Value: dev                                                                      │
+│     - Key: Name                                                                       │
+│       Value: S3-cloudfront.aws.test.grucloud.org                                      │
+│   Id: ENSP11JQNT4WY                                                                   │
+│   ARN: arn:aws:cloudfront::840541460064:distribution/ENSP11JQNT4WY                    │
+│   Status: Deployed                                                                    │
+│   LastModifiedTime: 2022-08-05T11:28:58.586Z                                          │
+│   DomainName: d2nnsefnqnrio6.cloudfront.net                                           │
+│   AliasICPRecordals:                                                                  │
+│     - CNAME: cloudfront.aws.test.grucloud.org                                         │
+│       ICPRecordalStatus: APPROVED                                                     │
+│                                                                                       │
+└───────────────────────────────────────────────────────────────────────────────────────┘
+
+
+List Summary:
+Provider: aws
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                  │
+├──────────────────────────┬───────────────────────────────────────────────────────────┤
+│ CloudFront::Distribution │ S3-cloudfront.aws.test.grucloud.org                       │
+└──────────────────────────┴───────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t CloudFront::Distribution" executed in 5s, 102 MB
+```

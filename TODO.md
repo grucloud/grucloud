@@ -4,11 +4,31 @@
 
 ## Aws
 
+- flow logs s3 destination
+
+- API Gateway v1 Authorizer
+- ApiGatewayV2::Stage: name prefix with api
+- ELB Listener multiple target group ?
+
+- doc:
+  TransitGatewayPeeringAttachment,
+  Volume,
+  Registry,
+  EFS::AccessPoint,
+  DeliveryStream,
+  IAM,
+  RAM,
+  DB Proxy Target Group,
+  Route53 Record,
+  S3 Bucket,
+  SNS Subscription,
+  SSM Document doc,
+  WebACLCloudFront
+
 - cloudwan vpc attachment
 - route to core network
 - fix gc l -t
 - Network Manager docs
-- SSM Document doc
 
 - Firewall deps
 - ECSTask dependency check
@@ -16,7 +36,6 @@
 - WebAclDependencies dependencies refactor
 - RAMPrincipalAssociation findName
 - SNSSubscription deps sqs queue
-- flow logs s3 destination
 - PrincipalAssociation replace associatedEntity from config
 - ipamPoolIpv6
 - HostedZone name with vpc
@@ -32,6 +51,7 @@
 - s3 analytics configuration
 - s3 object gencode is missing ACL:public-read
 
+- CloudTrail EventDataStore,
 - ECSTaskSet
 - EventDataStore doc
 - AWS::AmazonMQ::Broker
@@ -66,6 +86,20 @@ https://rushjs.io/
 ## Kubernetes
 
 ## Azure
+
+│ response: │
+│ status: 429 │
+│ data: │
+│ Code: TooManyRequests │
+│ Message: Too many requests. Please try again later. │
+│ Target: null │
+│ Details: │
+│ - Message: Too many requests. Please try again later. │
+│ - Code: TooManyRequests │
+│ - ErrorEntity: │
+│ Code: TooManyRequests │
+│ Message: Too many requests. Please try again later. │
+│ Innererror: null
 
 - Disk vault dep vanished
 - gc d -a

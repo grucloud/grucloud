@@ -135,3 +135,49 @@ exports.createResources = () => [
 - [EC2 Transit Gateway](./TransitGateway.md)
 - [EC2 Vpc Endpoint](./VpcEndpoint.md)
 - [NetworkManager CoreNetwork](../NetworkManager/CoreNetwork.md)
+
+## List
+
+```sh
+gc l -t EC2::Route
+```
+
+```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 13/13
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 4 EC2::Route from aws                                                                        │
+├──────────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: vpc-default::rt-default::local::172.31.0.0/16                                          │
+│ managedByUs: NO                                                                              │
+│ live:                                                                                        │
+│   DestinationCidrBlock: 172.31.0.0/16                                                        │
+│   GatewayId: local                                                                           │
+│   Origin: CreateRouteTable                                                                   │
+│   State: active                                                                              │
+│   RouteTableId: rtb-19753867                                                                 │
+│                                                                                              │
+├──────────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: vpc-ec2-example::route-table::igw::0.0.0.0/0                                           │
+│ managedByUs: Yes                                                                             │
+│ live:                                                                                        │
+│   DestinationCidrBlock: 0.0.0.0/0                                                            │
+│   GatewayId: igw-0e01961b98c435457                                                           │
+│   Origin: CreateRoute                                                                        │
+│   State: active                                                                              │
+│   RouteTableId: rtb-0bc05587c5359f095                                                        │
+│                                                                                              │
+├──────────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: vpc-ec2-example::route-table::local::10.1.0.0/16                                       │
+│ managedByUs: NO                                                                              │
+│ live:                                                                                        │
+│   DestinationCidrBlock: 10.1.0.0/16                                                          │
+│   GatewayId: local                                                                           │
+│   Origin: CreateRouteTable                                                                   │
+│   State: active                                                                              │
+│   RouteTableId: rtb-0bc05587c5359f095                                                        │
+│                                                                                              │
+├──────────────────────────────────────────────────────────────────────────────────────────────┤
+```

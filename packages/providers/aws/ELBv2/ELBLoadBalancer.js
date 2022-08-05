@@ -11,6 +11,10 @@ const {
 const { AwsClient } = require("../AwsClient");
 const { createELB, tagResource, untagResource } = require("./ELBCommon");
 
+const logger = require("@grucloud/core/logger")({
+  prefix: "LoadBalancer",
+});
+
 const findName = get("live.Name");
 const findId = get("live.LoadBalancerArn");
 const pickId = pick(["LoadBalancerArn"]);
@@ -108,11 +112,16 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const create = client.create({
     method: "createLoadBalancer",
     getById,
-    isInstanceUp: eq(get("State.Code"), "active"),
+    isInstanceUp: pipe([
+      tap(({ State }) => {
+        logger.info(`createLoadBalancer state: ${State.Code}`);
+      }),
+      eq(get("State.Code"), "active"),
+    ]),
     isInstanceError: eq(get("State.Code"), "failed"),
     getErrorMessage: get("State.Reason", "failed"),
     pickCreated: ({ payload }) => pipe([() => payload]),
-    config: { retryCount: 40 * 10, retryDelay: 10e3 },
+    config: { retryCount: 60 * 10, retryDelay: 10e3 },
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteLoadBalancer-property

@@ -50,53 +50,73 @@ List only the ingress rules with the filter `SecurityGroupRuleEgress`
 gc l -t EC2::SecurityGroupRuleEgress
 ```
 
-```sh
-Listing resources on 2 providers: aws, k8s
-✓ aws
-  Initialising
-  ✓ Listing 2/2
-✓ k8s
-  Initialising
-  ✓ Listing
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 SecurityGroupRuleEgress from aws                                                  │
-├───────────────────────────────────┬──────────────────────────────────────────┬──────┤
-│ Name                              │ Data                                     │ Our  │
-├───────────────────────────────────┼──────────────────────────────────────────┼──────┤
-│ sg-cluster-rule-egress-starhackit │ IpPermissions:                           │ Yes  │
-│                                   │   - FromPort: 1024                       │      │
-│                                   │     IpProtocol: tcp                      │      │
-│                                   │     IpRanges:                            │      │
-│                                   │       - CidrIp: 0.0.0.0/0                │      │
-│                                   │     Ipv6Ranges:                          │      │
-│                                   │       - CidrIpv6: ::/0                   │      │
-│                                   │     ToPort: 65535                        │      │
-│                                   │ Tags:                                    │      │
-│                                   │   - Key: Name                            │      │
-│                                   │     Value: sg-cluster-rule-egress-starh… │      │
-│                                   │   - Key: ManagedBy                       │      │
-│                                   │     Value: GruCloud                      │      │
-│                                   │   - Key: CreatedByProvider               │      │
-│                                   │     Value: aws                           │      │
-│                                   │   - Key: stage                           │      │
-│                                   │     Value: dev                           │      │
-│                                   │   - Key: projectName                     │      │
-│                                   │     Value: starhackit                    │      │
-│                                   │                                          │      │
-└───────────────────────────────────┴──────────────────────────────────────────┴──────┘
+```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 3/3
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│ 4 EC2::SecurityGroupRuleEgress from aws                                                  │
+├──────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: sg::vpclink-ex-vpc::default-rule-egress-all                                        │
+│ managedByUs: NO                                                                          │
+│ live:                                                                                    │
+│   GroupId: sg-0807ac732d3e193d3                                                          │
+│   GroupName: default                                                                     │
+│   IpProtocol: -1                                                                         │
+│   IpRanges:                                                                              │
+│     - CidrIp: 0.0.0.0/0                                                                  │
+│   UserIdGroupPairs: []                                                                   │
+│                                                                                          │
+├──────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: sg::vpclink-ex-vpc::sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ-rule-egress-all         │
+│ managedByUs: NO                                                                          │
+│ live:                                                                                    │
+│   GroupId: sg-0ed32b4daab4b0d89                                                          │
+│   GroupName: sam-app-ECSSecurityGroup-1FYEJS4ML4TYJ                                      │
+│   IpProtocol: -1                                                                         │
+│   IpRanges:                                                                              │
+│     - CidrIp: 0.0.0.0/0                                                                  │
+│   UserIdGroupPairs: []                                                                   │
+│                                                                                          │
+├──────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ4-rule-egress-all           │
+│ managedByUs: NO                                                                          │
+│ live:                                                                                    │
+│   GroupId: sg-0d33d0925a8df9124                                                          │
+│   GroupName: sam-app-LoadBalancerSG-10GJVKU6RNTZ4                                        │
+│   IpProtocol: -1                                                                         │
+│   IpRanges:                                                                              │
+│     - CidrIp: 0.0.0.0/0                                                                  │
+│   UserIdGroupPairs: []                                                                   │
+│                                                                                          │
+├──────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ4-rule-egress-tcp-80        │
+│ managedByUs: NO                                                                          │
+│ live:                                                                                    │
+│   GroupId: sg-0d33d0925a8df9124                                                          │
+│   GroupName: sam-app-LoadBalancerSG-10GJVKU6RNTZ4                                        │
+│   FromPort: 80                                                                           │
+│   IpProtocol: tcp                                                                        │
+│   ToPort: 80                                                                             │
+│   UserIdGroupPairs:                                                                      │
+│     -                                                                                    │
+│       GroupId: sg-0ed32b4daab4b0d89                                                      │
+│       UserId: 840541460064                                                               │
+│                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
-Provider: k8s
-┌────────────────────────────────────────────────────────────────────────────────────┐
-│ k8s                                                                                │
-└────────────────────────────────────────────────────────────────────────────────────┘
 Provider: aws
-┌────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                │
-├────────────────────┬───────────────────────────────────────────────────────────────┤
-│ SecurityGroupRule… │ sg-cluster-rule-egress-starhackit                             │
-└────────────────────┴───────────────────────────────────────────────────────────────┘
-1 resource, 1 type, 2 providers
-Command "gc l -t SecurityGroupRuleEgress" executed in 6s
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                     │
+├──────────────────────────────┬──────────────────────────────────────────────────────────┤
+│ EC2::SecurityGroupRuleEgress │ sg::vpclink-ex-vpc::default-rule-egress-all              │
+│                              │ sg::vpclink-ex-vpc::sam-app-ECSSecurityGroup-1FYEJS4ML4… │
+│                              │ sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ… │
+│                              │ sg::vpclink-ex-vpc::sam-app-LoadBalancerSG-10GJVKU6RNTZ… │
+└──────────────────────────────┴──────────────────────────────────────────────────────────┘
+4 resources, 1 type, 1 provider
+Command "gc l -t EC2::SecurityGroupRuleEgress" executed in 4s, 106 MB
 ```

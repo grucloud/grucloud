@@ -1,6 +1,6 @@
 ---
 id: ClientVpnTargetNetwork
-title: Client VPN Endpoint
+title: Client Vpn Target Network
 ---
 
 Provides a [Client VPN Target Network](https://console.aws.amazon.com/vpc/home?#ClientVPNEndpoints:)
@@ -24,7 +24,7 @@ exports.createResources = () => [
 
 - [client-vpn-endpoint](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/client-vpn-endpoint)
 
-### Properties
+### Properties
 
 - [AssociateClientVpnTargetNetworkRequest](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/modules/associateclientvpntargetnetworkrequest.html)
 
@@ -41,57 +41,34 @@ gc l -t EC2::ClientVpnTargetNetwork
 
 ```txt
 Listing resources on 1 provider: aws
-✓ aws us-east-1 
+✓ aws us-east-1
   ✓ Initialising
-  ✓ Listing 1/1
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 EC2::ClientVpnEndpoint from aws                                                            │
-├──────────────────────────────────────────────────────────────────────────────────────────────┤
-│ name: client-vpn                                                                             │
-│ managedByUs: Yes                                                                             │
-│ live:                                                                                        │
-│   ClientVpnEndpointId: cvpn-endpoint-0a4eb6f262142e601                                       │
-│   Description:                                                                               │
-│   Status:                                                                                    │
-│     Code: pending-associate                                                                  │
-│   CreationTime: 2022-07-19T12:57:40                                                          │
-│   DnsName: *.cvpn-endpoint-0a4eb6f262142e601.prod.clientvpn.us-east-1.amazonaws.com          │
-│   ClientCidrBlock: 10.0.0.0/16                                                               │
-│   SplitTunnel: false                                                                         │
-│   VpnProtocol: openvpn                                                                       │
-│   TransportProtocol: udp                                                                     │
-│   VpnPort: 443                                                                               │
-│   ServerCertificateArn: arn:aws:acm:us-east-1:840541460064:certificate/555b616a-ca01-4ccf-b… │
-│   AuthenticationOptions:                                                                     │
-│     - Type: certificate-authentication                                                       │
-│       MutualAuthentication:                                                                  │
-│         ClientRootCertificateChain: arn:aws:acm:us-east-1:840541460064:certificate/81633d75… │
-│   ConnectionLogOptions:                                                                      │
-│     Enabled: false                                                                           │
-│   Tags:                                                                                      │
-│     - Key: Name                                                                              │
-│       Value: client-vpn                                                                      │
-│   SecurityGroupIds:                                                                          │
-│     - "sg-4e82a670"                                                                          │
-│   VpcId: vpc-faff3987                                                                        │
-│   ClientConnectOptions:                                                                      │
-│     Enabled: false                                                                           │
-│     Status:                                                                                  │
-│       Code: applying                                                                         │
-│   SessionTimeoutHours: 24                                                                    │
-│   ClientLoginBannerOptions:                                                                  │
-│     Enabled: false                                                                           │
-│                                                                                              │
-└──────────────────────────────────────────────────────────────────────────────────────────────┘
+  ✓ Listing 4/4
+┌────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 EC2::ClientVpnTargetNetwork from aws                                                     │
+├────────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: client-vpn-target-assoc::client-vpn::vpc::subnet-private1-us-east-1a                 │
+│ managedByUs: Yes                                                                           │
+│ live:                                                                                      │
+│   SubnetId: subnet-02bef9542a54f73b4                                                       │
+│   AssociationId: cvpn-assoc-09ed5c32a2272c9d8                                              │
+│   VpcId: vpc-009ff6fdeab48a06f                                                             │
+│   ClientVpnEndpointId: cvpn-endpoint-0abdc545b56e8eb1d                                     │
+│   Status:                                                                                  │
+│     Code: associated                                                                       │
+│   SecurityGroups:                                                                          │
+│     - "sg-0b7a6e74dbecea543"                                                               │
+│                                                                                            │
+└────────────────────────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
 Provider: aws
-┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                         │
-├────────────────────────┬────────────────────────────────────────────────────────────────────┤
-│ EC2::ClientVpnEndpoint │ client-vpn                                                         │
-└────────────────────────┴────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                       │
+├─────────────────────────────┬─────────────────────────────────────────────────────────────┤
+│ EC2::ClientVpnTargetNetwork │ client-vpn-target-assoc::client-vpn::vpc::subnet-private1-… │
+└─────────────────────────────┴─────────────────────────────────────────────────────────────┘
 1 resource, 1 type, 1 provider
-Command "gc l -t ClientVpnEndpoint" executed in 4s, 102 MB
+Command "gc l -t EC2::ClientVpnTargetNetwork" executed in 5s, 109 MB
 ```

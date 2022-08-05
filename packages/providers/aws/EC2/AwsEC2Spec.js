@@ -573,7 +573,6 @@ module.exports = pipe([
         "Status",
         "SecurityGroups",
       ],
-      //ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
       includeDefaultDependencies: true,
       inferName: pipe([
         get("dependenciesSpec"),
@@ -595,6 +594,8 @@ module.exports = pipe([
         subnet: {
           type: "Subnet",
           group: "EC2",
+          parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) => get("SubnetId"),
         },
       },
@@ -621,6 +622,7 @@ module.exports = pipe([
           type: "DhcpOptions",
           group: "EC2",
           parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) => get("DhcpOptionsId"),
         },
       },
@@ -1412,17 +1414,22 @@ module.exports = pipe([
         coreNetwork: {
           type: "CoreNetwork",
           group: "NetworkManager",
+          parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) => get("CoreNetworkArn"),
         },
         ec2Instance: {
           type: "Instance",
           group: "EC2",
+          parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) => get("InstanceId"),
         },
         egressOnlyInternetGateway: {
           type: "EgressOnlyInternetGateway",
           group: "EC2",
           parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) =>
             get("EgressOnlyInternetGatewayId"),
         },
@@ -1430,6 +1437,7 @@ module.exports = pipe([
           type: "InternetGateway",
           group: "EC2",
           parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) =>
             pipe([
               (live) =>
@@ -1446,12 +1454,14 @@ module.exports = pipe([
           type: "NatGateway",
           group: "EC2",
           parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) => get("NatGatewayId"),
         },
         prefixList: {
           type: "ManagedPrefixList",
           group: "EC2",
           parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) =>
             pipe([
               unless(
@@ -1470,12 +1480,14 @@ module.exports = pipe([
           type: "TransitGateway",
           group: "EC2",
           parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) => get("TransitGatewayId"),
         },
         vpcEndpoint: {
           type: "VpcEndpoint",
           group: "EC2",
           parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) =>
             pipe([
               (live) =>
@@ -1492,6 +1504,7 @@ module.exports = pipe([
           type: "VpcPeeringConnection",
           group: "EC2",
           parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) => get("VpcPeeringConnectionId"),
         },
       },
@@ -1567,26 +1580,10 @@ module.exports = pipe([
         vpc: {
           type: "Vpc",
           group: "EC2",
+          parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) => get("VpcId"),
         },
-        //TODO
-        // subnet: {
-        //   type: "Subnet",
-        //   group: "EC2",
-        //   dependencyId: ({ lives, config }) => get(""),
-        // },
-        // securityGroups: {
-        //   type: "SecurityGroup",
-        //   group: "EC2",
-        //   list: true,
-        //   dependencyIds: ({ lives, config }) =>
-        //     pipe([
-        //       get("IpPermissions"),
-        //       pluck("UserIdGroupPairs"),
-        //       flatten,
-        //       pluck("GroupId"),
-        //     ]),
-        // },
         eksCluster: {
           type: "Cluster",
           group: "EKS",
@@ -2410,15 +2407,15 @@ module.exports = pipe([
       type: "TransitGatewayPeeringAttachment",
       Client: EC2TransitGatewayPeeringAttachment,
       includeDefaultDependencies: true,
-      // inferName: pipe([
-      //   get("dependenciesSpec"),
-      //   tap(({ transitGateway, transitGatewayPeer }) => {
-      //     assert(transitGateway);
-      //     assert(transitGatewayPeer);
-      //   }),
-      //   ({ transitGateway, transitGatewayPeer }) =>
-      //     `tgw-peering-attach::${transitGateway}::${transitGatewayPeer}`,
-      // ]),
+      inferName: pipe([
+        get("dependenciesSpec"),
+        tap(({ transitGateway, transitGatewayPeer }) => {
+          assert(transitGateway);
+          assert(transitGatewayPeer);
+        }),
+        ({ transitGateway, transitGatewayPeer }) =>
+          `tgw-peering-attach::${transitGateway}::${transitGatewayPeer}`,
+      ]),
       // TODO remove this
       compare: compareEC2({
         filterTarget: () => pipe([pick([])]),
@@ -2437,12 +2434,16 @@ module.exports = pipe([
         transitGateway: {
           type: "TransitGateway",
           group: "EC2",
+          parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) =>
             get("RequesterTgwInfo.TransitGatewayId"),
         },
         transitGatewayPeer: {
           type: "TransitGateway",
           group: "EC2",
+          parent: true,
+          parentForName: true,
           dependencyId: ({ lives, config }) =>
             get("AccepterTgwInfo.TransitGatewayId"),
         },

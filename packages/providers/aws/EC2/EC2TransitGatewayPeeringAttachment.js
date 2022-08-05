@@ -7,7 +7,7 @@ const logger = require("@grucloud/core/logger")({
   prefix: "TgwPeeringAttachment",
 });
 
-const { buildTags, findNameInTags } = require("../AwsCommon");
+const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
@@ -79,48 +79,43 @@ const findNamePeeringAttachment =
   ({ config }) =>
   ({ live, lives }) =>
     pipe([
-      () => ({ live }),
-      findNameInTags(),
-      when(
-        isEmpty,
-        pipe([
-          () => live,
-          fork({
-            transitGatewayRequester: pipe([
-              get("RequesterTgwInfo.TransitGatewayId"),
-              (id) =>
+      () => live,
+      fork({
+        transitGatewayRequester: pipe([
+          get("RequesterTgwInfo.TransitGatewayId"),
+          (id) =>
+            pipe([
+              () =>
                 lives.getById({
                   id,
                   type: "TransitGateway",
                   group: "EC2",
                   providerName: config.providerName,
                 }),
-              get("name"),
-            ]),
-            transitGatewayAcceptor: pipe([
-              get("AccepterTgwInfo.TransitGatewayId"),
-              (id) =>
-                pipe([
-                  () =>
-                    lives.getById({
-                      id,
-                      type: "TransitGateway",
-                      group: "EC2",
-                      providerName: config.providerName,
-                    }),
-                  get("name"),
-                  when(isEmpty, () => id),
-                ])(),
-            ]),
-          }),
-          tap(({ transitGatewayRequester, transitGatewayAcceptor }) => {
-            assert(transitGatewayRequester);
-            assert(transitGatewayAcceptor);
-          }),
-          ({ transitGatewayRequester, transitGatewayAcceptor }) =>
-            `tgw-peering-attach::${transitGatewayRequester}::${transitGatewayAcceptor}`,
-        ])
-      ),
+              get("name", id),
+            ])(),
+        ]),
+        transitGatewayAcceptor: pipe([
+          get("AccepterTgwInfo.TransitGatewayId"),
+          (id) =>
+            pipe([
+              () =>
+                lives.getById({
+                  id,
+                  type: "TransitGateway",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", id),
+            ])(),
+        ]),
+      }),
+      tap(({ transitGatewayRequester, transitGatewayAcceptor }) => {
+        assert(transitGatewayRequester);
+        assert(transitGatewayAcceptor);
+      }),
+      ({ transitGatewayRequester, transitGatewayAcceptor }) =>
+        `tgw-peering-attach::${transitGatewayRequester}::${transitGatewayAcceptor}`,
     ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
