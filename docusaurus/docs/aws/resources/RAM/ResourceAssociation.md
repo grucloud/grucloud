@@ -54,14 +54,50 @@ exports.createResources = () => [
 
 ### Dependencies
 
+- [RAM Resource Share](../RAM/ResourceShare.md)
+- [EC2 Ipam Pool](../EC2/IpamPool.md)
+- [EC2 Subnet](../EC2/Subnet.md)
+- [EC2 Transit Gateway](../EC2/TransitGateway.md)
+- [Route53Resolver Rule](../Route53Resolver/Rule.md)
+
 ### Used By
 
 ### List
 
 ```sh
-gc l -t ResourceAssociation
+gc l -t RAM::ResourceAssociation
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 1/1
+┌───────────────────────────────────────────────────────────────────────────┐
+│ 1 RAM::ResourceAssociation from aws                                       │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: ram-resource-assoc::my-share::undefined                             │
+│ managedByUs: NO                                                           │
+│ live:                                                                     │
+│   associatedEntity: arn:aws:ec2:us-east-1:840541460064:subnet/subnet-0cb… │
+│   associationType: RESOURCE                                               │
+│   creationTime: 2022-08-05T22:01:37.122Z                                  │
+│   external: false                                                         │
+│   lastUpdatedTime: 2022-08-05T22:01:38.324Z                               │
+│   resourceShareArn: arn:aws:ram:us-east-1:840541460064:resource-share/12… │
+│   resourceShareName: my-share                                             │
+│   status: ASSOCIATED                                                      │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
 
+
+List Summary:
+Provider: aws
+┌──────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                      │
+├──────────────────────────┬───────────────────────────────────────────────┤
+│ RAM::ResourceAssociation │ ram-resource-assoc::my-share::undefined       │
+└──────────────────────────┴───────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t RAM::ResourceAssociation" executed in 5s, 104 MB
 ```

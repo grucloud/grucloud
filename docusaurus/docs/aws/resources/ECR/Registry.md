@@ -57,3 +57,36 @@ exports.createResources = () => [
 
 - [PutRegistryPolicyCommandInput properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecr/interfaces/putregistrypolicycommandinput.html)
 - [PutReplicationConfigurationCommandInput properties](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecr/interfaces/putreplicationconfigurationcommandinput.html)
+
+### List
+
+```sh
+gc l -t ECR::Registry
+```
+
+```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 1/1
+┌───────────────────────────────────────────────────────────────────────────┐
+│ 1 ECR::Registry from aws                                                  │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: default                                                             │
+│ managedByUs: NO                                                           │
+│ live:                                                                     │
+│   registryId: 840541460064                                                │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
+
+
+List Summary:
+Provider: aws
+┌──────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                      │
+├───────────────┬──────────────────────────────────────────────────────────┤
+│ ECR::Registry │ default                                                  │
+└───────────────┴──────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t ECR::Registry" executed in 4s, 100 MB
+```

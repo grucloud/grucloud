@@ -12,9 +12,8 @@ Provides an SSL certificate.
 ### Create a certificate with DNS validation
 
 ```js
-
 exports.createResources = () => [
- {
+  {
     type: "Certificate",
     group: "ACM",
     properties: ({}) => ({
@@ -28,9 +27,8 @@ exports.createResources = () => [
 ### Import a certificate
 
 ```js
-
 exports.createResources = () => [
- {
+  {
     type: "Certificate",
     group: "ACM",
     properties: () => ({
@@ -55,7 +53,7 @@ exports.createResources = () => [
 
 ## UsedBy
 
-- [Route53 Hosted Zone](../Route53/HostedZone.md)
+- [Route53 Record](../Route53/Record.md)
 - [CloudFront Distribution](../CloudFront/Distribution.md)
 - [ApiGatewayV2 Domain Name](../ApiGatewayV2/DomainName.md)
 - [CloudWatch Metric Alarm](../CloudWatch/MetricAlarm.md)

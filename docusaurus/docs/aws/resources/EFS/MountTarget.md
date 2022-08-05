@@ -34,9 +34,9 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [FileSystem](./FileSystem.md)
-- [Subnet](../EC2/Subnet.md)
-- [SecurityGroup](../EC2/SecurityGroup.md)
+- [EFS FileSystem](./FileSystem.md)
+- [EC2 Subnet](../EC2/Subnet.md)
+- [EC2 SecurityGroup](../EC2/SecurityGroup.md)
 
 ## List
 

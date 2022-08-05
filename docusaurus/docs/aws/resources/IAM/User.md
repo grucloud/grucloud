@@ -50,6 +50,10 @@ exports.createResources = () => [
 
 - [Iam Group](./Group.md)
 
+### Used By
+
+- [RAM Principal Association](../RAM/PrincipalAssociation.md)
+
 ### List
 
 ```sh

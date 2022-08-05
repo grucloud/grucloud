@@ -31,6 +31,10 @@ exports.createResources = () => [
 
 - [Certificate](../ACM/Certificate.md)
 
+## Used By
+
+- [Route53 Record](../Route53/Record.md)
+
 ## Full Examples
 
 - [Http with Lambda](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApiGatewayV2/http-lambda)

@@ -77,7 +77,7 @@ exports.createResources = () => [
 ## Dependencies
 
 - [Route53 Domain](../Route53Domains/Domain.md)
-- [Vpc](../EC2/Vpc.md)
+- [EC2 Vpc](../EC2/Vpc.md)
 
 ## Used By
 

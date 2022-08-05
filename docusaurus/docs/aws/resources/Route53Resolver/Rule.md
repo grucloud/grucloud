@@ -42,7 +42,8 @@ exports.createResources = () => [
 
 ## Used By
 
-- [Rule Association](./RuleAssociation.md)
+- [Route53 Resolver Rule Association](./RuleAssociation.md)
+- [RAM Resource Association](../RAM/ResourceAssociation.md)
 
 ## List
 

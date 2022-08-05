@@ -118,6 +118,7 @@ exports.createResources = () => [
 - [ECS Service](../ECS/Service.md)
 - [ECS TaskSet](../ECS/TaskSet.md)
 - [NetworkManager VpcAttachment](../NetworkManager/VpcAttachment.md)
+- [RAM Resource Association](../RAM/ResourceAssociation.md)
 - [RDS DBSubnetGroup](../RDS/DBSubnetGroup.md)
 
 ## Listing

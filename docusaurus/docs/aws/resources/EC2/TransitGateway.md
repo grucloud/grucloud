@@ -51,6 +51,7 @@ exports.createResources = () => [
 
 - [NetworkManager TransitGateway Registration](../NetworkManager/TransitGatewayRegistration.md)
 - [EC2 Flow Logs](../EC2/FlowLogs.md)
+- [RAM Resource Association](../RAM/ResourceAssociation.md)
 
 ### List
 

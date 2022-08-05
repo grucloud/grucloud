@@ -12,37 +12,19 @@ Create a WebACL:
 ```js
 exports.createResources = () => [
   {
-    type: "WebACL",
+    type: "WebACLCloudFront",
     group: "WAFv2",
     properties: ({}) => ({
-      Capacity: 1,
+      Capacity: 0,
       DefaultAction: {
         Allow: {},
       },
       ManagedByFirewallManager: false,
-      Name: "my-waf",
-      Rules: [
-        {
-          Action: {
-            Block: {},
-          },
-          Name: "russia",
-          Priority: 0,
-          Statement: {
-            GeoMatchStatement: {
-              CountryCodes: ["RU"],
-            },
-          },
-          VisibilityConfig: {
-            CloudWatchMetricsEnabled: true,
-            MetricName: "russia",
-            SampledRequestsEnabled: true,
-          },
-        },
-      ],
+      Name: "webacl-cloudfront",
+      Rules: [],
       VisibilityConfig: {
         CloudWatchMetricsEnabled: true,
-        MetricName: "my-waf",
+        MetricName: "webacl-cloudfront",
         SampledRequestsEnabled: true,
       },
       Scope: "CLOUDFRONT",
@@ -66,7 +48,7 @@ exports.createResources = () => [
 ## List
 
 ```sh
-gc l -t WAFv2::WebACL
+gc l -t WAFv2::WebACLCloudFront
 ```
 
 ```txt
@@ -74,62 +56,50 @@ Listing resources on 1 provider: aws
 ✓ aws us-east-1
   ✓ Initialising
   ✓ Listing 1/1
-┌───────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 WAFv2::WebACL from aws                                                                  │
-├───────────────────────────────────────────────────────────────────────────────────────────┤
-│ name: my-webacl                                                                           │
-│ managedByUs: Yes                                                                          │
-│ live:                                                                                     │
-│   ARN: arn:aws:wafv2:us-east-1:840541460064:regional/webacl/my-webacl/3d58abea-cbb3-47b6… │
-│   Capacity: 1                                                                             │
-│   DefaultAction:                                                                          │
-│     Allow:                                                                                │
-│   Description:                                                                            │
-│   Id: 3d58abea-cbb3-47b6-8619-b413c133561f                                                │
-│   LabelNamespace: awswaf:840541460064:webacl:my-webacl:                                   │
-│   ManagedByFirewallManager: false                                                         │
-│   Name: my-webacl                                                                         │
-│   Rules:                                                                                  │
-│     - Action:                                                                             │
-│         Block:                                                                            │
-│       Name: russia                                                                        │
-│       Priority: 0                                                                         │
-│       Statement:                                                                          │
-│         GeoMatchStatement:                                                                │
-│           CountryCodes:                                                                   │
-│             - "RU"                                                                        │
-│       VisibilityConfig:                                                                   │
-│         CloudWatchMetricsEnabled: true                                                    │
-│         MetricName: russia                                                                │
-│         SampledRequestsEnabled: true                                                      │
-│   VisibilityConfig:                                                                       │
-│     CloudWatchMetricsEnabled: true                                                        │
-│     MetricName: my-webacl                                                                 │
-│     SampledRequestsEnabled: true                                                          │
-│   Tags:                                                                                   │
-│     - Key: gc-created-by-provider                                                         │
-│       Value: aws                                                                          │
-│     - Key: gc-managed-by                                                                  │
-│       Value: grucloud                                                                     │
-│     - Key: gc-project-name                                                                │
-│       Value: wafv2-apigateway-rest                                                        │
-│     - Key: gc-stage                                                                       │
-│       Value: dev                                                                          │
-│     - Key: Name                                                                           │
-│       Value: my-webacl                                                                    │
-│   Scope: CLOUDFRONT                                                                         │
-│   LockToken: 946d0498-82aa-459c-b6a4-7ea528c7273b                                         │
-│                                                                                           │
-└───────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────┐
+│ 1 WAFv2::WebACLCloudFront from aws                                        │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: webacl-cloudfront                                                   │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   ARN: arn:aws:wafv2:us-east-1:840541460064:global/webacl/webacl-cloudfr… │
+│   Capacity: 0                                                             │
+│   DefaultAction:                                                          │
+│     Allow:                                                                │
+│   Description:                                                            │
+│   Id: cdb1455e-bcea-4787-9cf9-a982c6f2c08b                                │
+│   LabelNamespace: awswaf:840541460064:webacl:webacl-cloudfront:           │
+│   ManagedByFirewallManager: false                                         │
+│   Name: webacl-cloudfront                                                 │
+│   Rules: []                                                               │
+│   VisibilityConfig:                                                       │
+│     CloudWatchMetricsEnabled: true                                        │
+│     MetricName: webacl-cloudfront                                         │
+│     SampledRequestsEnabled: true                                          │
+│   Tags:                                                                   │
+│     - Key: gc-created-by-provider                                         │
+│       Value: aws                                                          │
+│     - Key: gc-managed-by                                                  │
+│       Value: grucloud                                                     │
+│     - Key: gc-project-name                                                │
+│       Value: wafv2-cloudfront                                             │
+│     - Key: gc-stage                                                       │
+│       Value: dev                                                          │
+│     - Key: Name                                                           │
+│       Value: webacl-cloudfront                                            │
+│   Scope: CLOUDFRONT                                                       │
+│   LockToken: a6055400-250f-4b6d-991e-309ee5e44714                         │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
 Provider: aws
-┌──────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                      │
-├───────────────┬──────────────────────────────────────────────────────────────────────────┤
-│ WAFv2::WebACL │ my-webacl                                                                │
-└───────────────┴──────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                      │
+├─────────────────────────┬────────────────────────────────────────────────┤
+│ WAFv2::WebACLCloudFront │ webacl-cloudfront                              │
+└─────────────────────────┴────────────────────────────────────────────────┘
 1 resource, 1 type, 1 provider
-Command "gc l -t WAFv2::WebACL" executed in 5s, 111 MB
+Command "gc l -t WAFv2::WebACLCloudFront" executed in 5s, 106 MB
 ```

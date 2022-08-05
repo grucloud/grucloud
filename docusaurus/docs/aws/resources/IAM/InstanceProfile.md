@@ -61,7 +61,10 @@ exports.createResources = () => [
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/IAM/iam/resources.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/IAM/iam)
+- [AutoScaling autoscaling](https://github.com/grucloud/grucloud/blob/main/examples/aws/AutoScaling/autoScalingGroup)
+- [EC2 launchTemplate](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/launchTemplate)
+- [ECS ecs-simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/ECS/ecs-simple)
 
 ### Properties
 
@@ -79,56 +82,56 @@ exports.createResources = () => [
 ### List
 
 ```sh
-gc l -t InstanceProfile
+gc l -t IAM::InstanceProfile
 ```
 
-```sh
+```txt
 Listing resources on 1 provider: aws
-✓ aws
+✓ aws us-east-1
   ✓ Initialising
-  ✓ Listing 3/3
-┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 IamInstanceProfile from aws                                                           │
-├──────────────────────────────────────────┬───────────────────────────────────────┬──────┤
-│ Name                                     │ Data                                  │ Our  │
-├──────────────────────────────────────────┼───────────────────────────────────────┼──────┤
-│ eks-54bc6e8b-43c7-2c95-7057-1af0e6e8aa77 │ Path: /                               │ NO   │
-│                                          │ InstanceProfileName: eks-54bc6e8b-43… │      │
-│                                          │ InstanceProfileId: AIPA4HNBM2ZQCIF3D… │      │
-│                                          │ Arn: arn:aws:iam::840541460064:insta… │      │
-│                                          │ CreateDate: 2021-04-16T23:49:13.000Z  │      │
-│                                          │ Roles:                                │      │
-│                                          │   - Path: /                           │      │
-│                                          │     RoleName: role-node-group         │      │
-│                                          │     RoleId: AROA4HNBM2ZQICLVXAZIM     │      │
-│                                          │     Arn: arn:aws:iam::840541460064:r… │      │
-│                                          │     CreateDate: 2021-04-16T23:39:55.… │      │
-│                                          │     AssumeRolePolicyDocument: %7B%22… │      │
-│                                          │     Tags:                             │      │
-│                                          │       - Key: Name                     │      │
-│                                          │         Value: role-node-group        │      │
-│                                          │       - Key: ManagedBy                │      │
-│                                          │         Value: GruCloud               │      │
-│                                          │       - Key: CreatedByProvider        │      │
-│                                          │         Value: aws                    │      │
-│                                          │       - Key: stage                    │      │
-│                                          │         Value: dev                    │      │
-│                                          │       - Key: projectName              │      │
-│                                          │         Value: ex-eks-mod             │      │
-│                                          │ Tags: []                              │      │
-│                                          │                                       │      │
-└──────────────────────────────────────────┴───────────────────────────────────────┴──────┘
+  ✓ Listing 1/1
+┌───────────────────────────────────────────────────────────────────────────┐
+│ 1 IAM::InstanceProfile from aws                                           │
+├───────────────────────────────────────────────────────────────────────────┤
+│ name: my-profile                                                          │
+│ managedByUs: Yes                                                          │
+│ live:                                                                     │
+│   Path: /                                                                 │
+│   InstanceProfileName: my-profile                                         │
+│   InstanceProfileId: AIPA4HNBM2ZQAMVDBBTM6                                │
+│   Arn: arn:aws:iam::840541460064:instance-profile/my-profile              │
+│   CreateDate: 2022-08-05T21:59:31.000Z                                    │
+│   Roles:                                                                  │
+│     - Path: /                                                             │
+│       RoleName: role-allow-assume-role                                    │
+│       RoleId: AROA4HNBM2ZQH7AP3SMUU                                       │
+│       Arn: arn:aws:iam::840541460064:role/role-allow-assume-role          │
+│       CreateDate: 2022-08-05T21:59:29.000Z                                │
+│       AssumeRolePolicyDocument: %7B%22Version%22%3A%222012-10-17%22%2C%2… │
+│   Tags:                                                                   │
+│     - Key: gc-created-by-provider                                         │
+│       Value: aws                                                          │
+│     - Key: gc-managed-by                                                  │
+│       Value: grucloud                                                     │
+│     - Key: gc-project-name                                                │
+│       Value: @grucloud/example-aws-iam                                    │
+│     - Key: gc-stage                                                       │
+│       Value: dev                                                          │
+│     - Key: Name                                                           │
+│       Value: my-profile                                                   │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
 Provider: aws
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                    │
-├────────────────────┬───────────────────────────────────────────────────────────────────┤
-│ IamInstanceProfile │ eks-54bc6e8b-43c7-2c95-7057-1af0e6e8aa77                          │
-└────────────────────┴───────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                      │
+├──────────────────────┬───────────────────────────────────────────────────┤
+│ IAM::InstanceProfile │ my-profile                                        │
+└──────────────────────┴───────────────────────────────────────────────────┘
 1 resource, 1 type, 1 provider
-Command "gc l -t IamInstanceProfile" executed in 3s
+Command "gc l -t IAM::InstanceProfile" executed in 4s, 100 MB
 ```
 
 ### AWS CLI

@@ -28,7 +28,8 @@ exports.createResources = () => [
 
 ## Source Code Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/Route53/health-check)
+- [health-check simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/Route53/health-check)
+- [aws-samples aws-route53-recovery-control-config](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/aws-route53-recovery-control-config)
 
 ## Properties
 
@@ -41,7 +42,7 @@ exports.createResources = () => [
 
 ## Used By
 
-- [Record](./Record.md)
+- [Route53 Record](./Record.md)
 - [CloudWatch Alarm](../CloudWatch/MetricAlarm.md)
 
 ## List

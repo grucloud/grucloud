@@ -155,6 +155,10 @@ When some S3 objects are updated during the _gc apply_ command, a [_createInvali
 - [OriginAccessIdentity](./OriginAccessIdentity.md)
 - [WAFv2 WebACLCloudFront](../WAFv2/WebACLCloudFront.md)
 
+### Used By
+
+- [Route53 Record](../Route53/Record.md)
+
 ### List
 
 ```
