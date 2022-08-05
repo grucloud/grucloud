@@ -75,6 +75,7 @@ exports.createResources = () => [
       },
       location: config.location,
       properties: {
+        sasPolicy: {},
         encryption: {
           services: {
             blob: {

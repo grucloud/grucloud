@@ -48,9 +48,6 @@ exports.createResources = () => [
             config: null,
           },
         },
-        oidcIssuerProfile: {
-          enabled: false,
-        },
         enableRBAC: true,
         networkProfile: {
           loadBalancerSku: "Standard",
@@ -67,7 +64,6 @@ exports.createResources = () => [
         storageProfile: {
           diskCSIDriver: {
             enabled: true,
-            version: "v1",
           },
           fileCSIDriver: {
             enabled: true,

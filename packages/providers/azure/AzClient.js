@@ -66,7 +66,7 @@ const shouldRetryOnExceptionAzure = pipe([
     );
   }),
   or([
-    and([eq(get("status"), 503), eq(get("code"), "ServerTimeout")]),
+    and([eq(get("status"), 503) /*, eq(get("code"), "ServerTimeout")*/]),
     and([eq(get("status"), 429), eq(get("code"), "RetryableError")]),
     and([eq(get("status"), 409), eq(get("code"), "Conflict")]),
     and([

@@ -32,7 +32,9 @@ const retryCall = async ({
   isExpectedException = () => false,
   shouldRetryOnException = ({ error, name }) => {
     logger.info(
-      `shouldRetryOnException ${name}, error: ${tos(convertError({ error }))}`
+      `shouldRetryOnException ${name}, error: ${JSON.stringify(
+        convertError({ error })
+      )}`
     );
     error.stack && logger.error(error.stack);
     return !error.stack;
