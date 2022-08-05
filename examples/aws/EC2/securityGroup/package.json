@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-ec2-security-group",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^8.0.0",
-    "@grucloud/provider-aws": "^8.0.0",
+    "@grucloud/core": "^9.0.0",
+    "@grucloud/provider-aws": "^9.0.0",
     "rubico": "^1.6.27"
   },
   "devDependencies": {
