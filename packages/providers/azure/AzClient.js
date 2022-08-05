@@ -58,20 +58,23 @@ const listExpectedExceptionMessages = [
 const shouldRetryOnExceptionAzure = pipe([
   fork({
     status: get("error.response.status"),
-    code: get("error.response.data.error.code"),
+    data: get("error.response.data"),
   }),
-  tap(({ status, code }) => {
+  tap(({ status, data }) => {
     logger.error(
-      `shouldRetryOnExceptionCreate status: ${status}, code: ${code}`
+      `shouldRetryOnExceptionCreate status: ${status}, data: ${JSON.stringify(
+        data
+      )}`
     );
   }),
   or([
     and([eq(get("status"), 503) /*, eq(get("code"), "ServerTimeout")*/]),
-    and([eq(get("status"), 429), eq(get("code"), "RetryableError")]),
-    and([eq(get("status"), 409), eq(get("code"), "Conflict")]),
+    and([eq(get("status"), 429), eq(get("data.Code"), "TooManyRequests")]),
+    and([eq(get("status"), 429), eq(get("data.error.code"), "RetryableError")]),
+    and([eq(get("status"), 409), eq(get("data.error.code"), "Conflict")]),
     and([
       eq(get("status"), 409),
-      eq(get("code"), "AnotherOperationInProgress"),
+      eq(get("data.error.code"), "AnotherOperationInProgress"),
     ]),
   ]),
 ]);
