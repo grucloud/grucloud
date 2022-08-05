@@ -80,6 +80,8 @@ const Route53RecordDependencies = {
   elasticIpAddress: {
     type: "ElasticIpAddress",
     group: "EC2",
+    parent: true,
+    parentForName: true,
     dependencyId: ({ lives, config }) =>
       pipe([
         get("ResourceRecords"),
@@ -102,6 +104,8 @@ const Route53RecordDependencies = {
   loadBalancer: {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
+    parent: true,
+    parentForName: true,
     dependencyId: ({ lives, config }) =>
       pipe([
         get("AliasTarget.DNSName", ""),
@@ -122,6 +126,8 @@ const Route53RecordDependencies = {
   certificate: {
     type: "Certificate",
     group: "ACM",
+    parent: true,
+    parentForName: true,
     dependencyId:
       ({ lives, config }) =>
       (live) =>
@@ -147,6 +153,8 @@ const Route53RecordDependencies = {
   distribution: {
     type: "Distribution",
     group: "CloudFront",
+    parent: true,
+    parentForName: true,
     dependencyId: ({ lives, config }) =>
       pipe([
         get("AliasTarget.DNSName", ""),
@@ -167,6 +175,8 @@ const Route53RecordDependencies = {
   userPoolDomain: {
     type: "UserPoolDomain",
     group: "CognitoIdentityServiceProvider",
+    parent: true,
+    parentForName: true,
     dependencyId: ({ lives, config }) =>
       pipe([
         get("AliasTarget.DNSName", ""),
@@ -193,6 +203,8 @@ const Route53RecordDependencies = {
   apiGatewayV2DomainName: {
     type: "DomainName",
     group: "ApiGatewayV2",
+    parent: true,
+    parentForName: true,
     dependencyId: ({ lives, config }) =>
       pipe([
         get("AliasTarget.DNSName", ""),
@@ -218,6 +230,8 @@ const Route53RecordDependencies = {
   vpcEndpoint: {
     type: "VpcEndpoint",
     group: "EC2",
+    parent: true,
+    parentForName: true,
     dependencyId: ({ lives, config }) =>
       pipe([
         get("AliasTarget.DNSName", ""),
