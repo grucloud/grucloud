@@ -191,7 +191,9 @@ exports.createResources = () => [
                   'AzureSubnet',
                   'ExternalAddress',
                   'MMAWorkspaceMachine',
-                  'MMAWorkspaceNetwork'
+                  'MMAWorkspaceNetwork',
+                  'AzureArcVM',
+                  'AzureVMSS'
                 ],
                 'x-ms-enum': { name: 'EndpointType', modelAsString: true },
                 description: 'The endpoint type.'
@@ -491,6 +493,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2022-01-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/networkWatcher.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2022-01-01/networkWatcher.json).

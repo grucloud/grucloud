@@ -8,7 +8,7 @@ describe("EC2TransitGatewayVpcAttachment", async function () {
   let transitGatewayAttachment;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     transitGatewayAttachment = provider.getClient({
       groupType: "EC2::TransitGatewayVpcAttachment",
     });

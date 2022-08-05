@@ -107,7 +107,7 @@ exports.createResources = () => [
         version: {
           description: 'PostgreSQL Server version.',
           type: 'string',
-          enum: [ '13', '12', '11' ],
+          enum: [ '14', '13', '12', '11' ],
           'x-ms-enum': { name: 'ServerVersion', modelAsString: true }
         },
         minorVersion: {

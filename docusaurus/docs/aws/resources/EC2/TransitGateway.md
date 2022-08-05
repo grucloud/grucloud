@@ -30,7 +30,12 @@ exports.createResources = () => [
 ### Examples
 
 - [transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/transit-gateway)
-- [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/hub-and-spoke-with-inspection-vpc)
+- [transit gateway peering](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/transit-gateway-peering)
+- [flow logs with transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs-tgw)
+- [flow logs with transit gateway vpn connection](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs-tgw-vpn)
+- [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/hub-and-spoke-with-inspection-vpc)
+- [aws-network-hub-for-terraform](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/aws-network-hub-for-terraform)
+- [hub-and-spoke-with-shared-services-vpc-terraform](https://github.com/grucloud/grucloud/tree/main/examples/aws/aws-samples/hub-and-spoke-with-shared-services-vpc-terraform)
 - [cloud-wan](https://github.com/grucloud/grucloud/blob/main/examples/aws/NetworkManager/cloud-wan)
 
 ### Properties
@@ -40,11 +45,12 @@ exports.createResources = () => [
 ### Used By
 
 - [TransitGatewayVpcAttachment](./TransitGatewayVpcAttachment.md)
+- [TransitGatewayAttachment](./TransitGatewayAttachment.md)
 
 ### Used By
 
-- [TransitGatewayRegistration](../NetworkManager/TransitGatewayRegistration.md)
-- [Flow Logs](../EC2/FlowLogs.md)
+- [NetworkManager TransitGateway Registration](../NetworkManager/TransitGatewayRegistration.md)
+- [EC2 Flow Logs](../EC2/FlowLogs.md)
 
 ### List
 

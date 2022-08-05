@@ -78,8 +78,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "vpc-postgres::route-table-public",
       ig: "ig-postgres",
+      routeTable: "vpc-postgres::route-table-public",
     }),
   },
   {
@@ -97,21 +97,19 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 5432,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: 5432,
-      },
+      FromPort: 5432,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      Ipv6Ranges: [
+        {
+          CidrIpv6: "::/0",
+        },
+      ],
+      ToPort: 5432,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-postgres::security-group",

@@ -13,7 +13,11 @@ exports.createResources = () => [
     name: "myProximityPlacementGroup",
     properties: () => ({
       location: "westus",
-      properties: { proximityPlacementGroupType: "Standard" },
+      zones: ["1"],
+      properties: {
+        proximityPlacementGroupType: "Standard",
+        intent: { vmSizes: ["Basic_A0", "Basic_A2"] },
+      },
     }),
     dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
   },
@@ -180,8 +184,27 @@ exports.createResources = () => [
               description: 'The time of the status.'
             }
           }
+        },
+        intent: {
+          type: 'object',
+          properties: {
+            vmSizes: {
+              type: 'array',
+              description: 'Specifies possible sizes of virtual machines that can be created in the proximity placement group.',
+              items: {
+                type: 'string',
+                description: 'Specifies the size of the virtual machine. Recommended way to get the list of available sizes is using these APIs: <br><br> [List all available virtual machine sizes in an availability set](https://docs.microsoft.com/rest/api/compute/availabilitysets/listavailablesizes) <br><br> [List all available virtual machine sizes in a region]( https://docs.microsoft.com/rest/api/compute/resourceskus/list) <br><br> [List all available virtual machine sizes for resizing](https://docs.microsoft.com/rest/api/compute/virtualmachines/listavailablesizes). For more information about virtual machine sizes, see [Sizes for virtual machines](https://docs.microsoft.com/azure/virtual-machines/sizes). <br><br> The available VM sizes depend on region and availability set.'
+              }
+            }
+          },
+          description: 'Specifies the user intent of the proximity placement group.'
         }
       }
+    },
+    zones: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Specifies the Availability Zone where virtual machine, virtual machine scale set or availability set associated with the  proximity placement group can be created.'
     }
   },
   allOf: [
@@ -214,6 +237,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/proximityPlacementGroup.json).

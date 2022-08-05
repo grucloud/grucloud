@@ -1059,6 +1059,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2022-01-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/routeFilter.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2022-01-01/routeFilter.json).

@@ -29,12 +29,12 @@ exports.createResources = () => [
           },
         },
         template: {
+          revisionSuffix: "",
           containers: [
             {
               image:
                 "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest",
               name: "simple-hello-world-container",
-              command: [],
               resources: {
                 cpu: 0.25,
                 memory: "0.5Gi",

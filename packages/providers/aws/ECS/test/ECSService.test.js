@@ -8,7 +8,7 @@ describe("ECSService", async function () {
   let service;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     service = provider.getClient({ groupType: "ECS::Service" });
     await provider.start();
   });

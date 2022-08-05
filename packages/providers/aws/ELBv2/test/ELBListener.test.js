@@ -8,7 +8,7 @@ describe("ELB Listener", async function () {
   let listener;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     listener = provider.getClient({
       groupType: "ElasticLoadBalancingV2::Listener",
     });

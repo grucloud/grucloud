@@ -8,7 +8,7 @@ describe("CloudWatchEventTarget", async function () {
   let target;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     target = provider.getClient({ groupType: "CloudWatchEvents::Target" });
     await provider.start();
   });

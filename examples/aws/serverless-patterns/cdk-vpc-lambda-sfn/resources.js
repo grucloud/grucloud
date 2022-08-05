@@ -12,17 +12,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "LogStream",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logStreamName:
-        "log_stream_created_by_aws_to_validate_log_delivery_subscriptions",
-    }),
-    dependencies: ({}) => ({
-      cloudWatchLogGroup: "testlambdatest-",
-    }),
-  },
-  {
     type: "Vpc",
     group: "EC2",
     name: "vpcStack/test-VPC",
@@ -245,8 +234,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
+      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
       routeTable: `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}a`,
-      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
     }),
   },
   {
@@ -256,8 +245,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
+      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
       routeTable: `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}b`,
-      natGateway: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
     }),
   },
   {
@@ -267,8 +256,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
+      ig: "vpcStack/test-VPC",
       routeTable: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
-      ig: "vpcStack/test-VPC",
     }),
   },
   {
@@ -278,8 +267,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}b`,
       ig: "vpcStack/test-VPC",
+      routeTable: `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}b`,
     }),
   },
   {
@@ -297,21 +286,19 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 443,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "allow HTTPS traffic",
-          },
-          {
-            CidrIp: "10.0.0.0/16",
-            Description: "from 10.0.0.0/16:443",
-          },
-        ],
-        ToPort: 443,
-      },
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "allow HTTPS traffic",
+        },
+        {
+          CidrIp: "10.0.0.0/16",
+          Description: "from 10.0.0.0/16:443",
+        },
+      ],
+      ToPort: 443,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpcStack/test-VPC::test-vpcSG",
@@ -321,17 +308,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "allow HTTP traffic",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "allow HTTP traffic",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpcStack/test-VPC::test-vpcSG",

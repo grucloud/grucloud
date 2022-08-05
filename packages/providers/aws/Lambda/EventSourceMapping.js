@@ -1,28 +1,67 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, callProp, last, when } = require("rubico/x");
+const { pipe, tap, get, pick, switchCase, fork } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
-const { createLambda, tagResource, untagResource } = require("./LambdaCommon");
+const { createLambda } = require("./LambdaCommon");
 
 const findId = get("live.UUID");
 const pickId = pipe([pick(["UUID"])]);
 
-const nameFromArn = pipe([callProp("split", ":"), last]);
+const getNameFromSource = ({ lives, config, type, group }) =>
+  pipe([
+    get("EventSourceArn"),
+    tap((id) => {
+      assert(id);
+    }),
+    (id) =>
+      lives.getById({
+        providerName: config.providerName,
+        id,
+        type,
+        group,
+      }),
+    get("name"),
+  ]);
 
-const findName = pipe([
-  get("live"),
-  tap(({ FunctionArn, EventSourceArn }) => {
-    assert(FunctionArn);
-    assert(EventSourceArn);
-  }),
-  //TODO :: instead of -
-  ({ FunctionArn, EventSourceArn }) =>
-    `mapping-${nameFromArn(FunctionArn)}-${nameFromArn(EventSourceArn)}`,
-]);
+const findName = ({ live, lives, config }) =>
+  pipe([
+    () => live,
+    tap(({ FunctionArn, EventSourceArn }) => {
+      assert(FunctionArn);
+      assert(EventSourceArn);
+    }),
+    fork({
+      functionName: pipe([
+        get("FunctionArn"),
+        (id) =>
+          lives.getById({
+            providerName: config.providerName,
+            id,
+            type: "Function",
+            group: "Lambda",
+          }),
+        get("name"),
+      ]),
+      sqsQueueName: getNameFromSource({
+        lives,
+        config,
+        type: "Queue",
+        group: "SQS",
+      }),
+      kinesisStreamName: getNameFromSource({
+        lives,
+        config,
+        type: "Stream",
+        group: "Kinesis",
+      }),
+    }),
+    ({ functionName, sqsQueueName, kinesisStreamName }) =>
+      `mapping::${functionName}::${sqsQueueName || kinesisStreamName}`,
+  ])();
 
 exports.EventSourceMapping = ({ spec, config }) => {
   const lambda = createLambda(config);
@@ -34,59 +73,6 @@ Amazon MQ and RabbitMQ
 Amazon MSK
 Apache Kafka
 */
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Function",
-      group: "Lambda",
-      ids: [
-        pipe([
-          () =>
-            lives.getById({
-              providerName: config.providerName,
-              id: live.FunctionArn,
-              type: "Function",
-              group: "Lambda",
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    //TODO create function
-    {
-      type: "Queue",
-      group: "SQS",
-      ids: [
-        pipe([
-          () =>
-            lives.getById({
-              providerName: config.providerName,
-              id: live.EventSourceArn,
-              type: "Queue",
-              group: "SQS",
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    {
-      type: "Stream",
-      group: "Kinesis",
-      ids: [
-        pipe([
-          () =>
-            lives.getById({
-              providerName: config.providerName,
-              id: live.EventSourceArn,
-              type: "Stream",
-              group: "Kinesis",
-            }),
-          get("id"),
-        ])(),
-      ],
-    },
-    //S3
-  ];
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listEventSourceMappings-property
   const getList = client.getList({
     method: "listEventSourceMappings",
@@ -149,18 +135,19 @@ Apache Kafka
       defaultsDeep({
         FunctionName: getField(lambdaFunction, "Configuration.FunctionName"),
       }),
-      when(
+      switchCase([
         () => sqsQueue,
         defaultsDeep({
           EventSourceArn: getField(sqsQueue, "Attributes.QueueArn"),
-        })
-      ),
-      when(
+        }),
         () => kinesisStream,
         defaultsDeep({
           EventSourceArn: getField(kinesisStream, "StreamARN"),
-        })
-      ),
+        }),
+        () => {
+          assert(false, "missing EventSourceMapping dependency");
+        },
+      ]),
       tap((params) => {
         assert(true);
       }),
@@ -177,8 +164,5 @@ Apache Kafka
     getByName,
     getList,
     configDefault,
-    findDependencies,
-    tagResource: tagResource({ lambda }),
-    untagResource: untagResource({ lambda }),
   };
 };

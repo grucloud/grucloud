@@ -29,16 +29,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 22,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 22,
-      },
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 22,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-default::launch-wizard-1",

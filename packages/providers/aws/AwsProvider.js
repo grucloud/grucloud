@@ -9,22 +9,16 @@ const {
   not,
   map,
   fork,
-  switchCase,
 } = require("rubico");
 const {
-  prepend,
   first,
   pluck,
   isFunction,
   size,
   defaultsDeep,
   when,
-  callProp,
-  includes,
 } = require("rubico/x");
-const { EOL } = require("os");
-
-const shell = require("shelljs");
+const { loadConfig } = require("@aws-sdk/node-config-provider");
 
 const path = require("path");
 
@@ -69,7 +63,7 @@ const validateConfig = ({ region, zone, zones }) => {
   }
 };
 
-exports.AwsProvider = ({
+exports.AwsProvider = async ({
   name = "aws",
   stage = "dev",
   config,
@@ -113,26 +107,18 @@ exports.AwsProvider = ({
       }),
       () => config,
       get("credentials.profile", "default"),
-      prepend("aws configure get region --profile "),
-      (command) =>
+      (profile) =>
         pipe([
-          () => shell.exec(command, { silent: true }),
-          ({ stdout, stderr, code }) =>
-            switchCase([
-              () => code === 0,
-              pipe([() => stdout]),
-              pipe([
-                tap((params) => {
-                  throw Error(
-                    `Could not run command: '${command}',\n${stderr}`
-                  );
-                }),
-              ]),
-            ])(),
-          callProp("replace", EOL, ""),
-          when(includes("undefined"), () => undefined),
-          tap((params) => {
-            assert(true);
+          () =>
+            loadConfig(
+              {
+                configFileSelector: get("region"),
+              },
+              { profile }
+            ),
+          (awsConfig) => awsConfig({}),
+          tap((region) => {
+            //assert(region);
           }),
         ])(),
       tap((region) => {
@@ -170,7 +156,7 @@ exports.AwsProvider = ({
     ])();
 
   //let region;
-  let region = getRegion(
+  let region = await getRegion(
     mergeConfig({
       config,
       configs,

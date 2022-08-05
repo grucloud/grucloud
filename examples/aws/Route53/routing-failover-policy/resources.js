@@ -90,8 +90,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `project1-vpc::project1-rtb-private1-${config.region}a`,
       ig: "ig",
+      routeTable: `project1-vpc::project1-rtb-private1-${config.region}a`,
     }),
   },
   {
@@ -101,8 +101,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `project1-vpc::project1-rtb-private2-${config.region}b`,
       ig: "ig",
+      routeTable: `project1-vpc::project1-rtb-private2-${config.region}b`,
     }),
   },
   {

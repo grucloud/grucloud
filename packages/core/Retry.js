@@ -32,7 +32,9 @@ const retryCall = async ({
   isExpectedException = () => false,
   shouldRetryOnException = ({ error, name }) => {
     logger.info(
-      `shouldRetryOnException ${name}, error: ${tos(convertError({ error }))}`
+      `shouldRetryOnException ${name}, error: ${JSON.stringify(
+        convertError({ error })
+      )}`
     );
     error.stack && logger.error(error.stack);
     return !error.stack;
@@ -116,10 +118,6 @@ const retryCall = async ({
       ),
       catchError(
         pipe([
-          tap(({ error }) => {
-            // beware, shouldRetryOnException could throw an exception, any missing require ?
-            assert(error);
-          }),
           switchCase([
             and([not(get("hasMaxCount")), eq(get("error.code"), 503)]),
             ({ error }) => of(error.result),

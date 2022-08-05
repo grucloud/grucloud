@@ -8,7 +8,7 @@ describe("ECSCapacityProvider", async function () {
   let capacityprovider;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     capacityprovider = provider.getClient({
       groupType: "ECS::CapacityProvider",
     });

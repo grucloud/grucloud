@@ -45,12 +45,7 @@ const {
   destroyNetworkInterfaces,
 } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
-const {
-  createEC2,
-  tagResource,
-  untagResource,
-  findDependenciesVpc,
-} = require("./EC2Common");
+const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
 const SubnetAttributes = [
   "MapPublicIpOnLaunch",
@@ -144,7 +139,7 @@ exports.EC2Subnet = ({ spec, config }) => {
               group: "EC2",
               providerName: config.providerName,
             }),
-          get("name"),
+          get("name", live.VpcId),
           tap((name) => {
             assert(name, "no vpc name in subnet");
           }),

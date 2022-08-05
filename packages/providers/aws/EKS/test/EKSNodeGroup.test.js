@@ -8,7 +8,7 @@ describe("EKSNodeGroup", async function () {
   let nodeGroup;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     nodeGroup = provider.getClient({ groupType: "EKS::NodeGroup" });
     await provider.start();
   });

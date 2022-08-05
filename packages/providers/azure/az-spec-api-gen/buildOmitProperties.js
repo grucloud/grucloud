@@ -20,6 +20,7 @@ const {
   isSwaggerObject,
   buildParentPath,
   findTypesByDiscriminator,
+  getAllProperties,
 } = require("./AzureRestApiCommon");
 
 const buildOmitPropertiesObject = ({ key, swagger, parentPath, accumulator }) =>
@@ -99,10 +100,7 @@ const buildOmitPropertiesEnum = ({ key, swagger, parentPath, accumulator }) =>
     fork({
       fromBase: pipe([
         pipe([
-          get("properties"),
-          tap((properties) => {
-            assert(properties);
-          }),
+          getAllProperties,
           buildOmitProperties({
             swagger,
             parentPath: buildParentPath(key)(parentPath),
@@ -114,10 +112,7 @@ const buildOmitPropertiesEnum = ({ key, swagger, parentPath, accumulator }) =>
         findTypesByDiscriminator({ swagger }),
         flatMap(
           pipe([
-            get("properties"),
-            tap((properties) => {
-              assert(properties);
-            }),
+            getAllProperties,
             buildOmitProperties({
               swagger,
               parentPath: buildParentPath(key)(parentPath),

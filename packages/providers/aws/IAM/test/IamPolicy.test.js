@@ -8,7 +8,7 @@ describe("IamPolicy", async function () {
   let policy;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     policy = provider.getClient({
       groupType: "IAM::Policy",
     });

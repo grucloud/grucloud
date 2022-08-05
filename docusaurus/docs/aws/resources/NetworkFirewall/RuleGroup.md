@@ -5,7 +5,7 @@ title: Rule Group
 
 Provides a [Network Firewall Policy](https://console.aws.amazon.com/vpc/home?#NetworkFirewallRuleGroups:)
 
-### Sample Code
+### Sample Code
 
 #### Stateful rule
 
@@ -86,13 +86,13 @@ exports.createResources = () => [
 
 - [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/hub-and-spoke-with-inspection-vpc)
 
-### Properties
+### Properties
 
 - [CreateRuleGroupCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-network-firewall/interfaces/createrulegroupcommandinput.html)
 
 ### Used By
 
-- [Firewall Policy](./FirewallPolicy.md)
+- [Firewall Policy](./Policy.md)
 
 ### List
 

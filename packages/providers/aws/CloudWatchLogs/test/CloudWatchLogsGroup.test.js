@@ -8,7 +8,7 @@ describe("CloudWatchLogsGroup", async function () {
   let logGroup;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     logGroup = provider.getClient({ groupType: "CloudWatchLogs::LogGroup" });
     await provider.start();
   });

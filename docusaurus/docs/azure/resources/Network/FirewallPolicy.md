@@ -50,10 +50,11 @@ exports.createResources = () => [
           enableProxy: true,
           requireProxyForNetworkRules: false,
         },
-        explicitProxySettings: {
+        explicitProxy: {
           enableExplicitProxy: true,
           httpPort: 8087,
           httpsPort: 8087,
+          enablePacFile: true,
           pacFilePort: 8087,
           pacFile:
             "https://tinawstorage.file.core.windows.net/?sv=2020-02-10&ss=bfqt&srt=sco&sp=rwdlacuptfx&se=2021-06-04T07:01:12Z&st=2021-06-03T23:01:12Z&sip=68.65.171.11&spr=https&sig=Plsa0RRVpGbY0IETZZOT6znOHcSro71LLTTbzquYPgs%3D",
@@ -232,6 +233,15 @@ exports.createResources = () => [
               type: 'array',
               description: 'List of private IP addresses/IP address ranges to not be SNAT.',
               items: { type: 'string' }
+            },
+            autoLearnPrivateRanges: {
+              type: 'string',
+              description: 'The operation mode for automatically learning private ranges to not be SNAT',
+              enum: [ 'Enabled', 'Disabled' ],
+              'x-ms-enum': {
+                name: 'AutoLearnPrivateRangesMode',
+                modelAsString: true
+              }
             }
           }
         },
@@ -265,7 +275,7 @@ exports.createResources = () => [
             }
           }
         },
-        explicitProxySettings: {
+        explicitProxy: {
           description: 'Explicit Proxy Settings definition.',
           type: 'object',
           properties: {
@@ -291,6 +301,11 @@ exports.createResources = () => [
               minimum: 0,
               exclusiveMinimum: false,
               description: 'Port number for explicit proxy https protocol, cannot be greater than 64000.'
+            },
+            enablePacFile: {
+              type: 'boolean',
+              description: 'When set to true, pac file port and url needs to be provided.',
+              'x-nullable': true
             },
             pacFilePort: {
               type: 'integer',
@@ -518,6 +533,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2022-01-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/firewallPolicy.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2022-01-01/firewallPolicy.json).

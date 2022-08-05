@@ -224,8 +224,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "NATGateway",
       routeTable: "VPC::PrivateRouteTableUSEAST1D",
-      natGateway: "NATGateway",
     }),
   },
   {
@@ -235,8 +235,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "NATGateway",
       routeTable: "VPC::PrivateRouteTableUSEAST1F",
-      natGateway: "NATGateway",
     }),
   },
   {
@@ -246,8 +246,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "VPC::PublicRouteTable",
       ig: "InternetGateway",
+      routeTable: "VPC::PublicRouteTable",
     }),
   },
   {
@@ -313,9 +313,7 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-      },
+      IpProtocol: "-1",
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::VPC::ClusterSharedNodeSecurityGroup",
@@ -326,16 +324,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 443,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 443,
-      },
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 443,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::VPC::load-balancer",
@@ -345,16 +341,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::VPC::load-balancer",

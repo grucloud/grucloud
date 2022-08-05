@@ -14,7 +14,7 @@ const { buildTagsS3Object } = require("../AwsS3Object");
 const bucketName = "grucloud-s3bucket-test-update";
 const types = ["Bucket", "Object"];
 const createStack = async ({ config }) => {
-  const provider = AwsProvider({
+  const provider = await AwsProvider({
     config: () => ({ projectName: "gru-test" }),
   });
 
@@ -37,7 +37,7 @@ const createStack = async ({ config }) => {
 };
 
 const createStackNext = async ({ config }) => {
-  const provider = AwsProvider({
+  const provider = await AwsProvider({
     config: () => ({ projectName: "gru-test" }),
   });
 

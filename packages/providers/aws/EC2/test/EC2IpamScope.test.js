@@ -8,7 +8,7 @@ describe("EC2 IpamScope", async function () {
   let ipamScope;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     ipamScope = provider.getClient({
       groupType: "EC2::IpamScope",
     });

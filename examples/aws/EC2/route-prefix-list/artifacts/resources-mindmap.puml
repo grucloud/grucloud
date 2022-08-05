@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project route-prefix-list
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ RouteTable (1)
+++++ Route (1)
+++++ ManagedPrefixList (1)
+@endmindmap

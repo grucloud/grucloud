@@ -27,7 +27,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       domain: "grucloud.org",
-      vpc: "vpc-2",
+      vpc: "vpc-1",
     }),
   },
   {
@@ -35,7 +35,7 @@ exports.createResources = () => [
     group: "Route53",
     dependencies: ({}) => ({
       hostedZone: "test.grucloud.org.",
-      vpc: "vpc-1",
+      vpc: "vpc-2",
     }),
   },
   {

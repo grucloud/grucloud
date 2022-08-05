@@ -8,7 +8,7 @@ describe("Route53RecoveryControlConfigRoutingControl", async function () {
   let routingControl;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     routingControl = provider.getClient({
       groupType: "Route53RecoveryControlConfig::RoutingControl",
     });

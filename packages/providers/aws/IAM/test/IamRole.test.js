@@ -8,7 +8,7 @@ describe("IamRole", async function () {
   let role;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     role = provider.getClient({
       groupType: "IAM::Role",
     });

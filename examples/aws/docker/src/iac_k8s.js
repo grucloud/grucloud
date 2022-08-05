@@ -3,6 +3,8 @@ const { K8sProvider } = require("@grucloud/provider-k8s");
 
 exports.createStack = async ({ createProvider }) => {
   return {
-    stacks: [{ provider: createProvider(K8sProvider, { config: () => ({}) }) }],
+    stacks: [
+      { provider: await createProvider(K8sProvider, { config: () => ({}) }) },
+    ],
   };
 };

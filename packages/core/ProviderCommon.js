@@ -302,11 +302,11 @@ const findClientDependencies =
       tap(() => {
         assert(specs);
         assert(spec);
-        logger.debug(
-          `findClientDependencies groupType: ${spec.groupType}, #specs ${size(
-            specs
-          )}`
-        );
+        // logger.debug(
+        //   `findClientDependencies groupType: ${spec.groupType}, #specs ${size(
+        //     specs
+        //   )}`
+        // );
       }),
       () => specs,
       get("dependsOnList", []),

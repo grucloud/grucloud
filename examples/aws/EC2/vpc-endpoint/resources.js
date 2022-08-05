@@ -95,8 +95,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "project-vpc::project-rtb-public",
       ig: "project-igw",
+      routeTable: "project-vpc::project-rtb-public",
     }),
   },
   {

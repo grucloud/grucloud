@@ -4,6 +4,29 @@ title: AppServiceEnvironmentPrivateEndpointConnection
 ---
 Provides a **AppServiceEnvironmentPrivateEndpointConnection** from the **Web** group
 ## Examples
+### Approves or rejects a private endpoint connection.
+```js
+exports.createResources = () => [
+  {
+    type: "AppServiceEnvironmentPrivateEndpointConnection",
+    group: "Web",
+    name: "myAppServiceEnvironmentPrivateEndpointConnection",
+    properties: () => ({
+      properties: {
+        privateLinkServiceConnectionState: {
+          status: "Approved",
+          description: "Approved by johndoe@company.com",
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      name: "myAppServiceEnvironment",
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceEnvironment](../Web/AppServiceEnvironment.md)
@@ -63,6 +86,6 @@ Provides a **AppServiceEnvironmentPrivateEndpointConnection** from the **Web** g
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-03-01/AppServiceEnvironments.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2022-03-01/AppServiceEnvironments.json).

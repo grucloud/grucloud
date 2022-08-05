@@ -53,7 +53,7 @@ exports.createResources = () => [
 
 ## List
 
-The user pool domains can be filtered with the _CognitoIdentityServiceProvider::UserPoolDomain"_ type:
+The user pool domains can be filtered with the `CognitoIdentityServiceProvider::UserPoolDomain` type:
 
 ```sh
 gc l -t CognitoIdentityServiceProvider::UserPoolDomain

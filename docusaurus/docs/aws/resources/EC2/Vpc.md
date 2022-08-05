@@ -78,14 +78,16 @@ const vpc = provider.EC2.makeVpc({
 
 ## Used By
 
-- [Subnet](./Subnet.md)
-- [Security Group](./SecurityGroup.md)
-- [Internet Gateway Attachment](./InternetGatewayAttachment.md)
-- [Dhcp Options Association](./DhcpOptionsAssociation.md)
-- [Flow Logs](./FlowLogs.md)
-- [Route53 HostedZone](../Route53/HostedZone.md)
 - [CodeBuild Project](../CodeBuild/Project.md)
-- [Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
+- [EC2 Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
+- [EC2 Dhcp Options Association](./DhcpOptionsAssociation.md)
+- [EC2 Flow Logs](./FlowLogs.md)
+- [EC2 Internet Gateway Attachment](./InternetGatewayAttachment.md)
+- [EC2 Security Group](./SecurityGroup.md)
+- [EC2 Subnet](./Subnet.md)
+- [EC2 Vpc Peering Connection](./VpcPeeringConnection.md)
+- [NetworkManager VpcAttachment](../NetworkManager/VpcAttachment.md)
+- [Route53 HostedZone](../Route53/HostedZone.md)
 
 ## List
 

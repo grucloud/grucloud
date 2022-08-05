@@ -51,7 +51,29 @@ exports.createResources = () => [
       properties: {
         target: {
           type: 'string',
-          description: 'The ID of the targeted resource, only VM is currently supported.'
+          description: 'The ID of the targeted resource, only AzureVM and AzureVMSS as target type are currently supported.'
+        },
+        scope: {
+          description: 'A list of AzureVMSS instances which can be included or excluded to run packet capture. If both included and excluded are empty, then the packet capture will run on all instances of AzureVMSS.',
+          type: 'object',
+          properties: {
+            include: {
+              type: 'array',
+              description: 'List of AzureVMSS instances to run packet capture on.',
+              items: { type: 'string' }
+            },
+            exclude: {
+              type: 'array',
+              description: 'List of AzureVMSS instances which has to be excluded from the AzureVMSS from running packet capture.',
+              items: { type: 'string' }
+            }
+          }
+        },
+        targetType: {
+          description: 'Target type of the resource provided.',
+          type: 'string',
+          enum: [ 'AzureVM', 'AzureVMSS' ],
+          'x-ms-enum': { name: 'PacketCaptureTargetType', modelAsString: false }
         },
         bytesToCapturePerPacket: {
           type: 'integer',
@@ -135,6 +157,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2022-01-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/networkWatcher.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2022-01-01/networkWatcher.json).

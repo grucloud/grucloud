@@ -8,7 +8,7 @@ describe("AutoScalingLaunchConfiguration", async function () {
   let launchconfiguration;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     launchconfiguration = provider.getClient({
       groupType: "AutoScaling::LaunchConfiguration",
     });

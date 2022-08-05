@@ -17,7 +17,7 @@ exports.createResources = () => [
         type: "SystemAssigned",
       },
       properties: {
-        kubernetesVersion: "1.21.7",
+        kubernetesVersion: "1.24.0",
         dnsPrefix: "cluster-dns",
         agentPoolProfiles: [
           {
@@ -32,7 +32,7 @@ exports.createResources = () => [
             enableAutoScaling: false,
             type: "VirtualMachineScaleSets",
             mode: "System",
-            orchestratorVersion: "1.21.7",
+            orchestratorVersion: "1.24.0",
             enableNodePublicIP: false,
             enableFIPS: false,
             name: "agentpool",
@@ -47,9 +47,6 @@ exports.createResources = () => [
             enabled: false,
             config: null,
           },
-        },
-        oidcIssuerProfile: {
-          enabled: false,
         },
         enableRBAC: true,
         networkProfile: {
@@ -67,7 +64,6 @@ exports.createResources = () => [
         storageProfile: {
           diskCSIDriver: {
             enabled: true,
-            version: "v1",
           },
           fileCSIDriver: {
             enabled: true,

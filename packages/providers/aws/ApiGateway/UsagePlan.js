@@ -44,7 +44,7 @@ const model = ({ config }) => ({
     method: "updateUsagePlan",
     // TODO build patchOperations
     filterParams: ({ payload, live }) =>
-      pipe([() => payload, defaultsDeep({ usagePlanId: id })])(),
+      pipe([() => payload, defaultsDeep({ usagePlanId: live.id })])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteUsagePlan-property
   destroy: {

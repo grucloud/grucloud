@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project security-group-prefix-list
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
+++++ SecurityGroupRuleEgress (1)
+++++ ManagedPrefixList (1)
+@endmindmap

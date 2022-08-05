@@ -14,7 +14,7 @@ describe("AwsS3Bucket", async function () {
   const bucketPrefix = "grucloud-t-";
 
   before(async function () {
-    provider = AwsProvider({
+    provider = await AwsProvider({
       name: "aws",
       config: () => ({ projectName: "gru-test" }),
     });

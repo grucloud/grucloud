@@ -8,7 +8,7 @@ describe("EcrRepository", async function () {
   let repository;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     repository = provider.getClient({
       groupType: "ECR::Repository",
     });

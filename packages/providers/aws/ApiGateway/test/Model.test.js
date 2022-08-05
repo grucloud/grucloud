@@ -8,7 +8,7 @@ describe.skip("Api Gateway Model", async function () {
   let model;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     model = provider.getClient({ groupType: "APIGateway::Model" });
     await provider.start();
   });

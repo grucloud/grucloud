@@ -61,6 +61,21 @@ const omitDestinationConfig = when(
   omit(["DestinationConfig"])
 );
 
+const dependencyIdEventSource =
+  ({ type, group }) =>
+  ({ lives, config }) =>
+    pipe([
+      get("EventSourceArn"),
+      (id) =>
+        lives.getById({
+          providerName: config.providerName,
+          id,
+          type,
+          group,
+        }),
+      get("id"),
+    ]);
+
 module.exports = pipe([
   () => [
     {
@@ -430,25 +445,25 @@ module.exports = pipe([
     {
       type: "EventSourceMapping",
       Client: EventSourceMapping,
-      //TODO
-      // `mapping-${nameFromArn(FunctionArn)}-${nameFromArn(EventSourceArn)}`,
-      // inferName: ({
-      //   dependenciesSpec: { lambdaFunction, sqsQueue, kinesisStream },
-      // }) =>
-      //   pipe([
-      //     switchCase([
-      //       () => lambdaFunction,
-      //       () => lambdaFunction,
-      //       () => sqsQueue,
-      //       () => sqsQueue,
-      //       () => kinesisStream,
-      //       () => kinesisStream,
-      //       () => {
-      //         assert(false, `missing EventSourceMapping dependency`);
-      //       },
-      //     ]),
-      //     prepend("mapping-")
-      //   ])(),
+      inferName: ({
+        dependenciesSpec: { lambdaFunction, sqsQueue, kinesisStream },
+      }) =>
+        pipe([
+          tap((params) => {
+            assert(lambdaFunction);
+            assert(sqsQueue || kinesisStream);
+          }),
+          switchCase([
+            () => sqsQueue,
+            () => sqsQueue,
+            () => kinesisStream,
+            () => kinesisStream,
+            () => {
+              assert(false, `missing EventSourceMapping dependency`);
+            },
+          ]),
+          prepend(`mapping::${lambdaFunction}::`),
+        ])(),
       compare: compareLambda({
         filterTarget: () =>
           pipe([
@@ -468,7 +483,6 @@ module.exports = pipe([
               "LastModified",
               "LastProcessingResult",
               "StateTransitionReason",
-              //"MaximumRecordAgeInSeconds",
               "State",
             ]),
             omitIfEmpty([
@@ -498,7 +512,7 @@ module.exports = pipe([
               "DestinationConfig",
               "Topics",
               "Queues",
-              //"MaximumRecordAgeInSeconds",
+              "MaximumRecordAgeInSeconds",
               "BisectBatchOnFunctionError",
               "MaximumRetryAttempts",
               "TumblingWindowInSeconds",
@@ -508,9 +522,28 @@ module.exports = pipe([
             omitDestinationConfig,
           ])(),
       dependencies: {
-        lambdaFunction: { type: "Function", group: "Lambda", parent: true },
-        sqsQueue: { type: "Queue", group: "SQS" },
-        kinesisStream: { type: "Stream", group: "Kinesis" },
+        lambdaFunction: {
+          type: "Function",
+          group: "Lambda",
+          parent: true,
+          dependencyId: ({ lives, config }) => pipe([get("FunctionArn")]),
+        },
+        sqsQueue: {
+          type: "Queue",
+          group: "SQS",
+          dependencyId: dependencyIdEventSource({
+            type: "Queue",
+            group: "SQS",
+          }),
+        },
+        kinesisStream: {
+          type: "Stream",
+          group: "Kinesis",
+          dependencyId: dependencyIdEventSource({
+            type: "Stream",
+            group: "Kinesis",
+          }),
+        },
         //TODO other event source
         /*
   Amazon DynamoDB Streams

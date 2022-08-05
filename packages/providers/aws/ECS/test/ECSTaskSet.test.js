@@ -8,7 +8,7 @@ describe("ECSTaskSet", async function () {
   let taskset;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     taskset = provider.getClient({ groupType: "ECS::TaskSet" });
     await provider.start();
   });

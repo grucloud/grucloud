@@ -8,7 +8,7 @@ describe.skip("LambdaEventSourceMapping", async function () {
   let eventSourceMapping;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     eventSourceMapping = provider.getClient({
       groupType: "Lambda::EventSourceMapping",
     });

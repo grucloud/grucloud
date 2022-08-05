@@ -706,7 +706,7 @@ exports.ProviderGru = ({
       get("results"),
       map(pick(["error", "providerName"])),
       addErrorToResults,
-      tap((results) => {
+      tap(({ results }) => {
         logger.info(`startProvider #providers ${size(results)}`);
       }),
     ])();

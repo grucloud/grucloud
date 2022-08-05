@@ -9,7 +9,7 @@ Manages a [Cloud Watch Log Stream](https://console.aws.amazon.com/cloudwatch/hom
 
 ```js
 exports.createResources = () => [
- {
+  {
     type: "LogStream",
     group: "CloudWatchLogs",
     properties: ({}) => ({
@@ -31,7 +31,7 @@ exports.createResources = () => [
 - [log stream](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatchLogs/log-stream)
 - [client-vpn-endpoint](https://github.com/grucloud/grucloud/tree/main/examples/aws/EC2/client-vpn-endpoint)
 
-## Dependencies
+## Dependencies
 
 - [CloudWatchLogs LogGroup](./LogGroup.md)
 
@@ -49,7 +49,7 @@ gc l -t CloudWatchLogs::LogStream
 
 ```txt
 Listing resources on 1 provider: aws
-✓ aws us-east-1 
+✓ aws us-east-1
   ✓ Initialising
   ✓ Listing 2/2
 ┌──────────────────────────────────────────────────────────────────────────────────────────────┐

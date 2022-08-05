@@ -260,8 +260,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
       natGateway: `${config.region}-prod-main-vpc-${config.region}b`,
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
     }),
   },
   {
@@ -279,8 +279,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
       natGateway: `${config.region}-prod-main-vpc-${config.region}c`,
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
     }),
   },
   {
@@ -298,8 +298,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
       natGateway: `${config.region}-prod-main-vpc-${config.region}d`,
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
     }),
   },
   {
@@ -317,8 +317,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
       ig: `${config.region}-prod-main-vpc`,
+      routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
     }),
   },
   {

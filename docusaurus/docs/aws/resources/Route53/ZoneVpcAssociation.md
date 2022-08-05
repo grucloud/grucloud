@@ -23,6 +23,8 @@ exports.createResources = () => [
 ## Source Code Examples
 
 - [vpc-association-authorization](https://github.com/grucloud/grucloud/tree/main/examples/aws/Route53/vpc-association-authorization)
+- [hosted zone private](https://github.com/grucloud/grucloud/tree/main/examples/aws/Route53/hostedzone-private)
+- [hub-and-spoke-with-shared-services-vpc-terraform](https://github.com/grucloud/grucloud/tree/main/examples/aws/aws-samples/hub-and-spoke-with-shared-services-vpc-terraform)
 
 ## Properties
 

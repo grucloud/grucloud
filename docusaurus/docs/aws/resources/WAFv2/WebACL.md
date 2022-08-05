@@ -56,7 +56,6 @@ exports.createResources = () => [
 - [WebACL with REST Api Gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/WAFv2/wafv2-apigateway-rest)
 - [WebACL with Graphql](https://github.com/grucloud/grucloud/blob/main/examples/aws/WAFv2/wafv2-graphql)
 - [WebACL with Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/WAFv2/wafv2-loadbalancer)
-- [WebACL with CloudFront](https://github.com/grucloud/grucloud/blob/main/examples/aws/WAFv2/wafv2-cloudfront)
 
 ## Used By
 

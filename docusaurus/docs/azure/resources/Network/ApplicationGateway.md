@@ -354,7 +354,7 @@ exports.createResources = () => [
               items: {
                 type: 'string',
                 description: 'Ssl protocol enums.',
-                enum: [ 'TLSv1_0', 'TLSv1_1', 'TLSv1_2' ],
+                enum: [ 'TLSv1_0', 'TLSv1_1', 'TLSv1_2', 'TLSv1_3' ],
                 'x-ms-enum': {
                   name: 'ApplicationGatewaySslProtocol',
                   modelAsString: true
@@ -364,7 +364,7 @@ exports.createResources = () => [
             policyType: {
               type: 'string',
               description: 'Type of Ssl Policy.',
-              enum: [ 'Predefined', 'Custom' ],
+              enum: [ 'Predefined', 'Custom', 'CustomV2' ],
               'x-ms-enum': {
                 name: 'ApplicationGatewaySslPolicyType',
                 modelAsString: true
@@ -376,7 +376,9 @@ exports.createResources = () => [
               enum: [
                 'AppGwSslPolicy20150501',
                 'AppGwSslPolicy20170401',
-                'AppGwSslPolicy20170401S'
+                'AppGwSslPolicy20170401S',
+                'AppGwSslPolicy20220101',
+                'AppGwSslPolicy20220101S'
               ],
               'x-ms-enum': {
                 name: 'ApplicationGatewaySslPolicyName',
@@ -428,7 +430,7 @@ exports.createResources = () => [
             minProtocolVersion: {
               description: 'Minimum version of Ssl protocol to be supported on application gateway.',
               type: 'string',
-              enum: [ 'TLSv1_0', 'TLSv1_1', 'TLSv1_2' ],
+              enum: [ 'TLSv1_0', 'TLSv1_1', 'TLSv1_2', 'TLSv1_3' ],
               'x-ms-enum': {
                 name: 'ApplicationGatewaySslProtocol',
                 modelAsString: true
@@ -1618,7 +1620,12 @@ exports.createResources = () => [
                         items: {
                           type: 'string',
                           description: 'Ssl protocol enums.',
-                          enum: [ 'TLSv1_0', 'TLSv1_1', 'TLSv1_2' ],
+                          enum: [
+                            'TLSv1_0',
+                            'TLSv1_1',
+                            'TLSv1_2',
+                            'TLSv1_3'
+                          ],
                           'x-ms-enum': {
                             name: 'ApplicationGatewaySslProtocol',
                             modelAsString: true
@@ -1628,7 +1635,7 @@ exports.createResources = () => [
                       policyType: {
                         type: 'string',
                         description: 'Type of Ssl Policy.',
-                        enum: [ 'Predefined', 'Custom' ],
+                        enum: [ 'Predefined', 'Custom', 'CustomV2' ],
                         'x-ms-enum': {
                           name: 'ApplicationGatewaySslPolicyType',
                           modelAsString: true
@@ -1640,7 +1647,9 @@ exports.createResources = () => [
                         enum: [
                           'AppGwSslPolicy20150501',
                           'AppGwSslPolicy20170401',
-                          'AppGwSslPolicy20170401S'
+                          'AppGwSslPolicy20170401S',
+                          'AppGwSslPolicy20220101',
+                          'AppGwSslPolicy20220101S'
                         ],
                         'x-ms-enum': {
                           name: 'ApplicationGatewaySslPolicyName',
@@ -1692,7 +1701,7 @@ exports.createResources = () => [
                       minProtocolVersion: {
                         description: 'Minimum version of Ssl protocol to be supported on application gateway.',
                         type: 'string',
-                        enum: [ 'TLSv1_0', 'TLSv1_1', 'TLSv1_2' ],
+                        enum: [ 'TLSv1_0', 'TLSv1_1', 'TLSv1_2', 'TLSv1_3' ],
                         'x-ms-enum': {
                           name: 'ApplicationGatewaySslProtocol',
                           modelAsString: true
@@ -3078,6 +3087,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2022-01-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/applicationGateway.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2022-01-01/applicationGateway.json).

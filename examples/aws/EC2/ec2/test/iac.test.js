@@ -17,6 +17,21 @@ describe("EC2 Instance", async function () {
           createResources: require("./resourcesUpdate1").createResources,
           configs: [config],
         },
+        {
+          createStack,
+          createResources: require("./resourcesUpdate2").createResources,
+          configs: [config],
+        },
+        {
+          createStack,
+          createResources: require("./resourcesUpdate3").createResources,
+          configs: [config],
+        },
+        {
+          createStack,
+          createResources: require("./resourcesUpdate4").createResources,
+          configs: [config],
+        },
       ],
     });
   });

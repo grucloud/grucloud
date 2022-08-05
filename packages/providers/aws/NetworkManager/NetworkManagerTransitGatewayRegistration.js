@@ -11,7 +11,6 @@ const { createAwsResource } = require("../AwsClient");
 const createModel = ({ config }) => ({
   package: "networkmanager",
   client: "NetworkManager",
-  region: "us-west-2",
   ignoreErrorCodes: ["ResourceNotFoundException"],
   getById: {
     method: "getTransitGatewayRegistrations",
@@ -23,7 +22,6 @@ const createModel = ({ config }) => ({
     ]),
     getField: "TransitGatewayRegistrations",
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#registerTransitGateway-property
   create: {
     method: "registerTransitGateway",

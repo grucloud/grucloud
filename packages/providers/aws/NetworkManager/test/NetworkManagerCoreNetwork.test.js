@@ -8,7 +8,7 @@ describe("NetworkManager CoreNetwork", async function () {
   let coreNetwork;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     coreNetwork = provider.getClient({
       groupType: "NetworkManager::CoreNetwork",
     });

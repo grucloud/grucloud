@@ -8,7 +8,7 @@ describe("UserPool", async function () {
   let userPool;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     userPool = provider.getClient({
       groupType: "CognitoIdentityServiceProvider::UserPool",
     });

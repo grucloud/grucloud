@@ -8,7 +8,7 @@ describe("IamUser", async function () {
   let user;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     user = provider.getClient({
       groupType: "IAM::User",
     });

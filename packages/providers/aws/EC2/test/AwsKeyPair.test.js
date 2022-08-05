@@ -8,7 +8,7 @@ describe("EC2 KeyPair", async function () {
   let keyPair;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     keyPair = provider.getClient({
       groupType: "EC2::KeyPair",
     });

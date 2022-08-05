@@ -8,7 +8,7 @@ describe("SSMDocument", async function () {
   let document;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     document = provider.getClient({ groupType: "SSM::Document" });
     await provider.start();
   });

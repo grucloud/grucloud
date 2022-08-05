@@ -4,6 +4,24 @@ title: AppServiceEnvironmentAseV3NetworkingConfiguration
 ---
 Provides a **AppServiceEnvironmentAseV3NetworkingConfiguration** from the **Web** group
 ## Examples
+### Update networking configuration of an App Service Environment.
+```js
+exports.createResources = () => [
+  {
+    type: "AppServiceEnvironmentAseV3NetworkingConfiguration",
+    group: "Web",
+    name: "myAppServiceEnvironmentAseV3NetworkingConfiguration",
+    properties: () => ({
+      properties: { ftpEnabled: true, remoteDebugEnabled: true },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      name: "myAppServiceEnvironment",
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceEnvironment](../Web/AppServiceEnvironment.md)
@@ -45,6 +63,18 @@ Provides a **AppServiceEnvironmentAseV3NetworkingConfiguration** from the **Web*
         allowNewPrivateEndpointConnections: {
           description: 'Property to enable and disable new private endpoint connection creation on ASE',
           type: 'boolean'
+        },
+        ftpEnabled: {
+          description: 'Property to enable and disable FTP on ASEV3',
+          type: 'boolean'
+        },
+        remoteDebugEnabled: {
+          description: 'Property to enable and disable Remote Debug on ASEV3',
+          type: 'boolean'
+        },
+        inboundIpAddressOverride: {
+          description: 'Customer provided Inbound IP Address. Only able to be set on Ase create.',
+          type: 'string'
         }
       },
       'x-ms-client-flatten': true
@@ -53,6 +83,6 @@ Provides a **AppServiceEnvironmentAseV3NetworkingConfiguration** from the **Web*
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-03-01/AppServiceEnvironments.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2022-03-01/AppServiceEnvironments.json).

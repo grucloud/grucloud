@@ -71,7 +71,7 @@ exports.createResources = () => [
 
 - [cloud-wan](https://github.com/grucloud/grucloud/blob/main/examples/aws/NetworkManager/cloud-wan)
 
-### Properties
+### Properties
 
 - [CreateCoreNetworkCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-networkmanager/interfaces/createcorenetworkcommandinput.html)
 
@@ -80,6 +80,8 @@ exports.createResources = () => [
 - [Global Network](./GlobalNetwork.md)
 
 ### Used By
+
+- [EC2 Route](../EC2/Route.md)
 
 ### List
 

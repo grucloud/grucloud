@@ -755,8 +755,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
       natGateway: `inspection-vpc-${config.region}a`,
+      routeTable: "inspection-vpc::inspection-vpc-private-subnet",
     }),
   },
   {
@@ -788,8 +788,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
       ig: "inspection-vpc",
+      routeTable: "inspection-vpc::inspection-vpc-public-subnet",
     }),
   },
   {
@@ -961,15 +961,13 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        IpRanges: [
-          {
-            CidrIp: "192.168.1.0/24",
-            Description: "Open to the provider client IP address",
-          },
-        ],
-      },
+      IpProtocol: "-1",
+      IpRanges: [
+        {
+          CidrIp: "192.168.1.0/24",
+          Description: "Open to the provider client IP address",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::inspection-vpc::public_vpc_security_group",
@@ -979,17 +977,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 22,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "SSH access",
-          },
-        ],
-        ToPort: 22,
-      },
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "SSH access",
+        },
+      ],
+      ToPort: 22,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::inspection-vpc::public_vpc_security_group",
@@ -999,17 +995,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "HTTP access",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "HTTP access",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::inspection-vpc::public_vpc_security_group",
@@ -1019,14 +1013,12 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-      },
+      IpProtocol: "-1",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-1::endoint_security_group",
@@ -1036,14 +1028,12 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        IpRanges: [
-          {
-            CidrIp: "192.168.1.0/24",
-          },
-        ],
-      },
+      IpProtocol: "-1",
+      IpRanges: [
+        {
+          CidrIp: "192.168.1.0/24",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-1::public_instance_security_group",
@@ -1053,16 +1043,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 22,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 22,
-      },
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 22,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-1::public_instance_security_group",
@@ -1072,16 +1060,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-1::public_instance_security_group",
@@ -1091,15 +1077,13 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        IpRanges: [
-          {
-            CidrIp: "192.168.1.0/24",
-            Description: "Open to the provider client IP address",
-          },
-        ],
-      },
+      IpProtocol: "-1",
+      IpRanges: [
+        {
+          CidrIp: "192.168.1.0/24",
+          Description: "Open to the provider client IP address",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-1::public_vpc_security_group",
@@ -1109,17 +1093,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 22,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "SSH access",
-          },
-        ],
-        ToPort: 22,
-      },
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "SSH access",
+        },
+      ],
+      ToPort: 22,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-1::public_vpc_security_group",
@@ -1129,17 +1111,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "HTTP access",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "HTTP access",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-1::public_vpc_security_group",
@@ -1149,14 +1129,12 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-      },
+      IpProtocol: "-1",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-2::endoint_security_group",
@@ -1166,14 +1144,12 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        IpRanges: [
-          {
-            CidrIp: "192.168.1.0/24",
-          },
-        ],
-      },
+      IpProtocol: "-1",
+      IpRanges: [
+        {
+          CidrIp: "192.168.1.0/24",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-2::public_instance_security_group",
@@ -1183,16 +1159,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 22,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 22,
-      },
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 22,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-2::public_instance_security_group",
@@ -1202,16 +1176,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-2::public_instance_security_group",
@@ -1221,15 +1193,13 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        IpRanges: [
-          {
-            CidrIp: "192.168.1.0/24",
-            Description: "Open to the provider client IP address",
-          },
-        ],
-      },
+      IpProtocol: "-1",
+      IpRanges: [
+        {
+          CidrIp: "192.168.1.0/24",
+          Description: "Open to the provider client IP address",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-2::public_vpc_security_group",
@@ -1239,17 +1209,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 22,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "SSH access",
-          },
-        ],
-        ToPort: 22,
-      },
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "SSH access",
+        },
+      ],
+      ToPort: 22,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-2::public_vpc_security_group",
@@ -1259,17 +1227,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "HTTP access",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "HTTP access",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-2::public_vpc_security_group",

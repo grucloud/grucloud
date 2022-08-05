@@ -8,7 +8,7 @@ exports.createResources = () => [
     group: "DocumentDB",
     properties: ({ config }) => ({
       name: `myorg-${config.stage}-grucloud`,
-      location: "East US",
+      location: config.location,
       identity: {
         type: "None",
       },
@@ -47,9 +47,6 @@ exports.createResources = () => [
         },
         networkAclBypass: "None",
         networkAclBypassResourceIds: [],
-        diagnosticLogSettings: {
-          enableFullTextQuery: "None",
-        },
         disableLocalAuth: false,
         capacity: {
           totalThroughputLimit: 1000,

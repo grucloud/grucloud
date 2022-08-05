@@ -21,6 +21,7 @@ const {
   buildParentPath,
   findTypesByDiscriminator,
   isKeyExcluded,
+  getAllProperties,
 } = require("./AzureRestApiCommon");
 
 const buildDefaultPropertiesObject = ({
@@ -127,10 +128,7 @@ const buildDefaultPropertiesEnum = ({
     fork({
       fromBase: pipe([
         pipe([
-          get("properties"),
-          tap((properties) => {
-            assert(properties);
-          }),
+          getAllProperties,
           buildDefaultProperties({
             swagger,
             parentPath: buildParentPath(key)(parentPath),
@@ -142,10 +140,7 @@ const buildDefaultPropertiesEnum = ({
         findTypesByDiscriminator({ swagger }),
         flatMap(
           pipe([
-            get("properties"),
-            tap((properties) => {
-              assert(properties);
-            }),
+            getAllProperties,
             buildDefaultProperties({
               swagger,
               parentPath: buildParentPath(key)(parentPath),

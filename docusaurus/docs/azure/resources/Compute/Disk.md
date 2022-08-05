@@ -362,6 +362,35 @@ exports.createResources = () => [
 
 ```
 
+### Create a managed disk with premium v2 account type.
+```js
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      sku: { name: "PremiumV2_LRS" },
+      properties: {
+        creationData: { createOption: "Empty" },
+        diskSizeGB: 200,
+        diskIOPSReadWrite: 125,
+        diskMBpsReadWrite: 3000,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
+
+```
+
 ### Create a managed disk with security profile
 ```js
 exports.createResources = () => [
@@ -497,6 +526,101 @@ exports.createResources = () => [
 ];
 
 ```
+
+### Create a managed disk from an Azure Compute Gallery image.
+```js
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        osType: "Windows",
+        creationData: {
+          createOption: "FromImage",
+          galleryImageReference: {
+            id: "/Subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/Providers/Microsoft.Compute/Galleries/{galleryName}/Images/{imageName}/Versions/1.0.0",
+          },
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
+
+```
+
+### Create a managed disk from an Azure Compute Gallery direct shared image.
+```js
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        osType: "Windows",
+        creationData: {
+          createOption: "FromImage",
+          galleryImageReference: {
+            sharedGalleryImageId:
+              "/SharedGalleries/{sharedGalleryUniqueName}/Images/{imageName}/Versions/1.0.0",
+          },
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
+
+```
+
+### Create a managed disk from an Azure Compute Gallery community image.
+```js
+exports.createResources = () => [
+  {
+    type: "Disk",
+    group: "Compute",
+    name: "myDisk",
+    properties: () => ({
+      location: "West US",
+      properties: {
+        osType: "Windows",
+        creationData: {
+          createOption: "FromImage",
+          galleryImageReference: {
+            communityGalleryImageId:
+              "/CommunityGalleries/{communityGalleryPublicGalleryName}/Images/{imageName}/Versions/1.0.0",
+          },
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      storageAccount: "myStorageAccount",
+      image: "myImage",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      diskAccess: "myDiskAccess",
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [StorageAccount](../Storage/StorageAccount.md)
@@ -528,7 +652,8 @@ exports.createResources = () => [
             'StandardSSD_LRS',
             'UltraSSD_LRS',
             'Premium_ZRS',
-            'StandardSSD_ZRS'
+            'StandardSSD_ZRS',
+            'PremiumV2_LRS'
           ],
           'x-ms-enum': {
             name: 'DiskStorageAccountTypes',
@@ -557,6 +682,10 @@ exports.createResources = () => [
               {
                 value: 'StandardSSD_ZRS',
                 description: 'Standard SSD zone redundant storage. Best for web servers, lightly used enterprise applications and dev/test that need storage resiliency against zone failures.'
+              },
+              {
+                value: 'PremiumV2_LRS',
+                description: 'Premium SSD v2 locally redundant storage. Best for production and performance-sensitive workloads that consistently require low latency and high IOPS and throughput.'
               }
             ]
           },
@@ -568,7 +697,7 @@ exports.createResources = () => [
           description: 'The sku tier.'
         }
       },
-      description: 'The disks sku name. Can be Standard_LRS, Premium_LRS, StandardSSD_LRS, UltraSSD_LRS, Premium_ZRS, or StandardSSD_ZRS.'
+      description: 'The disks sku name. Can be Standard_LRS, Premium_LRS, StandardSSD_LRS, UltraSSD_LRS, Premium_ZRS, StandardSSD_ZRS, or PremiumV2_LRS.'
     },
     zones: {
       type: 'array',
@@ -713,34 +842,48 @@ exports.createResources = () => [
               description: 'Required if createOption is Import. The Azure Resource Manager identifier of the storage account containing the blob to import as a disk.'
             },
             imageReference: {
-              description: 'Disk source information.',
+              description: 'Disk source information for PIR or user images.',
               properties: {
                 id: {
                   type: 'string',
-                  description: 'A relative uri containing either a Platform Image Repository or user image reference.'
+                  description: 'A relative uri containing either a Platform Image Repository, user image, or Azure Compute Gallery image reference.'
+                },
+                sharedGalleryImageId: {
+                  type: 'string',
+                  description: 'A relative uri containing a direct shared Azure Compute Gallery image reference.'
+                },
+                communityGalleryImageId: {
+                  type: 'string',
+                  description: 'A relative uri containing a community Azure Compute Gallery image reference.'
                 },
                 lun: {
                   type: 'integer',
                   format: 'int32',
                   description: "If the disk is created from an image's data disk, this is an index that indicates which of the data disks in the image to use. For OS disks, this field is null."
                 }
-              },
-              required: [ 'id' ]
+              }
             },
             galleryImageReference: {
-              description: 'Required if creating from a Gallery Image. The id of the ImageDiskReference will be the ARM id of the shared galley image version from which to create a disk.',
+              description: 'Required if creating from a Gallery Image. The id/sharedGalleryImageId/communityGalleryImageId of the ImageDiskReference will be the ARM id of the shared galley image version from which to create a disk.',
               properties: {
                 id: {
                   type: 'string',
-                  description: 'A relative uri containing either a Platform Image Repository or user image reference.'
+                  description: 'A relative uri containing either a Platform Image Repository, user image, or Azure Compute Gallery image reference.'
+                },
+                sharedGalleryImageId: {
+                  type: 'string',
+                  description: 'A relative uri containing a direct shared Azure Compute Gallery image reference.'
+                },
+                communityGalleryImageId: {
+                  type: 'string',
+                  description: 'A relative uri containing a community Azure Compute Gallery image reference.'
                 },
                 lun: {
                   type: 'integer',
                   format: 'int32',
                   description: "If the disk is created from an image's data disk, this is an index that indicates which of the data disks in the image to use. For OS disks, this field is null."
                 }
-              },
-              required: [ 'id' ]
+              }
             },
             sourceUri: {
               type: 'string',
@@ -1151,6 +1294,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-12-01`.
+The resource version is `2022-03-02`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-12-01/disk.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/DiskRP/stable/2022-03-02/DiskRP/disk.json).

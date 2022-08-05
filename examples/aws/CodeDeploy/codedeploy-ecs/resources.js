@@ -9,7 +9,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       applicationName: "AppECS-cluster-api",
       computePlatform: "ECS",
-      tags: [],
     }),
   },
   {
@@ -87,7 +86,6 @@ exports.createResources = () => [
           },
         ],
       },
-      tags: [],
     }),
     dependencies: ({}) => ({
       application: "AppECS-cluster-api",
@@ -211,8 +209,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "ECS cluster - VPC::ECS cluster - RouteTable",
       ig: "ECS cluster - InternetGateway",
+      routeTable: "ECS cluster - VPC::ECS cluster - RouteTable",
     }),
   },
   {
@@ -264,16 +262,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::ECS cluster - VPC::api-1918",
@@ -283,16 +279,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -303,11 +297,9 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 1,
-        IpProtocol: "tcp",
-        ToPort: 65535,
-      },
+      FromPort: 1,
+      IpProtocol: "tcp",
+      ToPort: 65535,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -321,16 +313,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup:

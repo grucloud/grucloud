@@ -95,8 +95,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `eoigw-vpc::eoigw-rtb-private1-${config.region}a`,
       egressOnlyInternetGateway: "my-eigw",
+      routeTable: `eoigw-vpc::eoigw-rtb-private1-${config.region}a`,
     }),
   },
   {
@@ -106,8 +106,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "eoigw-vpc::eoigw-rtb-public",
       ig: "eoigw-igw",
+      routeTable: "eoigw-vpc::eoigw-rtb-public",
     }),
   },
   {
@@ -117,8 +117,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "eoigw-vpc::eoigw-rtb-public",
       ig: "eoigw-igw",
+      routeTable: "eoigw-vpc::eoigw-rtb-public",
     }),
   },
 ];

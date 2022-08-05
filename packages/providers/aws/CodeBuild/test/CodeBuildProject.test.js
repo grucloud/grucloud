@@ -8,7 +8,7 @@ describe("CodeBuildProject", async function () {
   let project;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     project = provider.getClient({
       groupType: "CodeBuild::Project",
     });

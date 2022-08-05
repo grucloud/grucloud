@@ -138,50 +138,7 @@ exports.createResources = () => [
         },
         availabilityZone: {
           type: 'boolean',
-          description: 'If the data center has Availability Zone feature, apply it to the Virtual Machine ScaleSet that host the cassandra data center virtual machines.'
-        },
-        authenticationMethodLdapProperties: {
-          type: 'object',
-          description: 'Ldap authentication method properties. This feature is in preview.',
-          properties: {
-            serverHostname: {
-              description: 'Hostname of the LDAP server.',
-              type: 'string'
-            },
-            serverPort: {
-              description: 'Port of the LDAP server.',
-              type: 'integer',
-              format: 'int32'
-            },
-            serviceUserDistinguishedName: {
-              description: 'Distinguished name of the look up user account, who can look up user details on authentication.',
-              type: 'string'
-            },
-            serviceUserPassword: {
-              description: 'Password of the look up user.',
-              type: 'string'
-            },
-            searchBaseDistinguishedName: {
-              description: 'Distinguished name of the object to start the recursive search of users from.',
-              type: 'string'
-            },
-            searchFilterTemplate: {
-              description: 'Template to use for searching. Defaults to (cn=%s) where %s will be replaced by the username used to login.',
-              type: 'string'
-            },
-            serverCertificates: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  pem: {
-                    description: 'PEM formatted public key.',
-                    type: 'string'
-                  }
-                }
-              }
-            }
-          }
+          description: 'If the azure data center has Availability Zone support, apply it to the Virtual Machine ScaleSet that host the cassandra data center virtual machines.'
         }
       }
     }
@@ -189,6 +146,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2022-02-15-preview`.
+The resource version is `2022-05-15`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/preview/2022-02-15-preview/managedCassandra.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/stable/2022-05-15/managedCassandra.json).

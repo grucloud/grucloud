@@ -78,9 +78,14 @@ exports.createResources = () => [
             'Commissioning',
             'Commissioned',
             'Decommissioning',
-            'Deprovisioning'
+            'Deprovisioning',
+            'CommissionedNoInternetAdvertise'
           ],
           'x-ms-enum': { name: 'CommissionedState', modelAsString: true }
+        },
+        noInternetAdvertise: {
+          type: 'boolean',
+          description: 'Whether to Advertise the range to Internet.'
         },
         publicIpPrefixes: {
           readOnly: true,
@@ -151,6 +156,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-08-01`.
+The resource version is `2022-01-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2021-08-01/customIpPrefix.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/network/resource-manager/Microsoft.Network/stable/2022-01-01/customIpPrefix.json).

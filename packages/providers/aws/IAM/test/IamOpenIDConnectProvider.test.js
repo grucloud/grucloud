@@ -8,7 +8,7 @@ describe("IamOpenIDConnectProvider", async function () {
   let iamOpenIDConnectProvider;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     iamOpenIDConnectProvider = provider.getClient({
       groupType: "IAM::OpenIDConnectProvider",
     });

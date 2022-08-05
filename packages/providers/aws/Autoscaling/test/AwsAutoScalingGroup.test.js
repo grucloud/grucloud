@@ -8,7 +8,7 @@ describe("AutoScalingAutoScalingGroup", async function () {
   const types = ["AutoScalingGroup"];
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     autoSg = provider.getClient({ groupType: "AutoScaling::AutoScalingGroup" });
     await provider.start();
   });

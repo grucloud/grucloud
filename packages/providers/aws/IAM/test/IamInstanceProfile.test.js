@@ -8,7 +8,7 @@ describe("IamInstanceProfile", async function () {
   let instanceProfile;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     instanceProfile = provider.getClient({
       groupType: "IAM::InstanceProfile",
     });

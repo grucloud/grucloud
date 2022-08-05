@@ -57,9 +57,9 @@ module.exports = AxiosMaker = ({
         logger.info(`axios response: ${error.response}`);
       } else {
         logger.error(`axios error ${tos(convertError({ error }))}`);
-        logger.error(
-          `raw error response ${util.inspect(error.response, { depth: 8 })}`
-        );
+        // logger.error(
+        //   `raw error response ${util.inspect(error.response, { depth: 8 })}`
+        // );
       }
 
       return Promise.reject(error);

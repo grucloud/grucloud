@@ -239,9 +239,9 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
       routeTable:
         "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
-      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
     }),
   },
   {
@@ -251,9 +251,9 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
       routeTable:
         "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
-      natGateway: "ECSServiceStack/SkeletonVpc/publicSubnet1",
     }),
   },
   {
@@ -263,9 +263,9 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      ig: "ECSServiceStack/SkeletonVpc",
       routeTable:
         "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
-      ig: "ECSServiceStack/SkeletonVpc",
     }),
   },
   {
@@ -275,9 +275,9 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      ig: "ECSServiceStack/SkeletonVpc",
       routeTable:
         "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
-      ig: "ECSServiceStack/SkeletonVpc",
     }),
   },
   {
@@ -309,17 +309,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "Allow from anyone on port 80",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allow from anyone on port 80",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -330,11 +328,9 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -348,11 +344,9 @@ exports.createResources = () => [
     type: "SecurityGroupRuleEgress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -562,7 +556,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ getId }) => ({
+    properties: ({ config }) => ({
       RoleName:
         "ECSServiceStack-amazonecssampleTaskDefExecutionRol-1391KZSJLULK2",
       AssumeRolePolicyDocument: {
@@ -584,11 +578,9 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-                Resource: `${getId({
-                  type: "LogGroup",
-                  group: "CloudWatchLogs",
-                  name: "ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI",
-                })}:*`,
+                Resource: `arn:aws:logs:${
+                  config.region
+                }:${config.accountId()}:log-group:ECSServiceStack-amazonecssampleTaskDefwebLogGroup910AB31A-Aka75VsMnKfI:*`,
                 Effect: "Allow",
               },
             ],

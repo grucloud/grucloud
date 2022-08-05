@@ -22,6 +22,8 @@ const ignoreErrorMessages = [
 
 const pickId = pipe([({ Name }) => ({ SecretId: Name })]);
 
+const managedByOther = pipe([get("live.OwningService")]);
+
 const model = {
   package: "secrets-manager",
   client: "SecretsManager",
@@ -82,6 +84,7 @@ exports.SecretsManagerSecret = ({ spec, config }) =>
     config,
     findName: findNameInTagsOrId({ findId: get("live.Name") }),
     findId: pipe([get("live.ARN")]),
+    managedByOther,
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

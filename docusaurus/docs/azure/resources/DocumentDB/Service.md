@@ -138,6 +138,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2022-02-15-preview`.
+The resource version is `2022-05-15`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/preview/2022-02-15-preview/services.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/stable/2022-05-15/services.json).

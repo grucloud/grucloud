@@ -8,23 +8,23 @@ exports.createStack = async ({ createProvider }) => {
   return {
     stacks: [
       {
-        provider: createProvider(AwsProvider, {
+        provider: await createProvider(AwsProvider, {
           config: () => ({ region: process.env.AWS_REGION }),
         }),
       },
       {
-        provider: createProvider(GoogleProvider, {
+        provider: await createProvider(GoogleProvider, {
           config: () => ({ region: process.env.GCP_REGION }),
         }),
       },
       {
-        provider: createProvider(AzureProvider, {
+        provider: await createProvider(AzureProvider, {
           config: () => ({
             location: process.env.LOCATION,
           }),
         }),
       },
-      { provider: createProvider(K8sProvider, { config: () => ({}) }) },
+      { provider: await createProvider(K8sProvider, { config: () => ({}) }) },
     ],
   };
 };

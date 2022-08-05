@@ -38,7 +38,7 @@ exports.createResources = () => [
 
 - [client-vpn-endpoint](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/client-vpn-endpoint)
 
-### Properties
+### Properties
 
 - [CreateClientVpnEndpointCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/createclientvpnendpointcommandinput.html)
 

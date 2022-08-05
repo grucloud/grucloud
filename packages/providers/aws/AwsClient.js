@@ -423,9 +423,18 @@ const AwsClient =
           (created) =>
             pipe([
               () => created,
-              pickCreated({ pickId, payload, name, resolvedDependencies }),
+              pickCreated({
+                endpoint,
+                pickId,
+                payload,
+                name,
+                resolvedDependencies,
+              }),
               tap((params) => {
-                assert(isObject(params));
+                assert(
+                  isObject(params),
+                  `create pickCreated should return an object`
+                );
                 // logger.debug(
                 //   `create isUpById: ${name}, ${JSON.stringify(params)}`
                 // );
@@ -668,7 +677,42 @@ const AwsClient =
               (params) =>
                 retryCall({
                   name: `destroying ${type}`,
-                  fn: pipe([() => params, endpoint()[method]]),
+                  fn: pipe([
+                    () => params,
+                    endpoint()[method],
+                    () => live,
+                    tap(postDestroy),
+                    tap.if(
+                      () => isFunction(getById),
+                      () =>
+                        retryCall({
+                          name: `isDestroyed ${type}`,
+                          fn: pipe([
+                            () => live,
+                            tap((params) => {
+                              assert(true);
+                            }),
+                            getById,
+                            tap.if(isInstanceError, (live) => {
+                              logger.error(
+                                `isInstanceError: ${JSON.stringify(
+                                  live,
+                                  null,
+                                  4
+                                )}`
+                              );
+                              const error = new Error(
+                                `error destroying resource ${name}`
+                              );
+                              error.live = live;
+                              throw error;
+                            }),
+                            or([isEmpty, isInstanceDown]),
+                          ]),
+                          config,
+                        })
+                    ),
+                  ]),
                   config,
                   isExpectedResult,
                   shouldRetryOnException: or([
@@ -679,36 +723,8 @@ const AwsClient =
                     }),
                   ]),
                 }),
-              () => live,
-              tap(postDestroy),
-              tap.if(
-                () => isFunction(getById),
-                () =>
-                  retryCall({
-                    name: `isDestroyed ${type}`,
-                    fn: pipe([
-                      () => live,
-                      tap((params) => {
-                        assert(true);
-                      }),
-                      getById,
-                      tap.if(isInstanceError, (live) => {
-                        logger.error(
-                          `isInstanceError: ${JSON.stringify(live, null, 4)}`
-                        );
-                        const error = new Error(
-                          `error destroying resource ${name}`
-                        );
-                        error.live = live;
-                        throw error;
-                      }),
-                      or([isEmpty, isInstanceDown]),
-                    ]),
-                    config,
-                  })
-              ),
             ]),
-            (error, params) =>
+            (error = {}, params) =>
               pipe([
                 tap(() => {
                   logger.info(

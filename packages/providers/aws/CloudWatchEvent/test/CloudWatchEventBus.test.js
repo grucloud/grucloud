@@ -8,7 +8,7 @@ describe("CloudWatchEventBus", async function () {
   let eventBus;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     eventBus = provider.getClient({ groupType: "CloudWatchEvents::EventBus" });
     await provider.start();
   });

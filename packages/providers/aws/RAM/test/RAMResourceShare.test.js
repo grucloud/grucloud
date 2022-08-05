@@ -8,7 +8,7 @@ describe("RAMResourceShare", async function () {
   let resourceShare;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     resourceShare = provider.getClient({ groupType: "RAM::ResourceShare" });
     await provider.start();
   });

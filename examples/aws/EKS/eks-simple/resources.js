@@ -171,8 +171,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "NATGateway",
       routeTable: "VPC::PrivateRouteTableUSEAST1D",
-      natGateway: "NATGateway",
     }),
   },
   {
@@ -182,8 +182,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "NATGateway",
       routeTable: "VPC::PrivateRouteTableUSEAST1F",
-      natGateway: "NATGateway",
     }),
   },
   {
@@ -193,8 +193,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "VPC::PublicRouteTable",
       ig: "InternetGateway",
+      routeTable: "VPC::PublicRouteTable",
     }),
   },
   {
@@ -249,9 +249,7 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-      },
+      IpProtocol: "-1",
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::VPC::ClusterSharedNodeSecurityGroup",

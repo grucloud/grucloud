@@ -1,6 +1,6 @@
 ---
 id: TaskDefinition
-title: TaskDefinition
+title: Task Definition
 ---
 
 Manages an [ECS Task Definition](https://console.aws.amazon.com/ecs/home?#/taskDefinitions).

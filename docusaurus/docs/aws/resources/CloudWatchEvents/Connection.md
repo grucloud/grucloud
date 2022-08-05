@@ -33,6 +33,8 @@ exports.createResources = () => [
 
 ## Dependencies
 
+- [SecretsManager Secret](../SecretsManager/Secret.md)
+
 ## Used By
 
 - [ApiDestination](./ApiDestination.md)
@@ -44,12 +46,46 @@ exports.createResources = () => [
 
 ## List
 
-The connections can be filtered with the _Connection_ type:
+The connections can be filtered with the _CloudWatchEvents::Connection_ type:
 
 ```sh
-gc l -t Connection
+gc l -t CloudWatchEvents::Connection
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 1/1
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 CloudWatchEvents::Connection from aws                                                  │
+├──────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: MyConnection-dvMVGg2stExz                                                          │
+│ managedByUs: Yes                                                                         │
+│ live:                                                                                    │
+│   AuthParameters:                                                                        │
+│     ApiKeyAuthParameters:                                                                │
+│       ApiKeyName: MyWebhook                                                              │
+│   AuthorizationType: API_KEY                                                             │
+│   ConnectionArn: arn:aws:events:us-east-1:840541460064:connection/MyConnection-dvMVGg2s… │
+│   ConnectionState: AUTHORIZED                                                            │
+│   CreationTime: 2022-08-05T11:37:09.000Z                                                 │
+│   Description: My connection with an API key                                             │
+│   LastAuthorizedTime: 2022-08-05T11:37:09.000Z                                           │
+│   LastModifiedTime: 2022-08-05T11:37:09.000Z                                             │
+│   Name: MyConnection-dvMVGg2stExz                                                        │
+│   SecretArn: arn:aws:secretsmanager:us-east-1:840541460064:secret:events!connection/MyC… │
+│                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────┘
 
+
+List Summary:
+Provider: aws
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                     │
+├──────────────────────────────┬──────────────────────────────────────────────────────────┤
+│ CloudWatchEvents::Connection │ MyConnection-dvMVGg2stExz                                │
+└──────────────────────────────┴──────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t CloudWatchEvents::Connection" executed in 4s, 100 MB
 ```

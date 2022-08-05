@@ -153,6 +153,18 @@ Provides a **WebApp** from the **Web** group
           type: 'string',
           readOnly: true
         },
+        vnetRouteAllEnabled: {
+          description: 'Virtual Network Route All enabled. This causes all outbound traffic to have Virtual Network Security Groups and User Defined Routes applied.',
+          type: 'boolean'
+        },
+        vnetImagePullEnabled: {
+          description: 'To enable pulling image over Virtual Network',
+          type: 'boolean'
+        },
+        vnetContentShareEnabled: {
+          description: 'To enable accessing content over virtual network',
+          type: 'boolean'
+        },
         siteConfig: {
           description: 'Configuration of the app.',
           type: 'object',
@@ -1286,6 +1298,10 @@ Provides a **WebApp** from the **Web** group
           readOnly: true,
           example: '00000000-0000-0000-0000-000000000000'
         },
+        publicNetworkAccess: {
+          description: "Property to allow or block all public traffic. Allowed Values: 'Enabled', 'Disabled' or an empty string.",
+          type: 'string'
+        },
         storageAccountRequired: {
           description: 'Checks if Customer provided storage account is required',
           type: 'boolean'
@@ -1365,6 +1381,6 @@ Provides a **WebApp** from the **Web** group
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-03-01/WebApps.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2022-03-01/WebApps.json).

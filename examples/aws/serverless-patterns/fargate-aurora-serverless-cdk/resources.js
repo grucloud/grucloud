@@ -172,8 +172,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
       natGateway: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
+      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
     }),
   },
   {
@@ -183,8 +183,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
       natGateway: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
+      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
     }),
   },
   {
@@ -194,8 +194,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      ig: "CdkStack/Vpc",
       routeTable: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
-      ig: "CdkStack/Vpc",
     }),
   },
   {
@@ -205,8 +205,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
       ig: "CdkStack/Vpc",
+      routeTable: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
     }),
   },
   {
@@ -248,17 +248,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "Allow from anyone on port 80",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allow from anyone on port 80",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -269,11 +267,9 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -287,11 +283,9 @@ exports.createResources = () => [
     type: "SecurityGroupRuleEgress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -533,7 +527,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       RoleName:
         "CdkStack-FargateServiceTaskDefExecutionRole9194820-18VY1XIQQ7L55",
       AssumeRolePolicyDocument: {
@@ -573,11 +567,9 @@ exports.createResources = () => [
               },
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-                Resource: `${getId({
-                  type: "LogGroup",
-                  group: "CloudWatchLogs",
-                  name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n",
-                })}:*`,
+                Resource: `arn:aws:logs:${
+                  config.region
+                }:${config.accountId()}:log-group:CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-CKdn78sftM1n:*`,
                 Effect: "Allow",
               },
             ],

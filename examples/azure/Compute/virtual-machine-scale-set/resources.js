@@ -46,6 +46,8 @@ exports.createResources = () => [
                 publicKeys: [
                   {
                     path: "/home/azureuser/.ssh/authorized_keys",
+                    keyData:
+                      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1iqH17P1OQA6eVXNBAQp537Fr\r\ndsxOjCPLGvylW8dtL5OY/yJLeuRs+E4180avkxOew90eqbavV20HR1tgh67o09+I\r\nYioVagFTRz9TO/yWdG0GftY+TIjf8GTx8gcMpCufYsqLdU6KZmfaESMukcNURpb9\r\nU19r2Lv/v6K2CvrFRCqhC4QlA657JLpWX9i0e5hZbxzMDRaevRPqJMjXPDmSSwoT\r\nICz7Ud1jF5uMMGkHbKDhXr4bM2IDHHNrIw/Qt9XN5WAc58xK1JvYxQvfwnQBnrtc\r\n131G3Z684v3cGalrd9zwAPojde3bcZ1tfW7HD6+k2iSyxA1TwEseYtyAN3V/l/h+\r\n+YPa9VIVhZTNz5OgXK9CGygDMF2ieeU1evbyorvNsXt4y0IeweDyK4I/4vPBl8Zg\r\nDWOgUtF+WrTruhSU6Z4mEEWx2G4SGqJcWqbmJacAGU4qmvR7x6YFU9gUCy6cWR7Y\r\nPHDNQDRIaheW7O2rOGdfJwQOvp7PbU6mgjBII0U= generated-by-azure\r\n",
                   },
                 ],
               },

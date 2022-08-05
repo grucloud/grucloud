@@ -42,6 +42,10 @@ exports.createResources = () => [
               location: "us-east-1",
               asn: 64512,
             },
+            {
+              location: "us-west-2",
+              asn: 64513,
+            },
           ],
         },
         "attachment-policies": [

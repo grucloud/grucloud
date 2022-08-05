@@ -1,5 +1,16 @@
 const assert = require("assert");
-const { pipe, eq, or, get, not, and, tap, flatMap, filter } = require("rubico");
+const {
+  pipe,
+  eq,
+  or,
+  get,
+  not,
+  and,
+  tap,
+  flatMap,
+  filter,
+  reduce,
+} = require("rubico");
 const {
   includes,
   callProp,
@@ -19,6 +30,18 @@ const isSecret = (key) =>
   or([() => key.match(new RegExp("password$", "gi")), get("x-ms-secret")]);
 
 exports.isSecret = isSecret;
+
+exports.getAllProperties = ({ allOf = [], properties = {} }) =>
+  pipe([
+    () => allOf,
+    tap((params) => {
+      assert(true);
+    }),
+    reduce((acc, value) => ({ ...acc, ...value.properties }), properties),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 exports.isSwaggerObject = pipe([
   tap((params) => {

@@ -8,7 +8,7 @@ describe("NetworkFirewall Policy", async function () {
   let firewallPolicy;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     firewallPolicy = provider.getClient({
       groupType: "NetworkFirewall::Policy",
     });

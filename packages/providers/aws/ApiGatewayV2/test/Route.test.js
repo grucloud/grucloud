@@ -8,7 +8,7 @@ describe("Api GatewayV2 Route", async function () {
   let route;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     route = provider.getClient({ groupType: "ApiGatewayV2::Route" });
     await provider.start();
   });

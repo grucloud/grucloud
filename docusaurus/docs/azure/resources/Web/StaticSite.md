@@ -540,6 +540,37 @@ exports.createResources = () => [
           },
           readOnly: true
         },
+        linkedBackends: {
+          description: 'Backends linked to the static side',
+          type: 'array',
+          items: {
+            description: 'Static Site Linked Backend ARM resource.',
+            type: 'object',
+            properties: {
+              backendResourceId: {
+                description: 'The resource id of the backend linked to the static site',
+                type: 'string'
+              },
+              region: {
+                description: 'The region of the backend linked to the static site',
+                type: 'string'
+              },
+              createdOn: {
+                format: 'date-time',
+                description: 'The date and time on which the backend was linked to the static site.',
+                type: 'string',
+                readOnly: true
+              },
+              provisioningState: {
+                description: 'The provisioning state of the linking process.',
+                type: 'string',
+                readOnly: true
+              }
+            }
+          },
+          'x-ms-identifiers': [],
+          readOnly: true
+        },
         provider: {
           description: 'The provider that submitted the last deployment to the primary environment of the static site.',
           type: 'string'
@@ -549,6 +580,10 @@ exports.createResources = () => [
           enum: [ 'Enabled', 'Enabling', 'Disabled', 'Disabling' ],
           type: 'string',
           'x-ms-enum': { name: 'EnterpriseGradeCdnStatus', modelAsString: true }
+        },
+        publicNetworkAccess: {
+          description: "State indicating whether public traffic are allowed or not for a static web app. Allowed Values: 'Enabled', 'Disabled' or an empty string.",
+          type: 'string'
         }
       }
     },
@@ -685,6 +720,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-03-01/StaticSites.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2022-03-01/StaticSites.json).

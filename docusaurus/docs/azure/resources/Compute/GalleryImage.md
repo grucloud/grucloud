@@ -149,7 +149,7 @@ exports.createResources = () => [
         provisioningState: {
           readOnly: true,
           type: 'string',
-          title: 'The current state of the gallery image definition.',
+          title: 'The current state of the gallery or gallery artifact.',
           description: 'The provisioning state, which only appears in the response.',
           enum: [
             'Creating',
@@ -158,7 +158,8 @@ exports.createResources = () => [
             'Succeeded',
             'Deleting',
             'Migrating'
-          ]
+          ],
+          'x-ms-enum': { name: 'GalleryProvisioningState', modelAsString: true }
         },
         features: {
           type: 'array',
@@ -219,6 +220,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-10-01`.
+The resource version is `2022-01-03`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-10-01/gallery.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/GalleryRP/stable/2022-01-03/GalleryRP/gallery.json).

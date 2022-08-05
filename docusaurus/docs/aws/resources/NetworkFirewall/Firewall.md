@@ -33,7 +33,7 @@ exports.createResources = () => [
 
 - [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/hub-and-spoke-with-inspection-vpc)
 
-### Properties
+### Properties
 
 - [CreateFirewallCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-network-firewall/interfaces/createfirewallcommandinput.html)
 
@@ -41,7 +41,7 @@ exports.createResources = () => [
 
 - [Vpc](../EC2/Vpc.md)
 - [Subnet](../EC2/Subnet.md)
-- [Firewall Policy](./FirewallPolicy.md)
+- [Firewall Policy](./Policy.md)
 
 ### Used By
 

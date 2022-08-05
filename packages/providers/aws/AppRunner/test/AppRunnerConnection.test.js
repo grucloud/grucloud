@@ -7,7 +7,7 @@ describe("AppRunner connection", async function () {
   let connection;
 
   before(async function () {
-    provider = AwsProvider({
+    provider = await AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
     await provider.start();

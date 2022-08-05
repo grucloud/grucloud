@@ -102,6 +102,21 @@ exports.createResources = () => [
 
 - [CreateLaunchConfigurationCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-auto-scaling/interfaces/createlaunchconfigurationcommandinput.html)
 
+## Dependencies
+
+- [InstanceProfile](../IAM/InstanceProfile.md)
+- [KeyPair](../EC2/KeyPair.md)
+- [Image](../EC2/Image.md)
+- [SecurityGroup](../EC2/SecurityGroup.md)
+
+## Used By
+
+- [AutoScaling Group](./AutoScalingGroup.md)
+
+## Example
+
+- [Simple ECS](https://github.com/grucloud/grucloud/tree/main/examples/aws/ECS/ecs-simple)
+
 ## List
 
 The Launch Configuration can be filtered with the _LaunchConfiguration_ type:
@@ -153,18 +168,3 @@ Provider: aws
 1 resource, 1 type, 1 provider
 Command "gc l -t LaunchConfiguration" executed in 7s
 ```
-
-## Dependencies
-
-- [InstanceProfile](../IAM/InstanceProfile.md)
-- [KeyPair](../EC2/KeyPair.md)
-- [Image](../EC2/Image.md)
-- [SecurityGroup](../EC2/SecurityGroup.md)
-
-## Used By
-
-- [AutoScaling Group](./AutoScalingGroup.md)
-
-## Example
-
-- [Simple ECS](https://github.com/grucloud/grucloud/tree/main/examples/aws/ECS/ecs-simple)

@@ -184,17 +184,27 @@ exports.createResources = () => [
                   }
                 },
                 required: [ 'id' ],
-                description: 'A rule governing the accessibility of a managed hsm pool from a specific virtual network.'
+                description: 'A rule governing the accessibility of a managed hsm pool from a specific virtual network.',
+                type: 'object'
               },
               description: 'The list of virtual network rules.'
             }
-          }
+          },
+          type: 'object'
         },
         privateEndpointConnections: {
           readOnly: true,
           type: 'array',
           items: {
             properties: {
+              id: {
+                type: 'string',
+                description: 'Id of private endpoint connection.'
+              },
+              etag: {
+                type: 'string',
+                description: 'Modified whenever there is a change in the state of private endpoint connection.'
+              },
               properties: {
                 'x-ms-client-flatten': true,
                 description: 'Private endpoint connection properties.',
@@ -207,7 +217,8 @@ exports.createResources = () => [
                         type: 'string',
                         description: 'Full identifier of the private endpoint resource.'
                       }
-                    }
+                    },
+                    type: 'object'
                   },
                   privateLinkServiceConnectionState: {
                     description: 'Approval state of the private link connection.',
@@ -239,7 +250,8 @@ exports.createResources = () => [
                           modelAsString: true
                         }
                       }
-                    }
+                    },
+                    type: 'object'
                   },
                   provisioningState: {
                     description: 'Provisioning state of the private endpoint connection.',
@@ -258,10 +270,12 @@ exports.createResources = () => [
                       modelAsString: true
                     }
                   }
-                }
+                },
+                type: 'object'
               }
             },
-            description: 'Private endpoint connection item.'
+            description: 'Private endpoint connection item.',
+            type: 'object'
           },
           description: 'List of private endpoint connections associated with the managed hsm pool.'
         },
@@ -277,7 +291,8 @@ exports.createResources = () => [
           format: 'date-time',
           description: 'The scheduled purge date in UTC.'
         }
-      }
+      },
+      type: 'object'
     }
   },
   allOf: [
@@ -320,7 +335,8 @@ exports.createResources = () => [
               'x-ms-enum': { name: 'ManagedHsmSkuName', modelAsString: false }
             }
           },
-          required: [ 'name', 'family' ]
+          required: [ 'name', 'family' ],
+          type: 'object'
         },
         tags: {
           type: 'object',
@@ -361,17 +377,20 @@ exports.createResources = () => [
               format: 'date-time',
               description: 'The timestamp of the key vault resource last modification (UTC).'
             }
-          }
+          },
+          type: 'object'
         }
       },
       description: 'Managed HSM resource',
-      'x-ms-azure-resource': true
+      'x-ms-azure-resource': true,
+      type: 'object'
     }
   ],
-  description: 'Resource information with extended details.'
+  description: 'Resource information with extended details.',
+  type: 'object'
 }
 ```
 ## Misc
-The resource version is `2021-11-01-preview`.
+The resource version is `2022-07-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/keyvault/resource-manager/Microsoft.KeyVault/preview/2021-11-01-preview/managedHsm.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/keyvault/resource-manager/Microsoft.KeyVault/stable/2022-07-01/managedHsm.json).

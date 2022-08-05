@@ -14,7 +14,7 @@ describe.skip("Route53HostedZone", async function () {
   const subDomainName = `sub.${domainName}`;
 
   const createStack = async ({ config }) => {
-    const provider = AwsProvider({
+    const provider = await AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
 
@@ -61,7 +61,7 @@ describe.skip("Route53HostedZone", async function () {
   };
 
   const createStackNext = async ({ config }) => {
-    const provider = AwsProvider({
+    const provider = await AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
 

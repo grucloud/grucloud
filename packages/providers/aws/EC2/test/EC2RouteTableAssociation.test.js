@@ -8,7 +8,7 @@ describe("EC2RouteTableAssociation", async function () {
   let routeTableAssociation;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     routeTableAssociation = provider.getClient({
       groupType: "EC2::RouteTableAssociation",
     });

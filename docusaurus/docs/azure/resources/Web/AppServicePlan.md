@@ -115,6 +115,12 @@ exports.createResources = () => [
           type: 'integer',
           readOnly: true
         },
+        numberOfWorkers: {
+          format: 'int32',
+          description: 'The number of instances that are assigned to this App Service plan.',
+          type: 'integer',
+          readOnly: true
+        },
         geoRegion: {
           description: 'Geographical location for the App Service plan.',
           type: 'string',
@@ -328,6 +334,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-03-01/AppServicePlans.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2022-03-01/AppServicePlans.json).

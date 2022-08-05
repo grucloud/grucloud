@@ -8,7 +8,7 @@ describe("CloudFrontOriginAccessIdentity", async function () {
   let originAccessIdentity;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     originAccessIdentity = provider.getClient({
       groupType: "CloudFront::OriginAccessIdentity",
     });

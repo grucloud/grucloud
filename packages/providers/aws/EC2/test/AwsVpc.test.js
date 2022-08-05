@@ -8,7 +8,7 @@ describe("Vpc", async function () {
   let vpc;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     vpc = provider.getClient({
       groupType: "EC2::Vpc",
     });

@@ -37,7 +37,7 @@ exports.createResources = () => [
 ## Dependencies
 
 - [CloudWatch Metric Alarm](../CloudWatch/MetricAlarm.md)
-- [Route53RecovertControlConfig Routing Control](../Route53RecovertControlConfig/RoutingControl.md)
+- [Route53RecoveryControlConfig Routing Control](../Route53RecoveryControlConfig/RoutingControl.md)
 
 ## Used By
 

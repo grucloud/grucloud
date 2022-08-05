@@ -8,7 +8,7 @@ describe("Route53RecoveryReadinessCell", async function () {
   let cell;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     cell = provider.getClient({
       groupType: "Route53RecoveryReadiness::Cell",
     });

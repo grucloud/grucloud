@@ -27,7 +27,7 @@ List of resources for provider aws:
 * CloudWatchEvents: 
 [ApiDestination](./resources/CloudWatchEvents/ApiDestination.md), [Connection](./resources/CloudWatchEvents/Connection.md), [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
-[LogGroup](./resources/CloudWatchLogs/LogGroup.md)
+[LogGroup](./resources/CloudWatchLogs/LogGroup.md), [LogStream](./resources/CloudWatchLogs/LogStream.md), [SubscriptionFilter](./resources/CloudWatchLogs/SubscriptionFilter.md)
 * CodeBuild: 
 [Project](./resources/CodeBuild/Project.md)
 * CodeDeploy: 
@@ -45,13 +45,15 @@ List of resources for provider aws:
 * ECR: 
 [Repository](./resources/ECR/Repository.md), [Registry](./resources/ECR/Registry.md)
 * ECS: 
-[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [TaskDefinition](./resources/ECS/TaskDefinition.md), [Service](./resources/ECS/Service.md), [TaskSet](./resources/ECS/TaskSet.md), [Task](./resources/ECS/Task.md), [ContainerInstance](./resources/ECS/ContainerInstance.md)
+[CapacityProvider](./resources/ECS/CapacityProvider.md), [Cluster](./resources/ECS/Cluster.md), [TaskDefinition](./resources/ECS/TaskDefinition.md), [Service](./resources/ECS/Service.md), [TaskSet](./resources/ECS/TaskSet.md), [Task](./resources/ECS/Task.md)
 * EFS: 
 [FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
 [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
 * ElasticLoadBalancingV2: 
 [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md)
+* Firehose: 
+[DeliveryStream](./resources/Firehose/DeliveryStream.md)
 * Glue: 
 [Job](./resources/Glue/Job.md)
 * IAM: 

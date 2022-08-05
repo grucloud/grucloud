@@ -8,7 +8,7 @@ describe("NetworkManager GlobalNetwork", async function () {
   let globalNetwork;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     globalNetwork = provider.getClient({
       groupType: "NetworkManager::GlobalNetwork",
     });

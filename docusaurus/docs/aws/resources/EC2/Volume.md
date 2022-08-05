@@ -1,6 +1,6 @@
 ---
 id: Volume
-title: EBS Volume
+title: Volume
 ---
 
 Manages a [EBS Volume](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volumes.html)

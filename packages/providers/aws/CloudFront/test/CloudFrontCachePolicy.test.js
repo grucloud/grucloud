@@ -8,7 +8,7 @@ describe("CloudFrontCachePolicy", async function () {
   let cachePolicy;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     cachePolicy = provider.getClient({
       groupType: "CloudFront::CachePolicy",
     });

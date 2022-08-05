@@ -179,8 +179,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "Vpc8378EB38::VpcPrivateSubnet1RouteTableB2C5B500",
       natGateway: "VpcPublicSubnet1NATGateway4D7517AA",
+      routeTable: "Vpc8378EB38::VpcPrivateSubnet1RouteTableB2C5B500",
     }),
   },
   {
@@ -190,8 +190,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "Vpc8378EB38::VpcPrivateSubnet2RouteTableA678073B",
       natGateway: "VpcPublicSubnet2NATGateway9182C01D",
+      routeTable: "Vpc8378EB38::VpcPrivateSubnet2RouteTableA678073B",
     }),
   },
   {
@@ -201,8 +201,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      ig: "VpcIGWD7BA715C",
       routeTable: "Vpc8378EB38::VpcPublicSubnet1RouteTable6C95E38E",
-      ig: "VpcIGWD7BA715C",
     }),
   },
   {
@@ -212,8 +212,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "Vpc8378EB38::VpcPublicSubnet2RouteTable94F7E489",
       ig: "VpcIGWD7BA715C",
+      routeTable: "Vpc8378EB38::VpcPublicSubnet2RouteTable94F7E489",
     }),
   },
   {
@@ -255,16 +255,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -275,11 +273,9 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -293,16 +289,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 443,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "10.0.0.0/16",
-          },
-        ],
-        ToPort: 443,
-      },
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "10.0.0.0/16",
+        },
+      ],
+      ToPort: 443,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -313,11 +307,9 @@ exports.createResources = () => [
     type: "SecurityGroupRuleEgress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup:
@@ -591,7 +583,7 @@ exports.createResources = () => [
   {
     type: "Role",
     group: "IAM",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       RoleName:
         "CdkStack-FargateServiceTaskDefExecutionRole9194820-138OPFQCAE04H",
       AssumeRolePolicyDocument: {
@@ -631,11 +623,9 @@ exports.createResources = () => [
               },
               {
                 Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-                Resource: `${getId({
-                  type: "LogGroup",
-                  group: "CloudWatchLogs",
-                  name: "CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N",
-                })}:*`,
+                Resource: `arn:aws:logs:${
+                  config.region
+                }:${config.accountId()}:log-group:CdkStack-FargateServiceTaskDefwebLogGroup71FAF541-VaqaPjMDaE1N:*`,
                 Effect: "Allow",
               },
             ],

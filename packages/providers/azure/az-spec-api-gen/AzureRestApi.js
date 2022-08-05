@@ -17,7 +17,6 @@ const {
   pick,
   reduce,
   gte,
-  omit,
 } = require("rubico");
 const {
   append,
@@ -39,8 +38,7 @@ const {
   defaultsDeep,
   findIndex,
   identity,
-  isString,
-  isObject,
+  uniq,
 } = require("rubico/x");
 const path = require("path");
 const fs = require("fs").promises;
@@ -79,7 +77,18 @@ const OpertionIdReplaceMap = {
   BlobServices_GetServiceProperties: "BlobServices_Get",
 };
 
-const formatGroup = callProp("replace", "Microsoft.", "");
+const findGroupInPath = pipe([
+  callProp("split", "/"),
+  find(callProp("startsWith", "Microsoft.")),
+  tap((path) => {
+    assert(path);
+  }),
+  callProp("split", "."),
+  last,
+  tap((params) => {
+    assert(true);
+  }),
+]);
 
 //TODO do we still need this ?
 const selectMethod = (methods) =>
@@ -383,7 +392,7 @@ const findResources = ({
         }),
         (names) => ({
           ...names,
-          group: formatGroup(group),
+          group: findGroupInPath(dir),
           groupDir,
           apiVersion,
           methods: pipe([
@@ -429,12 +438,11 @@ const processSwagger =
     pipe([
       tap(() => {
         assert(dir);
-        assert(group);
-        assert(groupDir);
         assert(name);
       }),
       () => path.resolve(dir, name),
       tap((filename) => {
+        assert(filename);
         //console.log(`parsing ${filename}`);
       }),
       (filename) => SwaggerParser.dereference(filename, {}),
@@ -442,23 +450,17 @@ const processSwagger =
         pipe([
           () => swagger,
           assignSwaggerPaths,
+          tap((params) => {
+            assert(true);
+          }),
           (paths) =>
             findResources({
               dir,
               name,
               paths,
               swagger,
-              group,
-              groupDir,
-              apiVersion,
+              apiVersion: swagger.info.version,
             }),
-          (resources) => ({
-            name,
-            group,
-            groupDir,
-            apiVersion,
-            resources,
-          }),
         ])(),
       tap((params) => {
         assert(true);
@@ -467,48 +469,34 @@ const processSwagger =
 
 exports.processSwagger = processSwagger;
 
-const listPerVersion = ({ dir, group, groupDir }) =>
+const walkDir = () => (dir) =>
   pipe([
-    tap(({ name }) => {
-      assert(name);
+    tap(() => {
       assert(dir);
-      assert(group);
     }),
-    ({ name }) => path.resolve(dir, group, name),
-    (dir) =>
-      pipe([
-        () => fs.readdir(dir, { withFileTypes: true }),
-        filter(callProp("isDirectory")),
-        filter(pipe([get("name"), not(includes("private"))])),
-        flatMap(({ name: apiVersion }) =>
-          pipe([
-            () => path.resolve(dir, apiVersion),
-            (dir) =>
-              pipe([
-                () => fs.readdir(dir, { withFileTypes: true }),
-                filter(callProp("isFile")),
-                tap((params) => {
-                  assert(true);
-                }),
-                filter(pipe([get("name"), callProp("endsWith", ".json")])),
-                map(
-                  processSwagger({
-                    dir,
-                    group,
-                    groupDir,
-                    apiVersion,
-                  })
-                ),
-                tap((params) => {
-                  assert(true);
-                }),
-              ])(),
-          ])()
-        ),
-        pluck("resources"),
-        flatten,
-      ])(),
-  ]);
+    () => fs.readdir(dir, { withFileTypes: true }),
+    flatMap(
+      switchCase([
+        callProp("isDirectory"),
+        // Directory
+        pipe([
+          switchCase([
+            pipe([get("name"), includes("example")]),
+            () => undefined,
+            pipe([({ name }) => path.resolve(dir, name), walkDir()]),
+          ]),
+        ]),
+        // is json ?
+        pipe([get("name"), callProp("endsWith", ".json")]),
+        pipe([
+          processSwagger({
+            dir,
+          }),
+        ]),
+        () => undefined,
+      ])
+    ),
+  ])();
 
 const listPerGroup =
   ({ directorySpec }) =>
@@ -519,42 +507,25 @@ const listPerGroup =
         assert(groupDir);
       }),
       () => path.resolve(directorySpec, groupDir, "resource-manager"),
-      (dir) =>
-        tryCatch(
-          pipe([
-            () => fs.readdir(dir, { withFileTypes: true }),
-            filter(callProp("isDirectory")),
-            filter(pipe([get("name"), callProp("startsWith", "Microsoft.")])),
-            flatMap(({ name: group }) =>
-              pipe([
-                () => path.resolve(dir, group),
-                (specDir) => fs.readdir(specDir, { withFileTypes: true }),
-                flatMap(listPerVersion({ dir, group, groupDir })),
-                groupBy("type"),
-                map(
-                  pipe([
-                    // Trick to sort 2021-06-01 greater than 2021-06-01-preview
-                    callProp("sort", (a, b) =>
-                      `${a.apiVersion}-x`.localeCompare(`${b.apiVersion}-x`)
-                    ),
-                    last,
-                  ])
-                ),
-                values,
-                tap((params) => {
-                  assert(true);
-                }),
-                callProp("sort", (a, b) => a.type.localeCompare(b.type)),
-              ])()
-            ),
-            filter(not(isEmpty)),
-          ]),
-          (error) => {
-            console.error(error);
-            console.error(error.stack);
-            //throw error;
-          }
-        )(),
+      walkDir(),
+      filter(not(isEmpty)),
+      tap((params) => {
+        assert(true);
+      }),
+      //private ?
+      filter(not(pipe([get("apiVersion"), includes("preview")]))),
+      reduce((myMap, resource) => {
+        myMap.set(resource.type, resource);
+        return myMap;
+      }, new Map()),
+      tap((params) => {
+        assert(true);
+      }),
+      (myMap) => [...myMap.values()],
+      tap((params) => {
+        assert(true);
+      }),
+      callProp("sort", (a, b) => a.type.localeCompare(b.type)),
     ])();
 
 const addResourceGroupDependency = pipe([
@@ -1180,6 +1151,7 @@ const pickResourceInfo = ({ swagger, ...other }) =>
           accumulator: [],
         }),
         map(callProp("join", ".")),
+        uniq,
       ]),
       //pickProperties: pickPropertiesGet({ swagger }),
       pickPropertiesCreate: (resource) =>
@@ -1204,6 +1176,7 @@ const pickResourceInfo = ({ swagger, ...other }) =>
               map(callProp("join", ".")),
             ]),
           ]),
+          uniq,
         ])(),
       environmentVariables: pipe([
         getSchemaFromMethods({ method: "get" }),

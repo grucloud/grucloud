@@ -17,16 +17,15 @@ const {
 } = require("rubico");
 const {
   defaultsDeep,
-  callProp,
   isEmpty,
   first,
   pluck,
   flatten,
   unless,
-  find,
   includes,
   when,
   keys,
+  forEach,
 } = require("rubico/x");
 const { AwsClient } = require("../AwsClient");
 const { omitIfEmpty } = require("@grucloud/core/Common");
@@ -35,6 +34,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsEc2" });
 const { getByNameCore } = require("@grucloud/core/Common");
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
+
 const {
   getByIdCore,
   findNameInTags,
@@ -56,6 +56,9 @@ const {
   assignUserDataToBase64,
   getLaunchTemplateIdFromTags,
 } = require("./EC2Common");
+
+const AttributesNoRestart = ["DisableApiStop", "DisableApiTermination"];
+const AttributesNeedRestart = ["InstanceType", "UserData"];
 
 const ignoreErrorCodes = ["InvalidInstanceID.NotFound"];
 
@@ -161,109 +164,6 @@ exports.EC2Instance = ({ spec, config }) => {
     }),
   ]);
 
-  // const findDependencies = ({ live, lives, config }) => [
-  //   findDependenciesVpc({ live }),
-  //   {
-  //     type: "Image",
-  //     group: "EC2",
-  //     ids: pipe([
-  //       () => lives.getByType({ type: "Image", group: "EC2", providerName }),
-  //       filter(eq(get("id"), live.ImageId)),
-  //       pluck("id"),
-  //     ])(),
-  //   },
-  //   {
-  //     type: "KeyPair",
-  //     group: "EC2",
-  //     ids: [
-  //       pipe([
-  //         () =>
-  //           lives.getByName({
-  //             name: live.KeyName,
-  //             type: "KeyPair",
-  //             group: "EC2",
-  //             providerName,
-  //           }),
-  //         get("id"),
-  //       ])(),
-  //     ],
-  //   },
-  //   {
-  //     type: "LaunchTemplate",
-  //     group: "EC2",
-  //     ids: [pipe([() => live, getLaunchTemplateIdFromTags])()],
-  //   },
-  //   { type: "Subnet", group: "EC2", ids: [live.SubnetId] },
-  //   {
-  //     type: "Volume",
-  //     group: "EC2",
-  //     ids: pipe([
-  //       () => live,
-  //       get("BlockDeviceMappings"),
-  //       pluck("Ebs.VolumeId"),
-  //     ])(),
-  //   },
-  //   {
-  //     type: "NetworkInterface",
-  //     group: "EC2",
-  //     ids: pipe([
-  //       () => live,
-  //       get("NetworkInterfaces"),
-  //       pluck("NetworkInterfaceId"),
-  //     ])(),
-  //   },
-  //   {
-  //     type: "ElasticIpAddress",
-  //     group: "EC2",
-  //     ids: pipe([
-  //       () => live,
-  //       get("PublicIpAddress"),
-  //       (PublicIpAddress) =>
-  //         pipe([
-  //           () =>
-  //             lives.getByType({
-  //               type: "ElasticIpAddress",
-  //               group: "EC2",
-  //               providerName,
-  //             }),
-  //           filter(eq(get("live.PublicIp"), PublicIpAddress)),
-  //           pluck("id"),
-  //         ])(),
-  //     ])(),
-  //   },
-  //   {
-  //     type: "SecurityGroup",
-  //     group: "EC2",
-  //     ids: pipe([() => live, get("SecurityGroups"), pluck("GroupId")])(),
-  //   },
-  //   {
-  //     type: "InstanceProfile",
-  //     group: "IAM",
-  //     ids: [pipe([() => live, get("IamInstanceProfile.Arn")])()],
-  //   },
-  //   {
-  //     type: "PlacementGroup",
-  //     group: "EC2",
-  //     ids: [
-  //       pipe([
-  //         () => live,
-  //         get("Placement.GroupName"),
-  //         (name) =>
-  //           pipe([
-  //             () =>
-  //               lives.getByName({
-  //                 name,
-  //                 type: "PlacementGroup",
-  //                 group: "EC2",
-  //                 providerName,
-  //               }),
-  //             get("id"),
-  //           ])(),
-  //       ])(),
-  //     ],
-  //   },
-  // ];
-
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,
     key: "eks:cluster-name",
@@ -313,6 +213,8 @@ exports.EC2Instance = ({ spec, config }) => {
       }),
       assign({
         Image: imageDescriptionFromId({ ec2 }),
+      }),
+      assign({
         UserData: pipe([
           ({ InstanceId }) => ({
             Attribute: "userData",
@@ -323,6 +225,22 @@ exports.EC2Instance = ({ spec, config }) => {
           unless(isEmpty, (UserData) =>
             Buffer.from(UserData, "base64").toString()
           ),
+        ]),
+        DisableApiStop: pipe([
+          ({ InstanceId }) => ({
+            Attribute: "disableApiStop",
+            InstanceId,
+          }),
+          ec2().describeInstanceAttribute,
+          get("DisableApiStop.Value"),
+        ]),
+        DisableApiTermination: pipe([
+          ({ InstanceId }) => ({
+            Attribute: "disableApiTermination",
+            InstanceId,
+          }),
+          ec2().describeInstanceAttribute,
+          get("DisableApiTermination.Value"),
         ]),
         // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstanceCreditSpecifications-property
       }),
@@ -348,6 +266,9 @@ exports.EC2Instance = ({ spec, config }) => {
         not(eq(get("CreditSpecification.CpuCredits"), "unlimited")),
         omit(["CreditSpecification"])
       ),
+      tap((params) => {
+        assert(true);
+      }),
     ]);
 
   const getList = client.getList({
@@ -367,17 +288,34 @@ exports.EC2Instance = ({ spec, config }) => {
   const isUpById = pipe([getById, isInstanceUp]);
   const isDownById = pipe([getById, isInstanceDown]);
 
-  const updateInstanceType = ({ InstanceId, updated }) =>
+  const updateAttributes = ({ InstanceId, updated, added }) =>
     pipe([
-      () => updated,
-      get("InstanceType"),
-      tap.if(
-        not(isEmpty),
+      () => ({ ...updated, ...added }),
+
+      Object.entries,
+      filter(([key]) =>
         pipe([
-          (Value) => ({ InstanceId, InstanceType: { Value } }),
-          ec2().modifyInstanceAttribute,
-        ])
+          () => [...AttributesNeedRestart, ...AttributesNoRestart],
+          includes(key),
+        ])()
       ),
+      forEach(([key, Value]) =>
+        pipe([
+          () => Value,
+          when(
+            () => key === "UserData",
+            (Value) => Buffer.from(Value, "utf-8")
+          ),
+          (Value) => ({ InstanceId, [key]: { Value } }),
+          ec2().modifyInstanceAttribute,
+          tap((params) => {
+            assert(true);
+          }),
+        ])()
+      ),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
   const instanceStart = ({ InstanceId }) =>
@@ -433,16 +371,29 @@ exports.EC2Instance = ({ spec, config }) => {
         get("updateNeedRestart"),
         pipe([
           () => instanceStop({ InstanceId }),
-          () =>
-            updateInstanceType({
-              InstanceId,
-              updated: diff.liveDiff.updated,
-            }),
+          () => ({
+            InstanceId,
+            updated: diff.liveDiff.updated,
+            added: diff.liveDiff.added,
+          }),
+          updateAttributes,
           () => instanceStart({ InstanceId }),
+        ]),
+        get("updateNoRestart"),
+        pipe([
+          tap(() => {
+            logger.info(`ec2 updateNoRestart ${name}`);
+          }),
+          () => ({
+            InstanceId,
+            updated: diff.liveDiff.updated,
+            added: diff.liveDiff.added,
+          }),
+          updateAttributes,
         ]),
         () => {
           throw Error(
-            `Either updateNeedDestroy or updateNeedRestart is required`
+            `Either updateNeedDestroy or updateNeedRestart or updateNoRestart is required`
           );
         },
       ]),
@@ -479,7 +430,6 @@ exports.EC2Instance = ({ spec, config }) => {
   return {
     spec,
     findId,
-    //findDependencies,
     findNamespace,
     getByName,
     findName,
@@ -543,7 +493,7 @@ exports.compareEC2Instance = pipe([
           assert(lives);
           assert(config);
         }),
-        //TODO
+        omit(["StateReason"]),
         defaultsDeep(propertiesDefault),
         when(getLaunchTemplateIdFromTags, (live) =>
           pipe([
@@ -575,12 +525,20 @@ exports.compareEC2Instance = pipe([
     updateNeedDestroy: pipe([
       get("liveDiff.updated"),
       keys,
-      or([find((key) => includes(key)(["ImageId"]))]),
+      //TODO
+      any((key) => pipe([() => ["ImageId"], includes(key)])()),
     ]),
     updateNeedRestart: pipe([
-      get("liveDiff.updated"),
+      get("liveDiff"),
+      ({ updated, added }) => ({ ...updated, ...added }),
       keys,
-      or([find((key) => includes(key)(["InstanceType"]))]),
+      any((key) => pipe([() => AttributesNeedRestart, includes(key)])()),
+    ]),
+    updateNoRestart: pipe([
+      get("liveDiff"),
+      ({ updated, added }) => ({ ...updated, ...added }),
+      keys,
+      any((key) => pipe([() => AttributesNoRestart, includes(key)])()),
     ]),
   }),
   tap((diff) => {

@@ -4,6 +4,101 @@ title: Domain
 ---
 Provides a **Domain** from the **DomainRegistration** group
 ## Examples
+### Create App Service Domain
+```js
+exports.createResources = () => [
+  {
+    type: "Domain",
+    group: "DomainRegistration",
+    name: "myDomain",
+    properties: () => ({
+      location: "global",
+      tags: {},
+      properties: {
+        authCode: "exampleAuthCode",
+        privacy: false,
+        autoRenew: true,
+        dnsType: "DefaultDomainRegistrarDns",
+        consent: {
+          agreementKeys: ["agreementKey1"],
+          agreedBy: "192.0.2.1",
+          agreedAt: "2021-09-10T19:30:53Z",
+        },
+        contactTech: {
+          email: "tech@email.com",
+          fax: "1-245-534-2242",
+          nameFirst: "John",
+          nameLast: "Doe",
+          nameMiddle: "",
+          jobTitle: "Tech",
+          organization: "Microsoft Inc.",
+          phone: "1-245-534-2242",
+          addressMailing: {
+            address1: "3400 State St",
+            city: "Chicago",
+            state: "IL",
+            country: "United States",
+            postalCode: "67098",
+          },
+        },
+        contactBilling: {
+          email: "billing@email.com",
+          fax: "1-245-534-2242",
+          nameFirst: "John",
+          nameLast: "Doe",
+          nameMiddle: "",
+          jobTitle: "Billing",
+          organization: "Microsoft Inc.",
+          phone: "1-245-534-2242",
+          addressMailing: {
+            address1: "3400 State St",
+            city: "Chicago",
+            state: "IL",
+            country: "United States",
+            postalCode: "67098",
+          },
+        },
+        contactAdmin: {
+          email: "admin@email.com",
+          fax: "1-245-534-2242",
+          nameFirst: "John",
+          nameLast: "Doe",
+          nameMiddle: "",
+          jobTitle: "Admin",
+          organization: "Microsoft Inc.",
+          phone: "1-245-534-2242",
+          addressMailing: {
+            address1: "3400 State St",
+            city: "Chicago",
+            state: "IL",
+            country: "United States",
+            postalCode: "67098",
+          },
+        },
+        contactRegistrant: {
+          email: "registrant@email.com",
+          fax: "1-245-534-2242",
+          nameFirst: "John",
+          nameLast: "Doe",
+          nameMiddle: "",
+          jobTitle: "Registrant",
+          organization: "Microsoft Inc.",
+          phone: "1-245-534-2242",
+          addressMailing: {
+            address1: "3400 State St",
+            city: "Chicago",
+            state: "IL",
+            country: "United States",
+            postalCode: "67098",
+          },
+        },
+      },
+    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
@@ -392,7 +487,8 @@ Provides a **Domain** from the **DomainRegistration** group
               'ExpirationNotInRenewalTimeRange',
               'SubscriptionNotActive'
             ],
-            type: 'string'
+            type: 'string',
+            'x-ms-enum': { name: 'ResourceNotRenewableReason', modelAsString: true }
           },
           readOnly: true
         },
@@ -417,6 +513,6 @@ Provides a **Domain** from the **DomainRegistration** group
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.DomainRegistration/stable/2021-03-01/Domains.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.DomainRegistration/stable/2022-03-01/Domains.json).

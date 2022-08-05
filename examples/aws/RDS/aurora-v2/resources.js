@@ -144,8 +144,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `pg-vpc::pg-rtb-private1-${config.region}a`,
       natGateway: `pg-nat-public1-${config.region}a`,
+      routeTable: `pg-vpc::pg-rtb-private1-${config.region}a`,
     }),
   },
   {
@@ -155,8 +155,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `pg-vpc::pg-rtb-private2-${config.region}b`,
       natGateway: `pg-nat-public1-${config.region}a`,
+      routeTable: `pg-vpc::pg-rtb-private2-${config.region}b`,
     }),
   },
   {
@@ -166,8 +166,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "pg-vpc::pg-rtb-public",
       ig: "pg-igw",
+      routeTable: "pg-vpc::pg-rtb-public",
     }),
   },
   {
@@ -185,16 +185,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 5432,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "92.147.31.54/32",
-          },
-        ],
-        ToPort: 5432,
-      },
+      FromPort: 5432,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "92.147.31.54/32",
+        },
+      ],
+      ToPort: 5432,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::pg-vpc::pg",

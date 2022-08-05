@@ -51,7 +51,7 @@ exports.createResources = () => [
         snapshotType: {
           type: 'string',
           default: 'NodePool',
-          enum: [ 'NodePool', 'ManagedCluster' ],
+          enum: [ 'NodePool' ],
           'x-ms-enum': {
             name: 'SnapshotType',
             modelAsString: true,
@@ -59,10 +59,6 @@ exports.createResources = () => [
               {
                 value: 'NodePool',
                 description: 'The snapshot is a snapshot of a node pool.'
-              },
-              {
-                value: 'ManagedCluster',
-                description: 'The snapshot is a snapshot of a managed cluster.'
               }
             ]
           },
@@ -96,9 +92,9 @@ exports.createResources = () => [
         osSku: {
           readOnly: true,
           type: 'string',
-          enum: [ 'Ubuntu', 'CBLMariner', 'Windows2019', 'Windows2022' ],
+          enum: [ 'Ubuntu', 'CBLMariner' ],
           'x-ms-enum': { name: 'OSSKU', modelAsString: true },
-          description: 'Specifies the OS SKU used by the agent pool. If not specified, the default is Ubuntu if OSType=Linux or Windows2019 if OSType=Windows. And the default Windows OSSKU will be changed to Windows2022 after Windows2019 is deprecated.'
+          description: 'Specifies an OS SKU. This value must not be specified if OSType is Windows.'
         },
         vmSize: {
           readOnly: true,
@@ -200,6 +196,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2022-05-02-preview`.
+The resource version is `2022-06-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/preview/2022-05-02-preview/managedClusters.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/containerservice/resource-manager/Microsoft.ContainerService/stable/2022-06-01/managedClusters.json).

@@ -8,7 +8,7 @@ describe("EC2TransitGateway", async function () {
   let transitGateway;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     transitGateway = provider.getClient({
       groupType: "EC2::TransitGateway",
     });

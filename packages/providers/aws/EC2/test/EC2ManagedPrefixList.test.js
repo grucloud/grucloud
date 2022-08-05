@@ -6,7 +6,7 @@ describe("EC2ManagedPrefixList", async function () {
   let provider;
   let prefixList;
   before(async function () {
-    provider = AwsProvider({
+    provider = await AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
     prefixList = provider.getClient({ groupType: "EC2::ManagedPrefixList" });

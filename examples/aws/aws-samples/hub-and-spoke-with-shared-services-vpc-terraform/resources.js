@@ -444,17 +444,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 443,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "Allowing HTTPS",
-          },
-        ],
-        ToPort: 443,
-      },
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allowing HTTPS",
+        },
+      ],
+      ToPort: 443,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::shared-services-vpc::endpoints_sg",
@@ -464,17 +462,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 53,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "192.168.0.0/16",
-            Description: "Allowing DNS traffic (TCP)",
-          },
-        ],
-        ToPort: 53,
-      },
+      FromPort: 53,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "192.168.0.0/16",
+          Description: "Allowing DNS traffic (TCP)",
+        },
+      ],
+      ToPort: 53,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::shared-services-vpc::r53endpoint_inbound_sg",
@@ -484,17 +480,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 53,
-        IpProtocol: "udp",
-        IpRanges: [
-          {
-            CidrIp: "192.168.0.0/16",
-            Description: "Allowing DNS traffic (UDP)",
-          },
-        ],
-        ToPort: 53,
-      },
+      FromPort: 53,
+      IpProtocol: "udp",
+      IpRanges: [
+        {
+          CidrIp: "192.168.0.0/16",
+          Description: "Allowing DNS traffic (UDP)",
+        },
+      ],
+      ToPort: 53,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::shared-services-vpc::r53endpoint_inbound_sg",
@@ -504,17 +498,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 53,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "Allowing DNS traffic (TCP)",
-          },
-        ],
-        ToPort: 53,
-      },
+      FromPort: 53,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allowing DNS traffic (TCP)",
+        },
+      ],
+      ToPort: 53,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::shared-services-vpc::r53endpoint_outbound_sg",
@@ -524,17 +516,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 53,
-        IpProtocol: "udp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "Allowing DNS traffic (UDP)",
-          },
-        ],
-        ToPort: 53,
-      },
+      FromPort: 53,
+      IpProtocol: "udp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allowing DNS traffic (UDP)",
+        },
+      ],
+      ToPort: 53,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::shared-services-vpc::r53endpoint_outbound_sg",
@@ -544,17 +534,13 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: -1,
-        IpProtocol: "icmp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "Allowing ICMP traffic",
-          },
-        ],
-        ToPort: -1,
-      },
+      IpProtocol: "icmp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allowing ICMP traffic",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-1::instance_sg",
@@ -564,17 +550,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "Allowing HTTP traffic",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allowing HTTP traffic",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-1::instance_sg",
@@ -584,17 +568,13 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: -1,
-        IpProtocol: "icmp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "Allowing ICMP traffic",
-          },
-        ],
-        ToPort: -1,
-      },
+      IpProtocol: "icmp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allowing ICMP traffic",
+        },
+      ],
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-2::instance_sg",
@@ -604,17 +584,15 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-            Description: "Allowing HTTP traffic",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allowing HTTP traffic",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::spoke-vpc-2::instance_sg",
@@ -1265,7 +1243,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1278,7 +1256,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1291,7 +1269,7 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      vpc: "spoke-vpc-2",
+      vpc: "shared-services-vpc",
     }),
   },
   {
@@ -1304,6 +1282,22 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
+      vpc: "shared-services-vpc",
+    }),
+  },
+  {
+    type: "ZoneVpcAssociation",
+    group: "Route53",
+    dependencies: ({ config }) => ({
+      hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
+      vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "ZoneVpcAssociation",
+    group: "Route53",
+    dependencies: ({ config }) => ({
+      hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
       vpc: "spoke-vpc-2",
     }),
   },
@@ -1311,30 +1305,6 @@ exports.createResources = () => [
     type: "ZoneVpcAssociation",
     group: "Route53",
     dependencies: ({ config }) => ({
-      hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
-      vpc: "shared-services-vpc",
-    }),
-  },
-  {
-    type: "ZoneVpcAssociation",
-    group: "Route53",
-    dependencies: ({ config }) => ({
-      hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
-      vpc: "spoke-vpc-1",
-    }),
-  },
-  {
-    type: "ZoneVpcAssociation",
-    group: "Route53",
-    dependencies: ({ config }) => ({
-      hostedZone: `s3.${config.region}.amazonaws.com.`,
-      vpc: "shared-services-vpc",
-    }),
-  },
-  {
-    type: "ZoneVpcAssociation",
-    group: "Route53",
-    dependencies: ({ config }) => ({
       hostedZone: `s3.${config.region}.amazonaws.com.`,
       vpc: "spoke-vpc-1",
     }),
@@ -1343,8 +1313,8 @@ exports.createResources = () => [
     type: "ZoneVpcAssociation",
     group: "Route53",
     dependencies: ({ config }) => ({
-      hostedZone: `ssm.${config.region}.amazonaws.com.`,
-      vpc: "shared-services-vpc",
+      hostedZone: `s3.${config.region}.amazonaws.com.`,
+      vpc: "spoke-vpc-2",
     }),
   },
   {
@@ -1359,8 +1329,8 @@ exports.createResources = () => [
     type: "ZoneVpcAssociation",
     group: "Route53",
     dependencies: ({ config }) => ({
-      hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
-      vpc: "shared-services-vpc",
+      hostedZone: `ssm.${config.region}.amazonaws.com.`,
+      vpc: "spoke-vpc-2",
     }),
   },
   {
@@ -1369,6 +1339,14 @@ exports.createResources = () => [
     dependencies: ({ config }) => ({
       hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
       vpc: "spoke-vpc-1",
+    }),
+  },
+  {
+    type: "ZoneVpcAssociation",
+    group: "Route53",
+    dependencies: ({ config }) => ({
+      hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
+      vpc: "spoke-vpc-2",
     }),
   },
   {

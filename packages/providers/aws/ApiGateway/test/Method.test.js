@@ -8,7 +8,7 @@ describe.skip("Api Gateway Method", async function () {
   let method;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     method = provider.getClient({ groupType: "APIGateway::Method" });
     await provider.start();
   });

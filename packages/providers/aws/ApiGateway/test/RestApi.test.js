@@ -8,7 +8,7 @@ describe("RestApi", async function () {
   let restApi;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     restApi = provider.getClient({ groupType: "APIGateway::RestApi" });
     await provider.start();
   });

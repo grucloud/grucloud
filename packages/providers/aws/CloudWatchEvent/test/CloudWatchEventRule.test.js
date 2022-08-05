@@ -8,7 +8,7 @@ describe("CloudWatchEventRule", async function () {
   let rule;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     rule = provider.getClient({ groupType: "CloudWatchEvents::Rule" });
     await provider.start();
   });

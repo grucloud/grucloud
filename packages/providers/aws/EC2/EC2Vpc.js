@@ -12,9 +12,8 @@ const {
   assign,
   pick,
   omit,
-  and,
 } = require("rubico");
-const { isEmpty, defaultsDeep, size, when, find } = require("rubico/x");
+const { isEmpty, defaultsDeep, size, when, prepend } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "Vpc" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -24,6 +23,7 @@ const {
   buildTags,
   findNamespaceInTags,
   findNameInTagsOrId,
+  arnFromId,
 } = require("../AwsCommon");
 
 const { AwsClient } = require("../AwsClient");
@@ -46,31 +46,11 @@ exports.EC2Vpc = ({ spec, config }) => {
 
   const pickId = pick(["VpcId"]);
 
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "IpamPool",
-      group: "EC2",
-      ids: [
-        pipe([
-          () =>
-            lives.getByType({
-              type: "IpamPool",
-              group: "EC2",
-              providerName: config.providerName,
-            }),
-          find(
-            pipe([
-              get("live.Allocations"),
-              find(eq(get("ResourceId"), live.VpcId)),
-            ])
-          ),
-          get("live.IpamPoolId"),
-        ])(),
-      ],
-    },
-  ];
-  const decorate = () =>
+  const decorate = ({ config }) =>
     pipe([
+      tap((params) => {
+        assert(config);
+      }),
       assign({
         DnsSupport: pipe([
           ({ VpcId }) =>
@@ -87,6 +67,11 @@ exports.EC2Vpc = ({ spec, config }) => {
               Attribute: "enableDnsHostnames",
             }),
           get("EnableDnsHostnames.Value"),
+        ]),
+        VpcArn: pipe([
+          get("VpcId"),
+          prepend("vpc/"),
+          arnFromId({ service: "ec2", config }),
         ]),
       }),
     ]);
@@ -359,7 +344,6 @@ exports.EC2Vpc = ({ spec, config }) => {
     managedByOther,
     cannotBeDeleted,
     findId,
-    findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
     findName,

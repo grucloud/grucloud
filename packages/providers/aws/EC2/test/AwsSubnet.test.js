@@ -8,7 +8,7 @@ describe("Subnet", async function () {
   let subnet;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     subnet = provider.getClient({
       groupType: "EC2::Subnet",
     });

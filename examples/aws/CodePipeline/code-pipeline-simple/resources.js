@@ -358,7 +358,7 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    properties: ({ config, getId }) => ({
+    properties: ({ config }) => ({
       PolicyName: `CodeBuildBasePolicy-starhackit-${config.region}`,
       PolicyDocument: {
         Version: "2012-10-17",
@@ -366,16 +366,12 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Resource: [
-              `${getId({
-                type: "LogGroup",
-                group: "CloudWatchLogs",
-                name: "/aws/codebuild/starhackit",
-              })}`,
-              `${getId({
-                type: "LogGroup",
-                group: "CloudWatchLogs",
-                name: "/aws/codebuild/starhackit",
-              })}:*`,
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/codebuild/starhackit`,
+              `arn:aws:logs:${
+                config.region
+              }:${config.accountId()}:log-group:/aws/codebuild/starhackit:*`,
             ],
             Action: [
               "logs:CreateLogGroup",

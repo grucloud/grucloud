@@ -8,7 +8,7 @@ describe("CloudTrail Trail", async function () {
   let cloudTrail;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     cloudTrail = provider.getClient({ groupType: "CloudTrail::Trail" });
     await provider.start();
   });

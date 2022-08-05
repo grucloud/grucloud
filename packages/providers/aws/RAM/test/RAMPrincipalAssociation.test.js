@@ -8,7 +8,7 @@ describe("RAMPrincipalAssociation", async function () {
   let principalAssociation;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     principalAssociation = provider.getClient({
       groupType: "RAM::PrincipalAssociation",
     });

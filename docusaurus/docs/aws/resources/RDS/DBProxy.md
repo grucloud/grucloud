@@ -39,7 +39,7 @@ exports.createResources = () => [
         "sam-app-vpc::sam-app-prv-sub-3",
       ],
       securityGroups: ["sg::sam-app-vpc::sam-app-database-sg"],
-      secret: ["sam-app-cluster-secret"],
+      secrets: ["sam-app-cluster-secret"],
       role: "sam-app-dbProxyRole-1BMIN3H39UUK3",
     }),
   },
@@ -56,10 +56,10 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [DB Subnet Group](./DBSubnetGroup.md)
-- [Security Group](../EC2/SecurityGroup.md)
-- [Secret](../SecretsManager/Secret.md)
-- [Role](../IAM/Role.md)
+- [RDS DB Subnet Group](./DBSubnetGroup.md)
+- [EC2 Security Group](../EC2/SecurityGroup.md)
+- [SecretsManager Secret](../SecretsManager/Secret.md)
+- [IAM Role](../IAM/Role.md)
 
 ## List
 

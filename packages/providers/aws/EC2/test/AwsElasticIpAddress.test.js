@@ -8,7 +8,7 @@ describe("ElasticIpAddress", async function () {
   let elasticIpAddress;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     elasticIpAddress = provider.getClient({
       groupType: "EC2::ElasticIpAddress",
     });

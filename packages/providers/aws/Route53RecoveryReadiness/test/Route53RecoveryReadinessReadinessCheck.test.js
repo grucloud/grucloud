@@ -8,7 +8,7 @@ describe("Route53RecoveryReadinessReadinessCheck", async function () {
   let readinessCheck;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     readinessCheck = provider.getClient({
       groupType: "Route53RecoveryReadiness::ReadinessCheck",
     });

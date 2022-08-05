@@ -145,8 +145,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "nat-gateway",
       routeTable: "vpc::route-table-private-a",
-      natGateway: "nat-gateway",
     }),
   },
   {
@@ -156,8 +156,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
+      natGateway: "nat-gateway",
       routeTable: "vpc::route-table-private-b",
-      natGateway: "nat-gateway",
     }),
   },
   {
@@ -167,8 +167,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({}) => ({
-      routeTable: "vpc::route-table-public",
       ig: "internet-gateway",
+      routeTable: "vpc::route-table-public",
     }),
   },
   {
@@ -197,21 +197,19 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 5432,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: 5432,
-      },
+      FromPort: 5432,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      Ipv6Ranges: [
+        {
+          CidrIpv6: "::/0",
+        },
+      ],
+      ToPort: 5432,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc::security-group-postgres",
@@ -222,21 +220,19 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 22,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: 22,
-      },
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      Ipv6Ranges: [
+        {
+          CidrIpv6: "::/0",
+        },
+      ],
+      ToPort: 22,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc::security-group-public",

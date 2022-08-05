@@ -77,16 +77,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 0,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 65535,
-      },
+      FromPort: 0,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 65535,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::sam-app-vpc::lambda-sg",
@@ -96,9 +94,7 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        IpProtocol: "-1",
-      },
+      IpProtocol: "-1",
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::sam-app-vpc::sam-app-database-sg",
@@ -109,11 +105,9 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 3306,
-        IpProtocol: "tcp",
-        ToPort: 3306,
-      },
+      FromPort: 3306,
+      IpProtocol: "tcp",
+      ToPort: 3306,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::sam-app-vpc::sam-app-database-sg",
@@ -124,16 +118,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleEgress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 0,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 65535,
-      },
+      FromPort: 0,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 65535,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::sam-app-vpc::lambda-sg",

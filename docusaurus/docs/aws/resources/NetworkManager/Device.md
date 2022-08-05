@@ -13,7 +13,7 @@ exports.createResources = () => [];
 
 - [cloud-wan](https://github.com/grucloud/grucloud/blob/main/examples/aws/NetworkManager/cloud-wan)
 
-### Properties
+### Properties
 
 - [CreateDeviceCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-networkmanager/interfaces/createdevicecommandinput.html)
 

@@ -48,7 +48,7 @@ exports.createResources = () => [
 - [simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/RAM/resource-share)
 - [aws-network-hub](https://github.com/grucloud/grucloud/tree/main/examples/aws/aws-samples/aws-network-hub-for-terraform)s
 
-### Properties
+### Properties
 
 - [AssociateResourceShareCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ram/interfaces/associateresourcesharecommandinput.html)
 

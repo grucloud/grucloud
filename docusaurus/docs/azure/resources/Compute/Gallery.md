@@ -114,7 +114,7 @@ exports.createResources = () => [
         provisioningState: {
           readOnly: true,
           type: 'string',
-          title: 'The current state of the gallery.',
+          title: 'The current state of the gallery or gallery artifact.',
           description: 'The provisioning state, which only appears in the response.',
           enum: [
             'Creating',
@@ -123,15 +123,16 @@ exports.createResources = () => [
             'Succeeded',
             'Deleting',
             'Migrating'
-          ]
+          ],
+          'x-ms-enum': { name: 'GalleryProvisioningState', modelAsString: true }
         },
         sharingProfile: {
           description: 'Profile for gallery sharing to subscription or tenant',
           properties: {
             permissions: {
               type: 'string',
-              description: 'This property allows you to specify the permission of sharing gallery. <br><br> Possible values are: <br><br> **Private** <br><br> **Groups**',
-              enum: [ 'Private', 'Groups' ],
+              description: 'This property allows you to specify the permission of sharing gallery. <br><br> Possible values are: <br><br> **Private** <br><br> **Groups** <br><br> **Community**',
+              enum: [ 'Private', 'Groups', 'Community' ],
               'x-ms-enum': {
                 name: 'GallerySharingPermissionTypes',
                 modelAsString: true
@@ -145,8 +146,8 @@ exports.createResources = () => [
                 properties: {
                   type: {
                     type: 'string',
-                    description: 'This property allows you to specify the type of sharing group. <br><br> Possible values are: <br><br> **Subscriptions** <br><br> **AADTenants** <br><br> **Community**',
-                    enum: [ 'Subscriptions', 'AADTenants', 'Community' ],
+                    description: 'This property allows you to specify the type of sharing group. <br><br> Possible values are: <br><br> **Subscriptions** <br><br> **AADTenants**',
+                    enum: [ 'Subscriptions', 'AADTenants' ],
                     'x-ms-enum': {
                       name: 'SharingProfileGroupTypes',
                       modelAsString: true
@@ -163,40 +164,37 @@ exports.createResources = () => [
               description: 'A list of sharing profile groups.'
             },
             communityGalleryInfo: {
-              items: {
-                type: 'object',
-                description: 'Information of community gallery if current gallery is shared to community',
-                properties: {
-                  publisherUri: {
-                    type: 'string',
-                    description: 'Community gallery publisher uri'
-                  },
-                  publisherContact: {
-                    type: 'string',
-                    description: 'Community gallery publisher contact email'
-                  },
-                  eula: {
-                    type: 'string',
-                    description: 'Community gallery publisher eula'
-                  },
-                  publicNamePrefix: {
-                    type: 'string',
-                    description: 'Community gallery public name prefix'
-                  },
-                  communityGalleryEnabled: {
-                    readOnly: true,
-                    type: 'boolean',
-                    description: 'Contains info about whether community gallery sharing is enabled.'
-                  },
-                  publicNames: {
-                    readOnly: true,
-                    type: 'array',
-                    items: { type: 'string' },
-                    description: 'Community gallery public name list.'
-                  }
+              description: 'Information of community gallery if current gallery is shared to community.',
+              type: 'object',
+              properties: {
+                publisherUri: {
+                  type: 'string',
+                  description: 'The link to the publisher website. Visible to all users.'
+                },
+                publisherContact: {
+                  type: 'string',
+                  description: 'Community gallery publisher support email. The email address of the publisher. Visible to all users.'
+                },
+                eula: {
+                  type: 'string',
+                  description: 'End-user license agreement for community gallery image.'
+                },
+                publicNamePrefix: {
+                  type: 'string',
+                  description: 'The prefix of the gallery name that will be displayed publicly. Visible to all users.'
+                },
+                communityGalleryEnabled: {
+                  readOnly: true,
+                  type: 'boolean',
+                  description: 'Contains info about whether community gallery sharing is enabled.'
+                },
+                publicNames: {
+                  readOnly: true,
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Community gallery public name list.'
                 }
-              },
-              description: 'Information of community gallery if current gallery is shared to community.'
+              }
             }
           }
         },
@@ -283,6 +281,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-10-01`.
+The resource version is `2022-01-03`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-10-01/gallery.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/GalleryRP/stable/2022-01-03/GalleryRP/gallery.json).

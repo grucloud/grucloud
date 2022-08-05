@@ -8,7 +8,7 @@ describe("UsagePlanKey", async function () {
   let usagePlan;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     usagePlan = provider.getClient({ groupType: "APIGateway::UsagePlanKey" });
     await provider.start();
   });

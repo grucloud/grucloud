@@ -1,6 +1,6 @@
 ---
-id: Task
-title: Task
+id: TaskSet
+title: Task Set
 ---
 
 Manages an [ECS TaskSet](https://console.aws.amazon.com/ecs/home?#).

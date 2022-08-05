@@ -8,7 +8,7 @@ describe("EC2 Instance", async function () {
   let instance;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     instance = provider.getClient({
       groupType: "EC2::Instance",
     });

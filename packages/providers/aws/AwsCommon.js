@@ -52,6 +52,20 @@ const {
   replaceWithName,
 } = require("@grucloud/core/Common");
 
+exports.arnFromId = ({ config, service }) =>
+  pipe([
+    tap((id) => {
+      assert(config.region);
+      assert(config.accountId());
+      assert(service);
+      assert(id);
+    }),
+    (id) =>
+      `arn:${config.partition || "aws"}:${service}:${
+        config.region
+      }:${config.accountId()}:${id}`,
+  ]);
+
 const isAwsError = (code) =>
   pipe([
     tap((params) => {
@@ -1102,6 +1116,11 @@ const replaceStatement = ({ providerConfig, lives }) =>
           get("Principal"),
           replacePrincipal({ providerConfig, lives, principalKind: "Service" }),
           replacePrincipal({ providerConfig, lives, principalKind: "AWS" }),
+          replacePrincipal({
+            providerConfig,
+            lives,
+            principalKind: "Federated",
+          }),
         ]),
       })
     ),

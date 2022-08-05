@@ -8,7 +8,7 @@ describe("SSMParameter", async function () {
   let parameter;
 
   before(async function () {
-    provider = AwsProvider({ config });
+    provider = await AwsProvider({ config });
     parameter = provider.getClient({ groupType: "SSM::Parameter" });
     await provider.start();
   });

@@ -8,9 +8,9 @@ const { CodeDeployApplication } = require("./CodeDeployApplication");
 const { CodeDeployDeploymentGroup } = require("./CodeDeployDeploymentGroup");
 
 const GROUP = "CodeDeploy";
-
+const tagsKey = "tags";
 const compareCodeDeploy = compareAws({
-  tagsKey: "tags",
+  tagsKey,
   // getTargetTags: () => [],
   // getLiveTags: () => [],
 });
@@ -287,6 +287,7 @@ module.exports = pipe([
   map(
     defaultsDeep({
       group: GROUP,
+      tagsKey,
       isOurMinion,
       compare: compareCodeDeploy({}),
     })

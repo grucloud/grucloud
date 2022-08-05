@@ -1931,6 +1931,7 @@ exports.Cli = ({
               "default.env"
             ),
             all: true,
+            inventoryFetch: true,
           }),
           (commandOptions) => ({
             infra,

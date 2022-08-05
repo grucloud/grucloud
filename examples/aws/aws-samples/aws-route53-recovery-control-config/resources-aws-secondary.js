@@ -377,16 +377,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 80,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 80,
-      },
+      FromPort: 80,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 80,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::tf-arc-VPC::tf-arc-alb-sg",
@@ -396,11 +394,9 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 3000,
-        IpProtocol: "tcp",
-        ToPort: 3000,
-      },
+      FromPort: 3000,
+      IpProtocol: "tcp",
+      ToPort: 3000,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::tf-arc-VPC::tf-arc-asg-sg",
@@ -411,16 +407,14 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 5432,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        ToPort: 5432,
-      },
+      FromPort: 5432,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 5432,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-default::default",
@@ -430,21 +424,19 @@ exports.createResources = () => [
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 443,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: 443,
-      },
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      Ipv6Ranges: [
+        {
+          CidrIpv6: "::/0",
+        },
+      ],
+      ToPort: 443,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-eks::security-group-cluster",
@@ -454,21 +446,19 @@ exports.createResources = () => [
     type: "SecurityGroupRuleEgress",
     group: "EC2",
     properties: ({}) => ({
-      IpPermission: {
-        FromPort: 1024,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: 65535,
-      },
+      FromPort: 1024,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      Ipv6Ranges: [
+        {
+          CidrIpv6: "::/0",
+        },
+      ],
+      ToPort: 65535,
     }),
     dependencies: ({}) => ({
       securityGroup: "sg::vpc-eks::security-group-cluster",

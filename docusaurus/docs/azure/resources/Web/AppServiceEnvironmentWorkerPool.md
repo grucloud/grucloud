@@ -4,6 +4,22 @@ title: AppServiceEnvironmentWorkerPool
 ---
 Provides a **AppServiceEnvironmentWorkerPool** from the **Web** group
 ## Examples
+### Get properties of a worker pool.
+```js
+exports.createResources = () => [
+  {
+    type: "AppServiceEnvironmentWorkerPool",
+    group: "Web",
+    name: "myAppServiceEnvironmentWorkerPool",
+    properties: () => ({ properties: { workerSize: "Small", workerCount: 3 } }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      name: "myAppServiceEnvironment",
+    }),
+  },
+];
+
+```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceEnvironment](../Web/AppServiceEnvironment.md)
@@ -153,6 +169,6 @@ Provides a **AppServiceEnvironmentWorkerPool** from the **Web** group
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2021-03-01/AppServiceEnvironments.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/web/resource-manager/Microsoft.Web/stable/2022-03-01/AppServiceEnvironments.json).

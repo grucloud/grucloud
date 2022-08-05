@@ -157,7 +157,7 @@ exports.createResources = () => [
           readOnly: true,
           type: 'string',
           format: 'date-time',
-          description: 'Specifies the time at which the Dedicated Host resource was created.<br><br>Minimum api-version: 2021-11-01.'
+          description: 'Specifies the time at which the Dedicated Host resource was created.<br><br>Minimum api-version: 2022-03-01.'
         }
       },
       description: 'Properties of the dedicated host.'
@@ -209,6 +209,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/dedicatedHost.json).

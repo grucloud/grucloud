@@ -233,60 +233,22 @@ exports.ResourceMaker = ({
 
   const findLive = ({}) =>
     pipe([
-      tap(() => {
-        //assert(group);
-      }),
       () =>
-        provider.lives.getByType({ providerName: provider.name, type, group }),
+        provider.lives.getByName({
+          name: getResourceName(),
+          providerName: provider.name,
+          type,
+          group,
+        }),
       tap((xxx) => {
         assert(true);
       }),
-      switchCase([
-        not(isEmpty),
-        pipe([
-          (resources) =>
-            pipe([
-              () => resources,
-              find(({ live }) =>
-                pipe([
-                  getClient,
-                  tap((params) => {
-                    assert(true);
-                  }),
-                  (client) =>
-                    client.findName({
-                      live,
-                      lives: provider.lives,
-                      config: provider.config,
-                    }),
-                  tap((liveName) => {
-                    logger.debug(
-                      `findLive ${group}::${type} resourceName: ${getResourceName()} liveName: ${liveName}`
-                    );
-                  }),
-                  (liveName) => isDeepEqual(getResourceName(), liveName),
-                ])()
-              ),
-              // tap.if(isEmpty, () => {
-              //   logger.info(
-              //     `findLive ${type} resourceName: ${resourceName} not in resources: ${tos(
-              //       resources
-              //     )}`
-              //   );
-              // }),
-            ])(),
-        ]),
-        () => {
-          logger.debug(`findLive cannot find type ${type}`);
-        },
-      ]),
       get("live"),
-      tap((live) => {
+      tap.if(isEmpty, (live) => {
         logger.debug(
-          `findLive ${JSON.stringify({
+          `findLive no live for ${JSON.stringify({
             type,
             resourceName: getResourceName(),
-            hasLive: !!live,
           })}`
         );
       }),
@@ -973,6 +935,7 @@ exports.ResourceMaker = ({
   return {
     type,
     group,
+    groupType: `${group}::${type}`,
     provider,
     get name() {
       return getResourceName();

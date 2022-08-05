@@ -77,7 +77,7 @@ exports.createResources = () => [
                 publisher: "Microsoft.Windows.Azure.Extensions",
                 settings:
                   "<PublicConfig><UserName>UserAzure</UserName><Expiration>10/22/2021 15:05:45</Expiration></PublicConfig>",
-                typeHandlerVersion: "1.2.1",
+                typeHandlerVersion: "1.2",
               },
               name: "RDPExtension",
             },
@@ -357,9 +357,8 @@ exports.createResources = () => [
                 properties: {
                   sourceVault: {
                     description: 'The relative URL of the Key Vault containing all of the certificates in VaultCertificates.',
-                    type: 'object',
                     properties: {
-                      id: { description: 'Resource Id', type: 'string' }
+                      id: { type: 'string', description: 'Resource Id' }
                     },
                     'x-ms-azure-resource': true
                   },
@@ -408,6 +407,7 @@ exports.createResources = () => [
                         description: 'Specifies the frontend IP to be used for the load balancer. Only IPv4 frontend IP address is supported. Each load balancer configuration must have exactly one frontend IP configuration.',
                         type: 'array',
                         items: {
+                          description: 'Specifies the frontend IP to be used for the load balancer. Only IPv4 frontend IP address is supported. Each load balancer configuration must have exactly one frontend IP configuration.',
                           type: 'object',
                           properties: {
                             name: {
@@ -435,10 +435,17 @@ exports.createResources = () => [
                 required: [ 'name', 'properties' ]
               }
             },
+            slotType: {
+              description: 'Slot type for the cloud service.\r\n' +
+                'Possible values are <br /><br />**Production**<br /><br />**Staging**<br /><br />\r\n' +
+                'If not specified, the default value is Production.',
+              enum: [ 'Production', 'Staging' ],
+              type: 'string',
+              'x-ms-enum': { name: 'CloudServiceSlotType', modelAsString: true }
+            },
             swappableCloudService: {
               description: 'The id reference of the cloud service containing the target IP with which the subject cloud service can perform a swap. This property cannot be updated once it is set. The swappable cloud service referred by this id must be present otherwise an error will be thrown.',
-              type: 'object',
-              properties: { id: { description: 'Resource Id', type: 'string' } },
+              properties: { id: { type: 'string', description: 'Resource Id' } },
               'x-ms-azure-resource': true
             }
           }
@@ -480,27 +487,31 @@ exports.createResources = () => [
                       },
                       settings: {
                         description: 'Public settings for the extension. For JSON extensions, this is the JSON settings for the extension. For XML Extension (like RDP), this is the XML setting for the extension.',
-                        type: 'string'
+                        type: 'object'
                       },
                       protectedSettings: {
                         description: 'Protected settings for the extension which are encrypted before sent to the role instance.',
-                        type: 'string'
+                        type: 'object'
                       },
                       protectedSettingsFromKeyVault: {
                         type: 'object',
                         properties: {
                           sourceVault: {
-                            type: 'object',
+                            description: 'The ARM Resource ID of the Key Vault',
                             properties: {
                               id: {
-                                description: 'Resource Id',
-                                type: 'string'
+                                type: 'string',
+                                description: 'Resource Id'
                               }
                             },
                             'x-ms-azure-resource': true
                           },
-                          secretUrl: { type: 'string' }
-                        }
+                          secretUrl: {
+                            type: 'string',
+                            description: 'Secret URL which contains the protected settings of the extension'
+                          }
+                        },
+                        description: 'Protected settings for the extension, referenced using KeyVault which are encrypted before sent to the role instance.'
                       },
                       forceUpdateTag: {
                         description: 'Tag to force apply the provided public and protected settings.\r\n' +
@@ -539,6 +550,24 @@ exports.createResources = () => [
           readOnly: true
         }
       }
+    },
+    systemData: {
+      description: 'The system meta data relating to this resource.',
+      type: 'object',
+      properties: {
+        createdAt: {
+          format: 'date-time',
+          description: 'Specifies the time in UTC at which the Cloud Service (extended support) resource was created. <br />Minimum api-version: 2022-04-04.',
+          type: 'string',
+          readOnly: true
+        },
+        lastModifiedAt: {
+          format: 'date-time',
+          description: 'Specifies the time in UTC at which the Cloud Service (extended support) resource was last modified. <br />Minimum api-version: 2022-04-04.',
+          type: 'string',
+          readOnly: true
+        }
+      }
     }
   },
   'x-ms-azure-resource': true,
@@ -546,6 +575,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-03-01`.
+The resource version is `2022-04-04`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-03-01/cloudService.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/CloudserviceRP/stable/2022-04-04/CloudServiceRP/cloudService.json).

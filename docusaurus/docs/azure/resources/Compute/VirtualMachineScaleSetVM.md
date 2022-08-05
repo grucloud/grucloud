@@ -435,6 +435,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
       cloudServiceRoleInstance: "myCloudServiceRoleInstance",
       galleryImage: "myGalleryImage",
       vault: ["myVault"],
@@ -461,6 +462,7 @@ exports.createResources = () => [
     properties: () => ({ location: "westus" }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
       cloudServiceRoleInstance: "myCloudServiceRoleInstance",
       galleryImage: "myGalleryImage",
       vault: ["myVault"],
@@ -478,6 +480,7 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [CloudServiceRoleInstance](../Compute/CloudServiceRoleInstance.md)
 - [GalleryImage](../Compute/GalleryImage.md)
 - [Vault](../KeyVault/Vault.md)
@@ -1294,7 +1297,8 @@ exports.createResources = () => [
                         'StandardSSD_LRS',
                         'UltraSSD_LRS',
                         'Premium_ZRS',
-                        'StandardSSD_ZRS'
+                        'StandardSSD_ZRS',
+                        'PremiumV2_LRS'
                       ],
                       'x-ms-enum': {
                         name: 'StorageAccountTypes',
@@ -1428,7 +1432,8 @@ exports.createResources = () => [
                           'StandardSSD_LRS',
                           'UltraSSD_LRS',
                           'Premium_ZRS',
-                          'StandardSSD_ZRS'
+                          'StandardSSD_ZRS',
+                          'PremiumV2_LRS'
                         ],
                         'x-ms-enum': {
                           name: 'StorageAccountTypes',
@@ -1558,7 +1563,8 @@ exports.createResources = () => [
             },
             adminPassword: {
               type: 'string',
-              description: 'Specifies the password of the administrator account. <br><br> **Minimum-length (Windows):** 8 characters <br><br> **Minimum-length (Linux):** 6 characters <br><br> **Max-length (Windows):** 123 characters <br><br> **Max-length (Linux):** 72 characters <br><br> **Complexity requirements:** 3 out of 4 conditions below need to be fulfilled <br> Has lower characters <br>Has upper characters <br> Has a digit <br> Has a special character (Regex match [\\W_]) <br><br> **Disallowed values:** "abc@123", "P@$$w0rd", "P@ssw0rd", "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1", "Password22", "iloveyou!" <br><br> For resetting the password, see [How to reset the Remote Desktop service or its login password in a Windows VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp) <br><br> For resetting root password, see [Manage users, SSH, and check or repair disks on Azure Linux VMs using the VMAccess Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)'
+              description: 'Specifies the password of the administrator account. <br><br> **Minimum-length (Windows):** 8 characters <br><br> **Minimum-length (Linux):** 6 characters <br><br> **Max-length (Windows):** 123 characters <br><br> **Max-length (Linux):** 72 characters <br><br> **Complexity requirements:** 3 out of 4 conditions below need to be fulfilled <br> Has lower characters <br>Has upper characters <br> Has a digit <br> Has a special character (Regex match [\\W_]) <br><br> **Disallowed values:** "abc@123", "P@$$w0rd", "P@ssw0rd", "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1", "Password22", "iloveyou!" <br><br> For resetting the password, see [How to reset the Remote Desktop service or its login password in a Windows VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp) <br><br> For resetting root password, see [Manage users, SSH, and check or repair disks on Azure Linux VMs using the VMAccess Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)',
+              'x-ms-secret': true
             },
             customData: {
               type: 'string',
@@ -1641,6 +1647,26 @@ exports.createResources = () => [
                       'x-ms-enum': {
                         name: 'WindowsPatchAssessmentMode',
                         modelAsString: true
+                      }
+                    },
+                    automaticByPlatformSettings: {
+                      description: 'Specifies additional settings for patch mode AutomaticByPlatform in VM Guest Patching on Windows.',
+                      type: 'object',
+                      properties: {
+                        rebootSetting: {
+                          type: 'string',
+                          description: 'Specifies the reboot setting for all AutomaticByPlatform patch installation operations.',
+                          enum: [
+                            'Unknown',
+                            'IfRequired',
+                            'Never',
+                            'Always'
+                          ],
+                          'x-ms-enum': {
+                            name: 'WindowsVMGuestPatchAutomaticByPlatformRebootSetting',
+                            modelAsString: true
+                          }
+                        }
                       }
                     }
                   }
@@ -1728,6 +1754,26 @@ exports.createResources = () => [
                       'x-ms-enum': {
                         name: 'LinuxPatchAssessmentMode',
                         modelAsString: true
+                      }
+                    },
+                    automaticByPlatformSettings: {
+                      description: 'Specifies additional settings for patch mode AutomaticByPlatform in VM Guest Patching on Linux.',
+                      type: 'object',
+                      properties: {
+                        rebootSetting: {
+                          type: 'string',
+                          description: 'Specifies the reboot setting for all AutomaticByPlatform patch installation operations.',
+                          enum: [
+                            'Unknown',
+                            'IfRequired',
+                            'Never',
+                            'Always'
+                          ],
+                          'x-ms-enum': {
+                            name: 'LinuxVMGuestPatchAutomaticByPlatformRebootSetting',
+                            modelAsString: true
+                          }
+                        }
                       }
                     }
                   }
@@ -2279,8 +2325,10 @@ exports.createResources = () => [
         },
         allOf: [
           {
-            description: 'The Resource model definition.',
+            type: 'object',
+            description: 'The Resource model definition with location property as optional.',
             properties: {
+              location: { type: 'string', description: 'Resource location' },
               id: {
                 readOnly: true,
                 type: 'string',
@@ -2296,14 +2344,12 @@ exports.createResources = () => [
                 type: 'string',
                 description: 'Resource type'
               },
-              location: { type: 'string', description: 'Resource location' },
               tags: {
                 type: 'object',
                 additionalProperties: { type: 'string' },
                 description: 'Resource tags'
               }
             },
-            required: [ 'location' ],
             'x-ms-azure-resource': true
           }
         ],
@@ -2316,6 +2362,52 @@ exports.createResources = () => [
       type: 'array',
       items: { type: 'string' },
       description: 'The virtual machine zones.'
+    },
+    identity: {
+      description: 'The identity of the virtual machine, if configured.',
+      properties: {
+        principalId: {
+          readOnly: true,
+          type: 'string',
+          description: 'The principal id of virtual machine identity. This property will only be provided for a system assigned identity.'
+        },
+        tenantId: {
+          readOnly: true,
+          type: 'string',
+          description: 'The tenant id associated with the virtual machine. This property will only be provided for a system assigned identity.'
+        },
+        type: {
+          type: 'string',
+          description: "The type of identity used for the virtual machine. The type 'SystemAssigned, UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the virtual machine.",
+          enum: [
+            'SystemAssigned',
+            'UserAssigned',
+            'SystemAssigned, UserAssigned',
+            'None'
+          ],
+          'x-ms-enum': { name: 'ResourceIdentityType', modelAsString: false }
+        },
+        userAssignedIdentities: {
+          description: "The list of user identities associated with the Virtual Machine. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}'.",
+          type: 'object',
+          additionalProperties: {
+            type: 'object',
+            'x-ms-client-name': 'userAssignedIdentitiesValue',
+            properties: {
+              principalId: {
+                readOnly: true,
+                type: 'string',
+                description: 'The principal id of user assigned identity.'
+              },
+              clientId: {
+                readOnly: true,
+                type: 'string',
+                description: 'The client id of user assigned identity.'
+              }
+            }
+          }
+        }
+      }
     }
   },
   allOf: [
@@ -2348,6 +2440,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/virtualMachineScaleSet.json).

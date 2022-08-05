@@ -42,6 +42,7 @@ exports.createResources = () => [
       properties: {
         enabled: true,
         reserved: true,
+        vnetRouteAllEnabled: false,
         siteConfig: {
           numberOfWorkers: 1,
           linuxFxVersion: "NODE|16-lts",

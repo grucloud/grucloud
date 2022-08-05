@@ -12,6 +12,26 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "RouteTable",
+    group: "EC2",
+    name: "my-vpc::rt-default",
+    isDefault: true,
+    dependencies: ({}) => ({
+      vpc: "my-vpc",
+    }),
+  },
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "10.1.0.0/16",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "my-vpc::rt-default",
+      vpcPeeringConnection: "vpc-peering::my-vpc::vpc-peer",
+    }),
+  },
+  {
     type: "VpcPeeringConnection",
     group: "EC2",
     properties: ({ config }) => ({
