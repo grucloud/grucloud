@@ -248,7 +248,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `apigateway.amazonaws.com`,
+              Service: "apigateway.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -271,7 +271,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: `apigateway.amazonaws.com`,
+              Service: "apigateway.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -293,7 +293,7 @@ exports.createResources = () => [
                   "logs:GetLogEvents",
                   "logs:FilterLogEvents",
                 ],
-                Resource: `*`,
+                Resource: "*",
               },
             ],
           },

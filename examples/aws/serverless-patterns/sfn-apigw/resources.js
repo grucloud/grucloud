@@ -82,7 +82,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -142,7 +142,7 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["cloudwatch:*", "logs:*"],
-                Resource: `*`,
+                Resource: "*",
                 Effect: "Allow",
               },
             ],
@@ -180,7 +180,7 @@ exports.createResources = () => [
         States: {
           invokeAPI: {
             Type: "Task",
-            Resource: `arn:aws:states:::apigateway:invoke`,
+            Resource: "arn:aws:states:::apigateway:invoke",
             Parameters: {
               ApiEndpoint: `60lo2hkcu3.execute-api.${config.region}.amazonaws.com`,
               Method: "GET",

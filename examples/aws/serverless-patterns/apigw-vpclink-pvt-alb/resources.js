@@ -397,7 +397,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `ecs-tasks.amazonaws.com`,
+              Service: "ecs-tasks.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -416,7 +416,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `ecs-tasks.amazonaws.com`,
+              Service: "ecs-tasks.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },

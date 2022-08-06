@@ -125,7 +125,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -147,7 +147,7 @@ exports.createResources = () => [
           {
             Action: ["logs:*"],
             Effect: "Allow",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -172,7 +172,7 @@ exports.createResources = () => [
             Sid: "lambda-7ca7734f-45ef-4f83-a4de-917719c34d3d",
             Effect: "Allow",
             Principal: {
-              Service: `apigateway.amazonaws.com`,
+              Service: "apigateway.amazonaws.com",
             },
             Action: "lambda:InvokeFunction",
             Resource: `arn:aws:lambda:${

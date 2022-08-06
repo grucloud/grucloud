@@ -64,7 +64,7 @@ exports.createResources = () => [
                 config.region
               }.amazonaws.com/${config.accountId()}/sam-app-MyQueue-AqSTiBlPUT32`,
             },
-            Resource: `arn:aws:states:::sqs:sendMessage`,
+            Resource: "arn:aws:states:::sqs:sendMessage",
             Type: "Task",
           },
         },

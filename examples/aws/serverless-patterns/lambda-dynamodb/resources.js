@@ -34,7 +34,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -94,7 +94,7 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            DatabaseTable: `sam-app-DynamoTable-1TM3ILOZ1A36J`,
+            DatabaseTable: "sam-app-DynamoTable-1TM3ILOZ1A36J",
           },
         },
         FunctionName: "sam-app-LambdaPutDynamoDB-sV19pC5rYHdK",

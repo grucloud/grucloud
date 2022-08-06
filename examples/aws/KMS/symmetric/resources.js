@@ -19,7 +19,7 @@ exports.createResources = () => [
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
             Action: "kms:*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },

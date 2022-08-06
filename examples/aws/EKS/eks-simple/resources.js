@@ -348,7 +348,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `eks.amazonaws.com`,
+              Service: "eks.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -361,7 +361,7 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["cloudwatch:PutMetricData"],
-                Resource: `*`,
+                Resource: "*",
                 Effect: "Allow",
               },
             ],
@@ -378,7 +378,7 @@ exports.createResources = () => [
                   "ec2:DescribeAddresses",
                   "ec2:DescribeInternetGateways",
                 ],
-                Resource: `*`,
+                Resource: "*",
                 Effect: "Allow",
               },
             ],
@@ -410,7 +410,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `ec2.amazonaws.com`,
+              Service: "ec2.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },

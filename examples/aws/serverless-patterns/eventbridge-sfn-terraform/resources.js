@@ -46,7 +46,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `states.amazonaws.com`,
+              Service: "states.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -68,7 +68,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `events.amazonaws.com`,
+              Service: "events.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -98,7 +98,7 @@ exports.createResources = () => [
               "logs:DescribeLogGroups",
             ],
             Effect: "Allow",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
         Version: "2012-10-17",

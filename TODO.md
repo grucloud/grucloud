@@ -4,7 +4,6 @@
 
 ## Aws
 
-- flow logs s3 destination
 - CodePipeline add dependencies to S3
 - CodePipeline replace region to S3 bucket
 - API Gateway v1 Authorizer

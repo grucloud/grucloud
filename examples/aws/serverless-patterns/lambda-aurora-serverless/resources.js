@@ -14,7 +14,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -80,7 +80,7 @@ exports.createResources = () => [
             DBClusterArn: `arn:aws:rds:${
               config.region
             }:${config.accountId()}:cluster:aurora-test-cluster`,
-            DBName: `aurora_test_db`,
+            DBName: "aurora_test_db",
           },
         },
         FunctionName: "aurora-test-cluster-function",

@@ -31,8 +31,8 @@ exports.createResources = () => [
             Principal: "*",
             Action: "s3:*",
             Resource: [
-              `arn:aws:s3:::grucloud-s3-event-bridge-logs/*`,
-              `arn:aws:s3:::grucloud-s3-event-bridge-logs`,
+              "arn:aws:s3:::grucloud-s3-event-bridge-logs/*",
+              "arn:aws:s3:::grucloud-s3-event-bridge-logs",
             ],
             Condition: {
               Bool: {
@@ -47,7 +47,7 @@ exports.createResources = () => [
               Service: "cloudtrail.amazonaws.com",
             },
             Action: "s3:GetBucketAcl",
-            Resource: `arn:aws:s3:::grucloud-s3-event-bridge-logs`,
+            Resource: "arn:aws:s3:::grucloud-s3-event-bridge-logs",
           },
           {
             Sid: "AllowCloudTrailToWriteToBucket",

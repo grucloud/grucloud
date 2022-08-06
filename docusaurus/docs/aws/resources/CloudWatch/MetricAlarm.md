@@ -59,7 +59,7 @@ exports.createResources = () => [
 - [alarm-stop-ec2](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatch/alarm-stop-ec2)
 - [graphql-alarm](https://github.com/grucloud/grucloud/tree/main/examples/aws/AppSync/graphql-alarm)
 
-## Dependencies
+## Dependencies
 
 - [SNS Topic](../SNS/Topic.md)
 - [AppSync Graphql](../AppSync/GraphqlApi.md)

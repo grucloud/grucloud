@@ -31,7 +31,7 @@ exports.createResources = () => [
             Action: "sts:AssumeRoleWithWebIdentity",
             Condition: {
               StringEquals: {
-                "token.actions.githubusercontent.com:aud": `sts.amazonaws.com`,
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
               },
             },
           },
@@ -54,7 +54,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -73,7 +73,7 @@ exports.createResources = () => [
                   "iam:AddClientIDToOpenIDConnectProvider",
                   "iam:RemoveClientIDFromOpenIDConnectProvider",
                 ],
-                Resource: `*`,
+                Resource: "*",
                 Effect: "Allow",
               },
             ],

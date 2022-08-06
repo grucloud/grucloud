@@ -14,7 +14,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -63,7 +63,7 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            SSMParameterName: `ExampleParameterName`,
+            SSMParameterName: "ExampleParameterName",
           },
         },
         FunctionName: "sam-app-LambdaFunction-0c5CYs3DOq13",

@@ -553,7 +553,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: `ecs-tasks.amazonaws.com`,
+              Service: "ecs-tasks.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -582,7 +582,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: `codedeploy.amazonaws.com`,
+              Service: "codedeploy.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },

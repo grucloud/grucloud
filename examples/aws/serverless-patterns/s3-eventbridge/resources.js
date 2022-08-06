@@ -75,8 +75,8 @@ exports.createResources = () => [
             Principal: "*",
             Action: "s3:*",
             Resource: [
-              `arn:aws:s3:::gc-s3-eventbridge/*`,
-              `arn:aws:s3:::gc-s3-eventbridge`,
+              "arn:aws:s3:::gc-s3-eventbridge/*",
+              "arn:aws:s3:::gc-s3-eventbridge",
             ],
             Condition: {
               Bool: {
@@ -102,8 +102,8 @@ exports.createResources = () => [
             Principal: "*",
             Action: "s3:*",
             Resource: [
-              `arn:aws:s3:::gc-s3-eventbridge-cloudtrail/*`,
-              `arn:aws:s3:::gc-s3-eventbridge-cloudtrail`,
+              "arn:aws:s3:::gc-s3-eventbridge-cloudtrail/*",
+              "arn:aws:s3:::gc-s3-eventbridge-cloudtrail",
             ],
             Condition: {
               Bool: {
@@ -118,7 +118,7 @@ exports.createResources = () => [
               Service: "cloudtrail.amazonaws.com",
             },
             Action: "s3:GetBucketAcl",
-            Resource: `arn:aws:s3:::gc-s3-eventbridge-cloudtrail`,
+            Resource: "arn:aws:s3:::gc-s3-eventbridge-cloudtrail",
           },
           {
             Sid: "AllowCloudTrailToWriteToBucket",
@@ -149,7 +149,7 @@ exports.createResources = () => [
             {
               Effect: "Allow",
               Principal: {
-                Service: `events.amazonaws.com`,
+                Service: "events.amazonaws.com",
               },
               Action: "SQS:SendMessage",
               Resource: `arn:aws:sqs:${

@@ -25,7 +25,7 @@ exports.createResources = () => [
 
 - [UpdateAccountCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-api-gateway/interfaces/updateaccountcommandinput.html)
 
-## Dependencies
+## Dependencies
 
 - [IAM Role](../IAM/Role.md)
 

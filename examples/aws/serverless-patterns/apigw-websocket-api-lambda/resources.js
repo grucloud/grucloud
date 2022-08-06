@@ -161,7 +161,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -232,7 +232,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -303,7 +303,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -386,7 +386,7 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            TABLE_NAME: `sam-app-websocket_connections`,
+            TABLE_NAME: "sam-app-websocket_connections",
           },
         },
         FunctionName: "sam-app-onconnect-function",
@@ -411,7 +411,7 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            TABLE_NAME: `sam-app-websocket_connections`,
+            TABLE_NAME: "sam-app-websocket_connections",
           },
         },
         FunctionName: "sam-app-ondisconnect-function",
@@ -436,7 +436,7 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            TABLE_NAME: `sam-app-websocket_connections`,
+            TABLE_NAME: "sam-app-websocket_connections",
           },
         },
         FunctionName: "sam-app-post-function",

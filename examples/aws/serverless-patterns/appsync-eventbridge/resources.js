@@ -80,7 +80,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `appsync.amazonaws.com`,
+              Service: "appsync.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -107,7 +107,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `appsync.amazonaws.com`,
+              Service: "appsync.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -149,7 +149,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `appsync.amazonaws.com`,
+              Service: "appsync.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -162,7 +162,7 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: "events:PutEvents",
-                Resource: `*`,
+                Resource: "*",
                 Effect: "Allow",
               },
             ],

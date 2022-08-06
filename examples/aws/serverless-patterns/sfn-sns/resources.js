@@ -77,7 +77,7 @@ exports.createResources = () => [
         States: {
           SendSNSMessage: {
             Type: "Task",
-            Resource: `arn:aws:states:::sns:publish`,
+            Resource: "arn:aws:states:::sns:publish",
             Parameters: {
               Message: {
                 Input: "You just received a message from the state machine!",

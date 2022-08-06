@@ -215,7 +215,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: `monitoring.rds.amazonaws.com`,
+              Service: "monitoring.rds.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },

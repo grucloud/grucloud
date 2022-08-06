@@ -126,12 +126,12 @@ exports.createResources = () => [
           {
             Action: ["logs:*"],
             Effect: "Allow",
-            Resource: `*`,
+            Resource: "*",
           },
           {
             Action: ["sqs:*"],
             Effect: "Allow",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
