@@ -11,26 +11,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "LogStream",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logStreamName: "BackupDelivery",
-    }),
-    dependencies: ({}) => ({
-      cloudWatchLogGroup: "/aws/kinesisfirehose/my-deliverrt-stream",
-    }),
-  },
-  {
-    type: "LogStream",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logStreamName: "DestinationDelivery",
-    }),
-    dependencies: ({}) => ({
-      cloudWatchLogGroup: "/aws/kinesisfirehose/my-deliverrt-stream",
-    }),
-  },
-  {
     type: "DeliveryStream",
     group: "Firehose",
     properties: ({ config, getId }) => ({
