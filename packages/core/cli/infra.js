@@ -2,7 +2,7 @@ const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
 const { pipe, tap, filter, switchCase } = require("rubico");
-const { isFunction, unless, isEmpty, append, identity } = require("rubico/x");
+const { isFunction, when, isEmpty, append, identity } = require("rubico/x");
 
 const buildCreateResources = ({ createResources, createResourcesUpdate }) =>
   pipe([
@@ -18,7 +18,7 @@ const buildCreateResources = ({ createResources, createResourcesUpdate }) =>
         );
       },
     ]),
-    unless(() => isEmpty(createResourcesUpdate), append(createResourcesUpdate)),
+    when(() => createResourcesUpdate, append(createResourcesUpdate)),
     tap((params) => {
       assert(true);
     }),

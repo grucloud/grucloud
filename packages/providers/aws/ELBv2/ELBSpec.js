@@ -104,11 +104,9 @@ module.exports = pipe([
         targetGroup: {
           type: "TargetGroup",
           group: "ElasticLoadBalancingV2",
-          //TODO list ?
           dependencyIds: ({ lives, config }) =>
             pipe([get("DefaultActions"), pluck("TargetGroupArn")]),
         },
-        //TODO list ?
         certificate: {
           type: "Certificate",
           group: "ACM",

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get } = require("rubico");
+const { pipe, tap, get, assign } = require("rubico");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html#addTagsToResource-property
 exports.tagResource =
@@ -23,3 +23,15 @@ exports.untagResource =
       (TagKeys) => ({ ResourceId: live.Name, TagKeys, ResourceType }),
       endpoint().removeTagsFromResource,
     ]);
+
+exports.assignTags = ({ endpoint, ResourceType }) =>
+  assign({
+    Tags: pipe([
+      ({ Name }) => ({
+        ResourceId: Name,
+        ResourceType,
+      }),
+      endpoint().listTagsForResource,
+      get("TagList"),
+    ]),
+  });

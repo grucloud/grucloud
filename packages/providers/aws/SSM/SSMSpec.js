@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { assign, map, pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, callProp } = require("rubico/x");
+const { defaultsDeep, callProp, pluck } = require("rubico/x");
 const {
   isOurMinion,
   replaceAccountAndRegion,
@@ -27,6 +27,7 @@ module.exports = pipe([
           }),
         ])(),
       omitProperties: [
+        "Content.assumeRole",
         "Owner",
         "DocumentVersion",
         "CreatedDate",
@@ -34,7 +35,15 @@ module.exports = pipe([
         "StatusInformation",
         "ReviewStatus",
         "SchemaVersion",
+        "Category",
+        "CategoryEnum",
+        "DefaultVersion",
+        "Hash",
+        "HashType",
+        "LatestVersion",
+        "Description",
       ],
+      propertiesDefault: { DocumentFormat: "JSON" },
       dependencies: {
         role: {
           type: "Role",

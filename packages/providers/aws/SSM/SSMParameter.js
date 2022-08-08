@@ -5,7 +5,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./SSMCommon");
+const { tagResource, untagResource, assignTags } = require("./SSMCommon");
 
 const pickId = pipe([pick(["Name"])]);
 
@@ -19,16 +19,7 @@ const decorate =
       endpoint().getParameter,
       get("Parameter"),
       defaultsDeep(live),
-      assign({
-        Tags: pipe([
-          ({ Name }) => ({
-            ResourceId: Name,
-            ResourceType: "Parameter",
-          }),
-          endpoint().listTagsForResource,
-          get("TagList"),
-        ]),
-      }),
+      assignTags({ endpoint, ResourceType: "Parameter" }),
     ])();
 
 const model = {

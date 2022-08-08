@@ -5,17 +5,14 @@
 ## Aws
 
 - API Gateway v1 Authorizer
-- ELB Listener multiple target group ?
 
 - doc:
   DeliveryStream,
-  SSM Document doc,
 
 - cloudwan vpc attachment
 - route to core network
 - fix gc l -t
 - Network Manager docs
-- fix systems-manager-automation-to-lambda
 - Example with non default DB Proxy Target Group,
 - AutoScalingGroup: example with serviceLinkedRole
 - VpcEndpoint: example with serviceLinkedRole
