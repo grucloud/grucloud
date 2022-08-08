@@ -13,7 +13,7 @@ const {
   and,
 } = require("rubico");
 const {
-  append,
+  identity,
   isFunction,
   find,
   callProp,
@@ -274,3 +274,46 @@ const configDefaultGeneric = ({ properties, dependencies, config, spec }) =>
   ])();
 
 exports.configDefaultGeneric = configDefaultGeneric;
+
+const hasBracket = includes("[]");
+const removeBracket = pipe([callProp("replace", "[]", "")]);
+
+const findIdsByKeys =
+  ([key, ...otherKeys]) =>
+  (live) =>
+    pipe([
+      () => live,
+      get(removeBracket(key)),
+      switchCase([
+        () => isEmpty(otherKeys),
+        // Last key
+        pipe([identity]),
+        // Go down
+        pipe([
+          switchCase([
+            () => hasBracket(key),
+            pipe([
+              tap((values) => {
+                //assert(Array.isArray(values));
+              }),
+              map(findIdsByKeys(otherKeys)),
+            ]),
+            findIdsByKeys(otherKeys),
+          ]),
+        ]),
+      ]),
+    ])();
+
+exports.findIdsByPath =
+  ({ pathId }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(live);
+        assert(pathId);
+      }),
+      () => pathId,
+      callProp("split", "."),
+      (keys) => findIdsByKeys(keys)(live),
+      unless(Array.isArray, (id) => [id]),
+    ])();

@@ -6,6 +6,7 @@ Provides a **CertificateOrder** from the **Web** group
 ## Examples
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Certificate](../Web/Certificate.md)
 ## Swagger Schema
 ```js
 {

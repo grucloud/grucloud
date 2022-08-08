@@ -83,7 +83,7 @@ exports.createResources = () => [
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
       managedEnvironment: "myManagedEnvironment",
-      certificate: ["myCertificate"],
+      certificates: ["myCertificate"],
       containerAppsSourceControl: "myContainerAppsSourceControl",
     }),
   },

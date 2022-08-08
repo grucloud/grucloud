@@ -39,7 +39,7 @@ exports.createResources = () => [
           },
           osDisk: {
             osType: "Linux",
-            name: "testvm_OsDisk_1_728e049ab26f46529721367245ce949e",
+            name: "testvm_OsDisk_1_3c159bcd1ece41ef827adb54827c0fb5",
             createOption: "FromImage",
             caching: "ReadWrite",
             managedDisk: {
@@ -214,7 +214,7 @@ exports.createResources = () => [
   {
     type: "VirtualNetworkGateway",
     group: "Network",
-    properties: ({ config }) => ({
+    properties: ({ config, getId }) => ({
       name: "vpngw",
       location: config.location,
       properties: {
@@ -222,12 +222,40 @@ exports.createResources = () => [
           {
             properties: {
               privateIPAllocationMethod: "Dynamic",
+              subnet: {
+                id: `${getId({
+                  type: "Subnet",
+                  group: "Network",
+                  name: "multicloud::azure::GatewaySubnet",
+                })}`,
+              },
+              publicIPAddress: {
+                id: `${getId({
+                  type: "PublicIPAddress",
+                  group: "Network",
+                  name: "multicloud::vpngw-a-pip",
+                })}`,
+              },
             },
             name: "vnetGatewayConfig0",
           },
           {
             properties: {
               privateIPAllocationMethod: "Dynamic",
+              subnet: {
+                id: `${getId({
+                  type: "Subnet",
+                  group: "Network",
+                  name: "multicloud::azure::GatewaySubnet",
+                })}`,
+              },
+              publicIPAddress: {
+                id: `${getId({
+                  type: "PublicIPAddress",
+                  group: "Network",
+                  name: "multicloud::vpngw-b-pip",
+                })}`,
+              },
             },
             name: "vnetGatewayConfig1",
           },
@@ -251,20 +279,21 @@ exports.createResources = () => [
           asn: 65001,
           bgpPeeringAddress: "192.168.1.4,192.168.1.5",
           peerWeight: 0,
-          bgpPeeringAddresses: [
-            {
-              customBgpIpAddresses: [],
-            },
-            {
-              customBgpIpAddresses: [],
-            },
-          ],
+          // bgpPeeringAddresses: [
+          //   {
+          //     customBgpIpAddresses: [],
+          //   },
+          //   {
+          //     customBgpIpAddresses: [],
+          //   },
+          // ],
         },
         enableBgpRouteTranslationForNat: false,
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "multicloud",
+      subnet: ["multicloud::azure::GatewaySubnet"],
       publicIpAddress: ["multicloud::vpngw-a-pip", "multicloud::vpngw-b-pip"],
     }),
   },
@@ -272,7 +301,7 @@ exports.createResources = () => [
     type: "Workspace",
     group: "OperationalInsights",
     properties: ({ config }) => ({
-      name: "log23745",
+      name: "log2665",
       location: config.location,
       properties: {
         sku: {

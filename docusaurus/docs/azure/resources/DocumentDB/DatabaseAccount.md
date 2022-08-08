@@ -28,6 +28,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
+      subnets: ["mySubnet"],
     }),
   },
 ];
@@ -109,6 +110,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
+      subnets: ["mySubnet"],
     }),
   },
 ];
@@ -167,6 +169,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
+      subnets: ["mySubnet"],
     }),
   },
 ];
@@ -175,6 +178,7 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
+- [Subnet](../Network/Subnet.md)
 ## Swagger Schema
 ```js
 {
@@ -361,6 +365,14 @@ exports.createResources = () => [
             properties: {
               id: {
                 type: 'string',
+                format: 'arm-id',
+                'x-ms-arm-id-details': {
+                  allowedResources: [
+                    {
+                      type: 'Microsoft.Network/virtualNetworks/subnets'
+                    }
+                  ]
+                },
                 description: 'Resource ID of a subnet, for example: /subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}.'
               },
               ignoreMissingVNetServiceEndpoint: {

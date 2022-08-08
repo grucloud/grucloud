@@ -20,9 +20,21 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      networkSecurityGroup: "myNetworkSecurityGroup",
+      applicationSecurityGroups: ["myApplicationSecurityGroup"],
+      routeTable: "myRouteTable",
+      routes: ["myRoute"],
       natGateway: "myNatGateway",
+      serviceEndpointPolicies: ["myServiceEndpointPolicy"],
+      serviceEndpointPolicyDefinitions: ["myServiceEndpointPolicyDefinition"],
+      ipAllocations: ["myIpAllocation"],
+      applicationGateways: ["myApplicationGateway"],
+      publicIpAddress: "myPublicIPAddress",
       ddosCustomPolicy: "myDdosCustomPolicy",
       publicIpPrefix: "myPublicIPPrefix",
+      publicIpAddresses: ["myPublicIPAddress"],
+      publicIpPrefixes: ["myPublicIPPrefix"],
       virtualHub: "myVirtualHub",
     }),
   },
@@ -31,8 +43,20 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Subnet](../Network/Subnet.md)
+- [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
+- [ApplicationSecurityGroup](../Network/ApplicationSecurityGroup.md)
+- [RouteTable](../Network/RouteTable.md)
+- [Route](../Network/Route.md)
 - [NatGateway](../Network/NatGateway.md)
+- [ServiceEndpointPolicy](../Network/ServiceEndpointPolicy.md)
+- [ServiceEndpointPolicyDefinition](../Network/ServiceEndpointPolicyDefinition.md)
+- [IpAllocation](../Network/IpAllocation.md)
+- [ApplicationGateway](../Network/ApplicationGateway.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
 - [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
+- [PublicIPPrefix](../Network/PublicIPPrefix.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
 - [PublicIPPrefix](../Network/PublicIPPrefix.md)
 - [VirtualHub](../Network/VirtualHub.md)
 ## Swagger Schema

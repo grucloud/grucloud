@@ -437,13 +437,23 @@ exports.createResources = () => [
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
       cloudServiceRoleInstance: "myCloudServiceRoleInstance",
+      image: "myImage",
       galleryImage: "myGalleryImage",
-      vault: ["myVault"],
+      vault: "myVault",
       key: "myKey",
-      networkSecurityGroup: ["myNetworkSecurityGroup"],
-      subnet: ["mySubnet"],
-      publicIpPrefix: ["myPublicIPPrefix"],
-      dscpConfiguration: ["myDscpConfiguration"],
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
+      sshPublicKeys: ["mySshPublicKey"],
+      vaults: ["myVault"],
+      networkInterfaces: ["myNetworkInterface"],
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      subnets: ["mySubnet"],
+      publicIpPrefixes: ["myPublicIPPrefix"],
+      applicationSecurityGroups: ["myApplicationSecurityGroup"],
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      dscpConfigurations: ["myDscpConfiguration"],
       availabilitySet: "myAvailabilitySet",
       vmScaleSet: "myVirtualMachineScaleSet",
     }),
@@ -464,13 +474,23 @@ exports.createResources = () => [
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
       cloudServiceRoleInstance: "myCloudServiceRoleInstance",
+      image: "myImage",
       galleryImage: "myGalleryImage",
-      vault: ["myVault"],
+      vault: "myVault",
       key: "myKey",
-      networkSecurityGroup: ["myNetworkSecurityGroup"],
-      subnet: ["mySubnet"],
-      publicIpPrefix: ["myPublicIPPrefix"],
-      dscpConfiguration: ["myDscpConfiguration"],
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
+      sshPublicKeys: ["mySshPublicKey"],
+      vaults: ["myVault"],
+      networkInterfaces: ["myNetworkInterface"],
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      subnets: ["mySubnet"],
+      publicIpPrefixes: ["myPublicIPPrefix"],
+      applicationSecurityGroups: ["myApplicationSecurityGroup"],
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      dscpConfigurations: ["myDscpConfiguration"],
       availabilitySet: "myAvailabilitySet",
       vmScaleSet: "myVirtualMachineScaleSet",
     }),
@@ -482,12 +502,22 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [CloudServiceRoleInstance](../Compute/CloudServiceRoleInstance.md)
+- [Image](../Compute/Image.md)
 - [GalleryImage](../Compute/GalleryImage.md)
 - [Vault](../KeyVault/Vault.md)
 - [Key](../KeyVault/Key.md)
+- [Disk](../Compute/Disk.md)
+- [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
+- [Disk](../Compute/Disk.md)
+- [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
+- [SshPublicKey](../Compute/SshPublicKey.md)
+- [Vault](../KeyVault/Vault.md)
+- [NetworkInterface](../Network/NetworkInterface.md)
 - [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
 - [Subnet](../Network/Subnet.md)
 - [PublicIPPrefix](../Network/PublicIPPrefix.md)
+- [ApplicationSecurityGroup](../Network/ApplicationSecurityGroup.md)
+- [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
 - [DscpConfiguration](../Network/DscpConfiguration.md)
 - [AvailabilitySet](../Compute/AvailabilitySet.md)
 - [VirtualMachineScaleSet](../Compute/VirtualMachineScaleSet.md)
@@ -2442,4 +2472,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/virtualMachineScaleSet.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/ComputeRP/stable/2022-03-01/virtualMachineScaleSet.json).

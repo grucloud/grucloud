@@ -40,6 +40,7 @@ const {
   findDependenciesUserAssignedIdentity,
   createAxiosAzure,
   shortName,
+  findIdsByPath,
 } = require("./AzureCommon");
 const logger = require("@grucloud/core/logger")({ prefix: "AzClient" });
 
@@ -69,6 +70,16 @@ const shouldRetryOnExceptionAzure = pipe([
   }),
   or([
     and([eq(get("status"), 503) /*, eq(get("code"), "ServerTimeout")*/]),
+    and([
+      eq(get("status"), 429),
+      pipe([
+        get("data.Message"),
+        includes(
+          "Cannot acquire exclusive lock to create or update this server farm."
+        ),
+      ]),
+    ]),
+
     and([eq(get("status"), 429), eq(get("data.Code"), "TooManyRequests")]),
     and([eq(get("status"), 429), eq(get("data.error.code"), "RetryableError")]),
     and([eq(get("status"), 409), eq(get("data.error.code"), "Conflict")]),
@@ -218,15 +229,12 @@ module.exports = AzClient = ({
       map.entries(([key, { group, type, pathId }]) => [
         key,
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           () => live,
-          get(pathId),
-          (id) => ({
+          findIdsByPath({ pathId }),
+          (ids) => ({
             group,
             type,
-            ids: [id],
+            ids,
           }),
         ])(),
       ]),
@@ -530,6 +538,9 @@ module.exports = AzClient = ({
     ]),
     shouldRetryOnExceptionList: shouldRetryOnExceptionAzure,
     shouldRetryOnExceptionCreate: shouldRetryOnExceptionAzure,
+    shouldRetryOnExceptionGetById: shouldRetryOnExceptionAzure,
+    shouldRetryOnExceptionDelete: shouldRetryOnExceptionAzure,
+
     findTargetId,
     verbCreate: verbCreateFromMethods(methods),
     verbUpdate: verbUpdateFromMethods(methods),

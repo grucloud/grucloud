@@ -20,6 +20,8 @@ exports.createResources = () => [
       resourceGroup: "myResourceGroup",
       loadBalancer: "myLoadBalancer",
       customIpPrefix: "myCustomIPPrefix",
+      natGateway: "myNatGateway",
+      publicIpAddresses: ["myPublicIPAddress"],
     }),
   },
 ];
@@ -38,6 +40,8 @@ exports.createResources = () => [
       resourceGroup: "myResourceGroup",
       loadBalancer: "myLoadBalancer",
       customIpPrefix: "myCustomIPPrefix",
+      natGateway: "myNatGateway",
+      publicIpAddresses: ["myPublicIPAddress"],
     }),
   },
 ];
@@ -47,6 +51,8 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [LoadBalancer](../Network/LoadBalancer.md)
 - [CustomIPPrefix](../Network/CustomIPPrefix.md)
+- [NatGateway](../Network/NatGateway.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
 ## Swagger Schema
 ```js
 {

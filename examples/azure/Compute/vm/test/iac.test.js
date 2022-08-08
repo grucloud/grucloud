@@ -4,7 +4,7 @@ const { testEnd2End } = require("@grucloud/core/qa");
 const { createStack } = require("../iac");
 const config = require("../config");
 
-const title = "Azure VM";
+const title = "Azure VM simple";
 
 describe(title, async function () {
   before(async function () {});

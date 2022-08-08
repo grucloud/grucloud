@@ -27,7 +27,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -58,7 +61,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -88,7 +94,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -115,7 +124,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -162,7 +174,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -209,7 +224,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -236,7 +254,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -282,7 +303,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -308,7 +332,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -334,7 +361,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -360,7 +390,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -390,7 +423,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -418,7 +454,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -436,7 +475,10 @@ exports.createResources = () => [
     properties: () => ({ properties: { powerState: { code: "Stopped" } } }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -454,7 +496,10 @@ exports.createResources = () => [
     properties: () => ({ properties: { powerState: { code: "Running" } } }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -481,7 +526,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      publicIpPrefix: "myPublicIpPrefix",
       proximityPlacementGroup: "myProximityPlacementGroup",
+      hostGroup: "myHostGroup",
       resource: "myManagedCluster",
     }),
   },
@@ -490,7 +538,10 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
+- [Subnet](../Network/Subnet.md)
+- [PublicIpPrefix](../Network/PublicIpPrefix.md)
+- [ProximityPlacementGroup](../Network/ProximityPlacementGroup.md)
+- [HostGroup](../Compute/HostGroup.md)
 - [ManagedCluster](../ContainerService/ManagedCluster.md)
 ## Swagger Schema
 ```js
@@ -599,11 +650,19 @@ exports.createResources = () => [
         },
         vnetSubnetID: {
           type: 'string',
+          format: 'arm-id',
+          'x-ms-arm-id-details': {
+            allowedResources: [ { type: 'Microsoft.Network/virtualNetworks/subnets' } ]
+          },
           title: 'The ID of the subnet which agent pool nodes and optionally pods will join on startup.',
           description: 'If this is not specified, a VNET and subnet will be generated and used. If no podSubnetID is specified, this applies to nodes and pods, otherwise it applies to just nodes. This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}'
         },
         podSubnetID: {
           type: 'string',
+          format: 'arm-id',
+          'x-ms-arm-id-details': {
+            allowedResources: [ { type: 'Microsoft.Network/virtualNetworks/subnets' } ]
+          },
           title: 'The ID of the subnet which pods will join when launched.',
           description: 'If omitted, pod IPs are statically assigned on the node subnet (see vnetSubnetID for more details). This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}'
         },
@@ -775,6 +834,10 @@ exports.createResources = () => [
         },
         nodePublicIPPrefixID: {
           type: 'string',
+          format: 'arm-id',
+          'x-ms-arm-id-details': {
+            allowedResources: [ { type: 'Microsoft.Network/publicIPPrefixes' } ]
+          },
           title: 'The public IP prefix ID which VM nodes should use IPs from.',
           description: 'This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPPrefixes/{publicIPPrefixName}'
         },
@@ -842,7 +905,11 @@ exports.createResources = () => [
         },
         proximityPlacementGroupID: {
           description: 'The ID for Proximity Placement Group.',
-          type: 'string'
+          type: 'string',
+          format: 'arm-id',
+          'x-ms-arm-id-details': {
+            allowedResources: [ { type: 'Microsoft.Network/proximityPlacementGroups' } ]
+          }
         },
         kubeletConfig: {
           description: 'The Kubelet configuration on the agent pool nodes.',
@@ -1097,6 +1164,7 @@ exports.createResources = () => [
           properties: {
             sourceResourceId: {
               type: 'string',
+              format: 'arm-id',
               description: 'This is the ARM ID of the source object to be used to create the target object.'
             }
           }

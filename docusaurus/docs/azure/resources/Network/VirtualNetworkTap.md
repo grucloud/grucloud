@@ -21,14 +21,33 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      networkInterface: "myNetworkInterface",
       loadBalancer: "myLoadBalancer",
+      virtualNetworks: ["myVirtualNetwork"],
+      loadBalancers: ["myLoadBalancer"],
+      subnets: ["mySubnet"],
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      applicationSecurityGroups: ["myApplicationSecurityGroup"],
+      routeTables: ["myRouteTable"],
+      routes: ["myRoute"],
+      natGateways: ["myNatGateway"],
+      serviceEndpointPolicies: ["myServiceEndpointPolicy"],
+      serviceEndpointPolicyDefinitions: ["myServiceEndpointPolicyDefinition"],
+      ipAllocations: ["myIpAllocation"],
+      applicationGateways: ["myApplicationGateway"],
+      publicIpAddresses: ["myPublicIPAddress"],
+      ddosCustomPolicies: ["myDdosCustomPolicy"],
+      publicIpPrefixes: ["myPublicIPPrefix"],
+      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      networkInterfaces: ["myNetworkInterface"],
+      inboundNatRules: ["myInboundNatRule"],
+      subnet: "mySubnet",
+      networkSecurityGroup: "myNetworkSecurityGroup",
+      routeTable: "myRouteTable",
       natGateway: "myNatGateway",
+      publicIpAddress: "myPublicIPAddress",
       ddosCustomPolicy: "myDdosCustomPolicy",
       publicIpPrefix: "myPublicIPPrefix",
-      virtualNetwork: ["myVirtualNetwork"],
-      subnet: ["mySubnet"],
-      networkInterface: ["myNetworkInterface"],
-      loadBalancerBackendAddressPool: ["myLoadBalancerBackendAddressPool"],
     }),
   },
 ];
@@ -36,14 +55,33 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [NetworkInterface](../Network/NetworkInterface.md)
 - [LoadBalancer](../Network/LoadBalancer.md)
+- [VirtualNetwork](../Network/VirtualNetwork.md)
+- [LoadBalancer](../Network/LoadBalancer.md)
+- [Subnet](../Network/Subnet.md)
+- [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
+- [ApplicationSecurityGroup](../Network/ApplicationSecurityGroup.md)
+- [RouteTable](../Network/RouteTable.md)
+- [Route](../Network/Route.md)
 - [NatGateway](../Network/NatGateway.md)
+- [ServiceEndpointPolicy](../Network/ServiceEndpointPolicy.md)
+- [ServiceEndpointPolicyDefinition](../Network/ServiceEndpointPolicyDefinition.md)
+- [IpAllocation](../Network/IpAllocation.md)
+- [ApplicationGateway](../Network/ApplicationGateway.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
 - [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
 - [PublicIPPrefix](../Network/PublicIPPrefix.md)
-- [VirtualNetwork](../Network/VirtualNetwork.md)
-- [Subnet](../Network/Subnet.md)
-- [NetworkInterface](../Network/NetworkInterface.md)
 - [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
+- [NetworkInterface](../Network/NetworkInterface.md)
+- [InboundNatRule](../Network/InboundNatRule.md)
+- [Subnet](../Network/Subnet.md)
+- [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
+- [RouteTable](../Network/RouteTable.md)
+- [NatGateway](../Network/NatGateway.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
+- [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
+- [PublicIPPrefix](../Network/PublicIPPrefix.md)
 ## Swagger Schema
 ```js
 <ref *2> {

@@ -19,7 +19,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
-      workspace: ["myWorkspace"],
+      workspaces: ["myWorkspace"],
     }),
   },
 ];

@@ -44,6 +44,7 @@ exports.createResources = () => [
           properties: {
             sourceResourceId: {
               type: 'string',
+              format: 'arm-id',
               description: 'This is the ARM ID of the source object to be used to create the target object.'
             }
           }

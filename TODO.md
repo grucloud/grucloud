@@ -4,6 +4,7 @@
 
 ## Aws
 
+- LogStream ignore ?
 - CodePipeline add dependencies to S3
 - CodePipeline replace region to S3 bucket
 - API Gateway v1 Authorizer
@@ -80,6 +81,7 @@ https://rushjs.io/
 
 ## Azure
 
+- Microsoft.Network/proximityPlacementGroups => Microsoft.Compute/proximityPlacementGroups
 - Disk vault dep vanished
 - gc d -a
   Compute::VirtualMachineScaleSetExtension 0/3 Request failed with status code 400 On resource 'aks-agentpool-16833683-vmss',

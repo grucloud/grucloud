@@ -79,9 +79,11 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualHub: "myVirtualHub",
-      vpnSite: ["myVpnSite"],
-      virtualHubIpConfiguration: ["myVirtualHubIpConfiguration"],
-      routeTable: ["myRouteTable"],
+      connections: ["myConnection"],
+      vpnSites: ["myVpnSite"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
+      natRules: ["myNatRule"],
+      routeTables: ["myRouteTable"],
     }),
   },
 ];
@@ -90,8 +92,10 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualHub](../Network/VirtualHub.md)
+- [Connection](../Web/Connection.md)
 - [VpnSite](../Network/VpnSite.md)
 - [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
+- [NatRule](../Network/NatRule.md)
 - [RouteTable](../Network/RouteTable.md)
 ## Swagger Schema
 ```js

@@ -40,9 +40,10 @@ const {
   identity,
   uniq,
 } = require("rubico/x");
+const util = require("util");
 const path = require("path");
 const fs = require("fs").promises;
-const { camelCase, snakeCase } = require("change-case");
+const { camelCase, snakeCase, pascalCase } = require("change-case");
 const pluralize = require("pluralize");
 const SwaggerParser = require("@apidevtools/swagger-parser");
 
@@ -355,16 +356,8 @@ const findGetAllByParentPath =
 const makeResourceDir = ({ dir, name }) =>
   pipe([
     () => dir,
-    callProp("split", "/"),
-    callProp("slice", -5),
-    tap((params) => {
-      assert(true);
-    }),
-    callProp("join", "/"),
+    callProp("replace", /^(.+)specification\//, ""),
     append(`/${name}`),
-    tap((params) => {
-      assert(true);
-    }),
   ])();
 
 const findResources = ({
@@ -652,15 +645,7 @@ const findParameterTypeFromPath =
 const isParamLastOfUrl =
   ({ path }) =>
   (name) =>
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      () => path,
-      callProp("split", "/"),
-      last,
-      includes(name),
-    ])();
+    pipe([() => path, callProp("split", "/"), last, includes(name)])();
 
 const addDependencyFromPath = ({
   resources,
@@ -810,12 +795,27 @@ const findDependenciesAllGroup = ({ depName }) =>
     first,
   ]);
 
+const microsoftTypeToGruCloud = pipe([
+  tap((type) => {
+    assert(type);
+  }),
+  callProp("split", "/"),
+  fork({
+    group: pipe([first, callProp("split", "."), last]),
+    type: pipe([last, pluralize.singular, pascalCase]),
+  }),
+  tap((params) => {
+    assert(true);
+  }),
+]);
+
 const findDependenciesFromResources = ({
   resources,
   type,
   group,
   depId,
   pathId,
+  allowedResources,
 }) =>
   pipe([
     tap(() => {
@@ -825,42 +825,60 @@ const findDependenciesFromResources = ({
       assert(pathId);
       assert(resources);
     }),
-    () => depId,
-    callProp("replace", /Id$/gi, ""),
-    callProp("replace", /Resource$/i, ""),
-    tap((params) => {
-      assert(true);
-    }),
-    unless(isEmpty, (depName) =>
+    switchCase([
+      () => allowedResources,
       pipe([
-        () => resources,
-        filter(not(eq(get("type"), type))),
-        (resources) => {
-          for (fn of [
-            findDependenciesSameGroupStrict,
-            findDependenciesDepMatchesResource,
-            findDependenciesSameGroup,
-            findDependenciesAllGroup,
-          ]) {
-            const dep = fn({ depName, depId, type, group })(resources);
-            if (!isEmpty(dep)) {
-              return dep;
-            }
-          }
-        },
-        pick(["group", "type", "parent"]),
+        () => allowedResources,
+        first,
+        get("type"),
+        tap((type) => {
+          assert(type);
+        }),
+        microsoftTypeToGruCloud,
+        defaultsDeep({ pathId }),
+      ]),
+      pipe([
+        () => depId,
+        callProp("replace", /Id$/gi, ""),
+        callProp("replace", /Resource$/i, ""),
+        callProp("replace", "[]", ""),
+        pluralize.singular,
         tap((params) => {
           assert(true);
         }),
-        unless(isEmpty, defaultsDeep({ pathId })),
-      ])()
-    ),
+        unless(isEmpty, (depName) =>
+          pipe([
+            () => resources,
+            filter(not(eq(get("type"), type))),
+            (resources) => {
+              for (fn of [
+                findDependenciesSameGroupStrict,
+                findDependenciesDepMatchesResource,
+                findDependenciesSameGroup,
+                findDependenciesAllGroup,
+              ]) {
+                const dep = fn({ depName, type, group })(resources);
+                if (!isEmpty(dep)) {
+                  return dep;
+                }
+              }
+            },
+            pick(["group", "type", "parent"]),
+            tap((params) => {
+              assert(true);
+            }),
+            unless(isEmpty, defaultsDeep({ pathId })),
+          ])()
+        ),
+      ]),
+    ]),
   ])();
 
 const findPreDefinedDependencies = ({ depId, pathId }) =>
   pipe([
     tap(() => {
       assert(depId);
+      assert(pathId);
     }),
     () => PreDefinedDependenciesMap[depId],
     tap((params) => {
@@ -888,22 +906,13 @@ const addDependencyFromBody = ({ resources, type, group, method, swagger }) =>
     get("parameters"),
     find(eq(get("in"), "body")),
     get("schema"),
-    tap((params) => {
-      assert(true);
-    }),
     (schema) =>
       pipe([
         () => schema,
         buildDependenciesFromBodyObject({ swagger }),
-        tap((deps) => {
-          assert(true);
-        }),
-        map(({ depId, pathId }) =>
+        map(({ depId, pathId, allowedResources }) =>
           pipe([
             () => findPreDefinedDependencies({ depId, pathId }),
-            tap((params) => {
-              assert(true);
-            }),
             when(isEmpty, () =>
               findDependenciesFromResources({
                 resources,
@@ -911,25 +920,28 @@ const addDependencyFromBody = ({ resources, type, group, method, swagger }) =>
                 group,
                 depId,
                 pathId,
+                allowedResources,
               })
             ),
-            tap((params) => {
-              assert(true);
-            }),
           ])()
         ),
+        map(
+          when(
+            pipe([get("pathId"), includes("[]")]),
+            assign({ list: () => true })
+          )
+        ),
+        filter(not(and([eq(get("type"), type), eq(get("group"), group)]))),
         filter(not(isEmpty)),
         tap((params) => {
           assert(true);
         }),
         reduce(
-          (acc, { group, type, pathId }) =>
+          (acc, { group, type, pathId, list }) =>
             pipe([
-              tap((params) => {
-                assert(group);
-              }),
               () => type,
               camelCase,
+              when(() => list, pluralize.plural),
               (varName) => ({
                 ...acc,
                 [varName]: pipe([
@@ -938,11 +950,8 @@ const addDependencyFromBody = ({ resources, type, group, method, swagger }) =>
                     group,
                     createOnly: true,
                     pathId,
+                    list,
                   }),
-                  when(
-                    pipe([() => pathId, includes("[]")]),
-                    defaultsDeep({ list: true })
-                  ),
                 ])(),
               }),
             ])(),
@@ -1044,22 +1053,6 @@ const buildEnvironmentVariables =
       flatten,
       (results) => [...accumulator, ...results],
     ])();
-
-const getParentPath = ({ obj, key, parentPath }) =>
-  pipe([
-    tap((params) => {
-      assert(key);
-    }),
-    () => obj,
-    switchCase([
-      or([
-        get("x-ms-client-flatten"),
-        and([() => key === "properties", () => !isEmpty(parentPath)]),
-      ]),
-      () => parentPath,
-      () => [...parentPath, key],
-    ]),
-  ])();
 
 const getSchemaFromMethods = ({ method }) =>
   pipe([

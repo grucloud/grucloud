@@ -12,7 +12,10 @@ exports.createResources = () => [
     group: "Network",
     name: "myServiceEndpointPolicy",
     properties: () => ({ location: "westus" }),
-    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      serviceEndpointPolicyDefinitions: ["myServiceEndpointPolicyDefinition"],
+    }),
   },
 ];
 
@@ -44,13 +47,17 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      serviceEndpointPolicyDefinitions: ["myServiceEndpointPolicyDefinition"],
+    }),
   },
 ];
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [ServiceEndpointPolicyDefinition](../Network/ServiceEndpointPolicyDefinition.md)
 ## Swagger Schema
 ```js
 <ref *2> {

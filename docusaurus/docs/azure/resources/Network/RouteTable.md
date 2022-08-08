@@ -12,7 +12,10 @@ exports.createResources = () => [
     group: "Network",
     name: "myRouteTable",
     properties: () => ({ location: "westus" }),
-    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      routes: ["myRoute"],
+    }),
   },
 ];
 
@@ -40,13 +43,17 @@ exports.createResources = () => [
       },
       location: "westus",
     }),
-    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      routes: ["myRoute"],
+    }),
   },
 ];
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Route](../Network/Route.md)
 ## Swagger Schema
 ```js
 {

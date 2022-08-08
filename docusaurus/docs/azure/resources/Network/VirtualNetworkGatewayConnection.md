@@ -91,9 +91,11 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnet: ["mySubnet"],
-      publicIpAddress: ["myPublicIPAddress"],
-      virtualHubIpConfiguration: ["myVirtualHubIpConfiguration"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
+      subnets: ["mySubnet"],
+      publicIpAddresses: ["myPublicIPAddress"],
+      natRules: ["myNatRule"],
+      localNetworkGateway: "myLocalNetworkGateway",
     }),
   },
 ];
@@ -101,9 +103,11 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 - [Subnet](../Network/Subnet.md)
 - [PublicIPAddress](../Network/PublicIPAddress.md)
-- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
+- [NatRule](../Network/NatRule.md)
+- [LocalNetworkGateway](../Network/LocalNetworkGateway.md)
 ## Swagger Schema
 ```js
 {

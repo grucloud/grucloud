@@ -1165,8 +1165,10 @@ exports.fnSpecs = ({ config }) => {
         managedByOther: () => true,
         cannotBeDeleted: () => true,
       },
+      //TODO fix azure swagger
       {
-        type: "NatGateway",
+        type: "RouteTable",
+        group: "Network",
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
@@ -1174,70 +1176,10 @@ exports.fnSpecs = ({ config }) => {
             name: "resourceGroupName",
             parent: true,
           },
-          publicIpAddresses: {
-            type: "PublicIPAddress",
-            group: "Network",
-            list: true,
-            createOnly: true,
-          },
         },
-        pickPropertiesCreate: [
-          "sku.name",
-          "properties.idleTimeoutInMinutes",
-          "properties.publicIpPrefixes",
-          "zones",
-        ],
-        findDependencies: ({ live, lives }) => [
-          findDependenciesResourceGroup({ live, lives, config }),
-          {
-            type: "PublicIPAddress",
-            group: "Network",
-            ids: pipe([
-              () => live,
-              get("properties.publicIpAddresses"),
-              pluck("id"),
-            ])(),
-          },
-        ],
-        configDefault: ({ properties, dependencies, config, spec }) =>
-          pipe([
-            () => properties,
-            defaultsDeep(
-              configDefaultGeneric({
-                properties,
-                dependencies,
-                config,
-                spec,
-              })
-            ),
-            when(
-              () => dependencies.publicIpAddresses,
-              defaultsDeep({
-                properties: {
-                  publicIpAddresses: pipe([
-                    () => dependencies.publicIpAddresses,
-                    map((ipAddress) => ({ id: getField(ipAddress, "id") })),
-                  ])(),
-                },
-              })
-            ),
-          ])(),
       },
-      //TODO
       {
         type: "VirtualNetworkGateway",
-        findDependencies: ({ live, lives }) => [
-          findDependenciesResourceGroup({ live, lives, config }),
-          {
-            type: "PublicIPAddress",
-            group: "Network",
-            ids: pipe([
-              () => live,
-              get("properties.ipConfigurations"),
-              map(get("properties.publicIPAddress.id")),
-            ])(),
-          },
-        ],
         configDefault: ({ properties, dependencies, config, spec }) =>
           pipe([
             () => properties,

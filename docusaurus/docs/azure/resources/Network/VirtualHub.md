@@ -30,6 +30,7 @@ exports.createResources = () => [
       expressRouteGateway: "myExpressRouteGateway",
       azureFirewall: "myAzureFirewall",
       securityPartnerProvider: "mySecurityPartnerProvider",
+      virtualHubRouteTableV2s: ["myVirtualHubRouteTableV2"],
     }),
   },
 ];
@@ -43,6 +44,7 @@ exports.createResources = () => [
 - [ExpressRouteGateway](../Network/ExpressRouteGateway.md)
 - [AzureFirewall](../Network/AzureFirewall.md)
 - [SecurityPartnerProvider](../Network/SecurityPartnerProvider.md)
+- [VirtualHubRouteTableV2](../Network/VirtualHubRouteTableV2.md)
 ## Swagger Schema
 ```js
 {

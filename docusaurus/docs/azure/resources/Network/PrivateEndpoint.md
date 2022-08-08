@@ -14,8 +14,17 @@ exports.createResources = () => [
     properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      networkSecurityGroup: "myNetworkSecurityGroup",
+      applicationSecurityGroups: ["myApplicationSecurityGroup"],
+      routeTable: "myRouteTable",
+      routes: ["myRoute"],
       natGateway: "myNatGateway",
-      privateLinkService: ["myPrivateLinkService"],
+      serviceEndpointPolicies: ["myServiceEndpointPolicy"],
+      serviceEndpointPolicyDefinitions: ["myServiceEndpointPolicyDefinition"],
+      ipAllocations: ["myIpAllocation"],
+      applicationGateways: ["myApplicationGateway"],
+      privateLinkServices: ["myPrivateLinkService"],
     }),
   },
 ];
@@ -60,8 +69,17 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      networkSecurityGroup: "myNetworkSecurityGroup",
+      applicationSecurityGroups: ["myApplicationSecurityGroup"],
+      routeTable: "myRouteTable",
+      routes: ["myRoute"],
       natGateway: "myNatGateway",
-      privateLinkService: ["myPrivateLinkService"],
+      serviceEndpointPolicies: ["myServiceEndpointPolicy"],
+      serviceEndpointPolicyDefinitions: ["myServiceEndpointPolicyDefinition"],
+      ipAllocations: ["myIpAllocation"],
+      applicationGateways: ["myApplicationGateway"],
+      privateLinkServices: ["myPrivateLinkService"],
     }),
   },
 ];
@@ -78,8 +96,17 @@ exports.createResources = () => [
     properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      subnet: "mySubnet",
+      networkSecurityGroup: "myNetworkSecurityGroup",
+      applicationSecurityGroups: ["myApplicationSecurityGroup"],
+      routeTable: "myRouteTable",
+      routes: ["myRoute"],
       natGateway: "myNatGateway",
-      privateLinkService: ["myPrivateLinkService"],
+      serviceEndpointPolicies: ["myServiceEndpointPolicy"],
+      serviceEndpointPolicyDefinitions: ["myServiceEndpointPolicyDefinition"],
+      ipAllocations: ["myIpAllocation"],
+      applicationGateways: ["myApplicationGateway"],
+      privateLinkServices: ["myPrivateLinkService"],
     }),
   },
 ];
@@ -87,7 +114,16 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Subnet](../Network/Subnet.md)
+- [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
+- [ApplicationSecurityGroup](../Network/ApplicationSecurityGroup.md)
+- [RouteTable](../Network/RouteTable.md)
+- [Route](../Network/Route.md)
 - [NatGateway](../Network/NatGateway.md)
+- [ServiceEndpointPolicy](../Network/ServiceEndpointPolicy.md)
+- [ServiceEndpointPolicyDefinition](../Network/ServiceEndpointPolicyDefinition.md)
+- [IpAllocation](../Network/IpAllocation.md)
+- [ApplicationGateway](../Network/ApplicationGateway.md)
 - [PrivateLinkService](../Network/PrivateLinkService.md)
 ## Swagger Schema
 ```js

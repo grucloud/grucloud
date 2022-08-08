@@ -14,10 +14,21 @@ exports.createResources = () => [
     properties: () => ({ type: "EdgeZone", name: "edgeZone0" }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      natGateway: ["myNatGateway"],
-      ddosCustomPolicy: ["myDdosCustomPolicy"],
-      publicIpPrefix: ["myPublicIPPrefix"],
-      loadBalancer: ["myLoadBalancer"],
+      loadBalancers: ["myLoadBalancer"],
+      subnets: ["mySubnet"],
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      applicationSecurityGroups: ["myApplicationSecurityGroup"],
+      routeTables: ["myRouteTable"],
+      routes: ["myRoute"],
+      natGateways: ["myNatGateway"],
+      serviceEndpointPolicies: ["myServiceEndpointPolicy"],
+      serviceEndpointPolicyDefinitions: ["myServiceEndpointPolicyDefinition"],
+      ipAllocations: ["myIpAllocation"],
+      applicationGateways: ["myApplicationGateway"],
+      publicIpAddresses: ["myPublicIPAddress"],
+      ddosCustomPolicies: ["myDdosCustomPolicy"],
+      publicIpPrefixes: ["myPublicIPPrefix"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
     }),
   },
 ];
@@ -25,10 +36,21 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [LoadBalancer](../Network/LoadBalancer.md)
+- [Subnet](../Network/Subnet.md)
+- [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
+- [ApplicationSecurityGroup](../Network/ApplicationSecurityGroup.md)
+- [RouteTable](../Network/RouteTable.md)
+- [Route](../Network/Route.md)
 - [NatGateway](../Network/NatGateway.md)
+- [ServiceEndpointPolicy](../Network/ServiceEndpointPolicy.md)
+- [ServiceEndpointPolicyDefinition](../Network/ServiceEndpointPolicyDefinition.md)
+- [IpAllocation](../Network/IpAllocation.md)
+- [ApplicationGateway](../Network/ApplicationGateway.md)
+- [PublicIPAddress](../Network/PublicIPAddress.md)
 - [DdosCustomPolicy](../Network/DdosCustomPolicy.md)
 - [PublicIPPrefix](../Network/PublicIPPrefix.md)
-- [LoadBalancer](../Network/LoadBalancer.md)
+- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 ## Swagger Schema
 ```js
 {

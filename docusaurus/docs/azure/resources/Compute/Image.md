@@ -28,8 +28,12 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
-      snapshot: ["mySnapshot"],
-      disk: ["myDisk"],
+      snapshot: "mySnapshot",
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      snapshots: ["mySnapshot"],
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
     }),
   },
 ];
@@ -61,8 +65,12 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
-      snapshot: ["mySnapshot"],
-      disk: ["myDisk"],
+      snapshot: "mySnapshot",
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      snapshots: ["mySnapshot"],
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
     }),
   },
 ];
@@ -94,8 +102,12 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
-      snapshot: ["mySnapshot"],
-      disk: ["myDisk"],
+      snapshot: "mySnapshot",
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      snapshots: ["mySnapshot"],
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
     }),
   },
 ];
@@ -120,8 +132,12 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
-      snapshot: ["mySnapshot"],
-      disk: ["myDisk"],
+      snapshot: "mySnapshot",
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      snapshots: ["mySnapshot"],
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
     }),
   },
 ];
@@ -159,8 +175,12 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
-      snapshot: ["mySnapshot"],
-      disk: ["myDisk"],
+      snapshot: "mySnapshot",
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      snapshots: ["mySnapshot"],
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
     }),
   },
 ];
@@ -200,8 +220,12 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
-      snapshot: ["mySnapshot"],
-      disk: ["myDisk"],
+      snapshot: "mySnapshot",
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      snapshots: ["mySnapshot"],
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
     }),
   },
 ];
@@ -241,8 +265,12 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
-      snapshot: ["mySnapshot"],
-      disk: ["myDisk"],
+      snapshot: "mySnapshot",
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      snapshots: ["mySnapshot"],
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
     }),
   },
 ];
@@ -275,8 +303,12 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
-      snapshot: ["mySnapshot"],
-      disk: ["myDisk"],
+      snapshot: "mySnapshot",
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      snapshots: ["mySnapshot"],
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
     }),
   },
 ];
@@ -310,8 +342,12 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
-      snapshot: ["mySnapshot"],
-      disk: ["myDisk"],
+      snapshot: "mySnapshot",
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      snapshots: ["mySnapshot"],
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
     }),
   },
 ];
@@ -345,8 +381,12 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualMachine: "myVirtualMachine",
-      snapshot: ["mySnapshot"],
-      disk: ["myDisk"],
+      snapshot: "mySnapshot",
+      disk: "myDisk",
+      diskEncryptionSet: "myDiskEncryptionSet",
+      snapshots: ["mySnapshot"],
+      disks: ["myDisk"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
     }),
   },
 ];
@@ -357,6 +397,10 @@ exports.createResources = () => [
 - [VirtualMachine](../Compute/VirtualMachine.md)
 - [Snapshot](../Compute/Snapshot.md)
 - [Disk](../Compute/Disk.md)
+- [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
+- [Snapshot](../Compute/Snapshot.md)
+- [Disk](../Compute/Disk.md)
+- [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
 ## Swagger Schema
 ```js
 {
@@ -630,4 +674,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/image.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/ComputeRP/stable/2022-03-01/image.json).

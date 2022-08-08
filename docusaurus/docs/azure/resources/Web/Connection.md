@@ -22,13 +22,17 @@ exports.createResources = () => [
       },
       id: "/subscriptions/f34b22a3-2202-4fb1-b040-1332bd928c84/resourceGroups/testResourceGroup/providers/Microsoft.Web/connections/testManagedApi-1",
     }),
-    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      customApi: "myCustomApi",
+    }),
   },
 ];
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [CustomApi](../Web/CustomApi.md)
 ## Swagger Schema
 ```js
 {

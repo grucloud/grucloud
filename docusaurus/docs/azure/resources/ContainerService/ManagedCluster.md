@@ -1710,11 +1710,27 @@ exports.createResources = () => [
                   },
                   vnetSubnetID: {
                     type: 'string',
+                    format: 'arm-id',
+                    'x-ms-arm-id-details': {
+                      allowedResources: [
+                        {
+                          type: 'Microsoft.Network/virtualNetworks/subnets'
+                        }
+                      ]
+                    },
                     title: 'The ID of the subnet which agent pool nodes and optionally pods will join on startup.',
                     description: 'If this is not specified, a VNET and subnet will be generated and used. If no podSubnetID is specified, this applies to nodes and pods, otherwise it applies to just nodes. This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}'
                   },
                   podSubnetID: {
                     type: 'string',
+                    format: 'arm-id',
+                    'x-ms-arm-id-details': {
+                      allowedResources: [
+                        {
+                          type: 'Microsoft.Network/virtualNetworks/subnets'
+                        }
+                      ]
+                    },
                     title: 'The ID of the subnet which pods will join when launched.',
                     description: 'If omitted, pod IPs are statically assigned on the node subnet (see vnetSubnetID for more details). This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}'
                   },
@@ -1889,6 +1905,12 @@ exports.createResources = () => [
                   },
                   nodePublicIPPrefixID: {
                     type: 'string',
+                    format: 'arm-id',
+                    'x-ms-arm-id-details': {
+                      allowedResources: [
+                        { type: 'Microsoft.Network/publicIPPrefixes' }
+                      ]
+                    },
                     title: 'The public IP prefix ID which VM nodes should use IPs from.',
                     description: 'This is of the form: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPPrefixes/{publicIPPrefixName}'
                   },
@@ -1956,7 +1978,15 @@ exports.createResources = () => [
                   },
                   proximityPlacementGroupID: {
                     description: 'The ID for Proximity Placement Group.',
-                    type: 'string'
+                    type: 'string',
+                    format: 'arm-id',
+                    'x-ms-arm-id-details': {
+                      allowedResources: [
+                        {
+                          type: 'Microsoft.Network/proximityPlacementGroups'
+                        }
+                      ]
+                    }
                   },
                   kubeletConfig: {
                     description: 'The Kubelet configuration on the agent pool nodes.',
@@ -2217,6 +2247,7 @@ exports.createResources = () => [
                     properties: {
                       sourceResourceId: {
                         type: 'string',
+                        format: 'arm-id',
                         description: 'This is the ARM ID of the source object to be used to create the target object.'
                       }
                     }
@@ -2379,6 +2410,14 @@ exports.createResources = () => [
                     properties: {
                       resourceId: {
                         type: 'string',
+                        format: 'arm-id',
+                        'x-ms-arm-id-details': {
+                          allowedResources: [
+                            {
+                              type: 'Microsoft.ManagedIdentity/userAssignedIdentities'
+                            }
+                          ]
+                        },
                         description: 'The resource ID of the user assigned identity.'
                       },
                       clientId: {
@@ -2438,6 +2477,14 @@ exports.createResources = () => [
                     properties: {
                       resourceId: {
                         type: 'string',
+                        format: 'arm-id',
+                        'x-ms-arm-id-details': {
+                          allowedResources: [
+                            {
+                              type: 'Microsoft.ManagedIdentity/userAssignedIdentities'
+                            }
+                          ]
+                        },
                         description: 'The resource ID of the user assigned identity.'
                       },
                       clientId: {
@@ -2723,6 +2770,7 @@ exports.createResources = () => [
                         properties: {
                           id: {
                             type: 'string',
+                            format: 'arm-id',
                             description: 'The fully qualified Azure resource id.'
                           }
                         },
@@ -2743,6 +2791,7 @@ exports.createResources = () => [
                         properties: {
                           id: {
                             type: 'string',
+                            format: 'arm-id',
                             description: 'The fully qualified Azure resource id.'
                           }
                         },
@@ -2760,6 +2809,7 @@ exports.createResources = () => [
                     properties: {
                       id: {
                         type: 'string',
+                        format: 'arm-id',
                         description: 'The fully qualified Azure resource id.'
                       }
                     },
@@ -2814,6 +2864,7 @@ exports.createResources = () => [
                     properties: {
                       id: {
                         type: 'string',
+                        format: 'arm-id',
                         description: 'The fully qualified Azure resource id.'
                       }
                     },
@@ -3076,6 +3127,10 @@ exports.createResources = () => [
         },
         diskEncryptionSetID: {
           type: 'string',
+          format: 'arm-id',
+          'x-ms-arm-id-details': {
+            allowedResources: [ { type: 'Microsoft.Compute/diskEncryptionSets' } ]
+          },
           title: 'The Resource ID of the disk encryption set to use for enabling encryption at rest.',
           description: "This is of the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/diskEncryptionSets/{encryptionSetName}'"
         },
@@ -3086,6 +3141,14 @@ exports.createResources = () => [
             properties: {
               resourceId: {
                 type: 'string',
+                format: 'arm-id',
+                'x-ms-arm-id-details': {
+                  allowedResources: [
+                    {
+                      type: 'Microsoft.ManagedIdentity/userAssignedIdentities'
+                    }
+                  ]
+                },
                 description: 'The resource ID of the user assigned identity.'
               },
               clientId: {
@@ -3129,6 +3192,7 @@ exports.createResources = () => [
               privateLinkServiceID: {
                 readOnly: true,
                 type: 'string',
+                format: 'arm-id',
                 description: 'The private link service ID of the resource, this field is exposed only to NRP internally.'
               }
             }
@@ -3173,6 +3237,14 @@ exports.createResources = () => [
               properties: {
                 logAnalyticsWorkspaceResourceId: {
                   type: 'string',
+                  format: 'arm-id',
+                  'x-ms-arm-id-details': {
+                    allowedResources: [
+                      {
+                        type: 'Microsoft.OperationalInsights/workspaces'
+                      }
+                    ]
+                  },
                   description: 'Resource ID of the Log Analytics workspace to be associated with Microsoft Defender. When Microsoft Defender is enabled, this field is required and must be a valid workspace resource ID. When Microsoft Defender is disabled, leave the field empty.'
                 },
                 securityMonitoring: {

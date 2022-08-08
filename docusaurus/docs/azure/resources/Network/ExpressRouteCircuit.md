@@ -31,9 +31,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      routeFilter: ["myRouteFilter"],
-      expressRouteConnection: ["myExpressRouteConnection"],
-      expressRouteCircuitPeering: ["myExpressRouteCircuitPeering"],
+      routeFilters: ["myRouteFilter"],
+      expressRouteConnections: ["myExpressRouteConnection"],
+      connections: ["myConnection"],
+      expressRouteCircuitPeerings: ["myExpressRouteCircuitPeering"],
       route: "myRoute",
     }),
   },
@@ -65,9 +66,10 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      routeFilter: ["myRouteFilter"],
-      expressRouteConnection: ["myExpressRouteConnection"],
-      expressRouteCircuitPeering: ["myExpressRouteCircuitPeering"],
+      routeFilters: ["myRouteFilter"],
+      expressRouteConnections: ["myExpressRouteConnection"],
+      connections: ["myConnection"],
+      expressRouteCircuitPeerings: ["myExpressRouteCircuitPeering"],
       route: "myRoute",
     }),
   },
@@ -78,6 +80,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [RouteFilter](../Network/RouteFilter.md)
 - [ExpressRouteConnection](../Network/ExpressRouteConnection.md)
+- [Connection](../Web/Connection.md)
 - [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
 - [Route](../Network/Route.md)
 ## Swagger Schema

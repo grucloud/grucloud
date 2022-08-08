@@ -74,6 +74,7 @@ module.exports = CoreClient = ({
   isDefault,
   managedByOther = () => false,
   cannotBeDeleted,
+  shouldRetryOnExceptionGetById = shouldRetryOnExceptionCreateDefault,
   shouldRetryOnExceptionList = shouldRetryOnExceptionCreateDefault,
   shouldRetryOnExceptionCreate = shouldRetryOnExceptionCreateDefault,
   shouldRetryOnExceptionDelete = shouldRetryOnExceptionDeleteDefault,
@@ -139,6 +140,7 @@ module.exports = CoreClient = ({
                   axios.request(path, {
                     method: verbGet,
                   }),
+                shouldRetryOnException: shouldRetryOnExceptionGetById,
                 config,
               }),
             get("data"),

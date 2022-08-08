@@ -95,13 +95,17 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      configurationPolicyGroups: ["myConfigurationPolicyGroup"],
+    }),
   },
 ];
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [ConfigurationPolicyGroup](../Network/ConfigurationPolicyGroup.md)
 ## Swagger Schema
 ```js
 {

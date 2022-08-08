@@ -4,29 +4,28 @@ const {
   tap,
   filter,
   map,
-  and,
   eq,
   or,
   get,
-  flatMap,
   not,
   fork,
   switchCase,
+  assign,
 } = require("rubico");
 const {
   isEmpty,
   flatten,
   values,
   callProp,
-  isString,
   isObject,
+  last,
+  when,
 } = require("rubico/x");
 
 const {
   isPreviousProperties,
   isOmit,
   isSwaggerObject,
-  findTypesByDiscriminator,
   buildParentPath,
 } = require("./AzureRestApiCommon");
 
@@ -50,6 +49,15 @@ const PreDefinedDependenciesMap = {
   serverFarmId: {
     type: "AppServicePlan",
     group: "Web",
+  },
+  customerId: {
+    type: "Workspace",
+    group: "OperationalInsights",
+  },
+  publicKeys: {
+    type: "SshPublicKey",
+    group: "Compute",
+    list: true,
   },
 };
 
@@ -131,48 +139,50 @@ const buildDependenciesFromBodyArray = ({
     ]),
   ]);
 
+const preDefinedDependenciesPathId = ({ parentPath, key }) =>
+  pipe([
+    fork({
+      pathId: pipe([() => [...parentPath, key], callProp("join", ".")]),
+      depId: pipe([() => key]),
+    }),
+  ]);
+
 const buildDependenciesFromBody =
   ({ swagger, parentPath = [], accumulator = [] }) =>
   (properties = {}) =>
     pipe([
-      tap((params) => {
-        assert(swagger);
-        //console.log("\n\nparentPath", parentPath);
-      }),
       () => properties,
       map.entries(([key, obj]) => [
         key,
         pipe([
-          tap((params) => {
-            //console.log("key ", key, JSON.stringify(obj));
-          }),
           () => obj,
           switchCase([
             // loop detection
             isPreviousProperties({ parentPath, key }),
+            pipe([() => undefined]),
+            pipe([() => PreDefinedDependenciesMap[key]]),
+            pipe([
+              preDefinedDependenciesPathId({ parentPath, key }),
+              (result) => [result],
+            ]),
+            pipe([get("x-ms-arm-id-details")]),
             pipe([
               tap((params) => {
                 assert(true);
               }),
-              () => undefined,
-            ]),
-            pipe([() => PreDefinedDependenciesMap[key]]),
-            pipe([
               () => [...parentPath, key],
               callProp("join", "."),
               (pathId) => [
                 {
                   pathId,
                   depId: key,
+                  allowedResources: obj["x-ms-arm-id-details"].allowedResources,
                 },
               ],
             ]),
             // Find properties.id
             pipe([get("properties.id")]),
             pipe([
-              tap((params) => {
-                assert(true);
-              }),
               () => [...parentPath, key, "id"],
               callProp("join", "."),
               (pathId) => [
@@ -182,6 +192,22 @@ const buildDependenciesFromBody =
                 },
               ],
             ]),
+            // Find id
+            pipe([() => key === "id"]),
+            pipe([
+              fork({
+                pathId: pipe([
+                  () => [...parentPath, key],
+                  callProp("join", "."),
+                ]),
+                depId: pipe([
+                  () => parentPath,
+                  last,
+                  when(isEmpty, () => "id"),
+                ]),
+              }),
+              (result) => [result],
+            ]),
             pipe([eq(get("type"), "boolean")]),
             pipe([() => []]),
             // Find MyPropId
@@ -190,14 +216,14 @@ const buildDependenciesFromBody =
               tap((params) => {
                 assert(true);
               }),
-              () => [...parentPath, key],
-              callProp("join", "."),
-              (pathId) => [
-                {
-                  pathId,
-                  depId: key,
-                },
-              ],
+              fork({
+                pathId: pipe([
+                  () => [...parentPath, key],
+                  callProp("join", "."),
+                ]),
+                depId: () => key,
+              }),
+              (result) => [result],
             ]),
             // Omit ?
             or([isOmit({ key, obj }) /*, get("x-ms-mutability")*/]),

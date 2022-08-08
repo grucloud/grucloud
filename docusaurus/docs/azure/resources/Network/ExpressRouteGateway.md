@@ -22,8 +22,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      expressRouteCircuitPeering: ["myExpressRouteCircuitPeering"],
-      routeTable: ["myRouteTable"],
+      expressRouteConnections: ["myExpressRouteConnection"],
+      expressRouteCircuitPeerings: ["myExpressRouteCircuitPeering"],
+      routeTables: ["myRouteTable"],
       virtualHub: "myVirtualHub",
     }),
   },
@@ -32,6 +33,7 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [ExpressRouteConnection](../Network/ExpressRouteConnection.md)
 - [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
 - [RouteTable](../Network/RouteTable.md)
 - [VirtualHub](../Network/VirtualHub.md)

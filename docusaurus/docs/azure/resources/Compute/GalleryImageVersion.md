@@ -72,7 +72,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -151,7 +151,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -228,7 +228,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -305,7 +305,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -384,7 +384,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -452,7 +452,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -484,7 +484,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -561,7 +561,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -973,4 +973,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-01-03`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/GalleryRP/stable/2022-01-03/GalleryRP/gallery.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/GalleryRP/stable/2022-01-03/gallery.json).

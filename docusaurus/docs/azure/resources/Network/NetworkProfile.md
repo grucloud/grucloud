@@ -35,7 +35,18 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      natGateway: ["myNatGateway"],
+      networkInterfaces: ["myNetworkInterface"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
+      subnets: ["mySubnet"],
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      applicationSecurityGroups: ["myApplicationSecurityGroup"],
+      routeTables: ["myRouteTable"],
+      routes: ["myRoute"],
+      natGateways: ["myNatGateway"],
+      serviceEndpointPolicies: ["myServiceEndpointPolicy"],
+      serviceEndpointPolicyDefinitions: ["myServiceEndpointPolicyDefinition"],
+      ipAllocations: ["myIpAllocation"],
+      applicationGateways: ["myApplicationGateway"],
     }),
   },
 ];
@@ -43,7 +54,18 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [NetworkInterface](../Network/NetworkInterface.md)
+- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
+- [Subnet](../Network/Subnet.md)
+- [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
+- [ApplicationSecurityGroup](../Network/ApplicationSecurityGroup.md)
+- [RouteTable](../Network/RouteTable.md)
+- [Route](../Network/Route.md)
 - [NatGateway](../Network/NatGateway.md)
+- [ServiceEndpointPolicy](../Network/ServiceEndpointPolicy.md)
+- [ServiceEndpointPolicyDefinition](../Network/ServiceEndpointPolicyDefinition.md)
+- [IpAllocation](../Network/IpAllocation.md)
+- [ApplicationGateway](../Network/ApplicationGateway.md)
 ## Swagger Schema
 ```js
 {

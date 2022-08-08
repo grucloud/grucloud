@@ -21,7 +21,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      virtualHubIpConfiguration: ["myVirtualHubIpConfiguration"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
     }),
   },
 ];
