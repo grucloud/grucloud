@@ -74,10 +74,10 @@ exports.createResources = () => [
   {
     type: "Pipeline",
     group: "CodePipeline",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       pipeline: {
         artifactStore: {
-          location: "codepipeline-us-east-1-149415713660",
+          location: `codepipeline-${config.region}-149415713660`,
           type: "S3",
         },
         name: "my-pipeline",
@@ -142,10 +142,11 @@ exports.createResources = () => [
         version: 1,
       },
     }),
-    dependencies: ({}) => ({
+    dependencies: ({ config }) => ({
       role: "AWSCodePipelineServiceRole-my-pipeline",
       codeBuildProject: ["my-project"],
       ecrRepository: ["starhackit"],
+      s3Bucket: `codepipeline-${config.region}-149415713660`,
     }),
   },
   {

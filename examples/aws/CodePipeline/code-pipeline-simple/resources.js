@@ -49,10 +49,10 @@ exports.createResources = () => [
   {
     type: "Pipeline",
     group: "CodePipeline",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       pipeline: {
         artifactStore: {
-          location: "codepipeline-us-east-1-709458114120",
+          location: `codepipeline-${config.region}-709458114120`,
           type: "S3",
         },
         name: "my-pipeline",
@@ -128,6 +128,7 @@ exports.createResources = () => [
       role: `AWSCodePipelineServiceRole-${config.region}-my-pipeline`,
       connections: ["myconn"],
       codeBuildProject: ["starhackit"],
+      s3Bucket: `codepipeline-${config.region}-709458114120`,
     }),
   },
   {

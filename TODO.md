@@ -4,9 +4,6 @@
 
 ## Aws
 
-- LogStream ignore ?
-- CodePipeline add dependencies to S3
-- CodePipeline replace region to S3 bucket
 - API Gateway v1 Authorizer
 - ApiGatewayV2::Stage: name prefix with api
 - ELB Listener multiple target group ?
