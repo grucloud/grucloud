@@ -62,7 +62,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "ApigwFargate",
-      stage: "$default",
+      stage: "ApigwFargate::$default",
     }),
   },
   {

@@ -69,7 +69,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "API Gateway HTTP API to EventBridge",
-      stage: "$default",
+      stage: "API Gateway HTTP API to EventBridge::$default",
     }),
   },
   {

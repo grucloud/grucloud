@@ -64,7 +64,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "MyHttpApi",
-      stage: "$default",
+      stage: "MyHttpApi::$default",
     }),
   },
   {

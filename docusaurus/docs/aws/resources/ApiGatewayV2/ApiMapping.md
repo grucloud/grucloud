@@ -10,52 +10,16 @@ Manages an [Api Gateway V2 ApiMapping](https://console.aws.amazon.com/apigateway
 ```js
 exports.createResources = () => [
   {
-    type: "DomainName",
-    group: "ApiGatewayV2",
-    name: "grucloud.org",
-    dependencies: () => ({
-      certificate: "grucloud.org",
-    }),
-  },
-  {
-    type: "Api",
-    group: "ApiGatewayV2",
-    name: "my-api",
-    properties: ({}) => ({
-      ProtocolType: "HTTP",
-      ApiKeySelectionExpression: "$request.header.x-api-key",
-      DisableExecuteApiEndpoint: false,
-      RouteSelectionExpression: "$request.method $request.path",
-    }),
-  },
-  {
-    type: "Stage",
-    group: "ApiGatewayV2",
-    name: "my-api-stage-dev",
-    properties: ({}) => ({
-      AccessLogSettings: {
-        Format:
-          '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
-      },
-    }),
-    dependencies: () => ({
-      api: "my-api",
-      logGroup: "lg-http-test",
-    }),
-  },
-  {
     type: "ApiMapping",
     group: "ApiGatewayV2",
     properties: ({}) => ({
       ApiMappingKey: "",
     }),
     dependencies: () => ({
-      api: "my-api",
       domainName: "grucloud.org",
-      stage: "my-api-stage-dev",
+      stage: "my-api::stage-dev",
     }),
   },
-  { type: "LogGroup", group: "CloudWatchLogs", name: "lg-http-test" },
 ];
 ```
 
@@ -65,7 +29,6 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [API](./Api.md)
 - [Stage](./Stage.md)
 - [DomainName](./DomainName.md)
 

@@ -42,7 +42,7 @@ exports.createResources = () => [
         Format:
           '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
       },
-      StageName: "my-api-stage-dev",
+      StageName: "stage-dev",
       Tags: {
         mykey1: "value",
       },
@@ -59,9 +59,8 @@ exports.createResources = () => [
       ApiMappingKey: "",
     }),
     dependencies: ({}) => ({
-      api: "my-api",
       domainName: "grucloud.org",
-      stage: "my-api-stage-dev",
+      stage: "my-api::stage-dev",
     }),
   },
   {
@@ -94,7 +93,7 @@ exports.createResources = () => [
     group: "ApiGatewayV2",
     dependencies: ({}) => ({
       api: "my-api",
-      stage: "my-api-stage-dev",
+      stage: "my-api::stage-dev",
     }),
   },
   {

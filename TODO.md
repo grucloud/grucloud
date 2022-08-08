@@ -5,7 +5,6 @@
 ## Aws
 
 - API Gateway v1 Authorizer
-- ApiGatewayV2::Stage: name prefix with api
 - ELB Listener multiple target group ?
 
 - doc:

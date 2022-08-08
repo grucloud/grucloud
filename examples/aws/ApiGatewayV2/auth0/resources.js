@@ -66,9 +66,8 @@ exports.createResources = () => [
       ApiMappingKey: "",
     }),
     dependencies: ({}) => ({
-      api: "my-api",
       domainName: "grucloud.org",
-      stage: "my-api-stage-dev",
+      stage: "my-api::my-api-stage-dev",
     }),
   },
   {
@@ -103,7 +102,7 @@ exports.createResources = () => [
     group: "ApiGatewayV2",
     dependencies: ({}) => ({
       api: "my-api",
-      stage: "my-api-stage-dev",
+      stage: "my-api::my-api-stage-dev",
     }),
   },
   {

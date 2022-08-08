@@ -59,7 +59,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "serverlessland-pvt-endpoint",
-      stage: "$default",
+      stage: "serverlessland-pvt-endpoint::$default",
     }),
   },
   {

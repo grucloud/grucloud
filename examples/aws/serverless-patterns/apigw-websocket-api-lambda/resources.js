@@ -124,7 +124,7 @@ exports.createResources = () => [
     group: "ApiGatewayV2",
     dependencies: ({}) => ({
       api: "sam-app",
-      stage: "prod",
+      stage: "sam-app::prod",
     }),
   },
   {

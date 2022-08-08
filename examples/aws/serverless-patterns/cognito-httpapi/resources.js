@@ -81,7 +81,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "sam-app",
-      stage: "$default",
+      stage: "sam-app::$default",
     }),
   },
   {
