@@ -313,6 +313,14 @@ exports.fnSpecs = ({ config }) => {
             pick(pickPropertiesCreate),
             omit(["properties.routes"]),
           ]),
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+            parent: true,
+          },
+        },
       },
       {
         type: "Route",
@@ -1164,19 +1172,6 @@ exports.fnSpecs = ({ config }) => {
         ignoreResource: () => () => true,
         managedByOther: () => true,
         cannotBeDeleted: () => true,
-      },
-      //TODO fix azure swagger
-      {
-        type: "RouteTable",
-        group: "Network",
-        dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            name: "resourceGroupName",
-            parent: true,
-          },
-        },
       },
       {
         type: "VirtualNetworkGateway",

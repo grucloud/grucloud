@@ -90,6 +90,11 @@ const shouldRetryOnExceptionAzure = pipe([
   ]),
 ]);
 
+const shouldRetryOnExceptionDeleteAzure = pipe([
+  get("error.response.status"),
+  (status) => pipe([() => [409, 429], includes(status)])(),
+]);
+
 const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
 
 const onResponseListDefault = () => get("value", []);
@@ -539,7 +544,7 @@ module.exports = AzClient = ({
     shouldRetryOnExceptionList: shouldRetryOnExceptionAzure,
     shouldRetryOnExceptionCreate: shouldRetryOnExceptionAzure,
     shouldRetryOnExceptionGetById: shouldRetryOnExceptionAzure,
-    shouldRetryOnExceptionDelete: shouldRetryOnExceptionAzure,
+    shouldRetryOnExceptionDelete: shouldRetryOnExceptionDeleteAzure,
 
     findTargetId,
     verbCreate: verbCreateFromMethods(methods),

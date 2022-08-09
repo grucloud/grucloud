@@ -757,7 +757,7 @@
                 "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true,
-                "pathId": "properties.extensionProfile.extensions[].properties.protectedSettingsFromKeyVault.sourceVault",
+                "pathId": "properties.extensionProfile.extensions[].properties.protectedSettingsFromKeyVault.sourceVault.id",
                 "list": true
             },
             "publicIpAddresses": {
@@ -1377,7 +1377,7 @@
                 "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true,
-                "pathId": "properties.activeKey.sourceVault"
+                "pathId": "properties.activeKey.sourceVault.id"
             },
             "key": {
                 "type": "Key",
@@ -2289,7 +2289,7 @@
                 "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true,
-                "pathId": "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.sourceVault"
+                "pathId": "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.sourceVault.id"
             },
             "key": {
                 "type": "Key",
@@ -2334,7 +2334,7 @@
                 "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true,
-                "pathId": "properties.osProfile.secrets[].sourceVault",
+                "pathId": "properties.osProfile.secrets[].sourceVault.id",
                 "list": true
             },
             "networkInterfaces": {
@@ -2787,7 +2787,7 @@
                 "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true,
-                "pathId": "properties.virtualMachineProfile.osProfile.secrets[].sourceVault",
+                "pathId": "properties.virtualMachineProfile.osProfile.secrets[].sourceVault.id",
                 "list": true
             },
             "image": {
@@ -3182,7 +3182,7 @@
                 "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true,
-                "pathId": "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.sourceVault"
+                "pathId": "properties.storageProfile.osDisk.encryptionSettings.keyEncryptionKey.sourceVault.id"
             },
             "key": {
                 "type": "Key",
@@ -3227,7 +3227,7 @@
                 "type": "Vault",
                 "group": "KeyVault",
                 "createOnly": true,
-                "pathId": "properties.osProfile.secrets[].sourceVault",
+                "pathId": "properties.osProfile.secrets[].sourceVault.id",
                 "list": true
             },
             "networkInterfaces": {

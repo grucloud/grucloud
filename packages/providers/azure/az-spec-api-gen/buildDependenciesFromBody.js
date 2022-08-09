@@ -41,6 +41,7 @@ const PreDefinedDependenciesMap = {
   sourceVault: {
     type: "Vault",
     group: "KeyVault",
+    keyId: "sourceVault.id",
   },
   keyUrl: {
     type: "Key",
@@ -142,7 +143,16 @@ const buildDependenciesFromBodyArray = ({
 const preDefinedDependenciesPathId = ({ parentPath, key }) =>
   pipe([
     fork({
-      pathId: pipe([() => [...parentPath, key], callProp("join", ".")]),
+      pathId: pipe([
+        () => PreDefinedDependenciesMap,
+        get(`${key}.keyId`, key),
+        tap((params) => {
+          assert(true);
+        }),
+
+        (keyId) => [...parentPath, keyId],
+        callProp("join", "."),
+      ]),
       depId: pipe([() => key]),
     }),
   ]);
