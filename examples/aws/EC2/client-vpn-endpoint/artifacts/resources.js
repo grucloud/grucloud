@@ -60,7 +60,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       vpc: "vpc",
       cloudWatchLogGroup: "/client-vpn",
-      cloudWatchLogStream: "/client-vpn::cvpn-endpoint",
       serverCertificate: "server",
       clientCertificate: "client1.domain.tld",
     }),

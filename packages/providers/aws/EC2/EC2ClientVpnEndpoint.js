@@ -98,10 +98,10 @@ exports.EC2ClientVpnEndpoint = ({ spec, config }) =>
             set("ConnectionLogOptions", {
               Enabled: true,
               CloudwatchLogGroup: cloudWatchLogGroup.config.logGroupName,
-              CloudwatchLogStream: getField(
-                cloudWatchLogStream,
-                "logStreamName"
-              ),
+              // CloudwatchLogStream: getField(
+              //   cloudWatchLogStream,
+              //   "logStreamName"
+              // ),
             }),
           ])
         ),

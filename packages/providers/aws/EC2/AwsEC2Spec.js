@@ -526,25 +526,25 @@ module.exports = pipe([
               get("id"),
             ]),
         },
-        cloudWatchLogStream: {
-          type: "LogStream",
-          group: "CloudWatchLogs",
-          dependencyId: ({ lives, config }) =>
-            pipe([
-              get("ConnectionLogOptions.CloudwatchLogStream"),
-              (logStream) =>
-                pipe([
-                  () =>
-                    lives.getByType({
-                      providerName: config.providerName,
-                      type: "LogStream",
-                      group: "CloudWatchLogs",
-                    }),
-                  find(pipe([eq(get("live.logStreamName"), logStream)])),
-                  get("id"),
-                ])(),
-            ]),
-        },
+        // cloudWatchLogStream: {
+        //   type: "LogStream",
+        //   group: "CloudWatchLogs",
+        //   dependencyId: ({ lives, config }) =>
+        //     pipe([
+        //       get("ConnectionLogOptions.CloudwatchLogStream"),
+        //       (logStream) =>
+        //         pipe([
+        //           () =>
+        //             lives.getByType({
+        //               providerName: config.providerName,
+        //               type: "LogStream",
+        //               group: "CloudWatchLogs",
+        //             }),
+        //           find(pipe([eq(get("live.logStreamName"), logStream)])),
+        //           get("id"),
+        //         ])(),
+        //     ]),
+        // },
         serverCertificate: {
           type: "Certificate",
           group: "ACM",
