@@ -4,6 +4,21 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "SshPublicKey",
+    group: "Compute",
+    properties: ({ config }) => ({
+      name: "keypair",
+      location: config.location,
+      properties: {
+        publicKey:
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1iqH17P1OQA6eVXNBAQp537Fr\r\ndsxOjCPLGvylW8dtL5OY/yJLeuRs+E4180avkxOew90eqbavV20HR1tgh67o09+I\r\nYioVagFTRz9TO/yWdG0GftY+TIjf8GTx8gcMpCufYsqLdU6KZmfaESMukcNURpb9\r\nU19r2Lv/v6K2CvrFRCqhC4QlA657JLpWX9i0e5hZbxzMDRaevRPqJMjXPDmSSwoT\r\nICz7Ud1jF5uMMGkHbKDhXr4bM2IDHHNrIw/Qt9XN5WAc58xK1JvYxQvfwnQBnrtc\r\n131G3Z684v3cGalrd9zwAPojde3bcZ1tfW7HD6+k2iSyxA1TwEseYtyAN3V/l/h+\r\n+YPa9VIVhZTNz5OgXK9CGygDMF2ieeU1evbyorvNsXt4y0IeweDyK4I/4vPBl8Zg\r\nDWOgUtF+WrTruhSU6Z4mEEWx2G4SGqJcWqbmJacAGU4qmvR7x6YFU9gUCy6cWR7Y\r\nPHDNQDRIaheW7O2rOGdfJwQOvp7PbU6mgjBII0U= generated-by-azure\r\n",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "rg-vm",
+    }),
+  },
+  {
     type: "VirtualMachine",
     group: "Compute",
     properties: ({ getId }) => ({
@@ -21,8 +36,12 @@ exports.createResources = () => [
               publicKeys: [
                 {
                   path: "/home/ops/.ssh/authorized_keys",
-                  keyData:
-                    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/+ZCfuXkRdiRcNjERsbmuqtKBY+ctRVd/q06VNRGxqAGI+DGnc55eMxvhh1ptdjuNg6HA7yufumrj9AmxrKEtGmRfseeVUy3th7FphEKKYCkpb8zxIEdfRr5r374gl3QxrxeKzk2YgsCQAfwfaD+ZlNQyKHWgnfwFCGEh3ciL5eSQP5xittjJap35l17kwygtCYxPcA+5DlAjDtonLGzypw/Bnb8U6TutWiHsK5Jx4iYVo4rsPmy6MsTZUx0gAKf0jvRpROK4TOHUAfio05jxfDVfE2hOZAvYFas5fKOCI8in/xaVy/hoW3rFU7OvPWfyNv7+5IE6ytI59c5e9PMXJ9IVcQmiPkfTfK91YsYcyknf6SXdTjs0aPWRpCp+UpDr98qt8xqTMujI1RA075719T1I3OUO7+w/prFLUPkEHbOLnfJ1kzam6kX87OkEG6OwIqR3A7Sw1q3EmRfDppzBOw8Oaapla+52DMLeJ6j1eLNLyBcsrgVTbOLYyZXbORMLvr0FwiAmbUPBSPKFIT12N10dElScihA2YI1g6SS5nNZAiyU16T0zL9teXYEYlupXo7T5Dc44m7xiiuzx4xibh8MprUTDUKoHSmTTSZ9psggaYcrZZQKmO8P7Et8t44iEyZ7W8xpByHxRrqmuCrqx9dIopk8fXhnQA/sP/EbX5Q== frederic.heem@gmail.com\n",
+                  keyData: `${getId({
+                    type: "SshPublicKey",
+                    group: "Compute",
+                    name: "rg-vm::keypair",
+                    path: "live.properties.publicKey",
+                  })}`,
                 },
               ],
             },
@@ -67,6 +86,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vm",
+      sshPublicKeys: ["rg-vm::keypair"],
       networkInterfaces: ["rg-vm::network-interface"],
     }),
   },

@@ -4,21 +4,6 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "SshPublicKey",
-    group: "Compute",
-    properties: ({ config }) => ({
-      name: "keypair",
-      location: config.location,
-      properties: {
-        publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1iqH17P1OQA6eVXNBAQp537Fr\r\ndsxOjCPLGvylW8dtL5OY/yJLeuRs+E4180avkxOew90eqbavV20HR1tgh67o09+I\r\nYioVagFTRz9TO/yWdG0GftY+TIjf8GTx8gcMpCufYsqLdU6KZmfaESMukcNURpb9\r\nU19r2Lv/v6K2CvrFRCqhC4QlA657JLpWX9i0e5hZbxzMDRaevRPqJMjXPDmSSwoT\r\nICz7Ud1jF5uMMGkHbKDhXr4bM2IDHHNrIw/Qt9XN5WAc58xK1JvYxQvfwnQBnrtc\r\n131G3Z684v3cGalrd9zwAPojde3bcZ1tfW7HD6+k2iSyxA1TwEseYtyAN3V/l/h+\r\n+YPa9VIVhZTNz5OgXK9CGygDMF2ieeU1evbyorvNsXt4y0IeweDyK4I/4vPBl8Zg\r\nDWOgUtF+WrTruhSU6Z4mEEWx2G4SGqJcWqbmJacAGU4qmvR7x6YFU9gUCy6cWR7Y\r\nPHDNQDRIaheW7O2rOGdfJwQOvp7PbU6mgjBII0U= generated-by-azure\r\n",
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "rg-virtual-machine-scale-set",
-    }),
-  },
-  {
     type: "VirtualMachineScaleSet",
     group: "Compute",
     properties: ({ getId }) => ({
@@ -29,25 +14,28 @@ exports.createResources = () => [
         capacity: 2,
       },
       properties: {
-        singlePlacementGroup: false,
+        singlePlacementGroup: true,
         upgradePolicy: {
           mode: "Manual",
-        },
-        scaleInPolicy: {
-          rules: ["Default"],
+          rollingUpgradePolicy: {
+            maxBatchInstancePercent: 20,
+            maxUnhealthyInstancePercent: 20,
+            maxUnhealthyUpgradedInstancePercent: 20,
+            pauseTimeBetweenBatches: "PT0S",
+          },
         },
         virtualMachineProfile: {
           osProfile: {
             computerNamePrefix: "vm-scale-",
-            adminUsername: "azureuser",
+            adminUsername: "ops",
             linuxConfiguration: {
               disablePasswordAuthentication: true,
               ssh: {
                 publicKeys: [
                   {
-                    path: "/home/azureuser/.ssh/authorized_keys",
+                    path: "/home/ops/.ssh/authorized_keys",
                     keyData:
-                      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1iqH17P1OQA6eVXNBAQp537Fr\r\ndsxOjCPLGvylW8dtL5OY/yJLeuRs+E4180avkxOew90eqbavV20HR1tgh67o09+I\r\nYioVagFTRz9TO/yWdG0GftY+TIjf8GTx8gcMpCufYsqLdU6KZmfaESMukcNURpb9\r\nU19r2Lv/v6K2CvrFRCqhC4QlA657JLpWX9i0e5hZbxzMDRaevRPqJMjXPDmSSwoT\r\nICz7Ud1jF5uMMGkHbKDhXr4bM2IDHHNrIw/Qt9XN5WAc58xK1JvYxQvfwnQBnrtc\r\n131G3Z684v3cGalrd9zwAPojde3bcZ1tfW7HD6+k2iSyxA1TwEseYtyAN3V/l/h+\r\n+YPa9VIVhZTNz5OgXK9CGygDMF2ieeU1evbyorvNsXt4y0IeweDyK4I/4vPBl8Zg\r\nDWOgUtF+WrTruhSU6Z4mEEWx2G4SGqJcWqbmJacAGU4qmvR7x6YFU9gUCy6cWR7Y\r\nPHDNQDRIaheW7O2rOGdfJwQOvp7PbU6mgjBII0U= generated-by-azure\r\n",
+                      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/+ZCfuXkRdiRcNjERsbmuqtKBY+ctRVd/q06VNRGxqAGI+DGnc55eMxvhh1ptdjuNg6HA7yufumrj9AmxrKEtGmRfseeVUy3th7FphEKKYCkpb8zxIEdfRr5r374gl3QxrxeKzk2YgsCQAfwfaD+ZlNQyKHWgnfwFCGEh3ciL5eSQP5xittjJap35l17kwygtCYxPcA+5DlAjDtonLGzypw/Bnb8U6TutWiHsK5Jx4iYVo4rsPmy6MsTZUx0gAKf0jvRpROK4TOHUAfio05jxfDVfE2hOZAvYFas5fKOCI8in/xaVy/hoW3rFU7OvPWfyNv7+5IE6ytI59c5e9PMXJ9IVcQmiPkfTfK91YsYcyknf6SXdTjs0aPWRpCp+UpDr98qt8xqTMujI1RA075719T1I3OUO7+w/prFLUPkEHbOLnfJ1kzam6kX87OkEG6OwIqR3A7Sw1q3EmRfDppzBOw8Oaapla+52DMLeJ6j1eLNLyBcsrgVTbOLYyZXbORMLvr0FwiAmbUPBSPKFIT12N10dElScihA2YI1g6SS5nNZAiyU16T0zL9teXYEYlupXo7T5Dc44m7xiiuzx4xibh8MprUTDUKoHSmTTSZ9psggaYcrZZQKmO8P7Et8t44iEyZ7W8xpByHxRrqmuCrqx9dIopk8fXhnQA/sP/EbX5Q== frederic.heem@gmail.com",
                   },
                 ],
               },
@@ -70,21 +58,16 @@ exports.createResources = () => [
               diskSizeGB: 30,
             },
             imageReference: {
-              publisher: "canonical",
-              offer: "0001-com-ubuntu-server-focal",
-              sku: "20_04-lts",
+              publisher: "Canonical",
+              offer: "UbuntuServer",
+              sku: "18.04-LTS",
               version: "latest",
-            },
-          },
-          diagnosticsProfile: {
-            bootDiagnostics: {
-              enabled: true,
             },
           },
           networkProfile: {
             networkInterfaceConfigurations: [
               {
-                name: "virtual-network-nic01",
+                name: "vmsca3e24Nic",
                 properties: {
                   primary: true,
                   enableAcceleratedNetworking: false,
@@ -92,7 +75,7 @@ exports.createResources = () => [
                     id: getId({
                       type: "NetworkSecurityGroup",
                       group: "Network",
-                      name: "rg-virtual-machine-scale-set::basicnsgvirtual-network-nic01",
+                      name: "rg-virtual-machine-scale-set::security-group",
                     }),
                   },
                   dnsSettings: {
@@ -101,14 +84,13 @@ exports.createResources = () => [
                   enableIPForwarding: false,
                   ipConfigurations: [
                     {
-                      name: "virtual-network-nic01-defaultIpConfiguration",
+                      name: "vmsca3e24IPConfig",
                       properties: {
-                        primary: true,
                         subnet: {
                           id: getId({
                             type: "Subnet",
                             group: "Network",
-                            name: "rg-virtual-machine-scale-set::virtual-network::default",
+                            name: "rg-virtual-machine-scale-set::virtual-network::subnet",
                           }),
                         },
                         privateIPAddressVersion: "IPv4",
@@ -120,40 +102,42 @@ exports.createResources = () => [
             ],
           },
         },
-        overprovision: false,
+        overprovision: true,
         doNotRunExtensionsOnOverprovisionedVMs: false,
-        platformFaultDomainCount: 1,
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-virtual-machine-scale-set",
-      sshPublicKeys: ["rg-virtual-machine-scale-set::keypair"],
-      networkSecurityGroups: [
-        "rg-virtual-machine-scale-set::basicnsgvirtual-network-nic01",
-      ],
-      subnets: ["rg-virtual-machine-scale-set::virtual-network::default"],
+      networkSecurityGroups: ["rg-virtual-machine-scale-set::security-group"],
+      subnets: ["rg-virtual-machine-scale-set::virtual-network::subnet"],
     }),
   },
   {
     type: "NetworkSecurityGroup",
     group: "Network",
     properties: ({}) => ({
-      name: "basicnsgrg-virtual-machine-scale-set-vnet-nic01",
+      name: "security-group",
       properties: {
-        securityRules: [],
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "rg-virtual-machine-scale-set",
-    }),
-  },
-  {
-    type: "NetworkSecurityGroup",
-    group: "Network",
-    properties: ({}) => ({
-      name: "basicnsgvirtual-network-nic01",
-      properties: {
-        securityRules: [],
+        securityRules: [
+          {
+            name: "SSH",
+            properties: {
+              description: "allow SSH",
+              protocol: "Tcp",
+              sourcePortRange: "*",
+              destinationPortRange: "22",
+              sourceAddressPrefix: "*",
+              destinationAddressPrefix: "*",
+              access: "Allow",
+              priority: 1000,
+              direction: "Inbound",
+              sourcePortRanges: [],
+              destinationPortRanges: [],
+              sourceAddressPrefixes: [],
+              destinationAddressPrefixes: [],
+            },
+          },
+        ],
       },
     }),
     dependencies: ({}) => ({
@@ -164,7 +148,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "Network",
     properties: ({}) => ({
-      name: "default",
+      name: "subnet",
       properties: {
         addressPrefix: "10.0.0.0/24",
       },

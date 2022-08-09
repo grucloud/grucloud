@@ -11,6 +11,8 @@ const {
   omit,
   filter,
   not,
+  and,
+  switchCase,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -27,7 +29,7 @@ const {
 const fs = require("fs").promises;
 const path = require("path");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { omitIfEmpty, compare } = require("@grucloud/core/Common");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 
 const {
   findDependenciesResourceGroup,
@@ -319,7 +321,48 @@ const filterVirtualMachineProperties =
                     assign({
                       publicKeys: pipe([
                         get("publicKeys", []),
-                        //map(omit(["keyData"])),
+                        map(
+                          assign({
+                            keyData: ({ keyData }) =>
+                              pipe([
+                                () => lives,
+                                find(
+                                  and([
+                                    eq(
+                                      get("groupType"),
+                                      "Compute::SshPublicKey"
+                                    ),
+                                    eq(
+                                      get("live.properties.publicKey"),
+                                      keyData
+                                    ),
+                                  ])
+                                ),
+                                tap((params) => {
+                                  assert(true);
+                                }),
+                                get("id"),
+                                switchCase([
+                                  isEmpty,
+                                  () => keyData,
+                                  replaceWithName({
+                                    groupType: "Compute::SshPublicKey",
+                                    path: "live.properties.publicKey",
+                                    //pathLive: "live.properties.publicKey",
+                                    providerConfig,
+                                    lives,
+                                  }),
+                                ]),
+                                tap((params) => {
+                                  assert(true);
+                                }),
+                              ])(),
+                          })
+                        ),
+
+                        tap((params) => {
+                          assert(true);
+                        }),
                       ]),
                     }),
                   ]),
@@ -365,26 +408,6 @@ const VirtualMachineDependencySshPublicKey = ({
     ),
   ])(),
 });
-
-const publicKeysCreatePayload = ({ dependencies }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => dependencies.sshPublicKeys,
-    map((sshPublicKey) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        //TODO azureuser
-        () => ({
-          path: "/home/azureuser/.ssh/authorized_keys",
-          keyData: getField(sshPublicKey, "properties.publicKey"),
-        }),
-      ])()
-    ),
-  ])();
 
 exports.fnSpecs = ({ config }) =>
   pipe([
@@ -455,24 +478,6 @@ exports.fnSpecs = ({ config }) =>
       },
       {
         type: "DiskEncryptionSet",
-        dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            name: "resourceGroupName",
-            parent: true,
-          },
-          vault: {
-            type: "Vault",
-            group: "KeyVault",
-            createOnly: true,
-          },
-          key: {
-            type: "Key",
-            group: "KeyVault",
-            createOnly: true,
-          },
-        },
         //TODO remove
         pickPropertiesCreate: [
           "name",
@@ -705,22 +710,6 @@ exports.fnSpecs = ({ config }) =>
               assert(true);
             }),
             () => properties,
-            when(
-              () => dependencies.sshPublicKeys,
-              defaultsDeep({
-                properties: {
-                  virtualMachineProfile: {
-                    osProfile: {
-                      linuxConfiguration: {
-                        ssh: {
-                          publicKeys: publicKeysCreatePayload({ dependencies }),
-                        },
-                      },
-                    },
-                  },
-                },
-              })
-            ),
             defaultsDeep(
               configDefaultGeneric({ properties, dependencies, config, spec })
             ),
@@ -835,20 +824,6 @@ exports.fnSpecs = ({ config }) =>
               );
             }),
             () => properties,
-            when(
-              () => dependencies.sshPublicKeys,
-              defaultsDeep({
-                properties: {
-                  osProfile: {
-                    linuxConfiguration: {
-                      ssh: {
-                        publicKeys: publicKeysCreatePayload({ dependencies }),
-                      },
-                    },
-                  },
-                },
-              })
-            ),
             unless(
               () => isEmpty(dependencies.networkInterfaces),
               defaultsDeep({

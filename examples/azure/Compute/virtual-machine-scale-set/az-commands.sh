@@ -1,18 +1,17 @@
 #!/bin/bash
 
 # Variables
-rg=rg-vm
+rg=rg-virtual-machine-scale-set
 location=uksouth
 vnet_name=virtual-network
 vnet_prefix=10.0.0.0/16
 subnet_name=subnet
 subnet_prefix=10.0.0.0/24
 ip_address_name=ip-address
-nat_gateway_name=nat-gw
 nsg_name=security-group
-nic_name=network-interface
-ssh_key_name="mykeypair"
 admin_username="ops"
+image="UbuntuLTS"
+vmss_name=vm-scale-set
 vm_name=vm
 
 # Resources::ResourceGroup
@@ -29,24 +28,30 @@ az network vnet subnet create -g "$rg" -n "$subnet_name" --vnet-name "$vnet_name
 
 # Network::PublicIPAddress
 # https://docs.microsoft.com/en-us/cli/azure/network/public-ip?view=azure-cli-latest#az-network-public-ip-create
-az network public-ip create -g "$rg" -n "$ip_address_name" -l "$location" -o none
+#az network public-ip create -g "$rg" -n "$ip_address_name" -l "$location" -o none
 
 # Network::NetworkSecurityGroup
 # https://docs.microsoft.com/en-us/cli/azure/network/nsg?view=azure-cli-latest#az-network-nsg-create
 az network nsg create -g "$rg" -n "$nsg_name"
 # https://docs.microsoft.com/en-us/cli/azure/network/nsg/rule?view=azure-cli-latest#az-network-nsg-rule-create
-az network nsg rule create -g "$rg" --nsg-name "$nsg_name" -n SSH --priority 1000 --source-address-prefixes '*' --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 22  --protocol Tcp --description "allow SSH"
-az network nsg rule create -g "$rg" --nsg-name "$nsg_name" -n ICMP --priority 1001 --source-address-prefixes '*' --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges '*' --protocol Icmp --description "allow ICMP"
+az network nsg rule create -g "$rg" --nsg-name "$nsg_name" -n SSH    --priority 1000 --source-address-prefixes '*' --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 22  --protocol Tcp --description "allow SSH"
+#az network nsg rule create -g "$rg" --nsg-name "$nsg_name" -n ICMP --priority 1001 --source-address-prefixes '*' --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges '*' --protocol Icmp --description "allow ICMP"
 
 # Network::NetworkInterface
 # https://docs.microsoft.com/en-us/cli/azure/network/nic?view=azure-cli-latest#az-network-nic-create
-az network nic create -g "$rg" --vnet-name "$vnet_name" --subnet "$subnet_name" -n "$nic_name"  --network-security-group "$nsg_name" --public-ip-address "$ip_address_name"  --ip-forwarding
+#az network nic create -g "$rg" --vnet-name "$vnet_name" --subnet "$subnet_name" -n "$nic_name"  --network-security-group "$nsg_name" --public-ip-address "$ip_address_name"  --ip-forwarding
 
-# Compute::VirtualMachine
-# https://docs.microsoft.com/en-us/cli/azure/vm?view=azure-cli-latest#az-vm-create
-                                               
 # Compute::SshPublicKey
 # https://docs.microsoft.com/en-us/cli/azure/sshkey?view=azure-cli-latest#az-sshkey-create
-az sshkey create --location "$location" --resource-group "$rg" --name "$ssh_key_name"  
+#az sshkey create --location "$location" --resource-group "$rg" --name "$ssh_key_name"  
 
-az vm create -n "$vm_name" -g "$rg" --image UbuntuLTS --size Standard_A1_v2 --nics "$nic_name" --admin-username "$admin_username" --ssh-key-name "$ssh_key_name" 
+# Compute::VirtualMachineScaleSet
+# https://docs.microsoft.com/en-us/cli/azure/vmss?view=azure-cli-latest#az-vmss-create
+az vmss create -n "$vmss_name" -g "$rg" --image  "$image" --vm-sku Standard_B1ls  \
+    --subnet "$subnet_name"  \
+    --vnet-name "$vnet_name" \
+    --ssh-key-values "@~/.ssh/id_rsa.pub"  \
+    --nsg  "$nsg_name" \
+    --admin-username  "$admin_username" \
+    --computer-name-prefix "vm-scale-" \
+    --load-balancer ""
