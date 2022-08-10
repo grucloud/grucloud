@@ -36,8 +36,12 @@ exports.createResources = () => [
               publicKeys: [
                 {
                   path: "/home/ops/.ssh/authorized_keys",
-                  keyData:
-                    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCu6uXPrx9cha47I6tLeOmYuWLEwQPxyBmhi2Z3bmhZHbqO0Ehc12wzMzZr6JKD3HPsdy8QPrqQnyysmboMdfKiKjC8JzkqoyfJ0yMwT9FhrJQo1fP0Fqa/zCh4QQSwPkOUB89G6EHLeEyERMpETVmAU12HYZKVm8VLwVsp5W6+YclT6uSCr/ZIRBSIoNk1+soPyUOpq98DwFzzuAmwGVeUhW4Wl5TFAeJszbCg3CvqveoV7FTrWJnbug7lHek5drExPhxjWsvdn+9+lAhnyFdNoaBa5tPhSHxY/NFwe8YSfNt/Eh6l2fygmu0aj1cdooEzfk5oTKS5ydxOKHMHlNW8IJ2xS8rChfwGnt/bbVzxfGWEhBokRhJV0NObPAhv8u1fquDEpYhATap7E2BtI9wq7UvfCySBrOb94VpQ3HmRP+c2lUXfdxO6690jxGdxN79JZPh9cglYo6Oh3q5aJcRDg2PlrkICoQpGQ5VY2PBcSCYtJnHCZWQ8yi6VIJFfY90= generated-by-azure",
+                  keyData: `${getId({
+                    type: "SshPublicKey",
+                    group: "Compute",
+                    name: "rg-vm-ad-login::keypair",
+                    path: "live.properties.publicKey",
+                  })}`,
                 },
               ],
             },
