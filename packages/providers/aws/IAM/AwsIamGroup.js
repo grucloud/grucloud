@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, any, assign, pick, omit } = require("rubico");
-const { defaultsDeep, forEach } = require("rubico/x");
+const { defaultsDeep, forEach, callProp } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamGroup" });
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -28,6 +28,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
             defaultsDeep({ MaxItems: 1e3 }),
             iam().listAttachedGroupPolicies,
             get("AttachedPolicies"),
+            callProp("sort", (a, b) => a.PolicyArn.localeCompare(b.PolicyArn)),
           ]),
           Policies: pipe([
             pick(["GroupName"]),
