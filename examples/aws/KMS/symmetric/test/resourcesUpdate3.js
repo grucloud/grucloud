@@ -3,7 +3,7 @@ exports.createResources = () => [
     type: "Key",
     group: "KMS",
     name: "key-test",
-    properties: () => ({
+    properties: ({ config }) => ({
       Policy: {
         Version: "2012-10-17",
         Id: "key-default-1",

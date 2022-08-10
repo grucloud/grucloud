@@ -6,23 +6,23 @@ exports.createResources = () => [
   {
     type: "LoadBalancer",
     group: "ElasticLoadBalancingV2",
-    name: "load-balancer",
     properties: ({}) => ({
+      Name: "load-balancer",
       Scheme: "internet-facing",
       Type: "application",
       IpAddressType: "ipv4",
       Tags: [{ Key: "mykey1", Value: "value" }],
     }),
     dependencies: () => ({
-      subnets: ["subnet-a", "subnet-b"],
+      subnets: ["vpc::subnet-a", "vpc::subnet-b"],
       securityGroups: ["sg::vpc::default"],
     }),
   },
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "target-group-rest",
     properties: ({}) => ({
+      Name: "target-group-rest",
       Protocol: "HTTP",
       Port: 30020,
       HealthCheckProtocol: "HTTP",
@@ -46,8 +46,8 @@ exports.createResources = () => [
   {
     type: "TargetGroup",
     group: "ElasticLoadBalancingV2",
-    name: "target-group-web",
     properties: ({}) => ({
+      Name: "target-group-web",
       Protocol: "HTTP",
       Port: 30010,
       HealthCheckProtocol: "HTTP",

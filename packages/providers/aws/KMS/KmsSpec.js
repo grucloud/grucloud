@@ -41,7 +41,7 @@ module.exports = pipe([
       filterLive: ({ providerConfig, lives }) =>
         pipe([
           //TODO no pick
-          pick(["Description", "Policy"]),
+          pick(["Enabled", "Description", "Policy"]),
           assign({
             Policy: pipe([
               get("Policy"),

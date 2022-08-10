@@ -17,13 +17,14 @@ exports.createResources = () => [
       ],
     }),
     dependencies: () => ({
-      subnets: ["subnet-1", "subnet-2"],
+      subnets: ["vpc-postgres::subnet-1", "vpc-postgres::subnet-2"],
     }),
   },
   {
     type: "DBInstance",
     group: "RDS",
     properties: ({ config }) => ({
+      DBInstanceIdentifier: "db-instance",
       DBInstanceClass: "db.t3.micro",
       Engine: "postgres",
       EngineVersion: "14.2",

@@ -44,60 +44,71 @@ exports.createResources = () => [
   {
     type: "TaskDefinition",
     group: "ECS",
-    properties: () => ({
+    properties: ({}) => ({
       containerDefinitions: [
         {
-          name: "nginx",
-          image: "nginx",
           cpu: 0,
-          memory: 512,
+          environment: [],
+          essential: true,
+          image: "nginx",
+          memory: 1024,
+          mountPoints: [],
+          name: "nginx",
           portMappings: [
             {
-              containerPort: 81,
+              containerPort: 80,
               hostPort: 80,
               protocol: "tcp",
             },
           ],
-          essential: true,
-          environment: [],
-          mountPoints: [],
           volumesFrom: [],
         },
       ],
-      placementConstraints: [],
+      family: "nginx",
       requiresCompatibilities: ["EC2"],
-      tags: [{ key: "mykey1", value: "value" }],
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
+        },
+      ],
     }),
   },
   {
     type: "Service",
     group: "ECS",
-    properties: () => ({
-      launchType: "EC2",
-      desiredCount: 2,
+    properties: ({}) => ({
       deploymentConfiguration: {
         deploymentCircuitBreaker: {
           enable: false,
           rollback: false,
         },
-        maximumPercent: 200,
+        maximumPercent: 150,
         minimumHealthyPercent: 100,
       },
+      desiredCount: 1,
+      enableECSManagedTags: true,
+      enableExecuteCommand: false,
+      launchType: "EC2",
       placementConstraints: [],
       placementStrategy: [
         {
-          type: "spread",
           field: "attribute:ecs.availability-zone",
+          type: "spread",
         },
         {
-          type: "spread",
           field: "instanceId",
+          type: "spread",
         },
       ],
       schedulingStrategy: "REPLICA",
-      enableECSManagedTags: true,
-      enableExecuteCommand: false,
-      tags: [{ key: "mykey1", value: "value" }],
+      serviceName: "service-nginx",
+      tags: [
+        {
+          key: "mykey",
+          value: "value",
+        },
+      ],
     }),
     dependencies: () => ({
       cluster: "cluster",
