@@ -17,6 +17,7 @@ const {
   first,
   append,
   find,
+  callProp,
 } = require("rubico/x");
 const querystring = require("querystring");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -208,3 +209,7 @@ exports.findInStatement =
       }),
       filter(not(isEmpty)),
     ])();
+
+exports.sortPolicies = callProp("sort", (a, b) =>
+  a.PolicyArn.localeCompare(b.PolicyArn)
+);
