@@ -8,7 +8,7 @@ Provides a **WebAppConfiguration** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Web app configuration ARM resource.',
   type: 'object',

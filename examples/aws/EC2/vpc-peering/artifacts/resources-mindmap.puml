@@ -5,9 +5,13 @@ skinparam monochrome true
 ++ aws-primary
 +++ EC2
 ++++ Vpc (1)
+++++ RouteTable (1)
+++++ Route (1)
 ++++ VpcPeeringConnection (1)
 -- aws-secondary
 --- EC2
 ---- Vpc (1)
+---- RouteTable (1)
+---- Route (1)
 ---- VpcPeeringConnectionAccepter (1)
 @endmindmap

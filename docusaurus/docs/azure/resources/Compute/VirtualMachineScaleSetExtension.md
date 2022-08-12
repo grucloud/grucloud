@@ -54,7 +54,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualMachineScaleSet](../Compute/VirtualMachineScaleSet.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     name: { type: 'string', description: 'The name of the extension.' },

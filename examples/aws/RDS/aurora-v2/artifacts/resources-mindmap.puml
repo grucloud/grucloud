@@ -3,8 +3,6 @@ title Resources for project aurora-v2
 skinparam monochrome true
 + Infra
 ++ aws
-+++ CloudWatchLogs
-++++ LogGroup (1)
 +++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)

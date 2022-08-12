@@ -17,7 +17,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      hostingEnvironment: "myHostingEnvironment",
       appServicePlan: "myAppServicePlan",
     }),
   },
@@ -26,10 +25,9 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [HostingEnvironment](../Web/HostingEnvironment.md)
 - [AppServicePlan](../Web/AppServicePlan.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'SSL certificate for an app.',
   type: 'object',

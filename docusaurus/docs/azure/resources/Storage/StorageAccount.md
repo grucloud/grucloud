@@ -541,7 +541,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     sku: {

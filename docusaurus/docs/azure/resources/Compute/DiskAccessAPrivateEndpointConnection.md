@@ -21,7 +21,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      privateEndpoint: "myPrivateEndpoint",
       diskAccess: "myDiskAccess",
     }),
   },
@@ -30,10 +29,9 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [PrivateEndpoint](../Network/PrivateEndpoint.md)
 - [DiskAccess](../Compute/DiskAccess.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

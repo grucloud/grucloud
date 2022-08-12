@@ -3,8 +3,6 @@ title Resources for project RDS Postgres Stateless
 skinparam monochrome true
 + Infra
 ++ aws
-+++ CloudWatchLogs
-++++ LogGroup (1)
 +++ EC2
 ++++ KeyPair (1)
 ++++ Vpc (1)

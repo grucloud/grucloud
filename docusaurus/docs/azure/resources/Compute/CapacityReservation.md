@@ -29,7 +29,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   type: 'object',
   properties: {

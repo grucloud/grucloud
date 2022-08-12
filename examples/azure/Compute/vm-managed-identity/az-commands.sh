@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-rg=rg-vm-ad-login
+rg=rg-user-managed-identity
 location=uksouth
 vnet_name=virtual-network
 vnet_prefix=10.0.0.0/16
@@ -12,8 +12,9 @@ nat_gateway_name=nat-gw
 nsg_name=security-group
 nic_name=network-interface
 ssh_key_name=keypair
+managed_identity=MyIdentity
 vm_name=vm
-vm_extension_name=AADSSHLoginForLinux
+AZURE_SUBSCRIPTION_ID=481ba7bf-8d0f-4a36-a362-8d858d34e0e8
 
 # Resources::ResourceGroup
 # https://docs.microsoft.com/en-us/cli/azure/group?view=azure-cli-latest#az-group-creates
@@ -40,12 +41,26 @@ az network nsg rule create -g "$rg" --nsg-name "$nsg_name" -n SSH --priority 100
 
 # Network::NetworkInterface
 # https://docs.microsoft.com/en-us/cli/azure/network/nic?view=azure-cli-latest#az-network-nic-create
-az network nic create -g "$rg" --vnet-name "$vnet_name" --subnet "$subnet_name" -n "$nic_name"  --network-security-group "$nsg_name" --public-ip-address "$ip_address_name"  --ip-forwarding
+az network nic create -g "$rg" \
+        --vnet-name "$vnet_name" \
+         --subnet "$subnet_name" \
+         -n "$nic_name" \
+         --network-security-group "$nsg_name" \
+         --public-ip-address "$ip_address_name"  \
+         --ip-forwarding
 
 # Compute::SshPublicKey
 # https://docs.microsoft.com/en-us/cli/azure/sshkey?view=azure-cli-latest#az-sshkey-create
 az sshkey create -n "$ssh_key_name" -g "$rg" 
 
-# Compute::VirtualMachine
+# ManagedIdentity::UserAssignedIdentity
+# https://docs.microsoft.com/en-us/cli/azure/identity?view=azure-cli-latest#az-identity-create
+az identity create --name "$managed_identity" --resource-group "$rg"
+
 # https://docs.microsoft.com/en-us/cli/azure/vm?view=azure-cli-latest#az-vm-create
-az vm create -n "$vm_name" -g "$rg" --image UbuntuLTS --size Standard_B1ls --nics "$nic_name" --admin-username ops --assign-identity [system] --ssh-key-name "$ssh_key_name"
+az vm create -n "$vm_name" -g "$rg" --image UbuntuLTS \
+        --size Standard_B1ls \
+        --nics "$nic_name"\
+        --admin-username ops \
+        --assign-identity /subscriptions/$AZURE_SUBSCRIPTION_ID/resourcegroups/$rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$managed_identity \
+        --ssh-key-name "$ssh_key_name"

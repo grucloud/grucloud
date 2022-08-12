@@ -33,7 +33,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [CassandraCluster](../DocumentDB/CassandraCluster.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'A managed Cassandra data center.',
   type: 'object',

@@ -32,7 +32,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Subnet](../Network/Subnet.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

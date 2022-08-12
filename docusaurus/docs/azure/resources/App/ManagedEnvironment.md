@@ -37,7 +37,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Workspace](../OperationalInsights/Workspace.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'An environment for hosting container apps',
   type: 'object',

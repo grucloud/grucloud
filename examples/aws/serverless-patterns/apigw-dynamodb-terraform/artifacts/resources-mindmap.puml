@@ -10,8 +10,6 @@ skinparam monochrome true
 ++++ Stage (1)
 ++++ UsagePlan (1)
 ++++ UsagePlanKey (1)
-+++ CloudWatchLogs
-++++ LogGroup (2)
 +++ DynamoDB
 ++++ Table (1)
 +++ IAM

@@ -70,25 +70,38 @@ exports.createResources = () => [
   {
     type: "NetworkInterface",
     group: "Network",
-    properties: ({}) => ({
+    properties: ({ config, getId }) => ({
       name: "testvmVMNic",
+      location: config.location,
       properties: {
         ipConfigurations: [
           {
-            name: "ipconfigtestvm",
             properties: {
-              privateIPAllocationMethod: "Dynamic",
+              publicIPAddress: {
+                id: `${getId({
+                  type: "PublicIPAddress",
+                  group: "Network",
+                  name: "multicloud::vmtest-pip",
+                })}`,
+              },
+              subnet: {
+                id: `${getId({
+                  type: "Subnet",
+                  group: "Network",
+                  name: "multicloud::azure::vm",
+                })}`,
+              },
             },
+            name: "ipconfigtestvm",
           },
         ],
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "multicloud",
-      virtualNetwork: "multicloud::azure",
-      publicIpAddress: "multicloud::vmtest-pip",
-      securityGroup: "multicloud::testvmNSG",
-      subnet: "multicloud::azure::vm",
+      networkSecurityGroup: "multicloud::testvmNSG",
+      publicIpAddresses: ["multicloud::vmtest-pip"],
+      subnets: ["multicloud::azure::vm"],
     }),
   },
   {
@@ -293,8 +306,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "multicloud",
-      subnet: ["multicloud::azure::GatewaySubnet"],
-      publicIpAddress: ["multicloud::vpngw-a-pip", "multicloud::vpngw-b-pip"],
+      subnets: ["multicloud::azure::GatewaySubnet"],
+      publicIpAddresses: ["multicloud::vpngw-a-pip", "multicloud::vpngw-b-pip"],
     }),
   },
   {

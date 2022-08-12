@@ -39,7 +39,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ManagedEnvironment](../App/ManagedEnvironment.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Dapr Component.',
   type: 'object',

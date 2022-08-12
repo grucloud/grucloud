@@ -8,7 +8,7 @@ Provides a **WebAppPrivateAccess** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Description of the parameters of Private Access for a Web Site.',
   type: 'object',

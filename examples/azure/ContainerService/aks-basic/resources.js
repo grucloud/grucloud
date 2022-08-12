@@ -27,7 +27,6 @@ exports.createResources = () => [
             osDiskType: "Managed",
             kubeletDiskType: "OS",
             maxPods: 110,
-            osType: "Linux",
             osSKU: "Ubuntu",
             enableAutoScaling: false,
             type: "VirtualMachineScaleSets",
@@ -52,10 +51,14 @@ exports.createResources = () => [
         networkProfile: {
           loadBalancerSku: "Standard",
           loadBalancerProfile: {
-            managedOutboundIPs: {},
+            managedOutboundIPs: {
+              count: 1,
+            },
           },
           natGatewayProfile: {
-            managedOutboundIPProfile: {},
+            managedOutboundIPProfile: {
+              count: 1,
+            },
           },
           podCidrs: ["10.244.0.0/16"],
           serviceCidrs: ["10.0.0.0/16"],

@@ -34,7 +34,7 @@ exports.createResources = () => [
 - [WebApp](../Web/WebApp.md)
 - [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Private Endpoint Connection Approval ARM resource.',
   type: 'object',

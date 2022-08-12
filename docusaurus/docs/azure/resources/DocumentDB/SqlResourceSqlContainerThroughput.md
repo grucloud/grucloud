@@ -32,7 +32,7 @@ exports.createResources = () => [
 - [SqlResourceSqlDatabase](../DocumentDB/SqlResourceSqlDatabase.md)
 - [SqlResourceSqlContainer](../DocumentDB/SqlResourceSqlContainer.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Parameters to update Cosmos DB resource throughput.',
   type: 'object',

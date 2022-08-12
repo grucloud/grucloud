@@ -418,21 +418,21 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEKSWorkerNodePolicy",
-          PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-        },
-        {
           PolicyName: "AmazonEC2ContainerRegistryReadOnly",
           PolicyArn:
             "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
         },
         {
-          PolicyName: "AmazonSSMManagedInstanceCore",
-          PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-        },
-        {
           PolicyName: "AmazonEKS_CNI_Policy",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+        },
+        {
+          PolicyName: "AmazonEKSWorkerNodePolicy",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+        },
+        {
+          PolicyName: "AmazonSSMManagedInstanceCore",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
         },
       ],
     }),

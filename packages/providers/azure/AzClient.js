@@ -227,7 +227,6 @@ module.exports = AzClient = ({
     pipe([
       tap((params) => {
         assert(dependencies);
-        //console.log(dependencies);
       }),
       () => dependencies,
       filter(get("pathId")),
@@ -251,6 +250,10 @@ module.exports = AzClient = ({
 
   const findDependenciesDefault = ({ live, lives }) =>
     pipe([
+      tap((params) => {
+        assert(true);
+      }),
+
       () => [
         ...findDependenciesFromList({ live, lives }),
         findDependenciesUserAssignedIdentity({ live, lives }),

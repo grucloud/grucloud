@@ -1433,7 +1433,7 @@ exports.createResources = () => [
 - [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
 - [Route](../Network/Route.md)
 ## Swagger Schema
-```js
+```json
 {
   type: 'object',
   properties: {
@@ -2518,7 +2518,7 @@ exports.createResources = () => [
                           error: {
                             description: 'Details about the error.',
                             type: 'object',
-                            properties: {
+                            properties: <ref *1> {
                               code: {
                                 type: 'string',
                                 description: 'An identifier for the error. Codes are invariant and are intended to be consumed programmatically.'
@@ -2533,7 +2533,11 @@ exports.createResources = () => [
                               },
                               details: {
                                 type: 'array',
-                                items: [Object],
+                                items: {
+                                  type: 'object',
+                                  properties: [Circular *1],
+                                  description: 'An error response from the pod identity provisioning.'
+                                },
                                 'x-ms-identifiers': [],
                                 description: 'A list of additional details about the error.'
                               }

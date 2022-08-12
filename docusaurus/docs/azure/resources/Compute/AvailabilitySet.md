@@ -32,7 +32,7 @@ exports.createResources = () => [
 - [VirtualMachine](../Compute/VirtualMachine.md)
 - [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

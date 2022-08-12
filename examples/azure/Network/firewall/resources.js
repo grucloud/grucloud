@@ -6,46 +6,37 @@ exports.createResources = () => [
   {
     type: "AzureFirewall",
     group: "Network",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       name: "firewall",
+      location: config.location,
       properties: {
-        sku: {
-          name: "AZFW_VNet",
-          tier: "Standard",
-        },
-        threatIntelMode: "Alert",
-        additionalProperties: {},
         ipConfigurations: [
           {
-            name: "ip-address",
+            name: "ipconfig1",
             properties: {
               subnet: {
-                id: getId({
+                id: `${getId({
                   type: "Subnet",
                   group: "Network",
                   name: "rg-firewall::virtual-network::azurefirewallsubnet",
-                }),
+                })}`,
               },
               publicIPAddress: {
-                id: getId({
+                id: `${getId({
                   type: "PublicIPAddress",
                   group: "Network",
                   name: "rg-firewall::ip-address",
-                }),
+                })}`,
               },
             },
           },
         ],
-        networkRuleCollections: [],
-        applicationRuleCollections: [],
-        natRuleCollections: [],
-        firewallPolicy: {
-          id: getId({
-            type: "FirewallPolicy",
-            group: "Network",
-            name: "rg-firewall::firewall-policy",
-          }),
+        threatIntelMode: "Alert",
+        sku: {
+          name: "AZFW_VNet",
+          tier: "Standard",
         },
+        additionalProperties: {},
       },
     }),
     dependencies: ({}) => ({

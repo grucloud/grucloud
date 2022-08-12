@@ -23,7 +23,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [CloudService](../Compute/CloudService.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Defines an update domain for the cloud service.',
   type: 'object',

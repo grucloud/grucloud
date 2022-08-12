@@ -46,7 +46,7 @@ exports.createResources = () => [
 - [SecurityPartnerProvider](../Network/SecurityPartnerProvider.md)
 - [VirtualHubRouteTableV2](../Network/VirtualHubRouteTableV2.md)
 ## Swagger Schema
-```js
+```json
 {
   required: [ 'location' ],
   properties: {

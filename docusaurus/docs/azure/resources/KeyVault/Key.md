@@ -24,7 +24,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Vault](../KeyVault/Vault.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     tags: {

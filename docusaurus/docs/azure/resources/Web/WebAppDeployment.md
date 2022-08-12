@@ -8,7 +8,7 @@ Provides a **WebAppDeployment** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'User credentials used for publishing activity.',
   type: 'object',

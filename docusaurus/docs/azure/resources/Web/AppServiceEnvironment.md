@@ -38,7 +38,7 @@ exports.createResources = () => [
 - [AppServiceEnvironmentAseCustomDnsSuffixConfiguration](../Web/AppServiceEnvironmentAseCustomDnsSuffixConfiguration.md)
 - [AppServiceEnvironmentAseV3NetworkingConfiguration](../Web/AppServiceEnvironmentAseV3NetworkingConfiguration.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'App Service Environment ARM resource.',
   type: 'object',

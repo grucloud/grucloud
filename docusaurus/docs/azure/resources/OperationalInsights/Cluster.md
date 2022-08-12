@@ -19,7 +19,6 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
-      workspaces: ["myWorkspace"],
     }),
   },
 ];
@@ -28,9 +27,8 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
-- [Workspace](../OperationalInsights/Workspace.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     identity: {

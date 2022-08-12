@@ -3,8 +3,6 @@ title Resources for project lambda-aurora-serverless
 skinparam monochrome true
 + Infra
 ++ aws
-+++ CloudWatchLogs
-++++ LogGroup (1)
 +++ IAM
 ++++ Role (1)
 +++ Lambda

@@ -37,7 +37,7 @@ exports.createResources = () => [
 - [Connection](../Web/Connection.md)
 - [ExpressRouteCircuit](../Network/ExpressRouteCircuit.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

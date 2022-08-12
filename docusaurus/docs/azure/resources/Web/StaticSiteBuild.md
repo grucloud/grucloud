@@ -8,7 +8,7 @@ Provides a **StaticSiteBuild** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [StaticSite](../Web/StaticSite.md)
 ## Swagger Schema
-```js
+```json
 ''
 ```
 ## Misc

@@ -71,7 +71,7 @@ exports.createResources = () => [
 - [RouteTable](../Network/RouteTable.md)
 - [VpnServerConfiguration](../Network/VpnServerConfiguration.md)
 ## Swagger Schema
-```js
+```json
 {
   required: [ 'location' ],
   properties: {
@@ -128,7 +128,12 @@ exports.createResources = () => [
                             type: 'array',
                             description: 'The list of resource ids of all the RouteTables.',
                             items: {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             }
@@ -144,9 +149,19 @@ exports.createResources = () => [
                             items: {
                               description: 'List of all Static Routes.',
                               properties: {
-                                name: [Object],
-                                addressPrefixes: [Object],
-                                nextHopIpAddress: [Object]
+                                name: {
+                                  type: 'string',
+                                  description: 'The name of the StaticRoute that is unique within a VnetRoute.'
+                                },
+                                addressPrefixes: {
+                                  type: 'array',
+                                  description: 'List of all address prefixes.',
+                                  items: { type: 'string' }
+                                },
+                                nextHopIpAddress: {
+                                  type: 'string',
+                                  description: 'The ip address of the next hop.'
+                                }
                               }
                             }
                           },
@@ -155,7 +170,12 @@ exports.createResources = () => [
                             readOnly: true,
                             description: 'The list of references to HubBgpConnection objects.',
                             items: {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             }
@@ -203,7 +223,29 @@ exports.createResources = () => [
                             policyMembers: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  name: {
+                                    type: 'string',
+                                    description: 'Name of the VpnServerConfigurationPolicyGroupMember.'
+                                  },
+                                  attributeType: {
+                                    type: 'string',
+                                    description: 'The Vpn Policy member attribute type.',
+                                    enum: [
+                                      'CertificateGroupId',
+                                      'AADGroupId',
+                                      'RadiusAzureGroupId'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'VpnPolicyMemberAttributeType',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  attributeValue: {
+                                    type: 'string',
+                                    description: 'The value of Attribute used for this VpnServerConfigurationPolicyGroupMember.'
+                                  }
+                                },
                                 description: 'VpnServerConfiguration PolicyGroup member',
                                 type: 'object'
                               },
@@ -214,7 +256,12 @@ exports.createResources = () => [
                               type: 'array',
                               readOnly: true,
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource ID.'
+                                  }
+                                },
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               },

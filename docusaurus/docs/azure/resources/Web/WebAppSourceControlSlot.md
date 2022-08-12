@@ -9,7 +9,7 @@ Provides a **WebAppSourceControlSlot** from the **Web** group
 - [WebApp](../Web/WebApp.md)
 - [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Source control configuration for an app.',
   type: 'object',

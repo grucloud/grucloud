@@ -111,7 +111,7 @@ exports.createResources = () => [
 - [Workspace](../OperationalInsights/Workspace.md)
 - [NetworkWatcher](../Network/NetworkWatcher.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     location: { type: 'string', description: 'Connection monitor location.' },

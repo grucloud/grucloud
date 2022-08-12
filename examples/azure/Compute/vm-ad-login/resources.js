@@ -114,25 +114,38 @@ exports.createResources = () => [
   {
     type: "NetworkInterface",
     group: "Network",
-    properties: ({}) => ({
+    properties: ({ config, getId }) => ({
       name: "network-interface",
+      location: config.location,
       properties: {
         ipConfigurations: [
           {
-            name: "ipconfig1",
             properties: {
-              privateIPAllocationMethod: "Dynamic",
+              publicIPAddress: {
+                id: `${getId({
+                  type: "PublicIPAddress",
+                  group: "Network",
+                  name: "rg-vm-ad-login::ip-address",
+                })}`,
+              },
+              subnet: {
+                id: `${getId({
+                  type: "Subnet",
+                  group: "Network",
+                  name: "rg-vm-ad-login::virtual-network::subnet",
+                })}`,
+              },
             },
+            name: "ipconfig1",
           },
         ],
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vm-ad-login",
-      virtualNetwork: "rg-vm-ad-login::virtual-network",
-      publicIpAddress: "rg-vm-ad-login::ip-address",
-      securityGroup: "rg-vm-ad-login::security-group",
-      subnet: "rg-vm-ad-login::virtual-network::subnet",
+      networkSecurityGroup: "rg-vm-ad-login::security-group",
+      publicIpAddresses: ["rg-vm-ad-login::ip-address"],
+      subnets: ["rg-vm-ad-login::virtual-network::subnet"],
     }),
   },
   {

@@ -8,7 +8,7 @@ Provides a **WebAppAuthSettingsV2WithoutSecrets** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Configuration settings for the Azure App Service Authentication / Authorization V2 feature.',
   type: 'object',

@@ -31,7 +31,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceCertificateOrder](../CertificateRegistration/AppServiceCertificateOrder.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Key Vault container ARM resource for a certificate that is purchased through Azure.',
   type: 'object',

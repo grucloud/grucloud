@@ -569,7 +569,13 @@ exports.compare = ({
     }),
   ]);
 
-const replaceId = (idResource) => callProp("replace", idResource, "");
+const replaceId = (id) =>
+  pipe([
+    callProp("replace", new RegExp(`^${id}`, "i"), ""),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
 
 const buildGetId =
   ({ id = "", path = "id", providerConfig } = {}) =>
@@ -598,10 +604,17 @@ const buildGetId =
       unless(
         or([
           () => isEmpty(id),
-          pipe([() => idResource, replaceId(id), isEmpty]),
+          pipe([
+            () => idResource,
+            eq(callProp("toLowerCase"), id.toLowerCase()),
+          ]),
         ]),
         pipe([
           append(", suffix:'"),
+          tap((params) => {
+            assert(true);
+          }),
+
           append(replaceId(idResource)(id)),
           append("'"),
         ])
@@ -614,7 +627,14 @@ const buildGetId =
 exports.buildGetId = buildGetId;
 
 exports.replaceWithName =
-  ({ groupType, pathLive = "id", path = "name", providerConfig, lives }) =>
+  ({
+    groupType,
+    pathLive = "id",
+    path = "name",
+    providerConfig,
+    lives,
+    withSuffix = false,
+  }) =>
   (Id) =>
     pipe([
       tap(() => {
@@ -637,7 +657,7 @@ exports.replaceWithName =
               () => Id,
               switchCase([
                 () => groupType,
-                includes(id),
+                switchCase([() => withSuffix, includes(id), eq(identity, id)]),
                 callProp("startsWith", id),
               ]),
             ])(),

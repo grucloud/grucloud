@@ -24,7 +24,7 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   type: 'object',
   properties: {
@@ -89,7 +89,13 @@ exports.createResources = () => [
                           virtualMachinesAllocated: {
                             type: 'array',
                             items: {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  readOnly: true,
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             readOnly: true,

@@ -22,21 +22,15 @@ exports.createResources = () => [
       },
       location: "centraluseuap",
     }),
-    dependencies: ({}) => ({
-      resourceGroup: "myResourceGroup",
-      subnet: "mySubnet",
-      virtualNetwork: "myVirtualNetwork",
-    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
   },
 ];
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Subnet](../Network/Subnet.md)
-- [VirtualNetwork](../Network/VirtualNetwork.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

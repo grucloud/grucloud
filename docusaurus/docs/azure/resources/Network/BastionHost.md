@@ -28,7 +28,7 @@ exports.createResources = () => [
 - [Subnet](../Network/Subnet.md)
 - [PublicIPAddress](../Network/PublicIPAddress.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

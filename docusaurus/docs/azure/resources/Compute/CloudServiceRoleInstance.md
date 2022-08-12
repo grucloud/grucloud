@@ -8,7 +8,7 @@ Provides a **CloudServiceRoleInstance** from the **Compute** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [CloudService](../Compute/CloudService.md)
 ## Swagger Schema
-```js
+```json
 ''
 ```
 ## Misc

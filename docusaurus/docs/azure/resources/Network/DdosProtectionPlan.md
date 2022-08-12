@@ -20,7 +20,7 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'A DDoS protection plan in a resource group.',
   'x-ms-azure-resource': true,

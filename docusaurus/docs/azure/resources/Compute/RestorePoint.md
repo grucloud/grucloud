@@ -58,7 +58,7 @@ exports.createResources = () => [
 - [Disk](../Compute/Disk.md)
 - [RestorePointCollection](../Compute/RestorePointCollection.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -241,7 +241,12 @@ exports.createResources = () => [
                             },
                             sourceVault: {
                               description: 'The relative URL of the Key Vault containing the secret.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             }
                           },
@@ -256,7 +261,12 @@ exports.createResources = () => [
                             },
                             sourceVault: {
                               description: 'The relative URL of the Key Vault containing the key.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             }
                           },
@@ -307,7 +317,12 @@ exports.createResources = () => [
                           description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
                           allOf: [
                             {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             }
                           ]
@@ -330,7 +345,17 @@ exports.createResources = () => [
                             },
                             diskEncryptionSet: {
                               description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
-                              allOf: [ [Object] ]
+                              allOf: [
+                                {
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'Resource Id'
+                                    }
+                                  },
+                                  'x-ms-azure-resource': true
+                                }
+                              ]
                             }
                           }
                         }
@@ -406,7 +431,12 @@ exports.createResources = () => [
                             description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
                             allOf: [
                               {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource Id'
+                                  }
+                                },
                                 'x-ms-azure-resource': true
                               }
                             ]
@@ -418,12 +448,28 @@ exports.createResources = () => [
                               securityEncryptionType: {
                                 type: 'string',
                                 description: 'Specifies the EncryptionType of the managed disk. <br> It is set to DiskWithVMGuestState for encryption of the managed disk along with VMGuestState blob, and VMGuestStateOnly for encryption of just the VMGuestState blob. <br><br> NOTE: It can be set for only Confidential VMs.',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [
+                                  'VMGuestStateOnly',
+                                  'DiskWithVMGuestState'
+                                ],
+                                'x-ms-enum': {
+                                  name: 'securityEncryptionTypes',
+                                  modelAsString: true
+                                }
                               },
                               diskEncryptionSet: {
                                 description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
-                                allOf: [Array]
+                                allOf: [
+                                  {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource Id'
+                                      }
+                                    },
+                                    'x-ms-azure-resource': true
+                                  }
+                                ]
                               }
                             }
                           }
@@ -591,8 +637,11 @@ exports.createResources = () => [
                               protocol: {
                                 type: 'string',
                                 description: 'Specifies the protocol of WinRM listener. <br><br> Possible values are: <br>**http** <br><br> **https**',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [ 'Http', 'Https' ],
+                                'x-ms-enum': {
+                                  name: 'ProtocolTypes',
+                                  modelAsString: false
+                                }
                               },
                               certificateUrl: {
                                 type: 'string',

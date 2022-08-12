@@ -13,7 +13,7 @@ Provides a **WebAppSlot** from the **Web** group
 - [Subnet](../Network/Subnet.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'A web app, a mobile app backend, or an API app.',
   type: 'object',

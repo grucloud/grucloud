@@ -98,7 +98,7 @@ exports.createResources = () => [
 - [PublicIPAddress](../Network/PublicIPAddress.md)
 - [NatRule](../Network/NatRule.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

@@ -33,7 +33,7 @@ exports.createResources = () => [
 - [PrivateEndpoint](../Network/PrivateEndpoint.md)
 - [StorageAccount](../Storage/StorageAccount.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

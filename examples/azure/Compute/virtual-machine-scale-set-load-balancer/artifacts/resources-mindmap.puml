@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project virtual-machine-scale-set-load-balancer
+skinparam monochrome true
++ Infra
+++ azure
++++ Compute
+++++ VirtualMachineScaleSet (1)
++++ Network
+++++ LoadBalancer (1)
+++++ NetworkSecurityGroup (1)
+++++ PublicIPAddress (1)
+++++ Subnet (1)
+++++ VirtualNetwork (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

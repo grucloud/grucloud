@@ -8,7 +8,7 @@ Provides a **WebAppRelayServiceConnection** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Hybrid Connection for an App Service app.',
   type: 'object',

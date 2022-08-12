@@ -38,7 +38,7 @@ exports.createResources = () => [
 - [RouteTable](../Network/RouteTable.md)
 - [ExpressRouteGateway](../Network/ExpressRouteGateway.md)
 ## Swagger Schema
-```js
+```json
 {
   required: [ 'name' ],
   properties: {

@@ -11,9 +11,11 @@ const {
   set,
   assign,
   and,
+  not,
+  flatMap,
+  or,
 } = require("rubico");
 const {
-  identity,
   isFunction,
   find,
   callProp,
@@ -25,6 +27,7 @@ const {
   last,
   values,
   includes,
+  identity,
 } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildGetId } = require("@grucloud/core/Common");
@@ -59,8 +62,25 @@ exports.shortName = pipe([
 
 exports.isSubstituable = callProp("startsWith", "{");
 
+exports.replaceSubscription = ({ providerConfig }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    callProp("split", "/"),
+    (items) => {
+      items[2] = "${config.subscriptionId}";
+      return items;
+    },
+    callProp("join", "/"),
+    tap((params) => {
+      assert(true);
+    }),
+    (resource) => () => "`" + resource + "`",
+  ]);
+
 const findResourceById =
-  ({ groupType, lives }) =>
+  ({ groupType, lives, withSuffix }) =>
   (idToMatch) =>
     pipe([
       tap(() => {
@@ -79,7 +99,11 @@ const findResourceById =
               pipe([
                 () => idToMatch,
                 callProp("toUpperCase"),
-                callProp("startsWith", id),
+                switchCase([
+                  () => withSuffix,
+                  callProp("startsWith", id),
+                  eq(identity, id),
+                ]),
               ])(),
           ]),
         ])
@@ -92,6 +116,7 @@ exports.assignDependenciesId = ({
   lives,
   propertyName = "id",
   providerConfig,
+  withSuffix = false,
 }) =>
   pipe([
     tap((params) => {
@@ -114,9 +139,15 @@ exports.assignDependenciesId = ({
             findResourceById({
               groupType: `${group}::${type}`,
               lives,
+              withSuffix,
             }),
             tap((resource) => {
-              assert(resource);
+              if (!resource) {
+                assert(
+                  resource,
+                  `no resource id '${id}, type: ${group}::${type}'`
+                );
+              }
             }),
             buildGetId({ id, providerConfig }),
             (result) => () => result,
@@ -287,7 +318,7 @@ const findIdsByKeys =
       switchCase([
         () => isEmpty(otherKeys),
         // Last key
-        pipe([identity]),
+        pipe([(result) => [result]]),
         // Go down
         pipe([
           switchCase([
@@ -296,9 +327,9 @@ const findIdsByKeys =
               tap((values) => {
                 //assert(Array.isArray(values));
               }),
-              map(findIdsByKeys(otherKeys)),
+              flatMap(findIdsByKeys(otherKeys)),
             ]),
-            findIdsByKeys(otherKeys),
+            pipe([findIdsByKeys(otherKeys)], (result) => [result]),
           ]),
         ]),
       ]),
@@ -315,5 +346,5 @@ exports.findIdsByPath =
       () => pathId,
       callProp("split", "."),
       (keys) => findIdsByKeys(keys)(live),
-      unless(Array.isArray, (id) => [id]),
+      filter(not(isEmpty)),
     ])();

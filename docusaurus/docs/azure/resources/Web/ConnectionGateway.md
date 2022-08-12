@@ -36,7 +36,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Connection](../Web/Connection.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'The gateway definition',
   type: 'object',

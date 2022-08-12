@@ -34,7 +34,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [CustomApi](../Web/CustomApi.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'API connection',
   type: 'object',

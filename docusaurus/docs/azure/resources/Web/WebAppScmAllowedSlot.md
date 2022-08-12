@@ -26,7 +26,7 @@ exports.createResources = () => [
 - [WebApp](../Web/WebApp.md)
 - [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Publishing Credentials Policies parameters.',
   type: 'object',

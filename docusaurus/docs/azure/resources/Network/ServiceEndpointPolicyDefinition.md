@@ -34,7 +34,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ServiceEndpointPolicy](../Network/ServiceEndpointPolicy.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

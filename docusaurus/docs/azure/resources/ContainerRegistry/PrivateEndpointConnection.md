@@ -33,7 +33,7 @@ exports.createResources = () => [
 - [PrivateEndpoint](../Network/PrivateEndpoint.md)
 - [Registry](../ContainerRegistry/Registry.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'An object that represents a private endpoint connection for a container registry.',
   type: 'object',

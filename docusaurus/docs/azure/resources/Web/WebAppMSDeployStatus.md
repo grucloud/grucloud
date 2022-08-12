@@ -8,7 +8,7 @@ Provides a **WebAppMSDeployStatus** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'MSDeploy ARM PUT information',
   type: 'object',

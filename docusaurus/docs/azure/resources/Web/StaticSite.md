@@ -37,7 +37,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Static Site ARM resource.',
   type: 'object',

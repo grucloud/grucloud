@@ -26,6 +26,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
       vault: "myVault",
       key: "myKey",
     }),
@@ -54,6 +55,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
       vault: "myVault",
       key: "myKey",
     }),
@@ -89,6 +91,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
       vault: "myVault",
       key: "myKey",
     }),
@@ -98,10 +101,11 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [Vault](../KeyVault/Vault.md)
 - [Key](../KeyVault/Key.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     identity: {

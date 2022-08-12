@@ -26,7 +26,7 @@ exports.createResources = () => [
 - [Vault](../KeyVault/Vault.md)
 - [SshPublicKey](../Compute/SshPublicKey.md)
 ## Swagger Schema
-```js
+```json
 {
   allOf: [
     {

@@ -51,7 +51,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'An object that represents a container registry.',
   required: [ 'sku' ],

@@ -242,11 +242,17 @@ const filterVirtualMachineProperties =
                                       loadBalancerBackendAddressPools: pipe([
                                         get("loadBalancerBackendAddressPools"),
                                         map(
-                                          assignDependenciesId({
-                                            group: "Network",
-                                            type: "LoadBalancerBackendAddressPool",
-                                            providerConfig,
-                                            lives,
+                                          assign({
+                                            id: pipe([
+                                              get("id"),
+                                              replaceWithName({
+                                                groupType:
+                                                  "Network::LoadBalancer",
+                                                providerConfig,
+                                                lives,
+                                                path: "id",
+                                              }),
+                                            ]),
                                           })
                                         ),
                                       ]),
@@ -268,23 +274,35 @@ const filterVirtualMachineProperties =
                                               type: "ApplicationGateway",
                                               providerConfig,
                                               lives,
+                                              withSuffix: true,
                                             })
                                           ),
                                         ]),
                                     })
                                   ),
+                                  when(
+                                    get("loadBalancerInboundNatPools"),
+                                    assign({
+                                      loadBalancerInboundNatPools: pipe([
+                                        get("loadBalancerInboundNatPools"),
+                                        map(
+                                          assign({
+                                            id: pipe([
+                                              get("id"),
+                                              replaceWithName({
+                                                groupType:
+                                                  "Network::LoadBalancer",
+                                                providerConfig,
+                                                lives,
+                                                path: "id",
+                                              }),
+                                            ]),
+                                          })
+                                        ),
+                                      ]),
+                                    })
+                                  ),
                                   assign({
-                                    //TODO
-                                    // loadBalancerInboundNatPools: pipe([
-                                    //   get("loadBalancerInboundNatPools"),
-                                    //   map(
-                                    //     assignDependenciesId({
-                                    //       group: "Network",
-                                    //       type: "LoadBalancerInboundNatPool",
-                                    //       lives,
-                                    //     })
-                                    //   ),
-                                    // ]),
                                     subnet: pipe([
                                       get("subnet"),
                                       assignDependenciesId({
@@ -338,9 +356,6 @@ const filterVirtualMachineProperties =
                                     ),
                                   ])
                                 ),
-                                tap((params) => {
-                                  assert(true);
-                                }),
                                 get("id"),
                                 switchCase([
                                   isEmpty,
@@ -348,21 +363,13 @@ const filterVirtualMachineProperties =
                                   replaceWithName({
                                     groupType: "Compute::SshPublicKey",
                                     path: "live.properties.publicKey",
-                                    //pathLive: "live.properties.publicKey",
                                     providerConfig,
                                     lives,
                                   }),
                                 ]),
-                                tap((params) => {
-                                  assert(true);
-                                }),
                               ])(),
                           })
                         ),
-
-                        tap((params) => {
-                          assert(true);
-                        }),
                       ]),
                     }),
                   ]),
@@ -378,9 +385,6 @@ const filterVirtualMachineProperties =
         "storageProfile.dataDisks",
         "networkProfile",
       ]),
-      tap((params) => {
-        assert(true);
-      }),
     ]);
 
 const VirtualMachineDependencySshPublicKey = ({
@@ -570,11 +574,10 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
             list: true,
           },
-          loadBalancerBackendAddressPools: {
-            type: "LoadBalancerBackendAddressPool",
+          loadBalancer: {
+            type: "LoadBalancer",
             group: "Network",
             createOnly: true,
-            list: true,
           },
           applicationGateways: {
             type: "ApplicationGateway",
@@ -632,7 +635,7 @@ exports.fnSpecs = ({ config }) =>
               "properties.virtualMachineProfile.osProfile.linuxConfiguration.ssh.publicKeys",
           }),
           {
-            type: "LoadBalancerBackendAddressPool",
+            type: "LoadBalancer",
             group: "Network",
             ids: pipe([
               () => live,
@@ -646,6 +649,14 @@ exports.fnSpecs = ({ config }) =>
               pluck("loadBalancerBackendAddressPools"),
               flatten,
               pluck("id"),
+              filter(not(isEmpty)),
+              map(
+                pipe([
+                  callProp("split", "/"),
+                  callProp("slice", 0, -2),
+                  callProp("join", "/"),
+                ])
+              ),
             ])(),
           },
           {

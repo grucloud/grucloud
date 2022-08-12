@@ -4,11 +4,9 @@ skinparam monochrome true
 + Infra
 ++ azure
 +++ Compute
-++++ SshPublicKey (1)
 ++++ VirtualMachineScaleSet (1)
 +++ Network
 ++++ LoadBalancer (1)
-++++ LoadBalancerBackendAddressPool (1)
 ++++ NetworkSecurityGroup (1)
 ++++ PublicIPAddress (1)
 ++++ Subnet (1)

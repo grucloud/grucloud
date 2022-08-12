@@ -257,7 +257,7 @@ exports.createResources = () => [
 - [PublicIPAddress](../Network/PublicIPAddress.md)
 - [Subnet](../Network/Subnet.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Describes the cloud service.',
   type: 'object',
@@ -418,9 +418,30 @@ exports.createResources = () => [
                               description: 'Properties of load balancer frontend ip configuration.',
                               type: 'object',
                               properties: {
-                                publicIPAddress: [Object],
-                                subnet: [Object],
-                                privateIPAddress: [Object]
+                                publicIPAddress: {
+                                  description: 'The reference to the public ip address resource.',
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'Resource Id'
+                                    }
+                                  },
+                                  'x-ms-azure-resource': true
+                                },
+                                subnet: {
+                                  description: 'The reference to the virtual network subnet resource.',
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'Resource Id'
+                                    }
+                                  },
+                                  'x-ms-azure-resource': true
+                                },
+                                privateIPAddress: {
+                                  description: 'The virtual network private IP address of the IP configuration.',
+                                  type: 'string'
+                                }
                               }
                             }
                           },

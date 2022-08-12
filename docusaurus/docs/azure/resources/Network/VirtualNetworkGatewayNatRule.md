@@ -39,7 +39,7 @@ exports.createResources = () => [
 - [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 - [VirtualNetworkGateway](../Network/VirtualNetworkGateway.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

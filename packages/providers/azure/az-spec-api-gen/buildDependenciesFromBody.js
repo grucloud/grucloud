@@ -27,6 +27,9 @@ const {
   isOmit,
   isSwaggerObject,
   buildParentPath,
+  isKeyExcluded,
+  getAllProperties,
+  resolveSwaggerObject,
 } = require("./AzureRestApiCommon");
 
 const PreDefinedDependenciesMap = {
@@ -71,43 +74,15 @@ const buildDependenciesFromBodyObject = ({
   accumulator,
 }) =>
   pipe([
-    fork({
-      fromAllOf: pipe([
-        get("allOf", []),
-        map(
-          pipe([
-            get("properties"),
-            buildDependenciesFromBody({
-              swagger,
-              parentPath: buildParentPath(key)(parentPath),
-              accumulator,
-            }),
-          ])
-        ),
-        flatten,
-      ]),
-      fromProperties: pipe([
-        get("properties"),
-        buildDependenciesFromBody({
-          swagger,
-          parentPath: buildParentPath(key)(parentPath),
-          accumulator,
-        }),
-      ]),
-      // fromAditionalProperties: switchCase([
-      //   get("additionalProperties"),
-      //   pipe([
-      //     get("additionalProperties"),
-      //     () => [buildParentPath(key)(parentPath)],
-      //   ]),
-      //   () => [],
-      // ]),
+    tap((params) => {
+      assert(params);
     }),
-    ({ fromAllOf = [], fromProperties = [], fromAditionalProperties = [] }) => [
-      ...fromAllOf,
-      ...fromProperties,
-      ...fromAditionalProperties,
-    ],
+    getAllProperties,
+    buildDependenciesFromBody({
+      swagger,
+      parentPath: buildParentPath(key)(parentPath),
+      accumulator,
+    }),
     tap((params) => {
       assert(true);
     }),
@@ -165,15 +140,54 @@ const buildDependenciesFromBody =
       map.entries(([key, obj]) => [
         key,
         pipe([
+          tap((params) => {
+            if (key == "publicIPAddress") {
+              assert(true);
+            }
+          }),
+
           () => obj,
+          resolveSwaggerObject,
+          //getAllProperties,
           switchCase([
+            isKeyExcluded({ key }),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => undefined,
+            ]),
+            // readOnly
+            pipe([get("readOnly")]),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => undefined,
+            ]),
             // loop detection
             isPreviousProperties({ parentPath, key }),
             pipe([() => undefined]),
+            // Pre defined dependencies
             pipe([() => PreDefinedDependenciesMap[key]]),
             pipe([
               preDefinedDependenciesPathId({ parentPath, key }),
               (result) => [result],
+            ]),
+
+            pipe([get("x-ms-azure-resource")]),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => [...parentPath, key, "id"],
+              callProp("join", "."),
+              (pathId) => [
+                {
+                  pathId,
+                  depId: key,
+                },
+              ],
             ]),
             pipe([get("x-ms-arm-id-details")]),
             pipe([

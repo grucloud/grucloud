@@ -544,7 +544,7 @@ exports.createResources = () => [
 - [HostGroup](../Compute/HostGroup.md)
 - [ManagedCluster](../ContainerService/ManagedCluster.md)
 ## Swagger Schema
-```js
+```json
 {
   type: 'object',
   allOf: [

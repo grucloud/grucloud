@@ -3,8 +3,6 @@ title Resources for project vm-ad-login
 skinparam monochrome true
 + Infra
 ++ azure
-+++ Authorization
-++++ RoleAssignment (1)
 +++ Compute
 ++++ SshPublicKey (1)
 ++++ VirtualMachine (1)

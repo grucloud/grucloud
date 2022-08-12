@@ -4,54 +4,38 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "SshPublicKey",
-    group: "Compute",
-    properties: ({ config }) => ({
-      name: "vmss_key",
-      location: config.location,
-      properties: {
-        publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCxXnVXbmiV4UWi7FTpR4mWx4pp\r\nM+9t/77vpw3rwtFW/n0V/2N6+j9yuCP5Mu2Pi7c+i8UQ3bkofHOpjsk4uAu0vr8a\r\nC0/LPiHFmlvtEfKvomoNtLO5iRnTjpsPFFqvfNQJKDsOnGoBO4pAF2xdr96V2Doh\r\nggxdj5ZyGh0EbQqm/XKrW1boOYkoqxGQKO8EZj4l0qWzRmpMw2NXQtqOO+pJ2IVJ\r\nhQOwnXk4G/v9yxogwuUGp4cFu02bix72LzRgzXLfsFkQqwRSg50xlNqsoBysTPhb\r\nibQhLNbSHqJtyXgoPNuEohREjuH1EjU0tFJrv285xd7xWRnVyG2w6+WWckr84uwO\r\no3456BJWD9PoQvXTJVMhR1iR8J8FesqZP1JwrV3CLS205z6z5GLgcKulVsCal9/G\r\nvnxXM1Ob9zAEFd6QBAuK0ejbOb1tmXgwnhlFAWr7Fq1TbAfk0ga6Cm5chEmI21ZK\r\nVO9j0Reu0NAONyrPs09y7u3r38CgGTyot/VS5mU= generated-by-azure\r\n",
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "rg-load-balancer",
-    }),
-  },
-  {
     type: "VirtualMachineScaleSet",
     group: "Compute",
     properties: ({ getId }) => ({
-      name: "vmss",
+      name: "vm-scale-set",
       sku: {
         name: "Standard_B1ls",
         tier: "Standard",
-        capacity: 1,
+        capacity: 2,
       },
       properties: {
-        singlePlacementGroup: false,
+        singlePlacementGroup: true,
         upgradePolicy: {
           mode: "Manual",
-        },
-        scaleInPolicy: {
-          rules: ["Default"],
+          rollingUpgradePolicy: {
+            maxBatchInstancePercent: 20,
+            maxUnhealthyInstancePercent: 20,
+            maxUnhealthyUpgradedInstancePercent: 20,
+            pauseTimeBetweenBatches: "PT0S",
+          },
         },
         virtualMachineProfile: {
           osProfile: {
-            computerNamePrefix: "vmssfxzig",
-            adminUsername: "azureuser",
+            computerNamePrefix: "vm-scale-",
+            adminUsername: "ops",
             linuxConfiguration: {
               disablePasswordAuthentication: true,
               ssh: {
                 publicKeys: [
                   {
-                    path: "/home/azureuser/.ssh/authorized_keys",
-                    keyData: `${getId({
-                      type: "SshPublicKey",
-                      group: "Compute",
-                      name: "rg-load-balancer::vmss_key",
-                      path: "live.properties.publicKey",
-                    })}`,
+                    path: "/home/ops/.ssh/authorized_keys",
+                    keyData:
+                      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/+ZCfuXkRdiRcNjERsbmuqtKBY+ctRVd/q06VNRGxqAGI+DGnc55eMxvhh1ptdjuNg6HA7yufumrj9AmxrKEtGmRfseeVUy3th7FphEKKYCkpb8zxIEdfRr5r374gl3QxrxeKzk2YgsCQAfwfaD+ZlNQyKHWgnfwFCGEh3ciL5eSQP5xittjJap35l17kwygtCYxPcA+5DlAjDtonLGzypw/Bnb8U6TutWiHsK5Jx4iYVo4rsPmy6MsTZUx0gAKf0jvRpROK4TOHUAfio05jxfDVfE2hOZAvYFas5fKOCI8in/xaVy/hoW3rFU7OvPWfyNv7+5IE6ytI59c5e9PMXJ9IVcQmiPkfTfK91YsYcyknf6SXdTjs0aPWRpCp+UpDr98qt8xqTMujI1RA075719T1I3OUO7+w/prFLUPkEHbOLnfJ1kzam6kX87OkEG6OwIqR3A7Sw1q3EmRfDppzBOw8Oaapla+52DMLeJ6j1eLNLyBcsrgVTbOLYyZXbORMLvr0FwiAmbUPBSPKFIT12N10dElScihA2YI1g6SS5nNZAiyU16T0zL9teXYEYlupXo7T5Dc44m7xiiuzx4xibh8MprUTDUKoHSmTTSZ9psggaYcrZZQKmO8P7Et8t44iEyZ7W8xpByHxRrqmuCrqx9dIopk8fXhnQA/sP/EbX5Q== frederic.heem@gmail.com",
                   },
                 ],
               },
@@ -59,7 +43,8 @@ exports.createResources = () => [
               enableVMAgentPlatformUpdates: false,
             },
             allowExtensionOperations: true,
-            adminPassword: process.env.RG_LOAD_BALANCER_VMSS_ADMIN_PASSWORD,
+            adminPassword:
+              process.env.RG_LOAD_BALANCER_VM_SCALE_SET_ADMIN_PASSWORD,
           },
           storageProfile: {
             osDisk: {
@@ -72,21 +57,16 @@ exports.createResources = () => [
               diskSizeGB: 30,
             },
             imageReference: {
-              publisher: "canonical",
-              offer: "0001-com-ubuntu-server-focal",
-              sku: "20_04-lts",
+              publisher: "Canonical",
+              offer: "UbuntuServer",
+              sku: "18.04-LTS",
               version: "latest",
-            },
-          },
-          diagnosticsProfile: {
-            bootDiagnostics: {
-              enabled: true,
             },
           },
           networkProfile: {
             networkInterfaceConfigurations: [
               {
-                name: "vnet-nic01",
+                name: "vmscac7c5Nic",
                 properties: {
                   primary: true,
                   enableAcceleratedNetworking: false,
@@ -94,7 +74,7 @@ exports.createResources = () => [
                     id: getId({
                       type: "NetworkSecurityGroup",
                       group: "Network",
-                      name: "rg-load-balancer::basicnsgvnet-nic01",
+                      name: "rg-load-balancer::security-group",
                     }),
                   },
                   dnsSettings: {
@@ -103,24 +83,23 @@ exports.createResources = () => [
                   enableIPForwarding: false,
                   ipConfigurations: [
                     {
-                      name: "vnet-nic01-defaultIpConfiguration",
+                      name: "vmscac7c5IPConfig",
                       properties: {
-                        primary: true,
                         subnet: {
                           id: getId({
                             type: "Subnet",
                             group: "Network",
-                            name: "rg-load-balancer::vnet::default",
+                            name: "rg-load-balancer::virtual-network::subnet",
                           }),
                         },
                         privateIPAddressVersion: "IPv4",
                         loadBalancerBackendAddressPools: [
                           {
-                            id: getId({
-                              type: "LoadBalancerBackendAddressPool",
+                            id: `${getId({
+                              type: "LoadBalancer",
                               group: "Network",
-                              name: "rg-load-balancer::load-balancer::backendpool",
-                            }),
+                              name: "rg-load-balancer::load-balancer",
+                            })}/backendAddressPools/load-balancerbepool`,
                           },
                         ],
                       },
@@ -131,76 +110,84 @@ exports.createResources = () => [
             ],
           },
         },
-        overprovision: false,
+        overprovision: true,
         doNotRunExtensionsOnOverprovisionedVMs: false,
-        platformFaultDomainCount: 1,
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
-      sshPublicKeys: ["rg-load-balancer::vmss_key"],
-      networkSecurityGroups: ["rg-load-balancer::basicnsgvnet-nic01"],
-      subnets: ["rg-load-balancer::vnet::default"],
-      loadBalancerBackendAddressPools: [
-        "rg-load-balancer::load-balancer::backendpool",
-      ],
+      networkSecurityGroups: ["rg-load-balancer::security-group"],
+      subnets: ["rg-load-balancer::virtual-network::subnet"],
+      loadBalancer: "rg-load-balancer::load-balancer",
     }),
   },
   {
     type: "LoadBalancer",
     group: "Network",
-    properties: ({ getId }) => ({
+    properties: ({ config, getId }) => ({
       name: "load-balancer",
+      location: config.location,
       sku: {
-        name: "Standard",
+        name: "Basic",
         tier: "Regional",
       },
       properties: {
         frontendIPConfigurations: [
           {
-            name: "frontend",
+            name: "LoadBalancerFrontEnd",
             properties: {
               publicIPAddress: {
                 id: getId({
                   type: "PublicIPAddress",
                   group: "Network",
-                  name: "rg-load-balancer::ip",
+                  name: "rg-load-balancer::ip-address",
                 }),
               },
             },
           },
         ],
+        backendAddressPools: [
+          {
+            name: "load-balancerbepool",
+          },
+        ],
         loadBalancingRules: [],
         probes: [],
-        inboundNatRules: [],
-        outboundRules: [],
         inboundNatPools: [],
+        outboundRules: [],
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
-      publicIPAddresses: ["rg-load-balancer::ip"],
-    }),
-  },
-  {
-    type: "LoadBalancerBackendAddressPool",
-    group: "Network",
-    properties: ({}) => ({
-      name: "backendpool",
-      properties: {},
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "rg-load-balancer",
-      loadBalancer: "rg-load-balancer::load-balancer",
+      publicIpAddresses: ["rg-load-balancer::ip-address"],
     }),
   },
   {
     type: "NetworkSecurityGroup",
     group: "Network",
     properties: ({}) => ({
-      name: "basicnsgvnet-nic01",
+      name: "security-group",
       properties: {
-        securityRules: [],
+        securityRules: [
+          {
+            name: "SSH",
+            properties: {
+              description: "allow SSH",
+              protocol: "Tcp",
+              sourcePortRange: "*",
+              destinationPortRange: "22",
+              sourceAddressPrefix: "*",
+              destinationAddressPrefix: "*",
+              access: "Allow",
+              priority: 1000,
+              direction: "Inbound",
+              sourcePortRanges: [],
+              destinationPortRanges: [],
+              sourceAddressPrefixes: [],
+              destinationAddressPrefixes: [],
+            },
+          },
+        ],
       },
     }),
     dependencies: ({}) => ({
@@ -211,13 +198,7 @@ exports.createResources = () => [
     type: "PublicIPAddress",
     group: "Network",
     properties: ({}) => ({
-      name: "ip",
-      sku: {
-        name: "Standard",
-      },
-      properties: {
-        publicIPAllocationMethod: "Static",
-      },
+      name: "ip-address",
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
@@ -227,21 +208,21 @@ exports.createResources = () => [
     type: "Subnet",
     group: "Network",
     properties: ({}) => ({
-      name: "default",
+      name: "subnet",
       properties: {
-        addressPrefix: "10.0.0.0/16",
+        addressPrefix: "10.0.0.0/24",
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-load-balancer",
-      virtualNetwork: "rg-load-balancer::vnet",
+      virtualNetwork: "rg-load-balancer::virtual-network",
     }),
   },
   {
     type: "VirtualNetwork",
     group: "Network",
     properties: ({}) => ({
-      name: "vnet",
+      name: "virtual-network",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],

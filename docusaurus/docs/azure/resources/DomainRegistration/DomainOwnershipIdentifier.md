@@ -24,7 +24,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [DomainOwnershipIdentifier](../DomainRegistration/DomainOwnershipIdentifier.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Domain ownership Identifier.',
   type: 'object',

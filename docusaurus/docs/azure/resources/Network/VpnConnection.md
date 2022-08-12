@@ -56,7 +56,7 @@ exports.createResources = () => [
 - [RouteTable](../Network/RouteTable.md)
 - [VpnGateway](../Network/VpnGateway.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

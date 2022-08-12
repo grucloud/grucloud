@@ -15,6 +15,7 @@ const {
 } = require("../AzureRestApi");
 
 const specDir = "node_modules/azure-rest-api-specs/specification/";
+//const specDir = "../../../../../azure-rest-api-specs/specification/";
 
 describe("AzureRestApi", function () {
   before(async function () {});

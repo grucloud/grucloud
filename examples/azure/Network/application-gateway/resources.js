@@ -4,54 +4,38 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "SshPublicKey",
-    group: "Compute",
-    properties: ({ config }) => ({
-      name: "admingrucloud",
-      location: config.location,
-      properties: {
-        publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDJIm/qoOB61JXbMH7c9jcaVdBJ\r\nQ8NwwIyWfOIklNQG80JFQKQlc/pO1wS30+WlNhjLFXCokZdrJmDzry68BAz92lJ4\r\nTQHRZoZmzsjs40bIQ1xTw72w+LT/eMj2YJIMvKcokIOY/ZziKYwEhGjJCv7Gg2Da\r\nyHN8mbxMs6IL35Q80lJJBrc91AZ/ZplZFu07GySY78+JuNFI+WqO5ltNHduf+u1u\r\nrHrT7NbwDAhTsV7PaP9/q9u8iWJyglH8QfTyNMjciMxTHxjgDFV9xPfsyaMaB8tf\r\nkcSNx9rAmtH62D3FWup8gvGs4PHUoSIihvogtEWyLquQqP4CJUUcLjE7xSIDdZ5R\r\nuqo5Xf1nfBQXdB7atwT8rSEm9CdpSlcWbJ4yzeki9IUMR8iPnHB27lxuBlyHiYPL\r\n8vSXe1ofbl7J0NErjjoyDn1x75hDZGHX9VLh1BMz03DkJ5+zKRtwWYHozQvi7AA8\r\nIRDzslT6+u/ZwpkfbPlwyh8pQFBOTn2l3SlupLk= generated-by-azure\r\n",
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "rg-ag",
-    }),
-  },
-  {
     type: "VirtualMachineScaleSet",
     group: "Compute",
     properties: ({ getId }) => ({
-      name: "vmss",
+      name: "vm-scale-set",
       sku: {
         name: "Standard_B1ls",
         tier: "Standard",
-        capacity: 1,
+        capacity: 2,
       },
       properties: {
-        singlePlacementGroup: false,
+        singlePlacementGroup: true,
         upgradePolicy: {
           mode: "Manual",
-        },
-        scaleInPolicy: {
-          rules: ["Default"],
+          rollingUpgradePolicy: {
+            maxBatchInstancePercent: 20,
+            maxUnhealthyInstancePercent: 20,
+            maxUnhealthyUpgradedInstancePercent: 20,
+            pauseTimeBetweenBatches: "PT0S",
+          },
         },
         virtualMachineProfile: {
           osProfile: {
-            computerNamePrefix: "vmssscr3w",
-            adminUsername: "azureuser",
+            computerNamePrefix: "vm-scale-",
+            adminUsername: "ops",
             linuxConfiguration: {
               disablePasswordAuthentication: true,
               ssh: {
                 publicKeys: [
                   {
-                    path: "/home/azureuser/.ssh/authorized_keys",
-                    keyData: `${getId({
-                      type: "SshPublicKey",
-                      group: "Compute",
-                      name: "rg-ag::admingrucloud",
-                      path: "live.properties.publicKey",
-                    })}`,
+                    path: "/home/ops/.ssh/authorized_keys",
+                    keyData:
+                      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/+ZCfuXkRdiRcNjERsbmuqtKBY+ctRVd/q06VNRGxqAGI+DGnc55eMxvhh1ptdjuNg6HA7yufumrj9AmxrKEtGmRfseeVUy3th7FphEKKYCkpb8zxIEdfRr5r374gl3QxrxeKzk2YgsCQAfwfaD+ZlNQyKHWgnfwFCGEh3ciL5eSQP5xittjJap35l17kwygtCYxPcA+5DlAjDtonLGzypw/Bnb8U6TutWiHsK5Jx4iYVo4rsPmy6MsTZUx0gAKf0jvRpROK4TOHUAfio05jxfDVfE2hOZAvYFas5fKOCI8in/xaVy/hoW3rFU7OvPWfyNv7+5IE6ytI59c5e9PMXJ9IVcQmiPkfTfK91YsYcyknf6SXdTjs0aPWRpCp+UpDr98qt8xqTMujI1RA075719T1I3OUO7+w/prFLUPkEHbOLnfJ1kzam6kX87OkEG6OwIqR3A7Sw1q3EmRfDppzBOw8Oaapla+52DMLeJ6j1eLNLyBcsrgVTbOLYyZXbORMLvr0FwiAmbUPBSPKFIT12N10dElScihA2YI1g6SS5nNZAiyU16T0zL9teXYEYlupXo7T5Dc44m7xiiuzx4xibh8MprUTDUKoHSmTTSZ9psggaYcrZZQKmO8P7Et8t44iEyZ7W8xpByHxRrqmuCrqx9dIopk8fXhnQA/sP/EbX5Q== frederic.heem@gmail.com",
                   },
                 ],
               },
@@ -59,7 +43,7 @@ exports.createResources = () => [
               enableVMAgentPlatformUpdates: false,
             },
             allowExtensionOperations: true,
-            adminPassword: process.env.RG_AG_VMSS_ADMIN_PASSWORD,
+            adminPassword: process.env.RG_AG_VM_SCALE_SET_ADMIN_PASSWORD,
           },
           storageProfile: {
             osDisk: {
@@ -72,21 +56,16 @@ exports.createResources = () => [
               diskSizeGB: 30,
             },
             imageReference: {
-              publisher: "canonical",
-              offer: "0001-com-ubuntu-server-focal",
-              sku: "20_04-lts",
+              publisher: "Canonical",
+              offer: "UbuntuServer",
+              sku: "18.04-LTS",
               version: "latest",
-            },
-          },
-          diagnosticsProfile: {
-            bootDiagnostics: {
-              enabled: true,
             },
           },
           networkProfile: {
             networkInterfaceConfigurations: [
               {
-                name: "vnet-nic01",
+                name: "vmsca7f3dNic",
                 properties: {
                   primary: true,
                   enableAcceleratedNetworking: false,
@@ -94,7 +73,7 @@ exports.createResources = () => [
                     id: getId({
                       type: "NetworkSecurityGroup",
                       group: "Network",
-                      name: "rg-ag::basicnsgvnet-nic01",
+                      name: "rg-ag::security-group",
                     }),
                   },
                   dnsSettings: {
@@ -103,14 +82,13 @@ exports.createResources = () => [
                   enableIPForwarding: false,
                   ipConfigurations: [
                     {
-                      name: "vnet-nic01-defaultIpConfiguration",
+                      name: "vmsca7f3dIPConfig",
                       properties: {
-                        primary: true,
                         subnet: {
                           id: getId({
                             type: "Subnet",
                             group: "Network",
-                            name: "rg-ag::vnet::default",
+                            name: "rg-ag::virtual-network::subnet",
                           }),
                         },
                         privateIPAddressVersion: "IPv4",
@@ -120,7 +98,8 @@ exports.createResources = () => [
                               type: "ApplicationGateway",
                               group: "Network",
                               name: "rg-ag::ag",
-                              suffix: "/backendAddressPools/backendpool",
+                              suffix:
+                                "/backendAddressPools/appGatewayBackendPool",
                             }),
                           },
                         ],
@@ -132,16 +111,14 @@ exports.createResources = () => [
             ],
           },
         },
-        overprovision: false,
+        overprovision: true,
         doNotRunExtensionsOnOverprovisionedVMs: false,
-        platformFaultDomainCount: 1,
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-ag",
-      sshPublicKeys: ["rg-ag::admingrucloud"],
-      networkSecurityGroups: ["rg-ag::basicnsgvnet-nic01"],
-      subnets: ["rg-ag::vnet::default"],
+      networkSecurityGroups: ["rg-ag::security-group"],
+      subnets: ["rg-ag::virtual-network::subnet"],
       applicationGateways: ["rg-ag::ag"],
     }),
   },
@@ -154,30 +131,31 @@ exports.createResources = () => [
         sku: {
           name: "Standard_v2",
           tier: "Standard_v2",
+          capacity: 2,
         },
         gatewayIPConfigurations: [
           {
-            name: "appGatewayIpConfig",
+            name: "appGatewayFrontendIP",
             properties: {
               subnet: {
-                id: getId({
+                id: `${getId({
                   type: "Subnet",
                   group: "Network",
-                  name: "rg-ag::vnet::subnet-ag",
-                }),
+                  name: "rg-ag::virtual-network::subnet_ag",
+                })}`,
               },
             },
           },
         ],
         frontendIPConfigurations: [
           {
-            name: "appGwPublicFrontendIp",
+            name: "appGatewayFrontendIP",
             properties: {
               publicIPAddress: {
                 id: getId({
                   type: "PublicIPAddress",
                   group: "Network",
-                  name: "rg-ag::ip",
+                  name: "rg-ag::ip-address",
                 }),
               },
             },
@@ -185,7 +163,7 @@ exports.createResources = () => [
         ],
         frontendPorts: [
           {
-            name: "port_80",
+            name: "appGatewayFrontendPort",
             properties: {
               port: 80,
             },
@@ -193,31 +171,35 @@ exports.createResources = () => [
         ],
         backendAddressPools: [
           {
-            name: "backendpool",
+            name: "appGatewayBackendPool",
             properties: {},
           },
         ],
         backendHttpSettingsCollection: [
           {
-            name: "http-settings",
+            name: "appGatewayBackendHttpSettings",
             properties: {
               port: 80,
               protocol: "Http",
               cookieBasedAffinity: "Disabled",
+              connectionDraining: {
+                enabled: false,
+                drainTimeoutInSec: 1,
+              },
               pickHostNameFromBackendAddress: false,
-              requestTimeout: 20,
+              requestTimeout: 30,
             },
           },
         ],
         httpListeners: [
           {
-            name: "listener",
+            name: "appGatewayHttpListener",
             properties: {
               frontendIPConfiguration: {
-                id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/frontendIPConfigurations/appGwPublicFrontendIp`,
+                id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/frontendIPConfigurations/appGatewayFrontendIP`,
               },
               frontendPort: {
-                id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/frontendPorts/port_80`,
+                id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/frontendPorts/appGatewayFrontendPort`,
               },
               protocol: "Http",
               hostNames: [],
@@ -227,40 +209,35 @@ exports.createResources = () => [
         ],
         requestRoutingRules: [
           {
-            name: "rule",
+            name: "rule1",
             properties: {
               ruleType: "Basic",
               priority: 1,
               httpListener: {
-                id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/httpListeners/listener`,
+                id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/httpListeners/appGatewayHttpListener`,
               },
               backendAddressPool: {
-                id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/backendAddressPools/backendpool`,
+                id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/backendAddressPools/appGatewayBackendPool`,
               },
               backendHttpSettings: {
-                id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/backendHttpSettingsCollection/http-settings`,
+                id: `/subscriptions/${config.subscriptionId}/resourceGroups/rg-ag/providers/Microsoft.Network/applicationGateways/ag/backendHttpSettingsCollection/appGatewayBackendHttpSettings`,
               },
             },
           },
         ],
-        enableHttp2: false,
-        autoscaleConfiguration: {
-          minCapacity: 0,
-          maxCapacity: 10,
-        },
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-ag",
-      subnets: ["rg-ag::vnet::subnet-ag"],
-      publicIpAddresses: ["rg-ag::ip"],
+      subnets: ["rg-ag::virtual-network::subnet_ag"],
+      publicIpAddresses: ["rg-ag::ip-address"],
     }),
   },
   {
     type: "NetworkSecurityGroup",
     group: "Network",
     properties: ({}) => ({
-      name: "basicnsgvnet-nic01",
+      name: "security-group",
       properties: {
         securityRules: [],
       },
@@ -273,7 +250,7 @@ exports.createResources = () => [
     type: "PublicIPAddress",
     group: "Network",
     properties: ({}) => ({
-      name: "ip",
+      name: "ip-address",
       sku: {
         name: "Standard",
       },
@@ -289,35 +266,35 @@ exports.createResources = () => [
     type: "Subnet",
     group: "Network",
     properties: ({}) => ({
-      name: "default",
+      name: "subnet",
       properties: {
         addressPrefix: "10.0.0.0/24",
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-ag",
-      virtualNetwork: "rg-ag::vnet",
+      virtualNetwork: "rg-ag::virtual-network",
     }),
   },
   {
     type: "Subnet",
     group: "Network",
     properties: ({}) => ({
-      name: "subnet-ag",
+      name: "subnet_ag",
       properties: {
         addressPrefix: "10.0.1.0/24",
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-ag",
-      virtualNetwork: "rg-ag::vnet",
+      virtualNetwork: "rg-ag::virtual-network",
     }),
   },
   {
     type: "VirtualNetwork",
     group: "Network",
     properties: ({}) => ({
-      name: "vnet",
+      name: "virtual-network",
       properties: {
         addressSpace: {
           addressPrefixes: ["10.0.0.0/16"],

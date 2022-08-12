@@ -9,7 +9,7 @@ Provides a **WebAppDeploymentSlot** from the **Web** group
 - [WebApp](../Web/WebApp.md)
 - [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'User credentials used for publishing activity.',
   type: 'object',

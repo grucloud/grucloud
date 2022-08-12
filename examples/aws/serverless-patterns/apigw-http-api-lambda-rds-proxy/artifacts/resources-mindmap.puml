@@ -3,8 +3,6 @@ title Resources for project apigw-http-api-lambda-rds-proxy
 skinparam monochrome true
 + Infra
 ++ aws
-+++ CloudWatchLogs
-++++ LogGroup (3)
 +++ EC2
 ++++ Vpc (1)
 ++++ Subnet (3)

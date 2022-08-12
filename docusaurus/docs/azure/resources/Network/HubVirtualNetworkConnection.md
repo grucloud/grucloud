@@ -62,7 +62,7 @@ exports.createResources = () => [
 - [RouteTable](../Network/RouteTable.md)
 - [VirtualHub](../Network/VirtualHub.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

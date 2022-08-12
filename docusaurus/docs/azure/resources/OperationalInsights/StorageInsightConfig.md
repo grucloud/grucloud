@@ -35,7 +35,7 @@ exports.createResources = () => [
 - [LinkedStorageAccount](../OperationalInsights/LinkedStorageAccount.md)
 - [Workspace](../OperationalInsights/Workspace.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

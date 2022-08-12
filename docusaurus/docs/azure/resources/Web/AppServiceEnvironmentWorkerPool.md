@@ -24,7 +24,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceEnvironment](../Web/AppServiceEnvironment.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Worker pool of an App Service Environment ARM resource.',
   type: 'object',

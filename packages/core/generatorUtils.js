@@ -6,6 +6,7 @@ const prettier = require("prettier");
 const prompts = require("prompts");
 const { ESLint } = require("eslint");
 const { deepOmit } = require("./deepOmit");
+const { deepOmitDefaults } = require("./deepOmitDefault");
 
 const { differenceObject, omitIfEmpty } = require("./Common");
 const {
@@ -55,6 +56,7 @@ const {
   prepend,
 } = require("rubico/x");
 const Diff = require("diff");
+
 const { resourcesTpl } = require("./resourcesTpl");
 
 exports.filterModel = ({ field }) =>
@@ -223,22 +225,8 @@ const buildProperties = ({
     }),
     when(() => isEmpty(pickPropertiesCreate), pipe([deepOmit(omitProperties)])),
     deepOmit(omitPropertiesExtra),
-    tap((params) => {
-      assert(true);
-    }),
     differenceObject(propertiesDefault),
-    (live) =>
-      pipe([
-        () => propertiesDefaultArray,
-        reduce(
-          (acc, [path, defaultValue]) =>
-            pipe([
-              () => acc,
-              when(eq(get(path), defaultValue), omit([path])),
-            ])(),
-          live
-        ),
-      ])(),
+    deepOmitDefaults(propertiesDefaultArray),
     tap((params) => {
       assert(true);
     }),

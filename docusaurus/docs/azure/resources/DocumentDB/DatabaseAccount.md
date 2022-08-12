@@ -180,7 +180,7 @@ exports.createResources = () => [
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [Subnet](../Network/Subnet.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Parameters to create and update Cosmos DB database accounts.',
   type: 'object',

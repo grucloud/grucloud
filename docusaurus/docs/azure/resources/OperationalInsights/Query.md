@@ -32,7 +32,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [QueryPack](../OperationalInsights/QueryPack.md)
 ## Swagger Schema
-```js
+```json
 {
   type: 'object',
   properties: {

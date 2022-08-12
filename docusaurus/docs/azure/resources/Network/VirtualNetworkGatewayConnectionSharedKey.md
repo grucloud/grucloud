@@ -24,7 +24,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualNetworkGatewayConnection](../Network/VirtualNetworkGatewayConnection.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     value: {

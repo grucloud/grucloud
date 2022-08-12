@@ -99,7 +99,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [DatabaseAccount](../DocumentDB/DatabaseAccount.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Parameters for Create or Update Request for ServiceResource',
   type: 'object',

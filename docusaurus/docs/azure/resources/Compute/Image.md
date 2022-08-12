@@ -402,7 +402,7 @@ exports.createResources = () => [
 - [Disk](../Compute/Disk.md)
 - [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

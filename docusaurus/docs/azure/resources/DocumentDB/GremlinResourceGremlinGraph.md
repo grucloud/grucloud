@@ -56,7 +56,7 @@ exports.createResources = () => [
 - [DatabaseAccount](../DocumentDB/DatabaseAccount.md)
 - [GremlinResourceGremlinDatabase](../DocumentDB/GremlinResourceGremlinDatabase.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Parameters to create and update Cosmos DB Gremlin graph.',
   type: 'object',

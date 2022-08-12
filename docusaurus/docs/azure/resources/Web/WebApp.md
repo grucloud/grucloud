@@ -11,7 +11,7 @@ Provides a **WebApp** from the **Web** group
 - [HostingEnvironment](../Web/HostingEnvironment.md)
 - [Subnet](../Network/Subnet.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'A web app, a mobile app backend, or an API app.',
   type: 'object',

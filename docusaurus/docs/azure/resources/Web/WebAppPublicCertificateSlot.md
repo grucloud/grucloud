@@ -9,7 +9,7 @@ Provides a **WebAppPublicCertificateSlot** from the **Web** group
 - [WebApp](../Web/WebApp.md)
 - [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Public certificate object',
   type: 'object',

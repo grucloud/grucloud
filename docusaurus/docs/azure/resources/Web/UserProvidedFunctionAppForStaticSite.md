@@ -33,7 +33,7 @@ exports.createResources = () => [
 - [UserProvidedFunctionAppForStaticSiteBuild](../Web/UserProvidedFunctionAppForStaticSiteBuild.md)
 - [StaticSite](../Web/StaticSite.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Static Site User Provided Function App ARM resource.',
   type: 'object',

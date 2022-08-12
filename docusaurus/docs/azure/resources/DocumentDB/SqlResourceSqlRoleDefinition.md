@@ -42,7 +42,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [DatabaseAccount](../DocumentDB/DatabaseAccount.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Parameters to create and update an Azure Cosmos DB SQL Role Definition.',
   type: 'object',

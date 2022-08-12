@@ -53,7 +53,7 @@ exports.createResources = () => [
 - [Gallery](../Compute/Gallery.md)
 - [GalleryApplication](../Compute/GalleryApplication.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -153,12 +153,35 @@ exports.createResources = () => [
                               securityProfile: {
                                 type: 'object',
                                 description: 'This property specifies the security profile of an OS disk image.',
-                                properties: [Object]
+                                properties: {
+                                  confidentialVMEncryptionType: {
+                                    type: 'string',
+                                    description: 'confidential VM encryption types',
+                                    enum: [
+                                      'EncryptedVMGuestStateOnlyWithPmk',
+                                      'EncryptedWithPmk',
+                                      'EncryptedWithCmk'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'ConfidentialVMEncryptionType',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  secureVMDiskEncryptionSetId: {
+                                    type: 'string',
+                                    description: 'secure VM disk encryption set id'
+                                  }
+                                }
                               }
                             },
                             allOf: [
                               {
-                                properties: [Object],
+                                properties: {
+                                  diskEncryptionSetId: {
+                                    type: 'string',
+                                    description: 'A relative URI containing the resource ID of the disk encryption set.'
+                                  }
+                                },
                                 description: 'This is the disk image encryption base class.'
                               }
                             ],
@@ -167,8 +190,24 @@ exports.createResources = () => [
                           dataDiskImages: {
                             type: 'array',
                             items: {
-                              properties: { lun: [Object] },
-                              allOf: [ [Object] ],
+                              properties: {
+                                lun: {
+                                  type: 'integer',
+                                  format: 'int32',
+                                  description: 'This property specifies the logical unit number of the data disk. This value is used to identify data disks within the Virtual Machine and therefore must be unique for each data disk attached to the Virtual Machine.'
+                                }
+                              },
+                              allOf: [
+                                {
+                                  properties: {
+                                    diskEncryptionSetId: {
+                                      type: 'string',
+                                      description: 'A relative URI containing the resource ID of the disk encryption set.'
+                                    }
+                                  },
+                                  description: 'This is the disk image encryption base class.'
+                                }
+                              ],
                               required: [ 'lun' ],
                               description: 'Contains encryption settings for a data disk image.'
                             },
@@ -268,12 +307,35 @@ exports.createResources = () => [
                               securityProfile: {
                                 type: 'object',
                                 description: 'This property specifies the security profile of an OS disk image.',
-                                properties: [Object]
+                                properties: {
+                                  confidentialVMEncryptionType: {
+                                    type: 'string',
+                                    description: 'confidential VM encryption types',
+                                    enum: [
+                                      'EncryptedVMGuestStateOnlyWithPmk',
+                                      'EncryptedWithPmk',
+                                      'EncryptedWithCmk'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'ConfidentialVMEncryptionType',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  secureVMDiskEncryptionSetId: {
+                                    type: 'string',
+                                    description: 'secure VM disk encryption set id'
+                                  }
+                                }
                               }
                             },
                             allOf: [
                               {
-                                properties: [Object],
+                                properties: {
+                                  diskEncryptionSetId: {
+                                    type: 'string',
+                                    description: 'A relative URI containing the resource ID of the disk encryption set.'
+                                  }
+                                },
                                 description: 'This is the disk image encryption base class.'
                               }
                             ],
@@ -282,8 +344,24 @@ exports.createResources = () => [
                           dataDiskImages: {
                             type: 'array',
                             items: {
-                              properties: { lun: [Object] },
-                              allOf: [ [Object] ],
+                              properties: {
+                                lun: {
+                                  type: 'integer',
+                                  format: 'int32',
+                                  description: 'This property specifies the logical unit number of the data disk. This value is used to identify data disks within the Virtual Machine and therefore must be unique for each data disk attached to the Virtual Machine.'
+                                }
+                              },
+                              allOf: [
+                                {
+                                  properties: {
+                                    diskEncryptionSetId: {
+                                      type: 'string',
+                                      description: 'A relative URI containing the resource ID of the disk encryption set.'
+                                    }
+                                  },
+                                  description: 'This is the disk image encryption base class.'
+                                }
+                              ],
                               required: [ 'lun' ],
                               description: 'Contains encryption settings for a data disk image.'
                             },

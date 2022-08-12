@@ -905,7 +905,7 @@ const addDependencyFromBody = ({ resources, type, group, method, swagger }) =>
     () => method,
     get("parameters"),
     find(eq(get("in"), "body")),
-    get("schema"),
+    get("schema", {}),
     (schema) =>
       pipe([
         () => schema,

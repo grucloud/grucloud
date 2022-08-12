@@ -11,10 +11,11 @@ const {
   flatten,
 } = require("rubico/x");
 
-const logger = require("@grucloud/core/logger")({ prefix: "AzProvider" });
-const { getField } = require("@grucloud/core/ProviderCommon");
-const { omitIfEmpty, compare } = require("@grucloud/core/Common");
-const { tos } = require("@grucloud/core/tos");
+const {
+  omitIfEmpty,
+  compare,
+  replaceWithName,
+} = require("@grucloud/core/Common");
 
 const {
   findDependenciesResourceGroup,
@@ -22,6 +23,7 @@ const {
   configDefaultDependenciesId,
   configDefaultGeneric,
   assignDependenciesId,
+  replaceSubscription,
 } = require("../AzureCommon");
 
 const group = "Network";
@@ -147,11 +149,16 @@ exports.fnSpecs = ({ config }) => {
                             assign({
                               subnet: pipe([
                                 get("subnet"),
-                                assignDependenciesId({
-                                  group: "Network",
-                                  type: "Subnet",
-                                  providerConfig,
-                                  lives,
+                                assign({
+                                  id: pipe([
+                                    get("id"),
+                                    replaceWithName({
+                                      groupType: "Network::Subnet",
+                                      providerConfig,
+                                      lives,
+                                      path: "id",
+                                    }),
+                                  ]),
                                 }),
                               ]),
                             }),
@@ -336,46 +343,48 @@ exports.fnSpecs = ({ config }) => {
             name: "resourceGroupName",
             parent: true,
           },
-          publicIPAddresses: {
+          subnets: {
+            type: "Subnet",
+            group: "Network",
+            createOnly: true,
+            pathId:
+              "properties.backendAddressPools[].properties.loadBalancerBackendAddresses[].properties.subnet.id",
+            list: true,
+          },
+          publicIpAddresses: {
             type: "PublicIPAddress",
             group: "Network",
             createOnly: true,
+            pathId:
+              "properties.frontendIPConfigurations[].properties.publicIPAddress.id",
+            list: true,
+          },
+          virtualNetworks: {
+            type: "VirtualNetwork",
+            group: "Network",
+            createOnly: true,
+            pathId:
+              "properties.backendAddressPools[].properties.loadBalancerBackendAddresses[].properties.virtualNetwork.id",
             list: true,
           },
         },
-        //TODO remove
-        omitPropertiesExtra: ["properties.backendAddressPools"],
+        omitPropertiesExtra: ["properties.inboundNatRules"],
         propertiesDefaultArray: [
           [
             "properties.frontendIPConfigurations[].properties.privateIPAllocationMethod",
             "Dynamic",
           ],
         ],
-        findDependencies: ({ live, lives }) => [
-          findDependenciesResourceGroup({ live, lives, config }),
-          {
-            type: "PublicIPAddress",
-            group: "Network",
-            ids: pipe([
-              () => live,
-              get("properties.frontendIPConfigurations"),
-              pluck("properties"),
-              pluck("publicIPAddress"),
-              pluck("id"),
-            ])(),
-          },
-        ],
         filterLive: ({ lives, providerConfig }) =>
           pipe([
-            pick(["name", "sku", "tags", "properties"]),
+            tap((params) => {
+              assert(providerConfig);
+            }),
+            pick(["name", "location", "sku", "tags", "properties"]),
             assign({
               properties: pipe([
                 get("properties"),
-                omit([
-                  "provisioningState",
-                  "resourceGuid",
-                  "backendAddressPools",
-                ]),
+                omit(["provisioningState", "resourceGuid", "inboundNatRules"]),
                 assign({
                   frontendIPConfigurations: pipe([
                     get("frontendIPConfigurations"),
@@ -402,6 +411,10 @@ exports.fnSpecs = ({ config }) => {
                       ])
                     ),
                   ]),
+                  backendAddressPools: pipe([
+                    get("backendAddressPools"),
+                    map(pipe([pick(["name"])])),
+                  ]),
                   loadBalancingRules: pipe([
                     get("loadBalancingRules"),
                     map(
@@ -415,11 +428,16 @@ exports.fnSpecs = ({ config }) => {
                               backendAddressPools: pipe([
                                 get("backendAddressPools"),
                                 map(
-                                  assignDependenciesId({
-                                    group: "Network",
-                                    type: "LoadBalancerBackendAddressPool",
-                                    providerConfig,
-                                    lives,
+                                  assign({
+                                    id: pipe([
+                                      get("id"),
+                                      replaceWithName({
+                                        groupType: "Network::LoadBalancer",
+                                        providerConfig,
+                                        lives,
+                                        path: "id",
+                                      }),
+                                    ]),
                                   })
                                 ),
                               ]),
@@ -450,7 +468,7 @@ exports.fnSpecs = ({ config }) => {
                     ),
                   ]),
                   outboundRules: pipe([
-                    get("outboundRules"),
+                    get("outboundRules", []),
                     map(
                       pipe([
                         pick(["name", "properties"]),
@@ -481,105 +499,38 @@ exports.fnSpecs = ({ config }) => {
                       ])
                     ),
                   ]),
-                  /*
-                  //TODO
-        inboundNatRules: [],
-        inboundNatPools: [],
-                  */
+                  inboundNatPools: pipe([
+                    get("inboundNatPools"),
+                    map(
+                      pipe([
+                        tap((params) => {
+                          assert(true);
+                        }),
+                        pick(["name", "properties"]),
+                        assign({
+                          properties: pipe([
+                            get("properties"),
+                            omit(["provisioningState"]),
+                            assign({
+                              frontendIPConfiguration: pipe([
+                                get("frontendIPConfiguration"),
+                                assign({
+                                  id: pipe([
+                                    get("id"),
+                                    replaceSubscription({ providerConfig }),
+                                  ]),
+                                }),
+                              ]),
+                            }),
+                          ]),
+                        }),
+                      ])
+                    ),
+                  ]),
                 }),
               ]),
             }),
-            tap((params) => {
-              assert(true);
-            }),
           ]),
-      },
-      {
-        type: "LoadBalancerBackendAddressPool",
-        dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            name: "resourceGroupName",
-            parent: true,
-          },
-          loadBalancer: {
-            type: "LoadBalancer",
-            group: "Network",
-            name: "loadBalancerName",
-            parent: true,
-          },
-          virtualNetworks: {
-            type: "VirtualNetwork",
-            group: "Network",
-            createOnly: true,
-            list: true,
-          },
-        },
-        omitPropertiesExtra: ["properties.loadBalancerBackendAddresses"],
-        // findDependencies: ({ live, lives }) => [
-        //   findDependenciesResourceGroup({ live, lives, config }),
-        //   {
-        //     type: "VirtualNetwork",
-        //     group: "Network",
-        //     ids: pipe([
-        //       () => live,
-        //       get("properties.loadBalancerBackendAddresses"),
-        //       pluck("properties"),
-        //       pluck("virtualNetwork"),
-        //       flatten,
-        //       pluck("id"),
-        //     ])(),
-        //   },
-        // ],
-        filterLive: () =>
-          pipe([
-            pick(["name", "properties"]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                tap((params) => {
-                  assert(true);
-                }),
-                omit([
-                  "provisioningState",
-                  "backendIPConfigurations",
-                  "loadBalancerBackendAddresses",
-                  "loadBalancingRules",
-                  "outboundRules",
-                ]),
-                // assign({
-                //   loadBalancerBackendAddresses: pipe([
-                //     get("loadBalancerBackendAddresses"),
-                //     map(
-                //       assign({
-                //         properties: pipe([
-                //           get("properties"),
-                //           assign({
-                //             virtualNetwork: pipe([
-                //               get("virtualNetwork"),
-                //               assignDependenciesId({
-                //                 group: "Network",
-                //                 type: "VirtualNetwork",
-                //                 lives,
-                //               }),
-                //             ]),
-                //           }),
-                //         ]),
-                //       })
-                //     ),
-                //   ]),
-                // }),
-              ]),
-            }),
-          ]),
-        configDefault: ({ properties, dependencies, config, spec }) =>
-          pipe([
-            () => properties,
-            tap((params) => {
-              assert(true);
-            }),
-          ])(),
       },
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks
@@ -724,130 +675,7 @@ exports.fnSpecs = ({ config }) => {
       {
         type: "AzureFirewall",
         apiVersion: "2021-05-01",
-        dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            name: "resourceGroupName",
-            parent: true,
-          },
-          subnets: {
-            type: "Subnet",
-            group: "Network",
-            createOnly: true,
-            list: true,
-          },
-          publicIpAddresses: {
-            type: "PublicIPAddress",
-            group: "Network",
-            createOnly: true,
-            list: true,
-          },
-          virtualHub: {
-            type: "VirtualHub",
-            group: "Network",
-            createOnly: true,
-            pathId: "properties.virtualHub.id",
-          },
-          firewallPolicy: {
-            type: "FirewallPolicy",
-            group: "Network",
-            createOnly: true,
-            pathId: "properties.firewallPolicy.id",
-          },
-        },
-        findDependencies: ({ live, lives }) => [
-          findDependenciesResourceGroup({ live, lives, config }),
-          {
-            type: "PublicIPAddress",
-            group: "Network",
-            ids: pipe([
-              () => live,
-              get("properties.ipConfigurations"),
-              pluck("properties"),
-              pluck("publicIPAddress"),
-              pluck("id"),
-            ])(),
-          },
-          {
-            type: "Subnet",
-            group: "Network",
-            ids: pipe([
-              () => live,
-              get("properties.ipConfigurations"),
-              pluck("properties"),
-              pluck("subnet"),
-              pluck("id"),
-            ])(),
-          },
-          //TODO create findDependenciesDependencyId
-          {
-            type: "VirtualHub",
-            group: "Network",
-            ids: [pipe([() => live, get("properties.virtualHub.id")])()],
-          },
-          {
-            type: "FirewallPolicy",
-            group: "Network",
-            ids: [pipe([() => live, get("properties.firewallPolicy.id")])()],
-          },
-        ],
-        omitProperties: [],
-        filterLive: ({ lives, providerConfig }) =>
-          pipe([
-            pick(["name", "sku", "tags", "properties"]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                omit(["provisioningState"]),
-                assign({
-                  firewallPolicy: pipe([
-                    get("firewallPolicy"),
-                    assignDependenciesId({
-                      group: "Network",
-                      type: "FirewallPolicy",
-                      providerConfig,
-                      lives,
-                    }),
-                  ]),
-                  ipConfigurations: pipe([
-                    get("ipConfigurations"),
-                    map(
-                      pipe([
-                        pick(["name", "properties"]),
-                        assign({
-                          properties: pipe([
-                            get("properties"),
-                            pick(["subnet", "publicIPAddress"]),
-                            assign({
-                              subnet: pipe([
-                                get("subnet"),
-                                assignDependenciesId({
-                                  group: "Network",
-                                  type: "Subnet",
-                                  providerConfig,
-                                  lives,
-                                }),
-                              ]),
-                              publicIPAddress: pipe([
-                                get("publicIPAddress"),
-                                assignDependenciesId({
-                                  group: "Network",
-                                  type: "PublicIPAddress",
-                                  providerConfig,
-                                  lives,
-                                }),
-                              ]),
-                            }),
-                          ]),
-                        }),
-                      ])
-                    ),
-                  ]),
-                }),
-              ]),
-            }),
-          ]),
+        omitPropertiesExtra: ["properties.ipConfigurations[].id"],
       },
       {
         type: "FirewallPolicy",
@@ -881,148 +709,64 @@ exports.fnSpecs = ({ config }) => {
           resourceGroup: {
             type: "ResourceGroup",
             group: "Resources",
+            name: "resourceGroupName",
             parent: true,
           },
-          virtualNetwork: {
-            type: "VirtualNetwork",
-            group: "Network",
-            createOnly: true,
-          },
-          publicIpAddress: {
-            type: "PublicIPAddress",
-            group: "Network",
-            createOnly: true,
-          },
-          securityGroup: {
+          networkSecurityGroup: {
             type: "NetworkSecurityGroup",
             group: "Network",
             createOnly: true,
+            pathId: "properties.networkSecurityGroup.id",
           },
-          subnet: { type: "Subnet", group: "Network", createOnly: true },
-        },
-        propertiesDefault: {
-          properties: {
-            enableAcceleratedNetworking: false,
-            enableIPForwarding: false,
-          },
-        },
-        pickPropertiesCreate: [
-          "properties.enableAcceleratedNetworking",
-          "properties.enableIPForwarding",
-        ],
-        findDependencies: ({ live, lives }) => [
-          findDependenciesResourceGroup({ live, lives, config }),
-          {
-            type: "VirtualNetwork",
-            group: "Network",
-            ids: pipe([
-              () => live,
-              get("properties.ipConfigurations"),
-              map(
-                pipe([
-                  get("properties.subnet.id"),
-                  (id) => id.replace(/\/subnet.+$/g, ""),
-                ])
-              ),
-            ])(),
-          },
-          {
+          publicIpAddresses: {
             type: "PublicIPAddress",
             group: "Network",
-            ids: pipe([
-              () => live,
-              get("properties.ipConfigurations"),
-              pluck("properties"),
-              pluck("publicIPAddress"),
-              pluck("id"),
-            ])(),
+            createOnly: true,
+            pathId:
+              "properties.ipConfigurations[].properties.publicIPAddress.id",
+            list: true,
           },
-          {
-            type: "NetworkSecurityGroup",
-            group: "Network",
-            ids: [get("properties.networkSecurityGroup.id")(live)],
-          },
-          {
+          subnets: {
             type: "Subnet",
             group: "Network",
-            ids: pipe([
-              () => live,
-              get("properties.ipConfigurations"),
-              pluck("properties"),
-              pluck("subnet"),
-              pluck("id"),
-            ])(),
+            createOnly: true,
+            pathId: "properties.ipConfigurations[].properties.subnet.id",
+            list: true,
           },
-        ],
-        filterLive: () =>
-          pipe([
-            pick(["name", "tags", "properties"]),
-            assign({
-              properties: pipe([
-                get("properties"),
-                pick(["ipConfigurations"]),
-                assign({
-                  ipConfigurations: pipe([
-                    get("ipConfigurations"),
-                    map(
-                      pipe([
-                        pick(["name", "properties"]),
-                        assign({
-                          properties: pipe([
-                            get("properties"),
-                            pick(["privateIPAllocationMethod"]),
-                          ]),
-                        }),
-                      ])
-                    ),
-                  ]),
-                }),
-              ]),
-            }),
-          ]),
-        configDefault: async ({ properties, dependencies }) => {
-          assert(isObject(dependencies));
-          const { securityGroup, virtualNetwork, subnet, publicIpAddress } =
-            dependencies;
-          assert(virtualNetwork, "dependencies is missing virtualNetwork");
-          assert(subnet, "dependencies is missing subnet");
-          assert(publicIpAddress, "dependencies is missing publicIpAddress");
-          logger.debug(
-            `NetworkInterface configDefault ${tos({
-              properties,
-              subnet,
-              virtualNetwork,
-            })}`
-          );
-
-          return defaultsDeep({
-            location,
-            tags: buildTags(config),
-            properties: {
-              //TODO securityGroup => networkSecurityGroup
-              ...(securityGroup && {
-                networkSecurityGroup: {
-                  id: getField(securityGroup, "id"),
-                },
-              }),
-              ipConfigurations: [
-                {
-                  properties: {
-                    subnet: {
-                      id: getField(subnet, "id"),
-                    },
-                    //TODO
-                    ...(publicIpAddress && {
-                      publicIPAddress: {
-                        id: getField(publicIpAddress, "id"),
-                      },
-                    }),
-                  },
-                },
-              ],
-            },
-          })(properties);
+          applicationSecurityGroups: {
+            type: "ApplicationSecurityGroup",
+            group: "Network",
+            createOnly: true,
+            pathId:
+              "properties.ipConfigurations[].properties.applicationSecurityGroups[].id",
+            list: true,
+          },
         },
+        propertiesDefaultArray: [
+          ["properties.ipConfigurations[].properties.primary", true],
+          [
+            "properties.ipConfigurations[].properties.privateIPAllocationMethod",
+            "Dynamic",
+          ],
+          [
+            "properties.ipConfigurations[].properties.privateIPAddressVersion",
+            "IPv4",
+          ],
+        ],
+        propertiesDefault: {
+          kind: "Regular",
+          properties: {
+            nicType: "Standard",
+            enableAcceleratedNetworking: false,
+            enableIPForwarding: false,
+            dnsSettings: { dnsServers: [] },
+          },
+        },
+        omitPropertiesExtra: [
+          "properties.ipConfigurations[].type",
+          //TODO
+          "properties.ipConfigurations[].properties.privateIPAddress",
+        ],
       },
       // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/subnets
       {

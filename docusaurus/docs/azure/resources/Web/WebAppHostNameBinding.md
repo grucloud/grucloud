@@ -8,7 +8,7 @@ Provides a **WebAppHostNameBinding** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'A hostname binding object.',
   type: 'object',

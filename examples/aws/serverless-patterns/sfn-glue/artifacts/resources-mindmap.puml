@@ -6,8 +6,6 @@ skinparam monochrome true
 +++ CloudWatchEvents
 ++++ Rule (1)
 ++++ Target (1)
-+++ CloudWatchLogs
-++++ LogGroup (3)
 +++ Glue
 ++++ Job (1)
 +++ IAM

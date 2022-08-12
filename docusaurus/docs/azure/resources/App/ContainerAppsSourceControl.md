@@ -43,7 +43,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ContainerApp](../App/ContainerApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Container App SourceControl.',
   type: 'object',

@@ -19,7 +19,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      dedicatedHostGroup: "myDedicatedHostGroup",
       hostGroup: "myDedicatedHostGroup",
     }),
   },
@@ -29,9 +28,8 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [DedicatedHostGroup](../Compute/DedicatedHostGroup.md)
-- [DedicatedHostGroup](../Compute/DedicatedHostGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

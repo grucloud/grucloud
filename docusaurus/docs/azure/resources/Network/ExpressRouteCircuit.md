@@ -84,7 +84,7 @@ exports.createResources = () => [
 - [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
 - [Route](../Network/Route.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     sku: {
@@ -433,12 +433,22 @@ exports.createResources = () => [
                           properties: {
                             expressRouteCircuitPeering: {
                               description: 'Reference to Express Route Circuit Private Peering Resource of the circuit initiating connection.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             peerExpressRouteCircuitPeering: {
                               description: 'Reference to Express Route Circuit Private Peering Resource of the peered circuit.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             addressPrefix: {
@@ -452,8 +462,24 @@ exports.createResources = () => [
                             ipv6CircuitConnectionConfig: {
                               description: 'IPv6 Address PrefixProperties of the express route circuit connection.',
                               properties: {
-                                addressPrefix: [Object],
-                                circuitConnectionStatus: [Object]
+                                addressPrefix: {
+                                  type: 'string',
+                                  description: '/125 IP address space to carve out customer addresses for global reach.'
+                                },
+                                circuitConnectionStatus: {
+                                  readOnly: true,
+                                  description: 'Express Route Circuit connection state.',
+                                  type: 'string',
+                                  enum: [
+                                    'Connected',
+                                    'Connecting',
+                                    'Disconnected'
+                                  ],
+                                  'x-ms-enum': {
+                                    name: 'CircuitConnectionStatus',
+                                    modelAsString: true
+                                  }
+                                }
                               }
                             },
                             circuitConnectionStatus: {
@@ -528,12 +554,22 @@ exports.createResources = () => [
                           properties: {
                             expressRouteCircuitPeering: {
                               description: 'Reference to Express Route Circuit Private Peering Resource of the circuit.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             peerExpressRouteCircuitPeering: {
                               description: 'Reference to Express Route Circuit Private Peering Resource of the peered circuit.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             addressPrefix: {

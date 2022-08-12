@@ -91,11 +91,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
-      subnets: ["mySubnet"],
-      publicIpAddresses: ["myPublicIPAddress"],
-      natRules: ["myNatRule"],
       localNetworkGateway: "myLocalNetworkGateway",
+      natRules: ["myNatRule"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
     }),
   },
 ];
@@ -103,13 +101,11 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
-- [Subnet](../Network/Subnet.md)
-- [PublicIPAddress](../Network/PublicIPAddress.md)
-- [NatRule](../Network/NatRule.md)
 - [LocalNetworkGateway](../Network/LocalNetworkGateway.md)
+- [NatRule](../Network/NatRule.md)
+- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -344,8 +340,16 @@ exports.createResources = () => [
                                 readOnly: true,
                                 description: 'The provisioning state of the VPN client root certificate resource.',
                                 type: 'string',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [
+                                  'Succeeded',
+                                  'Updating',
+                                  'Deleting',
+                                  'Failed'
+                                ],
+                                'x-ms-enum': {
+                                  name: 'ProvisioningState',
+                                  modelAsString: true
+                                }
                               }
                             },
                             required: [ 'publicCertData' ]
@@ -393,8 +397,16 @@ exports.createResources = () => [
                                 readOnly: true,
                                 description: 'The provisioning state of the VPN client revoked certificate resource.',
                                 type: 'string',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [
+                                  'Succeeded',
+                                  'Updating',
+                                  'Deleting',
+                                  'Failed'
+                                ],
+                                'x-ms-enum': {
+                                  name: 'ProvisioningState',
+                                  modelAsString: true
+                                }
                               }
                             }
                           },
@@ -746,8 +758,14 @@ exports.createResources = () => [
                             type: 'array',
                             items: {
                               properties: {
-                                addressSpace: [Object],
-                                portRange: [Object]
+                                addressSpace: {
+                                  type: 'string',
+                                  description: 'Address space for Vpn NatRule mapping.'
+                                },
+                                portRange: {
+                                  type: 'string',
+                                  description: 'Port range for Vpn NatRule mapping.'
+                                }
                               },
                               description: 'Vpn NatRule mapping.'
                             },
@@ -757,8 +775,14 @@ exports.createResources = () => [
                             type: 'array',
                             items: {
                               properties: {
-                                addressSpace: [Object],
-                                portRange: [Object]
+                                addressSpace: {
+                                  type: 'string',
+                                  description: 'Address space for Vpn NatRule mapping.'
+                                },
+                                portRange: {
+                                  type: 'string',
+                                  description: 'Port range for Vpn NatRule mapping.'
+                                }
                               },
                               description: 'Vpn NatRule mapping.'
                             },
@@ -1085,8 +1109,16 @@ exports.createResources = () => [
                                 readOnly: true,
                                 description: 'The provisioning state of the VPN client root certificate resource.',
                                 type: 'string',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [
+                                  'Succeeded',
+                                  'Updating',
+                                  'Deleting',
+                                  'Failed'
+                                ],
+                                'x-ms-enum': {
+                                  name: 'ProvisioningState',
+                                  modelAsString: true
+                                }
                               }
                             },
                             required: [ 'publicCertData' ]
@@ -1134,8 +1166,16 @@ exports.createResources = () => [
                                 readOnly: true,
                                 description: 'The provisioning state of the VPN client revoked certificate resource.',
                                 type: 'string',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [
+                                  'Succeeded',
+                                  'Updating',
+                                  'Deleting',
+                                  'Failed'
+                                ],
+                                'x-ms-enum': {
+                                  name: 'ProvisioningState',
+                                  modelAsString: true
+                                }
                               }
                             }
                           },
@@ -1487,8 +1527,14 @@ exports.createResources = () => [
                             type: 'array',
                             items: {
                               properties: {
-                                addressSpace: [Object],
-                                portRange: [Object]
+                                addressSpace: {
+                                  type: 'string',
+                                  description: 'Address space for Vpn NatRule mapping.'
+                                },
+                                portRange: {
+                                  type: 'string',
+                                  description: 'Port range for Vpn NatRule mapping.'
+                                }
                               },
                               description: 'Vpn NatRule mapping.'
                             },
@@ -1498,8 +1544,14 @@ exports.createResources = () => [
                             type: 'array',
                             items: {
                               properties: {
-                                addressSpace: [Object],
-                                portRange: [Object]
+                                addressSpace: {
+                                  type: 'string',
+                                  description: 'Address space for Vpn NatRule mapping.'
+                                },
+                                portRange: {
+                                  type: 'string',
+                                  description: 'Port range for Vpn NatRule mapping.'
+                                }
                               },
                               description: 'Vpn NatRule mapping.'
                             },

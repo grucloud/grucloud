@@ -45,7 +45,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Registry](../ContainerRegistry/Registry.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'An object that represents a replication for a container registry.',
   type: 'object',
