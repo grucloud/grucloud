@@ -340,7 +340,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -369,7 +369,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -385,7 +385,7 @@ exports.createResources = () => [
                   "logs:PutRetentionPolicy",
                   "logs:DeleteRetentionPolicy",
                 ],
-                Resource: `*`,
+                Resource: "*",
                 Effect: "Allow",
               },
             ],
@@ -414,7 +414,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -490,7 +490,7 @@ exports.createResources = () => [
                   "logs:DescribeResourcePolicies",
                   "logs:DescribeLogGroups",
                 ],
-                Resource: `*`,
+                Resource: "*",
                 Effect: "Allow",
               },
               {
@@ -571,7 +571,7 @@ exports.createResources = () => [
             ],
             Type: "Task",
             OutputPath: "$.Payload",
-            Resource: `arn:aws:states:::lambda:invoke`,
+            Resource: "arn:aws:states:::lambda:invoke",
             Parameters: {
               FunctionName: `arn:aws:lambda:${
                 config.region

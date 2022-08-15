@@ -26,6 +26,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
       vault: "myVault",
       key: "myKey",
     }),
@@ -54,6 +55,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
       vault: "myVault",
       key: "myKey",
     }),
@@ -89,6 +91,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      managedIdentities: ["myUserAssignedIdentity"],
       vault: "myVault",
       key: "myKey",
     }),
@@ -98,10 +101,11 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [Vault](../KeyVault/Vault.md)
 - [Key](../KeyVault/Key.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     identity: {
@@ -309,4 +313,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-03-02`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/DiskRP/stable/2022-03-02/DiskRP/diskEncryptionSet.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/DiskRP/stable/2022-03-02/diskEncryptionSet.json).

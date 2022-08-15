@@ -48,9 +48,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      vault: ["myVault"],
-      publicIpAddress: ["myPublicIPAddress"],
-      subnet: ["mySubnet"],
+      vaults: ["myVault"],
+      publicIpAddresses: ["myPublicIPAddress"],
+      subnets: ["mySubnet"],
     }),
   },
 ];
@@ -118,9 +118,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      vault: ["myVault"],
-      publicIpAddress: ["myPublicIPAddress"],
-      subnet: ["mySubnet"],
+      vaults: ["myVault"],
+      publicIpAddresses: ["myPublicIPAddress"],
+      subnets: ["mySubnet"],
     }),
   },
 ];
@@ -175,9 +175,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      vault: ["myVault"],
-      publicIpAddress: ["myPublicIPAddress"],
-      subnet: ["mySubnet"],
+      vaults: ["myVault"],
+      publicIpAddresses: ["myPublicIPAddress"],
+      subnets: ["mySubnet"],
     }),
   },
 ];
@@ -243,9 +243,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      vault: ["myVault"],
-      publicIpAddress: ["myPublicIPAddress"],
-      subnet: ["mySubnet"],
+      vaults: ["myVault"],
+      publicIpAddresses: ["myPublicIPAddress"],
+      subnets: ["mySubnet"],
     }),
   },
 ];
@@ -257,7 +257,7 @@ exports.createResources = () => [
 - [PublicIPAddress](../Network/PublicIPAddress.md)
 - [Subnet](../Network/Subnet.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Describes the cloud service.',
   type: 'object',
@@ -418,9 +418,30 @@ exports.createResources = () => [
                               description: 'Properties of load balancer frontend ip configuration.',
                               type: 'object',
                               properties: {
-                                publicIPAddress: [Object],
-                                subnet: [Object],
-                                privateIPAddress: [Object]
+                                publicIPAddress: {
+                                  description: 'The reference to the public ip address resource.',
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'Resource Id'
+                                    }
+                                  },
+                                  'x-ms-azure-resource': true
+                                },
+                                subnet: {
+                                  description: 'The reference to the virtual network subnet resource.',
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'Resource Id'
+                                    }
+                                  },
+                                  'x-ms-azure-resource': true
+                                },
+                                privateIPAddress: {
+                                  description: 'The virtual network private IP address of the IP configuration.',
+                                  type: 'string'
+                                }
                               }
                             }
                           },
@@ -577,4 +598,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-04-04`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/CloudserviceRP/stable/2022-04-04/CloudServiceRP/cloudService.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/CloudserviceRP/stable/2022-04-04/cloudService.json).

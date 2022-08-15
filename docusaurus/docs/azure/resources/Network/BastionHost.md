@@ -14,8 +14,9 @@ exports.createResources = () => [
     properties: () => ({ name: "Standard" }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      subnet: ["mySubnet"],
-      publicIpAddress: ["myPublicIPAddress"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
+      subnets: ["mySubnet"],
+      publicIpAddresses: ["myPublicIPAddress"],
     }),
   },
 ];
@@ -23,10 +24,11 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 - [Subnet](../Network/Subnet.md)
 - [PublicIPAddress](../Network/PublicIPAddress.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

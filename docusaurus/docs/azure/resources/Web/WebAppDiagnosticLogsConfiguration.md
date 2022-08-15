@@ -8,7 +8,7 @@ Provides a **WebAppDiagnosticLogsConfiguration** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Configuration of App Service site logs.',
   type: 'object',

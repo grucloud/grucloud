@@ -12,10 +12,7 @@ exports.createResources = () => [
     group: "OperationalInsights",
     name: "myQueryPack",
     properties: () => ({ location: "South Central US", properties: {} }),
-    dependencies: ({}) => ({
-      resourceGroup: "myResourceGroup",
-      query: "myQuery",
-    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
   },
 ];
 
@@ -33,19 +30,15 @@ exports.createResources = () => [
       tags: { Tag1: "Value1" },
       properties: {},
     }),
-    dependencies: ({}) => ({
-      resourceGroup: "myResourceGroup",
-      query: "myQuery",
-    }),
+    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
   },
 ];
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Query](../OperationalInsights/Query.md)
 ## Swagger Schema
-```js
+```json
 {
   type: 'object',
   properties: {

@@ -22,8 +22,9 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      expressRouteCircuitPeering: ["myExpressRouteCircuitPeering"],
-      routeTable: ["myRouteTable"],
+      expressRouteConnections: ["myExpressRouteConnection"],
+      expressRouteCircuitPeerings: ["myExpressRouteCircuitPeering"],
+      routeTables: ["myRouteTable"],
       virtualHub: "myVirtualHub",
     }),
   },
@@ -32,11 +33,12 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [ExpressRouteConnection](../Network/ExpressRouteConnection.md)
 - [ExpressRouteCircuitPeering](../Network/ExpressRouteCircuitPeering.md)
 - [RouteTable](../Network/RouteTable.md)
 - [VirtualHub](../Network/VirtualHub.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -130,7 +132,12 @@ exports.createResources = () => [
                             type: 'array',
                             description: 'The list of resource ids of all the RouteTables.',
                             items: {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             }
@@ -146,9 +153,19 @@ exports.createResources = () => [
                             items: {
                               description: 'List of all Static Routes.',
                               properties: {
-                                name: [Object],
-                                addressPrefixes: [Object],
-                                nextHopIpAddress: [Object]
+                                name: {
+                                  type: 'string',
+                                  description: 'The name of the StaticRoute that is unique within a VnetRoute.'
+                                },
+                                addressPrefixes: {
+                                  type: 'array',
+                                  description: 'List of all address prefixes.',
+                                  items: { type: 'string' }
+                                },
+                                nextHopIpAddress: {
+                                  type: 'string',
+                                  description: 'The ip address of the next hop.'
+                                }
                               }
                             }
                           },
@@ -157,7 +174,12 @@ exports.createResources = () => [
                             readOnly: true,
                             description: 'The list of references to HubBgpConnection objects.',
                             items: {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             }

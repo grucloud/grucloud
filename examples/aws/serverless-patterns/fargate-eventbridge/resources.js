@@ -356,7 +356,7 @@ exports.createResources = () => [
             })}`,
             Effect: "Allow",
             Principal: {
-              AWS: `*`,
+              AWS: "*",
             },
           },
         ],
@@ -592,7 +592,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `ecs-tasks.amazonaws.com`,
+              Service: "ecs-tasks.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -618,7 +618,7 @@ exports.createResources = () => [
               },
               {
                 Action: "ecr:GetAuthorizationToken",
-                Resource: `*`,
+                Resource: "*",
                 Effect: "Allow",
               },
               {
@@ -651,7 +651,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `ecs-tasks.amazonaws.com`,
+              Service: "ecs-tasks.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },

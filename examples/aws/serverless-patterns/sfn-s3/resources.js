@@ -14,7 +14,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `states.amazonaws.com`,
+              Service: "states.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -27,7 +27,7 @@ exports.createResources = () => [
             Statement: [
               {
                 Action: ["s3:PutObject"],
-                Resource: `arn:aws:s3:::gc-my-sfn-bucket-destination/*`,
+                Resource: "arn:aws:s3:::gc-my-sfn-bucket-destination/*",
                 Effect: "Allow",
               },
             ],
@@ -52,7 +52,7 @@ exports.createResources = () => [
               Bucket: "gc-my-sfn-bucket-destination",
               Key: "filename.txt",
             },
-            Resource: `arn:aws:states:::aws-sdk:s3:putObject`,
+            Resource: "arn:aws:states:::aws-sdk:s3:putObject",
             Type: "Task",
           },
         },

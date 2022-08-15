@@ -24,7 +24,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ExpressRoutePortAuthorization](../Network/ExpressRoutePortAuthorization.md)
 ## Swagger Schema
-```js
+```json
 {
   type: 'object',
   title: 'ExpressRoute Port Authorization',

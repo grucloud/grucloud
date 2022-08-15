@@ -468,7 +468,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: `apigateway.amazonaws.com`,
+              Service: "apigateway.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },

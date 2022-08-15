@@ -8,7 +8,7 @@ Provides a **WebAppPublicCertificate** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Public certificate object',
   type: 'object',

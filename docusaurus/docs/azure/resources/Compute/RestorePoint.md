@@ -22,9 +22,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      vault: "myVault",
-      key: "myKey",
-      virtualMachineScaleSetVm: "myVirtualMachineScaleSetVM",
+      disks: ["myDisk"],
       restorePointCollection: "myRestorePointCollection",
     }),
   },
@@ -48,9 +46,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      vault: "myVault",
-      key: "myKey",
-      virtualMachineScaleSetVm: "myVirtualMachineScaleSetVM",
+      disks: ["myDisk"],
       restorePointCollection: "myRestorePointCollection",
     }),
   },
@@ -59,12 +55,10 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [Vault](../KeyVault/Vault.md)
-- [Key](../KeyVault/Key.md)
-- [VirtualMachineScaleSetVM](../Compute/VirtualMachineScaleSetVM.md)
+- [Disk](../Compute/Disk.md)
 - [RestorePointCollection](../Compute/RestorePointCollection.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -247,7 +241,12 @@ exports.createResources = () => [
                             },
                             sourceVault: {
                               description: 'The relative URL of the Key Vault containing the secret.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             }
                           },
@@ -262,7 +261,12 @@ exports.createResources = () => [
                             },
                             sourceVault: {
                               description: 'The relative URL of the Key Vault containing the key.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             }
                           },
@@ -301,7 +305,8 @@ exports.createResources = () => [
                             'StandardSSD_LRS',
                             'UltraSSD_LRS',
                             'Premium_ZRS',
-                            'StandardSSD_ZRS'
+                            'StandardSSD_ZRS',
+                            'PremiumV2_LRS'
                           ],
                           'x-ms-enum': {
                             name: 'StorageAccountTypes',
@@ -312,7 +317,12 @@ exports.createResources = () => [
                           description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
                           allOf: [
                             {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             }
                           ]
@@ -335,7 +345,17 @@ exports.createResources = () => [
                             },
                             diskEncryptionSet: {
                               description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
-                              allOf: [ [Object] ]
+                              allOf: [
+                                {
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'Resource Id'
+                                    }
+                                  },
+                                  'x-ms-azure-resource': true
+                                }
+                              ]
                             }
                           }
                         }
@@ -399,7 +419,8 @@ exports.createResources = () => [
                               'StandardSSD_LRS',
                               'UltraSSD_LRS',
                               'Premium_ZRS',
-                              'StandardSSD_ZRS'
+                              'StandardSSD_ZRS',
+                              'PremiumV2_LRS'
                             ],
                             'x-ms-enum': {
                               name: 'StorageAccountTypes',
@@ -410,7 +431,12 @@ exports.createResources = () => [
                             description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
                             allOf: [
                               {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource Id'
+                                  }
+                                },
                                 'x-ms-azure-resource': true
                               }
                             ]
@@ -422,12 +448,28 @@ exports.createResources = () => [
                               securityEncryptionType: {
                                 type: 'string',
                                 description: 'Specifies the EncryptionType of the managed disk. <br> It is set to DiskWithVMGuestState for encryption of the managed disk along with VMGuestState blob, and VMGuestStateOnly for encryption of just the VMGuestState blob. <br><br> NOTE: It can be set for only Confidential VMs.',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [
+                                  'VMGuestStateOnly',
+                                  'DiskWithVMGuestState'
+                                ],
+                                'x-ms-enum': {
+                                  name: 'securityEncryptionTypes',
+                                  modelAsString: true
+                                }
                               },
                               diskEncryptionSet: {
                                 description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
-                                allOf: [Array]
+                                allOf: [
+                                  {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource Id'
+                                      }
+                                    },
+                                    'x-ms-azure-resource': true
+                                  }
+                                ]
                               }
                             }
                           }
@@ -474,7 +516,8 @@ exports.createResources = () => [
                 },
                 adminPassword: {
                   type: 'string',
-                  description: 'Specifies the password of the administrator account. <br><br> **Minimum-length (Windows):** 8 characters <br><br> **Minimum-length (Linux):** 6 characters <br><br> **Max-length (Windows):** 123 characters <br><br> **Max-length (Linux):** 72 characters <br><br> **Complexity requirements:** 3 out of 4 conditions below need to be fulfilled <br> Has lower characters <br>Has upper characters <br> Has a digit <br> Has a special character (Regex match [\\W_]) <br><br> **Disallowed values:** "abc@123", "P@$$w0rd", "P@ssw0rd", "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1", "Password22", "iloveyou!" <br><br> For resetting the password, see [How to reset the Remote Desktop service or its login password in a Windows VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp) <br><br> For resetting root password, see [Manage users, SSH, and check or repair disks on Azure Linux VMs using the VMAccess Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)'
+                  description: 'Specifies the password of the administrator account. <br><br> **Minimum-length (Windows):** 8 characters <br><br> **Minimum-length (Linux):** 6 characters <br><br> **Max-length (Windows):** 123 characters <br><br> **Max-length (Linux):** 72 characters <br><br> **Complexity requirements:** 3 out of 4 conditions below need to be fulfilled <br> Has lower characters <br>Has upper characters <br> Has a digit <br> Has a special character (Regex match [\\W_]) <br><br> **Disallowed values:** "abc@123", "P@$$w0rd", "P@ssw0rd", "P@ssword123", "Pa$$word", "pass@word1", "Password!", "Password1", "Password22", "iloveyou!" <br><br> For resetting the password, see [How to reset the Remote Desktop service or its login password in a Windows VM](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/reset-rdp) <br><br> For resetting root password, see [Manage users, SSH, and check or repair disks on Azure Linux VMs using the VMAccess Extension](https://docs.microsoft.com/troubleshoot/azure/virtual-machines/troubleshoot-ssh-connection)',
+                  'x-ms-secret': true
                 },
                 customData: {
                   type: 'string',
@@ -561,6 +604,26 @@ exports.createResources = () => [
                             name: 'WindowsPatchAssessmentMode',
                             modelAsString: true
                           }
+                        },
+                        automaticByPlatformSettings: {
+                          description: 'Specifies additional settings for patch mode AutomaticByPlatform in VM Guest Patching on Windows.',
+                          type: 'object',
+                          properties: {
+                            rebootSetting: {
+                              type: 'string',
+                              description: 'Specifies the reboot setting for all AutomaticByPlatform patch installation operations.',
+                              enum: [
+                                'Unknown',
+                                'IfRequired',
+                                'Never',
+                                'Always'
+                              ],
+                              'x-ms-enum': {
+                                name: 'WindowsVMGuestPatchAutomaticByPlatformRebootSetting',
+                                modelAsString: true
+                              }
+                            }
+                          }
                         }
                       }
                     },
@@ -574,8 +637,11 @@ exports.createResources = () => [
                               protocol: {
                                 type: 'string',
                                 description: 'Specifies the protocol of WinRM listener. <br><br> Possible values are: <br>**http** <br><br> **https**',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [ 'Http', 'Https' ],
+                                'x-ms-enum': {
+                                  name: 'ProtocolTypes',
+                                  modelAsString: false
+                                }
                               },
                               certificateUrl: {
                                 type: 'string',
@@ -644,6 +710,26 @@ exports.createResources = () => [
                           'x-ms-enum': {
                             name: 'LinuxPatchAssessmentMode',
                             modelAsString: true
+                          }
+                        },
+                        automaticByPlatformSettings: {
+                          description: 'Specifies additional settings for patch mode AutomaticByPlatform in VM Guest Patching on Linux.',
+                          type: 'object',
+                          properties: {
+                            rebootSetting: {
+                              type: 'string',
+                              description: 'Specifies the reboot setting for all AutomaticByPlatform patch installation operations.',
+                              enum: [
+                                'Unknown',
+                                'IfRequired',
+                                'Never',
+                                'Always'
+                              ],
+                              'x-ms-enum': {
+                                name: 'LinuxVMGuestPatchAutomaticByPlatformRebootSetting',
+                                modelAsString: true
+                              }
+                            }
                           }
                         }
                       }
@@ -765,14 +851,13 @@ exports.createResources = () => [
         },
         consistencyMode: {
           type: 'string',
-          readOnly: true,
           enum: [
             'CrashConsistent',
             'FileSystemConsistent',
             'ApplicationConsistent'
           ],
           'x-ms-enum': { name: 'ConsistencyModeTypes', modelAsString: true },
-          description: 'Gets the consistency mode for the restore point. Please refer to https://aka.ms/RestorePoints for more details.'
+          description: 'ConsistencyMode of the RestorePoint. Can be specified in the input while creating a restore point. For now, only CrashConsistent is accepted as a valid input. Please refer to https://aka.ms/RestorePoints for more details.'
         },
         timeCreated: {
           type: 'string',
@@ -803,46 +888,46 @@ exports.createResources = () => [
                     description: 'Disk restore point Id.'
                   },
                   replicationStatus: {
+                    description: 'The disk restore point replication status information.',
                     type: 'object',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        status: {
-                          type: 'object',
-                          items: {
-                            properties: {
-                              code: {
-                                type: 'string',
-                                description: 'The status code.'
-                              },
-                              level: {
-                                type: 'string',
-                                description: 'The level code.',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
-                              },
-                              displayStatus: {
-                                type: 'string',
-                                description: 'The short localizable label for the status.'
-                              },
-                              message: {
-                                type: 'string',
-                                description: 'The detailed status message, including for alerts and error messages.'
-                              },
-                              time: {
-                                type: 'string',
-                                format: 'date-time',
-                                description: 'The time of the status.'
-                              }
-                            },
-                            description: 'Instance view status.'
+                    properties: {
+                      status: {
+                        description: 'The resource status information.',
+                        properties: {
+                          code: {
+                            type: 'string',
+                            description: 'The status code.'
                           },
-                          description: 'The resource status information.'
+                          level: {
+                            type: 'string',
+                            description: 'The level code.',
+                            enum: [ 'Info', 'Warning', 'Error' ],
+                            'x-ms-enum': {
+                              name: 'StatusLevelTypes',
+                              modelAsString: false
+                            }
+                          },
+                          displayStatus: {
+                            type: 'string',
+                            description: 'The short localizable label for the status.'
+                          },
+                          message: {
+                            type: 'string',
+                            description: 'The detailed status message, including for alerts and error messages.'
+                          },
+                          time: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'The time of the status.'
+                          }
                         }
                       },
-                      description: 'The instance view of a disk restore point.'
-                    },
-                    description: 'The disk restore point replication status information.'
+                      completionPercent: {
+                        type: 'integer',
+                        format: 'int32',
+                        description: 'Replication completion percentage.'
+                      }
+                    }
                   }
                 },
                 description: 'The instance view of a disk restore point.'
@@ -908,6 +993,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-11-01`.
+The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/stable/2021-11-01/compute.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/ComputeRP/stable/2022-03-01/restorePoint.json).

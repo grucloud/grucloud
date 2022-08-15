@@ -37,7 +37,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Registry](../ContainerRegistry/Registry.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'The parameters for creating a webhook.',
   required: [ 'location' ],

@@ -24,7 +24,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [StaticSite](../Web/StaticSite.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Static Site Custom Domain Request Properties ARM resource.',
   type: 'object',

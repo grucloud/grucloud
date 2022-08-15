@@ -34,7 +34,7 @@ exports.createResources = () => [
 - [StaticSite](../Web/StaticSite.md)
 - [StaticSiteBuild](../Web/StaticSiteBuild.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Static Site Linked Backend ARM resource.',
   type: 'object',

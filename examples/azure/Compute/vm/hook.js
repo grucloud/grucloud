@@ -41,11 +41,13 @@ module.exports = ({ provider }) => {
         //console.log("azure onDeployed");
         const resources = provider.resources();
         const publicIpAddress = await resources.Network.PublicIPAddress[
-          "rg-vm::ip"
+          "rg-vm::ip-address"
         ].getLive();
+        assert(publicIpAddress);
         const networkInterface = await resources.Network.NetworkInterface[
           "rg-vm::network-interface"
         ].getLive();
+        assert(networkInterface);
         const vm = await resources.Compute.VirtualMachine[
           "rg-vm::vm"
         ].getLive();

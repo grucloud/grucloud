@@ -68,7 +68,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: [`events.amazonaws.com`, `states.amazonaws.com`],
+              Service: ["events.amazonaws.com", "states.amazonaws.com"],
             },
             Action: "sts:AssumeRole",
           },
@@ -111,7 +111,7 @@ exports.createResources = () => [
             Sid: "StepFunctionAssumeRole",
             Effect: "Allow",
             Principal: {
-              Service: `states.amazonaws.com`,
+              Service: "states.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -153,7 +153,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: `glue.amazonaws.com`,
+              Service: "glue.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -211,7 +211,7 @@ exports.createResources = () => [
         States: {
           "Glue StartJobRun": {
             Type: "Task",
-            Resource: `arn:aws:states:::glue:startJobRun.sync`,
+            Resource: "arn:aws:states:::glue:startJobRun.sync",
             Parameters: {
               JobName: "sample-glue-job-terraform",
               Arguments: {

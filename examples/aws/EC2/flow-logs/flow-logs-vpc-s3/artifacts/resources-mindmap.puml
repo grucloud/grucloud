@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project flow-logs-vpc-s3
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ FlowLogs (1)
+++++ Vpc (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

@@ -23,6 +23,7 @@ exports.createResources = () => [
       resourceGroup: "myResourceGroup",
       routeFilter: "myRouteFilter",
       expressRouteConnection: "myExpressRouteConnection",
+      connections: ["myConnection"],
       circuit: "myExpressRouteCircuit",
     }),
   },
@@ -33,9 +34,10 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [RouteFilter](../Network/RouteFilter.md)
 - [ExpressRouteConnection](../Network/ExpressRouteConnection.md)
+- [Connection](../Web/Connection.md)
 - [ExpressRouteCircuit](../Network/ExpressRouteCircuit.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

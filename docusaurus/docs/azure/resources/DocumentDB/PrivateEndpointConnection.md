@@ -33,7 +33,7 @@ exports.createResources = () => [
 - [PrivateEndpoint](../Network/PrivateEndpoint.md)
 - [DatabaseAccount](../DocumentDB/DatabaseAccount.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'A private endpoint connection',
   type: 'object',

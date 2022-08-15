@@ -8,7 +8,7 @@ Provides a **WebAppVnetConnection** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Virtual Network information ARM resource.',
   type: 'object',

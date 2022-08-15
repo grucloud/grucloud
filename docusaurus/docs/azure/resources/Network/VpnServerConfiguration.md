@@ -95,15 +95,19 @@ exports.createResources = () => [
         ],
       },
     }),
-    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      configurationPolicyGroups: ["myConfigurationPolicyGroup"],
+    }),
   },
 ];
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [ConfigurationPolicyGroup](../Network/ConfigurationPolicyGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -382,14 +386,93 @@ exports.createResources = () => [
                           properties: {
                             vpnClientAddressPool: {
                               description: 'The reference to the address space resource which represents Address space for P2S VpnClient.',
-                              properties: { addressPrefixes: [Object] }
+                              properties: {
+                                addressPrefixes: {
+                                  type: 'array',
+                                  items: { type: 'string' },
+                                  description: 'A list of address blocks reserved for this virtual network in CIDR notation.'
+                                }
+                              }
                             },
                             routingConfiguration: {
                               description: 'The Routing Configuration indicating the associated and propagated route tables on this connection.',
                               properties: {
-                                associatedRouteTable: [Object],
-                                propagatedRouteTables: [Object],
-                                vnetRoutes: [Object]
+                                associatedRouteTable: {
+                                  description: 'The resource id RouteTable associated with this RoutingConfiguration.',
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'Resource ID.'
+                                    }
+                                  },
+                                  'x-ms-azure-resource': true
+                                },
+                                propagatedRouteTables: {
+                                  description: 'The list of RouteTables to advertise the routes to.',
+                                  properties: {
+                                    labels: {
+                                      type: 'array',
+                                      description: 'The list of labels.',
+                                      items: { type: 'string' }
+                                    },
+                                    ids: {
+                                      type: 'array',
+                                      description: 'The list of resource ids of all the RouteTables.',
+                                      items: {
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource ID.'
+                                          }
+                                        },
+                                        description: 'Reference to another subresource.',
+                                        'x-ms-azure-resource': true
+                                      }
+                                    }
+                                  }
+                                },
+                                vnetRoutes: {
+                                  description: 'List of routes that control routing from VirtualHub into a virtual network connection.',
+                                  properties: {
+                                    staticRoutes: {
+                                      type: 'array',
+                                      description: 'List of all Static Routes.',
+                                      items: {
+                                        description: 'List of all Static Routes.',
+                                        properties: {
+                                          name: {
+                                            type: 'string',
+                                            description: 'The name of the StaticRoute that is unique within a VnetRoute.'
+                                          },
+                                          addressPrefixes: {
+                                            type: 'array',
+                                            description: 'List of all address prefixes.',
+                                            items: { type: 'string' }
+                                          },
+                                          nextHopIpAddress: {
+                                            type: 'string',
+                                            description: 'The ip address of the next hop.'
+                                          }
+                                        }
+                                      }
+                                    },
+                                    bgpConnections: {
+                                      type: 'array',
+                                      readOnly: true,
+                                      description: 'The list of references to HubBgpConnection objects.',
+                                      items: {
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource ID.'
+                                          }
+                                        },
+                                        description: 'Reference to another subresource.',
+                                        'x-ms-azure-resource': true
+                                      }
+                                    }
+                                  }
+                                }
                               }
                             },
                             enableInternetSecurity: {
@@ -400,7 +483,12 @@ exports.createResources = () => [
                               type: 'array',
                               readOnly: true,
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource ID.'
+                                  }
+                                },
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               },
@@ -411,8 +499,112 @@ exports.createResources = () => [
                               readOnly: true,
                               items: {
                                 type: 'object',
-                                properties: [Object],
-                                allOf: [Array],
+                                properties: {
+                                  properties: {
+                                    'x-ms-client-flatten': true,
+                                    description: 'Properties of the VpnServerConfigurationPolicyGroup.',
+                                    type: 'object',
+                                    properties: {
+                                      isDefault: {
+                                        type: 'boolean',
+                                        description: 'Shows if this is a Default VpnServerConfigurationPolicyGroup or not.'
+                                      },
+                                      priority: {
+                                        type: 'integer',
+                                        format: 'int32',
+                                        description: 'Priority for VpnServerConfigurationPolicyGroup.'
+                                      },
+                                      policyMembers: {
+                                        type: 'array',
+                                        items: {
+                                          properties: {
+                                            name: {
+                                              type: 'string',
+                                              description: 'Name of the VpnServerConfigurationPolicyGroupMember.'
+                                            },
+                                            attributeType: {
+                                              type: 'string',
+                                              description: 'The Vpn Policy member attribute type.',
+                                              enum: [
+                                                'CertificateGroupId',
+                                                'AADGroupId',
+                                                'RadiusAzureGroupId'
+                                              ],
+                                              'x-ms-enum': {
+                                                name: 'VpnPolicyMemberAttributeType',
+                                                modelAsString: true
+                                              }
+                                            },
+                                            attributeValue: {
+                                              type: 'string',
+                                              description: 'The value of Attribute used for this VpnServerConfigurationPolicyGroupMember.'
+                                            }
+                                          },
+                                          description: 'VpnServerConfiguration PolicyGroup member',
+                                          type: 'object'
+                                        },
+                                        description: 'Multiple PolicyMembers for VpnServerConfigurationPolicyGroup.',
+                                        'x-ms-identifiers': []
+                                      },
+                                      p2SConnectionConfigurations: {
+                                        type: 'array',
+                                        readOnly: true,
+                                        items: {
+                                          properties: {
+                                            id: {
+                                              type: 'string',
+                                              description: 'Resource ID.'
+                                            }
+                                          },
+                                          description: 'Reference to another subresource.',
+                                          'x-ms-azure-resource': true
+                                        },
+                                        description: 'List of references to P2SConnectionConfigurations.'
+                                      },
+                                      provisioningState: {
+                                        readOnly: true,
+                                        description: 'The provisioning state of the VpnServerConfigurationPolicyGroup resource.',
+                                        type: 'string',
+                                        enum: [
+                                          'Succeeded',
+                                          'Updating',
+                                          'Deleting',
+                                          'Failed'
+                                        ],
+                                        'x-ms-enum': {
+                                          name: 'ProvisioningState',
+                                          modelAsString: true
+                                        }
+                                      }
+                                    }
+                                  },
+                                  etag: {
+                                    type: 'string',
+                                    readOnly: true,
+                                    description: 'A unique read-only string that changes whenever the resource is updated.'
+                                  },
+                                  name: {
+                                    type: 'string',
+                                    description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                                  },
+                                  type: {
+                                    readOnly: true,
+                                    type: 'string',
+                                    description: 'Resource type.'
+                                  }
+                                },
+                                allOf: [
+                                  {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource ID.'
+                                      }
+                                    },
+                                    description: 'Reference to another subresource.',
+                                    'x-ms-azure-resource': true
+                                  }
+                                ],
                                 description: 'VpnServerConfigurationPolicyGroup Resource.'
                               },
                               description: 'List of previous Configuration Policy Groups that this P2SConnectionConfiguration was attached to.'

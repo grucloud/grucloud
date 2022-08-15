@@ -21,7 +21,6 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      privateEndpoint: "myPrivateEndpoint",
       diskAccess: "myDiskAccess",
     }),
   },
@@ -30,10 +29,9 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [PrivateEndpoint](../Network/PrivateEndpoint.md)
 - [DiskAccess](../Compute/DiskAccess.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -109,4 +107,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-03-02`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/DiskRP/stable/2022-03-02/DiskRP/diskAccess.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/DiskRP/stable/2022-03-02/diskAccess.json).

@@ -32,10 +32,10 @@ exports.createResources = () => [
             Sid: "EnableAnotherAccountToReadTheSecret",
             Effect: "Allow",
             Principal: {
-              AWS: `arn:aws:iam::548529576214:root`,
+              AWS: "arn:aws:iam::548529576214:root",
             },
             Action: "secretsmanager:GetSecretValue",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },

@@ -4,22 +4,15 @@
 
 ## Aws
 
-- flow logs s3 destination
-- CodePipeline add dependencies to S3
-- CodePipeline replace region to S3 bucket
 - API Gateway v1 Authorizer
-- ApiGatewayV2::Stage: name prefix with api
-- ELB Listener multiple target group ?
 
 - doc:
   DeliveryStream,
-  SSM Document doc,
 
 - cloudwan vpc attachment
 - route to core network
 - fix gc l -t
 - Network Manager docs
-- fix systems-manager-automation-to-lambda
 - Example with non default DB Proxy Target Group,
 - AutoScalingGroup: example with serviceLinkedRole
 - VpcEndpoint: example with serviceLinkedRole
@@ -81,6 +74,7 @@ https://rushjs.io/
 
 ## Azure
 
+- Microsoft.Network/proximityPlacementGroups => Microsoft.Compute/proximityPlacementGroups
 - Disk vault dep vanished
 - gc d -a
   Compute::VirtualMachineScaleSetExtension 0/3 Request failed with status code 400 On resource 'aks-agentpool-16833683-vmss',

@@ -104,7 +104,7 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Defines web application firewall policy.',
   properties: {
@@ -452,7 +452,12 @@ exports.createResources = () => [
                           properties: {
                             subnet: {
                               description: 'Reference to the subnet resource. A subnet from where application gateway gets its private address.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             provisioningState: {
@@ -793,17 +798,32 @@ exports.createResources = () => [
                             },
                             subnet: {
                               description: 'Reference to the subnet resource.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             publicIPAddress: {
                               description: 'Reference to the PublicIP resource.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             privateLinkConfiguration: {
                               description: 'Reference to the application gateway private link configuration.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             provisioningState: {
@@ -970,7 +990,17 @@ exports.createResources = () => [
                             },
                             match: {
                               description: 'Criterion for classifying a healthy probe response.',
-                              properties: { body: [Object], statusCodes: [Object] }
+                              properties: {
+                                body: {
+                                  type: 'string',
+                                  description: 'Body that must be contained in the health response. Default value is empty.'
+                                },
+                                statusCodes: {
+                                  type: 'array',
+                                  items: { type: 'string' },
+                                  description: 'Allowed ranges of healthy status codes. Default range of healthy status codes is 200-399.'
+                                }
+                              }
                             },
                             provisioningState: {
                               readOnly: true,
@@ -1029,7 +1059,7 @@ exports.createResources = () => [
                   },
                   backendAddressPools: {
                     type: 'array',
-                    items: {
+                    items: <ref *2> {
                       properties: {
                         properties: {
                           'x-ms-client-flatten': true,
@@ -1038,9 +1068,896 @@ exports.createResources = () => [
                             backendIPConfigurations: {
                               readOnly: true,
                               type: 'array',
-                              items: {
-                                properties: [Object],
-                                allOf: [Array],
+                              items: <ref *3> {
+                                properties: <ref *1> {
+                                  properties: {
+                                    'x-ms-client-flatten': true,
+                                    description: 'Network interface IP configuration properties.',
+                                    properties: {
+                                      gatewayLoadBalancer: {
+                                        description: 'The reference to gateway load balancer frontend IP.',
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource ID.'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      },
+                                      virtualNetworkTaps: {
+                                        type: 'array',
+                                        items: {
+                                          properties: {
+                                            properties: {
+                                              'x-ms-client-flatten': true,
+                                              description: 'Virtual Network Tap Properties.',
+                                              properties: {
+                                                networkInterfaceTapConfigurations: {
+                                                  readOnly: true,
+                                                  type: 'array',
+                                                  items: [Object],
+                                                  description: 'Specifies the list of resource IDs for the network interface IP configuration that needs to be tapped.'
+                                                },
+                                                resourceGuid: {
+                                                  type: 'string',
+                                                  readOnly: true,
+                                                  description: 'The resource GUID property of the virtual network tap resource.'
+                                                },
+                                                provisioningState: {
+                                                  readOnly: true,
+                                                  description: 'The provisioning state of the virtual network tap resource.',
+                                                  type: 'string',
+                                                  enum: [Array],
+                                                  'x-ms-enum': [Object]
+                                                },
+                                                destinationNetworkInterfaceIPConfiguration: {
+                                                  description: 'The reference to the private IP Address of the collector nic that will receive the tap.',
+                                                  properties: [Circular *1],
+                                                  allOf: [Array]
+                                                },
+                                                destinationLoadBalancerFrontEndIPConfiguration: {
+                                                  description: 'The reference to the private IP address on the internal Load Balancer that will receive the tap.',
+                                                  properties: [Object],
+                                                  allOf: [Array]
+                                                },
+                                                destinationPort: {
+                                                  type: 'integer',
+                                                  description: 'The VXLAN destination port that will receive the tapped traffic.'
+                                                }
+                                              }
+                                            },
+                                            etag: {
+                                              readOnly: true,
+                                              type: 'string',
+                                              description: 'A unique read-only string that changes whenever the resource is updated.'
+                                            }
+                                          },
+                                          allOf: [
+                                            {
+                                              properties: {
+                                                id: {
+                                                  type: 'string',
+                                                  description: 'Resource ID.'
+                                                },
+                                                name: {
+                                                  readOnly: true,
+                                                  type: 'string',
+                                                  description: 'Resource name.'
+                                                },
+                                                type: {
+                                                  readOnly: true,
+                                                  type: 'string',
+                                                  description: 'Resource type.'
+                                                },
+                                                location: {
+                                                  type: 'string',
+                                                  description: 'Resource location.'
+                                                },
+                                                tags: {
+                                                  type: 'object',
+                                                  additionalProperties: [Object],
+                                                  description: 'Resource tags.'
+                                                }
+                                              },
+                                              description: 'Common resource representation.',
+                                              'x-ms-azure-resource': true
+                                            }
+                                          ],
+                                          description: 'Virtual Network Tap resource.'
+                                        },
+                                        description: 'The reference to Virtual Network Taps.'
+                                      },
+                                      applicationGatewayBackendAddressPools: {
+                                        type: 'array',
+                                        items: [Circular *2],
+                                        description: 'The reference to ApplicationGatewayBackendAddressPool resource.'
+                                      },
+                                      loadBalancerBackendAddressPools: {
+                                        type: 'array',
+                                        items: {
+                                          properties: {
+                                            properties: {
+                                              'x-ms-client-flatten': true,
+                                              description: 'Properties of load balancer backend address pool.',
+                                              properties: {
+                                                location: {
+                                                  type: 'string',
+                                                  description: 'The location of the backend address pool.'
+                                                },
+                                                tunnelInterfaces: {
+                                                  type: 'array',
+                                                  items: [Object],
+                                                  description: 'An array of gateway load balancer tunnel interfaces.'
+                                                },
+                                                loadBalancerBackendAddresses: {
+                                                  type: 'array',
+                                                  items: [Object],
+                                                  description: 'An array of backend addresses.'
+                                                },
+                                                backendIPConfigurations: {
+                                                  readOnly: true,
+                                                  type: 'array',
+                                                  items: [Circular *3],
+                                                  description: 'An array of references to IP addresses defined in network interfaces.'
+                                                },
+                                                loadBalancingRules: {
+                                                  readOnly: true,
+                                                  type: 'array',
+                                                  items: [Object],
+                                                  description: 'An array of references to load balancing rules that use this backend address pool.'
+                                                },
+                                                outboundRule: {
+                                                  readOnly: true,
+                                                  description: 'A reference to an outbound rule that uses this backend address pool.',
+                                                  properties: [Object],
+                                                  'x-ms-azure-resource': true
+                                                },
+                                                outboundRules: {
+                                                  readOnly: true,
+                                                  type: 'array',
+                                                  items: [Object],
+                                                  description: 'An array of references to outbound rules that use this backend address pool.'
+                                                },
+                                                inboundNatRules: {
+                                                  readOnly: true,
+                                                  type: 'array',
+                                                  items: [Object],
+                                                  description: 'An array of references to inbound NAT rules that use this backend address pool.'
+                                                },
+                                                provisioningState: {
+                                                  readOnly: true,
+                                                  description: 'The provisioning state of the backend address pool resource.',
+                                                  type: 'string',
+                                                  enum: [Array],
+                                                  'x-ms-enum': [Object]
+                                                },
+                                                drainPeriodInSeconds: {
+                                                  type: 'integer',
+                                                  format: 'int32',
+                                                  description: 'Amount of seconds Load Balancer waits for before sending RESET to client and backend address.'
+                                                }
+                                              }
+                                            },
+                                            name: {
+                                              type: 'string',
+                                              description: 'The name of the resource that is unique within the set of backend address pools used by the load balancer. This name can be used to access the resource.'
+                                            },
+                                            etag: {
+                                              readOnly: true,
+                                              type: 'string',
+                                              description: 'A unique read-only string that changes whenever the resource is updated.'
+                                            },
+                                            type: {
+                                              readOnly: true,
+                                              type: 'string',
+                                              description: 'Type of the resource.'
+                                            }
+                                          },
+                                          allOf: [
+                                            {
+                                              properties: {
+                                                id: {
+                                                  type: 'string',
+                                                  description: 'Resource ID.'
+                                                }
+                                              },
+                                              description: 'Reference to another subresource.',
+                                              'x-ms-azure-resource': true
+                                            }
+                                          ],
+                                          description: 'Pool of backend IP addresses.'
+                                        },
+                                        description: 'The reference to LoadBalancerBackendAddressPool resource.'
+                                      },
+                                      loadBalancerInboundNatRules: {
+                                        type: 'array',
+                                        items: {
+                                          properties: {
+                                            properties: {
+                                              'x-ms-client-flatten': true,
+                                              description: 'Properties of load balancer inbound NAT rule.',
+                                              properties: {
+                                                frontendIPConfiguration: {
+                                                  description: 'A reference to frontend IP addresses.',
+                                                  properties: [Object],
+                                                  'x-ms-azure-resource': true
+                                                },
+                                                backendIPConfiguration: {
+                                                  readOnly: true,
+                                                  description: 'A reference to a private IP address defined on a network interface of a VM. Traffic sent to the frontend port of each of the frontend IP configurations is forwarded to the backend IP.',
+                                                  properties: [Circular *1],
+                                                  allOf: [Array]
+                                                },
+                                                protocol: {
+                                                  description: 'The reference to the transport protocol used by the load balancing rule.',
+                                                  type: 'string',
+                                                  enum: [Array],
+                                                  'x-ms-enum': [Object]
+                                                },
+                                                frontendPort: {
+                                                  type: 'integer',
+                                                  format: 'int32',
+                                                  description: 'The port for the external endpoint. Port numbers for each rule must be unique within the Load Balancer. Acceptable values range from 1 to 65534.'
+                                                },
+                                                backendPort: {
+                                                  type: 'integer',
+                                                  format: 'int32',
+                                                  description: 'The port used for the internal endpoint. Acceptable values range from 1 to 65535.'
+                                                },
+                                                idleTimeoutInMinutes: {
+                                                  type: 'integer',
+                                                  format: 'int32',
+                                                  description: 'The timeout for the TCP idle connection. The value can be set between 4 and 30 minutes. The default value is 4 minutes. This element is only used when the protocol is set to TCP.'
+                                                },
+                                                enableFloatingIP: {
+                                                  type: 'boolean',
+                                                  description: "Configures a virtual machine's endpoint for the floating IP capability required to configure a SQL AlwaysOn Availability Group. This setting is required when using the SQL AlwaysOn Availability Groups in SQL server. This setting can't be changed after you create the endpoint."
+                                                },
+                                                enableTcpReset: {
+                                                  type: 'boolean',
+                                                  description: 'Receive bidirectional TCP Reset on TCP flow idle timeout or unexpected connection termination. This element is only used when the protocol is set to TCP.'
+                                                },
+                                                frontendPortRangeStart: {
+                                                  type: 'integer',
+                                                  format: 'int32',
+                                                  description: 'The port range start for the external endpoint. This property is used together with BackendAddressPool and FrontendPortRangeEnd. Individual inbound NAT rule port mappings will be created for each backend address from BackendAddressPool. Acceptable values range from 1 to 65534.'
+                                                },
+                                                frontendPortRangeEnd: {
+                                                  type: 'integer',
+                                                  format: 'int32',
+                                                  description: 'The port range end for the external endpoint. This property is used together with BackendAddressPool and FrontendPortRangeStart. Individual inbound NAT rule port mappings will be created for each backend address from BackendAddressPool. Acceptable values range from 1 to 65534.'
+                                                },
+                                                backendAddressPool: {
+                                                  description: 'A reference to backendAddressPool resource.',
+                                                  properties: [Object],
+                                                  'x-ms-azure-resource': true
+                                                },
+                                                provisioningState: {
+                                                  readOnly: true,
+                                                  description: 'The provisioning state of the inbound NAT rule resource.',
+                                                  type: 'string',
+                                                  enum: [Array],
+                                                  'x-ms-enum': [Object]
+                                                }
+                                              }
+                                            },
+                                            name: {
+                                              type: 'string',
+                                              description: 'The name of the resource that is unique within the set of inbound NAT rules used by the load balancer. This name can be used to access the resource.'
+                                            },
+                                            etag: {
+                                              readOnly: true,
+                                              type: 'string',
+                                              description: 'A unique read-only string that changes whenever the resource is updated.'
+                                            },
+                                            type: {
+                                              readOnly: true,
+                                              type: 'string',
+                                              description: 'Type of the resource.'
+                                            }
+                                          },
+                                          allOf: [
+                                            {
+                                              properties: {
+                                                id: {
+                                                  type: 'string',
+                                                  description: 'Resource ID.'
+                                                }
+                                              },
+                                              description: 'Reference to another subresource.',
+                                              'x-ms-azure-resource': true
+                                            }
+                                          ],
+                                          description: 'Inbound NAT rule of the load balancer.'
+                                        },
+                                        description: 'A list of references of LoadBalancerInboundNatRules.'
+                                      },
+                                      privateIPAddress: {
+                                        type: 'string',
+                                        description: 'Private IP address of the IP configuration.'
+                                      },
+                                      privateIPAllocationMethod: {
+                                        description: 'The private IP address allocation method.',
+                                        type: 'string',
+                                        enum: [ 'Static', 'Dynamic' ],
+                                        'x-ms-enum': {
+                                          name: 'IPAllocationMethod',
+                                          modelAsString: true
+                                        }
+                                      },
+                                      privateIPAddressVersion: {
+                                        description: 'Whether the specific IP configuration is IPv4 or IPv6. Default is IPv4.',
+                                        type: 'string',
+                                        enum: [ 'IPv4', 'IPv6' ],
+                                        'x-ms-enum': {
+                                          name: 'IPVersion',
+                                          modelAsString: true
+                                        }
+                                      },
+                                      subnet: {
+                                        description: 'Subnet bound to the IP configuration.',
+                                        properties: {
+                                          properties: {
+                                            'x-ms-client-flatten': true,
+                                            description: 'Properties of the subnet.',
+                                            properties: {
+                                              addressPrefix: {
+                                                type: 'string',
+                                                description: 'The address prefix for the subnet.'
+                                              },
+                                              addressPrefixes: {
+                                                type: 'array',
+                                                items: { type: 'string' },
+                                                description: 'List of address prefixes for the subnet.'
+                                              },
+                                              networkSecurityGroup: {
+                                                description: 'The reference to the NetworkSecurityGroup resource.',
+                                                properties: {
+                                                  properties: [Object],
+                                                  etag: [Object]
+                                                },
+                                                allOf: [ [Object] ]
+                                              },
+                                              routeTable: {
+                                                description: 'The reference to the RouteTable resource.',
+                                                properties: {
+                                                  properties: [Object],
+                                                  etag: [Object]
+                                                },
+                                                allOf: [ [Object] ]
+                                              },
+                                              natGateway: {
+                                                description: 'Nat gateway associated with this subnet.',
+                                                properties: { id: [Object] },
+                                                'x-ms-azure-resource': true
+                                              },
+                                              serviceEndpoints: {
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  description: 'The service endpoint properties.'
+                                                },
+                                                description: 'An array of service endpoints.'
+                                              },
+                                              serviceEndpointPolicies: {
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  allOf: [Array],
+                                                  description: 'Service End point policy resource.'
+                                                },
+                                                description: 'An array of service endpoint policies.'
+                                              },
+                                              privateEndpoints: {
+                                                readOnly: true,
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  allOf: [Array],
+                                                  description: 'Private endpoint resource.'
+                                                },
+                                                description: 'An array of references to private endpoints.'
+                                              },
+                                              ipConfigurations: {
+                                                readOnly: true,
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  allOf: [Array],
+                                                  description: 'IP configuration.'
+                                                },
+                                                description: 'An array of references to the network interface IP configurations using subnet.'
+                                              },
+                                              ipConfigurationProfiles: {
+                                                readOnly: true,
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  allOf: [Array],
+                                                  description: 'IP configuration profile child resource.'
+                                                },
+                                                description: 'Array of IP configuration profiles which reference this subnet.'
+                                              },
+                                              ipAllocations: {
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  description: 'Reference to another subresource.',
+                                                  'x-ms-azure-resource': true
+                                                },
+                                                description: 'Array of IpAllocation which reference this subnet.'
+                                              },
+                                              resourceNavigationLinks: {
+                                                readOnly: true,
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  allOf: [Array],
+                                                  description: 'ResourceNavigationLink resource.'
+                                                },
+                                                description: 'An array of references to the external resources using subnet.'
+                                              },
+                                              serviceAssociationLinks: {
+                                                readOnly: true,
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  allOf: [Array],
+                                                  description: 'ServiceAssociationLink resource.'
+                                                },
+                                                description: 'An array of references to services injecting into this subnet.'
+                                              },
+                                              delegations: {
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  allOf: [Array],
+                                                  description: 'Details the service to which the subnet is delegated.'
+                                                },
+                                                description: 'An array of references to the delegations on the subnet.'
+                                              },
+                                              purpose: {
+                                                type: 'string',
+                                                readOnly: true,
+                                                description: 'A read-only string identifying the intention of use for this subnet based on delegations and other user-defined properties.'
+                                              },
+                                              provisioningState: {
+                                                readOnly: true,
+                                                description: 'The provisioning state of the subnet resource.',
+                                                type: 'string',
+                                                enum: [
+                                                  'Succeeded',
+                                                  'Updating',
+                                                  'Deleting',
+                                                  'Failed'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'ProvisioningState',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              privateEndpointNetworkPolicies: {
+                                                type: 'string',
+                                                default: 'Disabled',
+                                                description: 'Enable or Disable apply network policies on private end point in the subnet.',
+                                                enum: [
+                                                  'Enabled',
+                                                  'Disabled'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'VirtualNetworkPrivateEndpointNetworkPolicies',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              privateLinkServiceNetworkPolicies: {
+                                                type: 'string',
+                                                default: 'Enabled',
+                                                description: 'Enable or Disable apply network policies on private link service in the subnet.',
+                                                enum: [
+                                                  'Enabled',
+                                                  'Disabled'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'VirtualNetworkPrivateLinkServiceNetworkPolicies',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              applicationGatewayIpConfigurations: {
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  allOf: [Array],
+                                                  description: 'IP configuration of an application gateway. Currently 1 public and 1 private IP configuration is allowed.'
+                                                },
+                                                description: 'Application gateway IP configurations of virtual network resource.'
+                                              }
+                                            }
+                                          },
+                                          name: {
+                                            type: 'string',
+                                            description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                                          },
+                                          etag: {
+                                            readOnly: true,
+                                            type: 'string',
+                                            description: 'A unique read-only string that changes whenever the resource is updated.'
+                                          },
+                                          type: {
+                                            type: 'string',
+                                            description: 'Resource type.'
+                                          }
+                                        },
+                                        allOf: [
+                                          {
+                                            properties: {
+                                              id: {
+                                                type: 'string',
+                                                description: 'Resource ID.'
+                                              }
+                                            },
+                                            description: 'Reference to another subresource.',
+                                            'x-ms-azure-resource': true
+                                          }
+                                        ]
+                                      },
+                                      primary: {
+                                        type: 'boolean',
+                                        description: 'Whether this is a primary customer address on the network interface.'
+                                      },
+                                      publicIPAddress: {
+                                        description: 'Public IP address bound to the IP configuration.',
+                                        properties: <ref *4> {
+                                          extendedLocation: {
+                                            description: 'The extended location of the public ip address.',
+                                            properties: {
+                                              name: {
+                                                type: 'string',
+                                                description: 'The name of the extended location.'
+                                              },
+                                              type: {
+                                                description: 'The type of the extended location.',
+                                                type: 'string',
+                                                enum: [ 'EdgeZone' ],
+                                                'x-ms-enum': {
+                                                  name: 'ExtendedLocationTypes',
+                                                  modelAsString: true
+                                                }
+                                              }
+                                            }
+                                          },
+                                          sku: {
+                                            description: 'The public IP address SKU.',
+                                            properties: {
+                                              name: {
+                                                type: 'string',
+                                                description: 'Name of a public IP address SKU.',
+                                                enum: [ 'Basic', 'Standard' ],
+                                                'x-ms-enum': {
+                                                  name: 'PublicIPAddressSkuName',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              tier: {
+                                                type: 'string',
+                                                description: 'Tier of a public IP address SKU.',
+                                                enum: [
+                                                  'Regional',
+                                                  'Global'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'PublicIPAddressSkuTier',
+                                                  modelAsString: true
+                                                }
+                                              }
+                                            }
+                                          },
+                                          properties: {
+                                            'x-ms-client-flatten': true,
+                                            description: 'Public IP address properties.',
+                                            properties: {
+                                              publicIPAllocationMethod: {
+                                                description: 'The public IP address allocation method.',
+                                                type: 'string',
+                                                enum: [ 'Static', 'Dynamic' ],
+                                                'x-ms-enum': {
+                                                  name: 'IPAllocationMethod',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              publicIPAddressVersion: {
+                                                description: 'The public IP address version.',
+                                                type: 'string',
+                                                enum: [ 'IPv4', 'IPv6' ],
+                                                'x-ms-enum': {
+                                                  name: 'IPVersion',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              ipConfiguration: {
+                                                readOnly: true,
+                                                description: 'The IP configuration associated with the public IP address.',
+                                                properties: {
+                                                  properties: [Object],
+                                                  name: [Object],
+                                                  etag: [Object]
+                                                },
+                                                allOf: [ [Object] ]
+                                              },
+                                              dnsSettings: {
+                                                description: 'The FQDN of the DNS record associated with the public IP address.',
+                                                properties: {
+                                                  domainNameLabel: [Object],
+                                                  fqdn: [Object],
+                                                  reverseFqdn: [Object]
+                                                }
+                                              },
+                                              ddosSettings: {
+                                                description: 'The DDoS protection custom policy associated with the public IP address.',
+                                                properties: {
+                                                  ddosCustomPolicy: [Object],
+                                                  protectionCoverage: [Object],
+                                                  protectedIP: [Object]
+                                                }
+                                              },
+                                              ipTags: {
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  description: 'Contains the IpTag associated with the object.'
+                                                },
+                                                description: 'The list of tags associated with the public IP address.'
+                                              },
+                                              ipAddress: {
+                                                type: 'string',
+                                                description: 'The IP address associated with the public IP address resource.'
+                                              },
+                                              publicIPPrefix: {
+                                                description: 'The Public IP Prefix this Public IP Address should be allocated from.',
+                                                properties: { id: [Object] },
+                                                'x-ms-azure-resource': true
+                                              },
+                                              idleTimeoutInMinutes: {
+                                                type: 'integer',
+                                                format: 'int32',
+                                                description: 'The idle timeout of the public IP address.'
+                                              },
+                                              resourceGuid: {
+                                                readOnly: true,
+                                                type: 'string',
+                                                description: 'The resource GUID property of the public IP address resource.'
+                                              },
+                                              provisioningState: {
+                                                readOnly: true,
+                                                description: 'The provisioning state of the public IP address resource.',
+                                                type: 'string',
+                                                enum: [
+                                                  'Succeeded',
+                                                  'Updating',
+                                                  'Deleting',
+                                                  'Failed'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'ProvisioningState',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              servicePublicIPAddress: {
+                                                description: 'The service public IP address of the public IP address resource.',
+                                                properties: [Circular *4],
+                                                allOf: [ [Object] ]
+                                              },
+                                              natGateway: {
+                                                description: 'The NatGateway for the Public IP address.',
+                                                properties: {
+                                                  sku: [Object],
+                                                  properties: [Object],
+                                                  zones: [Object],
+                                                  etag: [Object]
+                                                },
+                                                allOf: [ [Object] ]
+                                              },
+                                              migrationPhase: {
+                                                type: 'string',
+                                                description: 'Migration phase of Public IP Address.',
+                                                enum: [
+                                                  'None',
+                                                  'Prepare',
+                                                  'Commit',
+                                                  'Abort',
+                                                  'Committed'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'PublicIPAddressMigrationPhase',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              linkedPublicIPAddress: {
+                                                description: 'The linked public IP address of the public IP address resource.',
+                                                properties: [Circular *4],
+                                                allOf: [ [Object] ]
+                                              },
+                                              deleteOption: {
+                                                type: 'string',
+                                                description: 'Specify what happens to the public IP address when the VM using it is deleted',
+                                                enum: [ 'Delete', 'Detach' ],
+                                                'x-ms-enum': {
+                                                  name: 'DeleteOptions',
+                                                  modelAsString: true
+                                                }
+                                              }
+                                            }
+                                          },
+                                          etag: {
+                                            readOnly: true,
+                                            type: 'string',
+                                            description: 'A unique read-only string that changes whenever the resource is updated.'
+                                          },
+                                          zones: {
+                                            type: 'array',
+                                            items: { type: 'string' },
+                                            description: 'A list of availability zones denoting the IP allocated for the resource needs to come from.'
+                                          }
+                                        },
+                                        allOf: [
+                                          {
+                                            properties: {
+                                              id: {
+                                                type: 'string',
+                                                description: 'Resource ID.'
+                                              },
+                                              name: {
+                                                readOnly: true,
+                                                type: 'string',
+                                                description: 'Resource name.'
+                                              },
+                                              type: {
+                                                readOnly: true,
+                                                type: 'string',
+                                                description: 'Resource type.'
+                                              },
+                                              location: {
+                                                type: 'string',
+                                                description: 'Resource location.'
+                                              },
+                                              tags: {
+                                                type: 'object',
+                                                additionalProperties: { type: 'string' },
+                                                description: 'Resource tags.'
+                                              }
+                                            },
+                                            description: 'Common resource representation.',
+                                            'x-ms-azure-resource': true
+                                          }
+                                        ]
+                                      },
+                                      applicationSecurityGroups: {
+                                        type: 'array',
+                                        items: {
+                                          properties: {
+                                            properties: {
+                                              'x-ms-client-flatten': true,
+                                              description: 'Properties of the application security group.',
+                                              properties: {
+                                                resourceGuid: {
+                                                  readOnly: true,
+                                                  type: 'string',
+                                                  description: 'The resource GUID property of the application security group resource. It uniquely identifies a resource, even if the user changes its name or migrate the resource across subscriptions or resource groups.'
+                                                },
+                                                provisioningState: {
+                                                  readOnly: true,
+                                                  description: 'The provisioning state of the application security group resource.',
+                                                  type: 'string',
+                                                  enum: [Array],
+                                                  'x-ms-enum': [Object]
+                                                }
+                                              }
+                                            },
+                                            etag: {
+                                              readOnly: true,
+                                              type: 'string',
+                                              description: 'A unique read-only string that changes whenever the resource is updated.'
+                                            }
+                                          },
+                                          allOf: [
+                                            {
+                                              properties: {
+                                                id: {
+                                                  type: 'string',
+                                                  description: 'Resource ID.'
+                                                },
+                                                name: {
+                                                  readOnly: true,
+                                                  type: 'string',
+                                                  description: 'Resource name.'
+                                                },
+                                                type: {
+                                                  readOnly: true,
+                                                  type: 'string',
+                                                  description: 'Resource type.'
+                                                },
+                                                location: {
+                                                  type: 'string',
+                                                  description: 'Resource location.'
+                                                },
+                                                tags: {
+                                                  type: 'object',
+                                                  additionalProperties: [Object],
+                                                  description: 'Resource tags.'
+                                                }
+                                              },
+                                              description: 'Common resource representation.',
+                                              'x-ms-azure-resource': true
+                                            }
+                                          ],
+                                          description: 'An application security group in a resource group.'
+                                        },
+                                        description: 'Application security groups in which the IP configuration is included.'
+                                      },
+                                      provisioningState: {
+                                        readOnly: true,
+                                        description: 'The provisioning state of the network interface IP configuration.',
+                                        type: 'string',
+                                        enum: [
+                                          'Succeeded',
+                                          'Updating',
+                                          'Deleting',
+                                          'Failed'
+                                        ],
+                                        'x-ms-enum': {
+                                          name: 'ProvisioningState',
+                                          modelAsString: true
+                                        }
+                                      },
+                                      privateLinkConnectionProperties: {
+                                        description: 'PrivateLinkConnection properties for the network interface.',
+                                        readOnly: true,
+                                        properties: {
+                                          groupId: {
+                                            type: 'string',
+                                            readOnly: true,
+                                            description: 'The group ID for current private link connection.'
+                                          },
+                                          requiredMemberName: {
+                                            type: 'string',
+                                            readOnly: true,
+                                            description: 'The required member name for current private link connection.'
+                                          },
+                                          fqdns: {
+                                            type: 'array',
+                                            items: { type: 'string' },
+                                            readOnly: true,
+                                            description: 'List of FQDNs for current private link connection.'
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  name: {
+                                    type: 'string',
+                                    description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                                  },
+                                  etag: {
+                                    readOnly: true,
+                                    type: 'string',
+                                    description: 'A unique read-only string that changes whenever the resource is updated.'
+                                  },
+                                  type: {
+                                    type: 'string',
+                                    description: 'Resource type.'
+                                  }
+                                },
+                                allOf: [
+                                  {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource ID.'
+                                      }
+                                    },
+                                    description: 'Reference to another subresource.',
+                                    'x-ms-azure-resource': true
+                                  }
+                                ],
                                 description: 'IPConfiguration in a network interface.'
                               },
                               description: 'Collection of references to IPs defined in network interfaces.'
@@ -1048,7 +1965,16 @@ exports.createResources = () => [
                             backendAddresses: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  fqdn: {
+                                    type: 'string',
+                                    description: 'Fully qualified domain name (FQDN).'
+                                  },
+                                  ipAddress: {
+                                    type: 'string',
+                                    description: 'IP address.'
+                                  }
+                                },
                                 description: 'Backend address of an application gateway.'
                               },
                               description: 'Backend addresses.'
@@ -1139,13 +2065,23 @@ exports.createResources = () => [
                             },
                             probe: {
                               description: 'Probe resource of an application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             authenticationCertificates: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource ID.'
+                                  }
+                                },
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               },
@@ -1154,7 +2090,12 @@ exports.createResources = () => [
                             trustedRootCertificates: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource ID.'
+                                  }
+                                },
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               },
@@ -1163,8 +2104,19 @@ exports.createResources = () => [
                             connectionDraining: {
                               description: 'Connection draining of the backend http settings resource.',
                               properties: {
-                                enabled: [Object],
-                                drainTimeoutInSec: [Object]
+                                enabled: {
+                                  type: 'boolean',
+                                  description: 'Whether connection draining is enabled or not.'
+                                },
+                                drainTimeoutInSec: {
+                                  type: 'integer',
+                                  format: 'int32',
+                                  maximum: 3600,
+                                  exclusiveMaximum: false,
+                                  minimum: 1,
+                                  exclusiveMinimum: false,
+                                  description: 'The number of seconds connection draining is active. Acceptable values are from 1 second to 3600 seconds.'
+                                }
                               },
                               required: [ 'enabled', 'drainTimeoutInSec' ]
                             },
@@ -1267,13 +2219,23 @@ exports.createResources = () => [
                             },
                             probe: {
                               description: 'Probe resource of an application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             trustedRootCertificates: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource ID.'
+                                  }
+                                },
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               },
@@ -1345,12 +2307,22 @@ exports.createResources = () => [
                           properties: {
                             frontendIPConfiguration: {
                               description: 'Frontend IP configuration resource of an application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             frontendPort: {
                               description: 'Frontend port resource of an application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             protocol: {
@@ -1368,12 +2340,22 @@ exports.createResources = () => [
                             },
                             sslCertificate: {
                               description: 'SSL certificate resource of an application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             sslProfile: {
                               description: 'SSL profile resource of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             requireServerNameIndication: {
@@ -1398,14 +2380,36 @@ exports.createResources = () => [
                             customErrorConfigurations: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  statusCode: {
+                                    type: 'string',
+                                    description: 'Status code of the application gateway customer error.',
+                                    enum: [
+                                      'HttpStatus403',
+                                      'HttpStatus502'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'ApplicationGatewayCustomErrorStatusCode',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  customErrorPageUrl: {
+                                    type: 'string',
+                                    description: 'Error page URL of the application gateway customer error.'
+                                  }
+                                },
                                 description: 'Customer error of an application gateway.'
                               },
                               description: 'Custom error configurations of the HTTP listener.'
                             },
                             firewallPolicy: {
                               description: 'Reference to the FirewallPolicy resource.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             hostNames: {
@@ -1458,12 +2462,22 @@ exports.createResources = () => [
                           properties: {
                             frontendIPConfiguration: {
                               description: 'Frontend IP configuration resource of an application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             frontendPort: {
                               description: 'Frontend port resource of an application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             protocol: {
@@ -1477,12 +2491,22 @@ exports.createResources = () => [
                             },
                             sslCertificate: {
                               description: 'SSL certificate resource of an application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             sslProfile: {
                               description: 'SSL profile resource of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             provisioningState: {
@@ -1544,7 +2568,12 @@ exports.createResources = () => [
                             trustedClientCertificates: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource ID.'
+                                  }
+                                },
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               },
@@ -1553,16 +2582,118 @@ exports.createResources = () => [
                             sslPolicy: {
                               description: 'SSL policy of the application gateway resource.',
                               properties: {
-                                disabledSslProtocols: [Object],
-                                policyType: [Object],
-                                policyName: [Object],
-                                cipherSuites: [Object],
-                                minProtocolVersion: [Object]
+                                disabledSslProtocols: {
+                                  type: 'array',
+                                  description: 'Ssl protocols to be disabled on application gateway.',
+                                  items: {
+                                    type: 'string',
+                                    description: 'Ssl protocol enums.',
+                                    enum: [
+                                      'TLSv1_0',
+                                      'TLSv1_1',
+                                      'TLSv1_2',
+                                      'TLSv1_3'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'ApplicationGatewaySslProtocol',
+                                      modelAsString: true
+                                    }
+                                  }
+                                },
+                                policyType: {
+                                  type: 'string',
+                                  description: 'Type of Ssl Policy.',
+                                  enum: [
+                                    'Predefined',
+                                    'Custom',
+                                    'CustomV2'
+                                  ],
+                                  'x-ms-enum': {
+                                    name: 'ApplicationGatewaySslPolicyType',
+                                    modelAsString: true
+                                  }
+                                },
+                                policyName: {
+                                  description: 'Name of Ssl predefined policy.',
+                                  type: 'string',
+                                  enum: [
+                                    'AppGwSslPolicy20150501',
+                                    'AppGwSslPolicy20170401',
+                                    'AppGwSslPolicy20170401S',
+                                    'AppGwSslPolicy20220101',
+                                    'AppGwSslPolicy20220101S'
+                                  ],
+                                  'x-ms-enum': {
+                                    name: 'ApplicationGatewaySslPolicyName',
+                                    modelAsString: true
+                                  }
+                                },
+                                cipherSuites: {
+                                  type: 'array',
+                                  items: {
+                                    type: 'string',
+                                    description: 'Ssl cipher suites enums.',
+                                    enum: [
+                                      'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384',
+                                      'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256',
+                                      'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA',
+                                      'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA',
+                                      'TLS_DHE_RSA_WITH_AES_256_GCM_SHA384',
+                                      'TLS_DHE_RSA_WITH_AES_128_GCM_SHA256',
+                                      'TLS_DHE_RSA_WITH_AES_256_CBC_SHA',
+                                      'TLS_DHE_RSA_WITH_AES_128_CBC_SHA',
+                                      'TLS_RSA_WITH_AES_256_GCM_SHA384',
+                                      'TLS_RSA_WITH_AES_128_GCM_SHA256',
+                                      'TLS_RSA_WITH_AES_256_CBC_SHA256',
+                                      'TLS_RSA_WITH_AES_128_CBC_SHA256',
+                                      'TLS_RSA_WITH_AES_256_CBC_SHA',
+                                      'TLS_RSA_WITH_AES_128_CBC_SHA',
+                                      'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384',
+                                      'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256',
+                                      'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384',
+                                      'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256',
+                                      'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA',
+                                      'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA',
+                                      'TLS_DHE_DSS_WITH_AES_256_CBC_SHA256',
+                                      'TLS_DHE_DSS_WITH_AES_128_CBC_SHA256',
+                                      'TLS_DHE_DSS_WITH_AES_256_CBC_SHA',
+                                      'TLS_DHE_DSS_WITH_AES_128_CBC_SHA',
+                                      'TLS_RSA_WITH_3DES_EDE_CBC_SHA',
+                                      'TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA',
+                                      'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256',
+                                      'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'ApplicationGatewaySslCipherSuite',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  description: 'Ssl cipher suites to be enabled in the specified order to application gateway.'
+                                },
+                                minProtocolVersion: {
+                                  description: 'Minimum version of Ssl protocol to be supported on application gateway.',
+                                  type: 'string',
+                                  enum: [
+                                    'TLSv1_0',
+                                    'TLSv1_1',
+                                    'TLSv1_2',
+                                    'TLSv1_3'
+                                  ],
+                                  'x-ms-enum': {
+                                    name: 'ApplicationGatewaySslProtocol',
+                                    modelAsString: true
+                                  }
+                                }
                               }
                             },
                             clientAuthConfiguration: {
                               description: 'Client authentication configuration of the application gateway resource.',
-                              properties: { verifyClientCertIssuerDN: [Object] }
+                              properties: {
+                                verifyClientCertIssuerDN: {
+                                  type: 'boolean',
+                                  description: 'Verify client certificate issuer name on the application gateway.'
+                                }
+                              }
                             },
                             provisioningState: {
                               readOnly: true,
@@ -1622,34 +2753,171 @@ exports.createResources = () => [
                           properties: {
                             defaultBackendAddressPool: {
                               description: 'Default backend address pool resource of URL path map.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             defaultBackendHttpSettings: {
                               description: 'Default backend http settings resource of URL path map.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             defaultRewriteRuleSet: {
                               description: 'Default Rewrite rule set resource of URL path map.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             defaultRedirectConfiguration: {
                               description: 'Default redirect configuration resource of URL path map.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             defaultLoadDistributionPolicy: {
                               description: 'Default Load Distribution Policy resource of URL path map.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             pathRules: {
                               type: 'array',
                               items: {
-                                properties: [Object],
-                                allOf: [Array],
+                                properties: {
+                                  properties: {
+                                    'x-ms-client-flatten': true,
+                                    description: 'Properties of the application gateway path rule.',
+                                    properties: {
+                                      paths: {
+                                        type: 'array',
+                                        items: { type: 'string' },
+                                        description: 'Path rules of URL path map.'
+                                      },
+                                      backendAddressPool: {
+                                        description: 'Backend address pool resource of URL path map path rule.',
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource ID.'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      },
+                                      backendHttpSettings: {
+                                        description: 'Backend http settings resource of URL path map path rule.',
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource ID.'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      },
+                                      redirectConfiguration: {
+                                        description: 'Redirect configuration resource of URL path map path rule.',
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource ID.'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      },
+                                      rewriteRuleSet: {
+                                        description: 'Rewrite rule set resource of URL path map path rule.',
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource ID.'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      },
+                                      loadDistributionPolicy: {
+                                        description: 'Load Distribution Policy resource of URL path map path rule.',
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource ID.'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      },
+                                      provisioningState: {
+                                        readOnly: true,
+                                        description: 'The provisioning state of the path rule resource.',
+                                        type: 'string',
+                                        enum: [
+                                          'Succeeded',
+                                          'Updating',
+                                          'Deleting',
+                                          'Failed'
+                                        ],
+                                        'x-ms-enum': {
+                                          name: 'ProvisioningState',
+                                          modelAsString: true
+                                        }
+                                      },
+                                      firewallPolicy: {
+                                        description: 'Reference to the FirewallPolicy resource.',
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource ID.'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      }
+                                    }
+                                  },
+                                  name: {
+                                    type: 'string',
+                                    description: 'Name of the path rule that is unique within an Application Gateway.'
+                                  },
+                                  etag: {
+                                    readOnly: true,
+                                    type: 'string',
+                                    description: 'A unique read-only string that changes whenever the resource is updated.'
+                                  },
+                                  type: {
+                                    readOnly: true,
+                                    type: 'string',
+                                    description: 'Type of the resource.'
+                                  }
+                                },
+                                allOf: [
+                                  {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource ID.'
+                                      }
+                                    },
+                                    description: 'Reference to another subresource.',
+                                    'x-ms-azure-resource': true
+                                  }
+                                ],
                                 description: 'Path rule of URL path map of an application gateway.'
                               },
                               description: 'Path rule of URL path map resource.'
@@ -1730,37 +2998,72 @@ exports.createResources = () => [
                             },
                             backendAddressPool: {
                               description: 'Backend address pool resource of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             backendHttpSettings: {
                               description: 'Backend http settings resource of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             httpListener: {
                               description: 'Http listener resource of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             urlPathMap: {
                               description: 'URL path map resource of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             rewriteRuleSet: {
                               description: 'Rewrite Rule Set resource in Basic rule of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             redirectConfiguration: {
                               description: 'Redirect configuration resource of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             loadDistributionPolicy: {
                               description: 'Load Distribution Policy resource of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             provisioningState: {
@@ -1841,17 +3144,32 @@ exports.createResources = () => [
                             },
                             backendAddressPool: {
                               description: 'Backend address pool resource of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             backendSettings: {
                               description: 'Backend settings resource of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             listener: {
                               description: 'Listener resource of the application gateway.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             provisioningState: {
@@ -1914,7 +3232,98 @@ exports.createResources = () => [
                             rewriteRules: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  name: {
+                                    type: 'string',
+                                    description: 'Name of the rewrite rule that is unique within an Application Gateway.'
+                                  },
+                                  ruleSequence: {
+                                    type: 'integer',
+                                    description: 'Rule Sequence of the rewrite rule that determines the order of execution of a particular rule in a RewriteRuleSet.'
+                                  },
+                                  conditions: {
+                                    type: 'array',
+                                    items: {
+                                      properties: {
+                                        variable: {
+                                          type: 'string',
+                                          description: 'The condition parameter of the RewriteRuleCondition.'
+                                        },
+                                        pattern: {
+                                          type: 'string',
+                                          description: 'The pattern, either fixed string or regular expression, that evaluates the truthfulness of the condition.'
+                                        },
+                                        ignoreCase: {
+                                          type: 'boolean',
+                                          description: 'Setting this parameter to truth value with force the pattern to do a case in-sensitive comparison.'
+                                        },
+                                        negate: {
+                                          type: 'boolean',
+                                          description: 'Setting this value as truth will force to check the negation of the condition given by the user.'
+                                        }
+                                      },
+                                      description: 'Set of conditions in the Rewrite Rule in Application Gateway.'
+                                    },
+                                    description: 'Conditions based on which the action set execution will be evaluated.'
+                                  },
+                                  actionSet: {
+                                    type: 'object',
+                                    description: 'Set of actions to be done as part of the rewrite Rule.',
+                                    properties: {
+                                      requestHeaderConfigurations: {
+                                        type: 'array',
+                                        items: {
+                                          properties: {
+                                            headerName: {
+                                              type: 'string',
+                                              description: 'Header name of the header configuration.'
+                                            },
+                                            headerValue: {
+                                              type: 'string',
+                                              description: 'Header value of the header configuration.'
+                                            }
+                                          },
+                                          description: 'Header configuration of the Actions set in Application Gateway.'
+                                        },
+                                        description: 'Request Header Actions in the Action Set.'
+                                      },
+                                      responseHeaderConfigurations: {
+                                        type: 'array',
+                                        items: {
+                                          properties: {
+                                            headerName: {
+                                              type: 'string',
+                                              description: 'Header name of the header configuration.'
+                                            },
+                                            headerValue: {
+                                              type: 'string',
+                                              description: 'Header value of the header configuration.'
+                                            }
+                                          },
+                                          description: 'Header configuration of the Actions set in Application Gateway.'
+                                        },
+                                        description: 'Response Header Actions in the Action Set.'
+                                      },
+                                      urlConfiguration: {
+                                        description: 'Url Configuration Action in the Action Set.',
+                                        properties: {
+                                          modifiedPath: {
+                                            type: 'string',
+                                            description: 'Url path which user has provided for url rewrite. Null means no path will be updated. Default value is null.'
+                                          },
+                                          modifiedQueryString: {
+                                            type: 'string',
+                                            description: 'Query string which user has provided for url rewrite. Null means no query string will be updated. Default value is null.'
+                                          },
+                                          reroute: {
+                                            type: 'boolean',
+                                            description: 'If set as true, it will re-evaluate the url path map provided in path based request routing rules using modified path. Default value is false.'
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
                                 description: 'Rewrite rule of an application gateway.'
                               },
                               description: 'Rewrite rules in the rewrite rule set.'
@@ -1986,7 +3395,12 @@ exports.createResources = () => [
                             },
                             targetListener: {
                               description: 'Reference to a listener to redirect the request to.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             targetUrl: {
@@ -2004,7 +3418,12 @@ exports.createResources = () => [
                             requestRoutingRules: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource ID.'
+                                  }
+                                },
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               },
@@ -2013,7 +3432,12 @@ exports.createResources = () => [
                             urlPathMaps: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource ID.'
+                                  }
+                                },
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               },
@@ -2022,7 +3446,12 @@ exports.createResources = () => [
                             pathRules: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource ID.'
+                                  }
+                                },
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               },
@@ -2217,8 +3646,82 @@ exports.createResources = () => [
                             ipConfigurations: {
                               type: 'array',
                               items: {
-                                properties: [Object],
-                                allOf: [Array],
+                                properties: {
+                                  properties: {
+                                    'x-ms-client-flatten': true,
+                                    description: 'Properties of an application gateway private link ip configuration.',
+                                    properties: {
+                                      privateIPAddress: {
+                                        type: 'string',
+                                        description: 'The private IP address of the IP configuration.'
+                                      },
+                                      privateIPAllocationMethod: {
+                                        description: 'The private IP address allocation method.',
+                                        type: 'string',
+                                        enum: [ 'Static', 'Dynamic' ],
+                                        'x-ms-enum': {
+                                          name: 'IPAllocationMethod',
+                                          modelAsString: true
+                                        }
+                                      },
+                                      subnet: {
+                                        description: 'Reference to the subnet resource.',
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource ID.'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      },
+                                      primary: {
+                                        type: 'boolean',
+                                        description: 'Whether the ip configuration is primary or not.'
+                                      },
+                                      provisioningState: {
+                                        readOnly: true,
+                                        description: 'The provisioning state of the application gateway private link IP configuration.',
+                                        type: 'string',
+                                        enum: [
+                                          'Succeeded',
+                                          'Updating',
+                                          'Deleting',
+                                          'Failed'
+                                        ],
+                                        'x-ms-enum': {
+                                          name: 'ProvisioningState',
+                                          modelAsString: true
+                                        }
+                                      }
+                                    }
+                                  },
+                                  name: {
+                                    type: 'string',
+                                    description: 'The name of application gateway private link ip configuration.'
+                                  },
+                                  etag: {
+                                    readOnly: true,
+                                    type: 'string',
+                                    description: 'A unique read-only string that changes whenever the resource is updated.'
+                                  },
+                                  type: {
+                                    readOnly: true,
+                                    type: 'string',
+                                    description: 'The resource type.'
+                                  }
+                                },
+                                allOf: [
+                                  {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource ID.'
+                                      }
+                                    },
+                                    description: 'Reference to another subresource.',
+                                    'x-ms-azure-resource': true
+                                  }
+                                ],
                                 description: 'The application gateway private link ip configuration.'
                               },
                               description: 'An array of application gateway private link ip configurations.'
@@ -2283,19 +3786,887 @@ exports.createResources = () => [
                             privateEndpoint: {
                               readOnly: true,
                               description: 'The resource of private end point.',
-                              properties: {
-                                extendedLocation: [Object],
-                                properties: [Object],
-                                etag: [Object]
+                              properties: <ref *5> {
+                                extendedLocation: {
+                                  description: 'The extended location of the load balancer.',
+                                  properties: {
+                                    name: {
+                                      type: 'string',
+                                      description: 'The name of the extended location.'
+                                    },
+                                    type: {
+                                      description: 'The type of the extended location.',
+                                      type: 'string',
+                                      enum: [ 'EdgeZone' ],
+                                      'x-ms-enum': {
+                                        name: 'ExtendedLocationTypes',
+                                        modelAsString: true
+                                      }
+                                    }
+                                  }
+                                },
+                                properties: {
+                                  'x-ms-client-flatten': true,
+                                  description: 'Properties of the private endpoint.',
+                                  properties: {
+                                    subnet: {
+                                      description: 'The ID of the subnet from which the private IP will be allocated.',
+                                      properties: {
+                                        properties: {
+                                          'x-ms-client-flatten': true,
+                                          description: 'Properties of the subnet.',
+                                          properties: {
+                                            addressPrefix: {
+                                              type: 'string',
+                                              description: 'The address prefix for the subnet.'
+                                            },
+                                            addressPrefixes: {
+                                              type: 'array',
+                                              items: { type: 'string' },
+                                              description: 'List of address prefixes for the subnet.'
+                                            },
+                                            networkSecurityGroup: {
+                                              description: 'The reference to the NetworkSecurityGroup resource.',
+                                              properties: {
+                                                properties: {
+                                                  'x-ms-client-flatten': true,
+                                                  description: 'Properties of the network security group.',
+                                                  properties: [Object]
+                                                },
+                                                etag: {
+                                                  readOnly: true,
+                                                  type: 'string',
+                                                  description: 'A unique read-only string that changes whenever the resource is updated.'
+                                                }
+                                              },
+                                              allOf: [
+                                                {
+                                                  properties: [Object],
+                                                  description: 'Common resource representation.',
+                                                  'x-ms-azure-resource': true
+                                                }
+                                              ]
+                                            },
+                                            routeTable: {
+                                              description: 'The reference to the RouteTable resource.',
+                                              properties: {
+                                                properties: {
+                                                  'x-ms-client-flatten': true,
+                                                  description: 'Properties of the route table.',
+                                                  properties: [Object]
+                                                },
+                                                etag: {
+                                                  readOnly: true,
+                                                  type: 'string',
+                                                  description: 'A unique read-only string that changes whenever the resource is updated.'
+                                                }
+                                              },
+                                              allOf: [
+                                                {
+                                                  properties: [Object],
+                                                  description: 'Common resource representation.',
+                                                  'x-ms-azure-resource': true
+                                                }
+                                              ]
+                                            },
+                                            natGateway: {
+                                              description: 'Nat gateway associated with this subnet.',
+                                              properties: {
+                                                id: {
+                                                  type: 'string',
+                                                  description: 'Resource ID.'
+                                                }
+                                              },
+                                              'x-ms-azure-resource': true
+                                            },
+                                            serviceEndpoints: {
+                                              type: 'array',
+                                              items: {
+                                                properties: {
+                                                  service: [Object],
+                                                  locations: [Object],
+                                                  provisioningState: [Object]
+                                                },
+                                                description: 'The service endpoint properties.'
+                                              },
+                                              description: 'An array of service endpoints.'
+                                            },
+                                            serviceEndpointPolicies: {
+                                              type: 'array',
+                                              items: {
+                                                properties: {
+                                                  properties: [Object],
+                                                  etag: [Object],
+                                                  kind: [Object]
+                                                },
+                                                allOf: [ [Object] ],
+                                                description: 'Service End point policy resource.'
+                                              },
+                                              description: 'An array of service endpoint policies.'
+                                            },
+                                            privateEndpoints: {
+                                              readOnly: true,
+                                              type: 'array',
+                                              items: {
+                                                properties: [Circular *5],
+                                                allOf: [ [Object] ],
+                                                description: 'Private endpoint resource.'
+                                              },
+                                              description: 'An array of references to private endpoints.'
+                                            },
+                                            ipConfigurations: {
+                                              readOnly: true,
+                                              type: 'array',
+                                              items: {
+                                                properties: {
+                                                  properties: [Object],
+                                                  name: [Object],
+                                                  etag: [Object]
+                                                },
+                                                allOf: [ [Object] ],
+                                                description: 'IP configuration.'
+                                              },
+                                              description: 'An array of references to the network interface IP configurations using subnet.'
+                                            },
+                                            ipConfigurationProfiles: {
+                                              readOnly: true,
+                                              type: 'array',
+                                              items: {
+                                                properties: {
+                                                  properties: [Object],
+                                                  name: [Object],
+                                                  type: [Object],
+                                                  etag: [Object]
+                                                },
+                                                allOf: [ [Object] ],
+                                                description: 'IP configuration profile child resource.'
+                                              },
+                                              description: 'Array of IP configuration profiles which reference this subnet.'
+                                            },
+                                            ipAllocations: {
+                                              type: 'array',
+                                              items: {
+                                                properties: { id: [Object] },
+                                                description: 'Reference to another subresource.',
+                                                'x-ms-azure-resource': true
+                                              },
+                                              description: 'Array of IpAllocation which reference this subnet.'
+                                            },
+                                            resourceNavigationLinks: {
+                                              readOnly: true,
+                                              type: 'array',
+                                              items: {
+                                                properties: {
+                                                  properties: [Object],
+                                                  name: [Object],
+                                                  id: [Object],
+                                                  etag: [Object],
+                                                  type: [Object]
+                                                },
+                                                allOf: [ [Object] ],
+                                                description: 'ResourceNavigationLink resource.'
+                                              },
+                                              description: 'An array of references to the external resources using subnet.'
+                                            },
+                                            serviceAssociationLinks: {
+                                              readOnly: true,
+                                              type: 'array',
+                                              items: {
+                                                properties: {
+                                                  properties: [Object],
+                                                  name: [Object],
+                                                  etag: [Object],
+                                                  type: [Object]
+                                                },
+                                                allOf: [ [Object] ],
+                                                description: 'ServiceAssociationLink resource.'
+                                              },
+                                              description: 'An array of references to services injecting into this subnet.'
+                                            },
+                                            delegations: {
+                                              type: 'array',
+                                              items: {
+                                                properties: {
+                                                  properties: [Object],
+                                                  name: [Object],
+                                                  etag: [Object],
+                                                  type: [Object]
+                                                },
+                                                allOf: [ [Object] ],
+                                                description: 'Details the service to which the subnet is delegated.'
+                                              },
+                                              description: 'An array of references to the delegations on the subnet.'
+                                            },
+                                            purpose: {
+                                              type: 'string',
+                                              readOnly: true,
+                                              description: 'A read-only string identifying the intention of use for this subnet based on delegations and other user-defined properties.'
+                                            },
+                                            provisioningState: {
+                                              readOnly: true,
+                                              description: 'The provisioning state of the subnet resource.',
+                                              type: 'string',
+                                              enum: [
+                                                'Succeeded',
+                                                'Updating',
+                                                'Deleting',
+                                                'Failed'
+                                              ],
+                                              'x-ms-enum': {
+                                                name: 'ProvisioningState',
+                                                modelAsString: true
+                                              }
+                                            },
+                                            privateEndpointNetworkPolicies: {
+                                              type: 'string',
+                                              default: 'Disabled',
+                                              description: 'Enable or Disable apply network policies on private end point in the subnet.',
+                                              enum: [ 'Enabled', 'Disabled' ],
+                                              'x-ms-enum': {
+                                                name: 'VirtualNetworkPrivateEndpointNetworkPolicies',
+                                                modelAsString: true
+                                              }
+                                            },
+                                            privateLinkServiceNetworkPolicies: {
+                                              type: 'string',
+                                              default: 'Enabled',
+                                              description: 'Enable or Disable apply network policies on private link service in the subnet.',
+                                              enum: [ 'Enabled', 'Disabled' ],
+                                              'x-ms-enum': {
+                                                name: 'VirtualNetworkPrivateLinkServiceNetworkPolicies',
+                                                modelAsString: true
+                                              }
+                                            },
+                                            applicationGatewayIpConfigurations: {
+                                              type: 'array',
+                                              items: {
+                                                properties: {
+                                                  properties: [Object],
+                                                  name: [Object],
+                                                  etag: [Object],
+                                                  type: [Object]
+                                                },
+                                                allOf: [ [Object] ],
+                                                description: 'IP configuration of an application gateway. Currently 1 public and 1 private IP configuration is allowed.'
+                                              },
+                                              description: 'Application gateway IP configurations of virtual network resource.'
+                                            }
+                                          }
+                                        },
+                                        name: {
+                                          type: 'string',
+                                          description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                                        },
+                                        etag: {
+                                          readOnly: true,
+                                          type: 'string',
+                                          description: 'A unique read-only string that changes whenever the resource is updated.'
+                                        },
+                                        type: {
+                                          type: 'string',
+                                          description: 'Resource type.'
+                                        }
+                                      },
+                                      allOf: [
+                                        {
+                                          properties: {
+                                            id: {
+                                              type: 'string',
+                                              description: 'Resource ID.'
+                                            }
+                                          },
+                                          description: 'Reference to another subresource.',
+                                          'x-ms-azure-resource': true
+                                        }
+                                      ]
+                                    },
+                                    networkInterfaces: {
+                                      type: 'array',
+                                      readOnly: true,
+                                      items: {
+                                        properties: {
+                                          extendedLocation: {
+                                            description: 'The extended location of the network interface.',
+                                            properties: {
+                                              name: {
+                                                type: 'string',
+                                                description: 'The name of the extended location.'
+                                              },
+                                              type: {
+                                                description: 'The type of the extended location.',
+                                                type: 'string',
+                                                enum: [ 'EdgeZone' ],
+                                                'x-ms-enum': {
+                                                  name: 'ExtendedLocationTypes',
+                                                  modelAsString: true
+                                                }
+                                              }
+                                            }
+                                          },
+                                          properties: {
+                                            'x-ms-client-flatten': true,
+                                            description: 'Properties of the network interface.',
+                                            properties: {
+                                              virtualMachine: {
+                                                description: 'The reference to a virtual machine.',
+                                                readOnly: true,
+                                                properties: { id: [Object] },
+                                                'x-ms-azure-resource': true
+                                              },
+                                              networkSecurityGroup: {
+                                                description: 'The reference to the NetworkSecurityGroup resource.',
+                                                properties: {
+                                                  properties: [Object],
+                                                  etag: [Object]
+                                                },
+                                                allOf: [ [Object] ]
+                                              },
+                                              privateEndpoint: {
+                                                readOnly: true,
+                                                description: 'A reference to the private endpoint to which the network interface is linked.',
+                                                properties: [Circular *5],
+                                                allOf: [ [Object] ]
+                                              },
+                                              ipConfigurations: {
+                                                type: 'array',
+                                                items: <ref *3> {
+                                                  properties: [Object],
+                                                  allOf: [Array],
+                                                  description: 'IPConfiguration in a network interface.'
+                                                },
+                                                description: 'A list of IPConfigurations of the network interface.'
+                                              },
+                                              tapConfigurations: {
+                                                readOnly: true,
+                                                type: 'array',
+                                                items: {
+                                                  properties: [Object],
+                                                  allOf: [Array],
+                                                  description: 'Tap configuration in a Network Interface.'
+                                                },
+                                                description: 'A list of TapConfigurations of the network interface.'
+                                              },
+                                              dnsSettings: {
+                                                description: 'The DNS settings in network interface.',
+                                                properties: {
+                                                  dnsServers: [Object],
+                                                  appliedDnsServers: [Object],
+                                                  internalDnsNameLabel: [Object],
+                                                  internalFqdn: [Object],
+                                                  internalDomainNameSuffix: [Object]
+                                                }
+                                              },
+                                              macAddress: {
+                                                readOnly: true,
+                                                type: 'string',
+                                                description: 'The MAC address of the network interface.'
+                                              },
+                                              primary: {
+                                                readOnly: true,
+                                                type: 'boolean',
+                                                description: 'Whether this is a primary network interface on a virtual machine.'
+                                              },
+                                              vnetEncryptionSupported: {
+                                                readOnly: true,
+                                                type: 'boolean',
+                                                description: 'Whether the virtual machine this nic is attached to supports encryption.'
+                                              },
+                                              enableAcceleratedNetworking: {
+                                                type: 'boolean',
+                                                description: 'If the network interface is configured for accelerated networking. Not applicable to VM sizes which require accelerated networking.'
+                                              },
+                                              enableIPForwarding: {
+                                                type: 'boolean',
+                                                description: 'Indicates whether IP forwarding is enabled on this network interface.'
+                                              },
+                                              hostedWorkloads: {
+                                                type: 'array',
+                                                items: { type: 'string' },
+                                                readOnly: true,
+                                                description: 'A list of references to linked BareMetal resources.'
+                                              },
+                                              dscpConfiguration: {
+                                                description: 'A reference to the dscp configuration to which the network interface is linked.',
+                                                readOnly: true,
+                                                properties: { id: [Object] },
+                                                'x-ms-azure-resource': true
+                                              },
+                                              resourceGuid: {
+                                                readOnly: true,
+                                                type: 'string',
+                                                description: 'The resource GUID property of the network interface resource.'
+                                              },
+                                              provisioningState: {
+                                                readOnly: true,
+                                                description: 'The provisioning state of the network interface resource.',
+                                                type: 'string',
+                                                enum: [
+                                                  'Succeeded',
+                                                  'Updating',
+                                                  'Deleting',
+                                                  'Failed'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'ProvisioningState',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              workloadType: {
+                                                type: 'string',
+                                                description: 'WorkloadType of the NetworkInterface for BareMetal resources'
+                                              },
+                                              nicType: {
+                                                type: 'string',
+                                                description: 'Type of Network Interface resource.',
+                                                enum: [
+                                                  'Standard',
+                                                  'Elastic'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'NetworkInterfaceNicType',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              privateLinkService: {
+                                                description: 'Privatelinkservice of the network interface resource.',
+                                                properties: {
+                                                  extendedLocation: [Object],
+                                                  properties: [Object],
+                                                  etag: [Object]
+                                                },
+                                                allOf: [ [Object] ]
+                                              },
+                                              migrationPhase: {
+                                                type: 'string',
+                                                description: 'Migration phase of Network Interface resource.',
+                                                enum: [
+                                                  'None',
+                                                  'Prepare',
+                                                  'Commit',
+                                                  'Abort',
+                                                  'Committed'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'NetworkInterfaceMigrationPhase',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              auxiliaryMode: {
+                                                type: 'string',
+                                                description: 'Auxiliary mode of Network Interface resource.',
+                                                enum: [
+                                                  'None',
+                                                  'MaxConnections',
+                                                  'Floating'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'NetworkInterfaceAuxiliaryMode',
+                                                  modelAsString: true
+                                                }
+                                              }
+                                            }
+                                          },
+                                          etag: {
+                                            readOnly: true,
+                                            type: 'string',
+                                            description: 'A unique read-only string that changes whenever the resource is updated.'
+                                          }
+                                        },
+                                        allOf: [
+                                          {
+                                            properties: {
+                                              id: {
+                                                type: 'string',
+                                                description: 'Resource ID.'
+                                              },
+                                              name: {
+                                                readOnly: true,
+                                                type: 'string',
+                                                description: 'Resource name.'
+                                              },
+                                              type: {
+                                                readOnly: true,
+                                                type: 'string',
+                                                description: 'Resource type.'
+                                              },
+                                              location: {
+                                                type: 'string',
+                                                description: 'Resource location.'
+                                              },
+                                              tags: {
+                                                type: 'object',
+                                                additionalProperties: { type: 'string' },
+                                                description: 'Resource tags.'
+                                              }
+                                            },
+                                            description: 'Common resource representation.',
+                                            'x-ms-azure-resource': true
+                                          }
+                                        ],
+                                        description: 'A network interface in a resource group.'
+                                      },
+                                      description: 'An array of references to the network interfaces created for this private endpoint.'
+                                    },
+                                    provisioningState: {
+                                      readOnly: true,
+                                      description: 'The provisioning state of the private endpoint resource.',
+                                      type: 'string',
+                                      enum: [
+                                        'Succeeded',
+                                        'Updating',
+                                        'Deleting',
+                                        'Failed'
+                                      ],
+                                      'x-ms-enum': {
+                                        name: 'ProvisioningState',
+                                        modelAsString: true
+                                      }
+                                    },
+                                    privateLinkServiceConnections: {
+                                      type: 'array',
+                                      items: {
+                                        properties: {
+                                          properties: {
+                                            'x-ms-client-flatten': true,
+                                            description: 'Properties of the private link service connection.',
+                                            properties: {
+                                              provisioningState: {
+                                                readOnly: true,
+                                                description: 'The provisioning state of the private link service connection resource.',
+                                                type: 'string',
+                                                enum: [
+                                                  'Succeeded',
+                                                  'Updating',
+                                                  'Deleting',
+                                                  'Failed'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'ProvisioningState',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              privateLinkServiceId: {
+                                                type: 'string',
+                                                description: 'The resource id of private link service.'
+                                              },
+                                              groupIds: {
+                                                type: 'array',
+                                                items: { type: 'string' },
+                                                description: 'The ID(s) of the group(s) obtained from the remote resource that this private endpoint should connect to.'
+                                              },
+                                              requestMessage: {
+                                                type: 'string',
+                                                description: 'A message passed to the owner of the remote resource with this connection request. Restricted to 140 chars.'
+                                              },
+                                              privateLinkServiceConnectionState: {
+                                                description: 'A collection of read-only information about the state of the connection to the remote resource.',
+                                                properties: {
+                                                  status: [Object],
+                                                  description: [Object],
+                                                  actionsRequired: [Object]
+                                                }
+                                              }
+                                            }
+                                          },
+                                          name: {
+                                            type: 'string',
+                                            description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                                          },
+                                          type: {
+                                            readOnly: true,
+                                            type: 'string',
+                                            description: 'The resource type.'
+                                          },
+                                          etag: {
+                                            readOnly: true,
+                                            type: 'string',
+                                            description: 'A unique read-only string that changes whenever the resource is updated.'
+                                          }
+                                        },
+                                        allOf: [
+                                          {
+                                            properties: {
+                                              id: {
+                                                type: 'string',
+                                                description: 'Resource ID.'
+                                              }
+                                            },
+                                            description: 'Reference to another subresource.',
+                                            'x-ms-azure-resource': true
+                                          }
+                                        ],
+                                        description: 'PrivateLinkServiceConnection resource.'
+                                      },
+                                      description: 'A grouping of information about the connection to the remote resource.'
+                                    },
+                                    manualPrivateLinkServiceConnections: {
+                                      type: 'array',
+                                      items: {
+                                        properties: {
+                                          properties: {
+                                            'x-ms-client-flatten': true,
+                                            description: 'Properties of the private link service connection.',
+                                            properties: {
+                                              provisioningState: {
+                                                readOnly: true,
+                                                description: 'The provisioning state of the private link service connection resource.',
+                                                type: 'string',
+                                                enum: [
+                                                  'Succeeded',
+                                                  'Updating',
+                                                  'Deleting',
+                                                  'Failed'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'ProvisioningState',
+                                                  modelAsString: true
+                                                }
+                                              },
+                                              privateLinkServiceId: {
+                                                type: 'string',
+                                                description: 'The resource id of private link service.'
+                                              },
+                                              groupIds: {
+                                                type: 'array',
+                                                items: { type: 'string' },
+                                                description: 'The ID(s) of the group(s) obtained from the remote resource that this private endpoint should connect to.'
+                                              },
+                                              requestMessage: {
+                                                type: 'string',
+                                                description: 'A message passed to the owner of the remote resource with this connection request. Restricted to 140 chars.'
+                                              },
+                                              privateLinkServiceConnectionState: {
+                                                description: 'A collection of read-only information about the state of the connection to the remote resource.',
+                                                properties: {
+                                                  status: [Object],
+                                                  description: [Object],
+                                                  actionsRequired: [Object]
+                                                }
+                                              }
+                                            }
+                                          },
+                                          name: {
+                                            type: 'string',
+                                            description: 'The name of the resource that is unique within a resource group. This name can be used to access the resource.'
+                                          },
+                                          type: {
+                                            readOnly: true,
+                                            type: 'string',
+                                            description: 'The resource type.'
+                                          },
+                                          etag: {
+                                            readOnly: true,
+                                            type: 'string',
+                                            description: 'A unique read-only string that changes whenever the resource is updated.'
+                                          }
+                                        },
+                                        allOf: [
+                                          {
+                                            properties: {
+                                              id: {
+                                                type: 'string',
+                                                description: 'Resource ID.'
+                                              }
+                                            },
+                                            description: 'Reference to another subresource.',
+                                            'x-ms-azure-resource': true
+                                          }
+                                        ],
+                                        description: 'PrivateLinkServiceConnection resource.'
+                                      },
+                                      description: 'A grouping of information about the connection to the remote resource. Used when the network admin does not have access to approve connections to the remote resource.'
+                                    },
+                                    customDnsConfigs: {
+                                      type: 'array',
+                                      items: {
+                                        properties: {
+                                          fqdn: {
+                                            type: 'string',
+                                            description: 'Fqdn that resolves to private endpoint ip address.'
+                                          },
+                                          ipAddresses: {
+                                            type: 'array',
+                                            items: { type: 'string' },
+                                            description: 'A list of private ip addresses of the private endpoint.'
+                                          }
+                                        },
+                                        description: 'Contains custom Dns resolution configuration from customer.'
+                                      },
+                                      description: 'An array of custom dns configurations.'
+                                    },
+                                    applicationSecurityGroups: {
+                                      type: 'array',
+                                      items: {
+                                        properties: {
+                                          properties: {
+                                            'x-ms-client-flatten': true,
+                                            description: 'Properties of the application security group.',
+                                            properties: {
+                                              resourceGuid: {
+                                                readOnly: true,
+                                                type: 'string',
+                                                description: 'The resource GUID property of the application security group resource. It uniquely identifies a resource, even if the user changes its name or migrate the resource across subscriptions or resource groups.'
+                                              },
+                                              provisioningState: {
+                                                readOnly: true,
+                                                description: 'The provisioning state of the application security group resource.',
+                                                type: 'string',
+                                                enum: [
+                                                  'Succeeded',
+                                                  'Updating',
+                                                  'Deleting',
+                                                  'Failed'
+                                                ],
+                                                'x-ms-enum': {
+                                                  name: 'ProvisioningState',
+                                                  modelAsString: true
+                                                }
+                                              }
+                                            }
+                                          },
+                                          etag: {
+                                            readOnly: true,
+                                            type: 'string',
+                                            description: 'A unique read-only string that changes whenever the resource is updated.'
+                                          }
+                                        },
+                                        allOf: [
+                                          {
+                                            properties: {
+                                              id: {
+                                                type: 'string',
+                                                description: 'Resource ID.'
+                                              },
+                                              name: {
+                                                readOnly: true,
+                                                type: 'string',
+                                                description: 'Resource name.'
+                                              },
+                                              type: {
+                                                readOnly: true,
+                                                type: 'string',
+                                                description: 'Resource type.'
+                                              },
+                                              location: {
+                                                type: 'string',
+                                                description: 'Resource location.'
+                                              },
+                                              tags: {
+                                                type: 'object',
+                                                additionalProperties: { type: 'string' },
+                                                description: 'Resource tags.'
+                                              }
+                                            },
+                                            description: 'Common resource representation.',
+                                            'x-ms-azure-resource': true
+                                          }
+                                        ],
+                                        description: 'An application security group in a resource group.'
+                                      },
+                                      description: 'Application security groups in which the private endpoint IP configuration is included.'
+                                    },
+                                    ipConfigurations: {
+                                      type: 'array',
+                                      items: {
+                                        type: 'object',
+                                        properties: {
+                                          properties: {
+                                            'x-ms-client-flatten': true,
+                                            description: 'Properties of private endpoint IP configurations.',
+                                            type: 'object',
+                                            properties: {
+                                              groupId: {
+                                                type: 'string',
+                                                description: 'The ID of a group obtained from the remote resource that this private endpoint should connect to.'
+                                              },
+                                              memberName: {
+                                                type: 'string',
+                                                description: 'The member name of a group obtained from the remote resource that this private endpoint should connect to.'
+                                              },
+                                              privateIPAddress: {
+                                                type: 'string',
+                                                description: "A private ip address obtained from the private endpoint's subnet."
+                                              }
+                                            }
+                                          },
+                                          name: {
+                                            type: 'string',
+                                            description: 'The name of the resource that is unique within a resource group.'
+                                          },
+                                          type: {
+                                            readOnly: true,
+                                            type: 'string',
+                                            description: 'The resource type.'
+                                          },
+                                          etag: {
+                                            readOnly: true,
+                                            type: 'string',
+                                            description: 'A unique read-only string that changes whenever the resource is updated.'
+                                          }
+                                        },
+                                        description: 'An IP Configuration of the private endpoint.'
+                                      },
+                                      description: "A list of IP configurations of the private endpoint. This will be used to map to the First Party Service's endpoints."
+                                    },
+                                    customNetworkInterfaceName: {
+                                      type: 'string',
+                                      description: 'The custom name of the network interface attached to the private endpoint.'
+                                    }
+                                  }
+                                },
+                                etag: {
+                                  readOnly: true,
+                                  type: 'string',
+                                  description: 'A unique read-only string that changes whenever the resource is updated.'
+                                }
                               },
-                              allOf: [ [Object] ]
+                              allOf: [
+                                {
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'Resource ID.'
+                                    },
+                                    name: {
+                                      readOnly: true,
+                                      type: 'string',
+                                      description: 'Resource name.'
+                                    },
+                                    type: {
+                                      readOnly: true,
+                                      type: 'string',
+                                      description: 'Resource type.'
+                                    },
+                                    location: {
+                                      type: 'string',
+                                      description: 'Resource location.'
+                                    },
+                                    tags: {
+                                      type: 'object',
+                                      additionalProperties: { type: 'string' },
+                                      description: 'Resource tags.'
+                                    }
+                                  },
+                                  description: 'Common resource representation.',
+                                  'x-ms-azure-resource': true
+                                }
+                              ]
                             },
                             privateLinkServiceConnectionState: {
                               description: 'A collection of information about the state of the connection between service consumer and provider.',
                               properties: {
-                                status: [Object],
-                                description: [Object],
-                                actionsRequired: [Object]
+                                status: {
+                                  type: 'string',
+                                  description: 'Indicates whether the connection has been Approved/Rejected/Removed by the owner of the service.'
+                                },
+                                description: {
+                                  type: 'string',
+                                  description: 'The reason for approval/rejection of the connection.'
+                                },
+                                actionsRequired: {
+                                  type: 'string',
+                                  description: 'A message indicating if changes on the service provider require any updates on the consumer.'
+                                }
                               }
                             },
                             provisioningState: {
@@ -2400,8 +4771,59 @@ exports.createResources = () => [
                             loadDistributionTargets: {
                               type: 'array',
                               items: {
-                                properties: [Object],
-                                allOf: [Array],
+                                properties: {
+                                  properties: {
+                                    'x-ms-client-flatten': true,
+                                    description: 'Properties of the application gateway load distribution target.',
+                                    properties: {
+                                      weightPerServer: {
+                                        type: 'integer',
+                                        format: 'int32',
+                                        maximum: 100,
+                                        exclusiveMaximum: false,
+                                        minimum: 1,
+                                        exclusiveMinimum: false,
+                                        description: 'Weight per server. Range between 1 and 100.'
+                                      },
+                                      backendAddressPool: {
+                                        description: 'Backend address pool resource of the application gateway.',
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource ID.'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      }
+                                    }
+                                  },
+                                  name: {
+                                    type: 'string',
+                                    description: 'Name of the load distribution policy that is unique within an Application Gateway.'
+                                  },
+                                  etag: {
+                                    readOnly: true,
+                                    type: 'string',
+                                    description: 'A unique read-only string that changes whenever the resource is updated.'
+                                  },
+                                  type: {
+                                    readOnly: true,
+                                    type: 'string',
+                                    description: 'Type of the resource.'
+                                  }
+                                },
+                                allOf: [
+                                  {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource ID.'
+                                      }
+                                    },
+                                    description: 'Reference to another subresource.',
+                                    'x-ms-azure-resource': true
+                                  }
+                                ],
                                 description: 'Load Distribution Target of an application gateway.'
                               },
                               description: 'Load Distribution Targets resource of an application gateway.'
@@ -2677,7 +5099,17 @@ exports.createResources = () => [
                               rules: {
                                 description: 'List of rules that will be excluded. If none specified, all rules in the group will be excluded.',
                                 type: 'array',
-                                items: [Object]
+                                items: {
+                                  type: 'object',
+                                  description: 'Defines a managed rule to use for exclusion.',
+                                  required: [ 'ruleId' ],
+                                  properties: {
+                                    ruleId: {
+                                      description: 'Identifier for the managed rule.',
+                                      type: 'string'
+                                    }
+                                  }
+                                }
                               }
                             }
                           }
@@ -2732,8 +5164,11 @@ exports.createResources = () => [
                               state: {
                                 description: 'The state of the managed rule. Defaults to Disabled if not specified.',
                                 type: 'string',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [ 'Disabled' ],
+                                'x-ms-enum': {
+                                  name: 'ManagedRuleEnabledState',
+                                  modelAsString: true
+                                }
                               }
                             }
                           }

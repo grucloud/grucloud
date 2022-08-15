@@ -4,7 +4,7 @@
   "extension": ["js"],
   "exclude": "node_modules",
   "reporter": "spec",
-  "timeout": 3000e3,
+  "timeout": 900e3,
   "ui": "bdd",
   "bail": false,
   "recursive": true

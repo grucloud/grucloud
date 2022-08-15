@@ -81,7 +81,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "sam-app",
-      stage: "$default",
+      stage: "sam-app::$default",
     }),
   },
   {
@@ -137,7 +137,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -175,7 +175,7 @@ exports.createResources = () => [
             Sid: "4yymkbc",
             Effect: "Allow",
             Principal: {
-              Service: `apigateway.amazonaws.com`,
+              Service: "apigateway.amazonaws.com",
             },
             Action: "lambda:InvokeFunction",
             Resource: `arn:aws:lambda:${

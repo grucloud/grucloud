@@ -11,16 +11,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "LogStream",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logStreamName: "my-log-stream",
-    }),
-    dependencies: ({}) => ({
-      cloudWatchLogGroup: "my-log-group",
-    }),
-  },
-  {
     type: "SubscriptionFilter",
     group: "CloudWatchLogs",
     properties: ({}) => ({
@@ -45,7 +35,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -103,7 +93,7 @@ exports.createResources = () => [
             Sid: "InvokePermissionsForCWL9b3c8372cdca158bb90409322a153feb",
             Effect: "Allow",
             Principal: {
-              Service: `logs.amazonaws.com`,
+              Service: "logs.amazonaws.com",
             },
             Action: "lambda:InvokeFunction",
             Resource: `arn:aws:lambda:${

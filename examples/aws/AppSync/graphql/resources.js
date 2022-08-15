@@ -132,7 +132,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `appsync.amazonaws.com`,
+              Service: "appsync.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -169,7 +169,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -215,7 +215,8 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            NOTES_TABLE: `AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R`,
+            NOTES_TABLE:
+              "AppsyncCdkAppStack-CDKNotesTable254A7FD1-1K1O8M7V6LS1R",
           },
         },
         FunctionName: "lambda-fns",

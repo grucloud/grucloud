@@ -115,6 +115,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      natRules: ["myNatRule"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
       subnets: ["mySubnet"],
       publicIpAddresses: ["myPublicIPAddress"],
       virtualHub: "myVirtualHub",
@@ -236,6 +238,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      natRules: ["myNatRule"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
       subnets: ["mySubnet"],
       publicIpAddresses: ["myPublicIPAddress"],
       virtualHub: "myVirtualHub",
@@ -368,6 +372,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      natRules: ["myNatRule"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
       subnets: ["mySubnet"],
       publicIpAddresses: ["myPublicIPAddress"],
       virtualHub: "myVirtualHub",
@@ -403,6 +409,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      natRules: ["myNatRule"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
       subnets: ["mySubnet"],
       publicIpAddresses: ["myPublicIPAddress"],
       virtualHub: "myVirtualHub",
@@ -526,6 +534,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      natRules: ["myNatRule"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
       subnets: ["mySubnet"],
       publicIpAddresses: ["myPublicIPAddress"],
       virtualHub: "myVirtualHub",
@@ -647,6 +657,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      natRules: ["myNatRule"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
       subnets: ["mySubnet"],
       publicIpAddresses: ["myPublicIPAddress"],
       virtualHub: "myVirtualHub",
@@ -658,12 +670,14 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [NatRule](../Network/NatRule.md)
+- [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 - [Subnet](../Network/Subnet.md)
 - [PublicIPAddress](../Network/PublicIPAddress.md)
 - [VirtualHub](../Network/VirtualHub.md)
 - [FirewallPolicy](../Network/FirewallPolicy.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -725,8 +739,11 @@ exports.createResources = () => [
                               protocolType: {
                                 description: 'Protocol type.',
                                 type: 'string',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [ 'Http', 'Https', 'Mssql' ],
+                                'x-ms-enum': {
+                                  name: 'AzureFirewallApplicationRuleProtocolType',
+                                  modelAsString: true
+                                }
                               },
                               port: {
                                 type: 'integer',

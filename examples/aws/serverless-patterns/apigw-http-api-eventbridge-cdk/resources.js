@@ -64,7 +64,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "MyHttpApi",
-      stage: "$default",
+      stage: "MyHttpApi::$default",
     }),
   },
   {
@@ -120,7 +120,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `apigateway.amazonaws.com`,
+              Service: "apigateway.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },

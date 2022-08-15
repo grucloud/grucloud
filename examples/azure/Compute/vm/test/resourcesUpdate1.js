@@ -6,14 +6,28 @@ const createResources = ({ provider }) => {
   provider.Compute.makeVirtualMachine({
     name: "rg-vm::vm",
     properties: ({ getId }) => ({
+      name: "vm",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_A2_v2",
         },
         osProfile: {
-          computerName: "myVM",
+          computerName: "vm",
           adminUsername: "ops",
-          adminPassword: process.env.RESOURCE_GROUP_VM_ADMIN_PASSWORD,
+          linuxConfiguration: {
+            disablePasswordAuthentication: true,
+            ssh: {
+              publicKeys: [
+                {
+                  path: "/home/ops/.ssh/authorized_keys",
+                  keyData:
+                    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/+ZCfuXkRdiRcNjERsbmuqtKBY+ctRVd/q06VNRGxqAGI+DGnc55eMxvhh1ptdjuNg6HA7yufumrj9AmxrKEtGmRfseeVUy3th7FphEKKYCkpb8zxIEdfRr5r374gl3QxrxeKzk2YgsCQAfwfaD+ZlNQyKHWgnfwFCGEh3ciL5eSQP5xittjJap35l17kwygtCYxPcA+5DlAjDtonLGzypw/Bnb8U6TutWiHsK5Jx4iYVo4rsPmy6MsTZUx0gAKf0jvRpROK4TOHUAfio05jxfDVfE2hOZAvYFas5fKOCI8in/xaVy/hoW3rFU7OvPWfyNv7+5IE6ytI59c5e9PMXJ9IVcQmiPkfTfK91YsYcyknf6SXdTjs0aPWRpCp+UpDr98qt8xqTMujI1RA075719T1I3OUO7+w/prFLUPkEHbOLnfJ1kzam6kX87OkEG6OwIqR3A7Sw1q3EmRfDppzBOw8Oaapla+52DMLeJ6j1eLNLyBcsrgVTbOLYyZXbORMLvr0FwiAmbUPBSPKFIT12N10dElScihA2YI1g6SS5nNZAiyU16T0zL9teXYEYlupXo7T5Dc44m7xiiuzx4xibh8MprUTDUKoHSmTTSZ9psggaYcrZZQKmO8P7Et8t44iEyZ7W8xpByHxRrqmuCrqx9dIopk8fXhnQA/sP/EbX5Q== frederic.heem@gmail.com\n",
+                },
+              ],
+            },
+            enableVMAgentPlatformUpdates: false,
+          },
+          adminPassword: process.env.RG_VM_VM_ADMIN_PASSWORD,
         },
         storageProfile: {
           imageReference: {
@@ -24,7 +38,7 @@ const createResources = ({ provider }) => {
           },
           osDisk: {
             osType: "Linux",
-            name: "vm_disk1_d3f89462e7604d6ca7a0d7fde3cfbe6c",
+            name: "vm_disk1_9b4fe74488a743978177002ce7efbe9e",
             createOption: "FromImage",
             caching: "ReadWrite",
             managedDisk: {
@@ -42,6 +56,9 @@ const createResources = ({ provider }) => {
                 group: "Network",
                 name: "rg-vm::network-interface",
               }),
+              properties: {
+                primary: true,
+              },
             },
           ],
         },

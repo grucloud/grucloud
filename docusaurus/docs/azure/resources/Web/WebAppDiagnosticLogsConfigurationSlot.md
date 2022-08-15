@@ -9,7 +9,7 @@ Provides a **WebAppDiagnosticLogsConfigurationSlot** from the **Web** group
 - [WebApp](../Web/WebApp.md)
 - [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Configuration of App Service site logs.',
   type: 'object',

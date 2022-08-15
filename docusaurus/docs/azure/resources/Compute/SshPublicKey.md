@@ -23,7 +23,7 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -69,4 +69,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/sshPublicKey.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/ComputeRP/stable/2022-03-01/sshPublicKey.json).

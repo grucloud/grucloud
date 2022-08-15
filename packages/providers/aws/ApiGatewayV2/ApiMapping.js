@@ -9,15 +9,13 @@ const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
 const findId = get("live.ApiMappingId");
 const findName = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   get("live"),
-  ({ ApiName, DomainName, Stage, ApiMappingKey }) =>
-    `apimapping::${DomainName}::${ApiName}::${Stage}::${ApiMappingKey}`,
-  tap((params) => {
-    assert(true);
+  tap(({ DomainName, ApiName, Stage, ApiMappingKey }) => {
+    assert(Stage);
+    assert(ApiName);
   }),
+  ({ DomainName, ApiName, Stage, ApiMappingKey }) =>
+    `apimapping::${DomainName}::${ApiName}::${Stage}::${ApiMappingKey}`,
 ]);
 
 const pickId = pick(["ApiMappingId", "DomainName"]);
@@ -92,17 +90,16 @@ exports.ApiMapping = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { api, stage, domainName },
+    dependencies: { stage, domainName },
   }) =>
     pipe([
       tap(() => {
-        assert(api, "missing 'api' dependency");
         assert(domainName, "missing 'domainName' dependency");
         assert(stage, "missing 'stage' dependency");
       }),
       () => properties,
       defaultsDeep({
-        ApiId: getField(api, "ApiId"),
+        ApiId: getField(stage, "ApiId"),
         DomainName: getField(domainName, "DomainName"),
         Stage: getField(stage, "StageName"),
       }),

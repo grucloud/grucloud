@@ -4,30 +4,32 @@ const {
   tap,
   filter,
   map,
-  and,
   eq,
   or,
   get,
-  flatMap,
   not,
   fork,
   switchCase,
+  assign,
 } = require("rubico");
 const {
   isEmpty,
   flatten,
   values,
   callProp,
-  isString,
   isObject,
+  last,
+  when,
 } = require("rubico/x");
 
 const {
   isPreviousProperties,
   isOmit,
   isSwaggerObject,
-  findTypesByDiscriminator,
   buildParentPath,
+  isKeyExcluded,
+  getAllProperties,
+  resolveSwaggerObject,
 } = require("./AzureRestApiCommon");
 
 const PreDefinedDependenciesMap = {
@@ -42,6 +44,7 @@ const PreDefinedDependenciesMap = {
   sourceVault: {
     type: "Vault",
     group: "KeyVault",
+    keyId: "sourceVault.id",
   },
   keyUrl: {
     type: "Key",
@@ -50,6 +53,15 @@ const PreDefinedDependenciesMap = {
   serverFarmId: {
     type: "AppServicePlan",
     group: "Web",
+  },
+  customerId: {
+    type: "Workspace",
+    group: "OperationalInsights",
+  },
+  publicKeys: {
+    type: "SshPublicKey",
+    group: "Compute",
+    list: true,
   },
 };
 
@@ -62,43 +74,15 @@ const buildDependenciesFromBodyObject = ({
   accumulator,
 }) =>
   pipe([
-    fork({
-      fromAllOf: pipe([
-        get("allOf", []),
-        map(
-          pipe([
-            get("properties"),
-            buildDependenciesFromBody({
-              swagger,
-              parentPath: buildParentPath(key)(parentPath),
-              accumulator,
-            }),
-          ])
-        ),
-        flatten,
-      ]),
-      fromProperties: pipe([
-        get("properties"),
-        buildDependenciesFromBody({
-          swagger,
-          parentPath: buildParentPath(key)(parentPath),
-          accumulator,
-        }),
-      ]),
-      // fromAditionalProperties: switchCase([
-      //   get("additionalProperties"),
-      //   pipe([
-      //     get("additionalProperties"),
-      //     () => [buildParentPath(key)(parentPath)],
-      //   ]),
-      //   () => [],
-      // ]),
+    tap((params) => {
+      assert(params);
     }),
-    ({ fromAllOf = [], fromProperties = [], fromAditionalProperties = [] }) => [
-      ...fromAllOf,
-      ...fromProperties,
-      ...fromAditionalProperties,
-    ],
+    getAllProperties,
+    buildDependenciesFromBody({
+      swagger,
+      parentPath: buildParentPath(key)(parentPath),
+      accumulator,
+    }),
     tap((params) => {
       assert(true);
     }),
@@ -131,44 +115,67 @@ const buildDependenciesFromBodyArray = ({
     ]),
   ]);
 
+const preDefinedDependenciesPathId = ({ parentPath, key }) =>
+  pipe([
+    fork({
+      pathId: pipe([
+        () => PreDefinedDependenciesMap,
+        get(`${key}.keyId`, key),
+        tap((params) => {
+          assert(true);
+        }),
+
+        (keyId) => [...parentPath, keyId],
+        callProp("join", "."),
+      ]),
+      depId: pipe([() => key]),
+    }),
+  ]);
+
 const buildDependenciesFromBody =
   ({ swagger, parentPath = [], accumulator = [] }) =>
   (properties = {}) =>
     pipe([
-      tap((params) => {
-        assert(swagger);
-        //console.log("\n\nparentPath", parentPath);
-      }),
       () => properties,
       map.entries(([key, obj]) => [
         key,
         pipe([
           tap((params) => {
-            //console.log("key ", key, JSON.stringify(obj));
+            if (key == "publicIPAddress") {
+              assert(true);
+            }
           }),
+
           () => obj,
+          resolveSwaggerObject,
+          //getAllProperties,
           switchCase([
-            // loop detection
-            isPreviousProperties({ parentPath, key }),
+            isKeyExcluded({ key }),
             pipe([
               tap((params) => {
                 assert(true);
               }),
               () => undefined,
             ]),
+            // readOnly
+            pipe([get("readOnly")]),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => undefined,
+            ]),
+            // loop detection
+            isPreviousProperties({ parentPath, key }),
+            pipe([() => undefined]),
+            // Pre defined dependencies
             pipe([() => PreDefinedDependenciesMap[key]]),
             pipe([
-              () => [...parentPath, key],
-              callProp("join", "."),
-              (pathId) => [
-                {
-                  pathId,
-                  depId: key,
-                },
-              ],
+              preDefinedDependenciesPathId({ parentPath, key }),
+              (result) => [result],
             ]),
-            // Find properties.id
-            pipe([get("properties.id")]),
+
+            pipe([get("x-ms-azure-resource")]),
             pipe([
               tap((params) => {
                 assert(true);
@@ -182,10 +189,7 @@ const buildDependenciesFromBody =
                 },
               ],
             ]),
-            pipe([eq(get("type"), "boolean")]),
-            pipe([() => []]),
-            // Find MyPropId
-            pipe([() => key, callProp("match", new RegExp("Id$", "gi"))]),
+            pipe([get("x-ms-arm-id-details")]),
             pipe([
               tap((params) => {
                 assert(true);
@@ -196,8 +200,54 @@ const buildDependenciesFromBody =
                 {
                   pathId,
                   depId: key,
+                  allowedResources: obj["x-ms-arm-id-details"].allowedResources,
                 },
               ],
+            ]),
+            // Find properties.id
+            pipe([get("properties.id")]),
+            pipe([
+              () => [...parentPath, key, "id"],
+              callProp("join", "."),
+              (pathId) => [
+                {
+                  pathId,
+                  depId: key,
+                },
+              ],
+            ]),
+            // Find id
+            pipe([() => key === "id"]),
+            pipe([
+              fork({
+                pathId: pipe([
+                  () => [...parentPath, key],
+                  callProp("join", "."),
+                ]),
+                depId: pipe([
+                  () => parentPath,
+                  last,
+                  when(isEmpty, () => "id"),
+                ]),
+              }),
+              (result) => [result],
+            ]),
+            pipe([eq(get("type"), "boolean")]),
+            pipe([() => []]),
+            // Find MyPropId
+            pipe([() => key, callProp("match", new RegExp("Id$", "gi"))]),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              fork({
+                pathId: pipe([
+                  () => [...parentPath, key],
+                  callProp("join", "."),
+                ]),
+                depId: () => key,
+              }),
+              (result) => [result],
             ]),
             // Omit ?
             or([isOmit({ key, obj }) /*, get("x-ms-mutability")*/]),

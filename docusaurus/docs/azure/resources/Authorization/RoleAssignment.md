@@ -95,7 +95,7 @@ exports.createResources = () => [
 - [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
 - [VirtualMachine](../Compute/VirtualMachine.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

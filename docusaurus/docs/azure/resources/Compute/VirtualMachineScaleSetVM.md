@@ -436,14 +436,19 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
-      cloudServiceRoleInstance: "myCloudServiceRoleInstance",
-      galleryImage: "myGalleryImage",
-      vault: ["myVault"],
+      image: "myImage",
+      vault: "myVault",
       key: "myKey",
-      networkSecurityGroup: ["myNetworkSecurityGroup"],
-      subnet: ["mySubnet"],
-      publicIpPrefix: ["myPublicIPPrefix"],
-      dscpConfiguration: ["myDscpConfiguration"],
+      disk: "myDisk",
+      disks: ["myDisk"],
+      sshPublicKeys: ["mySshPublicKey"],
+      vaults: ["myVault"],
+      networkInterfaces: ["myNetworkInterface"],
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      subnets: ["mySubnet"],
+      publicIpPrefixes: ["myPublicIPPrefix"],
+      applicationSecurityGroups: ["myApplicationSecurityGroup"],
+      dscpConfigurations: ["myDscpConfiguration"],
       availabilitySet: "myAvailabilitySet",
       vmScaleSet: "myVirtualMachineScaleSet",
     }),
@@ -463,14 +468,19 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
-      cloudServiceRoleInstance: "myCloudServiceRoleInstance",
-      galleryImage: "myGalleryImage",
-      vault: ["myVault"],
+      image: "myImage",
+      vault: "myVault",
       key: "myKey",
-      networkSecurityGroup: ["myNetworkSecurityGroup"],
-      subnet: ["mySubnet"],
-      publicIpPrefix: ["myPublicIPPrefix"],
-      dscpConfiguration: ["myDscpConfiguration"],
+      disk: "myDisk",
+      disks: ["myDisk"],
+      sshPublicKeys: ["mySshPublicKey"],
+      vaults: ["myVault"],
+      networkInterfaces: ["myNetworkInterface"],
+      networkSecurityGroups: ["myNetworkSecurityGroup"],
+      subnets: ["mySubnet"],
+      publicIpPrefixes: ["myPublicIPPrefix"],
+      applicationSecurityGroups: ["myApplicationSecurityGroup"],
+      dscpConfigurations: ["myDscpConfiguration"],
       availabilitySet: "myAvailabilitySet",
       vmScaleSet: "myVirtualMachineScaleSet",
     }),
@@ -481,18 +491,23 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
-- [CloudServiceRoleInstance](../Compute/CloudServiceRoleInstance.md)
-- [GalleryImage](../Compute/GalleryImage.md)
+- [Image](../Compute/Image.md)
 - [Vault](../KeyVault/Vault.md)
 - [Key](../KeyVault/Key.md)
+- [Disk](../Compute/Disk.md)
+- [Disk](../Compute/Disk.md)
+- [SshPublicKey](../Compute/SshPublicKey.md)
+- [Vault](../KeyVault/Vault.md)
+- [NetworkInterface](../Network/NetworkInterface.md)
 - [NetworkSecurityGroup](../Network/NetworkSecurityGroup.md)
 - [Subnet](../Network/Subnet.md)
 - [PublicIPPrefix](../Network/PublicIPPrefix.md)
+- [ApplicationSecurityGroup](../Network/ApplicationSecurityGroup.md)
 - [DscpConfiguration](../Network/DscpConfiguration.md)
 - [AvailabilitySet](../Compute/AvailabilitySet.md)
 - [VirtualMachineScaleSet](../Compute/VirtualMachineScaleSet.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     instanceId: {
@@ -706,7 +721,12 @@ exports.createResources = () => [
                             },
                             sourceVault: {
                               description: 'The relative URL of the Key Vault containing the secret.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             }
                           },
@@ -721,7 +741,12 @@ exports.createResources = () => [
                             },
                             sourceVault: {
                               description: 'The relative URL of the Key Vault containing the key.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             }
                           },
@@ -1339,7 +1364,12 @@ exports.createResources = () => [
                           description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
                           allOf: [
                             {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             }
                           ]
@@ -1474,7 +1504,12 @@ exports.createResources = () => [
                             description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
                             allOf: [
                               {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource Id'
+                                  }
+                                },
                                 'x-ms-azure-resource': true
                               }
                             ]
@@ -1959,13 +1994,177 @@ exports.createResources = () => [
                             properties: {
                               'x-ms-client-flatten': true,
                               properties: {
-                                subnet: [Object],
-                                primary: [Object],
-                                publicIPAddressConfiguration: [Object],
-                                privateIPAddressVersion: [Object],
-                                applicationSecurityGroups: [Object],
-                                applicationGatewayBackendAddressPools: [Object],
-                                loadBalancerBackendAddressPools: [Object]
+                                subnet: {
+                                  description: 'Specifies the identifier of the subnet.',
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'Resource Id'
+                                    }
+                                  },
+                                  'x-ms-azure-resource': true
+                                },
+                                primary: {
+                                  type: 'boolean',
+                                  description: 'Specifies the primary network interface in case the virtual machine has more than 1 network interface.'
+                                },
+                                publicIPAddressConfiguration: {
+                                  description: 'The publicIPAddressConfiguration.',
+                                  properties: {
+                                    name: {
+                                      type: 'string',
+                                      description: 'The publicIP address configuration name.'
+                                    },
+                                    properties: {
+                                      'x-ms-client-flatten': true,
+                                      properties: {
+                                        idleTimeoutInMinutes: {
+                                          type: 'integer',
+                                          format: 'int32',
+                                          description: 'The idle timeout of the public IP address.'
+                                        },
+                                        deleteOption: {
+                                          type: 'string',
+                                          description: 'Specify what happens to the public IP address when the VM is deleted',
+                                          enum: [ 'Delete', 'Detach' ],
+                                          'x-ms-enum': {
+                                            name: 'DeleteOptions',
+                                            modelAsString: true
+                                          }
+                                        },
+                                        dnsSettings: {
+                                          description: 'The dns settings to be applied on the publicIP addresses .',
+                                          properties: {
+                                            domainNameLabel: {
+                                              type: 'string',
+                                              description: 'The Domain name label prefix of the PublicIPAddress resources that will be created. The generated name label is the concatenation of the domain name label and vm network profile unique ID.'
+                                            }
+                                          },
+                                          required: [ 'domainNameLabel' ]
+                                        },
+                                        ipTags: {
+                                          type: 'array',
+                                          items: {
+                                            properties: {
+                                              ipTagType: {
+                                                type: 'string',
+                                                description: 'IP tag type. Example: FirstPartyUsage.'
+                                              },
+                                              tag: {
+                                                type: 'string',
+                                                description: 'IP tag associated with the public IP. Example: SQL, Storage etc.'
+                                              }
+                                            },
+                                            description: 'Contains the IP tag associated with the public IP address.'
+                                          },
+                                          'x-ms-identifiers': [],
+                                          description: 'The list of IP tags associated with the public IP address.'
+                                        },
+                                        publicIPPrefix: {
+                                          description: 'The PublicIPPrefix from which to allocate publicIP addresses.',
+                                          properties: {
+                                            id: {
+                                              type: 'string',
+                                              description: 'Resource Id'
+                                            }
+                                          },
+                                          'x-ms-azure-resource': true
+                                        },
+                                        publicIPAddressVersion: {
+                                          type: 'string',
+                                          description: "Available from Api-Version 2019-07-01 onwards, it represents whether the specific ipconfiguration is IPv4 or IPv6. Default is taken as IPv4. Possible values are: 'IPv4' and 'IPv6'.",
+                                          enum: [ 'IPv4', 'IPv6' ],
+                                          'x-ms-enum': {
+                                            name: 'IPVersions',
+                                            modelAsString: true
+                                          }
+                                        },
+                                        publicIPAllocationMethod: {
+                                          type: 'string',
+                                          description: 'Specify the public IP allocation type',
+                                          enum: [ 'Dynamic', 'Static' ],
+                                          'x-ms-enum': {
+                                            name: 'PublicIPAllocationMethod',
+                                            modelAsString: true
+                                          }
+                                        }
+                                      },
+                                      description: "Describes a virtual machines IP Configuration's PublicIPAddress configuration"
+                                    },
+                                    sku: {
+                                      properties: {
+                                        name: {
+                                          type: 'string',
+                                          description: 'Specify public IP sku name',
+                                          enum: [ 'Basic', 'Standard' ],
+                                          'x-ms-enum': {
+                                            name: 'PublicIPAddressSkuName',
+                                            modelAsString: true
+                                          }
+                                        },
+                                        tier: {
+                                          type: 'string',
+                                          description: 'Specify public IP sku tier',
+                                          enum: [ 'Regional', 'Global' ],
+                                          'x-ms-enum': {
+                                            name: 'PublicIPAddressSkuTier',
+                                            modelAsString: true
+                                          }
+                                        }
+                                      },
+                                      description: 'Describes the public IP Sku. It can only be set with OrchestrationMode as Flexible.'
+                                    }
+                                  },
+                                  required: [ 'name' ]
+                                },
+                                privateIPAddressVersion: {
+                                  type: 'string',
+                                  description: "Available from Api-Version 2017-03-30 onwards, it represents whether the specific ipconfiguration is IPv4 or IPv6. Default is taken as IPv4.  Possible values are: 'IPv4' and 'IPv6'.",
+                                  enum: [ 'IPv4', 'IPv6' ],
+                                  'x-ms-enum': {
+                                    name: 'IPVersions',
+                                    modelAsString: true
+                                  }
+                                },
+                                applicationSecurityGroups: {
+                                  type: 'array',
+                                  items: {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource Id'
+                                      }
+                                    },
+                                    'x-ms-azure-resource': true
+                                  },
+                                  description: 'Specifies an array of references to application security group.'
+                                },
+                                applicationGatewayBackendAddressPools: {
+                                  type: 'array',
+                                  items: {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource Id'
+                                      }
+                                    },
+                                    'x-ms-azure-resource': true
+                                  },
+                                  description: 'Specifies an array of references to backend address pools of application gateways. A virtual machine can reference backend address pools of multiple application gateways. Multiple virtual machines cannot use the same application gateway.'
+                                },
+                                loadBalancerBackendAddressPools: {
+                                  type: 'array',
+                                  items: {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource Id'
+                                      }
+                                    },
+                                    'x-ms-azure-resource': true
+                                  },
+                                  description: 'Specifies an array of references to backend address pools of load balancers. A virtual machine can reference backend address pools of one public and one internal load balancer. [Multiple virtual machines cannot use the same basic sku load balancer].'
+                                }
                               },
                               description: 'Describes a virtual machine network interface IP configuration properties.'
                             }
@@ -2055,14 +2254,180 @@ exports.createResources = () => [
                             properties: {
                               'x-ms-client-flatten': true,
                               properties: {
-                                subnet: [Object],
-                                primary: [Object],
-                                publicIPAddressConfiguration: [Object],
-                                privateIPAddressVersion: [Object],
-                                applicationGatewayBackendAddressPools: [Object],
-                                applicationSecurityGroups: [Object],
-                                loadBalancerBackendAddressPools: [Object],
-                                loadBalancerInboundNatPools: [Object]
+                                subnet: {
+                                  description: 'Specifies the identifier of the subnet.',
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'The ARM resource id in the form of /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/...'
+                                    }
+                                  }
+                                },
+                                primary: {
+                                  type: 'boolean',
+                                  description: 'Specifies the primary network interface in case the virtual machine has more than 1 network interface.'
+                                },
+                                publicIPAddressConfiguration: {
+                                  description: 'The publicIPAddressConfiguration.',
+                                  properties: {
+                                    name: {
+                                      type: 'string',
+                                      description: 'The publicIP address configuration name.'
+                                    },
+                                    properties: {
+                                      'x-ms-client-flatten': true,
+                                      properties: {
+                                        idleTimeoutInMinutes: {
+                                          type: 'integer',
+                                          format: 'int32',
+                                          description: 'The idle timeout of the public IP address.'
+                                        },
+                                        dnsSettings: {
+                                          description: 'The dns settings to be applied on the publicIP addresses .',
+                                          properties: {
+                                            domainNameLabel: {
+                                              type: 'string',
+                                              description: 'The Domain name label.The concatenation of the domain name label and vm index will be the domain name labels of the PublicIPAddress resources that will be created'
+                                            }
+                                          },
+                                          required: [ 'domainNameLabel' ]
+                                        },
+                                        ipTags: {
+                                          type: 'array',
+                                          items: {
+                                            properties: {
+                                              ipTagType: {
+                                                type: 'string',
+                                                description: 'IP tag type. Example: FirstPartyUsage.'
+                                              },
+                                              tag: {
+                                                type: 'string',
+                                                description: 'IP tag associated with the public IP. Example: SQL, Storage etc.'
+                                              }
+                                            },
+                                            description: 'Contains the IP tag associated with the public IP address.'
+                                          },
+                                          'x-ms-identifiers': [],
+                                          description: 'The list of IP tags associated with the public IP address.'
+                                        },
+                                        publicIPPrefix: {
+                                          description: 'The PublicIPPrefix from which to allocate publicIP addresses.',
+                                          properties: {
+                                            id: {
+                                              type: 'string',
+                                              description: 'Resource Id'
+                                            }
+                                          },
+                                          'x-ms-azure-resource': true
+                                        },
+                                        publicIPAddressVersion: {
+                                          type: 'string',
+                                          description: "Available from Api-Version 2019-07-01 onwards, it represents whether the specific ipconfiguration is IPv4 or IPv6. Default is taken as IPv4. Possible values are: 'IPv4' and 'IPv6'.",
+                                          enum: [ 'IPv4', 'IPv6' ],
+                                          'x-ms-enum': {
+                                            name: 'IPVersion',
+                                            modelAsString: true
+                                          }
+                                        },
+                                        deleteOption: {
+                                          type: 'string',
+                                          description: 'Specify what happens to the public IP when the VM is deleted',
+                                          enum: [ 'Delete', 'Detach' ],
+                                          'x-ms-enum': {
+                                            name: 'DeleteOptions',
+                                            modelAsString: true
+                                          }
+                                        }
+                                      },
+                                      description: "Describes a virtual machines scale set IP Configuration's PublicIPAddress configuration"
+                                    },
+                                    sku: {
+                                      properties: {
+                                        name: {
+                                          type: 'string',
+                                          description: 'Specify public IP sku name',
+                                          enum: [ 'Basic', 'Standard' ],
+                                          'x-ms-enum': {
+                                            name: 'PublicIPAddressSkuName',
+                                            modelAsString: true
+                                          }
+                                        },
+                                        tier: {
+                                          type: 'string',
+                                          description: 'Specify public IP sku tier',
+                                          enum: [ 'Regional', 'Global' ],
+                                          'x-ms-enum': {
+                                            name: 'PublicIPAddressSkuTier',
+                                            modelAsString: true
+                                          }
+                                        }
+                                      },
+                                      description: 'Describes the public IP Sku. It can only be set with OrchestrationMode as Flexible.'
+                                    }
+                                  },
+                                  required: [ 'name' ]
+                                },
+                                privateIPAddressVersion: {
+                                  type: 'string',
+                                  description: "Available from Api-Version 2017-03-30 onwards, it represents whether the specific ipconfiguration is IPv4 or IPv6. Default is taken as IPv4.  Possible values are: 'IPv4' and 'IPv6'.",
+                                  enum: [ 'IPv4', 'IPv6' ],
+                                  'x-ms-enum': {
+                                    name: 'IPVersion',
+                                    modelAsString: true
+                                  }
+                                },
+                                applicationGatewayBackendAddressPools: {
+                                  type: 'array',
+                                  items: {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource Id'
+                                      }
+                                    },
+                                    'x-ms-azure-resource': true
+                                  },
+                                  description: 'Specifies an array of references to backend address pools of application gateways. A scale set can reference backend address pools of multiple application gateways. Multiple scale sets cannot use the same application gateway.'
+                                },
+                                applicationSecurityGroups: {
+                                  type: 'array',
+                                  items: {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource Id'
+                                      }
+                                    },
+                                    'x-ms-azure-resource': true
+                                  },
+                                  description: 'Specifies an array of references to application security group.'
+                                },
+                                loadBalancerBackendAddressPools: {
+                                  type: 'array',
+                                  items: {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource Id'
+                                      }
+                                    },
+                                    'x-ms-azure-resource': true
+                                  },
+                                  description: 'Specifies an array of references to backend address pools of load balancers. A scale set can reference backend address pools of one public and one internal load balancer. Multiple scale sets cannot use the same basic sku load balancer.'
+                                },
+                                loadBalancerInboundNatPools: {
+                                  type: 'array',
+                                  items: {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource Id'
+                                      }
+                                    },
+                                    'x-ms-azure-resource': true
+                                  },
+                                  description: 'Specifies an array of references to inbound Nat pools of the load balancers. A scale set can reference inbound nat pools of one public and one internal load balancer. Multiple scale sets cannot use the same basic sku load balancer.'
+                                }
                               },
                               description: "Describes a virtual machine scale set network profile's IP configuration properties."
                             }
@@ -2070,7 +2435,12 @@ exports.createResources = () => [
                           required: [ 'name' ],
                           allOf: [
                             {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             }
                           ],
@@ -2442,4 +2812,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/virtualMachineScaleSet.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/ComputeRP/stable/2022-03-01/virtualMachineScaleSet.json).

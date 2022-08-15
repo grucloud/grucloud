@@ -3,7 +3,7 @@ const { tap, pipe, map, get, assign, flatMap, filter, eq } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
 const { replaceWithName } = require("@grucloud/core/Common");
 
-const { isOurMinion, compareAws } = require("../AwsCommon");
+const { isOurMinion, compareAws, replaceRegion } = require("../AwsCommon");
 const { CodePipelinePipeline } = require("./CodePipelinePipeline");
 
 const GROUP = "CodePipeline";
@@ -105,6 +105,12 @@ module.exports = pipe([
               ),
             ]),
         },
+        s3Bucket: {
+          type: "Bucket",
+          group: "S3",
+          dependencyId: ({ lives, config }) =>
+            pipe([get("pipeline.artifactStore.location")]),
+        },
       },
       omitProperties: ["metadata", "pipeline.roleArn"],
       propertiesDefault: {},
@@ -114,6 +120,15 @@ module.exports = pipe([
             pipeline: pipe([
               get("pipeline"),
               assign({
+                artifactStore: pipe([
+                  get("artifactStore"),
+                  assign({
+                    location: pipe([
+                      get("location"),
+                      replaceRegion({ lives, providerConfig }),
+                    ]),
+                  }),
+                ]),
                 stages: pipe([
                   get("stages"),
                   map(

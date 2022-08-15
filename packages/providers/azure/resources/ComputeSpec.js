@@ -11,6 +11,8 @@ const {
   omit,
   filter,
   not,
+  and,
+  switchCase,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -27,7 +29,7 @@ const {
 const fs = require("fs").promises;
 const path = require("path");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { omitIfEmpty, compare } = require("@grucloud/core/Common");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 
 const {
   findDependenciesResourceGroup,
@@ -240,11 +242,17 @@ const filterVirtualMachineProperties =
                                       loadBalancerBackendAddressPools: pipe([
                                         get("loadBalancerBackendAddressPools"),
                                         map(
-                                          assignDependenciesId({
-                                            group: "Network",
-                                            type: "LoadBalancerBackendAddressPool",
-                                            providerConfig,
-                                            lives,
+                                          assign({
+                                            id: pipe([
+                                              get("id"),
+                                              replaceWithName({
+                                                groupType:
+                                                  "Network::LoadBalancer",
+                                                providerConfig,
+                                                lives,
+                                                path: "id",
+                                              }),
+                                            ]),
                                           })
                                         ),
                                       ]),
@@ -266,23 +274,35 @@ const filterVirtualMachineProperties =
                                               type: "ApplicationGateway",
                                               providerConfig,
                                               lives,
+                                              withSuffix: true,
                                             })
                                           ),
                                         ]),
                                     })
                                   ),
+                                  when(
+                                    get("loadBalancerInboundNatPools"),
+                                    assign({
+                                      loadBalancerInboundNatPools: pipe([
+                                        get("loadBalancerInboundNatPools"),
+                                        map(
+                                          assign({
+                                            id: pipe([
+                                              get("id"),
+                                              replaceWithName({
+                                                groupType:
+                                                  "Network::LoadBalancer",
+                                                providerConfig,
+                                                lives,
+                                                path: "id",
+                                              }),
+                                            ]),
+                                          })
+                                        ),
+                                      ]),
+                                    })
+                                  ),
                                   assign({
-                                    //TODO
-                                    // loadBalancerInboundNatPools: pipe([
-                                    //   get("loadBalancerInboundNatPools"),
-                                    //   map(
-                                    //     assignDependenciesId({
-                                    //       group: "Network",
-                                    //       type: "LoadBalancerInboundNatPool",
-                                    //       lives,
-                                    //     })
-                                    //   ),
-                                    // ]),
                                     subnet: pipe([
                                       get("subnet"),
                                       assignDependenciesId({
@@ -319,7 +339,37 @@ const filterVirtualMachineProperties =
                     assign({
                       publicKeys: pipe([
                         get("publicKeys", []),
-                        //map(omit(["keyData"])),
+                        map(
+                          assign({
+                            keyData: ({ keyData }) =>
+                              pipe([
+                                () => lives,
+                                find(
+                                  and([
+                                    eq(
+                                      get("groupType"),
+                                      "Compute::SshPublicKey"
+                                    ),
+                                    eq(
+                                      get("live.properties.publicKey"),
+                                      keyData
+                                    ),
+                                  ])
+                                ),
+                                get("id"),
+                                switchCase([
+                                  isEmpty,
+                                  () => keyData,
+                                  replaceWithName({
+                                    groupType: "Compute::SshPublicKey",
+                                    path: "live.properties.publicKey",
+                                    providerConfig,
+                                    lives,
+                                  }),
+                                ]),
+                              ])(),
+                          })
+                        ),
                       ]),
                     }),
                   ]),
@@ -335,9 +385,6 @@ const filterVirtualMachineProperties =
         "storageProfile.dataDisks",
         "networkProfile",
       ]),
-      tap((params) => {
-        assert(true);
-      }),
     ]);
 
 const VirtualMachineDependencySshPublicKey = ({
@@ -365,26 +412,6 @@ const VirtualMachineDependencySshPublicKey = ({
     ),
   ])(),
 });
-
-const publicKeysCreatePayload = ({ dependencies }) =>
-  pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    () => dependencies.sshPublicKeys,
-    map((sshPublicKey) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        //TODO azureuser
-        () => ({
-          path: "/home/azureuser/.ssh/authorized_keys",
-          keyData: getField(sshPublicKey, "properties.publicKey"),
-        }),
-      ])()
-    ),
-  ])();
 
 exports.fnSpecs = ({ config }) =>
   pipe([
@@ -455,24 +482,6 @@ exports.fnSpecs = ({ config }) =>
       },
       {
         type: "DiskEncryptionSet",
-        dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            name: "resourceGroupName",
-            parent: true,
-          },
-          vault: {
-            type: "Vault",
-            group: "KeyVault",
-            createOnly: true,
-          },
-          key: {
-            type: "Key",
-            group: "KeyVault",
-            createOnly: true,
-          },
-        },
         //TODO remove
         pickPropertiesCreate: [
           "name",
@@ -565,11 +574,10 @@ exports.fnSpecs = ({ config }) =>
             createOnly: true,
             list: true,
           },
-          loadBalancerBackendAddressPools: {
-            type: "LoadBalancerBackendAddressPool",
+          loadBalancer: {
+            type: "LoadBalancer",
             group: "Network",
             createOnly: true,
-            list: true,
           },
           applicationGateways: {
             type: "ApplicationGateway",
@@ -627,7 +635,7 @@ exports.fnSpecs = ({ config }) =>
               "properties.virtualMachineProfile.osProfile.linuxConfiguration.ssh.publicKeys",
           }),
           {
-            type: "LoadBalancerBackendAddressPool",
+            type: "LoadBalancer",
             group: "Network",
             ids: pipe([
               () => live,
@@ -641,6 +649,14 @@ exports.fnSpecs = ({ config }) =>
               pluck("loadBalancerBackendAddressPools"),
               flatten,
               pluck("id"),
+              filter(not(isEmpty)),
+              map(
+                pipe([
+                  callProp("split", "/"),
+                  callProp("slice", 0, -2),
+                  callProp("join", "/"),
+                ])
+              ),
             ])(),
           },
           {
@@ -705,22 +721,6 @@ exports.fnSpecs = ({ config }) =>
               assert(true);
             }),
             () => properties,
-            when(
-              () => dependencies.sshPublicKeys,
-              defaultsDeep({
-                properties: {
-                  virtualMachineProfile: {
-                    osProfile: {
-                      linuxConfiguration: {
-                        ssh: {
-                          publicKeys: publicKeysCreatePayload({ dependencies }),
-                        },
-                      },
-                    },
-                  },
-                },
-              })
-            ),
             defaultsDeep(
               configDefaultGeneric({ properties, dependencies, config, spec })
             ),
@@ -835,20 +835,6 @@ exports.fnSpecs = ({ config }) =>
               );
             }),
             () => properties,
-            when(
-              () => dependencies.sshPublicKeys,
-              defaultsDeep({
-                properties: {
-                  osProfile: {
-                    linuxConfiguration: {
-                      ssh: {
-                        publicKeys: publicKeysCreatePayload({ dependencies }),
-                      },
-                    },
-                  },
-                },
-              })
-            ),
             unless(
               () => isEmpty(dependencies.networkInterfaces),
               defaultsDeep({

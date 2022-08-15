@@ -13,6 +13,7 @@ exports.createResources = () => [
         name: "Premium_LRS",
       },
       properties: {
+        hyperVGeneration: "V1",
         creationData: {
           createOption: "Empty",
         },
@@ -39,7 +40,7 @@ exports.createResources = () => [
       location: config.location,
       properties: {
         publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDML7vLyGtMh/cmqV31Kx7xJbAk\r\nmVFUgaB3cRs7QTj9FzAJywGnF+YAB6Kg/7KhGNrbeddMH7Dal2t3GeGhWuJHQXrb\r\nPI6+XrkkNZBIgea0/yk2/DLcrbsXeO+vF21R/qXgSrbK1F4hG7UYl0XIXxlpf3XR\r\nmni+Cr0TTc0lrjUk+CsxxEX/tBUI03C2hMwppe2j2bMeNMN93jpj63Z0BDIS8laf\r\nZPrnHZconfgKwVx6DzpV303SpaVkyxisWTKlIhuKKcN4LDxtpt+emWhYxCfx6scr\r\nW3zBnfhK0WvZJihP2Dr5j+CrMzP1SByyzJGiz69IlnoRK1yTyP6kM4Nc3RfnE/xJ\r\ny9XPFXBF6aPWm6zQTeUjcb6AHPy84kixX5l87LGYxHMfipyEoEYTEEN6RmgO2mpk\r\nzvuL27ewD/FMd+uigx0vd6SfdJR4dyc5WkCA8PkmpVbFtSR995hvTuVgaknAG1wd\r\noAVIBoekRLIwca9DcIOjTqaU0EWF8Gkt8FDhkIE= generated-by-azure\r\n",
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDZw1HXdWqcJ7cGlPjbzskKEzS6rKsRAlqPCUqvtg89Ku/FDQS6ERuCaOq61PonN/aYgP2Zf6N/YlF7PfczoLIxpgDcOcayn9LiUglFxMdizxffoX74EROqDO4aXRgohrDzK0Qn/09aahCmV+5HGUfE7XHjj/KPyQsW96JCLJBy8sN4I+oK+6qeGL5jpI5smKS9sY2f3rMtMnIf9+TxwR0ccxb+PR2Vtjut0TvR/kpcYf13aDK6fCfE6BpQ2bJDbjVW5IR6czHtSMaOGSxi8Tasuf0nsyAFwUQR0q+CBC5GMMtslBakxy51fpK6BmvvDf7Bsrzh+IU63azE595kmaWyjpbzK3OkwbRrEVmFu6YC2PwPKlP6fMqDwW3pyrM7Saisuqe6ulRmKNgLZJiPcVMe2wm0YP7KlPIj/BzS68HpHYaPLf7BrWx5DMpGogxQO4MUYdNmY9FE1tfGqphMLWX6Gsp6uNfMhTtA0U4MuuzmMGk5XOxJUmD6gXy+ugsZToE= generated-by-azure",
       },
     }),
     dependencies: ({}) => ({
@@ -57,15 +58,19 @@ exports.createResources = () => [
         },
         osProfile: {
           computerName: "vm",
-          adminUsername: "azureuser",
+          adminUsername: "ops",
           linuxConfiguration: {
             disablePasswordAuthentication: true,
             ssh: {
               publicKeys: [
                 {
-                  path: "/home/azureuser/.ssh/authorized_keys",
-                  keyData:
-                    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDML7vLyGtMh/cmqV31Kx7xJbAk\r\nmVFUgaB3cRs7QTj9FzAJywGnF+YAB6Kg/7KhGNrbeddMH7Dal2t3GeGhWuJHQXrb\r\nPI6+XrkkNZBIgea0/yk2/DLcrbsXeO+vF21R/qXgSrbK1F4hG7UYl0XIXxlpf3XR\r\nmni+Cr0TTc0lrjUk+CsxxEX/tBUI03C2hMwppe2j2bMeNMN93jpj63Z0BDIS8laf\r\nZPrnHZconfgKwVx6DzpV303SpaVkyxisWTKlIhuKKcN4LDxtpt+emWhYxCfx6scr\r\nW3zBnfhK0WvZJihP2Dr5j+CrMzP1SByyzJGiz69IlnoRK1yTyP6kM4Nc3RfnE/xJ\r\ny9XPFXBF6aPWm6zQTeUjcb6AHPy84kixX5l87LGYxHMfipyEoEYTEEN6RmgO2mpk\r\nzvuL27ewD/FMd+uigx0vd6SfdJR4dyc5WkCA8PkmpVbFtSR995hvTuVgaknAG1wd\r\noAVIBoekRLIwca9DcIOjTqaU0EWF8Gkt8FDhkIE= generated-by-azure\r\n",
+                  path: "/home/ops/.ssh/authorized_keys",
+                  keyData: `${getId({
+                    type: "SshPublicKey",
+                    group: "Compute",
+                    name: "rg-vm-disks::keypair",
+                    path: "live.properties.publicKey",
+                  })}`,
                 },
               ],
             },
@@ -75,14 +80,14 @@ exports.createResources = () => [
         },
         storageProfile: {
           imageReference: {
-            publisher: "canonical",
-            offer: "0001-com-ubuntu-server-focal",
-            sku: "20_04-lts",
+            publisher: "Canonical",
+            offer: "UbuntuServer",
+            sku: "18.04-LTS",
             version: "latest",
           },
           osDisk: {
             osType: "Linux",
-            name: "vm_disk1_9d916b60fd7048329e3979079f2abdf7",
+            name: "vm_OsDisk_1_14336463e96443259dd32786de92d6e0",
             createOption: "FromImage",
             caching: "ReadWrite",
             managedDisk: {
@@ -94,10 +99,9 @@ exports.createResources = () => [
           dataDisks: [
             {
               lun: 0,
-              name: "vm_DataDisk_0",
+              name: "vm_datadisk_0",
               createOption: "Attach",
               caching: "None",
-              writeAcceleratorEnabled: false,
               managedDisk: {
                 storageAccountType: "Premium_LRS",
                 id: getId({
@@ -112,19 +116,17 @@ exports.createResources = () => [
             },
           ],
         },
-        diagnosticsProfile: {
-          bootDiagnostics: {
-            enabled: true,
-          },
-        },
         networkProfile: {
           networkInterfaces: [
             {
               id: getId({
                 type: "NetworkInterface",
                 group: "Network",
-                name: "rg-vm-disks::vm537",
+                name: "rg-vm-disks::network-interface",
               }),
+              properties: {
+                primary: true,
+              },
             },
           ],
         },
@@ -134,50 +136,65 @@ exports.createResources = () => [
       resourceGroup: "rg-vm-disks",
       disks: ["rg-vm-disks::vm_datadisk_0"],
       sshPublicKeys: ["rg-vm-disks::keypair"],
-      networkInterfaces: ["rg-vm-disks::vm537"],
+      networkInterfaces: ["rg-vm-disks::network-interface"],
     }),
   },
   {
     type: "NetworkInterface",
     group: "Network",
-    properties: ({}) => ({
-      name: "vm537",
+    properties: ({ config, getId }) => ({
+      name: "network-interface",
+      location: config.location,
       properties: {
         ipConfigurations: [
           {
-            name: "ipconfig1",
             properties: {
-              privateIPAllocationMethod: "Dynamic",
+              publicIPAddress: {
+                id: `${getId({
+                  type: "PublicIPAddress",
+                  group: "Network",
+                  name: "rg-vm-disks::ip-address",
+                })}`,
+              },
+              subnet: {
+                id: `${getId({
+                  type: "Subnet",
+                  group: "Network",
+                  name: "rg-vm-disks::virtual-network::subnet",
+                })}`,
+              },
             },
+            name: "ipconfig1",
           },
         ],
+        enableIPForwarding: true,
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vm-disks",
-      virtualNetwork: "rg-vm-disks::virtual-network",
-      publicIpAddress: "rg-vm-disks::vm-ip",
-      securityGroup: "rg-vm-disks::vm-nsg",
-      subnet: "rg-vm-disks::virtual-network::default",
+      networkSecurityGroup: "rg-vm-disks::security-group",
+      publicIpAddresses: ["rg-vm-disks::ip-address"],
+      subnets: ["rg-vm-disks::virtual-network::subnet"],
     }),
   },
   {
     type: "NetworkSecurityGroup",
     group: "Network",
     properties: ({}) => ({
-      name: "vm-nsg",
+      name: "security-group",
       properties: {
         securityRules: [
           {
             name: "SSH",
             properties: {
-              protocol: "TCP",
+              description: "allow SSH",
+              protocol: "Tcp",
               sourcePortRange: "*",
               destinationPortRange: "22",
               sourceAddressPrefix: "*",
               destinationAddressPrefix: "*",
               access: "Allow",
-              priority: 300,
+              priority: 1000,
               direction: "Inbound",
               sourcePortRanges: [],
               destinationPortRanges: [],
@@ -196,7 +213,7 @@ exports.createResources = () => [
     type: "PublicIPAddress",
     group: "Network",
     properties: ({}) => ({
-      name: "vm-ip",
+      name: "ip-address",
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vm-disks",
@@ -206,7 +223,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "Network",
     properties: ({}) => ({
-      name: "default",
+      name: "subnet",
       properties: {
         addressPrefix: "10.0.0.0/24",
       },

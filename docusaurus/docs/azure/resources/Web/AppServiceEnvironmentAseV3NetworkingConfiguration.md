@@ -26,7 +26,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceEnvironment](../Web/AppServiceEnvironment.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Full view of networking configuration for an ASE.',
   type: 'object',

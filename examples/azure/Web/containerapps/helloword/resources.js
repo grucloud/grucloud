@@ -34,10 +34,10 @@ exports.createResources = () => [
             {
               image:
                 "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest",
-              name: "simple-hello-world-container",
+              name: "helloworld",
               resources: {
-                cpu: 0.25,
-                memory: "0.5Gi",
+                cpu: 0.5,
+                memory: "1Gi",
               },
             },
           ],
@@ -78,18 +78,18 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-app-container",
-      workspace: "rg-app-container::workspacergappcontainerabb2",
+      workspace: "rg-app-container::workspace-rgappcontainerzqXk",
     }),
   },
   {
     type: "Workspace",
     group: "OperationalInsights",
     properties: ({ config }) => ({
-      name: "workspacergappcontainerabb2",
+      name: "workspace-rgappcontainerzqXk",
       location: config.location,
       properties: {
         sku: {
-          name: "PerGB2018",
+          name: "pergb2018",
         },
         retentionInDays: 30,
         features: {

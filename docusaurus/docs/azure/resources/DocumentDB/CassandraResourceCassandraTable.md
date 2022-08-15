@@ -41,7 +41,7 @@ exports.createResources = () => [
 - [DatabaseAccount](../DocumentDB/DatabaseAccount.md)
 - [CassandraResourceCassandraKeyspace](../DocumentDB/CassandraResourceCassandraKeyspace.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Parameters to create and update Cosmos DB Cassandra table.',
   type: 'object',

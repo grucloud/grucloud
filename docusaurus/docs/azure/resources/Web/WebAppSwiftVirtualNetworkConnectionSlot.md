@@ -10,7 +10,7 @@ Provides a **WebAppSwiftVirtualNetworkConnectionSlot** from the **Web** group
 - [WebApp](../Web/WebApp.md)
 - [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Swift Virtual Network Contract. This is used to enable the new Swift way of doing virtual network integration.',
   type: 'object',

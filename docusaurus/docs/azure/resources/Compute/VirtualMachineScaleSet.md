@@ -71,7 +71,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -157,7 +157,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -232,7 +232,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -312,7 +312,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -401,7 +401,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -481,7 +481,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -563,7 +563,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -639,7 +639,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -719,7 +719,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -791,7 +791,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -873,7 +873,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -945,7 +945,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1026,7 +1026,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1107,7 +1107,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1188,7 +1188,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1264,7 +1264,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1355,7 +1355,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1436,7 +1436,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1533,7 +1533,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1614,7 +1614,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1707,7 +1707,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1786,7 +1786,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1858,7 +1858,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -1925,7 +1925,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -2001,7 +2001,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -2094,7 +2094,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -2170,7 +2170,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -2267,7 +2267,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -2347,7 +2347,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -2426,7 +2426,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -2529,7 +2529,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -2608,7 +2608,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -2690,7 +2690,7 @@ exports.createResources = () => [
       dedicatedHostGroup: "myDedicatedHostGroup",
       capacityReservationGroup: "myCapacityReservationGroup",
       subnets: ["mySubnet"],
-      loadBalancerBackendAddressPools: ["myLoadBalancerBackendAddressPool"],
+      loadBalancer: "myLoadBalancer",
       applicationGateways: ["myApplicationGateway"],
     }),
   },
@@ -2708,10 +2708,10 @@ exports.createResources = () => [
 - [DedicatedHostGroup](../Compute/DedicatedHostGroup.md)
 - [CapacityReservationGroup](../Compute/CapacityReservationGroup.md)
 - [Subnet](../Network/Subnet.md)
-- [LoadBalancerBackendAddressPool](../Network/LoadBalancerBackendAddressPool.md)
+- [LoadBalancer](../Network/LoadBalancer.md)
 - [ApplicationGateway](../Network/ApplicationGateway.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     sku: {
@@ -2966,8 +2966,11 @@ exports.createResources = () => [
                               protocol: {
                                 type: 'string',
                                 description: 'Specifies the protocol of WinRM listener. <br><br> Possible values are: <br>**http** <br><br> **https**',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [ 'Http', 'Https' ],
+                                'x-ms-enum': {
+                                  name: 'ProtocolTypes',
+                                  modelAsString: false
+                                }
                               },
                               certificateUrl: {
                                 type: 'string',
@@ -3246,7 +3249,12 @@ exports.createResources = () => [
                           description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
                           allOf: [
                             {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource Id'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             }
                           ]
@@ -3269,7 +3277,17 @@ exports.createResources = () => [
                             },
                             diskEncryptionSet: {
                               description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
-                              allOf: [ [Object] ]
+                              allOf: [
+                                {
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'Resource Id'
+                                    }
+                                  },
+                                  'x-ms-azure-resource': true
+                                }
+                              ]
                             }
                           }
                         }
@@ -3345,7 +3363,12 @@ exports.createResources = () => [
                             description: 'Specifies the customer managed disk encryption set resource id for the managed disk.',
                             allOf: [
                               {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource Id'
+                                  }
+                                },
                                 'x-ms-azure-resource': true
                               }
                             ]
@@ -3357,12 +3380,28 @@ exports.createResources = () => [
                               securityEncryptionType: {
                                 type: 'string',
                                 description: 'Specifies the EncryptionType of the managed disk. <br> It is set to DiskWithVMGuestState for encryption of the managed disk along with VMGuestState blob, and VMGuestStateOnly for encryption of just the VMGuestState blob. <br><br> NOTE: It can be set for only Confidential VMs.',
-                                enum: [Array],
-                                'x-ms-enum': [Object]
+                                enum: [
+                                  'VMGuestStateOnly',
+                                  'DiskWithVMGuestState'
+                                ],
+                                'x-ms-enum': {
+                                  name: 'securityEncryptionTypes',
+                                  modelAsString: true
+                                }
                               },
                               diskEncryptionSet: {
                                 description: 'Specifies the customer managed disk encryption set resource id for the managed disk that is used for Customer Managed Key encrypted ConfidentialVM OS Disk and VMGuest blob.',
-                                allOf: [Array]
+                                allOf: [
+                                  {
+                                    properties: {
+                                      id: {
+                                        type: 'string',
+                                        description: 'Resource Id'
+                                      }
+                                    },
+                                    'x-ms-azure-resource': true
+                                  }
+                                ]
                               }
                             }
                           }
@@ -3446,7 +3485,7 @@ exports.createResources = () => [
                             properties: {
                               dnsServers: {
                                 type: 'array',
-                                items: [Object],
+                                items: { type: 'string' },
                                 description: 'List of DNS servers IP addresses'
                               }
                             }
@@ -3454,9 +3493,198 @@ exports.createResources = () => [
                           ipConfigurations: {
                             type: 'array',
                             items: {
-                              properties: { name: [Object], properties: [Object] },
+                              properties: {
+                                name: {
+                                  type: 'string',
+                                  description: 'The IP configuration name.'
+                                },
+                                properties: {
+                                  'x-ms-client-flatten': true,
+                                  properties: {
+                                    subnet: {
+                                      description: 'Specifies the identifier of the subnet.',
+                                      properties: {
+                                        id: {
+                                          type: 'string',
+                                          description: 'The ARM resource id in the form of /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/...'
+                                        }
+                                      }
+                                    },
+                                    primary: {
+                                      type: 'boolean',
+                                      description: 'Specifies the primary network interface in case the virtual machine has more than 1 network interface.'
+                                    },
+                                    publicIPAddressConfiguration: {
+                                      description: 'The publicIPAddressConfiguration.',
+                                      properties: {
+                                        name: {
+                                          type: 'string',
+                                          description: 'The publicIP address configuration name.'
+                                        },
+                                        properties: {
+                                          'x-ms-client-flatten': true,
+                                          properties: {
+                                            idleTimeoutInMinutes: {
+                                              type: 'integer',
+                                              format: 'int32',
+                                              description: 'The idle timeout of the public IP address.'
+                                            },
+                                            dnsSettings: {
+                                              description: 'The dns settings to be applied on the publicIP addresses .',
+                                              properties: {
+                                                domainNameLabel: {
+                                                  type: 'string',
+                                                  description: 'The Domain name label.The concatenation of the domain name label and vm index will be the domain name labels of the PublicIPAddress resources that will be created'
+                                                }
+                                              },
+                                              required: [ 'domainNameLabel' ]
+                                            },
+                                            ipTags: {
+                                              type: 'array',
+                                              items: {
+                                                properties: {
+                                                  ipTagType: [Object],
+                                                  tag: [Object]
+                                                },
+                                                description: 'Contains the IP tag associated with the public IP address.'
+                                              },
+                                              'x-ms-identifiers': [],
+                                              description: 'The list of IP tags associated with the public IP address.'
+                                            },
+                                            publicIPPrefix: {
+                                              description: 'The PublicIPPrefix from which to allocate publicIP addresses.',
+                                              properties: {
+                                                id: {
+                                                  type: 'string',
+                                                  description: 'Resource Id'
+                                                }
+                                              },
+                                              'x-ms-azure-resource': true
+                                            },
+                                            publicIPAddressVersion: {
+                                              type: 'string',
+                                              description: "Available from Api-Version 2019-07-01 onwards, it represents whether the specific ipconfiguration is IPv4 or IPv6. Default is taken as IPv4. Possible values are: 'IPv4' and 'IPv6'.",
+                                              enum: [ 'IPv4', 'IPv6' ],
+                                              'x-ms-enum': {
+                                                name: 'IPVersion',
+                                                modelAsString: true
+                                              }
+                                            },
+                                            deleteOption: {
+                                              type: 'string',
+                                              description: 'Specify what happens to the public IP when the VM is deleted',
+                                              enum: [ 'Delete', 'Detach' ],
+                                              'x-ms-enum': {
+                                                name: 'DeleteOptions',
+                                                modelAsString: true
+                                              }
+                                            }
+                                          },
+                                          description: "Describes a virtual machines scale set IP Configuration's PublicIPAddress configuration"
+                                        },
+                                        sku: {
+                                          properties: {
+                                            name: {
+                                              type: 'string',
+                                              description: 'Specify public IP sku name',
+                                              enum: [ 'Basic', 'Standard' ],
+                                              'x-ms-enum': {
+                                                name: 'PublicIPAddressSkuName',
+                                                modelAsString: true
+                                              }
+                                            },
+                                            tier: {
+                                              type: 'string',
+                                              description: 'Specify public IP sku tier',
+                                              enum: [ 'Regional', 'Global' ],
+                                              'x-ms-enum': {
+                                                name: 'PublicIPAddressSkuTier',
+                                                modelAsString: true
+                                              }
+                                            }
+                                          },
+                                          description: 'Describes the public IP Sku. It can only be set with OrchestrationMode as Flexible.'
+                                        }
+                                      },
+                                      required: [ 'name' ]
+                                    },
+                                    privateIPAddressVersion: {
+                                      type: 'string',
+                                      description: "Available from Api-Version 2017-03-30 onwards, it represents whether the specific ipconfiguration is IPv4 or IPv6. Default is taken as IPv4.  Possible values are: 'IPv4' and 'IPv6'.",
+                                      enum: [ 'IPv4', 'IPv6' ],
+                                      'x-ms-enum': {
+                                        name: 'IPVersion',
+                                        modelAsString: true
+                                      }
+                                    },
+                                    applicationGatewayBackendAddressPools: {
+                                      type: 'array',
+                                      items: {
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource Id'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      },
+                                      description: 'Specifies an array of references to backend address pools of application gateways. A scale set can reference backend address pools of multiple application gateways. Multiple scale sets cannot use the same application gateway.'
+                                    },
+                                    applicationSecurityGroups: {
+                                      type: 'array',
+                                      items: {
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource Id'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      },
+                                      description: 'Specifies an array of references to application security group.'
+                                    },
+                                    loadBalancerBackendAddressPools: {
+                                      type: 'array',
+                                      items: {
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource Id'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      },
+                                      description: 'Specifies an array of references to backend address pools of load balancers. A scale set can reference backend address pools of one public and one internal load balancer. Multiple scale sets cannot use the same basic sku load balancer.'
+                                    },
+                                    loadBalancerInboundNatPools: {
+                                      type: 'array',
+                                      items: {
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description: 'Resource Id'
+                                          }
+                                        },
+                                        'x-ms-azure-resource': true
+                                      },
+                                      description: 'Specifies an array of references to inbound Nat pools of the load balancers. A scale set can reference inbound nat pools of one public and one internal load balancer. Multiple scale sets cannot use the same basic sku load balancer.'
+                                    }
+                                  },
+                                  description: "Describes a virtual machine scale set network profile's IP configuration properties."
+                                }
+                              },
                               required: [ 'name' ],
-                              allOf: [ [Object] ],
+                              allOf: [
+                                {
+                                  properties: {
+                                    id: {
+                                      type: 'string',
+                                      description: 'Resource Id'
+                                    }
+                                  },
+                                  'x-ms-azure-resource': true
+                                }
+                              ],
                               description: "Describes a virtual machine scale set network profile's IP configuration."
                             },
                             description: 'Specifies the IP configurations of the network interface.'
@@ -3983,4 +4211,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/virtualMachineScaleSet.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/ComputeRP/stable/2022-03-01/virtualMachineScaleSet.json).

@@ -36,7 +36,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Gallery](../Compute/Gallery.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -222,4 +222,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-01-03`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/GalleryRP/stable/2022-01-03/GalleryRP/gallery.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/GalleryRP/stable/2022-01-03/gallery.json).

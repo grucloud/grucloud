@@ -24,15 +24,19 @@ exports.createResources = () => [
       },
       id: "/subscriptions/34adfa4f-cedf-4dc0-ba29-b6d1a69ab345/resourceGroups/testResourceGroup/providers/Microsoft.Web/connectionGateways/test123",
     }),
-    dependencies: ({}) => ({ resourceGroup: "myResourceGroup" }),
+    dependencies: ({}) => ({
+      resourceGroup: "myResourceGroup",
+      connection: "myConnection",
+    }),
   },
 ];
 
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [Connection](../Web/Connection.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'The gateway definition',
   type: 'object',

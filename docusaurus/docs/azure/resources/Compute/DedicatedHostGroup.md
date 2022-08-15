@@ -51,7 +51,7 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -106,7 +106,17 @@ exports.createResources = () => [
                           allocatableVMs: {
                             type: 'array',
                             items: {
-                              properties: { vmSize: [Object], count: [Object] },
+                              properties: {
+                                vmSize: {
+                                  type: 'string',
+                                  description: 'VM size in terms of which the unutilized capacity is represented.'
+                                },
+                                count: {
+                                  type: 'number',
+                                  format: 'double',
+                                  description: "Maximum number of VMs of size vmSize that can fit in the dedicated host's remaining capacity."
+                                }
+                              },
                               description: 'Represents the dedicated host unutilized capacity in terms of a specific VM size.'
                             },
                             'x-ms-identifiers': [],
@@ -217,4 +227,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/dedicatedHost.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/ComputeRP/stable/2022-03-01/dedicatedHost.json).

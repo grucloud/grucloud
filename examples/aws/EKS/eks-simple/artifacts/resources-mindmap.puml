@@ -20,5 +20,6 @@ skinparam monochrome true
 ++++ Cluster (1)
 ++++ NodeGroup (1)
 +++ IAM
+++++ OpenIDConnectProvider (1)
 ++++ Role (2)
 @endmindmap

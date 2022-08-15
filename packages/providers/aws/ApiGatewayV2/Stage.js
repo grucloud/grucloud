@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, pick, eq } = require("rubico");
+const { defaultsDeep, when, append, find } = require("rubico/x");
 
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -21,7 +21,25 @@ exports.Stage = ({ spec, config }) => {
 
   const findId = pipe([get("live"), buildResourceArn]);
 
-  const findName = get("live.StageName");
+  const findName = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(live.ApiId);
+        assert(live.StageName);
+      }),
+      () =>
+        lives.getByType({
+          type: "Api",
+          group: "ApiGatewayV2",
+          providerName: config.providerName,
+        }),
+      find(eq(get("live.ApiId"), live.ApiId)),
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+      append(`::${live.StageName}`),
+    ])();
 
   const pickId = pick(["ApiId", "StageName"]);
 
@@ -39,13 +57,7 @@ exports.Stage = ({ spec, config }) => {
     method: "getStages",
     getParam: "Items",
     config,
-    decorate: ({ parent: { ApiId } }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        defaultsDeep({ ApiId }),
-      ]),
+    decorate: ({ parent: { ApiId } }) => pipe([defaultsDeep({ ApiId })]),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -90,9 +102,6 @@ exports.Stage = ({ spec, config }) => {
         StageName: name,
         ApiId: getField(api, "ApiId"),
         Tags: buildTagsObject({ config, namespace, userTags: Tags }),
-      }),
-      tap((params) => {
-        assert(true);
       }),
       when(
         () => logGroup,

@@ -43,6 +43,8 @@ exports.createResources = () => [
         enabled: true,
         reserved: true,
         vnetRouteAllEnabled: false,
+        vnetImagePullEnabled: false,
+        vnetContentShareEnabled: false,
         siteConfig: {
           numberOfWorkers: 1,
           linuxFxVersion: "DOCKER|mcr.microsoft.com/appsvc/staticsite:latest",

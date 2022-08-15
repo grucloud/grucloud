@@ -41,7 +41,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VpnServerConfiguration](../Network/VpnServerConfiguration.md)
 ## Swagger Schema
-```js
+```json
 {
   type: 'object',
   properties: {

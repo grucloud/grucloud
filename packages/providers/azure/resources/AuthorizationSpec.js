@@ -16,6 +16,7 @@ const {
   any,
 } = require("rubico");
 const {
+  includes,
   defaultsDeep,
   pluck,
   flatten,
@@ -117,7 +118,8 @@ exports.fnSpecs = ({ config }) =>
               tap((params) => {
                 assert(true);
               }),
-              () => false,
+              get("id"),
+              includes("resourceGroups/MC_"),
             ]),
             pipe([
               get("live.properties.scope"),

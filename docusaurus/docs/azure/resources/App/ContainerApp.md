@@ -83,7 +83,7 @@ exports.createResources = () => [
       resourceGroup: "myResourceGroup",
       managedIdentities: ["myUserAssignedIdentity"],
       managedEnvironment: "myManagedEnvironment",
-      certificate: ["myCertificate"],
+      certificates: ["myCertificate"],
       containerAppsSourceControl: "myContainerAppsSourceControl",
     }),
   },
@@ -97,7 +97,7 @@ exports.createResources = () => [
 - [Certificate](../App/Certificate.md)
 - [ContainerAppsSourceControl](../App/ContainerAppsSourceControl.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Container App.',
   type: 'object',
@@ -544,8 +544,17 @@ exports.createResources = () => [
                               items: {
                                 description: 'HTTPHeader describes a custom header to be used in HTTP probes',
                                 type: 'object',
-                                required: [Array],
-                                properties: [Object]
+                                required: [ 'name', 'value' ],
+                                properties: {
+                                  name: {
+                                    description: 'The header field name',
+                                    type: 'string'
+                                  },
+                                  value: {
+                                    description: 'The header field value',
+                                    type: 'string'
+                                  }
+                                }
                               },
                               'x-ms-identifiers': [ 'name' ]
                             },
@@ -685,8 +694,14 @@ exports.createResources = () => [
                               description: 'Auth Secrets for Container App Scale Rule',
                               type: 'object',
                               properties: {
-                                secretRef: [Object],
-                                triggerParameter: [Object]
+                                secretRef: {
+                                  description: 'Name of the Container App secret from which to pull the auth params.',
+                                  type: 'string'
+                                },
+                                triggerParameter: {
+                                  description: 'Trigger Parameter that uses the secret',
+                                  type: 'string'
+                                }
                               }
                             },
                             'x-ms-identifiers': [ 'triggerParameter' ]
@@ -714,8 +729,14 @@ exports.createResources = () => [
                               description: 'Auth Secrets for Container App Scale Rule',
                               type: 'object',
                               properties: {
-                                secretRef: [Object],
-                                triggerParameter: [Object]
+                                secretRef: {
+                                  description: 'Name of the Container App secret from which to pull the auth params.',
+                                  type: 'string'
+                                },
+                                triggerParameter: {
+                                  description: 'Trigger Parameter that uses the secret',
+                                  type: 'string'
+                                }
                               }
                             },
                             'x-ms-identifiers': [ 'triggerParameter' ]
@@ -738,8 +759,14 @@ exports.createResources = () => [
                               description: 'Auth Secrets for Container App Scale Rule',
                               type: 'object',
                               properties: {
-                                secretRef: [Object],
-                                triggerParameter: [Object]
+                                secretRef: {
+                                  description: 'Name of the Container App secret from which to pull the auth params.',
+                                  type: 'string'
+                                },
+                                triggerParameter: {
+                                  description: 'Trigger Parameter that uses the secret',
+                                  type: 'string'
+                                }
                               }
                             },
                             'x-ms-identifiers': [ 'triggerParameter' ]

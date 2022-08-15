@@ -8,7 +8,7 @@ Provides a **CertificateOrderCertificate** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceCertificateOrder](../CertificateRegistration/AppServiceCertificateOrder.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Class representing the Key Vault container for certificate purchased through Azure',
   type: 'object',

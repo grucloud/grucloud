@@ -42,7 +42,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualWan: "myVirtualWan",
-      virtualHubIpConfiguration: ["myVirtualHubIpConfiguration"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
     }),
   },
 ];
@@ -53,7 +53,7 @@ exports.createResources = () => [
 - [VirtualWan](../Network/VirtualWan.md)
 - [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
 ## Swagger Schema
-```js
+```json
 {
   required: [ 'location' ],
   properties: {

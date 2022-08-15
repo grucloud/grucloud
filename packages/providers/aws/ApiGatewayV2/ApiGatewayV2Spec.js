@@ -96,7 +96,14 @@ module.exports = pipe([
     {
       type: "Stage",
       Client: Stage,
-      inferName: get("properties.StageName"),
+      inferName: ({ properties: { StageName }, dependenciesSpec: { api } }) =>
+        pipe([
+          tap(() => {
+            assert(StageName);
+            assert(api);
+          }),
+          () => `${api}::${StageName}`,
+        ])(),
       propertiesDefault: {
         RouteSettings: {},
         DefaultRouteSettings: {
@@ -191,27 +198,18 @@ module.exports = pipe([
       Client: ApiMapping,
       inferName: ({
         properties: { ApiMappingKey },
-        dependenciesSpec: { domainName, api, stage },
+        dependenciesSpec: { domainName, stage },
       }) =>
         pipe([
           tap(() => {
             assert(domainName);
-            assert(api);
             assert(stage);
-            //TODO
-            //assert(ApiMappingKey);
           }),
-          () => `apimapping::${domainName}::${api}::${stage}::${ApiMappingKey}`,
+          () => `apimapping::${domainName}::${stage}::${ApiMappingKey}`,
         ])(),
       omitProperties: ["ApiMappingId", "ApiName"],
       filterLive: () => pipe([pick(["ApiMappingKey"])]),
       dependencies: {
-        api: {
-          type: "Api",
-          group: "ApiGatewayV2",
-          parent: true,
-          dependencyId: dependencyIdApi,
-        },
         domainName: {
           type: "DomainName",
           group: "ApiGatewayV2",
@@ -221,6 +219,7 @@ module.exports = pipe([
         stage: {
           type: "Stage",
           group: "ApiGatewayV2",
+          parent: true,
           dependencyId:
             ({ lives, config }) =>
             (live) =>
@@ -231,9 +230,6 @@ module.exports = pipe([
                     type: "Stage",
                     group: "ApiGatewayV2",
                   }),
-                tap((params) => {
-                  assert(true);
-                }),
                 find(
                   and([
                     eq(get("live.StageName"), live.Stage),

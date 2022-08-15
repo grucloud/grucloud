@@ -33,7 +33,7 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   type: 'object',
   description: 'A custom API',

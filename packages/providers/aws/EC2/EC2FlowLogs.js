@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, switchCase, map, not, gte } = require("rubico");
+const { pipe, tap, get, switchCase, map, not, eq } = require("rubico");
 const {
   defaultsDeep,
   first,
@@ -10,6 +10,7 @@ const {
   values,
   keys,
   unless,
+  callProp,
 } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -19,7 +20,12 @@ const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
 const FlowLogsDependencies = {
-  vpc: { type: "Vpc", group: "EC2", ResourceType: "VPC", ResourceId: "VpcId" },
+  vpc: {
+    type: "Vpc",
+    group: "EC2",
+    ResourceType: "VPC",
+    ResourceId: "VpcId",
+  },
   subnet: {
     type: "Subnet",
     group: "EC2",
@@ -60,6 +66,7 @@ const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
   ignoreErrorCodes: ["InvalidFlowLogId.NotFound"],
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeFlowLogs-property
   getById: {
     pickId: pipe([
       ({ FlowLogId }) => ({
@@ -69,15 +76,18 @@ const createModel = ({ config }) => ({
     method: "describeFlowLogs",
     getField: "FlowLogs",
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeFlowLogs-property
   getList: {
     method: "describeFlowLogs",
     getParam: "FlowLogs",
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createFlowLogs-property
   create: {
     method: "createFlowLogs",
     pickCreated: ({ payload }) =>
       pipe([get("FlowLogIds"), first, (FlowLogId) => ({ FlowLogId })]),
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteFlowLogs-property
   destroy: {
     method: "deleteFlowLogs",
     pickId: ({ FlowLogId }) => ({ FlowLogIds: [FlowLogId] }),
@@ -184,7 +194,23 @@ exports.EC2FlowLogs = ({ spec, config }) =>
           ])(),
         ],
       },
-      //TODO S3
+      {
+        type: "Bucket",
+        group: "S3",
+        ids: [
+          pipe([
+            () => live,
+            switchCase([
+              eq(get("LogDestinationType"), "s3"),
+              pipe([
+                get("LogDestination"),
+                callProp("replace", "arn:aws:s3:::", ""),
+              ]),
+              () => undefined,
+            ]),
+          ])(),
+        ],
+      },
     ],
     getByName: getByNameCore,
     tagResource: tagResource,
@@ -212,6 +238,7 @@ exports.EC2FlowLogs = ({ spec, config }) =>
           () => s3Bucket,
           defaultsDeep({
             LogDestinationType: "s3",
+            LogDestination: `arn:aws:s3:::${getField(s3Bucket, "Name")}`,
           }),
           () => cloudWatchLogGroup,
           defaultsDeep({

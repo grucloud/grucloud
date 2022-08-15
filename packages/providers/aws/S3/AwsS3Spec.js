@@ -29,7 +29,7 @@ const {
   compareAws,
   isOurMinion,
   replaceArnWithAccountAndRegion,
-  assignPolicyResource,
+  assignPolicyAccountAndRegion,
 } = require("../AwsCommon");
 
 const GROUP = "S3";
@@ -254,43 +254,7 @@ module.exports = pipe([
             assign({
               Policy: pipe([
                 get("Policy"),
-                assign({
-                  Statement: pipe([
-                    get("Statement"),
-                    map(
-                      pipe([
-                        assign({
-                          Principal: pipe([
-                            get("Principal"),
-                            when(
-                              get("AWS"),
-                              assign({
-                                AWS: pipe([
-                                  get("AWS"),
-                                  when(
-                                    includes(
-                                      "CloudFront Origin Access Identity"
-                                    ),
-                                    pipe([
-                                      replaceWithName({
-                                        groupType:
-                                          "CloudFront::OriginAccessIdentity",
-                                        path: "id",
-                                        providerConfig,
-                                        lives,
-                                      }),
-                                    ])
-                                  ),
-                                ]),
-                              })
-                            ),
-                          ]),
-                        }),
-                        assignPolicyResource({ providerConfig, lives }),
-                      ])
-                    ),
-                  ]),
-                }),
+                assignPolicyAccountAndRegion({ providerConfig, lives }),
               ]),
             })
           ),

@@ -46,7 +46,9 @@ exports.ResourcesExcludes = [
   "Network::ExpressRoutePort",
   "Network::FirewallPolicyIdpsSignaturesOverride",
   "Network::InterfaceEndpoint",
+  "Network::LoadBalancerBackendAddressPool", // set LoadBalancerBackendAddressPool in LoadBalancers
   "Network::ManagementGroupNetworkManagerConnection",
+  "Network::InboundNatRule",
   "Network::NetworkManager",
   "Network::NetworkSecurityPerimeter",
   "Network::PublicIpAddress", // Renamed to PublicIPAddress

@@ -407,7 +407,7 @@ exports.createResources = () => [
 
 ## Properties
 
-- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property)
+- [CreateBucketCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/interfaces/createbucketcommandinput.html)
 
 ## Dependencies
 
@@ -421,7 +421,7 @@ exports.createResources = () => [
 - [CloudFront Distribution](../CloudFront/Distribution.md)
 - [CloudTrail Trail](../CloudTrail/Trail.md)
 - [CodePipeline Pipeline](../CodePipeline/Pipeline.md)
-- [EC2 Flow Logs](./FlowLogs.md)
+- [EC2 Flow Logs](../EC2/FlowLogs.md)
 - [Lambda Function](../Lambda/Function.md)
 - [NetworkFirewall Logging Configuration](../NetworkFirewall/LoggingConfiguration.md)
 

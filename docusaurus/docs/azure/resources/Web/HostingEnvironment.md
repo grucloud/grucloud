@@ -8,7 +8,7 @@ Provides a **HostingEnvironment** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualNetwork](../Network/VirtualNetwork.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Description of an hostingEnvironment (App Service Environment)',
   type: 'object',

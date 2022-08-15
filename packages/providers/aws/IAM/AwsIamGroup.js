@@ -1,11 +1,15 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, any, assign, pick, omit } = require("rubico");
-const { defaultsDeep, forEach } = require("rubico/x");
+const { defaultsDeep, forEach, callProp } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamGroup" });
 const { getByNameCore } = require("@grucloud/core/Common");
 const { AwsClient } = require("../AwsClient");
-const { createIAM, assignAttachedPolicies } = require("./AwsIamCommon");
+const {
+  createIAM,
+  assignAttachedPolicies,
+  sortPolicies,
+} = require("./AwsIamCommon");
 
 const findName = get("live.GroupName");
 const findId = findName;
@@ -28,6 +32,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
             defaultsDeep({ MaxItems: 1e3 }),
             iam().listAttachedGroupPolicies,
             get("AttachedPolicies"),
+            sortPolicies,
           ]),
           Policies: pipe([
             pick(["GroupName"]),

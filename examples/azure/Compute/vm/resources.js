@@ -4,6 +4,21 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "SshPublicKey",
+    group: "Compute",
+    properties: ({ config }) => ({
+      name: "mykeypair",
+      location: config.location,
+      properties: {
+        publicKey:
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLpcQerEi6H9mss/GvTz5whNjruxj4DiPhdQLYHncd/EGyP+EnlMIKD2nJPVdiXMbaiwBURPZW4ssVNTvhRMX8P4YzVnNM8wSM93c2yjUxOLZ0OmCv30lsopgQCM5TgqElr15xQsGZ6FHrS0Oo+GadQL/zg18xrHc/ZHgxvZIF3bz7OamO88n7mQU8vv4YppFr0IS5nduW7jNHbhe7vofZw796rOHlSg1GZU9//5fQR5RXkZO9bXeYNU/DJ8qMj8wVnY5e5dumKRd/1ifaQOmZuHDH/umFa9CbWvk7TLXMUkXT4C/HvNVT9WGi44xl86h1cvuawoJ6CQihDI1CSTvQxJ9RTGd+feJKtdXVOdPDZ1fIrKrGA38t52fcaP1Cw0aQ1SXMLlL+tS/h7NTVcwDhF3ICkyHjNNPwLKbAZVq4FelwFoA7H0BhRS8evj8BCIgRcJ8UQKunh2t47wswxdHd76qTav+smAg0heIKmNs7HgWP0megNWSP0fvW2mO+x8U= generated-by-azure",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "rg-vm",
+    }),
+  },
+  {
     type: "VirtualMachine",
     group: "Compute",
     properties: ({ getId }) => ({
@@ -13,9 +28,23 @@ exports.createResources = () => [
           vmSize: "Standard_A1_v2",
         },
         osProfile: {
-          computerName: "myVM",
+          computerName: "vm",
           adminUsername: "ops",
           linuxConfiguration: {
+            disablePasswordAuthentication: true,
+            ssh: {
+              publicKeys: [
+                {
+                  path: "/home/ops/.ssh/authorized_keys",
+                  keyData: `${getId({
+                    type: "SshPublicKey",
+                    group: "Compute",
+                    name: "rg-vm::mykeypair",
+                    path: "live.properties.publicKey",
+                  })}`,
+                },
+              ],
+            },
             enableVMAgentPlatformUpdates: false,
           },
           adminPassword: process.env.RG_VM_VM_ADMIN_PASSWORD,
@@ -29,7 +58,7 @@ exports.createResources = () => [
           },
           osDisk: {
             osType: "Linux",
-            name: "vm_disk1_d3f89462e7604d6ca7a0d7fde3cfbe6c",
+            name: "vm_disk1_fe471e07212f4e7a9c62afcd7c57b84c",
             createOption: "FromImage",
             caching: "ReadWrite",
             managedDisk: {
@@ -47,6 +76,9 @@ exports.createResources = () => [
                 group: "Network",
                 name: "rg-vm::network-interface",
               }),
+              properties: {
+                primary: true,
+              },
             },
           ],
         },
@@ -54,31 +86,46 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vm",
+      sshPublicKeys: ["rg-vm::mykeypair"],
       networkInterfaces: ["rg-vm::network-interface"],
     }),
   },
   {
     type: "NetworkInterface",
     group: "Network",
-    properties: ({}) => ({
+    properties: ({ config, getId }) => ({
       name: "network-interface",
+      location: config.location,
       properties: {
         ipConfigurations: [
           {
-            name: "ipconfig",
             properties: {
-              privateIPAllocationMethod: "Dynamic",
+              publicIPAddress: {
+                id: `${getId({
+                  type: "PublicIPAddress",
+                  group: "Network",
+                  name: "rg-vm::ip-address",
+                })}`,
+              },
+              subnet: {
+                id: `${getId({
+                  type: "Subnet",
+                  group: "Network",
+                  name: "rg-vm::virtual-network::subnet",
+                })}`,
+              },
             },
+            name: "ipconfig1",
           },
         ],
+        enableIPForwarding: true,
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vm",
-      virtualNetwork: "rg-vm::virtual-network",
-      publicIpAddress: "rg-vm::ip",
-      securityGroup: "rg-vm::security-group",
-      subnet: "rg-vm::virtual-network::subnet",
+      networkSecurityGroup: "rg-vm::security-group",
+      publicIpAddresses: ["rg-vm::ip-address"],
+      subnets: ["rg-vm::virtual-network::subnet"],
     }),
   },
   {
@@ -91,6 +138,7 @@ exports.createResources = () => [
           {
             name: "SSH",
             properties: {
+              description: "allow SSH",
               protocol: "Tcp",
               sourcePortRange: "*",
               destinationPortRange: "22",
@@ -108,6 +156,7 @@ exports.createResources = () => [
           {
             name: "ICMP",
             properties: {
+              description: "allow ICMP",
               protocol: "Icmp",
               sourcePortRange: "*",
               destinationPortRange: "*",
@@ -133,7 +182,7 @@ exports.createResources = () => [
     type: "PublicIPAddress",
     group: "Network",
     properties: ({}) => ({
-      name: "ip",
+      name: "ip-address",
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vm",

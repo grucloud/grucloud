@@ -32,7 +32,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Private Endpoint Connection Approval ARM resource.',
   type: 'object',

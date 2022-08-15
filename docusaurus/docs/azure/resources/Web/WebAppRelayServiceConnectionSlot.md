@@ -9,7 +9,7 @@ Provides a **WebAppRelayServiceConnectionSlot** from the **Web** group
 - [WebApp](../Web/WebApp.md)
 - [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Hybrid Connection for an App Service app.',
   type: 'object',

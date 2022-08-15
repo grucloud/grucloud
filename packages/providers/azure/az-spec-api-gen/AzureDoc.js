@@ -157,8 +157,8 @@ const createSchemaSection = ({ methods }) =>
       assert(true);
     }),
     get("schema", ""),
-    (schema) => util.inspect(schema, { depth: 15 }),
-    (content) => `\`\`\`js
+    (schema) => util.inspect(schema, { depth: 24 }),
+    (content) => `\`\`\`json
 ${content}
 \`\`\`
 `,

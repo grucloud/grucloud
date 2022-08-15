@@ -33,7 +33,7 @@ exports.createResources = () => [
 - [PrivateEndpoint](../Network/PrivateEndpoint.md)
 - [ManagedHsm](../KeyVault/ManagedHsm.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

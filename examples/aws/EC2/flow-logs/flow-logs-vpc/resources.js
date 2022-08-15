@@ -95,7 +95,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `vpc-flow-logs.amazonaws.com`,
+              Service: "vpc-flow-logs.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -115,7 +115,7 @@ exports.createResources = () => [
                   "logs:DescribeLogStreams",
                 ],
                 Effect: "Allow",
-                Resource: `*`,
+                Resource: "*",
               },
             ],
           },

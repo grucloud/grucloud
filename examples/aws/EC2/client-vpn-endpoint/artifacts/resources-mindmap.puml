@@ -7,7 +7,6 @@ skinparam monochrome true
 ++++ Certificate (2)
 +++ CloudWatchLogs
 ++++ LogGroup (1)
-++++ LogStream (1)
 +++ EC2
 ++++ ClientVpnAuthorizationRule (1)
 ++++ ClientVpnEndpoint (1)

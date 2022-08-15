@@ -23,6 +23,10 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualNetwork: "myVirtualNetwork",
+      appServiceEnvironmentAseCustomDnsSuffixConfiguration:
+        "myAppServiceEnvironmentAseCustomDnsSuffixConfiguration",
+      appServiceEnvironmentAseV3NetworkingConfiguration:
+        "myAppServiceEnvironmentAseV3NetworkingConfiguration",
     }),
   },
 ];
@@ -31,8 +35,10 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualNetwork](../Network/VirtualNetwork.md)
+- [AppServiceEnvironmentAseCustomDnsSuffixConfiguration](../Web/AppServiceEnvironmentAseCustomDnsSuffixConfiguration.md)
+- [AppServiceEnvironmentAseV3NetworkingConfiguration](../Web/AppServiceEnvironmentAseV3NetworkingConfiguration.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'App Service Environment ARM resource.',
   type: 'object',

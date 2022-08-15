@@ -61,7 +61,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [StorageAccount](../Storage/StorageAccount.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

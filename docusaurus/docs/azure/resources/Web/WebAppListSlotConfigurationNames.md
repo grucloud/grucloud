@@ -8,7 +8,7 @@ Provides a **WebAppListSlotConfigurationNames** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Slot Config names azure resource.',
   type: 'object',

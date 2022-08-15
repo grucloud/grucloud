@@ -526,25 +526,25 @@ module.exports = pipe([
               get("id"),
             ]),
         },
-        cloudWatchLogStream: {
-          type: "LogStream",
-          group: "CloudWatchLogs",
-          dependencyId: ({ lives, config }) =>
-            pipe([
-              get("ConnectionLogOptions.CloudwatchLogStream"),
-              (logStream) =>
-                pipe([
-                  () =>
-                    lives.getByType({
-                      providerName: config.providerName,
-                      type: "LogStream",
-                      group: "CloudWatchLogs",
-                    }),
-                  find(pipe([eq(get("live.logStreamName"), logStream)])),
-                  get("id"),
-                ])(),
-            ]),
-        },
+        // cloudWatchLogStream: {
+        //   type: "LogStream",
+        //   group: "CloudWatchLogs",
+        //   dependencyId: ({ lives, config }) =>
+        //     pipe([
+        //       get("ConnectionLogOptions.CloudwatchLogStream"),
+        //       (logStream) =>
+        //         pipe([
+        //           () =>
+        //             lives.getByType({
+        //               providerName: config.providerName,
+        //               type: "LogStream",
+        //               group: "CloudWatchLogs",
+        //             }),
+        //           find(pipe([eq(get("live.logStreamName"), logStream)])),
+        //           get("id"),
+        //         ])(),
+        //     ]),
+        // },
         serverCertificate: {
           type: "Certificate",
           group: "ACM",
@@ -656,24 +656,11 @@ module.exports = pipe([
         cloudWatchLogGroup: {
           type: "LogGroup",
           group: "CloudWatchLogs",
-          dependencyId: ({ lives, config }) =>
-            pipe([
-              (live) =>
-                lives.getByName({
-                  name: live.LogGroupName,
-                  type: "LogGroup",
-                  group: "CloudWatchLogs",
-                  providerName: config.providerName,
-                }),
-              get("id"),
-            ]),
         },
-        //TODO
-        // s3Bucket: {
-        //   type: "Bucket",
-        //   group: "S3",
-        //   dependencyId: ({ lives, config }) => get(""),
-        //},
+        s3Bucket: {
+          type: "Bucket",
+          group: "S3",
+        },
       },
       includeDefaultDependencies: true,
       compare: compareEC2({
@@ -691,12 +678,15 @@ module.exports = pipe([
                 find(eq(get("id"), DeliverLogsPermissionArn)),
               ])(),
             omit(["DeliverLogsPermissionArn"]),
-            assign({
-              DeliverLogsPermissionArn: pipe([
-                get("DeliverLogsPermissionArn"),
-                replaceAccountAndRegion({ providerConfig, lives }),
-              ]),
-            }),
+            when(
+              get("DeliverLogsPermissionArn"),
+              assign({
+                DeliverLogsPermissionArn: pipe([
+                  get("DeliverLogsPermissionArn"),
+                  replaceAccountAndRegion({ providerConfig, lives }),
+                ]),
+              })
+            ),
           ]),
           when(
             eq(get("LogDestinationType"), "s3"),

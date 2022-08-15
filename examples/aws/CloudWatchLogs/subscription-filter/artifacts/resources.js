@@ -11,16 +11,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "LogStream",
-    group: "CloudWatchLogs",
-    properties: ({}) => ({
-      logStreamName: "my-log-stream",
-    }),
-    dependencies: ({}) => ({
-      cloudWatchLogGroup: "my-log-group",
-    }),
-  },
-  {
     type: "SubscriptionFilter",
     group: "CloudWatchLogs",
     properties: ({}) => ({

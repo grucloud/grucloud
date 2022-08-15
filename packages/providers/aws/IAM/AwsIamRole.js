@@ -47,6 +47,7 @@ const {
   untagResourceIam,
   dependenciesPoliciesKind,
   findInStatement,
+  sortPolicies,
 } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagRole-property
@@ -165,6 +166,7 @@ exports.AwsIamRole = ({ spec, config }) => {
         MaxItems: 1e3,
       }),
     get("AttachedPolicies"),
+    sortPolicies,
     tap((policies) => {
       logger.debug(`getList listAttachedRolePolicies: ${tos(policies)}`);
     }),

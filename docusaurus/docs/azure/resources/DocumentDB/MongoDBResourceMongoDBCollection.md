@@ -43,7 +43,7 @@ exports.createResources = () => [
 - [DatabaseAccount](../DocumentDB/DatabaseAccount.md)
 - [MongoDBResourceMongoDBDatabase](../DocumentDB/MongoDBResourceMongoDBDatabase.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Parameters to create and update Cosmos DB MongoDB collection.',
   type: 'object',

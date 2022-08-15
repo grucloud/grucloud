@@ -69,7 +69,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "API Gateway HTTP API to EventBridge",
-      stage: "$default",
+      stage: "API Gateway HTTP API to EventBridge::$default",
     }),
   },
   {
@@ -105,7 +105,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `apigateway.amazonaws.com`,
+              Service: "apigateway.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -143,7 +143,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },

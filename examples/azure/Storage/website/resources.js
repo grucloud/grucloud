@@ -75,7 +75,9 @@ exports.createResources = () => [
       },
       location: config.location,
       properties: {
-        sasPolicy: {},
+        sasPolicy: {
+          expirationAction: "Log",
+        },
         encryption: {
           services: {
             blob: {
@@ -89,7 +91,9 @@ exports.createResources = () => [
           },
           requireInfrastructureEncryption: false,
         },
-        networkAcls: {},
+        networkAcls: {
+          defaultAction: "Allow",
+        },
         accessTier: "Hot",
         supportsHttpsTrafficOnly: true,
         allowBlobPublicAccess: true,

@@ -42,7 +42,7 @@ exports.createResources = () => [
         Format:
           '$context.identity.sourceIp - - [$context.requestTime] "$context.httpMethod $context.routeKey $context.protocol" $context.status $context.responseLength $context.requestId',
       },
-      StageName: "my-api-stage-dev",
+      StageName: "stage-dev",
       Tags: {
         mykey1: "value",
       },
@@ -59,9 +59,8 @@ exports.createResources = () => [
       ApiMappingKey: "",
     }),
     dependencies: ({}) => ({
-      api: "my-api",
       domainName: "grucloud.org",
-      stage: "my-api-stage-dev",
+      stage: "my-api::stage-dev",
     }),
   },
   {
@@ -94,7 +93,7 @@ exports.createResources = () => [
     group: "ApiGatewayV2",
     dependencies: ({}) => ({
       api: "my-api",
-      stage: "my-api-stage-dev",
+      stage: "my-api::stage-dev",
     }),
   },
   {
@@ -116,7 +115,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -138,7 +137,7 @@ exports.createResources = () => [
           {
             Action: ["logs:*"],
             Effect: "Allow",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -163,7 +162,7 @@ exports.createResources = () => [
             Sid: "lambda-f9a2e0dc-5300-469d-8bc9-25daea82056c",
             Effect: "Allow",
             Principal: {
-              Service: `apigateway.amazonaws.com`,
+              Service: "apigateway.amazonaws.com",
             },
             Action: "lambda:InvokeFunction",
             Resource: `arn:aws:lambda:${

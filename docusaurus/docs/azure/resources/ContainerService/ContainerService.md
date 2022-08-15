@@ -15,6 +15,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       vault: "myVault",
+      sshPublicKeys: ["mySshPublicKey"],
     }),
   },
 ];
@@ -23,8 +24,9 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Vault](../KeyVault/Vault.md)
+- [SshPublicKey](../Compute/SshPublicKey.md)
 ## Swagger Schema
-```js
+```json
 {
   allOf: [
     {

@@ -142,7 +142,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `rds.amazonaws.com`,
+              Service: "rds.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -182,7 +182,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `monitoring.rds.amazonaws.com`,
+              Service: "monitoring.rds.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },

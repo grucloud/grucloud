@@ -69,7 +69,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Subnet](../Network/Subnet.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     sku: {
@@ -189,12 +189,22 @@ exports.createResources = () => [
             },
             delegatedSubnetResourceId: {
               type: 'string',
+              format: 'arm-id',
+              'x-ms-arm-id-details': {
+                allowedResources: [
+                  { type: 'Microsoft.Network/virtualNetworks/subnets' }
+                ]
+              },
               default: '',
               description: 'delegated subnet arm resource id.',
               'x-ms-mutability': [ 'create', 'read' ]
             },
             privateDnsZoneArmResourceId: {
               type: 'string',
+              format: 'arm-id',
+              'x-ms-arm-id-details': {
+                allowedResources: [ { type: 'Microsoft.Network/privateDnsZones' } ]
+              },
               default: '',
               description: 'private dns zone arm resource id.',
               'x-ms-mutability': [ 'create', 'read' ]
@@ -266,6 +276,10 @@ exports.createResources = () => [
         },
         sourceServerResourceId: {
           type: 'string',
+          format: 'arm-id',
+          'x-ms-arm-id-details': {
+            allowedResources: [ { type: 'Microsoft.DBforPostgreSQL/flexibleServers' } ]
+          },
           description: "The source server resource ID to restore from. It's required when 'createMode' is 'PointInTimeRestore'.",
           'x-ms-mutability': [ 'create' ]
         },

@@ -11,7 +11,7 @@ exports.createResources = () => [
       location: config.location,
       properties: {
         publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDN2bsPENDfUWBy81C6uvY3IvP/\r\nsBr1pCg0QZiZ6OtAo1fvNVk9rG4ApA9NlbDeECNn5idqXzb68jQ2YPWjOgfxY2KW\r\n/kpZrrkuksYOw7O7ylZp9bIL4kD+8FzFB8A1EogIbZb2wZ1gqFawrpdtHvCuOTGG\r\n2EUwowDvo5++Jm6ee3tzGxdnBj+ciJOFv4NHrJl0y1Dbh8WzISbgkVL5gwrJvmj+\r\nxIUIOUesabSccAw08TX0vEt5G/yB3Q1EGPQ8fib4Og3tJOJ4+IBpnEi4RM9vEjgZ\r\nYvwEmuUb7Vx78uTZ8DUChQ74Ot4DvTAioSSXHJMOmY3yyGJBmzbGtbl6c8nx9tq2\r\nhlznqM8emKEuSHAV7zhB9Pk3f2C1XFCtUApWpY7CZ/huBv9EP1nohWp2tRCJFERt\r\ne5u6Sz+g0Lgz9roPfFRSExS7F+vP96TRV+KmzYzgHAXHD57h59qqYOiUxjjieCrm\r\n8C8ZUQjG3GPJaMnd4eCNsk5xanrRxxbiVw9OPKU= generated-by-azure\r\n",
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDC0/rnk5kQipNmX4ZtG+n0rAqCawway+rOuOubmxMPdBgvHCMak+M4Hc3bu6hxfJ549Ro0lNRWgCgQUSBNTUjcwurHApFiETGygwZr0n5TUExOaDWFmCz/YpGvrdOwcLutBvjy+Rhs/Y6rS0Vq5on357bUQvTmN2WJXxMHb5OTN+825qwdr0joV1j7OHLCKMHPkZGixE/ETnFFQHLz9dBaSN2n2R26PLc7s7x6N1YHrpvKM1/YO+h00/27XsXZctNmG/t9eqakr3KU+5aN0x8KBK2cI3iXfZBUneJt7O+2DvE2T42DZOyunPUV8GUAJh88MxTe2p/yQ+rLjxA7s5KokuGh9nPsU0nTGNfYY4PCjMDj0chVRk0wUMYcnFc9m0ZsAAZY/kQpZ+OkUAPLzxkZz3MsIQSXa9YRSNY0vQeeXMfa9JeCrYLKHnba2Bc3hwekggfZeZHecR2yXlk6ucoHl73j4pgQhnejfE+yyWLy5bC2lt3GQBFcmuc3IULxd2U= generated-by-azure",
       },
     }),
     dependencies: ({}) => ({
@@ -29,15 +29,19 @@ exports.createResources = () => [
         },
         osProfile: {
           computerName: "vm",
-          adminUsername: "azureuser",
+          adminUsername: "ops",
           linuxConfiguration: {
             disablePasswordAuthentication: true,
             ssh: {
               publicKeys: [
                 {
-                  path: "/home/azureuser/.ssh/authorized_keys",
-                  keyData:
-                    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDN2bsPENDfUWBy81C6uvY3IvP/\r\nsBr1pCg0QZiZ6OtAo1fvNVk9rG4ApA9NlbDeECNn5idqXzb68jQ2YPWjOgfxY2KW\r\n/kpZrrkuksYOw7O7ylZp9bIL4kD+8FzFB8A1EogIbZb2wZ1gqFawrpdtHvCuOTGG\r\n2EUwowDvo5++Jm6ee3tzGxdnBj+ciJOFv4NHrJl0y1Dbh8WzISbgkVL5gwrJvmj+\r\nxIUIOUesabSccAw08TX0vEt5G/yB3Q1EGPQ8fib4Og3tJOJ4+IBpnEi4RM9vEjgZ\r\nYvwEmuUb7Vx78uTZ8DUChQ74Ot4DvTAioSSXHJMOmY3yyGJBmzbGtbl6c8nx9tq2\r\nhlznqM8emKEuSHAV7zhB9Pk3f2C1XFCtUApWpY7CZ/huBv9EP1nohWp2tRCJFERt\r\ne5u6Sz+g0Lgz9roPfFRSExS7F+vP96TRV+KmzYzgHAXHD57h59qqYOiUxjjieCrm\r\n8C8ZUQjG3GPJaMnd4eCNsk5xanrRxxbiVw9OPKU= generated-by-azure\r\n",
+                  path: "/home/ops/.ssh/authorized_keys",
+                  keyData: `${getId({
+                    type: "SshPublicKey",
+                    group: "Compute",
+                    name: "rg-user-managed-identity::keypair",
+                    path: "live.properties.publicKey",
+                  })}`,
                 },
               ],
             },
@@ -47,14 +51,14 @@ exports.createResources = () => [
         },
         storageProfile: {
           imageReference: {
-            publisher: "canonical",
-            offer: "0001-com-ubuntu-server-focal",
-            sku: "20_04-lts",
+            publisher: "Canonical",
+            offer: "UbuntuServer",
+            sku: "18.04-LTS",
             version: "latest",
           },
           osDisk: {
             osType: "Linux",
-            name: "vm_disk1_bb67c59163eb4d1a82700ee86e65ca81",
+            name: "vm_OsDisk_1_605a4b8ed8b742e092a0b09fac517d22",
             createOption: "FromImage",
             caching: "ReadWrite",
             managedDisk: {
@@ -64,19 +68,17 @@ exports.createResources = () => [
             diskSizeGB: 30,
           },
         },
-        diagnosticsProfile: {
-          bootDiagnostics: {
-            enabled: true,
-          },
-        },
         networkProfile: {
           networkInterfaces: [
             {
               id: getId({
                 type: "NetworkInterface",
                 group: "Network",
-                name: "rg-user-managed-identity::vm180",
+                name: "rg-user-managed-identity::network-interface",
               }),
+              properties: {
+                primary: true,
+              },
             },
           ],
         },
@@ -87,16 +89,16 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
-      managedIdentities: ["rg-user-managed-identity::identity-vault"],
+      managedIdentities: ["rg-user-managed-identity::MyIdentity"],
       sshPublicKeys: ["rg-user-managed-identity::keypair"],
-      networkInterfaces: ["rg-user-managed-identity::vm180"],
+      networkInterfaces: ["rg-user-managed-identity::network-interface"],
     }),
   },
   {
     type: "UserAssignedIdentity",
     group: "ManagedIdentity",
     properties: ({ config }) => ({
-      name: "identity-vault",
+      name: "MyIdentity",
       location: config.location,
     }),
     dependencies: ({}) => ({
@@ -106,44 +108,59 @@ exports.createResources = () => [
   {
     type: "NetworkInterface",
     group: "Network",
-    properties: ({}) => ({
-      name: "vm180",
+    properties: ({ config, getId }) => ({
+      name: "network-interface",
+      location: config.location,
       properties: {
         ipConfigurations: [
           {
-            name: "ipconfig1",
             properties: {
-              privateIPAllocationMethod: "Dynamic",
+              publicIPAddress: {
+                id: `${getId({
+                  type: "PublicIPAddress",
+                  group: "Network",
+                  name: "rg-user-managed-identity::ip-address",
+                })}`,
+              },
+              subnet: {
+                id: `${getId({
+                  type: "Subnet",
+                  group: "Network",
+                  name: "rg-user-managed-identity::virtual-network::subnet",
+                })}`,
+              },
             },
+            name: "ipconfig1",
           },
         ],
+        enableIPForwarding: true,
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
-      virtualNetwork: "rg-user-managed-identity::vnet",
-      publicIpAddress: "rg-user-managed-identity::vm-ip",
-      securityGroup: "rg-user-managed-identity::vm-nsg",
-      subnet: "rg-user-managed-identity::vnet::default",
+      networkSecurityGroup: "rg-user-managed-identity::security-group",
+      publicIpAddresses: ["rg-user-managed-identity::ip-address"],
+      subnets: ["rg-user-managed-identity::virtual-network::subnet"],
     }),
   },
   {
     type: "NetworkSecurityGroup",
     group: "Network",
     properties: ({}) => ({
-      name: "vm-nsg",
+      name: "security-group",
       properties: {
         securityRules: [
           {
             name: "SSH",
             properties: {
-              protocol: "TCP",
+              description: "allow SSH",
+              protocol: "Tcp",
               sourcePortRange: "*",
               destinationPortRange: "22",
               sourceAddressPrefix: "*",
               destinationAddressPrefix: "*",
               access: "Allow",
-              priority: 300,
+              priority: 1000,
               direction: "Inbound",
               sourcePortRanges: [],
               destinationPortRanges: [],
@@ -162,7 +179,7 @@ exports.createResources = () => [
     type: "PublicIPAddress",
     group: "Network",
     properties: ({}) => ({
-      name: "vm-ip",
+      name: "ip-address",
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
@@ -172,24 +189,24 @@ exports.createResources = () => [
     type: "Subnet",
     group: "Network",
     properties: ({}) => ({
-      name: "default",
+      name: "subnet",
       properties: {
-        addressPrefix: "10.1.0.0/24",
+        addressPrefix: "10.0.0.0/24",
       },
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-user-managed-identity",
-      virtualNetwork: "rg-user-managed-identity::vnet",
+      virtualNetwork: "rg-user-managed-identity::virtual-network",
     }),
   },
   {
     type: "VirtualNetwork",
     group: "Network",
     properties: ({}) => ({
-      name: "vnet",
+      name: "virtual-network",
       properties: {
         addressSpace: {
-          addressPrefixes: ["10.1.0.0/16"],
+          addressPrefixes: ["10.0.0.0/16"],
         },
       },
     }),

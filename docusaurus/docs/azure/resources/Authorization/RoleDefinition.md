@@ -14,7 +14,7 @@ exports.createResources = () => [
 ## Dependencies
 
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     id: {

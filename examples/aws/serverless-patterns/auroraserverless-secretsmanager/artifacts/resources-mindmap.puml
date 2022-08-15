@@ -3,8 +3,6 @@ title Resources for project auroraserverless-secretsmanager
 skinparam monochrome true
 + Infra
 ++ aws
-+++ CloudWatchLogs
-++++ LogGroup (1)
 +++ EC2
 ++++ Vpc (1)
 ++++ Subnet (2)

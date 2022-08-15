@@ -9,7 +9,6 @@ exports.createResources = () => [
 
     properties: ({ config }) => ({
       name: "my-cluster",
-      version: "1.20",
       resourcesVpcConfig: {
         endpointPublicAccess: false,
         endpointPrivateAccess: true,
@@ -18,10 +17,10 @@ exports.createResources = () => [
     }),
     dependencies: () => ({
       subnets: [
-        "SubnetPrivateUSEAST1D",
-        "SubnetPrivateUSEAST1F",
-        "SubnetPublicUSEAST1D",
-        "SubnetPublicUSEAST1F",
+        "VPC::SubnetPrivateUSEAST1D",
+        "VPC::SubnetPrivateUSEAST1F",
+        "VPC::SubnetPublicUSEAST1D",
+        "VPC::SubnetPublicUSEAST1F",
       ],
       securityGroups: ["sg::VPC::ControlPlaneSecurityGroup"],
       role: "eksctl-my-cluster-cluster-ServiceRole-1T8YHA5ZIYVRB",
@@ -44,9 +43,9 @@ exports.createResources = () => [
       },
       tags: { mykey1: "value" },
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       cluster: "my-cluster",
-      subnets: ["SubnetPublicUSEAST1D", "SubnetPublicUSEAST1F"],
+      subnets: ["VPC::SubnetPublicUSEAST1D", "VPC::SubnetPublicUSEAST1F"],
       role: "eksctl-my-cluster-nodegroup-ng-1-NodeInstanceRole-1LT5OVYUG2SEI",
       launchTemplate: "eksctl-my-cluster-nodegroup-ng-1",
     }),

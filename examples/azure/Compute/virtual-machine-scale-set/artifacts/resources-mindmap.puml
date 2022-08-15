@@ -4,10 +4,9 @@ skinparam monochrome true
 + Infra
 ++ azure
 +++ Compute
-++++ SshPublicKey (1)
 ++++ VirtualMachineScaleSet (1)
 +++ Network
-++++ NetworkSecurityGroup (2)
+++++ NetworkSecurityGroup (1)
 ++++ Subnet (1)
 ++++ VirtualNetwork (1)
 +++ Resources

@@ -128,7 +128,7 @@ exports.createResources = () => [
 - [DiskEncryptionSet](../Compute/DiskEncryptionSet.md)
 - [DiskAccess](../Compute/DiskAccess.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     managedBy: {
@@ -733,4 +733,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-03-02`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/DiskRP/stable/2022-03-02/DiskRP/snapshot.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/DiskRP/stable/2022-03-02/snapshot.json).

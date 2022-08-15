@@ -74,10 +74,10 @@ exports.createResources = () => [
   {
     type: "Pipeline",
     group: "CodePipeline",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       pipeline: {
         artifactStore: {
-          location: "codepipeline-us-east-1-149415713660",
+          location: `codepipeline-${config.region}-149415713660`,
           type: "S3",
         },
         name: "my-pipeline",
@@ -142,10 +142,11 @@ exports.createResources = () => [
         version: 1,
       },
     }),
-    dependencies: ({}) => ({
+    dependencies: ({ config }) => ({
       role: "AWSCodePipelineServiceRole-my-pipeline",
       codeBuildProject: ["my-project"],
       ecrRepository: ["starhackit"],
+      s3Bucket: `codepipeline-${config.region}-149415713660`,
     }),
   },
   {
@@ -174,7 +175,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `codepipeline.amazonaws.com`,
+              Service: "codepipeline.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -197,7 +198,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `codebuild.amazonaws.com`,
+              Service: "codebuild.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -220,7 +221,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `events.amazonaws.com`,
+              Service: "events.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -240,7 +241,7 @@ exports.createResources = () => [
         Statement: [
           {
             Action: ["iam:PassRole"],
-            Resource: `*`,
+            Resource: "*",
             Effect: "Allow",
             Condition: {
               StringEqualsIfExists: {
@@ -262,7 +263,7 @@ exports.createResources = () => [
               "codecommit:GetUploadArchiveStatus",
               "codecommit:UploadArchive",
             ],
-            Resource: `*`,
+            Resource: "*",
             Effect: "Allow",
           },
           {
@@ -274,12 +275,12 @@ exports.createResources = () => [
               "codedeploy:GetDeploymentConfig",
               "codedeploy:RegisterApplicationRevision",
             ],
-            Resource: `*`,
+            Resource: "*",
             Effect: "Allow",
           },
           {
             Action: ["codestar-connections:UseConnection"],
-            Resource: `*`,
+            Resource: "*",
             Effect: "Allow",
           },
           {
@@ -296,12 +297,12 @@ exports.createResources = () => [
               "sqs:*",
               "ecs:*",
             ],
-            Resource: `*`,
+            Resource: "*",
             Effect: "Allow",
           },
           {
             Action: ["lambda:InvokeFunction", "lambda:ListFunctions"],
-            Resource: `*`,
+            Resource: "*",
             Effect: "Allow",
           },
           {
@@ -315,7 +316,7 @@ exports.createResources = () => [
               "opsworks:UpdateApp",
               "opsworks:UpdateStack",
             ],
-            Resource: `*`,
+            Resource: "*",
             Effect: "Allow",
           },
           {
@@ -331,7 +332,7 @@ exports.createResources = () => [
               "cloudformation:SetStackPolicy",
               "cloudformation:ValidateTemplate",
             ],
-            Resource: `*`,
+            Resource: "*",
             Effect: "Allow",
           },
           {
@@ -341,7 +342,7 @@ exports.createResources = () => [
               "codebuild:BatchGetBuildBatches",
               "codebuild:StartBuildBatch",
             ],
-            Resource: `*`,
+            Resource: "*",
             Effect: "Allow",
           },
           {
@@ -354,7 +355,7 @@ exports.createResources = () => [
               "devicefarm:CreateUpload",
               "devicefarm:ScheduleRun",
             ],
-            Resource: `*`,
+            Resource: "*",
           },
           {
             Effect: "Allow",
@@ -365,17 +366,17 @@ exports.createResources = () => [
               "servicecatalog:DeleteProvisioningArtifact",
               "servicecatalog:UpdateProduct",
             ],
-            Resource: `*`,
+            Resource: "*",
           },
           {
             Effect: "Allow",
             Action: ["cloudformation:ValidateTemplate"],
-            Resource: `*`,
+            Resource: "*",
           },
           {
             Effect: "Allow",
             Action: ["ecr:DescribeImages"],
-            Resource: `*`,
+            Resource: "*",
           },
           {
             Effect: "Allow",
@@ -384,7 +385,7 @@ exports.createResources = () => [
               "states:DescribeStateMachine",
               "states:StartExecution",
             ],
-            Resource: `*`,
+            Resource: "*",
           },
           {
             Effect: "Allow",
@@ -393,7 +394,7 @@ exports.createResources = () => [
               "appconfig:StopDeployment",
               "appconfig:GetDeployment",
             ],
-            Resource: `*`,
+            Resource: "*",
           },
         ],
         Version: "2012-10-17",

@@ -9,7 +9,7 @@ Provides a **WebAppSwiftVirtualNetworkConnection** from the **Web** group
 - [Subnet](../Network/Subnet.md)
 - [WebApp](../Web/WebApp.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Swift Virtual Network Contract. This is used to enable the new Swift way of doing virtual network integration.',
   type: 'object',

@@ -19,9 +19,13 @@ const {
   isEmpty,
   find,
 } = require("rubico/x");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 
 exports.isKeyExcluded = ({ key }) =>
   pipe([
+    tap(() => {
+      assert(key);
+    }),
     () => ["linkedPublicIPAddress", "servicePublicIPAddress"],
     includes(key),
   ]);
@@ -31,13 +35,26 @@ const isSecret = (key) =>
 
 exports.isSecret = isSecret;
 
-exports.getAllProperties = ({ allOf = [], properties = {} }) =>
+exports.resolveSwaggerObject = ({ allOf = [], ...other }) =>
   pipe([
     () => allOf,
     tap((params) => {
       assert(true);
     }),
-    reduce((acc, value) => ({ ...acc, ...value.properties }), properties),
+    reduce((acc, value) => defaultsDeep(value)(acc), other),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
+exports.getAllProperties = ({ allOf = [], properties = {} }) =>
+  pipe([
+    () => allOf,
+    tap((params) => {
+      assert(properties);
+    }),
+    reduce((acc, value) => ({ ...acc, ...value.properties }), {}),
+    defaultsDeep(properties),
     tap((params) => {
       assert(true);
     }),

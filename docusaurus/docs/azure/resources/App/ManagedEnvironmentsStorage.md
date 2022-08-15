@@ -33,7 +33,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ManagedEnvironment](../App/ManagedEnvironment.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Storage resource for managedEnvironment.',
   type: 'object',

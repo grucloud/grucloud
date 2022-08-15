@@ -36,7 +36,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: [`events.amazonaws.com`, `states.amazonaws.com`],
+              Service: ["events.amazonaws.com", "states.amazonaws.com"],
             },
             Action: "sts:AssumeRole",
           },
@@ -79,7 +79,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -106,7 +106,7 @@ exports.createResources = () => [
             Sid: "StepFunctionAssumeRole",
             Effect: "Allow",
             Principal: {
-              Service: `states.amazonaws.com`,
+              Service: "states.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -138,8 +138,8 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            application_name: `aws_lambda_example`,
-            env: `dev`,
+            application_name: "aws_lambda_example",
+            env: "dev",
           },
         },
         FunctionName: "aws_lambda_example",
@@ -161,7 +161,7 @@ exports.createResources = () => [
         States: {
           TriggerLambda: {
             Type: "Task",
-            Resource: `arn:aws:states:::lambda:invoke`,
+            Resource: "arn:aws:states:::lambda:invoke",
             OutputPath: "$.Payload",
             Parameters: {
               "Payload.$": "$",

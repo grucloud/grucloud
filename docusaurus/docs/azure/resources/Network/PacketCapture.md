@@ -42,7 +42,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [NetworkWatcher](../Network/NetworkWatcher.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

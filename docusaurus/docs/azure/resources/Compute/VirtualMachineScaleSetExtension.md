@@ -54,7 +54,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualMachineScaleSet](../Compute/VirtualMachineScaleSet.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     name: { type: 'string', description: 'The name of the extension.' },
@@ -130,4 +130,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/virtualMachineScaleSet.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/ComputeRP/stable/2022-03-01/virtualMachineScaleSet.json).

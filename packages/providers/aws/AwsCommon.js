@@ -52,6 +52,12 @@ const {
   replaceWithName,
 } = require("@grucloud/core/Common");
 
+const sortObject = pipe([
+  Object.entries,
+  callProp("sort", (a, b) => a[0].localeCompare(b[0])),
+  Object.fromEntries,
+]);
+
 exports.arnFromId = ({ config, service }) =>
   pipe([
     tap((id) => {
@@ -1033,7 +1039,7 @@ const replaceArnWithAccountAndRegion =
             new RegExp(providerConfig.region, "g"),
             "${config.region}"
           ),
-          (resource) => () => "`" + resource + "`",
+          when(not(eq(identity, Id)), (resource) => () => "`" + resource + "`"),
         ]),
       ]),
     ])();
@@ -1044,6 +1050,9 @@ const replaceAccountAndRegion =
   ({ providerConfig }) =>
   (prop) =>
     pipe([
+      tap((params) => {
+        assert(prop);
+      }),
       () => prop,
       callProp(
         "replace",
@@ -1121,6 +1130,25 @@ const replaceStatement = ({ providerConfig, lives }) =>
             lives,
             principalKind: "Federated",
           }),
+          when(
+            get("AWS"),
+            assign({
+              AWS: pipe([
+                get("AWS"),
+                when(
+                  includes("CloudFront Origin Access Identity"),
+                  pipe([
+                    replaceWithName({
+                      groupType: "CloudFront::OriginAccessIdentity",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ])
+                ),
+              ]),
+            })
+          ),
         ]),
       })
     ),
@@ -1161,9 +1189,6 @@ const replaceStatement = ({ providerConfig, lives }) =>
                   assign({
                     "elasticfilesystem:AccessPointArn": pipe([
                       get("elasticfilesystem:AccessPointArn"),
-                      tap((params) => {
-                        assert(true);
-                      }),
                       replaceWithName({
                         groupType: "EFS::AccessPoint",
                         path: "id",
@@ -1173,6 +1198,10 @@ const replaceStatement = ({ providerConfig, lives }) =>
                     ]),
                   })
                 ),
+                tap((params) => {
+                  assert(true);
+                }),
+                sortObject,
               ]),
             })
           ),

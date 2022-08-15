@@ -11,18 +11,6 @@ exports.fnSpecs = ({ config }) =>
       {
         // https://docs.microsoft.com/en-us/rest/api/app/
         type: "ManagedEnvironment",
-        dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            parent: true,
-          },
-          workspace: {
-            type: "Workspace",
-            group: "OperationalInsights",
-            createOnly: true,
-          },
-        },
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {

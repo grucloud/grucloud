@@ -20,6 +20,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
+      virtualMachines: ["myVirtualMachine"],
       proximityPlacementGroup: "myProximityPlacementGroup",
     }),
   },
@@ -28,9 +29,10 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
+- [VirtualMachine](../Compute/VirtualMachine.md)
 - [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -141,4 +143,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-03-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/ComputeRP/stable/2022-03-01/ComputeRP/availabilitySet.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/ComputeRP/stable/2022-03-01/availabilitySet.json).

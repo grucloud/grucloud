@@ -196,9 +196,6 @@ module.exports = pipe([
             assert(restApi);
           }),
           () => `${restApi}::${stageName}`,
-          tap((name) => {
-            assert(name);
-          }),
         ])(),
       propertiesDefault: { cacheClusterEnabled: false, tracingEnabled: false },
       compare: compareAPIGateway({

@@ -21,6 +21,7 @@ const {
   buildParentPath,
   findTypesByDiscriminator,
   getAllProperties,
+  isKeyExcluded,
 } = require("./AzureRestApiCommon");
 
 const buildOmitPropertiesObject = ({ key, swagger, parentPath, accumulator }) =>
@@ -28,46 +29,52 @@ const buildOmitPropertiesObject = ({ key, swagger, parentPath, accumulator }) =>
     tap((params) => {
       assert(true);
     }),
-    fork({
-      fromAllOf: pipe([
-        get("allOf", []),
-        map(
-          pipe([
-            get("properties"),
-            buildOmitProperties({
-              swagger,
-              parentPath: buildParentPath(key)(parentPath),
-              accumulator,
-            }),
-          ])
-        ),
-        flatten,
-      ]),
-      fromProperties: pipe([
-        get("properties"),
-        tap((params) => {
-          assert(true);
-        }),
-        buildOmitProperties({
-          swagger,
-          parentPath: buildParentPath(key)(parentPath),
-          accumulator,
-        }),
-      ]),
-      // fromAditionalProperties: switchCase([
-      //   get("additionalProperties"),
-      //   pipe([
-      //     get("additionalProperties"),
-      //     () => [buildParentPath(key)(parentPath)],
-      //   ]),
-      //   () => [],
-      // ]),
+    getAllProperties,
+    // fork({
+    //   fromAllOf: pipe([
+    //     get("allOf", []),
+    //     map(
+    //       pipe([
+    //         get("properties"),
+    //         buildOmitProperties({
+    //           swagger,
+    //           parentPath: buildParentPath(key)(parentPath),
+    //           accumulator,
+    //         }),
+    //       ])
+    //     ),
+    //     flatten,
+    //   ]),
+    //   fromProperties: pipe([
+    //     get("properties"),
+    //     tap((params) => {
+    //       assert(true);
+    //     }),
+    //     buildOmitProperties({
+    //       swagger,
+    //       parentPath: buildParentPath(key)(parentPath),
+    //       accumulator,
+    //     }),
+    //   ]),
+    //   // fromAditionalProperties: switchCase([
+    //   //   get("additionalProperties"),
+    //   //   pipe([
+    //   //     get("additionalProperties"),
+    //   //     () => [buildParentPath(key)(parentPath)],
+    //   //   ]),
+    //   //   () => [],
+    //   // ]),
+    // }),
+    // ({ fromAllOf = [], fromProperties = [], fromAditionalProperties = [] }) => [
+    //   ...fromAllOf,
+    //   ...fromProperties,
+    //   ...fromAditionalProperties,
+    // ],
+    buildOmitProperties({
+      swagger,
+      parentPath: buildParentPath(key)(parentPath),
+      accumulator,
     }),
-    ({ fromAllOf = [], fromProperties = [], fromAditionalProperties = [] }) => [
-      ...fromAllOf,
-      ...fromProperties,
-      ...fromAditionalProperties,
-    ],
     tap((params) => {
       assert(true);
     }),
@@ -138,6 +145,13 @@ const buildOmitProperties =
         pipe([
           () => obj,
           switchCase([
+            isKeyExcluded({ key }),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => undefined,
+            ]),
             // loop detection
             isPreviousProperties({ parentPath, key }),
             pipe([

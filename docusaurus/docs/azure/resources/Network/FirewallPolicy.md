@@ -98,7 +98,7 @@ exports.createResources = () => [
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [Workspace](../OperationalInsights/Workspace.md)
 ## Swagger Schema
-```js
+```json
 {
   type: 'object',
   properties: {

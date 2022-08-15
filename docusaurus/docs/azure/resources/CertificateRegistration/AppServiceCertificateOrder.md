@@ -41,7 +41,7 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'SSL certificate purchase order.',
   type: 'object',

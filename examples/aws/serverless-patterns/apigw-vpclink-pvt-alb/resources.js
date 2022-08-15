@@ -59,7 +59,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       api: "serverlessland-pvt-endpoint",
-      stage: "$default",
+      stage: "serverlessland-pvt-endpoint::$default",
     }),
   },
   {
@@ -397,7 +397,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `ecs-tasks.amazonaws.com`,
+              Service: "ecs-tasks.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -416,7 +416,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              Service: `ecs-tasks.amazonaws.com`,
+              Service: "ecs-tasks.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },

@@ -31,7 +31,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceEnvironment](../Web/AppServiceEnvironment.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Full view of the custom domain suffix configuration for ASEv3.',
   type: 'object',

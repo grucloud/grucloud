@@ -1,5 +1,5 @@
 {
-  "name": "multiple",
+  "name": "flow-logs-vpc-s3",
   "version": "9.0.0",
   "private": true,
   "description": "",
@@ -15,18 +15,17 @@
     "destroy": "gc destroy -f",
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
-    "info": "gc info",
     "test": "mocha"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^9.0.0",
-    "@grucloud/provider-azure": "^9.0.0",
-    "rubico": "^1.8.3"
+    "@grucloud/provider-aws": "^9.0.0",
+    "rubico": "1.8.10"
   },
   "devDependencies": {
-    "mocha": "^9.1.3",
+    "mocha": "^9.2.2",
     "mocha-junit-reporter": "^2.0.2"
   }
 }

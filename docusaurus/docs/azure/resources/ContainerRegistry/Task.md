@@ -282,7 +282,7 @@ exports.createResources = () => [
 - [UserAssignedIdentity](../ManagedIdentity/UserAssignedIdentity.md)
 - [Registry](../ContainerRegistry/Registry.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'The task that has the ARM resource and task properties. \r\n' +
     'The task will have all information to schedule a run against it.',

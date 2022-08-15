@@ -32,7 +32,7 @@ exports.createResources = () => [
 - [GremlinResourceGremlinDatabase](../DocumentDB/GremlinResourceGremlinDatabase.md)
 - [GremlinResourceGremlinGraph](../DocumentDB/GremlinResourceGremlinGraph.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Parameters to update Cosmos DB resource throughput.',
   type: 'object',

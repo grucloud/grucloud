@@ -72,7 +72,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -151,7 +151,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -228,7 +228,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -305,7 +305,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -384,7 +384,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -452,7 +452,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -484,7 +484,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -561,7 +561,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      diskEncryptionSet: ["myDiskEncryptionSet"],
+      diskEncryptionSets: ["myDiskEncryptionSet"],
       gallery: "myGallery",
       galleryImage: "myGalleryImage",
     }),
@@ -575,7 +575,7 @@ exports.createResources = () => [
 - [Gallery](../Compute/Gallery.md)
 - [GalleryImage](../Compute/GalleryImage.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
@@ -619,12 +619,35 @@ exports.createResources = () => [
                               securityProfile: {
                                 type: 'object',
                                 description: 'This property specifies the security profile of an OS disk image.',
-                                properties: [Object]
+                                properties: {
+                                  confidentialVMEncryptionType: {
+                                    type: 'string',
+                                    description: 'confidential VM encryption types',
+                                    enum: [
+                                      'EncryptedVMGuestStateOnlyWithPmk',
+                                      'EncryptedWithPmk',
+                                      'EncryptedWithCmk'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'ConfidentialVMEncryptionType',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  secureVMDiskEncryptionSetId: {
+                                    type: 'string',
+                                    description: 'secure VM disk encryption set id'
+                                  }
+                                }
                               }
                             },
                             allOf: [
                               {
-                                properties: [Object],
+                                properties: {
+                                  diskEncryptionSetId: {
+                                    type: 'string',
+                                    description: 'A relative URI containing the resource ID of the disk encryption set.'
+                                  }
+                                },
                                 description: 'This is the disk image encryption base class.'
                               }
                             ],
@@ -633,8 +656,24 @@ exports.createResources = () => [
                           dataDiskImages: {
                             type: 'array',
                             items: {
-                              properties: { lun: [Object] },
-                              allOf: [ [Object] ],
+                              properties: {
+                                lun: {
+                                  type: 'integer',
+                                  format: 'int32',
+                                  description: 'This property specifies the logical unit number of the data disk. This value is used to identify data disks within the Virtual Machine and therefore must be unique for each data disk attached to the Virtual Machine.'
+                                }
+                              },
+                              allOf: [
+                                {
+                                  properties: {
+                                    diskEncryptionSetId: {
+                                      type: 'string',
+                                      description: 'A relative URI containing the resource ID of the disk encryption set.'
+                                    }
+                                  },
+                                  description: 'This is the disk image encryption base class.'
+                                }
+                              ],
                               required: [ 'lun' ],
                               description: 'Contains encryption settings for a data disk image.'
                             },
@@ -734,12 +773,35 @@ exports.createResources = () => [
                               securityProfile: {
                                 type: 'object',
                                 description: 'This property specifies the security profile of an OS disk image.',
-                                properties: [Object]
+                                properties: {
+                                  confidentialVMEncryptionType: {
+                                    type: 'string',
+                                    description: 'confidential VM encryption types',
+                                    enum: [
+                                      'EncryptedVMGuestStateOnlyWithPmk',
+                                      'EncryptedWithPmk',
+                                      'EncryptedWithCmk'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'ConfidentialVMEncryptionType',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  secureVMDiskEncryptionSetId: {
+                                    type: 'string',
+                                    description: 'secure VM disk encryption set id'
+                                  }
+                                }
                               }
                             },
                             allOf: [
                               {
-                                properties: [Object],
+                                properties: {
+                                  diskEncryptionSetId: {
+                                    type: 'string',
+                                    description: 'A relative URI containing the resource ID of the disk encryption set.'
+                                  }
+                                },
                                 description: 'This is the disk image encryption base class.'
                               }
                             ],
@@ -748,8 +810,24 @@ exports.createResources = () => [
                           dataDiskImages: {
                             type: 'array',
                             items: {
-                              properties: { lun: [Object] },
-                              allOf: [ [Object] ],
+                              properties: {
+                                lun: {
+                                  type: 'integer',
+                                  format: 'int32',
+                                  description: 'This property specifies the logical unit number of the data disk. This value is used to identify data disks within the Virtual Machine and therefore must be unique for each data disk attached to the Virtual Machine.'
+                                }
+                              },
+                              allOf: [
+                                {
+                                  properties: {
+                                    diskEncryptionSetId: {
+                                      type: 'string',
+                                      description: 'A relative URI containing the resource ID of the disk encryption set.'
+                                    }
+                                  },
+                                  description: 'This is the disk image encryption base class.'
+                                }
+                              ],
                               required: [ 'lun' ],
                               description: 'Contains encryption settings for a data disk image.'
                             },
@@ -973,4 +1051,4 @@ exports.createResources = () => [
 ## Misc
 The resource version is `2022-01-03`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/Microsoft.Compute/GalleryRP/stable/2022-01-03/GalleryRP/gallery.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/compute/resource-manager/Microsoft.Compute/GalleryRP/stable/2022-01-03/gallery.json).

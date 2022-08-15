@@ -9,7 +9,7 @@ Provides a **WebAppPrivateAccessSlot** from the **Web** group
 - [WebApp](../Web/WebApp.md)
 - [WebAppSlot](../Web/WebAppSlot.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Description of the parameters of Private Access for a Web Site.',
   type: 'object',

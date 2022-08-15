@@ -32,7 +32,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Workspace](../OperationalInsights/Workspace.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {

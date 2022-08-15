@@ -79,9 +79,11 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       virtualHub: "myVirtualHub",
-      vpnSite: ["myVpnSite"],
-      virtualHubIpConfiguration: ["myVirtualHubIpConfiguration"],
-      routeTable: ["myRouteTable"],
+      connections: ["myConnection"],
+      vpnSites: ["myVpnSite"],
+      virtualHubIpConfigurations: ["myVirtualHubIpConfiguration"],
+      natRules: ["myNatRule"],
+      routeTables: ["myRouteTable"],
     }),
   },
 ];
@@ -90,11 +92,13 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [VirtualHub](../Network/VirtualHub.md)
+- [Connection](../Web/Connection.md)
 - [VpnSite](../Network/VpnSite.md)
 - [VirtualHubIpConfiguration](../Network/VirtualHubIpConfiguration.md)
+- [NatRule](../Network/NatRule.md)
 - [RouteTable](../Network/RouteTable.md)
 ## Swagger Schema
-```js
+```json
 {
   required: [ 'location' ],
   properties: {
@@ -347,7 +351,12 @@ exports.createResources = () => [
                           properties: {
                             vpnSiteLink: {
                               description: 'Id of the connected vpn site link.',
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               'x-ms-azure-resource': true
                             },
                             routingWeight: {
@@ -421,8 +430,20 @@ exports.createResources = () => [
                               type: 'array',
                               items: {
                                 type: 'object',
-                                properties: [Object],
-                                required: [Array],
+                                properties: {
+                                  ipConfigurationId: {
+                                    type: 'string',
+                                    description: 'The IpconfigurationId of ipconfiguration which belongs to gateway.'
+                                  },
+                                  customBgpIpAddress: {
+                                    type: 'string',
+                                    description: 'The custom BgpPeeringAddress which belongs to IpconfigurationId.'
+                                  }
+                                },
+                                required: [
+                                  'ipConfigurationId',
+                                  'customBgpIpAddress'
+                                ],
                                 description: 'GatewayCustomBgpIpAddressIpConfiguration for a virtual network gateway connection.'
                               },
                               description: 'vpnGatewayCustomBgpAddresses used by this connection.',
@@ -435,8 +456,125 @@ exports.createResources = () => [
                             ipsecPolicies: {
                               type: 'array',
                               items: {
-                                properties: [Object],
-                                required: [Array],
+                                properties: {
+                                  saLifeTimeSeconds: {
+                                    type: 'integer',
+                                    format: 'int32',
+                                    description: 'The IPSec Security Association (also called Quick Mode or Phase 2 SA) lifetime in seconds for a site to site VPN tunnel.'
+                                  },
+                                  saDataSizeKilobytes: {
+                                    type: 'integer',
+                                    format: 'int32',
+                                    description: 'The IPSec Security Association (also called Quick Mode or Phase 2 SA) payload size in KB for a site to site VPN tunnel.'
+                                  },
+                                  ipsecEncryption: {
+                                    description: 'The IPSec encryption algorithm (IKE phase 1).',
+                                    type: 'string',
+                                    enum: [
+                                      'None',      'DES',
+                                      'DES3',      'AES128',
+                                      'AES192',    'AES256',
+                                      'GCMAES128', 'GCMAES192',
+                                      'GCMAES256'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'IpsecEncryption',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  ipsecIntegrity: {
+                                    description: 'The IPSec integrity algorithm (IKE phase 1).',
+                                    type: 'string',
+                                    enum: [
+                                      'MD5',
+                                      'SHA1',
+                                      'SHA256',
+                                      'GCMAES128',
+                                      'GCMAES192',
+                                      'GCMAES256'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'IpsecIntegrity',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  ikeEncryption: {
+                                    description: 'The IKE encryption algorithm (IKE phase 2).',
+                                    type: 'string',
+                                    enum: [
+                                      'DES',
+                                      'DES3',
+                                      'AES128',
+                                      'AES192',
+                                      'AES256',
+                                      'GCMAES256',
+                                      'GCMAES128'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'IkeEncryption',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  ikeIntegrity: {
+                                    description: 'The IKE integrity algorithm (IKE phase 2).',
+                                    type: 'string',
+                                    enum: [
+                                      'MD5',
+                                      'SHA1',
+                                      'SHA256',
+                                      'SHA384',
+                                      'GCMAES256',
+                                      'GCMAES128'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'IkeIntegrity',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  dhGroup: {
+                                    description: 'The DH Group used in IKE Phase 1 for initial SA.',
+                                    type: 'string',
+                                    enum: [
+                                      'None',
+                                      'DHGroup1',
+                                      'DHGroup2',
+                                      'DHGroup14',
+                                      'DHGroup2048',
+                                      'ECP256',
+                                      'ECP384',
+                                      'DHGroup24'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'DhGroup',
+                                      modelAsString: true
+                                    }
+                                  },
+                                  pfsGroup: {
+                                    description: 'The Pfs Group used in IKE Phase 2 for new child SA.',
+                                    type: 'string',
+                                    enum: [
+                                      'None',   'PFS1',
+                                      'PFS2',   'PFS2048',
+                                      'ECP256', 'ECP384',
+                                      'PFS24',  'PFS14',
+                                      'PFSMM'
+                                    ],
+                                    'x-ms-enum': {
+                                      name: 'PfsGroup',
+                                      modelAsString: true
+                                    }
+                                  }
+                                },
+                                required: [
+                                  'saLifeTimeSeconds',
+                                  'saDataSizeKilobytes',
+                                  'ipsecEncryption',
+                                  'ipsecIntegrity',
+                                  'ikeEncryption',
+                                  'ikeIntegrity',
+                                  'dhGroup',
+                                  'pfsGroup'
+                                ],
                                 description: 'An IPSec Policy configuration for a virtual network gateway connection.'
                               },
                               description: 'The IPSec Policies to be considered by this connection.'
@@ -467,7 +605,12 @@ exports.createResources = () => [
                             ingressNatRules: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource ID.'
+                                  }
+                                },
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               },
@@ -476,7 +619,12 @@ exports.createResources = () => [
                             egressNatRules: {
                               type: 'array',
                               items: {
-                                properties: [Object],
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    description: 'Resource ID.'
+                                  }
+                                },
                                 description: 'Reference to another subresource.',
                                 'x-ms-azure-resource': true
                               },
@@ -539,7 +687,12 @@ exports.createResources = () => [
                             type: 'array',
                             description: 'The list of resource ids of all the RouteTables.',
                             items: {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             }
@@ -555,9 +708,19 @@ exports.createResources = () => [
                             items: {
                               description: 'List of all Static Routes.',
                               properties: {
-                                name: [Object],
-                                addressPrefixes: [Object],
-                                nextHopIpAddress: [Object]
+                                name: {
+                                  type: 'string',
+                                  description: 'The name of the StaticRoute that is unique within a VnetRoute.'
+                                },
+                                addressPrefixes: {
+                                  type: 'array',
+                                  description: 'List of all address prefixes.',
+                                  items: { type: 'string' }
+                                },
+                                nextHopIpAddress: {
+                                  type: 'string',
+                                  description: 'The ip address of the next hop.'
+                                }
                               }
                             }
                           },
@@ -566,7 +729,12 @@ exports.createResources = () => [
                             readOnly: true,
                             description: 'The list of references to HubBgpConnection objects.',
                             items: {
-                              properties: { id: [Object] },
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  description: 'Resource ID.'
+                                }
+                              },
                               description: 'Reference to another subresource.',
                               'x-ms-azure-resource': true
                             }

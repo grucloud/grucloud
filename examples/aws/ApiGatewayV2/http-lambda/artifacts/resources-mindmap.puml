@@ -14,7 +14,7 @@ skinparam monochrome true
 ++++ Route (1)
 ++++ Deployment (1)
 +++ CloudWatchLogs
-++++ LogGroup (3)
+++++ LogGroup (1)
 +++ IAM
 ++++ Role (1)
 ++++ Policy (1)

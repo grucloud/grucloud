@@ -19,6 +19,7 @@ const {
 } = require("rubico");
 
 const {
+  pluck,
   includes,
   unless,
   when,
@@ -32,7 +33,11 @@ const {
   isEmpty,
 } = require("rubico/x");
 
-const { compare, omitIfEmpty } = require("@grucloud/core/Common");
+const {
+  compare,
+  omitIfEmpty,
+  replaceWithName,
+} = require("@grucloud/core/Common");
 const { deepPick } = require("@grucloud/core/deepPick");
 const { deepDefaults } = require("@grucloud/core/deepDefault");
 
@@ -81,6 +86,108 @@ const createSpecsOveride = (config) =>
   ])();
 
 exports.createSpecsOveride = createSpecsOveride;
+
+const removeBracket = callProp("replace", "[]", "");
+const hasBracket = includes("[]");
+
+const assignDeep = ({
+  providerConfig,
+  lives,
+  groupType,
+  keys: [key, ...otherKey],
+}) =>
+  pipe([
+    tap((params) => {
+      assert(key);
+      assert(lives);
+    }),
+    when(
+      get(removeBracket(key)),
+      assign({
+        [removeBracket(key)]: pipe([
+          get(removeBracket(key)),
+          switchCase([
+            () => isEmpty(otherKey),
+            pipe([
+              replaceWithName({
+                groupType,
+                path: "id",
+                providerConfig,
+                lives,
+              }),
+            ]),
+            pipe([
+              switchCase([
+                () => hasBracket(key),
+                map((live) =>
+                  assignDeep({
+                    providerConfig,
+                    lives,
+                    groupType,
+                    keys: otherKey,
+                  })(live)
+                ),
+                (live) =>
+                  assignDeep({
+                    providerConfig,
+                    lives,
+                    groupType,
+                    keys: otherKey,
+                  })(live),
+              ]),
+            ]),
+          ]),
+        ]),
+      })
+    ),
+  ]);
+
+const filterLiveOneDependency =
+  ({ live, providerConfig, lives }) =>
+  ({ type, group, pathId = "" }) =>
+    pipe([
+      tap((params) => {
+        assert(lives);
+        assert(type);
+        assert(group);
+      }),
+      () => pathId,
+      switchCase([
+        isEmpty,
+        () => live,
+        pipe([
+          callProp("split", "."),
+          (keys) =>
+            pipe([
+              () => live,
+              assignDeep({
+                providerConfig,
+                lives,
+                groupType: `${group}::${type}`,
+                keys,
+              }),
+            ])(),
+        ]),
+      ]),
+    ])();
+
+const filterLiveDependencyArray =
+  ({ dependencies, providerConfig, lives }) =>
+  (live) =>
+    pipe([
+      () => dependencies,
+      filter(get("list")),
+      tap((params) => {
+        assert(live);
+      }),
+      reduce(
+        (acc, value) =>
+          defaultsDeep(acc)(
+            filterLiveOneDependency({ providerConfig, lives, live: acc })(value)
+          ),
+        live
+      ),
+    ])();
 
 const buildDefaultSpec = fork({
   isDefault: () => eq(get("live.name"), "default"),
@@ -181,23 +288,35 @@ const buildDefaultSpec = fork({
         lives,
       }),
   filterLive:
-    ({ pickPropertiesCreate = [] }) =>
-    ({ providerConfig }) =>
+    ({ pickPropertiesCreate = [], dependencies }) =>
+    ({ providerConfig, lives }) =>
       //TODO
       pipe([
         tap((params) => {
+          assert(lives);
+          assert(pickPropertiesCreate);
           assert(providerConfig);
+          assert(dependencies);
         }),
-        deepPick(["name", "kind", ...pickPropertiesCreate]),
+        deepPick([
+          "name",
+          "kind",
+          ...pickPropertiesCreate,
+          ...pipe([
+            () => dependencies,
+            values,
+            filter(get("list")),
+            pluck("pathId"),
+            filter(not(isEmpty)),
+          ])(),
+        ]),
         omit([
           "properties.provisioningState",
           "etag",
           "type",
           "identity.userAssignedIdentities",
         ]),
-        tap((params) => {
-          assert(true);
-        }),
+        filterLiveDependencyArray({ dependencies, providerConfig, lives }),
       ]),
   compare: ({
     pickPropertiesCreate = [],

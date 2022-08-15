@@ -32,7 +32,7 @@ exports.createResources = () => [
 - [CassandraResourceCassandraKeyspace](../DocumentDB/CassandraResourceCassandraKeyspace.md)
 - [CassandraResourceCassandraTable](../DocumentDB/CassandraResourceCassandraTable.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Parameters to update Cosmos DB resource throughput.',
   type: 'object',

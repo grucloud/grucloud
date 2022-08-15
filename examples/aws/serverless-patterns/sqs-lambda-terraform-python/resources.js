@@ -15,7 +15,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: `lambda.amazonaws.com`,
+              Service: "lambda.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -68,7 +68,7 @@ exports.createResources = () => [
       Configuration: {
         Environment: {
           Variables: {
-            POWERTOOLS_SERVICE_NAME: `sqs-lambda-demo`,
+            POWERTOOLS_SERVICE_NAME: "sqs-lambda-demo",
           },
         },
         FunctionName: "sqs-lambda-demo",

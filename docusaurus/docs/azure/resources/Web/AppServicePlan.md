@@ -35,7 +35,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [HostingEnvironment](../Web/HostingEnvironment.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'App Service plan.',
   type: 'object',

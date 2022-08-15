@@ -30,6 +30,7 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
       publicIpAddresses: ["myPublicIPAddress"],
+      publicIpPrefixes: ["myPublicIPPrefix"],
     }),
   },
 ];
@@ -38,8 +39,9 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [PublicIPAddress](../Network/PublicIPAddress.md)
+- [PublicIPPrefix](../Network/PublicIPPrefix.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     sku: {

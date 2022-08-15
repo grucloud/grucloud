@@ -47,7 +47,7 @@ exports.createResources = () => [
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Representation of a managed Cassandra cluster.',
   type: 'object',

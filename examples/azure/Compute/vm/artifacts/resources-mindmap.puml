@@ -1,9 +1,10 @@
 @startmindmap
-title Resources for project Azure VM
+title Resources for project Azure VM simple
 skinparam monochrome true
 + Infra
 ++ azure
 +++ Compute
+++++ SshPublicKey (1)
 ++++ VirtualMachine (1)
 +++ Network
 ++++ NetworkInterface (1)

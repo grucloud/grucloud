@@ -18,8 +18,8 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      loadBalancer: "myLoadBalancer",
       customIpPrefix: "myCustomIPPrefix",
+      natGateway: "myNatGateway",
     }),
   },
 ];
@@ -36,8 +36,8 @@ exports.createResources = () => [
     properties: () => ["1"],
     dependencies: ({}) => ({
       resourceGroup: "myResourceGroup",
-      loadBalancer: "myLoadBalancer",
       customIpPrefix: "myCustomIPPrefix",
+      natGateway: "myNatGateway",
     }),
   },
 ];
@@ -45,10 +45,10 @@ exports.createResources = () => [
 ```
 ## Dependencies
 - [ResourceGroup](../Resources/ResourceGroup.md)
-- [LoadBalancer](../Network/LoadBalancer.md)
 - [CustomIPPrefix](../Network/CustomIPPrefix.md)
+- [NatGateway](../Network/NatGateway.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     extendedLocation: {

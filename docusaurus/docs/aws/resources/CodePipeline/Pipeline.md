@@ -108,6 +108,7 @@ exports.createResources = () => [
 ## Full Examples
 
 - [CodePipeline code-pipeline-ecr](https://github.com/grucloud/grucloud/tree/main/examples/aws/CodePipeline/code-pipeline-ecr)
+- [CodePipeline code-pipeline-simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/CodePipeline/code-pipeline-simple)
 
 ## List
 

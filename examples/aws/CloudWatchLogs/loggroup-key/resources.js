@@ -31,7 +31,7 @@ exports.createResources = () => [
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
             Action: "kms:*",
-            Resource: `*`,
+            Resource: "*",
           },
           {
             Sid: "Enable KMS to be used by CloudWatch Logs",
@@ -46,7 +46,7 @@ exports.createResources = () => [
               "kms:GenerateDataKey*",
               "kms:Describe*",
             ],
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },

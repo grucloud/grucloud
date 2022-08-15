@@ -30,7 +30,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [ManagedEnvironment](../App/ManagedEnvironment.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Certificate used for Custom Domain bindings of Container Apps in a Managed Environment',
   type: 'object',

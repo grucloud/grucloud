@@ -5,8 +5,8 @@ skinparam monochrome true
 ++ aws
 +++ IAM
 ++++ Role (1)
-+++ StepFunctions
-++++ StateMachine (1)
 +++ SQS
 ++++ Queue (1)
++++ StepFunctions
+++++ StateMachine (1)
 @endmindmap

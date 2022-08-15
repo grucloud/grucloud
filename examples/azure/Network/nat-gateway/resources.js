@@ -6,13 +6,23 @@ exports.createResources = () => [
   {
     type: "NatGateway",
     group: "Network",
-    properties: ({}) => ({
+    properties: ({ config, getId }) => ({
       name: "nat-gw",
+      location: config.location,
       sku: {
         name: "Standard",
       },
       properties: {
         idleTimeoutInMinutes: 4,
+        publicIpAddresses: [
+          {
+            id: `${getId({
+              type: "PublicIPAddress",
+              group: "Network",
+              name: "rg-natgateway::ip-address",
+            })}`,
+          },
+        ],
       },
     }),
     dependencies: ({}) => ({
@@ -40,7 +50,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "Network",
     properties: ({}) => ({
-      name: "default",
+      name: "vm",
       properties: {
         addressPrefix: "10.0.0.0/24",
       },

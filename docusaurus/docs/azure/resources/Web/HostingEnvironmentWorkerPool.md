@@ -8,7 +8,7 @@ Provides a **HostingEnvironmentWorkerPool** from the **Web** group
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [AppServiceEnvironment](../Web/AppServiceEnvironment.md)
 ## Swagger Schema
-```js
+```json
 {
   description: 'Worker pool of a hostingEnvironment (App Service Environment)',
   type: 'object',

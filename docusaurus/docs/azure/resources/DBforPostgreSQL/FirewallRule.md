@@ -29,7 +29,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [FlexibleServer](../DBforPostgreSQL/FlexibleServer.md)
 ## Swagger Schema
-```js
+```json
 {
   properties: {
     properties: {
