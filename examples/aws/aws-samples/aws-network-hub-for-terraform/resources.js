@@ -1351,8 +1351,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
       egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}a`,
     }),
   },
   {
@@ -1373,8 +1373,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
       egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}b`,
     }),
   },
   {
@@ -1395,8 +1395,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
       egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_attachment_${config.region}c`,
     }),
   },
   {
@@ -1417,8 +1417,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
       egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
     }),
   },
   {
@@ -1428,8 +1428,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
       natGateway: `inspection_natgw_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
     }),
   },
   {
@@ -1439,8 +1439,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "64:ff9b::/96",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
       natGateway: `inspection_natgw_${config.region}a`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}a`,
     }),
   },
   {
@@ -1461,8 +1461,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
       egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
     }),
   },
   {
@@ -1472,8 +1472,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
       natGateway: `inspection_natgw_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
     }),
   },
   {
@@ -1483,8 +1483,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "64:ff9b::/96",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
       natGateway: `inspection_natgw_${config.region}b`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}b`,
     }),
   },
   {
@@ -1505,8 +1505,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
       egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
     }),
   },
   {
@@ -1516,8 +1516,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
       natGateway: `inspection_natgw_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
     }),
   },
   {
@@ -1527,8 +1527,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "64:ff9b::/96",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
       natGateway: `inspection_natgw_${config.region}c`,
+      routeTable: `inspection_vpc::inspection_inspection_${config.region}c`,
     }),
   },
   {
@@ -1549,8 +1549,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
       egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
     }),
   },
   {
@@ -1560,8 +1560,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
       ig: "inspection_igw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}a`,
     }),
   },
   {
@@ -1582,8 +1582,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
       egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
     }),
   },
   {
@@ -1593,8 +1593,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
       ig: "inspection_igw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}b`,
     }),
   },
   {
@@ -1615,8 +1615,8 @@ exports.createResources = () => [
       DestinationIpv6CidrBlock: "::/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
       egressOnlyInternetGateway: "inspection_eigw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
     }),
   },
   {
@@ -1626,8 +1626,8 @@ exports.createResources = () => [
       DestinationCidrBlock: "0.0.0.0/0",
     }),
     dependencies: ({ config }) => ({
-      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
       ig: "inspection_igw",
+      routeTable: `inspection_vpc::inspection_internet_${config.region}c`,
     }),
   },
   {
@@ -1743,7 +1743,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -1778,7 +1778,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -1813,7 +1813,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -1848,7 +1848,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -1883,7 +1883,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -1918,7 +1918,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -1953,7 +1953,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -1988,7 +1988,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -2023,7 +2023,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -2058,7 +2058,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -2093,7 +2093,7 @@ exports.createResources = () => [
             Action: "*",
             Effect: "Allow",
             Principal: "*",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },
@@ -2454,7 +2454,7 @@ exports.createResources = () => [
             Sid: "",
             Effect: "Allow",
             Principal: {
-              Service: `vpc-flow-logs.amazonaws.com`,
+              Service: "vpc-flow-logs.amazonaws.com",
             },
             Action: "sts:AssumeRole",
           },
@@ -2474,7 +2474,7 @@ exports.createResources = () => [
                   "logs:DescribeLogStreams",
                 ],
                 Effect: "Allow",
-                Resource: `*`,
+                Resource: "*",
               },
             ],
           },
@@ -2494,7 +2494,7 @@ exports.createResources = () => [
           {
             Effect: "Allow",
             Principal: {
-              AWS: `*`,
+              AWS: "*",
             },
             Action: "sts:AssumeRole",
             Condition: {
@@ -2521,8 +2521,8 @@ exports.createResources = () => [
   {
     type: "Policy",
     group: "IAM",
-    name: "dev_central_network_automation_policy",
     properties: ({}) => ({
+      PolicyName: "dev_central_network_automation_policy",
       PolicyDocument: {
         Statement: [
           {
@@ -2540,12 +2540,12 @@ exports.createResources = () => [
               "ec2:DisableTransitGatewayRouteTablePropagation",
             ],
             Effect: "Allow",
-            Resource: `*`,
+            Resource: "*",
           },
           {
             Action: ["ssm:GetParameters", "ssm:GetParameter", "kms:Decrypt"],
             Effect: "Allow",
-            Resource: `*`,
+            Resource: "*",
           },
           {
             Action: [
@@ -2563,7 +2563,7 @@ exports.createResources = () => [
               "route53:GetChange",
             ],
             Effect: "Allow",
-            Resource: `*`,
+            Resource: "*",
           },
         ],
         Version: "2012-10-17",
@@ -2589,7 +2589,7 @@ exports.createResources = () => [
               AWS: `arn:aws:iam::${config.accountId()}:root`,
             },
             Action: "kms:*",
-            Resource: `*`,
+            Resource: "*",
           },
           {
             Sid: "Enable KMS to be used by CloudWatch Logs",
@@ -2604,7 +2604,7 @@ exports.createResources = () => [
               "kms:Describe*",
               "kms:Decrypt*",
             ],
-            Resource: `*`,
+            Resource: "*",
           },
         ],
       },

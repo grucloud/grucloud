@@ -45,7 +45,7 @@ const RamResourceDependencies = {
     arnKey: "Arn",
     dependencyId: findDependencyFromEntity({
       type: "Rule",
-      group: "EC2",
+      group: "Route53Resolver",
       arnKey: "Arn",
     }),
   },
@@ -54,7 +54,7 @@ const RamResourceDependencies = {
     group: "EC2",
     arnKey: "TransitGatewayArn",
     dependencyId: findDependencyFromEntity({
-      type: "Rule",
+      type: "TransitGateway",
       group: "EC2",
       arnKey: "TransitGatewayArn",
     }),

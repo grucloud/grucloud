@@ -35,6 +35,8 @@ const { buildGetId } = require("@grucloud/core/Common");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
 
 exports.AZURE_MANAGEMENT_BASE_URL = "https://management.azure.com";
+exports.AZURE_GRAPH_BASE_URL = "https://graph.microsoft.com";
+
 exports.AZURE_KEYVAULT_AUDIENCE = "https://vault.azure.net";
 exports.AZURE_STORAGE_AUDIENCE = "https://storage.azure.com/";
 
