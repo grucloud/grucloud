@@ -46,6 +46,7 @@ exports.fnSpecs = ({ config }) =>
     () => [
       {
         type: "RoleDefinition",
+        hideResource: () => pipe([eq(get("properties.type"), "BuiltInRole")]),
         managedByOther: pipe([eq(get("live.properties.type"), "BuiltInRole")]),
         findName: pipe([get("live.properties.roleName")]),
       },

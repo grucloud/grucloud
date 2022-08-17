@@ -64,6 +64,7 @@ const SpecDefault = ({ providerName }) => ({
   postCreate: () => identity,
   postDestroy: () => identity,
   displayResource: () => identity,
+  hideResource: () => () => false,
   managedByOther: () => false,
   cannotBeDeleted: () => false,
   findResource: ({ resources, name, lives }) =>

@@ -269,6 +269,9 @@ const decorateLive =
         displayResource() {
           return client.spec.displayResource({ lives, config })(live);
         },
+        hideResource() {
+          return client.spec.hideResource({ lives, config })(live);
+        },
         get dependencies() {
           return memoDependencies();
         },
