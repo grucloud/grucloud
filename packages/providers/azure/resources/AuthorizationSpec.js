@@ -109,6 +109,7 @@ exports.fnSpecs = ({ config }) =>
         cannotBeDeleted: eq(get("live.properties.roleName"), "Owner"),
         ignoreResource: ({ lives }) =>
           or([
+            eq(get("live.properties.principalType"), "User"),
             and([
               eq(get("live.properties.principalType"), "ServicePrincipal"),
               not(get("live.properties.principalName")),

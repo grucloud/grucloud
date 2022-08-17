@@ -548,7 +548,7 @@ module.exports = AzClient = ({
     shouldRetryOnExceptionCreate: shouldRetryOnExceptionAzure,
     shouldRetryOnExceptionGetById: shouldRetryOnExceptionAzure,
     shouldRetryOnExceptionDelete: shouldRetryOnExceptionDeleteAzure,
-
+    onCreateExpectedException: spec.onCreateExpectedException,
     findTargetId,
     verbCreate: verbCreateFromMethods(methods),
     verbUpdate: verbUpdateFromMethods(methods),

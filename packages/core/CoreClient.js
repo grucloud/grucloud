@@ -79,7 +79,7 @@ module.exports = CoreClient = ({
   shouldRetryOnExceptionCreate = shouldRetryOnExceptionCreateDefault,
   shouldRetryOnExceptionDelete = shouldRetryOnExceptionDeleteDefault,
   onCreateFilterPayload = identity,
-  onCreateExpectedException,
+  onCreateExpectedException = pipe([() => false]),
   findDependencies,
   isUpById,
   isDownById,
