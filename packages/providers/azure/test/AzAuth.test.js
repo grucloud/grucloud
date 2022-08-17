@@ -22,7 +22,7 @@ describe("AzAuth", function () {
       assert(false);
     }
   });
-  it(
+  it.skip(
     "get ad users",
     tryCatch(
       pipe([
@@ -46,8 +46,12 @@ describe("AzAuth", function () {
           },
         }),
         Axios.create,
-        callProp("get", "v1.0/users"),
-        get("data.value"),
+        //callProp("get", `v1.0/users/`),
+        callProp("get", `v1.0/servicePrincipals/`),
+        tap((result) => {
+          assert(result);
+        }),
+        get("data"),
         tap((result) => {
           assert(result);
         }),

@@ -179,6 +179,7 @@ exports.AzureProvider = ({
     subscriptionId: process.env.AZURE_SUBSCRIPTION_ID,
     tenantId: process.env.AZURE_TENANT_ID,
     appId: process.env.AZURE_CLIENT_ID,
+    objectId: process.env.AZURE_OBJECT_ID,
   };
 
   const makeConfig = () =>

@@ -663,7 +663,7 @@ exports.createResources = () => [
       BackupRetentionPeriod: 1,
       DatabaseName: "aurora_db",
       Engine: "aurora",
-      EngineVersion: "5.6.10a",
+      EngineVersion: "5.6.mysql_aurora.1.22.3",
       Port: 3306,
       MasterUsername:
         process.env

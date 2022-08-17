@@ -10,10 +10,15 @@ const {
   identity,
   unless,
   isEmpty,
+  includes,
 } = require("rubico/x");
 const path = require("path");
 const prompts = require("prompts");
+const os = require("os");
 const fs = require("fs").promises;
+
+//const logger = require("../../logger")({ prefix: "Azure" });
+
 const { runShellCommands } = require("../runShellCommands");
 assert(runShellCommands);
 const RolesDefault = [
@@ -129,6 +134,15 @@ const fetchAppIdPassword = pipe([
   ),
 ]);
 
+const fetchServicePrincipalObjectId = pipe([
+  tap((appId) => {
+    assert(appId);
+  }),
+  (appId) => `az ad sp show --id ${appId} --query "id" --output tsv`,
+  execCommandShell(),
+  callProp("replace", os.EOL, ""),
+]);
+
 const registerNamespaces = () =>
   pipe([
     () => NamespacesDefault,
@@ -138,7 +152,54 @@ const registerNamespaces = () =>
     }),
   ])();
 
-const assignRoleAssignments = ({ account: { id }, app: { appId } }) =>
+const consentPermission = ({ principalId, resourceId, appRoleId }) =>
+  pipe([
+    tap(() => {
+      assert(principalId);
+      assert(resourceId);
+      assert(appRoleId);
+    }),
+    () => [
+      `az rest --method POST --uri https://graph.microsoft.com/v1.0/servicePrincipals/${resourceId}/appRoleAssignedTo --header Content-Type=application/json \
+      --body '{ \
+        "principalId": "${principalId}", \
+        "resourceId": "${resourceId}",\
+        "appRoleId": "${appRoleId}" \
+      }' `,
+    ],
+    runShellCommands({
+      text: "Consent Permission",
+      ignoreError: includes(
+        "Permission being assigned already exists on the object"
+      ),
+    }),
+  ])();
+
+exports.consentPermission = consentPermission;
+
+const addAppPermission =
+  ({ appRoleId, resourceId }) =>
+  ({ app: { appId }, objectId, graphObjectId }) =>
+    pipe([
+      tap(() => {
+        assert(appRoleId);
+        assert(resourceId);
+        assert(appId);
+        assert(appRoleId);
+        assert(graphObjectId);
+      }),
+      // https://graph.microsoft.com/Application.Read.All
+      () => [
+        `az ad app permission add --id ${appId} --api ${resourceId} --api-permissions ${appRoleId}=Role`,
+      ],
+      runShellCommands({
+        text: "Add permission https://graph.microsoft.com/Application.Read.All",
+      }),
+      () => ({ principalId: objectId, resourceId: graphObjectId, appRoleId }),
+      consentPermission,
+    ])();
+
+const createRoleAssignments = ({ account: { id }, app: { appId } }) =>
   pipe([
     tap(() => {
       assert(appId);
@@ -154,13 +215,14 @@ const assignRoleAssignments = ({ account: { id }, app: { appId } }) =>
     }),
   ])();
 
-const writeEnv = ({ dirs, app, account }) =>
+const writeEnv = ({ dirs, app, account, objectId }) =>
   pipe([
     tap(() => {
       assert(dirs);
       assert(dirs.destination);
       assert(app);
       assert(account);
+      assert(objectId);
     }),
     assign({
       content: pipe([
@@ -168,6 +230,8 @@ const writeEnv = ({ dirs, app, account }) =>
 AZURE_SUBSCRIPTION_ID=${account.id}
 AZURE_CLIENT_ID=${app.appId}
 AZURE_CLIENT_SECRET=${app.password}
+AZURE_OBJECT_ID=${objectId}
+
 `,
       ]),
       filename: () => path.resolve(dirs.destination, "auth.env"),
@@ -230,12 +294,28 @@ const createConfig = ({ location }) =>
     }),
   ])();
 
+const graphPrincipalId = "00000003-0000-0000-c000-000000000000";
+
 exports.createProjectAzure = pipe([
   tap(isAzPresent),
   tap(isAuthenticated),
   assign({ account: promptSubscribtionId }),
   assign({ app: fetchAppIdPassword }),
-  tap(assignRoleAssignments),
+  assign({ objectId: pipe([get("app.appId"), fetchServicePrincipalObjectId]) }),
+  assign({
+    graphObjectId: pipe([
+      () => graphPrincipalId,
+      fetchServicePrincipalObjectId,
+    ]),
+  }),
+  tap(
+    addAppPermission({
+      resourceId: graphPrincipalId,
+      // Application.Read.All
+      appRoleId: "9a5d68dd-52b0-4cc2-bd40-abcf44ac3a30",
+    })
+  ),
+  tap(createRoleAssignments),
   assign({ location: promptLocation }),
   assign({ config: createConfig }),
   tap(registerNamespaces),

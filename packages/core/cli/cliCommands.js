@@ -277,7 +277,7 @@ const displayError = ({ name, error }) => {
   console.error(`ERROR running command '${name}'`);
   error.stack && console.error(error.stack);
 
-  displayErrorResults({ name, results: error.result?.results });
+  displayErrorResults({ name, results: error.results });
   displayErrorResults({ name, results: error.resultQuery?.results });
   displayErrorResults({ name, results: error.resultDeploy?.results });
   displayErrorResults({ name, results: error.resultDestroy?.results });

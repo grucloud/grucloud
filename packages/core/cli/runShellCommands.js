@@ -1,7 +1,7 @@
 const assert = require("assert");
 const shell = require("shelljs");
 const { map, pipe, switchCase, tap, tryCatch } = require("rubico");
-const logger = require("../logger")({ prefix: "CliUtils" });
+const logger = require("../logger")({ prefix: "ShellCommands" });
 
 const { runAsyncCommand } = require("./cliUtils");
 
@@ -11,7 +11,7 @@ const buildContext = ({ command, index }) => ({
 });
 
 exports.runShellCommands =
-  ({ text }) =>
+  ({ text, ignoreError = () => false }) =>
   (commands) =>
     pipe([
       tap((params) => {
@@ -62,10 +62,18 @@ exports.runShellCommands =
                               resolve,
                             ]),
                             pipe([
-                              tap(() =>
+                              tap((params) => {
+                                logger.error(stderr);
+                              }),
+                              switchCase([
+                                ignoreError(stderr),
+                                () => "DONE",
+                                () => "ERROR",
+                              ]),
+                              tap((nextState) =>
                                 onStateChange({
                                   context: buildContext({ command, index }),
-                                  nextState: "ERROR",
+                                  nextState,
                                 })
                               ),
                               () => ({ stderr, error: true }),
