@@ -251,6 +251,7 @@ const filterVirtualMachineProperties =
                                                 providerConfig,
                                                 lives,
                                                 path: "id",
+                                                withSuffix: true,
                                               }),
                                             ]),
                                           })
@@ -295,6 +296,7 @@ const filterVirtualMachineProperties =
                                                 providerConfig,
                                                 lives,
                                                 path: "id",
+                                                withSuffix: true,
                                               }),
                                             ]),
                                           })

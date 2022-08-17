@@ -1757,12 +1757,12 @@ exports.createResources = () => [
       },
       AttachedPolicies: [
         {
-          PolicyName: "AmazonEC2RoleforSSM",
-          PolicyArn: "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
-        },
-        {
           PolicyName: "AmazonSSMManagedInstanceCore",
           PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+        },
+        {
+          PolicyName: "AmazonEC2RoleforSSM",
+          PolicyArn: "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
         },
       ],
     }),

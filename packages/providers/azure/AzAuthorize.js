@@ -5,7 +5,7 @@ const { pipe, tap, get } = require("rubico");
 
 const AZ_AUTHORIZATION_URL = "https://login.microsoftonline.com/";
 
-exports.AzAuthorize =
+const AzAuthorize =
   ({ resource = "https://management.azure.com/" }) =>
   ({ tenantId, appId, password }) =>
     pipe([
@@ -38,3 +38,5 @@ exports.AzAuthorize =
           (bearerToken) => ({ bearerToken }),
         ])(),
     ])();
+
+exports.AzAuthorize = AzAuthorize;
