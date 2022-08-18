@@ -8,8 +8,7 @@ const {
   tagResource,
   untagResource,
 } = require("./Route53RecoveryReadinessCommon");
-const { getField } = require("../../../core/ProviderCommon");
-
+const { getField } = require("@grucloud/core/ProviderCommon");
 const pickId = pipe([pick(["CellName"])]);
 
 const model = ({ config }) => ({
