@@ -11,6 +11,7 @@ describe(title, async function () {
     await testEnd2End({
       title,
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
+      outputDir: "artifacts",
       steps: [{ createStack, configs: [config] }],
     });
   }).timeout(35 * 60e3);

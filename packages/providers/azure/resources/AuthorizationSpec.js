@@ -146,6 +146,13 @@ exports.fnSpecs = ({ config }) =>
             filterDependency: roleAssignmentFilterDep,
           },
         },
+        operations: {
+          getAll: {
+            queryParameters: () => ({
+              $filter: `principalId eq '{${config.objectId}}'`,
+            }),
+          },
+        },
         cannotBeDeleted: roleAssignmentManagedByOther({ config }),
         ignoreResource: roleAssignmentManagedByOther({ config }),
         decorate:
@@ -155,7 +162,6 @@ exports.fnSpecs = ({ config }) =>
               tap((params) => {
                 assert(config);
               }),
-
               () => live,
               set(
                 "properties.roleName",

@@ -22,6 +22,24 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Key",
+    group: "KeyVault",
+    properties: ({}) => ({
+      name: "mykey1",
+      properties: {
+        attributes: {
+          enabled: true,
+          exportable: false,
+        },
+        kty: "RSA",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "rg-vault-rbac",
+      vault: "rg-vault-rbac::gcvaultrbac",
+    }),
+  },
+  {
     type: "Vault",
     group: "KeyVault",
     properties: ({ config }) => ({

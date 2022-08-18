@@ -10,14 +10,7 @@ const {
   eq,
   filter,
 } = require("rubico");
-const {
-  first,
-  prepend,
-  callProp,
-  find,
-  defaultsDeep,
-  when,
-} = require("rubico/x");
+const { prepend, callProp, find, defaultsDeep } = require("rubico/x");
 const { camelCase } = require("change-case");
 
 const GoogleTag = require("../../GoogleTag");
@@ -40,9 +33,9 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const GROUP = "compute";
 
-const ResourceVarNameSubnet = pipe([camelCase, prepend("subnet_")]);
-const ResourceNameSubnet = (name) =>
-  ResourceVarNameSubnet(name).replace(/_/g, "-");
+// const ResourceVarNameSubnet = pipe([camelCase, prepend("subnet_")]);
+// const ResourceNameSubnet = (name) =>
+//   ResourceVarNameSubnet(name).replace(/_/g, "-");
 
 module.exports = pipe([
   () => [
@@ -95,8 +88,6 @@ module.exports = pipe([
       dependencies: {
         network: { type: "Network", group: "compute" },
       },
-      //resourceVarName: ResourceVarNameSubnet,
-      resourceName: ResourceNameSubnet,
     },
     {
       type: "Firewall",
