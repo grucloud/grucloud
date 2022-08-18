@@ -6,8 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./SNSCommon");
-const { getField } = require("../../../core/ProviderCommon");
-
+const { getField } = require("@grucloud/core/ProviderCommon");
 const pickId = pipe([get("Attributes"), pick(["TopicArn"])]);
 
 const decorate = ({ endpoint }) =>

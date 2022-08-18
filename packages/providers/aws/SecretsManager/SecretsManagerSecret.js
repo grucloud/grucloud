@@ -14,8 +14,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, isAwsError, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./SecretsManagerCommon");
-const { getField } = require("../../../core/ProviderCommon");
-
+const { getField } = require("@grucloud/core/ProviderCommon");
 const ignoreErrorMessages = [
   "You can't perform this operation on the secret because it was marked for deletion",
 ];
