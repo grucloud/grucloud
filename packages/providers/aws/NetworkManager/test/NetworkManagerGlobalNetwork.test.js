@@ -3,7 +3,7 @@ const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
 describe("NetworkManager GlobalNetwork", async function () {
-  let config;
+  let config = () => ({ region: "us-west-2" });
   let provider;
   let globalNetwork;
 
