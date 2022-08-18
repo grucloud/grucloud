@@ -7,7 +7,7 @@ List an [Organisations Root](https://console.aws.amazon.com/organizations/v2/hom
 
 ### Used By
 
-- [OrganizationalUnit](../OrganizationalUnit.md)
+- [OrganizationalUnit](./OrganisationalUnit.md)
 
 ### List
 
