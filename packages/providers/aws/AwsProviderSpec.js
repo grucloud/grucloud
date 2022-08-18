@@ -34,8 +34,7 @@ const GROUPS = [
   ["KMS", "kms"],
   ["Lambda", "lambda"],
   ["NetworkFirewall", "network-firewall"],
-  //TODO
-  //["NetworkManager", "networkmanager"],
+  ["NetworkManager", "networkmanager"],
   ["Organisations", "organizations"],
   ["RDS", "rds"],
   ["RAM", "ram"],
