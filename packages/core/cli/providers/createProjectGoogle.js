@@ -168,7 +168,7 @@ const promptRegion = pipe([
 const initialZoneIndex = ({ zoneCurrent, zones }) =>
   pipe([
     tap(() => {
-      assert(zoneCurrent);
+      //assert(zoneCurrent);
       assert(zones);
     }),
     () => zones,
