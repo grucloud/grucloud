@@ -94,7 +94,10 @@ exports.displayListSummary = pipe([
                   `no resources for type ${groupType}`
                 );
               }),
-              () => pluck("displayName")(resources).join("\n"),
+              () => resources,
+              filter(not(callProp("hideResource"))),
+              pluck("displayName"),
+              callProp("join", "\n"),
               tap.if(not(isEmpty), (content) =>
                 table.push([
                   {
@@ -390,6 +393,8 @@ const displayLiveItem =
     assert(resource);
     assert(tableDefinitions);
     switchCase([
+      () => resource.hideResource(),
+      () => undefined,
       () => resource.error,
       () =>
         table.push([
