@@ -29,7 +29,9 @@ const {
   findIndex,
   isEmpty,
   includes,
+  defaultsDeep,
 } = require("rubico/x");
+
 const CoreClient = require("@grucloud/core/CoreClient");
 
 const {
@@ -95,7 +97,19 @@ const shouldRetryOnExceptionDeleteAzure = pipe([
   (status) => pipe([() => [409, 429], includes(status)])(),
 ]);
 
-const queryParameters = (apiVersion) => `?api-version=${apiVersion}`;
+const queryParameters = ({ apiVersion, queryParameters }) =>
+  pipe([
+    () => `?api-version=${apiVersion}`,
+    when(
+      () => queryParameters,
+      (qs) =>
+        pipe([
+          () => qs,
+          append("&"),
+          append(new URLSearchParams(queryParameters()).toString()),
+        ])()
+    ),
+  ])();
 
 const onResponseListDefault = () => get("value", []);
 
@@ -117,6 +131,8 @@ const onCreateFilterPayload = pipe([
   }),
 ]);
 
+const specDefault = { operations: { getAll: {} } };
+
 module.exports = AzClient = ({
   lives,
   spec,
@@ -132,11 +148,18 @@ module.exports = AzClient = ({
           pipe([() => path, callProp("split", "?api-version"), first])
         ),
       ])(),
-  pathUpdate = ({ id }) => `${id}${queryParameters(spec.apiVersion)}`,
+  pathUpdate = ({ id }) =>
+    `${id}${queryParameters({ apiVersion: spec.apiVersion })}`,
 }) => {
   assert(lives);
   assert(spec);
-  const { methods, apiVersion, dependencies = {} } = spec;
+  const {
+    methods,
+    operations,
+    apiVersion,
+    dependencies = {},
+  } = defaultsDeep(specDefault)(spec);
+
   if (!methods) {
     assert(methods);
   }
@@ -265,7 +288,7 @@ module.exports = AzClient = ({
       }),
     ])();
 
-  const pathGet = ({ id }) => `${id}${queryParameters(apiVersion)}`;
+  const pathGet = ({ id }) => `${id}${queryParameters({ apiVersion })}`;
 
   const substituteDependency =
     ({ dependencies }) =>
@@ -365,13 +388,13 @@ module.exports = AzClient = ({
       callProp("join", "/"),
       append("/"),
       append(shortName(name)),
-      append(queryParameters(apiVersion)),
+      append(queryParameters({ apiVersion })),
       tap((params) => {
         assert(true);
       }),
     ])();
 
-  const pathDelete = ({ id }) => `${id}${queryParameters(apiVersion)}`;
+  const pathDelete = ({ id }) => `${id}${queryParameters({ apiVersion })}`;
 
   const getPathsListNoDeps = ({ methods }) =>
     pipe([
@@ -395,7 +418,6 @@ module.exports = AzClient = ({
         "{scope}",
         `subscriptions/${process.env.AZURE_SUBSCRIPTION_ID}`
       ),
-      append(queryParameters(apiVersion)),
       tap((params) => {
         assert(true);
       }),
@@ -433,7 +455,6 @@ module.exports = AzClient = ({
           callProp("slice", size(id.split("/"))),
           callProp("join", "/"),
           prepend(`${id}/`),
-          append(queryParameters(apiVersion)),
         ])()
       ),
       tap((params) => {
@@ -493,6 +514,14 @@ module.exports = AzClient = ({
           getPathsListWithDeps({ lives, config, methods }),
         ]),
       ]),
+      map(
+        append(
+          queryParameters({
+            apiVersion,
+            queryParameters: operations.getAll.queryParameters,
+          })
+        )
+      ),
       tap((params) => {
         assert(true);
       }),
