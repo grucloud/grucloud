@@ -92,7 +92,7 @@ exports.createResources = () => [
       DatabaseName: "dbname",
       DBClusterIdentifier: "aurora-serverless",
       Engine: "aurora",
-      EngineVersion: "5.6.10a",
+      EngineVersion: "5.6.mysql_aurora.1.22.3",
       Port: 3306,
       MasterUsername: process.env.AURORA_SERVERLESS_MASTER_USERNAME,
       PreferredBackupWindow: "03:02-03:32",

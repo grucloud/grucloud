@@ -16,6 +16,7 @@
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
     "info": "gc info",
+    "init": "gc init",
     "test": "mocha"
   },
   "author": "",

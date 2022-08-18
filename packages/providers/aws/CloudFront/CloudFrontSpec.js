@@ -293,6 +293,7 @@ module.exports = () =>
                                   path: "id",
                                   providerConfig,
                                   lives,
+                                  withSuffix: true,
                                 }),
                               ]),
                             })

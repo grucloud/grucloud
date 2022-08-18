@@ -106,7 +106,7 @@ exports.createResources = () => [
       DatabaseName: "aurora_test_db",
       DBClusterIdentifier: "aurora-test-cluster",
       Engine: "aurora",
-      EngineVersion: "5.6.10a",
+      EngineVersion: "5.6.mysql_aurora.1.22.3",
       Port: 3306,
       MasterUsername: process.env.AURORA_TEST_CLUSTER_MASTER_USERNAME,
       PreferredBackupWindow: "08:17-08:47",

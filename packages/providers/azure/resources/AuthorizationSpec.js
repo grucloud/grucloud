@@ -41,6 +41,45 @@ const roleAssignmentFilterDep =
       ),
     ])();
 
+const roleAssignmentManagedByOther =
+  ({ config }) =>
+  ({ lives }) =>
+    pipe([
+      tap((params) => {
+        assert(config.objectId);
+      }),
+      or([
+        not(eq(get("live.properties.principalId"), config.objectId)),
+        // and([
+        //   eq(get("live.properties.principalType"), "ServicePrincipal"),
+        //   not(get("live.properties.principalName")),
+        // ]),
+        pipe([
+          // dependency scope starting with mc_ , mamaged by the aks cluster
+          tap((params) => {
+            assert(true);
+          }),
+          get("id"),
+          includes("resourceGroups/MC_"),
+        ]),
+        pipe([
+          get("live.properties.scope"),
+          callProp("toUpperCase"),
+          (scope) =>
+            pipe([
+              () => lives,
+              not(any(eq(pipe([get("id"), callProp("toUpperCase")]), scope))),
+            ])(),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      ]),
+      tap((params) => {
+        assert(true);
+      }),
+    ]);
+
 exports.fnSpecs = ({ config }) =>
   pipe([
     () => [
@@ -107,38 +146,16 @@ exports.fnSpecs = ({ config }) =>
             filterDependency: roleAssignmentFilterDep,
           },
         },
-        cannotBeDeleted: eq(get("live.properties.roleName"), "Owner"),
-        ignoreResource: ({ lives }) =>
-          or([
-            eq(get("live.properties.principalType"), "User"),
-            and([
-              eq(get("live.properties.principalType"), "ServicePrincipal"),
-              not(get("live.properties.principalName")),
-            ]),
-            pipe([
-              // dependency scope starting with mc_ , mamaged by the aks cluster
-              tap((params) => {
-                assert(true);
-              }),
-              get("id"),
-              includes("resourceGroups/MC_"),
-            ]),
-            pipe([
-              get("live.properties.scope"),
-              callProp("toUpperCase"),
-              (scope) =>
-                pipe([
-                  () => lives,
-                  not(
-                    any(eq(pipe([get("id"), callProp("toUpperCase")]), scope))
-                  ),
-                ])(),
-            ]),
-          ]),
+        cannotBeDeleted: roleAssignmentManagedByOther({ config }),
+        ignoreResource: roleAssignmentManagedByOther({ config }),
         decorate:
           ({ axios, lives }) =>
           (live) =>
             pipe([
+              tap((params) => {
+                assert(config);
+              }),
+
               () => live,
               set(
                 "properties.roleName",
