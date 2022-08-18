@@ -202,6 +202,7 @@ module.exports = pipe([
                                 path: "id",
                                 providerConfig,
                                 lives,
+                                withSuffix: true,
                               }),
                             ]),
                           }),

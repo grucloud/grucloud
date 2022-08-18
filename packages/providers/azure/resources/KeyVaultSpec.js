@@ -162,6 +162,15 @@ exports.fnSpecs = ({ config }) =>
               assert(true);
             }),
           ]),
+        onCreateExpectedException: pipe([
+          tap((error) => {
+            assert(true);
+          }),
+          eq(
+            get("response.data.error.code"),
+            "KeyCreationParametersDidNotMatchExistingKey"
+          ),
+        ]),
       },
       {
         type: "Secret",

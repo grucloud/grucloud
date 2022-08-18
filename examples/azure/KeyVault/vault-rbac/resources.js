@@ -2,6 +2,51 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {};
-
-exports.createResources = createResources;
+exports.createResources = () => [
+  {
+    type: "Key",
+    group: "KeyVault",
+    properties: ({}) => ({
+      name: "mykey",
+      properties: {
+        attributes: {
+          enabled: true,
+          exportable: false,
+        },
+        kty: "RSA",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "rg-vault-rbac",
+      vault: "rg-vault-rbac::gcvaultrbac",
+    }),
+  },
+  {
+    type: "Vault",
+    group: "KeyVault",
+    properties: ({ config }) => ({
+      name: "gcvaultrbac",
+      properties: {
+        sku: {
+          family: "A",
+          name: "standard",
+        },
+        enabledForDeployment: false,
+        enableRbacAuthorization: true,
+        publicNetworkAccess: "Enabled",
+        tenantId: `${config.tenantId}`,
+        accessPolicies: undefined,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "rg-vault-rbac",
+    }),
+  },
+  {
+    type: "ResourceGroup",
+    group: "Resources",
+    properties: ({}) => ({
+      name: "rg-vault-rbac",
+    }),
+  },
+];
