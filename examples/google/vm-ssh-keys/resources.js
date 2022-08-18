@@ -10,7 +10,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       description: "Managed By GruCloud",
       priority: 1000,
-      sourceRanges: ["0.0.0.0/0"],
       allowed: [
         {
           IPProtocol: "tcp",
@@ -30,7 +29,6 @@ exports.createResources = () => [
     properties: ({}) => ({
       description: "Managed By GruCloud",
       priority: 1000,
-      sourceRanges: ["0.0.0.0/0"],
       allowed: [
         {
           IPProtocol: "icmp",
@@ -68,7 +66,7 @@ exports.createResources = () => [
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20220204",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       ip: "ip-webserver-ssh-keys",
     }),
   },
