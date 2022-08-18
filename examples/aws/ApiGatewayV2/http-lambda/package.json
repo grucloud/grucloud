@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-api-gateway-lambda",
-  "version": "9.1.0",
+  "version": "9.1.1",
   "description": "AWS Api Gateway with Lambda function",
   "private": true,
   "main": "iac.js",
@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^9.1.0",
-    "@grucloud/provider-aws": "^9.1.0",
+    "@grucloud/provider-aws": "^9.1.1",
     "axios": "^0.27.2",
     "rubico": "^1.6.26"
   },
