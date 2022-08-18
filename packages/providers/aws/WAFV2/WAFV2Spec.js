@@ -4,13 +4,13 @@ const { map, pipe, tap, get } = require("rubico");
 const { defaultsDeep, first, prepend, values } = require("rubico/x");
 
 const { isOurMinion, compareAws } = require("../AwsCommon");
-const { WAFV2WebACL } = require("./WAFV2WebACL");
+const { WAFV2WebACL } = require("./WAFV2WebAcl");
 const { WAFV2WebACLCloudFront } = require("./WAFV2WebACLCloudFront");
 
 const {
   WAFV2WebACLAssociation,
   WebAclDependencies,
-} = require("./WAFV2WebACLAssociation");
+} = require("./WAFV2WebAclAssociation");
 
 const GROUP = "WAFv2";
 
