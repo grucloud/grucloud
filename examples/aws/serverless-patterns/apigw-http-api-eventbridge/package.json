@@ -1,6 +1,6 @@
 {
   "name": "apigw-http-api-eventbridge",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^9.0.0",
-    "@grucloud/provider-aws": "^9.0.0",
+    "@grucloud/core": "^9.1.0",
+    "@grucloud/provider-aws": "^9.1.0",
     "rubico": "^1.8.3"
   },
   "devDependencies": {
