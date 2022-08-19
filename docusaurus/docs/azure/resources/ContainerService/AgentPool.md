@@ -540,7 +540,7 @@ exports.createResources = () => [
 - [ResourceGroup](../Resources/ResourceGroup.md)
 - [Subnet](../Network/Subnet.md)
 - [PublicIpPrefix](../Network/PublicIpPrefix.md)
-- [ProximityPlacementGroup](../Network/ProximityPlacementGroup.md)
+- [ProximityPlacementGroup](../Compute/ProximityPlacementGroup.md)
 - [HostGroup](../Compute/HostGroup.md)
 - [ManagedCluster](../ContainerService/ManagedCluster.md)
 ## Swagger Schema
@@ -908,7 +908,7 @@ exports.createResources = () => [
           type: 'string',
           format: 'arm-id',
           'x-ms-arm-id-details': {
-            allowedResources: [ { type: 'Microsoft.Network/proximityPlacementGroups' } ]
+            allowedResources: [ { type: 'Microsoft.Compute/proximityPlacementGroups' } ]
           }
         },
         kubeletConfig: {

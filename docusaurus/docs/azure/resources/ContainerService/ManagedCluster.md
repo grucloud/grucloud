@@ -1983,7 +1983,7 @@ exports.createResources = () => [
                     'x-ms-arm-id-details': {
                       allowedResources: [
                         {
-                          type: 'Microsoft.Network/proximityPlacementGroups'
+                          type: 'Microsoft.Compute/proximityPlacementGroups'
                         }
                       ]
                     }

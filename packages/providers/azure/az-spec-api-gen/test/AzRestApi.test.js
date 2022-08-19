@@ -2,20 +2,13 @@ const assert = require("assert");
 const path = require("path");
 
 const { pipe, tap, get, eq, tryCatch } = require("rubico");
-const { find } = require("rubico/x");
-const SwaggerParser = require("@apidevtools/swagger-parser");
 
 const { SpecGroupDirs } = require("../../AzureSpecDirs");
 
-const {
-  processSwaggerFiles,
-  processSwagger,
-  buildDependenciesFromBody,
-  buildPickProperties,
-} = require("../AzureRestApi");
+const { processSwaggerFiles, processSwagger } = require("../AzureRestApi");
 
-const specDir = "node_modules/azure-rest-api-specs/specification/";
-//const specDir = "../../../../../azure-rest-api-specs/specification/";
+//const specDir = "node_modules/azure-rest-api-specs/specification/";
+const specDir = "../../../../../azure-rest-api-specs/specification/";
 
 describe("AzureRestApi", function () {
   before(async function () {});
@@ -61,7 +54,7 @@ describe("AzureRestApi", function () {
       }),
     ])();
   });
-  it("processSwaggerFiles", async function () {
+  it.only("processSwaggerFiles", async function () {
     await pipe([
       tryCatch(
         pipe([

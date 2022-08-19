@@ -353,16 +353,11 @@ const findGetAllByParentPath =
       ]),
     ])();
 
-const makeResourceDir = ({ dir, name }) =>
-  pipe([
-    () => dir,
-    callProp("replace", /^(.+)specification\//, ""),
-    append(`/${name}`),
-  ])();
+const makeResourceDir = ({ filename }) =>
+  pipe([() => filename, callProp("replace", /^(.+)specification\//, "")])();
 
 const findResources = ({
-  dir,
-  name,
+  filename,
   paths,
   group,
   groupDir,
@@ -385,7 +380,7 @@ const findResources = ({
         }),
         (names) => ({
           ...names,
-          group: findGroupInPath(dir),
+          group: findGroupInPath(filename),
           groupDir,
           apiVersion,
           methods: pipe([
@@ -414,7 +409,7 @@ const findResources = ({
                 ])(),
             }),
           ])(),
-          dir: makeResourceDir({ dir, name }),
+          dir: makeResourceDir({ filename }),
           swagger,
         }),
       ])()
@@ -425,40 +420,32 @@ const findResources = ({
     }),
   ])();
 
-const processSwagger =
-  ({ dir, group, groupDir, apiVersion }) =>
-  ({ name }) =>
-    pipe([
-      tap(() => {
-        assert(dir);
-        assert(name);
-      }),
-      () => path.resolve(dir, name),
-      tap((filename) => {
-        assert(filename);
-        //console.log(`parsing ${filename}`);
-      }),
-      (filename) => SwaggerParser.dereference(filename, {}),
-      (swagger) =>
-        pipe([
-          () => swagger,
-          assignSwaggerPaths,
-          tap((params) => {
-            assert(true);
+const processSwagger = (filename) =>
+  pipe([
+    tap(() => {
+      assert(filename);
+      console.log(`parsing ${filename}`);
+    }),
+    () => SwaggerParser.dereference(filename, {}),
+    (swagger) =>
+      pipe([
+        () => swagger,
+        assignSwaggerPaths,
+        tap((params) => {
+          assert(true);
+        }),
+        (paths) =>
+          findResources({
+            filename,
+            paths,
+            swagger,
+            apiVersion: swagger.info.version,
           }),
-          (paths) =>
-            findResources({
-              dir,
-              name,
-              paths,
-              swagger,
-              apiVersion: swagger.info.version,
-            }),
-        ])(),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+      ])(),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 exports.processSwagger = processSwagger;
 
@@ -481,11 +468,7 @@ const walkDir = () => (dir) =>
         ]),
         // is json ?
         pipe([get("name"), callProp("endsWith", ".json")]),
-        pipe([
-          processSwagger({
-            dir,
-          }),
-        ]),
+        pipe([({ name }) => [path.resolve(dir, name)]]),
         () => undefined,
       ])
     ),
@@ -502,22 +485,15 @@ const listPerGroup =
       () => path.resolve(directorySpec, groupDir, "resource-manager"),
       walkDir(),
       filter(not(isEmpty)),
-      tap((params) => {
-        assert(true);
-      }),
+      map.pool(5, processSwagger),
+      flatten,
       //private ?
       filter(not(pipe([get("apiVersion"), includes("preview")]))),
       reduce((myMap, resource) => {
         myMap.set(resource.type, resource);
         return myMap;
       }, new Map()),
-      tap((params) => {
-        assert(true);
-      }),
       (myMap) => [...myMap.values()],
-      tap((params) => {
-        assert(true);
-      }),
       callProp("sort", (a, b) => a.type.localeCompare(b.type)),
     ])();
 
@@ -1351,7 +1327,8 @@ const processSwaggerFiles = ({
         ({ name }) => pipe([() => filterDirs, includes(name)])(),
       ])
     ),
-    flatMap(pipe([get("name"), listPerGroup({ directorySpec })])),
+    map.series(pipe([get("name"), listPerGroup({ directorySpec })])),
+    flatten,
     filter(not(isEmpty)),
     //filter(filterNoSubscription),
     filter(filterExclusion),
