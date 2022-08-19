@@ -38,6 +38,7 @@ exports.createResources = () => [
 
 - [RouteTableAssociation](./RouteTableAssociation.md)
 - [Route](./Route.md)
+- [VpnGatewayRoutePropagation](./VpnGatewayRoutePropagation.md)
 
 ## List
 

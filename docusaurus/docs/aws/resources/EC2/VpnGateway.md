@@ -21,6 +21,7 @@ exports.createResources = () => [
 ### Examples
 
 - [site2site](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/site2site)
+- [vpn aws azure](https://github.com/grucloud/grucloud/blob/main/examples/cross-cloud/vpn-aws-azure)
 
 ### Properties
 
@@ -30,6 +31,7 @@ exports.createResources = () => [
 
 - [VpnConnection](./VpnConnection.md)
 - [VpnGatewayAttachment](./VpnGatewayAttachment.md)
+- [VpnGatewayRoutePropagation](./VpnGatewayRoutePropagation.md)
 
 ### List
 

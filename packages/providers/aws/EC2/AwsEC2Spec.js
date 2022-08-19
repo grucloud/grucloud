@@ -152,6 +152,9 @@ const {
 const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
 const { EC2VpnGateway } = require("./EC2VpnGateway");
 const { EC2VpnGatewayAttachment } = require("./EC2VpnGatewayAttachment");
+const {
+  EC2VpnGatewayRoutePropagation,
+} = require("./EC2VpnGatewayRoutePropagation");
 
 const { EC2VpnConnection } = require("./EC2VpnConnection");
 
@@ -2608,6 +2611,28 @@ module.exports = pipe([
           group: "EC2",
           parent: true,
           dependencyId: ({ lives, config }) => get("VpnGatewayId"),
+        },
+      },
+    },
+    {
+      type: "VpnGatewayRoutePropagation",
+      Client: EC2VpnGatewayRoutePropagation,
+      omitProperties: ["GatewayId", "RouteTableId", "State"],
+      compare: compareEC2({ filterAll: () => pick([]) }),
+      inferName: ({ dependenciesSpec: { routeTable, vpnGateway } }) =>
+        `vpn-gw-rt::${vpnGateway}::${routeTable}`,
+      dependencies: {
+        routeTable: {
+          type: "RouteTable",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("RouteTableId"),
+        },
+        vpnGateway: {
+          type: "VpnGateway",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("GatewayId"),
         },
       },
     },
