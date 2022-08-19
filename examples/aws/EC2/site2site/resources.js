@@ -13,11 +13,27 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Vpc",
+    group: "EC2",
+    name: "vpc-vpn",
+    properties: ({}) => ({
+      CidrBlock: "172.16.0.0/16",
+    }),
+  },
+  {
     type: "VpnGateway",
     group: "EC2",
     name: "vpw",
     properties: ({}) => ({
       AmazonSideAsn: 64512,
+    }),
+  },
+  {
+    type: "VpnGatewayAttachment",
+    group: "EC2",
+    dependencies: ({}) => ({
+      vpc: "vpc-vpn",
+      vpnGateway: "vpw",
     }),
   },
   {

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
+const { pipe, tap, get, pick, eq, not } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -19,6 +19,7 @@ const createModel = ({ config }) => ({
   getList: {
     method: "describeVpnGateways",
     getParam: "VpnGateways",
+    filterResource: pipe([not(eq(get("State"), "deleted"))]),
   },
   create: {
     method: "createVpnGateway",

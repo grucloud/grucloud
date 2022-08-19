@@ -5,6 +5,8 @@ skinparam monochrome true
 ++ aws
 +++ EC2
 ++++ CustomerGateway (1)
+++++ Vpc (1)
 ++++ VpnGateway (1)
+++++ VpnGatewayAttachment (1)
 ++++ VpnConnection (1)
 @endmindmap

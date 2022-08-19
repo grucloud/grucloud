@@ -29,6 +29,7 @@ exports.createResources = () => [
 ### Used By
 
 - [VpnConnection](./VpnConnection.md)
+- [VpnGatewayAttachment](./VpnGatewayAttachment.md)
 
 ### List
 
