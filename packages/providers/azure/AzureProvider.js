@@ -174,7 +174,7 @@ exports.AzureProvider = ({
         assert(true);
       }),
     ]),
-    retryCount: 60,
+    retryCount: 15 * 12,
     retryDelay: 10e3,
     subscriptionId: process.env.AZURE_SUBSCRIPTION_ID,
     tenantId: process.env.AZURE_TENANT_ID,

@@ -70,9 +70,9 @@ exports.createResources = () => [
   {
     type: "NetworkInterface",
     group: "Network",
-    properties: ({ config, getId }) => ({
+    properties: ({ getId }) => ({
       name: "testvmVMNic",
-      location: config.location,
+      location: "uksouth",
       properties: {
         ipConfigurations: [
           {
@@ -227,9 +227,9 @@ exports.createResources = () => [
   {
     type: "VirtualNetworkGateway",
     group: "Network",
-    properties: ({ config, getId }) => ({
+    properties: ({ getId }) => ({
       name: "vpn-gw",
-      location: config.location,
+      location: "uksouth",
       properties: {
         ipConfigurations: [
           {

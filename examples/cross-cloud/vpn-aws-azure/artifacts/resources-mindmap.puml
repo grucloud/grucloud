@@ -1,0 +1,32 @@
+@startmindmap
+title Resources for project vpn-aws-azure
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ CustomerGateway (2)
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ Subnet (2)
+++++ RouteTable (1)
+++++ RouteTableAssociation (2)
+++++ Route (1)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
+++++ VpnGateway (1)
+++++ VpnGatewayAttachment (1)
+++++ VpnConnection (2)
+-- azure
+--- Compute
+---- VirtualMachine (1)
+--- Network
+---- NetworkInterface (1)
+---- NetworkSecurityGroup (1)
+---- PublicIPAddress (4)
+---- Subnet (2)
+---- VirtualNetwork (1)
+---- VirtualNetworkGateway (1)
+--- Resources
+---- ResourceGroup (1)
+@endmindmap
