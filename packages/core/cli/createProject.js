@@ -194,7 +194,7 @@ exports.createProject =
       }),
       tap(updatePackageJson),
       tap(writeConfigToFile),
-      tap(npmInstall),
       tap(writeGitIgnore),
+      tap(npmInstall),
       tap(displayGuide),
     ])();

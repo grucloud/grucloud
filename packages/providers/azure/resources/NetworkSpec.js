@@ -311,15 +311,7 @@ exports.fnSpecs = ({ config }) => {
       },
       {
         type: "RouteTable",
-        omitProperties: ["properties.routes"],
-        filterLive: ({ pickPropertiesCreate }) =>
-          pipe([
-            tap((params) => {
-              assert(pickPropertiesCreate);
-            }),
-            pick(pickPropertiesCreate),
-            omit(["properties.routes"]),
-          ]),
+        omitPropertiesExtra: ["properties.routes"],
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",
@@ -627,36 +619,35 @@ exports.fnSpecs = ({ config }) => {
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses
         type: "PublicIPAddress",
-        dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            name: "resourceGroupName",
-            parent: true,
-          },
-          //TODO
-          // dscpConfiguration: {
-          //   type: "DscpConfiguration",
-          //   group: "Network",
-          //   createOnly: true,
-          // },
-          // workspace: {
-          //   type: "Workspace",
-          //   group: "OperationalInsights",
-          //   createOnly: true,
-          // },
-          //TODO
-          // ddosCustomPolicy: {
-          //   type: "DdosCustomPolicy",
-          //   group: "Network",
-          //   createOnly: true,
-          // },
-          // publicIpPrefix: {
-          //   type: "PublicIPPrefix",
-          //   group: "Network",
-          //   createOnly: true,
-          // },
-        },
+        // dependencies: {
+        //   resourceGroup: {
+        //     type: "ResourceGroup",
+        //     group: "Resources",
+        //     name: "resourceGroupName",
+        //     parent: true,
+        //   },
+        //   dscpConfiguration: {
+        //     type: "DscpConfiguration",
+        //     group: "Network",
+        //     createOnly: true,
+        //   },
+        //   workspace: {
+        //     type: "Workspace",
+        //     group: "OperationalInsights",
+        //     createOnly: true,
+        //   },
+        //   TODO
+        //   ddosCustomPolicy: {
+        //     type: "DdosCustomPolicy",
+        //     group: "Network",
+        //     createOnly: true,
+        //   },
+        //   publicIpPrefix: {
+        //     type: "PublicIPPrefix",
+        //     group: "Network",
+        //     createOnly: true,
+        //   },
+        // },
         propertiesDefault: {
           sku: { name: "Basic", tier: "Regional" },
           properties: {
@@ -667,6 +658,7 @@ exports.fnSpecs = ({ config }) => {
         pickPropertiesCreate: [
           "sku.name",
           "sku.tier",
+          "zones",
           "properties.publicIPAllocationMethod",
           "properties.publicIPAddressVersion",
           "properties.dnsSettings.domainNameLabel",
@@ -769,46 +761,11 @@ exports.fnSpecs = ({ config }) => {
         ],
       },
       // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/subnets
+
       {
         type: "Subnet",
         isDefault: () => false,
         managedByOther: () => false,
-        dependencies: {
-          resourceGroup: {
-            type: "ResourceGroup",
-            group: "Resources",
-            name: "resourceGroupName",
-            parent: true,
-          },
-          //TODO
-          // workspace: {
-          //   type: "Workspace",
-          //   group: "OperationalInsights",
-          //   createOnly: true,
-          // },
-          // ddosCustomPolicy: {
-          //   type: "DdosCustomPolicy",
-          //   group: "Network",
-          //   createOnly: true,
-          // },
-          // publicIpPrefix: {
-          //   type: "PublicIPPrefix",
-          //   group: "Network",
-          //   createOnly: true,
-          // },
-          virtualNetwork: {
-            type: "VirtualNetwork",
-            group: "Network",
-            name: "virtualNetworkName",
-            parent: true,
-          },
-          natGateway: {
-            type: "NatGateway",
-            group: "Network",
-            createOnly: true,
-            pathId: "properties.natGateway.id",
-          },
-        },
         omitProperties: [
           "properties.routeTable",
           "properties.networkSecurityGroup",
@@ -919,6 +876,14 @@ exports.fnSpecs = ({ config }) => {
       },
       {
         type: "VirtualNetworkGateway",
+        filterLiveExtra: () =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            //OmitIfEmpty
+            omit(["properties.bgpSettings.bgpPeeringAddresses"]),
+          ]),
         configDefault: ({ properties, dependencies, config, spec }) =>
           pipe([
             () => properties,
@@ -931,6 +896,48 @@ exports.fnSpecs = ({ config }) => {
               })
             ),
           ])(),
+      },
+      {
+        type: "VirtualNetworkGatewayConnection",
+        group: "Network",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+            parent: true,
+          },
+          localNetworkGateway: {
+            type: "LocalNetworkGateway",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.localNetworkGateway2.id",
+          },
+          // TODO fix azure swagger
+          virtualNetworkGateway: {
+            type: "VirtualNetworkGateway",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.virtualNetworkGateway1.id",
+          },
+          natRules: {
+            type: "NatRule",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.egressNatRules[].id",
+            list: true,
+          },
+        },
+      },
+      {
+        type: "VirtualNetworkGatewayConnectionSharedKey",
+        onResponseList: ({ path }) =>
+          pipe([
+            tap((params) => {
+              assert(path);
+            }),
+            ({ value }) => [{ id: path, value }],
+          ]),
       },
     ],
     map(defaultsDeep({ group })),

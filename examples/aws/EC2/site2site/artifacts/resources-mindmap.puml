@@ -6,7 +6,13 @@ skinparam monochrome true
 +++ EC2
 ++++ CustomerGateway (1)
 ++++ Vpc (1)
+++++ InternetGateway (1)
+++++ InternetGatewayAttachment (1)
+++++ Subnet (1)
+++++ RouteTable (1)
+++++ RouteTableAssociation (1)
 ++++ VpnGateway (1)
 ++++ VpnGatewayAttachment (1)
+++++ VpnGatewayRoutePropagation (1)
 ++++ VpnConnection (1)
 @endmindmap

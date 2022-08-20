@@ -12,8 +12,6 @@ skinparam monochrome true
 ++++ Subnet (2)
 ++++ VirtualNetwork (1)
 ++++ VirtualNetworkGateway (1)
-+++ OperationalInsights
-++++ Workspace (1)
 +++ Resources
 ++++ ResourceGroup (1)
 @endmindmap

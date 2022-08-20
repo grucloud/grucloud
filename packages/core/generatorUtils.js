@@ -197,6 +197,7 @@ const buildProperties = ({
     omitProperties = [],
     omitPropertiesExtra = [],
     pickPropertiesCreate = [],
+    filterLiveExtra = () => identity,
   },
 }) =>
   pipe([
@@ -211,6 +212,16 @@ const buildProperties = ({
     () => resource,
     get("live"),
     filterLive({
+      providerConfig,
+      lives,
+      resource,
+      dependencies,
+      programOptions,
+      commandOptions,
+      omitProperties,
+      pickPropertiesCreate,
+    }),
+    filterLiveExtra({
       providerConfig,
       lives,
       resource,

@@ -173,10 +173,9 @@ module.exports = CoreClient = ({
             assert(true);
           }),
           unless(Array.isArray, (path) => [path]),
-          map.pool(
-            5,
+          map.pool(5, (path) =>
             pipe([
-              (path) =>
+              () =>
                 retryCallOnError({
                   name: `getList type: ${spec.groupType}, path ${path}`,
                   fn: () =>
@@ -194,9 +193,9 @@ module.exports = CoreClient = ({
               tap((data) => {
                 logger.debug(`getList ${spec.groupType}, ${tos(data)}`);
               }),
-              onResponseList({ axios, lives }),
+              onResponseList({ axios, lives, path }),
               map(decorate({ axios, lives })),
-            ])
+            ])()
           ),
           flatten,
           tap((params) => {

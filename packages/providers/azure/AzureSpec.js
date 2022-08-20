@@ -31,6 +31,7 @@ const {
   last,
   append,
   isEmpty,
+  identity,
 } = require("rubico/x");
 
 const {
@@ -220,7 +221,7 @@ const buildDefaultSpec = fork({
                   pipe([
                     () => id[index + size(id) - size(path)],
                     tap((depName) => {
-                      assert(depName);
+                      assert(depName, `path ${path} id:${id}  `);
                     }),
                     when(
                       pipe([
@@ -329,6 +330,16 @@ const buildDefaultSpec = fork({
         pipe([
           tap((params) => {
             assert(input);
+          }),
+        ]),
+      filterLive: ({ live, config, filterLiveExtra = () => identity }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          filterLiveExtra({ live, providerConfig: config }),
+          tap((params) => {
+            assert(true);
           }),
         ]),
       filterAll: () =>

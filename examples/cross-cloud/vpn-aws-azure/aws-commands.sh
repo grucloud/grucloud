@@ -8,7 +8,7 @@ ipsec_psk='Microsoft123'
 #########
 
 # Variables
-rg=multicloud
+rg=rg-vpn
 location=uksouth
 vnet_name=azure
 vnet_prefix=192.168.0.0/16
