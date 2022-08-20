@@ -39,7 +39,7 @@ const createModel = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#enableVgwRoutePropagation-property
   create: {
     method: "enableVgwRoutePropagation",
-    //pickCreated: ({ payload }) => pipe([() => payload]),
+    shouldRetryOnExceptionCodes: ["Gateway.NotAttached"],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disableVgwRoutePropagation-property
   destroy: {
