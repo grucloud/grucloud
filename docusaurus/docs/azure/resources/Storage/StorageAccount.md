@@ -878,8 +878,7 @@ exports.createResources = () => [
                 }
               }
             }
-          },
-          required: [ 'keySource' ]
+          }
         },
         networkAcls: {
           'x-ms-client-name': 'NetworkRuleSet',
@@ -981,12 +980,12 @@ exports.createResources = () => [
           properties: {
             directoryServiceOptions: {
               type: 'string',
-              description: 'Indicates the directory service used.',
-              enum: [ 'None', 'AADDS', 'AD' ],
+              description: 'Indicates the directory service used. Note that this enum may be extended in the future.',
+              enum: [ 'None', 'AADDS', 'AD', 'AADKERB' ],
               'x-ms-enum': { name: 'DirectoryServiceOptions', modelAsString: true }
             },
             activeDirectoryProperties: {
-              description: 'Required if choose AD.',
+              description: 'Required if directoryServiceOptions are AD, optional if they are AADKERB.',
               properties: {
                 domainName: {
                   type: 'string',
@@ -1019,17 +1018,11 @@ exports.createResources = () => [
                 accountType: {
                   type: 'string',
                   description: 'Specifies the Active Directory account type for Azure Storage.',
-                  enum: [ 'User', 'Computer' ]
+                  enum: [ 'User', 'Computer' ],
+                  'x-ms-enum': { name: 'AccountType', modelAsString: true }
                 }
               },
-              required: [
-                'domainName',
-                'netBiosDomainName',
-                'forestName',
-                'domainGuid',
-                'domainSid',
-                'azureStorageSid'
-              ]
+              required: [ 'domainName', 'domainGuid' ]
             },
             defaultSharePermission: {
               type: 'string',
@@ -1171,6 +1164,6 @@ exports.createResources = () => [
 }
 ```
 ## Misc
-The resource version is `2021-09-01`.
+The resource version is `2022-05-01`.
 
-The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/storage/resource-manager/Microsoft.Storage/stable/2021-09-01/storage.json).
+The Swagger schema used to generate this documentation can be found [here](https://github.com/Azure/azure-rest-api-specs/tree/main/specification/storage/resource-manager/Microsoft.Storage/stable/2022-05-01/storage.json).

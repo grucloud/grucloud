@@ -85,6 +85,7 @@ const vpc = provider.EC2.makeVpc({
 - [EC2 Internet Gateway Attachment](./InternetGatewayAttachment.md)
 - [EC2 Security Group](./SecurityGroup.md)
 - [EC2 Subnet](./Subnet.md)
+- [EC2 Vpn Gateway Attachment](./VpnGatewayAttachment.md)
 - [EC2 Vpc Peering Connection](./VpcPeeringConnection.md)
 - [NetworkManager VpcAttachment](../NetworkManager/VpcAttachment.md)
 - [Route53 HostedZone](../Route53/HostedZone.md)

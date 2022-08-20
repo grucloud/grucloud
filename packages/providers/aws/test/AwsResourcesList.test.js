@@ -6,7 +6,7 @@ const { callProp } = require("rubico/x");
 const { AwsProvider } = require("../AwsProvider");
 
 describe("AwsResourcesList", async function () {
-  it.only("resourcesList", async function () {
+  it("resourcesList", async function () {
     pipe([
       () =>
         AwsProvider({

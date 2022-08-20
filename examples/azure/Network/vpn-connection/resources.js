@@ -22,7 +22,7 @@ exports.createResources = () => [
                 {
                   path: "/home/fredericheem/.ssh/authorized_keys",
                   keyData:
-                    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/+ZCfuXkRdiRcNjERsbmuqtKBY+ctRVd/q06VNRGxqAGI+DGnc55eMxvhh1ptdjuNg6HA7yufumrj9AmxrKEtGmRfseeVUy3th7FphEKKYCkpb8zxIEdfRr5r374gl3QxrxeKzk2YgsCQAfwfaD+ZlNQyKHWgnfwFCGEh3ciL5eSQP5xittjJap35l17kwygtCYxPcA+5DlAjDtonLGzypw/Bnb8U6TutWiHsK5Jx4iYVo4rsPmy6MsTZUx0gAKf0jvRpROK4TOHUAfio05jxfDVfE2hOZAvYFas5fKOCI8in/xaVy/hoW3rFU7OvPWfyNv7+5IE6ytI59c5e9PMXJ9IVcQmiPkfTfK91YsYcyknf6SXdTjs0aPWRpCp+UpDr98qt8xqTMujI1RA075719T1I3OUO7+w/prFLUPkEHbOLnfJ1kzam6kX87OkEG6OwIqR3A7Sw1q3EmRfDppzBOw8Oaapla+52DMLeJ6j1eLNLyBcsrgVTbOLYyZXbORMLvr0FwiAmbUPBSPKFIT12N10dElScihA2YI1g6SS5nNZAiyU16T0zL9teXYEYlupXo7T5Dc44m7xiiuzx4xibh8MprUTDUKoHSmTTSZ9psggaYcrZZQKmO8P7Et8t44iEyZ7W8xpByHxRrqmuCrqx9dIopk8fXhnQA/sP/EbX5Q== frederic.heem@gmail.com\n",
+                    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDvgA5na1mOXg/sn/wG950KAP9X0u2mWLLGeJVB/IECb1rHZN/x6lLfomEc8uCpFPj7wT1tZYq9iYkJXF7sWqvyRfHdvnSXLlVf2q4scgixsvxZYRu0B+Iwr8w2jL2gR81T3m/cD5PflCUHpgI5QF0TAfGQYPvdoWAH46JfwLS5gpZ4sULyVt6JksiED1gHG/rKhKwUaVxJLA0QqxlKxqF1P2Vj7EWjZF2QPVJB7tJ5JZIAA9DYCvUeqEqUEajPYFpuVJLicBPSuo9AN7YDbsvzVsoteB5tVZcEjfS6WAxWQ6zrdNCKfLFu50rFWY7bWQfLxcldTWNvueBXchxR2PqF",
                 },
               ],
             },
@@ -39,7 +39,7 @@ exports.createResources = () => [
           },
           osDisk: {
             osType: "Linux",
-            name: "testvm_OsDisk_1_3c159bcd1ece41ef827adb54827c0fb5",
+            name: "testvm_disk1_2fc9bc255e6441b3a40f2d9bc466b7af",
             createOption: "FromImage",
             caching: "ReadWrite",
             managedDisk: {
@@ -228,7 +228,7 @@ exports.createResources = () => [
     type: "VirtualNetworkGateway",
     group: "Network",
     properties: ({ config, getId }) => ({
-      name: "vpngw",
+      name: "vpn-gw",
       location: config.location,
       properties: {
         ipConfigurations: [
@@ -292,14 +292,6 @@ exports.createResources = () => [
           asn: 65001,
           bgpPeeringAddress: "192.168.1.4,192.168.1.5",
           peerWeight: 0,
-          // bgpPeeringAddresses: [
-          //   {
-          //     customBgpIpAddresses: [],
-          //   },
-          //   {
-          //     customBgpIpAddresses: [],
-          //   },
-          // ],
         },
         enableBgpRouteTranslationForNat: false,
       },
@@ -308,27 +300,6 @@ exports.createResources = () => [
       resourceGroup: "multicloud",
       subnets: ["multicloud::azure::GatewaySubnet"],
       publicIpAddresses: ["multicloud::vpngw-a-pip", "multicloud::vpngw-b-pip"],
-    }),
-  },
-  {
-    type: "Workspace",
-    group: "OperationalInsights",
-    properties: ({ config }) => ({
-      name: "log2665",
-      location: config.location,
-      properties: {
-        sku: {
-          name: "PerGB2018",
-        },
-        retentionInDays: 30,
-        features: {
-          legacy: 0,
-          searchVersion: 1,
-        },
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "multicloud",
     }),
   },
   {

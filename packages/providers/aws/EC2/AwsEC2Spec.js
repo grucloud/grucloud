@@ -151,6 +151,11 @@ const {
 
 const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
 const { EC2VpnGateway } = require("./EC2VpnGateway");
+const { EC2VpnGatewayAttachment } = require("./EC2VpnGatewayAttachment");
+const {
+  EC2VpnGatewayRoutePropagation,
+} = require("./EC2VpnGatewayRoutePropagation");
+
 const { EC2VpnConnection } = require("./EC2VpnConnection");
 
 const GROUP = "EC2";
@@ -2585,6 +2590,51 @@ module.exports = pipe([
       propertiesDefault: { Type: "ipsec.1" },
       compare: compareEC2({ filterAll: () => pick([]) }),
       ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
+    },
+    {
+      type: "VpnGatewayAttachment",
+      Client: EC2VpnGatewayAttachment,
+      ignoreResource: () => pipe([get("live"), eq(get("State"), "detached")]),
+      omitProperties: ["VpnGatewayId", "VpcId", "State"],
+      compare: compareEC2({ filterAll: () => pick([]) }),
+      inferName: ({ dependenciesSpec: { vpc, vpnGateway } }) =>
+        `vpn-gw-attach::${vpnGateway}::${vpc}`,
+      dependencies: {
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("VpcId"),
+        },
+        vpnGateway: {
+          type: "VpnGateway",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("VpnGatewayId"),
+        },
+      },
+    },
+    {
+      type: "VpnGatewayRoutePropagation",
+      Client: EC2VpnGatewayRoutePropagation,
+      omitProperties: ["GatewayId", "RouteTableId", "State"],
+      compare: compareEC2({ filterAll: () => pick([]) }),
+      inferName: ({ dependenciesSpec: { routeTable, vpnGateway } }) =>
+        `vpn-gw-rt::${vpnGateway}::${routeTable}`,
+      dependencies: {
+        routeTable: {
+          type: "RouteTable",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("RouteTableId"),
+        },
+        vpnGateway: {
+          type: "VpnGateway",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("GatewayId"),
+        },
+      },
     },
     {
       type: "VpnConnection",

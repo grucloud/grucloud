@@ -3858,7 +3858,7 @@
             },
             "proximityPlacementGroup": {
                 "type": "ProximityPlacementGroup",
-                "group": "Network",
+                "group": "Compute",
                 "createOnly": true,
                 "pathId": "properties.proximityPlacementGroupID"
             },
@@ -4192,7 +4192,7 @@
             },
             "proximityPlacementGroups": {
                 "type": "ProximityPlacementGroup",
-                "group": "Network",
+                "group": "Compute",
                 "createOnly": true,
                 "pathId": "properties.agentPoolProfiles[].proximityPlacementGroupID",
                 "list": true
@@ -18498,7 +18498,7 @@
     {
         "type": "BlobContainer",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -18565,7 +18565,7 @@
     {
         "type": "BlobService",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -18630,7 +18630,7 @@
     {
         "type": "EncryptionScope",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -18682,7 +18682,7 @@
     {
         "type": "FileService",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -18736,7 +18736,7 @@
     {
         "type": "FileShare",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -18803,7 +18803,7 @@
     {
         "type": "LocalUser",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -18864,7 +18864,7 @@
     {
         "type": "ObjectReplicationPolicy",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -18917,7 +18917,7 @@
     {
         "type": "PrivateEndpointConnection",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -18969,7 +18969,7 @@
     {
         "type": "Queue",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -19019,7 +19019,7 @@
     {
         "type": "QueueService",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -19064,7 +19064,7 @@
     {
         "type": "StorageAccount",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -19224,7 +19224,7 @@
     {
         "type": "Table",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
@@ -19277,7 +19277,7 @@
     {
         "type": "TableService",
         "group": "Storage",
-        "apiVersion": "2021-09-01",
+        "apiVersion": "2022-05-01",
         "dependencies": {
             "resourceGroup": {
                 "type": "ResourceGroup",
