@@ -1,0 +1,10 @@
+@startmindmap
+title Resources for project local-network-gateway
+skinparam monochrome true
++ Infra
+++ azure
++++ Network
+++++ LocalNetworkGateway (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap
