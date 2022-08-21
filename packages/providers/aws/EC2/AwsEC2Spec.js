@@ -387,10 +387,34 @@ module.exports = pipe([
       ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
       propertiesDefault: { Type: "ipsec.1" },
       compare: compareEC2({ filterAll: () => pick([]) }),
-      filterLive: () =>
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
           tap((params) => {
             assert(true);
+          }),
+          assign({
+            IpAddress: ({ IpAddress }) =>
+              pipe([
+                () => lives,
+                find(
+                  and([
+                    eq(get("groupType"), "Network::PublicIPAddress"),
+                    eq(get("live.properties.ipAddress"), IpAddress),
+                  ])
+                ),
+                get("id"),
+                switchCase([
+                  isEmpty,
+                  () => IpAddress,
+                  replaceWithName({
+                    groupType: "Network::PublicIPAddress",
+                    pathLive: "id",
+                    path: "live.properties.ipAddress",
+                    providerConfig,
+                    lives,
+                  }),
+                ]),
+              ])(),
           }),
         ]),
       dependencies: {
@@ -398,6 +422,52 @@ module.exports = pipe([
           type: "Certificate",
           group: "ACM",
           dependencyId: ({ lives, config }) => get("CertificateArn"),
+        },
+        ipAddressAzure: {
+          type: "PublicIPAddress",
+          group: "Network",
+          providerType: "azure",
+          dependencyId:
+            ({ lives, config }) =>
+            ({ IpAddress }) =>
+              pipe([
+                tap((params) => {
+                  assert(IpAddress);
+                }),
+                () =>
+                  lives.getByType({
+                    providerType: "azure",
+                    type: "PublicIPAddress",
+                    group: "Network",
+                  }),
+                find(eq(get("live.properties.ipAddress"), IpAddress)),
+                get("id"),
+              ])(),
+        },
+        virtualNetworkGatewayAzure: {
+          type: "VirtualNetworkGateway",
+          group: "Network",
+          providerType: "azure",
+          dependencyId:
+            ({ lives, config }) =>
+            ({ IpAddress }) =>
+              pipe([
+                () =>
+                  lives.getByType({
+                    providerType: "azure",
+                    type: "VirtualNetworkGateway",
+                    group: "Network",
+                  }),
+                find(
+                  pipe([
+                    get("live.properties.bgpSettings.bgpPeeringAddresses"),
+                    pluck("tunnelIpAddresses"),
+                    flatten,
+                    any(includes(IpAddress)),
+                  ])
+                ),
+                get("id"),
+              ])(),
         },
       },
     },
@@ -1372,6 +1442,7 @@ module.exports = pipe([
           routeTable,
           vpcEndpoint,
           vpcPeeringConnection,
+          vpnGateway,
         },
       }) =>
         pipe([
@@ -1396,6 +1467,8 @@ module.exports = pipe([
             pipe([append(`::${ec2Instance}`)]),
             () => vpcPeeringConnection,
             pipe([append(`::pcx`)]),
+            () => vpnGateway,
+            pipe([append(`::vgw`)]),
             pipe([append("::local")]),
           ]),
           switchCase([
@@ -1501,6 +1574,23 @@ module.exports = pipe([
           parent: true,
           parentForName: true,
           dependencyId: ({ lives, config }) => get("VpcPeeringConnectionId"),
+        },
+        vpnGateway: {
+          type: "VpnGateway",
+          group: "EC2",
+          parent: true,
+          parentForName: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([
+              (live) =>
+                lives.getById({
+                  id: live.GatewayId,
+                  type: "VpnGateway",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ]),
         },
       },
     },
@@ -2653,6 +2743,8 @@ module.exports = pipe([
         "CustomerGatewayConfiguration",
         "Routes",
       ],
+      //filterLive Sort by PSK
+
       propertiesDefault: {
         Type: "ipsec.1",
         Options: {

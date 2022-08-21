@@ -4,181 +4,89 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "VirtualMachine",
-    group: "Compute",
-    properties: ({ getId }) => ({
-      name: "testvm",
+    type: "LocalNetworkGateway",
+    group: "Network",
+    properties: ({ config, getId }) => ({
+      name: "azlngw1",
+      location: config.location,
       properties: {
-        hardwareProfile: {
-          vmSize: "Standard_B1s",
+        localNetworkAddressSpace: {
+          addressPrefixes: ["192.168.0.0/16"],
         },
-        osProfile: {
-          computerName: "testvm",
-          adminUsername: "fredericheem",
-          linuxConfiguration: {
-            disablePasswordAuthentication: true,
-            ssh: {
-              publicKeys: [
-                {
-                  path: "/home/fredericheem/.ssh/authorized_keys",
-                  keyData:
-                    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDvgA5na1mOXg/sn/wG950KAP9X0u2mWLLGeJVB/IECb1rHZN/x6lLfomEc8uCpFPj7wT1tZYq9iYkJXF7sWqvyRfHdvnSXLlVf2q4scgixsvxZYRu0B+Iwr8w2jL2gR81T3m/cD5PflCUHpgI5QF0TAfGQYPvdoWAH46JfwLS5gpZ4sULyVt6JksiED1gHG/rKhKwUaVxJLA0QqxlKxqF1P2Vj7EWjZF2QPVJB7tJ5JZIAA9DYCvUeqEqUEajPYFpuVJLicBPSuo9AN7YDbsvzVsoteB5tVZcEjfS6WAxWQ6zrdNCKfLFu50rFWY7bWQfLxcldTWNvueBXchxR2PqF",
-                },
-              ],
-            },
-            enableVMAgentPlatformUpdates: false,
-          },
-          adminPassword: process.env.MULTICLOUD_TESTVM_ADMIN_PASSWORD,
-        },
-        storageProfile: {
-          imageReference: {
-            publisher: "Canonical",
-            offer: "UbuntuServer",
-            sku: "18.04-LTS",
-            version: "latest",
-          },
-          osDisk: {
-            osType: "Linux",
-            name: "testvm_disk1_2fc9bc255e6441b3a40f2d9bc466b7af",
-            createOption: "FromImage",
-            caching: "ReadWrite",
-            managedDisk: {
-              storageAccountType: "Premium_LRS",
-            },
-            deleteOption: "Detach",
-            diskSizeGB: 30,
-          },
-        },
-        networkProfile: {
-          networkInterfaces: [
-            {
-              id: getId({
-                type: "NetworkInterface",
-                group: "Network",
-                name: "multicloud::testvmVMNic",
-              }),
-            },
-          ],
-        },
+        gatewayIpAddress: `${getId({
+          type: "VpnConnection",
+          group: "EC2",
+          name: "vpn-connection",
+          path: "live.Options.TunnelOptions[1].OutsideIpAddress",
+        })}`,
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "multicloud",
-      networkInterfaces: ["multicloud::testvmVMNic"],
+      resourceGroup: "hybridrg",
+      gatewayIpAddressAws: "vpn-connection",
     }),
   },
   {
-    type: "NetworkInterface",
+    type: "LocalNetworkGateway",
     group: "Network",
-    properties: ({ getId }) => ({
-      name: "testvmVMNic",
-      location: "uksouth",
+    properties: ({ config, getId }) => ({
+      name: "azlngw2",
+      location: config.location,
       properties: {
-        ipConfigurations: [
-          {
-            properties: {
-              publicIPAddress: {
-                id: `${getId({
-                  type: "PublicIPAddress",
-                  group: "Network",
-                  name: "multicloud::vmtest-pip",
-                })}`,
-              },
-              subnet: {
-                id: `${getId({
-                  type: "Subnet",
-                  group: "Network",
-                  name: "multicloud::azure::vm",
-                })}`,
-              },
-            },
-            name: "ipconfigtestvm",
-          },
-        ],
+        localNetworkAddressSpace: {
+          addressPrefixes: ["192.168.0.0/16"],
+        },
+        gatewayIpAddress: `${getId({
+          type: "VpnConnection",
+          group: "EC2",
+          name: "vpn-connection",
+          path: "live.Options.TunnelOptions[0].OutsideIpAddress",
+        })}`,
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "multicloud",
-      networkSecurityGroup: "multicloud::testvmNSG",
-      publicIpAddresses: ["multicloud::vmtest-pip"],
-      subnets: ["multicloud::azure::vm"],
-    }),
-  },
-  {
-    type: "NetworkSecurityGroup",
-    group: "Network",
-    properties: ({}) => ({
-      name: "testvmNSG",
-      properties: {
-        securityRules: [
-          {
-            name: "default-allow-ssh",
-            properties: {
-              protocol: "Tcp",
-              sourcePortRange: "*",
-              destinationPortRange: "22",
-              sourceAddressPrefix: "*",
-              destinationAddressPrefix: "*",
-              access: "Allow",
-              priority: 1000,
-              direction: "Inbound",
-              sourcePortRanges: [],
-              destinationPortRanges: [],
-              sourceAddressPrefixes: [],
-              destinationAddressPrefixes: [],
-            },
-          },
-        ],
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "multicloud",
+      resourceGroup: "hybridrg",
+      gatewayIpAddressAws: "vpn-connection",
     }),
   },
   {
     type: "PublicIPAddress",
     group: "Network",
     properties: ({}) => ({
-      name: "ergw-pip",
+      name: "vnetvgwpip1",
     }),
     dependencies: ({}) => ({
-      resourceGroup: "multicloud",
+      resourceGroup: "hybridrg",
     }),
   },
   {
-    type: "PublicIPAddress",
+    type: "Route",
     group: "Network",
     properties: ({}) => ({
-      name: "vmtest-pip",
-      sku: {
-        name: "Standard",
-      },
+      name: "awsroute",
       properties: {
-        publicIPAllocationMethod: "Static",
+        addressPrefix: "192.168.0.0/16",
+        nextHopType: "VirtualNetworkGateway",
+        hasBgpOverride: false,
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "multicloud",
+      resourceGroup: "hybridrg",
+      routeTable: "hybridrg::awsroute",
     }),
   },
   {
-    type: "PublicIPAddress",
+    type: "RouteTable",
     group: "Network",
-    properties: ({}) => ({
-      name: "vpngw-a-pip",
+    properties: ({ config }) => ({
+      name: "awsroute",
+      location: config.location,
+      properties: {
+        disableBgpRoutePropagation: false,
+      },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "multicloud",
-    }),
-  },
-  {
-    type: "PublicIPAddress",
-    group: "Network",
-    properties: ({}) => ({
-      name: "vpngw-b-pip",
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "multicloud",
+      resourceGroup: "hybridrg",
     }),
   },
   {
@@ -187,49 +95,51 @@ exports.createResources = () => [
     properties: ({}) => ({
       name: "GatewaySubnet",
       properties: {
-        addressPrefix: "192.168.1.0/24",
+        addressPrefix: "172.16.2.0/28",
+        privateEndpointNetworkPolicies: "Enabled",
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "multicloud",
-      virtualNetwork: "multicloud::azure",
+      resourceGroup: "hybridrg",
+      virtualNetwork: "hybridrg::vnet1",
     }),
   },
   {
     type: "Subnet",
     group: "Network",
     properties: ({}) => ({
-      name: "vm",
+      name: "subnet1",
       properties: {
-        addressPrefix: "192.168.2.0/24",
+        addressPrefix: "172.16.1.0/24",
+        privateEndpointNetworkPolicies: "Enabled",
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "multicloud",
-      virtualNetwork: "multicloud::azure",
+      resourceGroup: "hybridrg",
+      virtualNetwork: "hybridrg::vnet1",
     }),
   },
   {
     type: "VirtualNetwork",
     group: "Network",
     properties: ({}) => ({
-      name: "azure",
+      name: "vnet1",
       properties: {
         addressSpace: {
-          addressPrefixes: ["192.168.0.0/16"],
+          addressPrefixes: ["172.16.0.0/16"],
         },
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "multicloud",
+      resourceGroup: "hybridrg",
     }),
   },
   {
     type: "VirtualNetworkGateway",
     group: "Network",
-    properties: ({ getId }) => ({
-      name: "vpn-gw",
-      location: "uksouth",
+    properties: ({ config, getId }) => ({
+      name: "myvng1",
+      location: config.location,
       properties: {
         ipConfigurations: [
           {
@@ -239,46 +149,26 @@ exports.createResources = () => [
                 id: `${getId({
                   type: "Subnet",
                   group: "Network",
-                  name: "multicloud::azure::GatewaySubnet",
+                  name: "hybridrg::vnet1::GatewaySubnet",
                 })}`,
               },
               publicIPAddress: {
                 id: `${getId({
                   type: "PublicIPAddress",
                   group: "Network",
-                  name: "multicloud::vpngw-a-pip",
+                  name: "hybridrg::vnetvgwpip1",
                 })}`,
               },
             },
-            name: "vnetGatewayConfig0",
-          },
-          {
-            properties: {
-              privateIPAllocationMethod: "Dynamic",
-              subnet: {
-                id: `${getId({
-                  type: "Subnet",
-                  group: "Network",
-                  name: "multicloud::azure::GatewaySubnet",
-                })}`,
-              },
-              publicIPAddress: {
-                id: `${getId({
-                  type: "PublicIPAddress",
-                  group: "Network",
-                  name: "multicloud::vpngw-b-pip",
-                })}`,
-              },
-            },
-            name: "vnetGatewayConfig1",
+            name: "vnetGatewayConfig",
           },
         ],
         gatewayType: "Vpn",
         vpnType: "RouteBased",
         vpnGatewayGeneration: "Generation1",
-        enableBgp: true,
+        enableBgp: false,
         enablePrivateIpAddress: false,
-        activeActive: true,
+        activeActive: false,
         disableIPSecReplayProtection: false,
         sku: {
           name: "VpnGw1",
@@ -289,24 +179,106 @@ exports.createResources = () => [
           vpnAuthenticationTypes: [],
         },
         bgpSettings: {
-          asn: 65001,
-          bgpPeeringAddress: "192.168.1.4,192.168.1.5",
+          asn: 65515,
+          bgpPeeringAddress: "172.16.2.14",
           peerWeight: 0,
         },
         enableBgpRouteTranslationForNat: false,
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "multicloud",
-      subnets: ["multicloud::azure::GatewaySubnet"],
-      publicIpAddresses: ["multicloud::vpngw-a-pip", "multicloud::vpngw-b-pip"],
+      resourceGroup: "hybridrg",
+      subnets: ["hybridrg::vnet1::GatewaySubnet"],
+      publicIpAddresses: ["hybridrg::vnetvgwpip1"],
+    }),
+  },
+  {
+    type: "VirtualNetworkGatewayConnection",
+    group: "Network",
+    properties: ({ config }) => ({
+      name: "vngc1",
+      location: config.location,
+      properties: {
+        connectionType: "IPsec",
+        connectionProtocol: "IKEv2",
+        routingWeight: 0,
+        dpdTimeoutSeconds: 0,
+        connectionMode: "Default",
+        enableBgp: false,
+        useLocalAzureIpAddress: false,
+        usePolicyBasedTrafficSelectors: false,
+        expressRouteGatewayBypass: false,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
+      localNetworkGateway: "hybridrg::azlngw1",
+      virtualNetworkGateway: "hybridrg::myvng1",
+    }),
+  },
+  {
+    type: "VirtualNetworkGatewayConnection",
+    group: "Network",
+    properties: ({ config }) => ({
+      name: "vngc2",
+      location: config.location,
+      properties: {
+        connectionType: "IPsec",
+        connectionProtocol: "IKEv2",
+        routingWeight: 0,
+        dpdTimeoutSeconds: 0,
+        connectionMode: "Default",
+        enableBgp: false,
+        useLocalAzureIpAddress: false,
+        usePolicyBasedTrafficSelectors: false,
+        expressRouteGatewayBypass: false,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
+      localNetworkGateway: "hybridrg::azlngw2",
+      virtualNetworkGateway: "hybridrg::myvng1",
+    }),
+  },
+  {
+    type: "VirtualNetworkGatewayConnectionSharedKey",
+    group: "Network",
+    properties: ({ getId }) => ({
+      value: `${getId({
+        type: "VpnConnection",
+        group: "EC2",
+        name: "vpn-connection",
+        path: "live.Options.TunnelOptions[1].PreSharedKey",
+      })}`,
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
+      virtualNetworkGatewayConnection: "hybridrg::vngc1",
+      vpnConnectionAws: "vpn-connection",
+    }),
+  },
+  {
+    type: "VirtualNetworkGatewayConnectionSharedKey",
+    group: "Network",
+    properties: ({ getId }) => ({
+      value: `${getId({
+        type: "VpnConnection",
+        group: "EC2",
+        name: "vpn-connection",
+        path: "live.Options.TunnelOptions[0].PreSharedKey",
+      })}`,
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
+      virtualNetworkGatewayConnection: "hybridrg::vngc2",
+      vpnConnectionAws: "vpn-connection",
     }),
   },
   {
     type: "ResourceGroup",
     group: "Resources",
     properties: ({}) => ({
-      name: "multicloud",
+      name: "hybridrg",
     }),
   },
 ];

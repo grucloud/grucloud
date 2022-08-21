@@ -71,6 +71,13 @@ exports.EC2Route = ({ spec, config }) => {
         // Local route
         () => live.GatewayId === "local",
         append("::local"),
+        // VpnGateway
+        pipe([
+          () => live,
+          get("GatewayId", ""),
+          callProp("startsWith", "vgw-"),
+        ]),
+        pipe([append("::vgw")]),
         // Internet Gateway
         pipe([
           () => live,
@@ -205,14 +212,14 @@ exports.EC2Route = ({ spec, config }) => {
             () => NatGatewayId,
             eq(get("NatGatewayId"), NatGatewayId),
             () => TransitGatewayId,
-            eq(get("NatGatewayId"), NatGatewayId),
+            eq(get("TransitGatewayId"), TransitGatewayId),
             () => VpcEndpointId,
             eq(get("GatewayId"), VpcEndpointId),
-            () => EgressOnlyInternetGatewayId,
+            () => InstanceId,
             eq(get("InstanceId"), InstanceId),
             () => VpcPeeringConnectionId,
             eq(get("VpcPeeringConnectionId"), VpcPeeringConnectionId),
-            () => InstanceId,
+            () => EgressOnlyInternetGatewayId,
             eq(get("EgressOnlyInternetGatewayId"), EgressOnlyInternetGatewayId),
             //
             () => {
@@ -332,7 +339,10 @@ exports.EC2Route = ({ spec, config }) => {
       createRouteVpcEndpoint,
       client.create({
         method: "createRoute",
-        shouldRetryOnExceptionCodes: ["InvalidTransitGatewayID.NotFound"],
+        shouldRetryOnExceptionCodes: [
+          "InvalidTransitGatewayID.NotFound",
+          "InvalidGatewayID.NotFound",
+        ],
         shouldRetryOnExceptionMessages: [
           "VPC Endpoints of this type cannot be used as route targets",
         ],
@@ -419,15 +429,16 @@ exports.EC2Route = ({ spec, config }) => {
     properties = {},
     dependencies: {
       coreNetwork,
-      routeTable,
-      natGateway,
-      ig,
       ec2Instance,
-      vpcEndpoint,
-      transitGateway,
-      vpcPeeringConnection,
+      ig,
       egressOnlyInternetGateway,
+      natGateway,
       prefixList,
+      routeTable,
+      transitGateway,
+      vpcEndpoint,
+      vpcPeeringConnection,
+      vpnGateway,
     },
   }) =>
     pipe([
@@ -440,8 +451,9 @@ exports.EC2Route = ({ spec, config }) => {
             transitGateway ||
             egressOnlyInternetGateway ||
             ec2Instance ||
-            vpcPeeringConnection,
-          "Route needs the dependency 'ig', or 'natGateway' or 'vpcEndpoint', or 'transitGateway' or 'egressOnlyInternetGateway' or 'ec2Instance', or 'vpcPeeringConnection'"
+            vpcPeeringConnection ||
+            vpnGateway,
+          "Route needs the dependency 'ig', or 'natGateway' or 'vpcEndpoint', or 'transitGateway' or 'egressOnlyInternetGateway' or 'ec2Instance', or 'vpcPeeringConnection' or 'vpnGateway'"
         );
       }),
       () => properties,
@@ -492,6 +504,10 @@ exports.EC2Route = ({ spec, config }) => {
             egressOnlyInternetGateway,
             "EgressOnlyInternetGatewayId"
           ),
+        }),
+        () => vpnGateway,
+        defaultsDeep({
+          GatewayId: getField(vpnGateway, "VpnGatewayId"),
         }),
         identity,
       ]),

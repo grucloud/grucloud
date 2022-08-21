@@ -110,6 +110,24 @@ exports.createResources = () => [
 ];
 ```
 
+### Attach a route to a VPN Gateway
+
+```js
+exports.createResources = () => [
+  {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "192.168.0.0/16",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "vpc-vpn::my-rt",
+      vpnGateway: "vpw",
+    }),
+  },
+];
+```
+
 ## Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
@@ -119,6 +137,7 @@ exports.createResources = () => [
 - [route to instance](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/route-to-instance)
 - [route with prefix list](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/route-prefix-list)
 - [route to a vpc peering connection](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/vpc-peering)
+- [route to a vpn gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/site2site)
 
 ## Properties
 
@@ -134,6 +153,7 @@ exports.createResources = () => [
 - [EC2 Route Table](./RouteTable.md)
 - [EC2 Transit Gateway](./TransitGateway.md)
 - [EC2 Vpc Endpoint](./VpcEndpoint.md)
+- [EC2 Vpn Gateway](./VpnGateway.md)
 - [NetworkManager CoreNetwork](../NetworkManager/CoreNetwork.md)
 
 ## List

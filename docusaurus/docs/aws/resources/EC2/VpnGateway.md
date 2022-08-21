@@ -29,6 +29,7 @@ exports.createResources = () => [
 
 ### Used By
 
+- [EC2 Route](./Route.md)
 - [VpnConnection](./VpnConnection.md)
 - [VpnGatewayAttachment](./VpnGatewayAttachment.md)
 - [VpnGatewayRoutePropagation](./VpnGatewayRoutePropagation.md)

@@ -197,6 +197,7 @@ const buildProperties = ({
     omitProperties = [],
     omitPropertiesExtra = [],
     pickPropertiesCreate = [],
+    filterLiveExtra = () => identity,
   },
 }) =>
   pipe([
@@ -211,6 +212,16 @@ const buildProperties = ({
     () => resource,
     get("live"),
     filterLive({
+      providerConfig,
+      lives,
+      resource,
+      dependencies,
+      programOptions,
+      commandOptions,
+      omitProperties,
+      pickPropertiesCreate,
+    }),
+    filterLiveExtra({
       providerConfig,
       lives,
       resource,
@@ -1523,13 +1534,12 @@ const writeResources =
 
 const createWritersSpec = pipe([
   groupBy("group"),
-  tap((params) => {
-    assert(true);
-  }),
   map.entries(([group, value]) => [group, { group, types: value }]),
   values,
 ]);
 exports.createWritersSpec = createWritersSpec;
+
+const providersToSpecs = flatMap(callProp("getSpecs"));
 
 exports.generatorMain = ({
   providers,
@@ -1544,14 +1554,14 @@ exports.generatorMain = ({
   tryCatch(
     pipe([
       tap((xxx) => {
-        assert(specs);
+        assert(providers);
         assert(providerName);
       }),
       fork({
         lives: readModel({
           commandOptions,
           programOptions,
-          writersSpec: createWritersSpec(specs),
+          writersSpec: createWritersSpec(providersToSpecs(providers)),
           filterModel,
         }),
         mapping: readMapping({ commandOptions, programOptions }),
@@ -1566,15 +1576,13 @@ exports.generatorMain = ({
       }),
       ({ lives, mapping, providerConfig }) =>
         pipe([
-          () => specs,
+          () => providers,
+          providersToSpecs,
           createWritersSpec,
           map(({ group, types }) => ({
             group,
             types: pipe([
               () => types,
-              tap((params) => {
-                assert(true);
-              }),
               map((spec) => ({
                 type: spec.type,
                 typeTarget: spec.typeTarget,
@@ -1595,9 +1603,6 @@ exports.generatorMain = ({
               })),
             ])(),
           })),
-          tap((params) => {
-            assert(true);
-          }),
           fork({
             resources: writeResourcesToFile({
               providers,
@@ -1611,9 +1616,6 @@ exports.generatorMain = ({
               programOptions,
               commandOptions,
             }),
-          }),
-          tap((params) => {
-            assert(true);
           }),
         ])(),
     ]),

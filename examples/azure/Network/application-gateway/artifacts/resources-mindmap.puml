@@ -4,7 +4,6 @@ skinparam monochrome true
 + Infra
 ++ azure
 +++ Compute
-++++ SshPublicKey (1)
 ++++ VirtualMachineScaleSet (1)
 +++ Network
 ++++ ApplicationGateway (1)

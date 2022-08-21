@@ -209,7 +209,8 @@ const isInstanceUp = switchCase([
     get("properties.state"),
     (state) => pipe([() => ["Ready", "Running"], includes(state)])(),
   ]),
-  get("id"), // Last resort
+  // Network::VirtualNetworkGatewayConnectionSharedKey
+  not(isEmpty), // Last resort
 ]);
 
 exports.isInstanceUp = isInstanceUp;

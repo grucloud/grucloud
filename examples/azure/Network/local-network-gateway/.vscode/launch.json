@@ -68,17 +68,6 @@
       "port": 9229
     },
     {
-      "name": "Destroy Region B",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "destroy-regionB"],
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
-    },
-    {
       "name": "onDeployed",
       "type": "node",
       "request": "launch",
@@ -106,17 +95,6 @@
       "request": "launch",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["test"],
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
-    },
-    {
-      "name": "Init",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "init"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

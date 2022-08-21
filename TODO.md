@@ -74,7 +74,9 @@ https://rushjs.io/
 
 ## Azure
 
-- Microsoft.Network/proximityPlacementGroups => Microsoft.Compute/proximityPlacementGroups
+- message: maxContentLength size of -1 exceeded │
+  │ code: ERR_BAD_RESPONSE
+
 - Disk vault dep vanished
 - gc d -a
   Compute::VirtualMachineScaleSetExtension 0/3 Request failed with status code 400 On resource 'aks-agentpool-16833683-vmss',

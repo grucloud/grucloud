@@ -217,7 +217,7 @@ exports.AzureProvider = ({
           destination: path.resolve(programOptions.workingDirectory),
         }),
       }),
-      assign({ projectName: get("config.projectName") }),
+      assign({ projectName: get("config.projectName", "my-az-project") }),
       createProjectAzure,
       writeConfigToFile,
     ])();

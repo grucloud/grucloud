@@ -21,6 +21,7 @@ exports.createResources = () => [
 ### Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/egress-only-internet-gateway)
+- [aws-samples/aws-network-hub-for-terraform](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/aws-network-hub-for-terraform)
 
 ### Properties
 
