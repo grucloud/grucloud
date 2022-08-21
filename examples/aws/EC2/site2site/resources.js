@@ -59,6 +59,17 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "Route",
+    group: "EC2",
+    properties: ({}) => ({
+      DestinationCidrBlock: "192.168.0.0/16",
+    }),
+    dependencies: ({}) => ({
+      routeTable: "vpc-vpn::my-rt",
+      vpnGateway: "vpw",
+    }),
+  },
+  {
     type: "VpnGateway",
     group: "EC2",
     name: "vpw",

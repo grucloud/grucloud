@@ -91,7 +91,8 @@ exports.ResourceMaker = ({
           name,
           group,
           type,
-          providerName: config.providerName,
+          //TODO
+          //providerName: config.providerName,
         }),
       tap((params) => {
         assert(true);

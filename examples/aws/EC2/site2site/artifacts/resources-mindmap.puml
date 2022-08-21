@@ -11,6 +11,7 @@ skinparam monochrome true
 ++++ Subnet (1)
 ++++ RouteTable (1)
 ++++ RouteTableAssociation (1)
+++++ Route (1)
 ++++ VpnGateway (1)
 ++++ VpnGatewayAttachment (1)
 ++++ VpnGatewayRoutePropagation (1)

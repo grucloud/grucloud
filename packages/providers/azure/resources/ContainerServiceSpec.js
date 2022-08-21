@@ -151,8 +151,8 @@ exports.fnSpecs = ({ config }) =>
             maxAgentPools: 100,
           },
         },
-        postCreate: () => kubeConfigUpdate,
-        postDestroy: () => kubeConfigRemove,
+        create: { postCreate: () => kubeConfigUpdate },
+        destroy: { postDestroy: () => kubeConfigRemove },
         omitPropertiesExtra: [
           "properties.identityProfile",
           "properties.nodeResourceGroup",

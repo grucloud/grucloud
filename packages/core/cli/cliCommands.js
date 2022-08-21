@@ -39,6 +39,7 @@ const {
   isFunction,
   defaultsDeep,
   unless,
+  callProp,
 } = require("rubico/x");
 const { envLoader } = require("../EnvLoader");
 const fse = require("fs-extra");
@@ -1400,10 +1401,11 @@ const DoCommand = ({
       programOptions,
     }),
     ({ providerGru }) => providerGru.getProviders(),
-    map(
+
+    map.pool(
+      1,
       tryCatch(
-        (provider) =>
-          provider[command]({ options: commandOptions, programOptions }),
+        pipe([callProp(command, { options: commandOptions, programOptions })]),
         (error, provider) => {
           return { error, provider: provider.toString() };
         }

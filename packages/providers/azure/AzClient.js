@@ -131,9 +131,110 @@ const onCreateFilterPayload = pipe([
   }),
 ]);
 
-const specDefault = { operations: { getAll: {} } };
+//TODO remove
+const specDefault = {
+  operations: { getAll: {} },
+};
 
-module.exports = AzClient = ({
+const substituteDependency =
+  ({ dependencies }) =>
+  (paramName) =>
+    pipe([
+      tap(() => {
+        assert(dependencies);
+      }),
+      () => dependencies,
+      map.entries(([varName, resource]) => [varName, { varName, resource }]),
+      values,
+      tap((params) => {
+        assert(true);
+      }),
+      find(
+        or([
+          eq(pipe([({ varName }) => `{${varName}Name}`]), paramName),
+          eq(pipe([({ varName }) => `{${varName}}`]), paramName),
+        ])
+      ),
+      // tap((resource) => {
+      //   assert(
+      //     resource,
+      //     `no resource for ${paramName} in dependencies ${JSON.stringify(
+      //       dependencies,
+      //       null,
+      //       4
+      //     )}`
+      //   );
+      // }),
+      get("resource.name"),
+      // tap((name) => {
+      //   assert(
+      //     name,
+      //     `cannot find ${paramName} in ${JSON.stringify(dependencies, null, 4)}`
+      //   );
+      // }),
+      switchCase([isEmpty, () => paramName, shortName]),
+    ])();
+
+const substituteSubscriptionId = () =>
+  map(
+    when(
+      eq(identity, "{subscriptionId}"),
+      () => process.env.AZURE_SUBSCRIPTION_ID
+    )
+  );
+const substituteScope = ({ payload }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    map(
+      when(
+        eq(identity, "{scope}"),
+        pipe([
+          () => payload,
+          get("properties.scope", ""),
+          callProp("substring", 1), //remove first slash
+        ])
+      )
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
+const substitutePath = ({ dependencies }) =>
+  map(when(isSubstituable, substituteDependency({ dependencies })));
+
+const pathCreate =
+  ({ methods, apiVersion }) =>
+  ({ dependencies, name, payload }) =>
+    pipe([
+      () => methods,
+      get("get.path"),
+      tap((path) => {
+        assert(name);
+        assert(path);
+      }),
+      callProp("split", "/"),
+      substituteSubscriptionId(),
+      substituteScope({ payload }),
+      substitutePath({ dependencies }),
+      map(when(isSubstituable, () => shortName(name))),
+      callProp("join", "/"),
+      append(queryParameters({ apiVersion })),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+exports.pathCreate = pathCreate;
+
+const pathDelete =
+  ({ apiVersion }) =>
+  ({ id }) =>
+    `${id}${queryParameters({ apiVersion })}`;
+
+exports.AzClient = ({
   lives,
   spec,
   isInstanceUp = isInstanceUpDefault,
@@ -148,8 +249,9 @@ module.exports = AzClient = ({
           pipe([() => path, callProp("split", "?api-version"), first])
         ),
       ])(),
-  pathUpdate = ({ id }) =>
-    `${id}${queryParameters({ apiVersion: spec.apiVersion })}`,
+  pathUpdate = pipe([
+    ({ id }) => `${id}${queryParameters({ apiVersion: spec.apiVersion })}`,
+  ]),
 }) => {
   assert(lives);
   assert(spec);
@@ -276,7 +378,6 @@ module.exports = AzClient = ({
       tap((params) => {
         assert(true);
       }),
-
       () => [
         ...findDependenciesFromList({ live, lives }),
         findDependenciesUserAssignedIdentity({ live, lives }),
@@ -288,113 +389,12 @@ module.exports = AzClient = ({
       }),
     ])();
 
-  const pathGet = ({ id }) => `${id}${queryParameters({ apiVersion })}`;
-
-  const substituteDependency =
-    ({ dependencies }) =>
-    (paramName) =>
-      pipe([
-        tap(() => {
-          assert(dependencies);
-        }),
-        () => dependencies,
-        map.entries(([varName, resource]) => [varName, { varName, resource }]),
-        values,
-        tap((params) => {
-          assert(true);
-        }),
-        find(
-          or([
-            eq(pipe([({ varName }) => `{${varName}Name}`]), paramName),
-            eq(pipe([({ varName }) => `{${varName}}`]), paramName),
-          ])
-        ),
-        tap((resource) => {
-          assert(
-            resource,
-            `no resource for ${paramName} in dependencies ${JSON.stringify(
-              dependencies,
-              null,
-              4
-            )}`
-          );
-        }),
-        get("resource.name"),
-        tap((name) => {
-          assert(
-            name,
-            `cannot find ${paramName} in ${JSON.stringify(
-              dependencies,
-              null,
-              4
-            )}`
-          );
-        }),
-        shortName,
-      ])();
-
-  const substituteSubscriptionId = () =>
-    map(
-      when(
-        eq(identity, "{subscriptionId}"),
-        () => process.env.AZURE_SUBSCRIPTION_ID
-      )
-    );
-  const substituteScope = ({ payload }) =>
-    pipe([
-      tap((params) => {
-        // assert(payload);
-        //assert(payload.properties.scope);
-      }),
-      map(
-        when(
-          eq(identity, "{scope}"),
-          pipe([
-            () => payload,
-            get("properties.scope"),
-            callProp("substring", 1), //remove first slash
-          ])
-        )
-      ),
-      tap((params) => {
-        assert(true);
-      }),
-    ]);
-
-  const substitutePath = ({ dependencies }) =>
-    map(when(isSubstituable, substituteDependency({ dependencies })));
-
-  const pathCreate = ({ dependencies, name, payload }) =>
-    pipe([
-      () => methods,
-      get("get.path"),
-      tap((path) => {
-        assert(name);
-        assert(path);
-      }),
-      callProp("split", "/"),
-      tap(
-        pipe([last, isSubstituable], (isParam) => {
-          assert(isParam, "last part of the path must be a substituable");
-        })
-      ),
-      callProp("slice", 0, -1),
-      substituteSubscriptionId(),
-      substituteScope({ payload }),
-      tap((params) => {
-        assert(true);
-      }),
-      substitutePath({ dependencies }),
-      callProp("join", "/"),
-      append("/"),
-      append(shortName(name)),
-      append(queryParameters({ apiVersion })),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
-
-  const pathDelete = ({ id }) => `${id}${queryParameters({ apiVersion })}`;
+  const pathGet = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    ({ id }) => `${id}${queryParameters({ apiVersion })}`,
+  ]);
 
   const getPathsListNoDeps = ({ methods }) =>
     pipe([
@@ -544,9 +544,9 @@ module.exports = AzClient = ({
     decorate: spec.decorate,
     configDefault: spec.configDefault || configDefaultGeneric,
     pathGet,
-    pathCreate,
+    pathCreate: pathCreate({ methods, apiVersion }),
     pathUpdate,
-    pathDelete,
+    pathDelete: pathDelete({ methods, apiVersion }),
     pathList,
     listIsExpectedException: or([
       pipe([

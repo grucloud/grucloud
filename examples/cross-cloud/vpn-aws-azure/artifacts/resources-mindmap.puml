@@ -4,29 +4,25 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
-++++ CustomerGateway (2)
+++++ CustomerGateway (1)
 ++++ Vpc (1)
-++++ InternetGateway (1)
-++++ InternetGatewayAttachment (1)
-++++ Subnet (2)
+++++ Subnet (1)
 ++++ RouteTable (1)
-++++ RouteTableAssociation (2)
 ++++ Route (1)
-++++ SecurityGroup (1)
-++++ SecurityGroupRuleIngress (1)
 ++++ VpnGateway (1)
 ++++ VpnGatewayAttachment (1)
-++++ VpnConnection (2)
+++++ VpnConnection (1)
 -- azure
---- Compute
----- VirtualMachine (1)
 --- Network
----- NetworkInterface (1)
----- NetworkSecurityGroup (1)
----- PublicIPAddress (4)
+---- LocalNetworkGateway (2)
+---- PublicIPAddress (1)
+---- Route (1)
+---- RouteTable (1)
 ---- Subnet (2)
 ---- VirtualNetwork (1)
 ---- VirtualNetworkGateway (1)
+---- VirtualNetworkGatewayConnection (2)
+---- VirtualNetworkGatewayConnectionSharedKey (2)
 --- Resources
 ---- ResourceGroup (1)
 @endmindmap

@@ -147,8 +147,7 @@ const decorateLive =
               );
             }),
             filter(not(isEmpty)),
-            when(
-              and([isEmpty, () => !isEmpty(client.spec.dependencies)]),
+            when(and([() => !isEmpty(client.spec.dependencies)]), (deps = []) =>
               pipe([
                 () => client.spec,
                 get("dependencies", {}),
@@ -165,9 +164,6 @@ const decorateLive =
                       tap(() => {
                         assert(dependencyKey);
                         assert(type);
-                        // assert(
-                        //   isFunction(dependencyId) || isFunction(dependencyIds)
-                        // );
                       }),
                       () => live,
                       switchCase([
@@ -179,9 +175,6 @@ const decorateLive =
                                 config,
                               })
                             : () => false,
-                          tap((id) => {
-                            // assert(isObject(id));
-                          }),
                           (id) => [id],
                         ]),
                         () => dependencyIds,
@@ -192,39 +185,29 @@ const decorateLive =
                                 config,
                               })
                             : () => false,
-                          tap((ids) => {
-                            // assert(
-                            //   Array.isArray(ids),
-                            //   `ids not an array for type: ${type}, ${client.spec.groupType}`
-                            // );
-                          }),
                         ]),
-                        () => {
-                          // assert(
-                          //   false,
-                          //   `missing dependencyId or  dependencyIds`
-                          // );
-                        },
+                        () => {},
                       ]),
                       (ids) => ({ type, group, dependencyKey, ids }),
                     ])()
                 ),
-              ])
+                filter(pipe([get("ids"), not(isEmpty)])),
+                (additionalDeps) => [...deps, ...additionalDeps],
+              ])()
             ),
-            filter(pipe([get("ids", []), filter(not(isEmpty))])),
+            tap((params) => {
+              assert(true);
+            }),
+            filter(pipe([get("ids", []), not(isEmpty)])),
             map(
               pipe([
                 tap(({ type, group, ids }) => {
                   if (!type) {
                     assert(type);
                   }
-                  // assert(
-                  //   Array.isArray(ids),
-                  //   `no ids in dependency type ${type}, client ${client.spec.groupType}`
-                  // );
-                  //assert(group);
                 }),
                 assign({
+                  //TODO ko
                   providerName: () => client.spec.providerName,
                   groupType: buildGroupType,
                   ids: pipe([get("ids", []), filter(not(isEmpty)), uniq]),

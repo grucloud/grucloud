@@ -61,7 +61,7 @@ const AzTag = require("./AzTag");
 
 const Schema = require("./schema/AzureSchema.json");
 
-const AzClient = require("./AzClient");
+const { AzClient } = require("./AzClient");
 const { isSubstituable } = require("./AzureCommon");
 
 const createSpecsOveride = (config) =>

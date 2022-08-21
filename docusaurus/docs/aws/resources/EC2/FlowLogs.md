@@ -75,7 +75,6 @@ exports.createResources = () => [
 - [flow log on interface](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-interface)
 - [flow log on transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-tgw)
 - [flow log on vpc, s3 destination](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-vpc-s3)
-
 - [aws-samples/aws-network-hub-for-terraform](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/aws-network-hub-for-terraform)
 - [hub-and-spoke-with-shared-services-vpc-terraform](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/hub-and-spoke-with-shared-services-vpc-terraform)
 

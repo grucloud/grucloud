@@ -6,169 +6,91 @@ exports.createResources = () => [
   {
     type: "CustomerGateway",
     group: "EC2",
-    name: "cgw-09f421582b69f4dee",
-    properties: ({}) => ({
-      BgpAsn: "65001",
-      IpAddress: "20.117.155.184",
-      DeviceName: "vpngw-1",
+    name: "main-customer-gateway",
+    properties: ({ getId }) => ({
+      BgpAsn: "65000",
+      IpAddress: `${getId({
+        type: "PublicIPAddress",
+        group: "Network",
+        name: "hybridrg::vnetvgwpip1",
+        path: "live.properties.ipAddress",
+      })}`,
     }),
-  },
-  {
-    type: "CustomerGateway",
-    group: "EC2",
-    name: "cgw-0a89f11e45b99ce53",
-    properties: ({}) => ({
-      BgpAsn: "65001",
-      IpAddress: "20.117.155.183",
-      DeviceName: "vpngw-0",
+    dependencies: ({}) => ({
+      ipAddressAzure: "hybridrg::vnetvgwpip1",
+      virtualNetworkGatewayAzure: "hybridrg::myvng1",
     }),
   },
   {
     type: "Vpc",
     group: "EC2",
-    name: "vpc-0e7b001d465183e4e",
+    name: "Default VPC",
     properties: ({}) => ({
-      CidrBlock: "172.16.0.0/16",
-    }),
-  },
-  { type: "InternetGateway", group: "EC2", name: "igw-0442e270f9c2f57a2" },
-  {
-    type: "InternetGatewayAttachment",
-    group: "EC2",
-    dependencies: ({}) => ({
-      vpc: "vpc-0e7b001d465183e4e",
-      internetGateway: "igw-0442e270f9c2f57a2",
+      CidrBlock: "192.168.0.0/16",
     }),
   },
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc-0e7b001d465183e4e::subnet-06da3c16398e08892",
+    name: "Default VPC::main",
     properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}b`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
-      NetworkNumber: 2,
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-0e7b001d465183e4e",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "EC2",
-    name: "vpc-0e7b001d465183e4e::subnet-0801a66f762d6a0da",
-    properties: ({ config }) => ({
-      AvailabilityZone: `${config.region}a`,
-      MapPublicIpOnLaunch: true,
-      NewBits: 8,
+      AvailabilityZone: `${config.region}e`,
+      NewBits: 4,
       NetworkNumber: 1,
     }),
     dependencies: ({}) => ({
-      vpc: "vpc-0e7b001d465183e4e",
+      vpc: "Default VPC",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpc-0e7b001d465183e4e::rtb-0f74f1ba068163dad",
+    name: "Default VPC::rt-default",
+    isDefault: true,
     dependencies: ({}) => ({
-      vpc: "vpc-0e7b001d465183e4e",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "vpc-0e7b001d465183e4e::rtb-0f74f1ba068163dad",
-      subnet: "vpc-0e7b001d465183e4e::subnet-06da3c16398e08892",
-    }),
-  },
-  {
-    type: "RouteTableAssociation",
-    group: "EC2",
-    dependencies: ({}) => ({
-      routeTable: "vpc-0e7b001d465183e4e::rtb-0f74f1ba068163dad",
-      subnet: "vpc-0e7b001d465183e4e::subnet-0801a66f762d6a0da",
+      vpc: "Default VPC",
     }),
   },
   {
     type: "Route",
     group: "EC2",
     properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
+      DestinationCidrBlock: "172.16.1.0/24",
     }),
     dependencies: ({}) => ({
-      ig: "igw-0442e270f9c2f57a2",
-      routeTable: "vpc-0e7b001d465183e4e::rtb-0f74f1ba068163dad",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "multicloudsg",
-      Description: "Test SG",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-0e7b001d465183e4e",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 22,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 22,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-0e7b001d465183e4e::multicloudsg",
+      routeTable: "Default VPC::rt-default",
+      vpnGateway: "main",
     }),
   },
   {
     type: "VpnGateway",
     group: "EC2",
-    name: "vgw-0d9c6f7df53523d30",
+    name: "main",
     properties: ({}) => ({
-      AmazonSideAsn: 65002,
+      AmazonSideAsn: 64512,
     }),
   },
   {
     type: "VpnGatewayAttachment",
     group: "EC2",
     dependencies: ({}) => ({
-      vpc: "vpc-0e7b001d465183e4e",
-      vpnGateway: "vgw-0d9c6f7df53523d30",
+      vpc: "Default VPC",
+      vpnGateway: "main",
     }),
   },
   {
     type: "VpnConnection",
     group: "EC2",
-    name: "vpn-0842bc55e49a2a7b0",
+    name: "vpn-connection",
     properties: ({}) => ({
       Category: "VPN",
+      Options: {
+        StaticRoutesOnly: true,
+      },
     }),
     dependencies: ({}) => ({
-      customerGateway: "cgw-0a89f11e45b99ce53",
-      vpnGateway: "vgw-0d9c6f7df53523d30",
-    }),
-  },
-  {
-    type: "VpnConnection",
-    group: "EC2",
-    name: "vpn-0b8fe90e80372410e",
-    properties: ({}) => ({
-      Category: "VPN",
-    }),
-    dependencies: ({}) => ({
-      customerGateway: "cgw-09f421582b69f4dee",
-      vpnGateway: "vgw-0d9c6f7df53523d30",
+      customerGateway: "main-customer-gateway",
+      vpnGateway: "main",
     }),
   },
 ];

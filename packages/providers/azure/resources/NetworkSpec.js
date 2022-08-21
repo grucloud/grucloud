@@ -1,14 +1,26 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, pick, map, assign, omit } = require("rubico");
+const {
+  pipe,
+  eq,
+  get,
+  tap,
+  pick,
+  map,
+  assign,
+  omit,
+  any,
+  and,
+  switchCase,
+} = require("rubico");
 const {
   defaultsDeep,
   pluck,
-  isObject,
-  when,
   isEmpty,
   unless,
   callProp,
-  flatten,
+  findIndex,
+  find,
+  first,
 } = require("rubico/x");
 
 const {
@@ -619,35 +631,33 @@ exports.fnSpecs = ({ config }) => {
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses
         type: "PublicIPAddress",
-        // dependencies: {
-        //   resourceGroup: {
-        //     type: "ResourceGroup",
-        //     group: "Resources",
-        //     name: "resourceGroupName",
-        //     parent: true,
-        //   },
-        //   dscpConfiguration: {
-        //     type: "DscpConfiguration",
-        //     group: "Network",
-        //     createOnly: true,
-        //   },
-        //   workspace: {
-        //     type: "Workspace",
-        //     group: "OperationalInsights",
-        //     createOnly: true,
-        //   },
-        //   TODO
-        //   ddosCustomPolicy: {
-        //     type: "DdosCustomPolicy",
-        //     group: "Network",
-        //     createOnly: true,
-        //   },
-        //   publicIpPrefix: {
-        //     type: "PublicIPPrefix",
-        //     group: "Network",
-        //     createOnly: true,
-        //   },
-        // },
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+            parent: true,
+          },
+          ddosCustomPolicy: {
+            type: "DdosCustomPolicy",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.ddosSettings.ddosCustomPolicy.id",
+          },
+          publicIpPrefix: {
+            type: "PublicIPPrefix",
+            group: "Network",
+            createOnly: true,
+            pathId: "properties.publicIPPrefix.id",
+          },
+          // TODO infinite loop
+          // natGateway: {
+          //   type: "NatGateway",
+          //   group: "Network",
+          //   createOnly: true,
+          //   pathId: "properties.natGateway.id",
+          // },
+        },
         propertiesDefault: {
           sku: { name: "Basic", tier: "Regional" },
           properties: {
@@ -884,6 +894,17 @@ exports.fnSpecs = ({ config }) => {
             //OmitIfEmpty
             omit(["properties.bgpSettings.bgpPeeringAddresses"]),
           ]),
+        // Refresh the ip addresses which should now contain the ip address property
+        create: {
+          postCreate: ({ dependencies: { publicIpAddresses = [] } }) =>
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => publicIpAddresses,
+              map(callProp("getLive")),
+            ]),
+        },
         configDefault: ({ properties, dependencies, config, spec }) =>
           pipe([
             () => properties,
@@ -930,14 +951,193 @@ exports.fnSpecs = ({ config }) => {
         },
       },
       {
+        type: "LocalNetworkGateway",
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+            parent: true,
+          },
+          gatewayIpAddressAws: {
+            providerType: "aws",
+            type: "VpnConnection",
+            group: "EC2",
+            dependencyId:
+              ({ lives, config }) =>
+              ({ properties }) =>
+                pipe([
+                  tap((params) => {
+                    assert(properties.gatewayIpAddress);
+                  }),
+                  () =>
+                    lives.getByType({
+                      providerType: "aws",
+                      type: "VpnConnection",
+                      group: "EC2",
+                    }),
+                  find(
+                    pipe([
+                      get("live.Options.TunnelOptions"),
+                      any(
+                        eq(get("OutsideIpAddress"), properties.gatewayIpAddress)
+                      ),
+                    ])
+                  ),
+                  get("id"),
+                ])(),
+          },
+        },
+        filterLiveExtra: ({ lives, providerConfig }) =>
+          pipe([
+            assign({
+              properties: pipe([
+                get("properties"),
+                pipe([
+                  tap(({ gatewayIpAddress }) => {
+                    assert(gatewayIpAddress);
+                  }),
+                  assign({
+                    gatewayIpAddress: ({ gatewayIpAddress }) =>
+                      pipe([
+                        () => lives,
+                        find(
+                          and([
+                            eq(get("groupType"), "EC2::VpnConnection"),
+                            pipe([
+                              get("live.Options.TunnelOptions"),
+                              any(
+                                eq(get("OutsideIpAddress"), gatewayIpAddress)
+                              ),
+                            ]),
+                          ])
+                        ),
+                        switchCase([
+                          isEmpty,
+                          () => gatewayIpAddress,
+                          ({ id, live }) =>
+                            pipe([
+                              () => live,
+                              get("Options.TunnelOptions"),
+                              findIndex(
+                                eq(get("OutsideIpAddress"), gatewayIpAddress)
+                              ),
+                              tap((index) => {
+                                assert(index >= 0);
+                              }),
+                              (index) =>
+                                pipe([
+                                  () => id,
+                                  replaceWithName({
+                                    groupType: "EC2::VpnConnection",
+                                    path: `live.Options.TunnelOptions[${index}].OutsideIpAddress`,
+                                    providerConfig,
+                                    lives,
+                                  }),
+                                ])(),
+                            ])(),
+                        ]),
+                      ])(),
+                  }),
+                ]),
+              ]),
+            }),
+          ]),
+      },
+      {
         type: "VirtualNetworkGatewayConnectionSharedKey",
+        configDefault: ({ properties }) => pipe([() => properties])(),
         onResponseList: ({ path }) =>
           pipe([
-            tap((params) => {
-              assert(path);
-            }),
-            ({ value }) => [{ id: path, value }],
+            ({ value }) => [
+              {
+                id: pipe([() => path, callProp("split", "?"), first])(),
+                value,
+              },
+            ],
           ]),
+        filterLiveExtra: ({ lives, providerConfig }) =>
+          pipe([
+            assign({
+              value: ({ value }) =>
+                pipe([
+                  () => lives,
+                  find(
+                    and([
+                      eq(get("groupType"), "EC2::VpnConnection"),
+                      pipe([
+                        get("live.Options.TunnelOptions"),
+                        any(eq(get("PreSharedKey"), value)),
+                      ]),
+                    ])
+                  ),
+                  switchCase([
+                    isEmpty,
+                    () => value,
+                    ({ id, live }) =>
+                      pipe([
+                        () => live,
+                        get("Options.TunnelOptions"),
+                        findIndex(eq(get("PreSharedKey"), value)),
+                        tap((index) => {
+                          assert(index >= 0);
+                        }),
+                        (index) =>
+                          pipe([
+                            () => id,
+                            replaceWithName({
+                              groupType: "EC2::VpnConnection",
+                              path: `live.Options.TunnelOptions[${index}].PreSharedKey`,
+                              providerConfig,
+                              lives,
+                            }),
+                          ])(),
+                      ])(),
+                  ]),
+                ])(),
+            }),
+          ]),
+        dependencies: {
+          resourceGroup: {
+            type: "ResourceGroup",
+            group: "Resources",
+            name: "resourceGroupName",
+            parent: true,
+          },
+          virtualNetworkGatewayConnection: {
+            type: "VirtualNetworkGatewayConnection",
+            group: "Network",
+            name: "virtualNetworkGatewayConnectionName",
+            parent: true,
+          },
+          vpnConnectionAws: {
+            type: "VpnConnection",
+            group: "EC2",
+            createOnly: true,
+            providerType: "aws",
+            dependencyId:
+              ({ lives, config }) =>
+              ({ value }) =>
+                pipe([
+                  tap((params) => {
+                    assert(value);
+                  }),
+                  () =>
+                    lives.getByType({
+                      providerType: "aws",
+                      type: "VpnConnection",
+                      group: "EC2",
+                    }),
+                  find(
+                    pipe([
+                      get("live.Options.TunnelOptions"),
+                      any(eq(get("PreSharedKey"), value)),
+                    ])
+                  ),
+                  get("id"),
+                ])(),
+          },
+        },
       },
     ],
     map(defaultsDeep({ group })),

@@ -13,10 +13,10 @@
     "plan": "gc plan",
     "apply": "gc apply -f",
     "destroy": "gc destroy -f",
-    "destroy-regionB": "gc destroy -f -p aws-secondary",
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
-    "test": "mocha"
+    "test": "mocha",
+    "init":"gc init"
   },
   "author": "",
   "license": "ISC",

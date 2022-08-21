@@ -300,7 +300,11 @@ module.exports = CoreClient = ({
                                   config,
                                 }),
                               () => data,
-                              spec.postCreate({ name, id }),
+                              spec.create.postCreate({
+                                name,
+                                id,
+                                dependencies: dependencies(),
+                              }),
                             ])(),
                         ])(),
                     ]),
@@ -345,7 +349,7 @@ module.exports = CoreClient = ({
                   config,
                 })
               ),
-              spec.postDestroy({ name, id }),
+              spec.destroy.postDestroy({ name, id }),
               tap((data) => {
                 logger.info(`update ${tos({ name, type, id, data })} updated`);
               }),
