@@ -38,6 +38,7 @@ const NamespacesDefault = [
   "Microsoft.Insights",
   "Microsoft.Network",
   "Microsoft.Storage",
+  "Microsoft.Web",
 ];
 
 const { execCommandShell } = require("./createProjectCommon");
