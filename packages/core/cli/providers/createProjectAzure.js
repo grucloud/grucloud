@@ -37,6 +37,7 @@ const NamespacesDefault = [
   "Microsoft.KeyVault",
   "Microsoft.Insights",
   "Microsoft.Network",
+  "Microsoft.OperationalInsights",
   "Microsoft.Storage",
   "Microsoft.Web",
 ];
