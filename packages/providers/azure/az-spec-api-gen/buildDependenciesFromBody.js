@@ -140,15 +140,8 @@ const buildDependenciesFromBody =
       map.entries(([key, obj]) => [
         key,
         pipe([
-          tap((params) => {
-            if (key == "publicIPAddress") {
-              assert(true);
-            }
-          }),
-
           () => obj,
           resolveSwaggerObject,
-          //getAllProperties,
           switchCase([
             isKeyExcluded({ key }),
             pipe([

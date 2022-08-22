@@ -7,7 +7,7 @@ const { downloadDiscovery } = require("../GcpDownloadSpec");
 describe("GcpDownloadSpec", async function () {
   before(async function () {});
   after(async () => {});
-  it(
+  it.only(
     "download",
     tryCatch(
       pipe([
