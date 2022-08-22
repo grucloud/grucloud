@@ -12,6 +12,7 @@ const {
   and,
   eq,
   fork,
+  filter,
 } = require("rubico");
 const { defaultsDeep, when, includes, pluck, prepend } = require("rubico/x");
 
@@ -31,6 +32,7 @@ const {
   Function,
   compareFunction,
   filterFunctionUrlConfig,
+  removeVersion,
 } = require("./Function");
 const { Layer, compareLayer } = require("./Layer");
 const { EventSourceMapping } = require("./EventSourceMapping");
