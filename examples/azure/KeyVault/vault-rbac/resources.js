@@ -18,7 +18,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vault-rbac",
-      vault: "rg-vault-rbac::gcvaultrbac",
+      vault: "rg-vault-rbac::gc-vault-rbac",
     }),
   },
   {
@@ -36,14 +36,14 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "rg-vault-rbac",
-      vault: "rg-vault-rbac::gcvaultrbac",
+      vault: "rg-vault-rbac::gc-vault-rbac",
     }),
   },
   {
     type: "Vault",
     group: "KeyVault",
     properties: ({ config }) => ({
-      name: "gcvaultrbac",
+      name: "gc-vault-rbac",
       properties: {
         sku: {
           family: "A",
