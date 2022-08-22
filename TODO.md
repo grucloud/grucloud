@@ -77,6 +77,14 @@ https://rushjs.io/
 - message: maxContentLength size of -1 exceeded │
   │ code: ERR_BAD_RESPONSE
 
+message: Encountered an error (ServiceUnavailable) from host runtime. │
+│ code: ERR_BAD_REQUEST │
+│ url: /subscriptions/bff6898b-a5ee-46dc-b7b6-c163dbf1bfbd/resourceGroups/rg-app-node/providers/Microsoft.Web/sites/grucloud-test/functions?api-version=2022-03-01 │
+│ status: 400 │
+│ data: │
+│ Code: BadRequest │
+│ Message: Encountered an error (ServiceUnavailable) from host runtime. │
+
 - Disk vault dep vanished
 - gc d -a
   Compute::VirtualMachineScaleSetExtension 0/3 Request failed with status code 400 On resource 'aks-agentpool-16833683-vmss',

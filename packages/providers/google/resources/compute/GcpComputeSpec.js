@@ -181,7 +181,7 @@ module.exports = pipe([
         ip: { type: "Address", group: "compute" },
         subNetwork: { type: "SubNetwork", group: "compute" },
         disks: { type: "Disk", group: "compute", list: true },
-        frewall: { type: "Firewall", group: "compute" },
+        firewall: { type: "Firewall", group: "compute" },
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       },
       propertiesDefault: {

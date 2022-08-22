@@ -1539,7 +1539,12 @@ const createWritersSpec = pipe([
 ]);
 exports.createWritersSpec = createWritersSpec;
 
-const providersToSpecs = flatMap(callProp("getSpecs"));
+const providersToSpecs = pipe([
+  flatMap(callProp("getSpecs")),
+  groupBy("groupType"),
+  (groupTypeMap) => [...groupTypeMap.values()],
+  map(first),
+]);
 
 exports.generatorMain = ({
   providers,
@@ -1547,7 +1552,6 @@ exports.generatorMain = ({
   providerConfig,
   commandOptions,
   programOptions,
-  specs,
   providerType,
   filterModel,
 }) =>

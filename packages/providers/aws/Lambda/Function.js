@@ -61,11 +61,13 @@ const pickId = pipe([
     FunctionName: FunctionArn,
   }),
 ]);
+
 const removeVersion = pipe([
   callProp("split", ":"),
   callProp("slice", 0, -1),
   callProp("join", ":"),
 ]);
+exports.removeVersion = removeVersion;
 
 exports.Function = ({ spec, config }) => {
   const lambda = createLambda(config);

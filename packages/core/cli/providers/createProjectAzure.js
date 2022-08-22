@@ -34,9 +34,12 @@ const NamespacesDefault = [
   "Microsoft.ContainerService",
   "Microsoft.DocumentDB",
   "Microsoft.DBforPostgreSQL",
+  "Microsoft.KeyVault",
   "Microsoft.Insights",
   "Microsoft.Network",
+  "Microsoft.OperationalInsights",
   "Microsoft.Storage",
+  "Microsoft.Web",
 ];
 
 const { execCommandShell } = require("./createProjectCommon");
@@ -83,7 +86,7 @@ const promptSubscribtionId = (params) =>
       pipe([
         () => accounts,
         map(({ name, id }) => ({
-          title: id,
+          title: `${id} - ${name}`,
           description: `${name}`,
           value: id,
         })),
