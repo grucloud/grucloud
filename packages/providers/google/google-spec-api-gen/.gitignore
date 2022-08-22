@@ -1,0 +1,14 @@
+node_modules/
+.env
+.nyc_output
+coverage
+*.log
+gc.result.json
+.DS_Store
+grucloud.dot
+test-results.xml
+.DS_Store
+list.svg
+inventory*.json
+mochawesome-report
+.clinic

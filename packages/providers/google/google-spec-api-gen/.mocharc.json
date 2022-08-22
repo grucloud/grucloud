@@ -1,0 +1,10 @@
+{
+  "watch-files": ["**/*.js"],
+  "extension": ["js"],
+  "exclude": "node_modules",
+  "reporter": "mochawesome",
+  "timeout": 1000e3,
+  "ui": "bdd",
+  "bail": true,
+  "recursive": true
+}
