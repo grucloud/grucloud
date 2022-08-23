@@ -4,6 +4,28 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Firewall",
+    group: "compute",
+    name: "firewall",
+    properties: ({}) => ({
+      description: "Managed By GruCloud",
+      priority: 1000,
+      allowed: [
+        {
+          IPProtocol: "tcp",
+          ports: ["22", "80", "433"],
+        },
+      ],
+      direction: "INGRESS",
+      logConfig: {
+        enable: false,
+      },
+    }),
+    dependencies: ({}) => ({
+      network: "vpc",
+    }),
+  },
+  {
     type: "Network",
     group: "compute",
     name: "vpc",
@@ -21,28 +43,6 @@ exports.createResources = () => [
     name: "subnetwork",
     properties: ({}) => ({
       ipCidrRange: "10.164.0.0/20",
-    }),
-    dependencies: ({}) => ({
-      network: "vpc",
-    }),
-  },
-  {
-    type: "Firewall",
-    group: "compute",
-    name: "firewall",
-    properties: ({}) => ({
-      description: "Managed By GruCloud",
-      priority: 1000,
-      allowed: [
-        {
-          IPProtocol: "tcp",
-          ports: ["22", "80", "433"],
-        },
-      ],
-      direction: "INGRESS",
-      logConfig: {
-        enable: false,
-      },
     }),
     dependencies: ({}) => ({
       network: "vpc",

@@ -234,9 +234,13 @@ exports.ResourceMaker = ({
 
   const findLive = ({}) =>
     pipe([
-      () =>
+      getResourceName,
+      tap((params) => {
+        assert(true);
+      }),
+      (name) =>
         provider.lives.getByName({
-          name: getResourceName(),
+          name,
           providerName: provider.name,
           type,
           group,

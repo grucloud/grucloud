@@ -4,6 +4,14 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Address",
+    group: "compute",
+    name: "ip-webserver-ssh-keys",
+    properties: ({}) => ({
+      description: "Managed By GruCloud",
+    }),
+  },
+  {
     type: "Firewall",
     group: "compute",
     name: "firewall-22",
@@ -38,14 +46,6 @@ exports.createResources = () => [
       logConfig: {
         enable: false,
       },
-    }),
-  },
-  {
-    type: "Address",
-    group: "compute",
-    name: "ip-webserver-ssh-keys",
-    properties: ({}) => ({
-      description: "Managed By GruCloud",
     }),
   },
   {

@@ -4,14 +4,20 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "ServiceAccount",
-    group: "iam",
-    name: "sa-test-vm",
+    type: "Address",
+    group: "compute",
+    name: "ip-webserver",
     properties: ({}) => ({
-      serviceAccount: {
-        displayName: "SA dev",
-        description: "Managed By GruCloud",
-      },
+      description: "Managed By GruCloud",
+    }),
+  },
+  {
+    type: "Disk",
+    group: "compute",
+    name: "disk",
+    properties: ({}) => ({
+      sizeGb: "20",
+      type: "pd-standard",
     }),
   },
   {
@@ -52,23 +58,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Address",
-    group: "compute",
-    name: "ip-webserver",
-    properties: ({}) => ({
-      description: "Managed By GruCloud",
-    }),
-  },
-  {
-    type: "Disk",
-    group: "compute",
-    name: "disk",
-    properties: ({}) => ({
-      sizeGb: "20",
-      type: "pd-standard",
-    }),
-  },
-  {
     type: "VmInstance",
     group: "compute",
     name: "webserver",
@@ -88,6 +77,17 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       ip: "ip-webserver",
       disks: ["disk"],
+    }),
+  },
+  {
+    type: "ServiceAccount",
+    group: "iam",
+    name: "sa-test-vm",
+    properties: ({}) => ({
+      serviceAccount: {
+        displayName: "SA dev",
+        description: "Managed By GruCloud",
+      },
     }),
   },
 ];

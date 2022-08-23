@@ -385,46 +385,6 @@ const addDefaultSpecs = pipe([
   }),
 ]);
 
-// const addUsedBy = (specs) =>
-//   pipe([
-//     tap((params) => {
-//       assert(true);
-//     }),
-//     () => specs,
-//     map(
-//       assign({
-//         usedBy: (spec) =>
-//           pipe([
-//             tap((params) => {
-//               assert(spec);
-//             }),
-//             () => specs,
-//             filter(
-//               pipe([
-//                 get("dependencies"),
-//                 filter(get("parent")),
-//                 tap((params) => {
-//                   assert(true);
-//                 }),
-//                 any(
-//                   and([
-//                     eq(get("group"), spec.group),
-//                     eq(get("type"), spec.type),
-//                   ])
-//                 ),
-//               ])
-//             ),
-//             tap((params) => {
-//               assert(true);
-//             }),
-//           ])(),
-//       })
-//     ),
-//     tap((params) => {
-//       assert(true);
-//     }),
-//   ])();
-
 const findByGroupAndType = ({ group, type }) =>
   pipe([
     tap((params) => {
