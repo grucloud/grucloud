@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { get, pipe, tap, and, eq, any } = require("rubico");
+const { callProp, last } = require("rubico/x");
 const util = require("util");
 
 const CoreClient = require("@grucloud/core/CoreClient");
@@ -16,15 +17,116 @@ const onResponseDelete = pipe([
   }),
 ]);
 
+const substituteProjectRegionZone = ({ config }) =>
+  pipe([
+    tap((path) => {
+      assert(path);
+      assert(config.projectId);
+      assert(config.region);
+      assert(config.zone);
+    }),
+    callProp("replace", "{project}", config.projectId),
+    callProp("replace", "{region}", config.region),
+    callProp("replace", "{zone}", config.zone),
+  ]);
+
+const substitutePathId =
+  ({ id, parameterOrder }) =>
+  (path) =>
+    pipe([
+      tap((params) => {
+        assert(parameterOrder);
+        assert(id);
+        assert(path);
+      }),
+      () => parameterOrder,
+      last,
+      (lastParam) =>
+        pipe([
+          tap((params) => {
+            assert(lastParam);
+          }),
+          () => path,
+          callProp("replace", `{${lastParam}}`, id),
+        ])(),
+    ])();
+
+const pathListDefault =
+  ({ spec, config }) =>
+  ({}) =>
+    pipe([
+      () => spec,
+      get("methods.list"),
+      tap((list) => {
+        assert(list, `missing methods.list for ${spec.groupType}`);
+      }),
+      get("path"),
+      substituteProjectRegionZone({ config }),
+    ])();
+
+const pathGetDefault =
+  ({ spec, config }) =>
+  ({ id }) =>
+    pipe([
+      () => spec,
+      get("methods.get"),
+      tap((params) => {
+        assert(true);
+      }),
+      tap((getMethod) => {
+        assert(getMethod, `missing methods.get for ${spec.groupType}`);
+      }),
+      ({ parameterOrder, path }) =>
+        pipe([
+          () => path,
+          substituteProjectRegionZone({ config }),
+          substitutePathId({ config, id, parameterOrder }),
+        ])(),
+    ])();
+
+const pathCreateDefault =
+  ({ spec, config }) =>
+  ({}) =>
+    pipe([
+      () => spec,
+      get("methods.insert"),
+      tap((insert) => {
+        assert(insert, `missing methods.insert for ${spec.groupType}`);
+      }),
+      get("path"),
+      substituteProjectRegionZone({ config }),
+    ])();
+
+const pathDeleteDefault =
+  ({ spec, config }) =>
+  ({ id }) =>
+    pipe([
+      () => spec,
+      tap((params) => {
+        assert(true);
+      }),
+      get("methods.delete"),
+      tap((deleteMethod) => {
+        assert(deleteMethod, `missing methods.delete for ${spec.groupType}`);
+      }),
+      ({ parameterOrder, path }) =>
+        pipe([
+          () => path,
+          substituteProjectRegionZone({ config }),
+          substitutePathId({ config, id, parameterOrder }),
+        ])(),
+    ])();
+
 module.exports = GoogleClient = ({
-  baseURL,
-  url,
   spec,
   config,
+  baseURL,
   findName,
   findId,
-  pathList,
-  pathCreate,
+  pathGet = pathGetDefault({ spec, config }),
+  pathList = pathListDefault({ spec, config }),
+  pathCreate = pathCreateDefault({ spec, config }),
+  pathDelete = pathDeleteDefault({ spec, config }),
   pathUpdate,
   verbUpdate,
   findTargetId = () => get("targetId"),
@@ -35,8 +137,7 @@ module.exports = GoogleClient = ({
   isDefault,
   managedByOther,
   onResponseList = onResponseListDefault,
-  cannotBeDeleted = () => false,
-
+  cannotBeDeleted,
   onCreateExpectedException = pipe([
     tap((error) => {
       logger.info(`onCreateExpectedException ${util.inspect(error)}`);
@@ -57,10 +158,11 @@ module.exports = GoogleClient = ({
   ]),
   findDependencies,
 }) => {
-  assert(baseURL);
-  assert(url);
   assert(spec);
   assert(spec.type);
+
+  //assert(spec.baseUrl, `no baseUrl for ${spec.groupType}`);
+
   assert(config);
   assert(config.accessToken);
 
@@ -70,9 +172,11 @@ module.exports = GoogleClient = ({
     config,
     findName,
     findId,
+    pathGet,
     pathList,
     pathCreate,
     pathUpdate,
+    pathDelete,
     verbUpdate,
     findTargetId,
     isInstanceUp,
@@ -89,8 +193,7 @@ module.exports = GoogleClient = ({
     onCreateExpectedException,
     findDependencies,
     axios: createAxiosMakerGoogle({
-      baseURL,
-      url,
+      baseURL: baseURL || spec.baseUrl,
       config,
     }),
   });

@@ -40,7 +40,7 @@ exports.GcpDisk = ({ spec, config }) => {
       }),
       () =>
         lives.getByType({
-          type: "VmInstance",
+          type: "Instance",
           group: "compute",
           providerName: config.providerName,
         }),

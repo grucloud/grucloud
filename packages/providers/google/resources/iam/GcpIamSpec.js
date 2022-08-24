@@ -24,19 +24,32 @@ const {
 } = require("./GcpServiceAccount");
 
 const { GcpIamPolicy, compareIamPolicy } = require("./GcpIamPolicy");
-const {
-  GcpIamBinding,
-  isOurMinionIamBinding,
-  compareIamBinding,
-} = require("./GcpIamBinding");
+const { GcpIamBinding, isOurMinionIamBinding } = require("./GcpIamBinding");
 
 const GROUP = "iam";
 
 module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+  map(
+    assign({
+      group: () => GROUP,
+      baseUrl: () => "https://iam.googleapis.com/v1",
+    })
+  )([
     {
       type: "ServiceAccount",
       Client: GcpServiceAccount,
+      methods: {
+        get: {
+          path: "/projects/{project}/serviceAccounts/{serviceAccount}",
+          parameterOrder: ["project", "serviceAccount"],
+        },
+        list: { path: "/projects/{project}/serviceAccounts" },
+        insert: { path: "/projects/{project}/serviceAccounts" },
+        delete: {
+          path: "/projects/{project}/serviceAccounts/{serviceAccount}",
+          parameterOrder: ["project", "serviceAccount"],
+        },
+      },
       isOurMinion: isOurMinionServiceAccount,
       resourceVarName: pipe([prepend("sa_"), camelCase]),
       filterLive: () =>
@@ -64,6 +77,9 @@ module.exports = () =>
     },
     {
       type: "Policy",
+      //TODO
+      //methods: { list: { path: "/projects/${project}/serviceAccounts" } },
+
       dependencies: {
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       },
@@ -76,6 +92,9 @@ module.exports = () =>
     },
     {
       type: "Binding",
+      //TODO
+      //methods: { list: { path: "/projects/${project}/serviceAccounts" } },
+
       dependencies: {
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       },

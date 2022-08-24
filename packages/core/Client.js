@@ -151,8 +151,8 @@ const decorateLive =
               pipe([
                 () => client.spec,
                 get("dependencies", {}),
-                tap((params) => {
-                  assert(true);
+                tap((dependencies) => {
+                  assert(!Array.isArray(dependencies));
                 }),
                 Object.entries,
                 map(
@@ -373,6 +373,14 @@ const createClient = ({
       //assert(client.getByName);
       assert(client.getList);
     }),
+    //TODO
+    defaultsDeep(
+      pick(["cannotBeDeleted", "isDefault", "managedByOther"])(spec)
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+
     defaultsDeep({
       retryConfigs: { isUp: { retryDelay: 10e3, retryCount: 6 * 25 } },
       displayName: pipe([
@@ -387,11 +395,11 @@ const createClient = ({
         }),
         get("name"),
       ]),
-
       findMeta: () => undefined,
       findDependencies: () => [],
       findNamespace: () => "",
       findNamespaceFromTarget: get("namespace"),
+      //TODO remove ?
       cannotBeDeleted: () => false,
       isDefault: () => false,
       managedByOther: () => false,

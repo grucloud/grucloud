@@ -10,15 +10,41 @@ const {
   filter,
   and,
   not,
+  fork,
 } = require("rubico");
-const { callProp, find } = require("rubico/x");
+const {
+  pluck,
+  includes,
+  unless,
+  when,
+  callProp,
+  find,
+  values,
+  size,
+  last,
+  append,
+  isEmpty,
+  identity,
+} = require("rubico/x");
+
+const {
+  compare,
+  omitIfEmpty,
+  replaceWithName,
+} = require("@grucloud/core/Common");
+
+const { deepPick } = require("@grucloud/core/deepPick");
+const { deepDefaults } = require("@grucloud/core/deepDefault");
+
+const GoogleClient = require("./GoogleClient");
+
 const GcpCompute = require("./resources/compute");
 const GcpIam = require("./resources/iam");
 const GcpStorage = require("./resources/storage");
 const GcpDns = require("./resources/dns");
 const GcpRun = require("./resources/run");
 
-const Schema = require("./schema/GoogleSpec.json");
+const Schema = require("./schema/GoogleSchema.json");
 
 const createSpecsOveride = (config) =>
   pipe([
@@ -27,14 +53,205 @@ const createSpecsOveride = (config) =>
       GcpStorage,
       GcpIam,
       GcpCompute,
-      GcpDns,
+      //GcpDns,
       GcpRun,
     ],
     flatMap((spec) => spec({ config })),
-    tap((params) => {
-      assert(true);
-    }),
   ])();
+
+const isDefault = pipe([
+  tap((params) => {
+    assert(true);
+  }),
+  get("live.name", ""),
+  callProp("startsWith", "default"),
+]);
+
+const buildDefaultSpec = fork({
+  isDefault: () => isDefault,
+  managedByOther: () => isDefault,
+  cannotBeDeleted: () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      isDefault,
+    ]),
+  ignoreResource: () => () => pipe([get("isDefault")]),
+  //TODO
+  findName: ({ methods, dependencies }) =>
+    pipe([
+      tap((params) => {
+        assert(methods);
+        assert(dependencies);
+      }),
+      fork({
+        path: pipe([() => methods, get("get.path"), callProp("split", "/")]),
+        id: pipe([get("live.id"), callProp("split", "/")]),
+        lives: get("lives"),
+      }),
+      ({ path, id }) =>
+        pipe([
+          () => path,
+          reduce(
+            (acc, value, index) =>
+              pipe([
+                () => acc,
+                when(
+                  and([
+                    () => isSubstituable(value),
+                    not(eq(value, "{subscriptionId}")),
+                    not(eq(value, "{scope}")),
+                  ]),
+                  pipe([
+                    () => id[index + size(id) - size(path)],
+                    tap((depName) => {
+                      assert(depName, `path ${path} id:${id}  `);
+                    }),
+                    when(
+                      pipe([
+                        () => ["resourceGroup"],
+                        any((type) => pipe([() => value, includes(type)])()),
+                      ]),
+                      callProp("toLowerCase")
+                    ),
+                    (depName) => [...acc, depName],
+                  ])
+                ),
+              ])(),
+            []
+          ),
+        ])(),
+      callProp("join", "::"),
+      tap((name) => {
+        assert(name, "missing name");
+      }),
+    ]),
+  // inferName:
+  //   ({ dependencies }) =>
+  //   (resource) =>
+  //     pipe([
+  //       tap(() => {
+  //         assert(dependencies);
+  //         assert(resource);
+  //         assert(resource.dependenciesSpec);
+  //       }),
+  //       () => dependencies,
+  //       map.entries(([key, dep]) => [key, { varName: key, ...dep }]),
+  //       filter(get("parent")),
+  //       values,
+  //       last,
+  //       switchCase([
+  //         isEmpty,
+  //         () => "",
+  //         ({ varName }) =>
+  //           pipe([
+  //             () => resource.dependenciesSpec,
+  //             get(varName),
+  //             tap((name) => {
+  //               assert(name);
+  //             }),
+  //           ])(),
+  //       ]),
+  //       unless(
+  //         () => isEmpty(resource.name),
+  //         pipe([unless(isEmpty, append("::")), append(resource.name)])
+  //       ),
+  //       tap((params) => {
+  //         assert(true);
+  //       }),
+  //     ])(),
+  Client:
+    ({ dependencies }) =>
+    ({ spec, config, lives }) =>
+      GoogleClient({
+        spec,
+        dependencies,
+        config,
+        lives,
+      }),
+  filterLive:
+    ({ pickPropertiesCreate = [], dependencies }) =>
+    ({ providerConfig, lives }) =>
+      //TODO
+      pipe([
+        tap((params) => {
+          assert(lives);
+          assert(pickPropertiesCreate);
+          assert(providerConfig);
+          assert(dependencies);
+        }),
+        deepPick([
+          "name",
+          ...pickPropertiesCreate,
+          ...pipe([
+            () => dependencies,
+            values,
+            filter(get("list")),
+            pluck("pathId"),
+            filter(not(isEmpty)),
+          ])(),
+        ]),
+        //omit([]),
+        //filterLiveDependencyArray({ dependencies, providerConfig, lives }),
+      ]),
+  compare: ({
+    pickPropertiesCreate = [],
+    omitProperties = [],
+    omitPropertiesExtra = [],
+    propertiesDefaultArray,
+  }) =>
+    compare({
+      filterTarget: (input) =>
+        pipe([
+          tap((params) => {
+            assert(input);
+          }),
+        ]),
+      filterLive: ({ live, config, filterLiveExtra = () => identity }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          filterLiveExtra({ live, providerConfig: config }),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      filterAll: () =>
+        pipe([
+          tap((params) => {
+            assert(pickPropertiesCreate);
+          }),
+          deepPick(pickPropertiesCreate),
+          tap((params) => {
+            assert(true);
+          }),
+          deepDefaults(propertiesDefaultArray),
+          tap((params) => {
+            assert(true);
+          }),
+          omit(omitProperties),
+          omit(omitPropertiesExtra),
+          omit([
+            //TODO keep the name and add inferName
+            "name",
+          ]),
+          omitIfEmpty(["properties"]),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+    }),
+  //isOurMinion: () => AzTag.isOurMinion,
+});
+
+const addDefaultSpecs = pipe([
+  map((spec) => ({ ...buildDefaultSpec(spec), ...spec })),
+  tap((params) => {
+    assert(true);
+  }),
+]);
 
 const findByGroupAndType = ({ group, type }) =>
   pipe([
@@ -55,20 +272,10 @@ const mergeSpec = ({ specsGen, specsOveride }) =>
     map((overideSpec) =>
       pipe([
         () => specsGen,
-        tap((params) => {
-          assert(true);
-        }),
-
         findByGroupAndType(overideSpec),
         (found) => ({ ...found, ...overideSpec }),
-        tap((params) => {
-          assert(true);
-        }),
       ])()
     ),
-    tap((params) => {
-      assert(true);
-    }),
   ])();
 
 exports.fnSpecs = (config) =>
@@ -77,27 +284,26 @@ exports.fnSpecs = (config) =>
       specsOveride: () => createSpecsOveride(config),
       specsGen: pipe([() => Schema]),
     }),
-    // assign({
-    //   specsOveride: mergeSpec,
-    // }),
-    // assign({
-    //   specsGen: ({ specsGen, specsOveride }) =>
-    //     pipe([
-    //       () => specsGen,
-    //       filter(
-    //         not((spec) =>
-    //           pipe([() => specsOveride, findByGroupAndType(spec)])()
-    //         )
-    //       ),
-    //     ])(),
-    // }),
-    //({ specsGen, specsOveride }) => [...specsGen, ...specsOveride],
-    ({ specsOveride }) => [...specsOveride],
+    assign({
+      specsOveride: mergeSpec,
+    }),
+    assign({
+      specsGen: ({ specsGen, specsOveride }) =>
+        pipe([
+          () => specsGen,
+          filter(
+            not((spec) =>
+              pipe([() => specsOveride, findByGroupAndType(spec)])()
+            )
+          ),
+        ])(),
+    }),
+    ({ specsGen, specsOveride }) => [...specsGen, ...specsOveride],
     map(
       assign({ groupType: pipe([({ group, type }) => `${group}::${type}`]) })
     ),
     callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType)),
-    //addDefaultSpecs,
+    addDefaultSpecs,
     tap((params) => {
       assert(true);
     }),

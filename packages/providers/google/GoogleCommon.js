@@ -22,17 +22,24 @@ exports.createAxiosMakerGoogle = ({
   config,
   contentType,
 }) =>
-  AxiosMaker({
-    baseURL: urljoin(baseURL, url),
-    contentType,
-    onHeaders: () => {
-      const accessToken = config.accessToken();
-      assert(accessToken, "accessToken not set");
-      return {
-        Authorization: `Bearer ${accessToken}`,
-      };
-    },
-  });
+  pipe([
+    tap((params) => {
+      assert(baseURL);
+    }),
+    () => urljoin(baseURL, url),
+    (baseURL) =>
+      AxiosMaker({
+        baseURL,
+        contentType,
+        onHeaders: () => {
+          const accessToken = config.accessToken();
+          assert(accessToken, "accessToken not set");
+          return {
+            Authorization: `Bearer ${accessToken}`,
+          };
+        },
+      }),
+  ])();
 
 exports.compareGoogle = ({ filterAll, filterTarget, filterLive } = {}) =>
   pipe([

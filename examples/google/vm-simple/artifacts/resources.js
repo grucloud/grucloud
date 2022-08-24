@@ -4,7 +4,7 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "VmInstance",
+    type: "Instance",
     group: "compute",
     name: "web-server",
     properties: ({}) => ({

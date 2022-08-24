@@ -1,15 +1,13 @@
 const assert = require("assert");
 const fs = require("fs").promises;
 
-const { pipe, tap, switchCase, get } = require("rubico");
+const { pipe, tap } = require("rubico");
 const {} = require("rubico/x");
 const { JWT } = require("google-auth-library");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GoogleAutorize" });
 const { tos } = require("@grucloud/core/tos");
 const { init } = require("./GoogleInit");
-
-const { runGCloudCommand } = require("./GoogleCommon");
 
 const ServiceAccountName = "grucloud";
 

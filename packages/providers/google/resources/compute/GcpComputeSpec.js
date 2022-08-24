@@ -10,8 +10,7 @@ const {
   eq,
   filter,
 } = require("rubico");
-const { prepend, callProp, find, defaultsDeep } = require("rubico/x");
-const { camelCase } = require("change-case");
+const { callProp, find, defaultsDeep } = require("rubico/x");
 
 const GoogleTag = require("../../GoogleTag");
 const { compareGoogle } = require("../../GoogleCommon");
@@ -33,10 +32,6 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const GROUP = "compute";
 
-// const ResourceVarNameSubnet = pipe([camelCase, prepend("subnet_")]);
-// const ResourceNameSubnet = (name) =>
-//   ResourceVarNameSubnet(name).replace(/_/g, "-");
-
 module.exports = pipe([
   () => [
     {
@@ -54,21 +49,23 @@ module.exports = pipe([
       },
       Client: GcpUrlMap,
     },
-    {
-      type: "HttpsTargetProxy",
-      dependencies: {
-        urlMap: { type: "UrlMap", group: "compute" },
-        certificate: { type: "SslCertificate", group: "compute" },
-      },
-      Client: GcpHttpsTargetProxy,
-    },
-    {
-      type: "GlobalForwardingRule",
-      dependencies: {
-        httpsTargetProxy: { type: "HttpsTargetProxy", group: "compute" },
-      },
-      Client: GcpGlobalForwardingRule,
-    },
+    // TargetHttpsProxy
+    //TODO
+    // {
+    //   type: "HttpsTargetProxy",
+    //   dependencies: {
+    //     urlMap: { type: "UrlMap", group: "compute" },
+    //     certificate: { type: "SslCertificate", group: "compute" },
+    //   },
+    //   Client: GcpHttpsTargetProxy,
+    // },
+    // {
+    //   type: "GlobalForwardingRule",
+    //   dependencies: {
+    //     httpsTargetProxy: { type: "HttpsTargetProxy", group: "compute" },
+    //   },
+    //   Client: GcpGlobalForwardingRule,
+    // },
     {
       type: "Network",
       Client: GcpNetwork,
@@ -76,7 +73,7 @@ module.exports = pipe([
         pick(["description", "autoCreateSubnetworks", "routingConfig"]),
     },
     {
-      type: "SubNetwork",
+      type: "Subnetwork",
       filterLive: () =>
         pipe([
           pick(["ipCidrRange"]),
@@ -151,7 +148,7 @@ module.exports = pipe([
         ]),
     },
     {
-      type: "VmInstance",
+      type: "Instance",
       Client: GoogleVmInstance,
       compare: compareVmInstance,
       omitProperties: [
@@ -179,7 +176,7 @@ module.exports = pipe([
       dependsOnList: ["compute::Disk"],
       dependencies: {
         ip: { type: "Address", group: "compute" },
-        subNetwork: { type: "SubNetwork", group: "compute" },
+        subNetwork: { type: "Subnetwork", group: "compute" },
         disks: { type: "Disk", group: "compute", list: true },
         firewall: { type: "Firewall", group: "compute" },
         serviceAccount: { type: "ServiceAccount", group: "iam" },

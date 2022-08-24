@@ -72,7 +72,7 @@ module.exports = CoreClient = ({
   onResponseDelete = identity,
   onResponseUpdate = identity,
   isDefault,
-  managedByOther = () => false,
+  managedByOther,
   cannotBeDeleted,
   shouldRetryOnExceptionGetById = shouldRetryOnExceptionCreateDefault,
   shouldRetryOnExceptionList = shouldRetryOnExceptionCreateDefault,
@@ -233,12 +233,9 @@ module.exports = CoreClient = ({
                 assert(!spec.listOnly);
               }),
               () => ({ dependencies: dependencies(), name, payload }),
-              tap((params) => {
-                assert(true);
-              }),
               pathCreate,
               tap((path) => {
-                logger.info(`create ${spec.type}/${name}, path: ${path}`);
+                logger.info(`create ${spec.groupType}/${name}, path: ${path}`);
               }),
               (path) =>
                 pipe([
@@ -371,13 +368,10 @@ module.exports = CoreClient = ({
                 assert(!isEmpty(id), `destroy ${type}: invalid id`);
               }),
               () => ({ id, name, dependencies: dependencies() }),
-              tap((params) => {
-                assert(true);
-              }),
               pathDelete,
               (path) =>
                 retryCallOnError({
-                  name: `destroy type ${spec.type}, path: ${path}`,
+                  name: `destroy type ${spec.groupType}, path: ${path}`,
                   fn: () => axios.delete(path),
                   isExpectedResult: () => true,
                   config: { ...config, repeatCount: 0 },

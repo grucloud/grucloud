@@ -49,7 +49,7 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "VmInstance",
+    type: "Instance",
     group: "compute",
     name: "db",
     properties: ({}) => ({
