@@ -39,12 +39,27 @@ const path = require("path");
 const { ApisIncludes, ResourcesExcludes } = require("./GcpApiIncludes");
 const { buildDependenciesObject } = require("./GcpBuildDependencies");
 const { getResourcesDeep } = require("./GcpGetResourcesDeep");
+const { buildOmitPropertiesObject } = require("./GcpBuildOmitProperties");
 
 const { discoveryDereference } = require("./GcpDiscoveryDereference");
 const DiscoveryUrl =
   "https://discovery.googleapis.com/discovery/v1/apis?parameters";
 
-const assignDependenciesPaths = assign({
+const assignAdditionalProperties = assign({
+  omitProperties: ({ methods }) =>
+    pipe([
+      () => methods,
+      switchCase([
+        get("get.response"),
+        pipe([
+          get("get.response"),
+          buildOmitPropertiesObject({ inventory: {} }),
+          map(callProp("join", ".")),
+          callProp("sort"),
+        ]),
+        pipe([() => []]),
+      ]),
+    ])(),
   dependenciesPaths: ({ methods }) =>
     pipe([
       tap((params) => {
@@ -53,18 +68,9 @@ const assignDependenciesPaths = assign({
       () => methods,
       switchCase([
         get("get.response"),
-        pipe([
-          get("get.response"),
-          tap((response) => {
-            assert(response);
-          }),
-          buildDependenciesObject({ inventory: {} }),
-        ]),
+        pipe([get("get.response"), buildDependenciesObject({ inventory: {} })]),
         pipe([() => []]),
       ]),
-      tap((params) => {
-        assert(true);
-      }),
       callProp("sort", (a, b) => a.pathId.localeCompare(b.pathId)),
     ])(),
 });
@@ -80,7 +86,7 @@ const assignMethods = assign({
         assign({
           path: switchCase([get("flatPath"), get("flatPath"), get("path")]),
         }),
-        pick(["id", "path", "parameterOrder", "httpMethod"]),
+        pick(["id", "path", "httpMethod"]),
       ])
     ),
   ]),
@@ -120,7 +126,7 @@ const processRest = (inventory) =>
     filter(filterMethods),
     map(sortMethods),
     // Add dependencies to resources
-    map(assignDependenciesPaths),
+    map(assignAdditionalProperties),
     map(assignMethods),
     map(
       assign({

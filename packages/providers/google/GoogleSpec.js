@@ -11,15 +11,9 @@ const {
   and,
   not,
   fork,
+  omit,
 } = require("rubico");
-const {
-  pluck,
-  callProp,
-  find,
-  values,
-  isEmpty,
-  identity,
-} = require("rubico/x");
+const { pluck, callProp, find, identity } = require("rubico/x");
 
 const {
   compare,
@@ -39,6 +33,7 @@ const GcpDns = require("./resources/dns");
 const GcpRun = require("./resources/run");
 
 const Schema = require("./schema/GoogleSchema.json");
+const { deepOmit } = require("@grucloud/core/deepOmit");
 
 const createSpecsOveride = (config) =>
   pipe([
@@ -47,7 +42,7 @@ const createSpecsOveride = (config) =>
       GcpStorage,
       GcpIam,
       GcpCompute,
-      //GcpDns,
+      GcpDns,
       GcpRun,
     ],
     flatMap((spec) => spec({ config })),
@@ -59,7 +54,6 @@ const buildDefaultSpec = fork({
     () =>
     ({ live, id }) =>
       callProp("replace", new RegExp(`({.*})`), id),
-
   findName:
     ({ methods, dependencies }) =>
     ({ live }) =>
@@ -118,7 +112,7 @@ const buildDefaultSpec = fork({
         lives,
       }),
   filterLive:
-    ({ pickPropertiesCreate = [], dependencies }) =>
+    ({ pickPropertiesCreate = [], omitProperties = [], dependencies }) =>
     ({ providerConfig, lives }) =>
       //TODO
       pipe([
@@ -128,18 +122,11 @@ const buildDefaultSpec = fork({
           assert(providerConfig);
           assert(dependencies);
         }),
-        deepPick([
-          "name",
-          ...pickPropertiesCreate,
-          ...pipe([
-            () => dependencies,
-            values,
-            filter(get("list")),
-            pluck("pathId"),
-            filter(not(isEmpty)),
-          ])(),
-        ]),
-        //omit([]),
+        deepOmit(omitProperties),
+        omit(["labelFingerprint", "fingerprint"]),
+        tap((params) => {
+          assert(true);
+        }),
         //filterLiveDependencyArray({ dependencies, providerConfig, lives }),
       ]),
   compare: ({

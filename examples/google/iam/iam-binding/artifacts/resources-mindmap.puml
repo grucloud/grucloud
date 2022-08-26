@@ -4,6 +4,6 @@ skinparam monochrome true
 + Infra
 ++ google
 +++ iam
-++++ ServiceAccount (1)
 ++++ Binding (1)
+++++ ServiceAccount (1)
 @endmindmap

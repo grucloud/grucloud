@@ -4,5 +4,5 @@ skinparam monochrome true
 + Infra
 ++ google
 +++ compute
-++++ VmInstance (1)
+++++ Instance (1)
 @endmindmap

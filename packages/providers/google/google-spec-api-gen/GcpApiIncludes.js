@@ -1,6 +1,7 @@
 exports.ApisIncludes = [
   "cloudresourcemanager:v3",
   "compute:v1",
+  "dns:v1",
   "iam:v1",
   "run:v1",
   "storage:v1",

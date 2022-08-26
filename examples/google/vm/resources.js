@@ -8,7 +8,10 @@ exports.createResources = () => [
     group: "compute",
     name: "ip-webserver",
     properties: ({}) => ({
+      name: "ip-webserver",
       description: "Managed By GruCloud",
+      networkTier: "PREMIUM",
+      addressType: "EXTERNAL",
     }),
   },
   {

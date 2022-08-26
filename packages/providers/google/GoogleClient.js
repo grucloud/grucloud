@@ -224,12 +224,12 @@ const pathDeleteDefault =
       tap((deleteMethod) => {
         assert(deleteMethod, `missing methods.delete for ${spec.groupType}`);
       }),
-      ({ path }) =>
-        pipe([
-          () => path,
-          substituteProjectRegionZone({ config }),
-          substitutePathId({ config, id }),
-        ])(),
+      get("path"),
+      substituteProjectRegionZone({ config }),
+      substitutePathId({ config, id }),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
 const isDefaultDefault = pipe([

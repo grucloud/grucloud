@@ -150,7 +150,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       () =>
         retryCallOnError({
           name: `destroy ${bucketName}`,
-          fn: () => axios.delete(`/${bucketName}`),
+          fn: () => axios.delete(`/b/${bucketName}`),
           config: configProvider,
           isExpectedException: isExpectedException404,
         }),

@@ -127,7 +127,7 @@ module.exports = pipe([
     {
       type: "Address",
       Client: GcpAddress,
-      filterLive: () => pick(["description"]),
+      omitPropertiesExtra: ["address"],
     },
     {
       type: "Disk",

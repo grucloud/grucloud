@@ -5,13 +5,11 @@ const {
   filter,
   map,
   eq,
-  or,
   fork,
   and,
   get,
   not,
   switchCase,
-  reduce,
 } = require("rubico");
 const {
   isEmpty,
@@ -19,30 +17,10 @@ const {
   values,
   callProp,
   isObject,
-  append,
-  unless,
   includes,
-  last,
-  defaultsDeep,
 } = require("rubico/x");
 
-const buildParentPath = (key) =>
-  pipe([
-    unless(() => isEmpty(key), append(key)),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
-
-const getAllProperties = ({ allOf = [], properties = {} }) =>
-  pipe([
-    () => allOf,
-    tap((params) => {
-      assert(properties);
-    }),
-    reduce((acc, value) => ({ ...acc, ...value.properties }), {}),
-    defaultsDeep(properties),
-  ])();
+const { getAllProperties, buildParentPath } = require("./GcpApiSpecCommon");
 
 const buildDependenciesObject = ({ key, inventory, parentPath, accumulator }) =>
   pipe([
