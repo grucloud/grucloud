@@ -49,6 +49,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
   });
 
   const axiosUpload = createAxiosMakerGoogle({
+    baseURL: GCP_STORAGE_BASE_URL,
     config: configProvider,
     contentType: "application/x-www-form-urlencoded",
   });

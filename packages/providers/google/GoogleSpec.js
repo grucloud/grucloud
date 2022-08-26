@@ -14,15 +14,9 @@ const {
 } = require("rubico");
 const {
   pluck,
-  includes,
-  unless,
-  when,
   callProp,
   find,
   values,
-  size,
-  last,
-  append,
   isEmpty,
   identity,
 } = require("rubico/x");
@@ -59,74 +53,27 @@ const createSpecsOveride = (config) =>
     flatMap((spec) => spec({ config })),
   ])();
 
-const isDefault = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  get("live.name", ""),
-  callProp("startsWith", "default"),
-]);
-
 const buildDefaultSpec = fork({
-  isDefault: () => isDefault,
-  managedByOther: () => isDefault,
-  cannotBeDeleted: () =>
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      isDefault,
-    ]),
   ignoreResource: () => () => pipe([get("isDefault")]),
-  //TODO
-  findName: ({ methods, dependencies }) =>
-    pipe([
-      tap((params) => {
-        assert(methods);
-        assert(dependencies);
-      }),
-      fork({
-        path: pipe([() => methods, get("get.path"), callProp("split", "/")]),
-        id: pipe([get("live.id"), callProp("split", "/")]),
-        lives: get("lives"),
-      }),
-      ({ path, id }) =>
-        pipe([
-          () => path,
-          reduce(
-            (acc, value, index) =>
-              pipe([
-                () => acc,
-                when(
-                  and([
-                    () => isSubstituable(value),
-                    not(eq(value, "{subscriptionId}")),
-                    not(eq(value, "{scope}")),
-                  ]),
-                  pipe([
-                    () => id[index + size(id) - size(path)],
-                    tap((depName) => {
-                      assert(depName, `path ${path} id:${id}  `);
-                    }),
-                    when(
-                      pipe([
-                        () => ["resourceGroup"],
-                        any((type) => pipe([() => value, includes(type)])()),
-                      ]),
-                      callProp("toLowerCase")
-                    ),
-                    (depName) => [...acc, depName],
-                  ])
-                ),
-              ])(),
-            []
-          ),
-        ])(),
-      callProp("join", "::"),
-      tap((name) => {
-        assert(name, "missing name");
-      }),
-    ]),
+  pathLiveFromParent:
+    () =>
+    ({ live, id }) =>
+      callProp("replace", new RegExp(`({.*})`), id),
+
+  findName:
+    ({ methods, dependencies }) =>
+    ({ live }) =>
+      pipe([
+        tap((params) => {
+          assert(live);
+          //assert(dependencies);
+        }),
+        () => live,
+        get("name"),
+        tap((name) => {
+          assert(name, `missing name ${JSON.stringify(live)}`);
+        }),
+      ])(),
   // inferName:
   //   ({ dependencies }) =>
   //   (resource) =>

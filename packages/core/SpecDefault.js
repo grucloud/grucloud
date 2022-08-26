@@ -66,8 +66,6 @@ const SpecDefault = ({ providerName }) => ({
   destroy: { postDestroy: () => identity },
   displayResource: () => identity,
   hideResource: () => () => false,
-  managedByOther: () => false,
-  cannotBeDeleted: () => false,
   findResource: ({ resources, name, lives }) =>
     pipe([
       tap((params) => {

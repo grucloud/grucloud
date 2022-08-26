@@ -3,11 +3,11 @@ title Resources for project vm
 skinparam monochrome true
 + Infra
 ++ google
-+++ iam
-++++ ServiceAccount (1)
 +++ compute
-++++ Firewall (2)
 ++++ Address (1)
 ++++ Disk (1)
-++++ VmInstance (1)
+++++ Firewall (2)
+++++ Instance (1)
++++ iam
+++++ ServiceAccount (1)
 @endmindmap

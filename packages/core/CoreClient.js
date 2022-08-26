@@ -56,12 +56,17 @@ module.exports = CoreClient = ({
     name,
     ...properties,
   }),
-  findName = pipe([
-    get("live.name"),
-    tap((name) => {
-      assert(name, "missing name");
-    }),
-  ]),
+  findName = ({ live }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => live,
+      get("name"),
+      tap((name) => {
+        assert(name, `missing name in live ${JSON.stringify(live)}`);
+      }),
+    ])(),
   findId = get("live.id"),
   findTargetId = () => get("id"),
   decorate = () => identity,
@@ -194,7 +199,16 @@ module.exports = CoreClient = ({
                 logger.debug(`getList ${spec.groupType}, ${tos(data)}`);
               }),
               onResponseList({ axios, lives, path }),
-              map(decorate({ axios, lives })),
+              switchCase([
+                Array.isArray,
+                map(decorate({ axios, lives })),
+                pipe([
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  () => [],
+                ]),
+              ]),
             ])()
           ),
           flatten,

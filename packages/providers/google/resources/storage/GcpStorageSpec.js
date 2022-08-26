@@ -33,6 +33,50 @@ module.exports = () =>
       }),
     },
     {
+      type: "BucketAccessControl",
+      managedByOther: () => true,
+      findName: pipe([
+        get("live"),
+        tap(({ bucket, entity }) => {
+          assert(bucket);
+        }),
+        ({ bucket, entity }) => `${bucket}::${entity}`,
+      ]),
+    },
+    {
+      type: "DefaultObjectAccessControl",
+      cannotBeDeleted: () => true,
+      managedByOther: () => true,
+      findId: pipe([
+        get("live.entity"),
+        tap((name) => {
+          assert(name);
+        }),
+      ]),
+      findName: pipe([
+        get("live.entity"),
+        tap((name) => {
+          assert(name);
+        }),
+      ]),
+    },
+    {
+      type: "ObjectAccessControl",
+      managedByOther: () => true,
+      pathLiveFromParent: ({ live }) =>
+        pipe([
+          tap((params) => {
+            assert(live.bucket);
+            assert(live.name);
+          }),
+          () => `b/${live.bucket}/o/${live.name}/acl`,
+        ]),
+      findName: pipe([
+        get("live"),
+        ({ bucket, object, entity }) => `${bucket}::${object}::${entity}`,
+      ]),
+    },
+    {
       type: "Object",
       dependencies: {
         bucket: { type: "Bucket", group: "storage" },

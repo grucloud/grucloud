@@ -1,18 +1,6 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  filter,
-  map,
-  eq,
-  or,
-  get,
-  not,
-  switchCase,
-  assign,
-  reduce,
-} = require("rubico");
-const { when, isObject, identity } = require("rubico/x");
+const { pipe, tap, map, get, switchCase, assign, reduce } = require("rubico");
+const { isObject, identity } = require("rubico/x");
 
 const dereference = ({ schemas }) =>
   pipe([
@@ -34,6 +22,7 @@ const dereference = ({ schemas }) =>
             ]),
           ])()
         ),
+        // Cannot use Object.fromEntries because key can be an object.
         reduce(
           (acc, [key, value]) =>
             switchCase([
@@ -48,41 +37,25 @@ const dereference = ({ schemas }) =>
     ]),
   ]);
 
-exports.discoveryDereference = (discovery) =>
+exports.discoveryDereference = ({ schemas }) =>
   pipe([
-    () => discovery,
-    assign({
-      resources: pipe([
-        get("resources"),
-        map(
+    map(
+      assign({
+        methods: ({ methods }) =>
           pipe([
-            assign({
-              methods: pipe([
-                get("methods"),
-                assign({
-                  get: pipe([
-                    get("get"),
-                    assign({
-                      response: pipe([
-                        get("response"),
-                        tap((params) => {
-                          assert(true);
-                        }),
-                        dereference(discovery),
-                        tap((params) => {
-                          assert(true);
-                        }),
-                      ]),
-                    }),
-                    tap((params) => {
-                      assert(true);
-                    }),
-                  ]),
-                }),
-              ]),
-            }),
-          ])
-        ),
-      ]),
-    }),
-  ])();
+            () => methods,
+            map(
+              assign({
+                response: pipe([
+                  get("response"),
+                  tap((response) => {
+                    //assert(response);
+                  }),
+                  dereference({ schemas }),
+                ]),
+              })
+            ),
+          ])(),
+      })
+    ),
+  ]);

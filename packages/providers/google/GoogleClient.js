@@ -1,6 +1,18 @@
 const assert = require("assert");
-const { get, pipe, tap, and, eq, any } = require("rubico");
-const { callProp, last } = require("rubico/x");
+const {
+  get,
+  pipe,
+  tap,
+  and,
+  eq,
+  any,
+  switchCase,
+  filter,
+  map,
+  not,
+  or,
+} = require("rubico");
+const { callProp, last, values } = require("rubico/x");
 const util = require("util");
 
 const CoreClient = require("@grucloud/core/CoreClient");
@@ -26,42 +38,132 @@ const substituteProjectRegionZone = ({ config }) =>
       assert(config.zone);
     }),
     callProp("replace", "{project}", config.projectId),
+    callProp("replace", "{projectId}", config.projectId),
+    callProp("replace", "{projectsId}", config.projectId),
     callProp("replace", "{region}", config.region),
     callProp("replace", "{zone}", config.zone),
+    // Google Cloud Run
+    callProp("replace", "{namespacesId}", config.projectId),
+    callProp("replace", "{region}", config.region),
+    callProp("replace", "{locationsId}", config.region),
   ]);
 
-const substitutePathId =
-  ({ id, parameterOrder }) =>
-  (path) =>
-    pipe([
-      tap((params) => {
-        assert(parameterOrder);
-        assert(id);
-        assert(path);
-      }),
-      () => parameterOrder,
-      last,
-      (lastParam) =>
-        pipe([
-          tap((params) => {
-            assert(lastParam);
-          }),
-          () => path,
-          callProp("replace", `{${lastParam}}`, id),
-        ])(),
-    ])();
+const substitutePathId = ({ id }) =>
+  pipe([
+    tap((path) => {
+      assert(id);
+      assert(path);
+    }),
+    callProp("replace", new RegExp(`({.*})`), id),
+  ]);
 
+const getMethodPath = pipe([
+  switchCase([
+    get("flatPath"),
+    get("flatPath"),
+    get("path"),
+    get("path"),
+    (method) => {
+      //assert(false, `no path or flatPath in ${JSON.stringify(method)}`);
+    },
+  ]),
+]);
+
+const getListMethod = pipe([
+  switchCase([
+    get("search"),
+    get("search"),
+    get("list"),
+    get("list"),
+    get("aggregatedList"),
+    get("aggregatedList"),
+    get("get"),
+    get("get"),
+    (methods) => {
+      assert(false, `no list or aggregatedList in  ${JSON.stringify(methods)}`);
+    },
+  ]),
+]);
+
+const pathListDefaultNoDeps = ({ spec, config }) =>
+  pipe([
+    () => spec,
+    get("methods"),
+    getListMethod,
+    (method) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        () => method,
+        getMethodPath,
+        tap((path) => {
+          if (!path) {
+            assert(
+              path,
+              `missing methods list or aggregatedList for ${spec.groupType}`
+            );
+          }
+        }),
+        substituteProjectRegionZone({ config }),
+      ])(),
+  ]);
+
+const pathListDefaultWithDeps = ({ lives, spec, config }) =>
+  pipe([
+    () => spec,
+    get("dependencies"),
+    values,
+    filter(get("parent")),
+    last,
+    tap(({ type, group }) => {
+      assert(type);
+    }),
+    ({ type, group }) =>
+      lives.getByType({
+        providerName: config.providerName,
+        type,
+        group,
+      }),
+    tap((params) => {
+      assert(true);
+    }),
+    map(({ id, live }) =>
+      pipe([
+        tap((params) => {
+          assert(id);
+        }),
+        () => spec,
+        get("methods"),
+        getListMethod,
+        getMethodPath,
+        tap((path) => {
+          assert(path, `no getAll or get`);
+        }),
+        substituteProjectRegionZone({ config }),
+        spec.pathLiveFromParent({ live, id }),
+      ])()
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
+
+//Look into the url query for dependencies
 const pathListDefault =
   ({ spec, config }) =>
-  ({}) =>
+  ({ lives }) =>
     pipe([
       () => spec,
-      get("methods.list"),
-      tap((list) => {
-        assert(list, `missing methods.list for ${spec.groupType}`);
-      }),
-      get("path"),
-      substituteProjectRegionZone({ config }),
+      get("dependencies"),
+      values,
+      filter(get("parent")),
+      last,
+      switchCase([
+        isEmpty,
+        pathListDefaultNoDeps({ spec, config }),
+        pathListDefaultWithDeps({ lives, spec, config }),
+      ]),
     ])();
 
 const pathGetDefault =
@@ -76,20 +178,33 @@ const pathGetDefault =
       tap((getMethod) => {
         assert(getMethod, `missing methods.get for ${spec.groupType}`);
       }),
-      ({ parameterOrder, path }) =>
+      ({ path }) =>
         pipe([
           () => path,
           substituteProjectRegionZone({ config }),
-          substitutePathId({ config, id, parameterOrder }),
+          substitutePathId({ config, id }),
         ])(),
     ])();
+
+const getCreateMethod = pipe([
+  switchCase([
+    get("insert"),
+    get("insert"),
+    get("create"),
+    get("create"),
+    (methods) => {
+      assert(false, `no create method in  ${JSON.stringify(methods)}`);
+    },
+  ]),
+]);
 
 const pathCreateDefault =
   ({ spec, config }) =>
   ({}) =>
     pipe([
       () => spec,
-      get("methods.insert"),
+      get("methods"),
+      getCreateMethod,
       tap((insert) => {
         assert(insert, `missing methods.insert for ${spec.groupType}`);
       }),
@@ -109,13 +224,28 @@ const pathDeleteDefault =
       tap((deleteMethod) => {
         assert(deleteMethod, `missing methods.delete for ${spec.groupType}`);
       }),
-      ({ parameterOrder, path }) =>
+      ({ path }) =>
         pipe([
           () => path,
           substituteProjectRegionZone({ config }),
-          substitutePathId({ config, id, parameterOrder }),
+          substitutePathId({ config, id }),
         ])(),
     ])();
+
+const isDefaultDefault = pipe([
+  tap(({ live }) => {
+    assert(live);
+  }),
+  get("live.name", ""),
+  callProp("startsWith", "default"),
+]);
+
+const cannotBeDeletedDefault = ({ spec, config }) =>
+  or([
+    //
+    pipe([() => spec, not(get("methods.delete"))]),
+    isDefaultDefault,
+  ]);
 
 module.exports = GoogleClient = ({
   spec,
@@ -134,10 +264,10 @@ module.exports = GoogleClient = ({
   isInstanceUp,
   isInstanceDown,
   onResponseGet,
-  isDefault,
-  managedByOther,
+  isDefault = isDefaultDefault,
+  managedByOther = isDefaultDefault,
   onResponseList = onResponseListDefault,
-  cannotBeDeleted,
+  cannotBeDeleted = cannotBeDeletedDefault({ spec, config }),
   onCreateExpectedException = pipe([
     tap((error) => {
       logger.info(`onCreateExpectedException ${util.inspect(error)}`);
@@ -170,8 +300,8 @@ module.exports = GoogleClient = ({
     type: "google",
     spec,
     config,
-    findName,
-    findId,
+    findName: findName || spec.findName,
+    findId: findId || spec.findId,
     pathGet,
     pathList,
     pathCreate,

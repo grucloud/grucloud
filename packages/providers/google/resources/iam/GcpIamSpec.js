@@ -38,6 +38,7 @@ module.exports = () =>
     {
       type: "ServiceAccount",
       Client: GcpServiceAccount,
+      //TODO remove
       methods: {
         get: {
           path: "/projects/{project}/serviceAccounts/{serviceAccount}",
@@ -77,9 +78,6 @@ module.exports = () =>
     },
     {
       type: "Policy",
-      //TODO
-      //methods: { list: { path: "/projects/${project}/serviceAccounts" } },
-
       dependencies: {
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       },
@@ -92,9 +90,6 @@ module.exports = () =>
     },
     {
       type: "Binding",
-      //TODO
-      //methods: { list: { path: "/projects/${project}/serviceAccounts" } },
-
       dependencies: {
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       },

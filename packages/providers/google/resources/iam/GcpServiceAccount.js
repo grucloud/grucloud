@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, map, get, eq, assign, not } = require("rubico");
+const { pipe, tap, map, get, eq, assign, not, or } = require("rubico");
 const { defaultsDeep, first, callProp } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
@@ -24,6 +24,17 @@ const isOurMinionServiceAccount = ({ config, live }) =>
     tap((isOur) => {
       logger.info(`isOurMinionServiceAccount: name: ${live.email} ${isOur}`);
     }),
+  ])();
+
+const managedByGoogle = ({ config, live }) =>
+  pipe([
+    tap(() => {
+      assert(config);
+      assert(live, "live");
+    }),
+    () => live,
+    get("name"),
+    callProp("endsWith", "-compute@developer.gserviceaccount.com"),
   ])();
 
 exports.isOurMinionServiceAccount = isOurMinionServiceAccount;
@@ -91,7 +102,7 @@ exports.GcpServiceAccount = ({ spec, config }) => {
         ),
       ])();
 
-  const cannotBeDeleted = not(isOurMinionServiceAccount);
+  const cannotBeDeleted = or([managedByGoogle, not(isOurMinionServiceAccount)]);
 
   return GoogleClient({
     spec,
