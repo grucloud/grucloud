@@ -20,7 +20,7 @@ module.exports = () =>
       isOurMinion: GoogleTag.isOurMinion,
       filterLive: () =>
         pipe([
-          pick(["storageClass", "iamConfiguration", "iam"]),
+          pick(["name", "storageClass", "iamConfiguration", "iam"]),
           assign({ iam: pipe([get("iam"), pick(["bindings"])]) }),
         ]),
       compare: compareGoogle({
@@ -78,11 +78,9 @@ module.exports = () =>
     },
     {
       type: "Object",
-      dependencies: {
-        bucket: { type: "Bucket", group: "storage" },
-      },
       Client: GcpObject,
-      filterLive: () => pipe([pick(["contentType", "storageClass"])]),
+      filterLive: () =>
+        pipe([pick(["name", "path", "contentType", "storageClass"])]),
       compare: compareGoogle({
         filterTarget: ({ programOptions }) =>
           pipe([

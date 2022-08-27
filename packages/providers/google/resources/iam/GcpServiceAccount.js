@@ -66,7 +66,6 @@ exports.GcpServiceAccount = ({ spec, config }) => {
 
   const configDefault = ({ name, properties }) =>
     defaultsDeep({
-      accountId: name,
       serviceAccount: {
         description: managedByDescription,
       },

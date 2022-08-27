@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Instance",
     group: "compute",
-    name: "web-server",
     properties: ({}) => ({
+      name: "web-server",
       machineType: "f1-micro",
       metadata: {
         items: [

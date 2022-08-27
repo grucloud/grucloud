@@ -12,8 +12,9 @@ const {
   not,
   fork,
   omit,
+  switchCase,
 } = require("rubico");
-const { pluck, callProp, find, identity } = require("rubico/x");
+const { callProp, find, identity, values, last, append } = require("rubico/x");
 
 const {
   compare,
@@ -68,40 +69,35 @@ const buildDefaultSpec = fork({
           assert(name, `missing name ${JSON.stringify(live)}`);
         }),
       ])(),
-  // inferName:
-  //   ({ dependencies }) =>
-  //   (resource) =>
-  //     pipe([
-  //       tap(() => {
-  //         assert(dependencies);
-  //         assert(resource);
-  //         assert(resource.dependenciesSpec);
-  //       }),
-  //       () => dependencies,
-  //       map.entries(([key, dep]) => [key, { varName: key, ...dep }]),
-  //       filter(get("parent")),
-  //       values,
-  //       last,
-  //       switchCase([
-  //         isEmpty,
-  //         () => "",
-  //         ({ varName }) =>
-  //           pipe([
-  //             () => resource.dependenciesSpec,
-  //             get(varName),
-  //             tap((name) => {
-  //               assert(name);
-  //             }),
-  //           ])(),
-  //       ]),
-  //       unless(
-  //         () => isEmpty(resource.name),
-  //         pipe([unless(isEmpty, append("::")), append(resource.name)])
-  //       ),
-  //       tap((params) => {
-  //         assert(true);
-  //       }),
-  //     ])(),
+  inferName:
+    ({ dependencies }) =>
+    (resource) =>
+      pipe([
+        tap(() => {
+          assert(dependencies);
+          assert(resource);
+          assert(resource.dependenciesSpec);
+        }),
+        () => dependencies,
+        map.entries(([key, dep]) => [key, { varName: key, ...dep }]),
+        filter(get("parent")),
+        values,
+        last,
+        switchCase([
+          isEmpty,
+          () => "",
+          ({ varName }) =>
+            pipe([
+              () => resource.dependenciesSpec,
+              get(varName),
+              tap((name) => {
+                assert(name);
+              }),
+              append("::"),
+            ])(),
+        ]),
+        append(resource.properties.name),
+      ])(),
   Client:
     ({ dependencies }) =>
     ({ spec, config, lives }) =>

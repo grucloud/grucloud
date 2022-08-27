@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "Address",
     group: "compute",
-    name: "ip-webserver",
     properties: ({}) => ({
       name: "ip-webserver",
       description: "Managed By GruCloud",
@@ -17,8 +16,8 @@ exports.createResources = () => [
   {
     type: "Disk",
     group: "compute",
-    name: "disk",
     properties: ({}) => ({
+      name: "disk",
       sizeGb: "20",
       type: "pd-standard",
     }),
@@ -26,8 +25,8 @@ exports.createResources = () => [
   {
     type: "Firewall",
     group: "compute",
-    name: "firewall-22-80-433",
     properties: ({}) => ({
+      name: "firewall-22-80-433",
       description: "Managed By GruCloud",
       priority: 1000,
       allowed: [
@@ -45,8 +44,8 @@ exports.createResources = () => [
   {
     type: "Firewall",
     group: "compute",
-    name: "firewall-icmp",
     properties: ({}) => ({
+      name: "firewall-icmp",
       description: "Managed By GruCloud",
       priority: 1000,
       allowed: [
@@ -63,8 +62,8 @@ exports.createResources = () => [
   {
     type: "Instance",
     group: "compute",
-    name: "webserver",
     properties: ({}) => ({
+      name: "webserver",
       machineType: "f1-micro",
       metadata: {
         items: [
@@ -85,8 +84,8 @@ exports.createResources = () => [
   {
     type: "ServiceAccount",
     group: "iam",
-    name: "sa-test-vm",
     properties: ({}) => ({
+      accountId: "sa-test-vm",
       serviceAccount: {
         displayName: "SA dev",
         description: "Managed By GruCloud",

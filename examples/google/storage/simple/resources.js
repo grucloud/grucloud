@@ -6,14 +6,15 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "storage",
-    name: "grucloud-test",
-    properties: ({}) => ({}),
+    properties: ({}) => ({
+      name: "grucloud-test",
+    }),
   },
   {
     type: "Object",
     group: "storage",
-    name: "myfile",
     properties: ({}) => ({
+      name: "myfile",
       path: "/",
       contentType: "text/json",
       source: path.join(process.cwd(), "package.json"),

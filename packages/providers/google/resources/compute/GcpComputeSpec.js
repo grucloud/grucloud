@@ -35,20 +35,16 @@ const GROUP = "compute";
 module.exports = pipe([
   () => [
     {
-      type: "SslCertificate",
-      Client: GcpSslCertificate,
+      type: "Address",
+      Client: GcpAddress,
+      omitPropertiesExtra: ["address"],
     },
+
     {
       type: "BackendBucket",
       Client: GcpBackendBucket,
     },
-    {
-      type: "UrlMap",
-      dependencies: {
-        backendBucket: { type: "BackendBucket", group: "compute" },
-      },
-      Client: GcpUrlMap,
-    },
+
     // TargetHttpsProxy
     //TODO
     // {
@@ -66,25 +62,24 @@ module.exports = pipe([
     //   },
     //   Client: GcpGlobalForwardingRule,
     // },
+
     {
-      type: "Network",
-      Client: GcpNetwork,
-      filterLive: () =>
-        pick(["description", "autoCreateSubnetworks", "routingConfig"]),
-    },
-    {
-      type: "Subnetwork",
-      filterLive: () =>
+      type: "Disk",
+      Client: GcpDisk,
+      filterLive: ({ providerConfig }) =>
         pipe([
-          pick(["ipCidrRange"]),
-          tap((params) => {
-            assert(true);
+          pick(["name", "sizeGb", "type"]),
+          assign({
+            type: pipe([
+              get("type"),
+              callProp(
+                "replace",
+                `${GCP_COMPUTE_BASE_URL}/projects/${providerConfig.projectId}/zones/${providerConfig.zone}/diskTypes/`,
+                ""
+              ),
+            ]),
           }),
         ]),
-      Client: GcpSubNetwork,
-      dependencies: {
-        network: { type: "Network", group: "compute" },
-      },
     },
     {
       type: "Firewall",
@@ -115,6 +110,7 @@ module.exports = pipe([
       filterLive: () =>
         pipe([
           pick([
+            "name",
             "description",
             "priority",
             "sourceRanges",
@@ -122,29 +118,6 @@ module.exports = pipe([
             "direction",
             "logConfig",
           ]),
-        ]),
-    },
-    {
-      type: "Address",
-      Client: GcpAddress,
-      omitPropertiesExtra: ["address"],
-    },
-    {
-      type: "Disk",
-      Client: GcpDisk,
-      filterLive: ({ providerConfig }) =>
-        pipe([
-          pick(["sizeGb", "type"]),
-          assign({
-            type: pipe([
-              get("type"),
-              callProp(
-                "replace",
-                `${GCP_COMPUTE_BASE_URL}/projects/${providerConfig.projectId}/zones/${providerConfig.zone}/diskTypes/`,
-                ""
-              ),
-            ]),
-          }),
         ]),
     },
     {
@@ -158,7 +131,6 @@ module.exports = pipe([
         "serviceAccounts",
         "id",
         "creationTimestamp",
-        "name",
         "status",
         "selfLink",
         "cpuPlatform",
@@ -237,6 +209,37 @@ module.exports = pipe([
             ]),
           }),
         ]),
+    },
+    {
+      type: "Network",
+      Client: GcpNetwork,
+      filterLive: () =>
+        pick(["description", "autoCreateSubnetworks", "name", "routingConfig"]),
+    },
+    {
+      type: "Subnetwork",
+      filterLive: () =>
+        pipe([
+          pick(["name", "ipCidrRange"]),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      Client: GcpSubNetwork,
+      dependencies: {
+        network: { type: "Network", group: "compute" },
+      },
+    },
+    {
+      type: "SslCertificate",
+      Client: GcpSslCertificate,
+    },
+    {
+      type: "UrlMap",
+      dependencies: {
+        backendBucket: { type: "BackendBucket", group: "compute" },
+      },
+      Client: GcpUrlMap,
     },
   ],
   map(

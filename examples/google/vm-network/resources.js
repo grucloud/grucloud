@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Firewall",
     group: "compute",
-    name: "firewall",
     properties: ({}) => ({
+      name: "firewall",
       description: "Managed By GruCloud",
       priority: 1000,
       allowed: [
@@ -28,8 +28,8 @@ exports.createResources = () => [
   {
     type: "Instance",
     group: "compute",
-    name: "db",
     properties: ({}) => ({
+      name: "db",
       machineType: "f1-micro",
       metadata: {
         items: [
@@ -49,10 +49,10 @@ exports.createResources = () => [
   {
     type: "Network",
     group: "compute",
-    name: "vpc",
     properties: ({}) => ({
       description: "Managed By GruCloud",
       autoCreateSubnetworks: false,
+      name: "vpc",
       routingConfig: {
         routingMode: "REGIONAL",
       },
@@ -61,8 +61,8 @@ exports.createResources = () => [
   {
     type: "Subnetwork",
     group: "compute",
-    name: "subnetwork",
     properties: ({}) => ({
+      name: "subnetwork",
       ipCidrRange: "10.164.0.0/20",
     }),
     dependencies: ({}) => ({

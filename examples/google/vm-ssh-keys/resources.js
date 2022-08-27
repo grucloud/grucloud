@@ -6,16 +6,18 @@ exports.createResources = () => [
   {
     type: "Address",
     group: "compute",
-    name: "ip-webserver-ssh-keys",
     properties: ({}) => ({
+      name: "ip-webserver-ssh-keys",
       description: "Managed By GruCloud",
+      networkTier: "PREMIUM",
+      addressType: "EXTERNAL",
     }),
   },
   {
     type: "Firewall",
     group: "compute",
-    name: "firewall-22",
     properties: ({}) => ({
+      name: "firewall-22",
       description: "Managed By GruCloud",
       priority: 1000,
       allowed: [
@@ -33,8 +35,8 @@ exports.createResources = () => [
   {
     type: "Firewall",
     group: "compute",
-    name: "firewall-icmp",
     properties: ({}) => ({
+      name: "firewall-icmp",
       description: "Managed By GruCloud",
       priority: 1000,
       allowed: [
@@ -51,8 +53,8 @@ exports.createResources = () => [
   {
     type: "Instance",
     group: "compute",
-    name: "webserver-ssh-keys",
     properties: ({}) => ({
+      name: "webserver-ssh-keys",
       machineType: "f1-micro",
       metadata: {
         items: [

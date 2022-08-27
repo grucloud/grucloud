@@ -2,7 +2,6 @@ const assert = require("assert");
 const { pipe, tap, map, eq, get, switchCase, assign } = require("rubico");
 const { defaultsDeep, identity, when } = require("rubico/x");
 const GoogleClient = require("../../GoogleClient");
-const { GCP_STORAGE_BASE_URL } = require("./GcpStorageCommon");
 const { buildLabel } = require("../../GoogleCommon");
 const logger = require("@grucloud/core/logger")({ prefix: "GcpBucket" });
 const { tos } = require("@grucloud/core/tos");
@@ -32,7 +31,6 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
 
   const client = GoogleClient({
     spec,
-    //baseURL: `${GCP_STORAGE_BASE_URL}/b`,
     config: configProvider,
     findTargetId,
     pathList,

@@ -6,7 +6,9 @@ exports.createResources = () => [
   {
     type: "Binding",
     group: "iam",
-    name: "roles/firebasenotifications.viewer",
+    properties: ({}) => ({
+      role: "roles/firebasenotifications.viewer",
+    }),
     dependencies: ({}) => ({
       serviceAccounts: ["sa-test-example"],
     }),
@@ -14,8 +16,8 @@ exports.createResources = () => [
   {
     type: "ServiceAccount",
     group: "iam",
-    name: "sa-test-example",
     properties: ({}) => ({
+      accountId: "sa-test-example",
       serviceAccount: {
         displayName: "SA dev",
         description: "Managed By GruCloud",
