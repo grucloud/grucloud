@@ -11,15 +11,29 @@ const {
   map,
   not,
   or,
+  reduce,
+  set,
 } = require("rubico");
-const { callProp, last, values } = require("rubico/x");
+const {
+  find,
+  callProp,
+  last,
+  values,
+  isEmpty,
+  defaultsDeep,
+  when,
+} = require("rubico/x");
 const util = require("util");
 
+const { getField } = require("@grucloud/core/ProviderCommon");
 const CoreClient = require("@grucloud/core/CoreClient");
+const { findIdsByPath } = require("@grucloud/core/Common");
+
 const { tos } = require("@grucloud/core/tos");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GoogleClient" });
 const { createAxiosMakerGoogle } = require("./GoogleCommon");
+const { config } = require("dotenv");
 
 const onResponseListDefault = () => get("items", []);
 
@@ -247,12 +261,128 @@ const cannotBeDeletedDefault = ({ spec, config }) =>
     isDefaultDefault,
   ]);
 
+const findDependenciesFromCreate = ({ spec, live, lives }) =>
+  pipe([
+    () => spec,
+    get("dependencies"),
+    tap((dependencies) => {
+      assert(dependencies);
+    }),
+    filter(get("pathId")),
+    map.entries(([key, { group, type, pathId }]) => [
+      key,
+      pipe([
+        () => live,
+        findIdsByPath({ pathId }),
+        map((selfLink) =>
+          pipe([
+            () =>
+              lives.getByType({
+                providerName: config.providerName,
+                group,
+                type,
+              }),
+            find(eq(get("live.selfLink"), selfLink)),
+            get("id"),
+          ])()
+        ),
+        filter(not(isEmpty)),
+        (ids) => ({
+          group,
+          type,
+          ids,
+        }),
+      ])(),
+    ]),
+    values,
+  ])();
+
+const findDependenciesDefault =
+  ({ spec }) =>
+  ({ live, lives }) =>
+    pipe([
+      () => [
+        // TODO
+        //...findDependenciesFromList({ live, lives }),
+        ...findDependenciesFromCreate({ spec, live, lives }),
+      ],
+      filter(not(isEmpty)),
+    ])();
+
+const findIdDefault = pipe([
+  get("live.id"),
+  tap((id) => {
+    assert(id);
+  }),
+]);
+
+const configDefaultDependenciesId = ({ dependencies, spec }) =>
+  pipe([
+    tap(() => {
+      assert(spec);
+      assert(dependencies);
+    }),
+    () => spec,
+    get("dependencies"),
+    filter(get("pathId")),
+    filter(not(isEmpty)),
+    map.entries(([varName, { list, pathId }]) => [
+      varName,
+      pipe([
+        tap((params) => {
+          assert(pathId);
+        }),
+        () => ({}),
+        when(
+          () => dependencies[varName],
+          pipe([
+            switchCase([
+              () => list,
+              pipe([
+                tap((params) => {
+                  assert(true);
+                }),
+              ]),
+              pipe([set(pathId, getField(dependencies[varName], "selfLink"))]),
+            ]),
+          ])
+        ),
+      ])(),
+    ]),
+    values,
+    reduce((acc, value) => pipe([() => acc, defaultsDeep(value)])(), {}),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
+const configDefaultGeneric = ({ properties, dependencies, config, spec }) =>
+  pipe([
+    tap(() => {
+      assert(config);
+      assert(spec);
+    }),
+    () => properties,
+    // defaultsDeep({
+    //   tags: buildTags(config),
+    // }),
+    defaultsDeep(
+      configDefaultDependenciesId({
+        dependencies,
+        spec,
+      })
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
 module.exports = GoogleClient = ({
   spec,
   config,
   baseURL,
   findName,
-  findId,
+  findId = findIdDefault,
   pathGet = pathGetDefault({ spec, config }),
   pathList = pathListDefault({ spec, config }),
   pathCreate = pathCreateDefault({ spec, config }),
@@ -290,9 +420,6 @@ module.exports = GoogleClient = ({
 }) => {
   assert(spec);
   assert(spec.type);
-
-  //assert(spec.baseUrl, `no baseUrl for ${spec.groupType}`);
-
   assert(config);
   assert(config.accessToken);
 
@@ -314,14 +441,18 @@ module.exports = GoogleClient = ({
     onResponseGet,
     onResponseList,
     onResponseDelete,
-    configDefault,
+    configDefault: configDefault || spec.configDefault || configDefaultGeneric,
     isDefault,
     managedByOther,
     findTargetId,
     cannotBeDeleted,
-    shouldRetryOnExceptionCreate,
+    shouldRetryOnExceptionCreate:
+      spec.shouldRetryOnExceptionCreate || shouldRetryOnExceptionCreate,
     onCreateExpectedException,
-    findDependencies,
+    findDependencies:
+      findDependencies ||
+      spec.findDependencies ||
+      findDependenciesDefault({ spec }),
     axios: createAxiosMakerGoogle({
       baseURL: baseURL || spec.baseUrl,
       config,

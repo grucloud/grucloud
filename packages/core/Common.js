@@ -751,3 +751,46 @@ const cidrToSubnetMaskLength = pipe([
 ]);
 
 exports.cidrToSubnetMaskLength = cidrToSubnetMaskLength;
+
+const hasBracket = includes("[]");
+const removeBracket = pipe([callProp("replace", "[]", "")]);
+
+const findIdsByKeys =
+  ([key, ...otherKeys]) =>
+  (live) =>
+    pipe([
+      () => live,
+      get(removeBracket(key)),
+      switchCase([
+        () => isEmpty(otherKeys),
+        // Last key
+        pipe([(result) => [result]]),
+        // Go down
+        pipe([
+          switchCase([
+            () => hasBracket(key),
+            pipe([
+              tap((values) => {
+                //assert(Array.isArray(values));
+              }),
+              flatMap(findIdsByKeys(otherKeys)),
+            ]),
+            pipe([findIdsByKeys(otherKeys), (result) => [result]]),
+          ]),
+        ]),
+      ]),
+    ])();
+
+exports.findIdsByPath =
+  ({ pathId }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(live);
+        assert(pathId);
+      }),
+      () => pathId,
+      callProp("split", "."),
+      (keys) => findIdsByKeys(keys)(live),
+      filter(not(isEmpty)),
+    ])();

@@ -72,6 +72,11 @@
                 "id": "compute.addresses.list",
                 "path": "projects/{project}/regions/{region}/addresses",
                 "httpMethod": "GET"
+            },
+            "setLabels": {
+                "id": "compute.addresses.setLabels",
+                "path": "projects/{project}/regions/{region}/addresses/{resource}/setLabels",
+                "httpMethod": "POST"
             }
         },
         "omitProperties": [
@@ -99,12 +104,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             },
             "subnetwork": {
-                "type": "subnetwork",
+                "type": "Subnetwork",
                 "group": "compute",
                 "pathId": "subnetwork"
             }
@@ -337,7 +342,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             }
@@ -547,7 +552,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             }
@@ -641,6 +646,11 @@
                 "id": "compute.globalAddresses.list",
                 "path": "projects/{project}/global/addresses",
                 "httpMethod": "GET"
+            },
+            "setLabels": {
+                "id": "compute.globalAddresses.setLabels",
+                "path": "projects/{project}/global/addresses/{resource}/setLabels",
+                "httpMethod": "POST"
             }
         },
         "omitProperties": [
@@ -668,12 +678,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             },
             "subnetwork": {
-                "type": "subnetwork",
+                "type": "Subnetwork",
                 "group": "compute",
                 "pathId": "subnetwork"
             }
@@ -815,12 +825,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             },
             "subnetwork": {
-                "type": "subnetwork",
+                "type": "Subnetwork",
                 "group": "compute",
                 "pathId": "subnetwork"
             }
@@ -1259,12 +1269,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "healthCheck": {
-                "type": "healthCheck",
+                "type": "HealthCheck",
                 "group": "compute",
                 "pathId": "healthCheck"
             },
             "instanceTemplate": {
-                "type": "instanceTemplate",
+                "type": "InstanceTemplate",
                 "group": "compute",
                 "pathId": "instanceTemplate"
             }
@@ -1618,17 +1628,17 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "key": {
-                "type": "key",
+                "type": "Key",
                 "group": "iam",
                 "pathId": "metadata.key"
             },
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             },
             "subnetwork": {
-                "type": "subnetwork",
+                "type": "Subnetwork",
                 "group": "compute",
                 "pathId": "subnetwork"
             }
@@ -1715,17 +1725,17 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "key": {
-                "type": "key",
+                "type": "Key",
                 "group": "iam",
                 "pathId": "properties.metadata.key"
             },
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "properties.network"
             },
             "subnetwork": {
-                "type": "subnetwork",
+                "type": "Subnetwork",
                 "group": "compute",
                 "pathId": "properties.subnetwork"
             }
@@ -1763,6 +1773,11 @@
                 "id": "compute.interconnectAttachments.patch",
                 "path": "projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}",
                 "httpMethod": "PATCH"
+            },
+            "setLabels": {
+                "id": "compute.interconnectAttachments.setLabels",
+                "path": "projects/{project}/regions/{region}/interconnectAttachments/{resource}/setLabels",
+                "httpMethod": "POST"
             }
         },
         "omitProperties": [
@@ -1804,12 +1819,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "interconnect": {
-                "type": "interconnect",
+                "type": "Interconnect",
                 "group": "compute",
                 "pathId": "interconnect"
             },
             "router": {
-                "type": "router",
+                "type": "Router",
                 "group": "compute",
                 "pathId": "router"
             }
@@ -1847,6 +1862,11 @@
                 "id": "compute.interconnects.patch",
                 "path": "projects/{project}/global/interconnects/{interconnect}",
                 "httpMethod": "PATCH"
+            },
+            "setLabels": {
+                "id": "compute.interconnects.setLabels",
+                "path": "projects/{project}/global/interconnects/{resource}/setLabels",
+                "httpMethod": "POST"
             }
         },
         "omitProperties": [
@@ -2045,17 +2065,17 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "key": {
-                "type": "key",
+                "type": "Key",
                 "group": "iam",
                 "pathId": "sourceInstanceProperties.metadata.key"
             },
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "sourceInstanceProperties.network"
             },
             "subnetwork": {
-                "type": "subnetwork",
+                "type": "Subnetwork",
                 "group": "compute",
                 "pathId": "sourceInstanceProperties.subnetwork"
             }
@@ -2146,12 +2166,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             },
             "subnetwork": {
-                "type": "subnetwork",
+                "type": "Subnetwork",
                 "group": "compute",
                 "pathId": "subnetwork"
             }
@@ -2340,7 +2360,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             }
@@ -2436,7 +2456,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "nodeTemplate": {
-                "type": "nodeTemplate",
+                "type": "NodeTemplate",
                 "group": "compute",
                 "pathId": "nodeTemplate"
             }
@@ -2671,7 +2691,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "key": {
-                "type": "key",
+                "type": "Key",
                 "group": "iam",
                 "pathId": "commonInstanceMetadata.key"
             }
@@ -2906,7 +2926,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             }
@@ -3289,12 +3309,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "healthCheck": {
-                "type": "healthCheck",
+                "type": "HealthCheck",
                 "group": "compute",
                 "pathId": "healthCheck"
             },
             "instanceTemplate": {
-                "type": "instanceTemplate",
+                "type": "InstanceTemplate",
                 "group": "compute",
                 "pathId": "instanceTemplate"
             }
@@ -3403,12 +3423,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             },
             "subnetwork": {
-                "type": "subnetwork",
+                "type": "Subnetwork",
                 "group": "compute",
                 "pathId": "subnetwork"
             }
@@ -3699,7 +3719,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "urlMap": {
-                "type": "urlMap",
+                "type": "UrlMap",
                 "group": "compute",
                 "pathId": "urlMap"
             }
@@ -3779,12 +3799,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "sslPolicy": {
-                "type": "sslPolicy",
+                "type": "SslPolicy",
                 "group": "compute",
                 "pathId": "sslPolicy"
             },
             "urlMap": {
-                "type": "urlMap",
+                "type": "UrlMap",
                 "group": "compute",
                 "pathId": "urlMap"
             }
@@ -3940,12 +3960,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "backendService": {
-                "type": "backendService",
+                "type": "BackendService",
                 "group": "compute",
                 "pathId": "routeAction.requestMirrorPolicy.backendService"
             },
             "service": {
-                "type": "service",
+                "type": "Service",
                 "group": "run",
                 "pathId": "service"
             }
@@ -4225,7 +4245,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             }
@@ -4287,6 +4307,11 @@
             "removeRule": {
                 "id": "compute.securityPolicies.removeRule",
                 "path": "projects/{project}/global/securityPolicies/{securityPolicy}/removeRule",
+                "httpMethod": "POST"
+            },
+            "setLabels": {
+                "id": "compute.securityPolicies.setLabels",
+                "path": "projects/{project}/global/securityPolicies/{resource}/setLabels",
                 "httpMethod": "POST"
             }
         },
@@ -4642,7 +4667,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             }
@@ -4696,7 +4721,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "urlMap": {
-                "type": "urlMap",
+                "type": "UrlMap",
                 "group": "compute",
                 "pathId": "urlMap"
             }
@@ -4760,7 +4785,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "urlMap": {
-                "type": "urlMap",
+                "type": "UrlMap",
                 "group": "compute",
                 "pathId": "urlMap"
             }
@@ -4860,12 +4885,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "sslPolicy": {
-                "type": "sslPolicy",
+                "type": "SslPolicy",
                 "group": "compute",
                 "pathId": "sslPolicy"
             },
             "urlMap": {
-                "type": "urlMap",
+                "type": "UrlMap",
                 "group": "compute",
                 "pathId": "urlMap"
             }
@@ -4923,12 +4948,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "instance": {
-                "type": "instance",
+                "type": "Instance",
                 "group": "compute",
                 "pathId": "instance"
             },
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             }
@@ -5087,12 +5112,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "service": {
-                "type": "service",
+                "type": "Service",
                 "group": "run",
                 "pathId": "service"
             },
             "sslPolicy": {
-                "type": "sslPolicy",
+                "type": "SslPolicy",
                 "group": "compute",
                 "pathId": "sslPolicy"
             }
@@ -5150,7 +5175,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "service": {
-                "type": "service",
+                "type": "Service",
                 "group": "run",
                 "pathId": "service"
             }
@@ -5183,6 +5208,11 @@
                 "id": "compute.targetVpnGateways.list",
                 "path": "projects/{project}/regions/{region}/targetVpnGateways",
                 "httpMethod": "GET"
+            },
+            "setLabels": {
+                "id": "compute.targetVpnGateways.setLabels",
+                "path": "projects/{project}/regions/{region}/targetVpnGateways/{resource}/setLabels",
+                "httpMethod": "POST"
             }
         },
         "omitProperties": [
@@ -5207,7 +5237,7 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             }
@@ -5373,12 +5403,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "backendService": {
-                "type": "backendService",
+                "type": "BackendService",
                 "group": "compute",
                 "pathId": "routeAction.requestMirrorPolicy.backendService"
             },
             "service": {
-                "type": "service",
+                "type": "Service",
                 "group": "run",
                 "pathId": "service"
             }
@@ -5451,12 +5481,12 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "interconnectAttachment": {
-                "type": "interconnectAttachment",
+                "type": "InterconnectAttachment",
                 "group": "compute",
                 "pathId": "interconnectAttachment"
             },
             "network": {
-                "type": "network",
+                "type": "Network",
                 "group": "compute",
                 "pathId": "network"
             }
@@ -5489,6 +5519,11 @@
                 "id": "compute.vpnTunnels.list",
                 "path": "projects/{project}/regions/{region}/vpnTunnels",
                 "httpMethod": "GET"
+            },
+            "setLabels": {
+                "id": "compute.vpnTunnels.setLabels",
+                "path": "projects/{project}/regions/{region}/vpnTunnels/{resource}/setLabels",
+                "httpMethod": "POST"
             }
         },
         "omitProperties": [
@@ -5528,17 +5563,17 @@
         "baseUrl": "https://compute.googleapis.com/compute/v1/",
         "dependencies": {
             "router": {
-                "type": "router",
+                "type": "Router",
                 "group": "compute",
                 "pathId": "router"
             },
             "targetVpnGateway": {
-                "type": "targetVpnGateway",
+                "type": "TargetVpnGateway",
                 "group": "compute",
                 "pathId": "targetVpnGateway"
             },
             "vpnGateway": {
-                "type": "vpnGateway",
+                "type": "VpnGateway",
                 "group": "compute",
                 "pathId": "vpnGateway"
             }
@@ -6186,7 +6221,7 @@
         "baseUrl": "https://run.googleapis.com/",
         "dependencies": {
             "image": {
-                "type": "image",
+                "type": "Image",
                 "group": "compute",
                 "pathId": "spec.template.spec.image"
             }
@@ -6249,7 +6284,7 @@
         "baseUrl": "https://run.googleapis.com/",
         "dependencies": {
             "image": {
-                "type": "image",
+                "type": "Image",
                 "group": "compute",
                 "pathId": "spec.template.spec.template.spec.image"
             }
@@ -6319,7 +6354,7 @@
         "baseUrl": "https://run.googleapis.com/",
         "dependencies": {
             "image": {
-                "type": "image",
+                "type": "Image",
                 "group": "compute",
                 "pathId": "spec.template.spec.image"
             }

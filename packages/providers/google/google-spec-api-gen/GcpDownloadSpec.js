@@ -299,7 +299,7 @@ const buildDependenciesFromBody = ({ specs }) =>
             (group) => ({
               ...acc,
               [dep.depId]: {
-                type: dep.depId,
+                type: pascalCase(dep.depId),
                 group,
                 pathId: dep.pathId,
               },

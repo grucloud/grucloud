@@ -33,6 +33,7 @@ const {
 } = require("rubico/x");
 
 const CoreClient = require("@grucloud/core/CoreClient");
+const { findIdsByPath } = require("@grucloud/core/Common");
 
 const {
   isInstanceUp: isInstanceUpDefault,
@@ -42,7 +43,6 @@ const {
   findDependenciesUserAssignedIdentity,
   createAxiosAzure,
   shortName,
-  findIdsByPath,
 } = require("./AzureCommon");
 const logger = require("@grucloud/core/logger")({ prefix: "AzClient" });
 
@@ -134,6 +134,8 @@ const onCreateFilterPayload = pipe([
 //TODO remove
 const specDefault = {
   operations: { getAll: {} },
+  cannotBeDeleted: () => false,
+  managedByOther: () => false,
 };
 
 const substituteDependency =
@@ -260,6 +262,8 @@ exports.AzClient = ({
     operations,
     apiVersion,
     dependencies = {},
+    cannotBeDeleted,
+    managedByOther,
   } = defaultsDeep(specDefault)(spec);
 
   if (!methods) {
@@ -269,22 +273,6 @@ exports.AzClient = ({
     assert(dependencies);
   }
   assert(apiVersion);
-  assert(spec.cannotBeDeleted);
-  assert(spec.managedByOther);
-
-  const cannotBeDeleted = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    or([
-      spec.managedByOther,
-      spec.cannotBeDeleted,
-      pipe([() => methods, get("delete"), isEmpty]),
-    ]),
-    tap((params) => {
-      assert(true);
-    }),
-  ]);
 
   assert(spec.type);
   assert(config);
@@ -584,8 +572,20 @@ exports.AzClient = ({
     onCreateFilterPayload,
     isInstanceUp,
     isDefault: spec.isDefault,
-    cannotBeDeleted,
-    managedByOther: spec.managedByOther,
+    cannotBeDeleted: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      or([
+        managedByOther,
+        cannotBeDeleted,
+        pipe([() => methods, get("delete"), isEmpty]),
+      ]),
+      tap((params) => {
+        assert(true);
+      }),
+    ]),
+    managedByOther,
     axios,
   });
 };

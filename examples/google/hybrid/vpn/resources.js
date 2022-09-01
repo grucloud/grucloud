@@ -6,11 +6,9 @@ exports.createResources = () => [
   {
     type: "Address",
     group: "compute",
-    name: "ip-vpn",
     properties: ({}) => ({
-      name: "ip-vpn",
+      name: "ip-vpn-1",
       description: "",
-      address: "34.148.99.6",
       networkTier: "PREMIUM",
       addressType: "EXTERNAL",
     }),
@@ -18,56 +16,57 @@ exports.createResources = () => [
   {
     type: "ForwardingRule",
     group: "compute",
-    name: "vpn-1-rule-esp",
     properties: ({}) => ({
       name: "vpn-1-rule-esp",
       description: "",
-      IPAddress: "34.148.99.6",
       IPProtocol: "ESP",
-      target:
-        "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/us-east1/targetVpnGateways/vpn-1",
       loadBalancingScheme: "EXTERNAL",
       networkTier: "PREMIUM",
+    }),
+    dependencies: ({}) => ({
+      address: "ip-vpn-1",
+      targetVpnGateway: "vpn-1",
     }),
   },
   {
     type: "ForwardingRule",
     group: "compute",
-    name: "vpn-1-rule-udp4500",
     properties: ({}) => ({
       name: "vpn-1-rule-udp4500",
       description: "",
-      IPAddress: "34.148.99.6",
       IPProtocol: "UDP",
       portRange: "4500-4500",
-      target:
-        "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/us-east1/targetVpnGateways/vpn-1",
       loadBalancingScheme: "EXTERNAL",
       networkTier: "PREMIUM",
+    }),
+    dependencies: ({}) => ({
+      address: "ip-vpn-1",
+      targetVpnGateway: "vpn-1",
     }),
   },
   {
     type: "ForwardingRule",
     group: "compute",
-    name: "vpn-1-rule-udp500",
     properties: ({}) => ({
       name: "vpn-1-rule-udp500",
       description: "",
-      IPAddress: "34.148.99.6",
       IPProtocol: "UDP",
       portRange: "500-500",
-      target:
-        "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/us-east1/targetVpnGateways/vpn-1",
       loadBalancingScheme: "EXTERNAL",
       networkTier: "PREMIUM",
+    }),
+    dependencies: ({}) => ({
+      address: "ip-vpn-1",
+      targetVpnGateway: "vpn-1",
     }),
   },
   {
     type: "Network",
     group: "compute",
-    name: "network",
     properties: ({}) => ({
+      description: "Managed By GruCloud",
       autoCreateSubnetworks: false,
+      name: "network",
       routingConfig: {
         routingMode: "REGIONAL",
       },
@@ -76,23 +75,22 @@ exports.createResources = () => [
   {
     type: "Route",
     group: "compute",
-    name: "vpn-1-tunnel-1-route-1",
     properties: ({}) => ({
       name: "vpn-1-tunnel-1-route-1",
       description: "",
-      network:
-        "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/network",
       destRange: "10.0.0.0/16",
       priority: 1000,
-      nextHopVpnTunnel:
-        "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/us-east1/vpnTunnels/vpn-1-tunnel-1",
+    }),
+    dependencies: ({}) => ({
+      network: "network",
+      vpnTunnel: "vpn-1-tunnel-1",
     }),
   },
   {
     type: "Subnetwork",
     group: "compute",
-    name: "subnet-1",
     properties: ({}) => ({
+      name: "subnet-1",
       ipCidrRange: "10.0.0.0/24",
     }),
     dependencies: ({}) => ({
@@ -102,29 +100,28 @@ exports.createResources = () => [
   {
     type: "TargetVpnGateway",
     group: "compute",
-    name: "vpn-1",
     properties: ({}) => ({
       name: "vpn-1",
       description: "",
-      network:
-        "https://www.googleapis.com/compute/v1/projects/grucloud-test/global/networks/network",
+    }),
+    dependencies: ({}) => ({
+      network: "network",
     }),
   },
   {
     type: "VpnTunnel",
     group: "compute",
-    name: "vpn-1-tunnel-1",
     properties: ({}) => ({
       name: "vpn-1-tunnel-1",
       description: "",
-      targetVpnGateway:
-        "https://www.googleapis.com/compute/v1/projects/grucloud-test/regions/us-east1/targetVpnGateways/vpn-1",
       peerIp: "50.1.2.3",
-      sharedSecret: "*************",
-      sharedSecretHash: "ANDk9hJBjtmLIUWcwjnRcQgPYY_R",
+      sharedSecret: process.env.VPN_1_TUNNEL_1_SHAREDSECRET,
       ikeVersion: 2,
       localTrafficSelector: ["0.0.0.0/0"],
       remoteTrafficSelector: ["0.0.0.0/0"],
+    }),
+    dependencies: ({}) => ({
+      targetVpnGateway: "vpn-1",
     }),
   },
 ];

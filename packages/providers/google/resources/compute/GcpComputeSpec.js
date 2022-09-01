@@ -8,9 +8,10 @@ const {
   omit,
   get,
   eq,
+  and,
   filter,
 } = require("rubico");
-const { callProp, find, defaultsDeep } = require("rubico/x");
+const { callProp, find, defaultsDeep, includes } = require("rubico/x");
 
 const GoogleTag = require("../../GoogleTag");
 const { compareGoogle } = require("../../GoogleCommon");
@@ -82,6 +83,38 @@ module.exports = pipe([
         ]),
     },
     {
+      type: "ForwardingRule",
+      dependencies: {
+        address: {
+          type: "Address",
+          group: "compute",
+          pathId: "IPAddress",
+          dependencyId:
+            ({ lives, config }) =>
+            ({ IPAddress }) =>
+              pipe([
+                tap((params) => {
+                  assert(IPAddress);
+                }),
+                () =>
+                  lives.getByType({
+                    providerName: config.providerName,
+                    type: "Address",
+                    group: "compute",
+                  }),
+                find(eq(get("live.address"), IPAddress)),
+                get("id"),
+              ])(),
+        },
+        targetVpnGateway: {
+          type: "TargetVpnGateway",
+          group: "compute",
+          pathId: "target",
+        },
+      },
+      omitPropertiesExtra: ["IPAddress"],
+    },
+    {
       type: "Firewall",
       Client: GcpFirewall,
       dependencies: {
@@ -89,20 +122,8 @@ module.exports = pipe([
       },
       compare: compareGoogle({
         filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["network"]),
-            defaultsDeep({ disabled: false }),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["network", "creationTimestamp"]),
-          ]),
+          pipe([omit(["network"]), defaultsDeep({ disabled: false })]),
+        filterLive: () => pipe([omit(["network", "creationTimestamp"])]),
       }),
       propertiesDefault: {
         sourceRanges: ["0.0.0.0/0"],
@@ -231,6 +252,21 @@ module.exports = pipe([
       },
     },
     {
+      type: "Route",
+      dependencies: {
+        network: {
+          type: "Network",
+          group: "compute",
+          pathId: "network",
+        },
+        vpnTunnel: {
+          type: "VpnTunnel",
+          group: "compute",
+          pathId: "nextHopVpnTunnel",
+        },
+      },
+    },
+    {
       type: "SslCertificate",
       Client: GcpSslCertificate,
     },
@@ -240,6 +276,26 @@ module.exports = pipe([
         backendBucket: { type: "BackendBucket", group: "compute" },
       },
       Client: GcpUrlMap,
+    },
+    {
+      type: "VpnTunnel",
+      omitPropertiesExtra: ["sharedSecretHash"],
+      environmentVariables: [{ path: "sharedSecret", suffix: "SHAREDSECRET" }],
+      shouldRetryOnExceptionCreate: pipe([
+        tap(({ error }) => {
+          assert(error);
+        }),
+        get("error.response"),
+        and([
+          eq(get("status"), 400),
+          pipe([
+            get("data.error.message"),
+            includes(
+              "VPN gateway must be configured with an ESP forwarding rule before creating tunnel"
+            ),
+          ]),
+        ]),
+      ]),
     },
   ],
   map(
