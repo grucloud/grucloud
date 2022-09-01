@@ -188,6 +188,8 @@ const omitDependencyIds =
       pluck("pathId"),
       values,
       filter(not(isEmpty)),
+      filter(not(includes("[]"))),
+
       (pathIds) => pipe([() => live, deepOmit(pathIds)])(),
     ])();
 
