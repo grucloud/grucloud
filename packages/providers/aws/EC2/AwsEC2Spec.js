@@ -396,23 +396,50 @@ module.exports = pipe([
             IpAddress: ({ IpAddress }) =>
               pipe([
                 () => lives,
-                find(
-                  and([
-                    eq(get("groupType"), "Network::PublicIPAddress"),
-                    eq(get("live.properties.ipAddress"), IpAddress),
-                  ])
-                ),
-                get("id"),
+                fork({
+                  ipAddressAzure: pipe([
+                    find(
+                      and([
+                        eq(get("groupType"), "Network::PublicIPAddress"),
+                        eq(get("live.properties.ipAddress"), IpAddress),
+                      ])
+                    ),
+                    get("id"),
+                  ]),
+                  ipAddressGoogle: pipe([
+                    find(
+                      and([
+                        eq(get("groupType"), "compute::Address"),
+                        eq(get("live.address"), IpAddress),
+                      ])
+                    ),
+                    get("id"),
+                  ]),
+                }),
                 switchCase([
-                  isEmpty,
+                  get("ipAddressAzure"),
+                  pipe([
+                    get("ipAddressAzure"),
+                    replaceWithName({
+                      groupType: "Network::PublicIPAddress",
+                      pathLive: "id",
+                      path: "live.properties.ipAddress",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                  get("ipAddressGoogle"),
+                  pipe([
+                    get("ipAddressGoogle"),
+                    replaceWithName({
+                      groupType: "compute::Address",
+                      pathLive: "id",
+                      path: "live.address",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
                   () => IpAddress,
-                  replaceWithName({
-                    groupType: "Network::PublicIPAddress",
-                    pathLive: "id",
-                    path: "live.properties.ipAddress",
-                    providerConfig,
-                    lives,
-                  }),
                 ]),
               ])(),
           }),
@@ -441,6 +468,27 @@ module.exports = pipe([
                     group: "Network",
                   }),
                 find(eq(get("live.properties.ipAddress"), IpAddress)),
+                get("id"),
+              ])(),
+        },
+        ipAddressGoogle: {
+          type: "Address",
+          group: "compute",
+          providerType: "google",
+          dependencyId:
+            ({ lives, config }) =>
+            ({ IpAddress }) =>
+              pipe([
+                tap((params) => {
+                  assert(IpAddress);
+                }),
+                () =>
+                  lives.getByType({
+                    providerType: "google",
+                    type: "Address",
+                    group: "compute",
+                  }),
+                find(eq(get("live.address"), IpAddress)),
                 get("id"),
               ])(),
         },

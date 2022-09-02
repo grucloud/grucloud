@@ -11,6 +11,7 @@ const {
   any,
   and,
   switchCase,
+  fork,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -68,6 +69,34 @@ const applicationGatewayOmitIfEmpty = omitIfEmpty([
   "privateLinkConfigurations",
   "privateEndpointConnections",
 ]);
+
+const findEC2VpnConnectionByIp = ({ gatewayIpAddress }) =>
+  find(
+    and([
+      eq(get("groupType"), "EC2::VpnConnection"),
+      pipe([
+        get("live.Options.TunnelOptions"),
+        any(eq(pipe([get("OutsideIpAddress")]), gatewayIpAddress)),
+      ]),
+    ])
+  );
+
+const findVpnConnectionIndex = ({ gatewayIpAddress }) =>
+  pipe([
+    get("Options.TunnelOptions"),
+    findIndex(eq(pipe([get("OutsideIpAddress")]), gatewayIpAddress)),
+    tap((index) => {
+      assert(index >= 0);
+    }),
+  ]);
+
+const findGcpVpnTunnelByIp = ({ gatewayIpAddress }) =>
+  find(
+    and([
+      eq(get("groupType"), "compute::VpnTunnel"),
+      eq(get("live.peerIp"), gatewayIpAddress),
+    ])
+  );
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
@@ -987,6 +1016,27 @@ exports.fnSpecs = ({ config }) => {
                   get("id"),
                 ])(),
           },
+          gatewayIpAddressGoogle: {
+            providerType: "google",
+            type: "VpnTunnel",
+            group: "compute",
+            dependencyId:
+              ({ lives, config }) =>
+              ({ properties }) =>
+                pipe([
+                  tap((params) => {
+                    assert(properties.gatewayIpAddress);
+                  }),
+                  () =>
+                    lives.getByType({
+                      providerType: "google",
+                      type: "VpnTunnel",
+                      group: "compute",
+                    }),
+                  find(eq(get("live.peerIp"), properties.gatewayIpAddress)),
+                  get("id"),
+                ])(),
+          },
         },
         filterLiveExtra: ({ lives, providerConfig }) =>
           pipe([
@@ -1001,30 +1051,20 @@ exports.fnSpecs = ({ config }) => {
                     gatewayIpAddress: ({ gatewayIpAddress }) =>
                       pipe([
                         () => lives,
-                        find(
-                          and([
-                            eq(get("groupType"), "EC2::VpnConnection"),
-                            pipe([
-                              get("live.Options.TunnelOptions"),
-                              any(
-                                eq(get("OutsideIpAddress"), gatewayIpAddress)
-                              ),
-                            ]),
-                          ])
-                        ),
+                        fork({
+                          ec2VpnConnection: findEC2VpnConnectionByIp({
+                            gatewayIpAddress,
+                          }),
+                          googleVpnTunnel: findGcpVpnTunnelByIp({
+                            gatewayIpAddress,
+                          }),
+                        }),
                         switchCase([
-                          isEmpty,
-                          () => gatewayIpAddress,
-                          ({ id, live }) =>
+                          get("ec2VpnConnection"),
+                          ({ ec2VpnConnection: { id, live } }) =>
                             pipe([
                               () => live,
-                              get("Options.TunnelOptions"),
-                              findIndex(
-                                eq(get("OutsideIpAddress"), gatewayIpAddress)
-                              ),
-                              tap((index) => {
-                                assert(index >= 0);
-                              }),
+                              findVpnConnectionIndex({ gatewayIpAddress }),
                               (index) =>
                                 pipe([
                                   () => id,
@@ -1036,6 +1076,18 @@ exports.fnSpecs = ({ config }) => {
                                   }),
                                 ])(),
                             ])(),
+                          get("googleVpnTunnel"),
+                          ({ googleVpnTunnel: { id, live } }) =>
+                            pipe([
+                              () => id,
+                              replaceWithName({
+                                groupType: "compute::VpnTunnel",
+                                path: `live.peerIp`,
+                                providerConfig,
+                                lives,
+                              }),
+                            ])(),
+                          () => gatewayIpAddress,
                         ]),
                       ])(),
                   }),
