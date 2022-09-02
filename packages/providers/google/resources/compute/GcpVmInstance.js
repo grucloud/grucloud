@@ -83,7 +83,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
       ])(),
     },
     {
-      type: "SubNetwork",
+      type: "Subnetwork",
       group: "compute",
       ids: pipe([
         () => live,
@@ -93,7 +93,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
           pipe([
             () =>
               lives.getByType({
-                type: "SubNetwork",
+                type: "Subnetwork",
                 group: "compute",
                 providerName,
               }),

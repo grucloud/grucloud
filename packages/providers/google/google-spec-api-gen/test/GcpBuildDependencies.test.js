@@ -3,7 +3,7 @@ const assert = require("assert");
 const { pipe, tryCatch, tap, get } = require("rubico");
 
 const { buildDependenciesObject } = require("../GcpBuildDependencies");
-const { SubnetworkSchema } = require("./fixture");
+const { SubnetworkSchema } = require("./fixture/fixture");
 
 describe("GcpBuildDependencies", async function () {
   it(

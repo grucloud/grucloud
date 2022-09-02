@@ -180,6 +180,16 @@ const isNotOurTagKey = not(
     eq(identity, "fingerprint"), // GCP
   ])
 );
+const omitDependencyIds =
+  ({ dependencies = {} }) =>
+  (live) =>
+    pipe([
+      () => dependencies,
+      pluck("pathId"),
+      values,
+      filter(not(isEmpty)),
+      (pathIds) => pipe([() => live, deepOmit(pathIds)])(),
+    ])();
 
 const buildProperties = ({
   providerConfig,
@@ -221,6 +231,7 @@ const buildProperties = ({
       omitProperties,
       pickPropertiesCreate,
     }),
+    omitDependencyIds({ dependencies }),
     filterLiveExtra({
       providerConfig,
       lives,

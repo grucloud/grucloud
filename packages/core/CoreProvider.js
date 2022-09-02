@@ -1365,7 +1365,8 @@ function CoreProvider({
               map(
                 pipe([
                   (resource) => ({
-                    resource: omit(["live"])(resource),
+                    // TODO omit ends up calling isDefault
+                    resource,
                     action: "DESTROY",
                     live: client.spec.displayResource()(resource.live),
                     providerName: resource.providerName,

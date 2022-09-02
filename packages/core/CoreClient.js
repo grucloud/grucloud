@@ -56,12 +56,17 @@ module.exports = CoreClient = ({
     name,
     ...properties,
   }),
-  findName = pipe([
-    get("live.name"),
-    tap((name) => {
-      assert(name, "missing name");
-    }),
-  ]),
+  findName = ({ live }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => live,
+      get("name"),
+      tap((name) => {
+        assert(name, `missing name in live ${JSON.stringify(live)}`);
+      }),
+    ])(),
   findId = get("live.id"),
   findTargetId = () => get("id"),
   decorate = () => identity,
@@ -72,7 +77,7 @@ module.exports = CoreClient = ({
   onResponseDelete = identity,
   onResponseUpdate = identity,
   isDefault,
-  managedByOther = () => false,
+  managedByOther,
   cannotBeDeleted,
   shouldRetryOnExceptionGetById = shouldRetryOnExceptionCreateDefault,
   shouldRetryOnExceptionList = shouldRetryOnExceptionCreateDefault,
@@ -194,7 +199,16 @@ module.exports = CoreClient = ({
                 logger.debug(`getList ${spec.groupType}, ${tos(data)}`);
               }),
               onResponseList({ axios, lives, path }),
-              map(decorate({ axios, lives })),
+              switchCase([
+                Array.isArray,
+                map(decorate({ axios, lives })),
+                pipe([
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  () => [],
+                ]),
+              ]),
             ])()
           ),
           flatten,
@@ -233,12 +247,9 @@ module.exports = CoreClient = ({
                 assert(!spec.listOnly);
               }),
               () => ({ dependencies: dependencies(), name, payload }),
-              tap((params) => {
-                assert(true);
-              }),
               pathCreate,
               tap((path) => {
-                logger.info(`create ${spec.type}/${name}, path: ${path}`);
+                logger.info(`create ${spec.groupType}/${name}, path: ${path}`);
               }),
               (path) =>
                 pipe([
@@ -371,13 +382,10 @@ module.exports = CoreClient = ({
                 assert(!isEmpty(id), `destroy ${type}: invalid id`);
               }),
               () => ({ id, name, dependencies: dependencies() }),
-              tap((params) => {
-                assert(true);
-              }),
               pathDelete,
               (path) =>
                 retryCallOnError({
-                  name: `destroy type ${spec.type}, path: ${path}`,
+                  name: `destroy type ${spec.groupType}, path: ${path}`,
                   fn: () => axios.delete(path),
                   isExpectedResult: () => true,
                   config: { ...config, repeatCount: 0 },

@@ -13,7 +13,14 @@ const {
   and,
   switchCase,
 } = require("rubico");
-const { prepend, find, isEmpty, callProp, identity } = require("rubico/x");
+const {
+  prepend,
+  find,
+  isEmpty,
+  callProp,
+  identity,
+  first,
+} = require("rubico/x");
 const { camelCase } = require("change-case");
 const { compareGoogle } = require("../../GoogleCommon");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
@@ -24,25 +31,44 @@ const {
 } = require("./GcpServiceAccount");
 
 const { GcpIamPolicy, compareIamPolicy } = require("./GcpIamPolicy");
-const {
-  GcpIamBinding,
-  isOurMinionIamBinding,
-  compareIamBinding,
-} = require("./GcpIamBinding");
+const { GcpIamBinding, isOurMinionIamBinding } = require("./GcpIamBinding");
 
 const GROUP = "iam";
 
 module.exports = () =>
-  map(assign({ group: () => GROUP }))([
+  map(
+    assign({
+      group: () => GROUP,
+      baseUrl: () => "https://iam.googleapis.com/v1",
+    })
+  )([
     {
       type: "ServiceAccount",
       Client: GcpServiceAccount,
+      inferName: pipe([get("properties.accountId")]),
+      //TODO remove
+      methods: {
+        get: {
+          path: "/projects/{project}/serviceAccounts/{serviceAccount}",
+          parameterOrder: ["project", "serviceAccount"],
+        },
+        list: { path: "/projects/{project}/serviceAccounts" },
+        insert: { path: "/projects/{project}/serviceAccounts" },
+        delete: {
+          path: "/projects/{project}/serviceAccounts/{serviceAccount}",
+          parameterOrder: ["project", "serviceAccount"],
+        },
+      },
       isOurMinion: isOurMinionServiceAccount,
       resourceVarName: pipe([prepend("sa_"), camelCase]),
       filterLive: () =>
         pipe([
-          ({ description, displayName }) => ({
+          ({ email, description, displayName }) => ({
+            accountId: pipe([() => email, callProp("split", "@"), first])(),
             serviceAccount: { displayName, description },
+          }),
+          tap((params) => {
+            assert(true);
           }),
         ]),
       compare: compareGoogle({
@@ -58,7 +84,7 @@ module.exports = () =>
             tap((params) => {
               assert(true);
             }),
-            pick(["displayName", "description"]),
+            pick(["displayName", "description", "name"]),
           ]),
       }),
     },
@@ -79,6 +105,7 @@ module.exports = () =>
       dependencies: {
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       },
+      inferName: pipe([get("properties.role")]),
       Client: GcpIamBinding,
       isOurMinion: isOurMinionIamBinding,
       compare: compareGoogle({
@@ -95,7 +122,7 @@ module.exports = () =>
             }),
           ]),
       }),
-      filterLive: () => pipe([pick(["members"])]),
+      filterLive: () => pipe([pick(["role"])]),
       dependencies: {
         serviceAccounts: { type: "ServiceAccount", group: "iam", list: true },
       },
@@ -135,10 +162,5 @@ module.exports = () =>
               console.log(`Ignore binding ${name}`);
             }),
           ])(),
-      hasNoProperty: ({ lives, resource }) =>
-        pipe([
-          () => resource,
-          or([hasDependency({ type: "ServiceAccount", group: "iam" })]),
-        ])(),
     },
   ]);

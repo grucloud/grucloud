@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project vpn
+skinparam monochrome true
++ Infra
+++ google
++++ compute
+++++ Address (1)
+++++ ForwardingRule (3)
+++++ Network (1)
+++++ Route (1)
+++++ Subnetwork (1)
+++++ TargetVpnGateway (1)
+++++ VpnTunnel (1)
+@endmindmap

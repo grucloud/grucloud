@@ -8,10 +8,10 @@ const {
   omit,
   get,
   eq,
+  and,
   filter,
 } = require("rubico");
-const { prepend, callProp, find, defaultsDeep } = require("rubico/x");
-const { camelCase } = require("change-case");
+const { callProp, find, defaultsDeep, includes } = require("rubico/x");
 
 const GoogleTag = require("../../GoogleTag");
 const { compareGoogle } = require("../../GoogleCommon");
@@ -33,111 +33,43 @@ const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const GROUP = "compute";
 
-// const ResourceVarNameSubnet = pipe([camelCase, prepend("subnet_")]);
-// const ResourceNameSubnet = (name) =>
-//   ResourceVarNameSubnet(name).replace(/_/g, "-");
-
 module.exports = pipe([
   () => [
     {
-      type: "SslCertificate",
-      Client: GcpSslCertificate,
+      type: "Address",
+      Client: GcpAddress,
+      omitPropertiesExtra: ["address"],
     },
+
     {
       type: "BackendBucket",
       Client: GcpBackendBucket,
     },
-    {
-      type: "UrlMap",
-      dependencies: {
-        backendBucket: { type: "BackendBucket", group: "compute" },
-      },
-      Client: GcpUrlMap,
-    },
-    {
-      type: "HttpsTargetProxy",
-      dependencies: {
-        urlMap: { type: "UrlMap", group: "compute" },
-        certificate: { type: "SslCertificate", group: "compute" },
-      },
-      Client: GcpHttpsTargetProxy,
-    },
-    {
-      type: "GlobalForwardingRule",
-      dependencies: {
-        httpsTargetProxy: { type: "HttpsTargetProxy", group: "compute" },
-      },
-      Client: GcpGlobalForwardingRule,
-    },
-    {
-      type: "Network",
-      Client: GcpNetwork,
-      filterLive: () =>
-        pick(["description", "autoCreateSubnetworks", "routingConfig"]),
-    },
-    {
-      type: "SubNetwork",
-      filterLive: () =>
-        pipe([
-          pick(["ipCidrRange"]),
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
-      Client: GcpSubNetwork,
-      dependencies: {
-        network: { type: "Network", group: "compute" },
-      },
-    },
-    {
-      type: "Firewall",
-      Client: GcpFirewall,
-      dependencies: {
-        network: { type: "Network", group: "compute" },
-      },
-      compare: compareGoogle({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["network"]),
-            defaultsDeep({ disabled: false }),
-          ]),
-        filterLive: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            omit(["network", "creationTimestamp"]),
-          ]),
-      }),
-      propertiesDefault: {
-        sourceRanges: ["0.0.0.0/0"],
-      },
-      filterLive: () =>
-        pipe([
-          pick([
-            "description",
-            "priority",
-            "sourceRanges",
-            "allowed",
-            "direction",
-            "logConfig",
-          ]),
-        ]),
-    },
-    {
-      type: "Address",
-      Client: GcpAddress,
-      filterLive: () => pick(["description"]),
-    },
+
+    // TargetHttpsProxy
+    //TODO
+    // {
+    //   type: "HttpsTargetProxy",
+    //   dependencies: {
+    //     urlMap: { type: "UrlMap", group: "compute" },
+    //     certificate: { type: "SslCertificate", group: "compute" },
+    //   },
+    //   Client: GcpHttpsTargetProxy,
+    // },
+    // {
+    //   type: "GlobalForwardingRule",
+    //   dependencies: {
+    //     httpsTargetProxy: { type: "HttpsTargetProxy", group: "compute" },
+    //   },
+    //   Client: GcpGlobalForwardingRule,
+    // },
+
     {
       type: "Disk",
       Client: GcpDisk,
       filterLive: ({ providerConfig }) =>
         pipe([
-          pick(["sizeGb", "type"]),
+          pick(["name", "sizeGb", "type"]),
           assign({
             type: pipe([
               get("type"),
@@ -151,7 +83,66 @@ module.exports = pipe([
         ]),
     },
     {
-      type: "VmInstance",
+      type: "ForwardingRule",
+      dependencies: {
+        address: {
+          type: "Address",
+          group: "compute",
+          pathId: "IPAddress",
+          dependencyId:
+            ({ lives, config }) =>
+            ({ IPAddress }) =>
+              pipe([
+                tap((params) => {
+                  assert(IPAddress);
+                }),
+                () =>
+                  lives.getByType({
+                    providerName: config.providerName,
+                    type: "Address",
+                    group: "compute",
+                  }),
+                find(eq(get("live.address"), IPAddress)),
+                get("id"),
+              ])(),
+        },
+        targetVpnGateway: {
+          type: "TargetVpnGateway",
+          group: "compute",
+          pathId: "target",
+        },
+      },
+      omitPropertiesExtra: ["IPAddress"],
+    },
+    {
+      type: "Firewall",
+      Client: GcpFirewall,
+      dependencies: {
+        network: { type: "Network", group: "compute" },
+      },
+      compare: compareGoogle({
+        filterTarget: () =>
+          pipe([omit(["network"]), defaultsDeep({ disabled: false })]),
+        filterLive: () => pipe([omit(["network", "creationTimestamp"])]),
+      }),
+      propertiesDefault: {
+        sourceRanges: ["0.0.0.0/0"],
+      },
+      filterLive: () =>
+        pipe([
+          pick([
+            "name",
+            "description",
+            "priority",
+            "sourceRanges",
+            "allowed",
+            "direction",
+            "logConfig",
+          ]),
+        ]),
+    },
+    {
+      type: "Instance",
       Client: GoogleVmInstance,
       compare: compareVmInstance,
       omitProperties: [
@@ -161,7 +152,6 @@ module.exports = pipe([
         "serviceAccounts",
         "id",
         "creationTimestamp",
-        "name",
         "status",
         "selfLink",
         "cpuPlatform",
@@ -179,7 +169,7 @@ module.exports = pipe([
       dependsOnList: ["compute::Disk"],
       dependencies: {
         ip: { type: "Address", group: "compute" },
-        subNetwork: { type: "SubNetwork", group: "compute" },
+        subNetwork: { type: "Subnetwork", group: "compute" },
         disks: { type: "Disk", group: "compute", list: true },
         firewall: { type: "Firewall", group: "compute" },
         serviceAccount: { type: "ServiceAccount", group: "iam" },
@@ -240,6 +230,72 @@ module.exports = pipe([
             ]),
           }),
         ]),
+    },
+    {
+      type: "Network",
+      Client: GcpNetwork,
+      filterLive: () =>
+        pick(["description", "autoCreateSubnetworks", "name", "routingConfig"]),
+    },
+    {
+      type: "Subnetwork",
+      filterLive: () =>
+        pipe([
+          pick(["name", "ipCidrRange"]),
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+      Client: GcpSubNetwork,
+      dependencies: {
+        network: { type: "Network", group: "compute" },
+      },
+    },
+    {
+      type: "Route",
+      dependencies: {
+        network: {
+          type: "Network",
+          group: "compute",
+          pathId: "network",
+        },
+        vpnTunnel: {
+          type: "VpnTunnel",
+          group: "compute",
+          pathId: "nextHopVpnTunnel",
+        },
+      },
+    },
+    {
+      type: "SslCertificate",
+      Client: GcpSslCertificate,
+    },
+    {
+      type: "UrlMap",
+      dependencies: {
+        backendBucket: { type: "BackendBucket", group: "compute" },
+      },
+      Client: GcpUrlMap,
+    },
+    {
+      type: "VpnTunnel",
+      omitPropertiesExtra: ["sharedSecretHash"],
+      environmentVariables: [{ path: "sharedSecret", suffix: "SHAREDSECRET" }],
+      shouldRetryOnExceptionCreate: pipe([
+        tap(({ error }) => {
+          assert(error);
+        }),
+        get("error.response"),
+        and([
+          eq(get("status"), 400),
+          pipe([
+            get("data.error.message"),
+            includes(
+              "VPN gateway must be configured with an ESP forwarding rule before creating tunnel"
+            ),
+          ]),
+        ]),
+      ]),
     },
   ],
   map(

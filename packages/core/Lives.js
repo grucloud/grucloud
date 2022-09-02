@@ -158,17 +158,12 @@ exports.createLives = () => {
           mapPerType.set(groupType, mapById);
         }),
       ])(),
-    addResources: ({
-      providerName,
-      groupType,
-      resources = [],
-      error: latestError,
-    }) => {
+    addResources: ({ groupType, resources = [], error: latestError }) => {
       assert(groupType);
       assert(Array.isArray(resources) || latestError);
       logger.info(
         `live addResources ${JSON.stringify({
-          providerName,
+          //providerName: resources[0].providerName,
           groupType,
           resourceCount: size(resources),
         })}`

@@ -1,4 +1,5 @@
 const assert = require("assert");
+const util = require("util");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
@@ -623,7 +624,7 @@ const displayTablePerType = ({
         () =>
           table.push([
             {
-              content: colors.red(YAML.stringify(error)),
+              content: colors.red(YAML.stringify(util.inspect(error))),
             },
           ]),
         pipe([

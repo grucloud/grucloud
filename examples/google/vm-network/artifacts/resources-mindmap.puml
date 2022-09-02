@@ -4,8 +4,8 @@ skinparam monochrome true
 + Infra
 ++ google
 +++ compute
-++++ Network (1)
-++++ SubNetwork (1)
 ++++ Firewall (1)
-++++ VmInstance (1)
+++++ Instance (1)
+++++ Network (1)
+++++ Subnetwork (1)
 @endmindmap

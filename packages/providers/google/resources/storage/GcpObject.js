@@ -3,7 +3,7 @@ const fs = require("fs").promises;
 const querystring = require("querystring");
 
 const { pipe, tap, eq, map, get, filter, tryCatch, not } = require("rubico");
-const { defaultsDeep, find, isEmpty, when } = require("rubico/x");
+const { callProp, find, isEmpty, when } = require("rubico/x");
 const {
   logError,
   axiosErrorToJSON,
@@ -14,6 +14,7 @@ const {
 const { retryCallOnError } = require("@grucloud/core/Retry");
 
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");
+const GoogleClient = require("../../GoogleClient");
 
 const {
   GCP_STORAGE_BASE_URL,
@@ -24,8 +25,12 @@ const { buildLabel } = require("../../GoogleCommon");
 const logger = require("@grucloud/core/logger")({ prefix: "GcpObject" });
 const { tos } = require("@grucloud/core/tos");
 
-const findName = get("live.name");
+const findName = pipe([
+  get("live"),
+  ({ bucket, name }) => `${bucket}::${name}`,
+]);
 const findId = get("live.id");
+const findTargetId = () => get("id");
 
 const objectPath = ({ bucket, name }) =>
   pipe([
@@ -42,6 +47,12 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
 
   const { providerName } = configProvider;
 
+  const client = GoogleClient({
+    spec,
+    config: configProvider,
+    findTargetId,
+  });
+
   const axios = createAxiosMakerGoogle({
     baseURL: GCP_STORAGE_BASE_URL,
     url: "/b",
@@ -49,6 +60,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
   });
 
   const axiosUpload = createAxiosMakerGoogle({
+    baseURL: GCP_STORAGE_BASE_URL,
     config: configProvider,
     contentType: "application/x-www-form-urlencoded",
   });
@@ -88,20 +100,9 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
     return bucket;
   };
 
-  const configDefault = ({ name, properties }) =>
-    pipe([
-      () =>
-        defaultsDeep({
-          name,
-        })(properties),
-      tap((xx) => {
-        logger.debug(`configDefault`);
-      }),
-    ])();
-
   const getObject = tryCatch(
     pipe([
-      ({ bucket, name }) => objectPath({ bucket: bucket.name, name }),
+      objectPath,
       (path) =>
         retryCallOnError({
           name: `getObject ${path}`,
@@ -131,7 +132,10 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
           () => resource,
           getBucket,
           tryCatch(
-            pipe([(bucket) => getObject({ bucket, name: resource.name })]),
+            pipe([
+              (bucket) =>
+                getObject({ bucket: bucket.name, name: resource.name }),
+            ]),
             (error, params) => ({
               error: convertError({
                 error,
@@ -157,13 +161,15 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
       }),
     ])();
 
-  const getByName = ({ name, dependencies }) =>
+  const getByName = ({ name, dependencies, properties }) =>
     pipe([
       tap((obj) => {
         logger.debug(`getByName ${name}`);
+        assert(properties);
       }),
-      () => getBucket({ dependencies, name }),
-      (bucket) => getObject({ bucket, name }),
+      () => name,
+      callProp("split", "::"),
+      ([bucket, name]) => getObject({ bucket, name }),
       tap((result) => {
         logger.debug(`getByName name: ${name}, result: ${tos(result)}`);
       }),
@@ -190,7 +196,9 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
               axios.request(
                 `/b/${
                   dependencies().bucket.name
-                }/o?uploadType=resumable&name=${querystring.escape(name)}`,
+                }/o?uploadType=resumable&name=${querystring.escape(
+                  payload.name
+                )}`,
                 {
                   baseURL: GCP_STORAGE_UPLOAD_URL,
                   method: "POST",
@@ -253,17 +261,13 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
     ])();
 
   return {
-    spec,
-    config: configProvider,
+    ...client,
     findName,
     findId,
-    getList,
-    isDownById,
     create,
     update,
     destroy,
     getByName,
-    configDefault,
     findDependencies,
   };
 };

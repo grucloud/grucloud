@@ -20,7 +20,7 @@ module.exports = () =>
       isOurMinion: GoogleTag.isOurMinion,
       filterLive: () =>
         pipe([
-          pick(["storageClass", "iamConfiguration", "iam"]),
+          pick(["name", "storageClass", "iamConfiguration", "iam"]),
           assign({ iam: pipe([get("iam"), pick(["bindings"])]) }),
         ]),
       compare: compareGoogle({
@@ -33,12 +33,54 @@ module.exports = () =>
       }),
     },
     {
+      type: "BucketAccessControl",
+      managedByOther: () => true,
+      findName: pipe([
+        get("live"),
+        tap(({ bucket, entity }) => {
+          assert(bucket);
+        }),
+        ({ bucket, entity }) => `${bucket}::${entity}`,
+      ]),
+    },
+    {
+      type: "DefaultObjectAccessControl",
+      cannotBeDeleted: () => true,
+      managedByOther: () => true,
+      findId: pipe([
+        get("live.entity"),
+        tap((name) => {
+          assert(name);
+        }),
+      ]),
+      findName: pipe([
+        get("live.entity"),
+        tap((name) => {
+          assert(name);
+        }),
+      ]),
+    },
+    {
+      type: "ObjectAccessControl",
+      managedByOther: () => true,
+      pathLiveFromParent: ({ live }) =>
+        pipe([
+          tap((params) => {
+            assert(live.bucket);
+            assert(live.name);
+          }),
+          () => `b/${live.bucket}/o/${live.name}/acl`,
+        ]),
+      findName: pipe([
+        get("live"),
+        ({ bucket, object, entity }) => `${bucket}::${object}::${entity}`,
+      ]),
+    },
+    {
       type: "Object",
-      dependencies: {
-        bucket: { type: "Bucket", group: "storage" },
-      },
       Client: GcpObject,
-      filterLive: () => pipe([pick(["contentType", "storageClass"])]),
+      filterLive: () =>
+        pipe([pick(["name", "path", "contentType", "storageClass"])]),
       compare: compareGoogle({
         filterTarget: ({ programOptions }) =>
           pipe([

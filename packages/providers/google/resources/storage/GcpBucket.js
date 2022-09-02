@@ -1,9 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, map, eq, get, switchCase, assign } = require("rubico");
 const { defaultsDeep, identity, when } = require("rubico/x");
-
 const GoogleClient = require("../../GoogleClient");
-const { GCP_STORAGE_BASE_URL } = require("./GcpStorageCommon");
 const { buildLabel } = require("../../GoogleCommon");
 const logger = require("@grucloud/core/logger")({ prefix: "GcpBucket" });
 const { tos } = require("@grucloud/core/tos");
@@ -21,9 +19,8 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
   assert(spec);
   assert(configProvider);
   const { projectId, region } = configProvider;
-  const queryParam = () => `/?project=${projectId}`;
-  const pathList = queryParam;
-  const pathCreate = queryParam;
+  const pathList = () => `/b?project=${projectId}`;
+  const pathCreate = () => `/b?project=${projectId}`;
 
   const configDefault = ({ name, properties }) =>
     defaultsDeep({
@@ -34,8 +31,6 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
 
   const client = GoogleClient({
     spec,
-    baseURL: GCP_STORAGE_BASE_URL,
-    url: `/b`,
     config: configProvider,
     findTargetId,
     pathList,
@@ -53,7 +48,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
     (item) =>
       retryCallOnError({
         name: `getIam ${item.name}`,
-        fn: () => axios.get(`/${item.name}/iam`),
+        fn: () => axios.get(`/b/${item.name}/iam`),
         config: configProvider,
       }),
     get("data"),
@@ -107,7 +102,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
           (data) =>
             retryCallOnError({
               name: `setIam ${name}`,
-              fn: () => axios.put(`/${name}/iam`, data),
+              fn: () => axios.put(`/b/${name}/iam`, data),
               config: configProvider,
             }),
         ])
@@ -135,7 +130,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       () =>
         retryCallOnError({
           name: `list object to destroy on bucket ${bucketName}`,
-          fn: () => axios.get(`/${bucketName}/o`),
+          fn: () => axios.get(`/b/${bucketName}/o`),
           config: configProvider,
         }),
       get("data.items", []),
@@ -153,7 +148,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       () =>
         retryCallOnError({
           name: `destroy ${bucketName}`,
-          fn: () => axios.delete(`/${bucketName}`),
+          fn: () => axios.delete(`/b/${bucketName}`),
           config: configProvider,
           isExpectedException: isExpectedException404,
         }),

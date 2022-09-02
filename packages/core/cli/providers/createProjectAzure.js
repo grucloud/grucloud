@@ -30,6 +30,7 @@ const RolesDefault = [
 ];
 
 const NamespacesDefault = [
+  "Microsoft.App",
   "Microsoft.Compute",
   "Microsoft.ContainerService",
   "Microsoft.DocumentDB",

@@ -4,33 +4,10 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "Network",
-    group: "compute",
-    name: "vpc",
-    properties: ({}) => ({
-      description: "Managed By GruCloud",
-      autoCreateSubnetworks: false,
-      routingConfig: {
-        routingMode: "REGIONAL",
-      },
-    }),
-  },
-  {
-    type: "SubNetwork",
-    group: "compute",
-    name: "subnetwork",
-    properties: ({}) => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-    dependencies: ({}) => ({
-      network: "vpc",
-    }),
-  },
-  {
     type: "Firewall",
     group: "compute",
-    name: "firewall",
     properties: ({}) => ({
+      name: "firewall",
       description: "Managed By GruCloud",
       priority: 1000,
       allowed: [
@@ -49,10 +26,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "VmInstance",
+    type: "Instance",
     group: "compute",
-    name: "db",
     properties: ({}) => ({
+      name: "db",
       machineType: "f1-micro",
       metadata: {
         items: [
@@ -67,6 +44,29 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       subNetwork: "subnetwork",
+    }),
+  },
+  {
+    type: "Network",
+    group: "compute",
+    properties: ({}) => ({
+      description: "Managed By GruCloud",
+      autoCreateSubnetworks: false,
+      name: "vpc",
+      routingConfig: {
+        routingMode: "REGIONAL",
+      },
+    }),
+  },
+  {
+    type: "Subnetwork",
+    group: "compute",
+    properties: ({}) => ({
+      name: "subnetwork",
+      ipCidrRange: "10.164.0.0/20",
+    }),
+    dependencies: ({}) => ({
+      network: "vpc",
     }),
   },
 ];

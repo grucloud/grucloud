@@ -33,6 +33,10 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsClient" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { assignTagsSort, createEndpoint } = require("./AwsCommon");
 
+const shouldRetryOnExceptionMessagesDefaults = [
+  "Service Unavailable. Please try again later",
+];
+
 const shouldRetryOnExceptionCodesDefault =
   (shouldRetryOnExceptionCodes) =>
   ({ error, name }) =>
@@ -69,7 +73,10 @@ const shouldRetryOnExceptionDefault = ({
 }) =>
   or([
     shouldRetryOnExceptionCodesDefault(shouldRetryOnExceptionCodes),
-    shouldRetryOnExceptionMessagesDefault(shouldRetryOnExceptionMessages),
+    shouldRetryOnExceptionMessagesDefault([
+      ...shouldRetryOnExceptionMessages,
+      ...shouldRetryOnExceptionMessagesDefaults,
+    ]),
   ]);
 
 const AwsClient =

@@ -17,9 +17,6 @@ module.exports = () =>
         pipe([() => properties, get("metadata.name")])(),
       filterLive: () =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           omit(["metadata.uid"]),
           omit(["metadata.namespace"]),
           omit(["metadata.selfLink"]),
@@ -55,22 +52,10 @@ module.exports = () =>
             () =>
               "`${config.projectNumber()}-compute@developer.gserviceaccount.com`"
           ),
-          tap((params) => {
-            assert(true);
-          }),
         ]),
       compare: compareGoogle({
-        filterTarget: () =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
         filterLive: () =>
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
             omit([
               "metadata.annotations",
               "policy.etag",
@@ -86,7 +71,6 @@ module.exports = () =>
       dependencies: {
         service: { type: "Service", group: "run", parent: true },
       },
-      //TODO inferName
       inferName: ({ properties, dependencies }) =>
         pipe([
           dependencies,
@@ -94,20 +78,11 @@ module.exports = () =>
             assert(service);
           }),
           ({ service }) => `${service.name}::${properties.location}`,
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
       filterLive: () =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           omit(["policy.etag", "service"]),
           set("location", () => "config.region"),
-          tap((params) => {
-            assert(true);
-          }),
         ]),
       compare: compareGoogle({
         filterLive: () => pipe([omit(["policy.etag"])]),

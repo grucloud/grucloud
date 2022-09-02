@@ -18,8 +18,8 @@ const {
   unless,
   isEmpty,
   find,
+  defaultsDeep,
 } = require("rubico/x");
-const defaultsDeep = require("rubico/x/defaultsDeep");
 
 exports.isKeyExcluded = ({ key }) =>
   pipe([

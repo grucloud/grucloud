@@ -4,21 +4,29 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "ServiceAccount",
-    group: "iam",
-    name: "sa-test-vm",
+    type: "Address",
+    group: "compute",
     properties: ({}) => ({
-      serviceAccount: {
-        displayName: "SA dev",
-        description: "Managed By GruCloud",
-      },
+      name: "ip-webserver",
+      description: "Managed By GruCloud",
+      networkTier: "PREMIUM",
+      addressType: "EXTERNAL",
+    }),
+  },
+  {
+    type: "Disk",
+    group: "compute",
+    properties: ({}) => ({
+      name: "disk",
+      sizeGb: "20",
+      type: "pd-standard",
     }),
   },
   {
     type: "Firewall",
     group: "compute",
-    name: "firewall-22-80-433",
     properties: ({}) => ({
+      name: "firewall-22-80-433",
       description: "Managed By GruCloud",
       priority: 1000,
       allowed: [
@@ -36,8 +44,8 @@ exports.createResources = () => [
   {
     type: "Firewall",
     group: "compute",
-    name: "firewall-icmp",
     properties: ({}) => ({
+      name: "firewall-icmp",
       description: "Managed By GruCloud",
       priority: 1000,
       allowed: [
@@ -52,27 +60,10 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "Address",
+    type: "Instance",
     group: "compute",
-    name: "ip-webserver",
     properties: ({}) => ({
-      description: "Managed By GruCloud",
-    }),
-  },
-  {
-    type: "Disk",
-    group: "compute",
-    name: "disk",
-    properties: ({}) => ({
-      sizeGb: "20",
-      type: "pd-standard",
-    }),
-  },
-  {
-    type: "VmInstance",
-    group: "compute",
-    name: "webserver",
-    properties: ({}) => ({
+      name: "webserver",
       machineType: "f1-micro",
       metadata: {
         items: [
@@ -88,6 +79,17 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       ip: "ip-webserver",
       disks: ["disk"],
+    }),
+  },
+  {
+    type: "ServiceAccount",
+    group: "iam",
+    properties: ({}) => ({
+      accountId: "sa-test-vm",
+      serviceAccount: {
+        displayName: "SA dev",
+        description: "Managed By GruCloud",
+      },
     }),
   },
 ];
