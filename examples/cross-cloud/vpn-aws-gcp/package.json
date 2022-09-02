@@ -1,0 +1,33 @@
+{
+  "name": "vpn-aws-gcp",
+  "version": "9.1.3",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tree": "gc tree",
+    "graph": "gc graph",
+    "gencode": "gc gencode",
+    "list": "gc list",
+    "list-graph": "gc list -g",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "onDeployed": "gc run --onDeployed",
+    "onDestroyed": "gc run --onDestroyed",
+    "test": "mocha",
+    "init": "gc init"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^9.1.3",
+    "@grucloud/provider-aws": "^9.1.3",
+    "@grucloud/provider-google": "^9.1.3",
+    "rubico": "^1.8.11"
+  },
+  "devDependencies": {
+    "mocha": "^9.2.2",
+    "mocha-junit-reporter": "^2.0.2"
+  }
+}

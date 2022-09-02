@@ -10,9 +10,18 @@ const {
   eq,
   and,
   filter,
+  any,
+  switchCase,
 } = require("rubico");
-const { callProp, find, defaultsDeep, includes } = require("rubico/x");
-
+const {
+  callProp,
+  find,
+  defaultsDeep,
+  includes,
+  isEmpty,
+  findIndex,
+} = require("rubico/x");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const GoogleTag = require("../../GoogleTag");
 const { compareGoogle } = require("../../GoogleCommon");
 
@@ -29,7 +38,6 @@ const { GcpHttpsTargetProxy } = require("./GcpHttpsTargetProxy");
 const { GcpUrlMap } = require("./GcpUrlMap");
 const { GcpGlobalForwardingRule } = require("./GcpGlobalForwardingRule");
 const { GcpDisk } = require("./GcpDisk");
-const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const GROUP = "compute";
 
@@ -279,6 +287,50 @@ module.exports = pipe([
     },
     {
       type: "VpnTunnel",
+      // dependencies: {
+      //   router: {
+      //     type: "Router",
+      //     group: "compute",
+      //     pathId: "router",
+      //   },
+      //   targetVpnGateway: {
+      //     type: "TargetVpnGateway",
+      //     group: "compute",
+      //     pathId: "targetVpnGateway",
+      //   },
+      //   vpnGateway: {
+      //     type: "VpnGateway",
+      //     group: "compute",
+      //     pathId: "vpnGateway",
+      //   },
+      //   vpnConnectionAws: {
+      //     type: "VpnConnection",
+      //     group: "EC2",
+      //     createOnly: true,
+      //     providerType: "aws",
+      //     dependencyId:
+      //       ({ lives, config }) =>
+      //       ({ peerIp }) =>
+      //         pipe([
+      //           tap((params) => {
+      //             assert(peerIp);
+      //           }),
+      //           () =>
+      //             lives.getByType({
+      //               providerType: "aws",
+      //               type: "VpnConnection",
+      //               group: "EC2",
+      //             }),
+      //           find(
+      //             pipe([
+      //               get("live.Options.TunnelOptions"),
+      //               any(eq(get("OutsideIpAddress"), peerIp)),
+      //             ])
+      //           ),
+      //           get("id"),
+      //         ])(),
+      //   },
+      // },
       omitPropertiesExtra: ["sharedSecretHash"],
       environmentVariables: [{ path: "sharedSecret", suffix: "SHAREDSECRET" }],
       shouldRetryOnExceptionCreate: pipe([
@@ -296,6 +348,63 @@ module.exports = pipe([
           ]),
         ]),
       ]),
+      // filterLiveExtra: ({ lives, providerConfig }) =>
+      //   pipe([
+      //     assign({
+      //       sharedSecret: ({ sharedSecretHash }) =>
+      //         pipe([
+      //           () => lives,
+      //           find(
+      //             and([
+      //               eq(get("groupType"), "EC2::VpnConnection"),
+      //               pipe([
+      //                 get("live.Options.TunnelOptions"),
+      //                 any(
+      //                   eq(
+      //                     pipe([
+      //                       get("PreSharedKey"),
+      //                       //
+      //                     ]),
+      //                     sharedSecretHash
+      //                   )
+      //                 ),
+      //               ]),
+      //             ])
+      //           ),
+      //           switchCase([
+      //             isEmpty,
+      //             () => value,
+      //             ({ id, live }) =>
+      //               pipe([
+      //                 () => live,
+      //                 get("Options.TunnelOptions"),
+      //                 findIndex(
+      //                   eq(
+      //                     pipe([
+      //                       get("PreSharedKey"),
+      //                       // TODO hash
+      //                     ]),
+      //                     sharedSecretHash
+      //                   )
+      //                 ),
+      //                 tap((index) => {
+      //                   assert(index >= 0);
+      //                 }),
+      //                 (index) =>
+      //                   pipe([
+      //                     () => id,
+      //                     replaceWithName({
+      //                       groupType: "EC2::VpnConnection",
+      //                       path: `live.Options.TunnelOptions[${index}].PreSharedKey`,
+      //                       providerConfig,
+      //                       lives,
+      //                     }),
+      //                   ])(),
+      //               ])(),
+      //           ]),
+      //         ])(),
+      //     }),
+      //   ]),
     },
   ],
   map(
