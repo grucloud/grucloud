@@ -1,6 +1,5 @@
 const assert = require("assert");
 const path = require("path");
-const { JWT } = require("google-auth-library");
 const { authorize } = require("../GoogleAuthorize");
 
 describe("GoogleAuth", function () {

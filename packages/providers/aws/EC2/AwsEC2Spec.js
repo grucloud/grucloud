@@ -148,15 +148,14 @@ const {
 const {
   EC2TransitGatewayRouteTablePropagation,
 } = require("./EC2TransitGatewayRouteTablePropagation");
-
 const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
 const { EC2VpnGateway } = require("./EC2VpnGateway");
 const { EC2VpnGatewayAttachment } = require("./EC2VpnGatewayAttachment");
 const {
   EC2VpnGatewayRoutePropagation,
 } = require("./EC2VpnGatewayRoutePropagation");
-
 const { EC2VpnConnection } = require("./EC2VpnConnection");
+const { EC2VpnConnectionRoute } = require("./EC2VpnConnectionRoute");
 
 const GROUP = "EC2";
 
@@ -396,23 +395,50 @@ module.exports = pipe([
             IpAddress: ({ IpAddress }) =>
               pipe([
                 () => lives,
-                find(
-                  and([
-                    eq(get("groupType"), "Network::PublicIPAddress"),
-                    eq(get("live.properties.ipAddress"), IpAddress),
-                  ])
-                ),
-                get("id"),
+                fork({
+                  ipAddressAzure: pipe([
+                    find(
+                      and([
+                        eq(get("groupType"), "Network::PublicIPAddress"),
+                        eq(get("live.properties.ipAddress"), IpAddress),
+                      ])
+                    ),
+                    get("id"),
+                  ]),
+                  ipAddressGoogle: pipe([
+                    find(
+                      and([
+                        eq(get("groupType"), "compute::Address"),
+                        eq(get("live.address"), IpAddress),
+                      ])
+                    ),
+                    get("id"),
+                  ]),
+                }),
                 switchCase([
-                  isEmpty,
+                  get("ipAddressAzure"),
+                  pipe([
+                    get("ipAddressAzure"),
+                    replaceWithName({
+                      groupType: "Network::PublicIPAddress",
+                      pathLive: "id",
+                      path: "live.properties.ipAddress",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                  get("ipAddressGoogle"),
+                  pipe([
+                    get("ipAddressGoogle"),
+                    replaceWithName({
+                      groupType: "compute::Address",
+                      pathLive: "id",
+                      path: "live.address",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
                   () => IpAddress,
-                  replaceWithName({
-                    groupType: "Network::PublicIPAddress",
-                    pathLive: "id",
-                    path: "live.properties.ipAddress",
-                    providerConfig,
-                    lives,
-                  }),
                 ]),
               ])(),
           }),
@@ -441,6 +467,27 @@ module.exports = pipe([
                     group: "Network",
                   }),
                 find(eq(get("live.properties.ipAddress"), IpAddress)),
+                get("id"),
+              ])(),
+        },
+        ipAddressGoogle: {
+          type: "Address",
+          group: "compute",
+          providerType: "google",
+          dependencyId:
+            ({ lives, config }) =>
+            ({ IpAddress }) =>
+              pipe([
+                tap((params) => {
+                  assert(IpAddress);
+                }),
+                () =>
+                  lives.getByType({
+                    providerType: "google",
+                    type: "Address",
+                    group: "compute",
+                  }),
+                find(eq(get("live.address"), IpAddress)),
                 get("id"),
               ])(),
         },
@@ -2279,6 +2326,8 @@ module.exports = pipe([
         securityGroups: {
           type: "SecurityGroup",
           group: "EC2",
+          list: true,
+          includeDefaultDependencies: true,
           dependencyIds: ({ lives, config }) =>
             pipe([get("Groups"), pluck("GroupId")]),
         },
@@ -2744,7 +2793,6 @@ module.exports = pipe([
         "Routes",
       ],
       //filterLive Sort by PSK
-
       propertiesDefault: {
         Type: "ipsec.1",
         Options: {
@@ -2771,6 +2819,23 @@ module.exports = pipe([
           type: "TransitGateway",
           group: "EC2",
           dependencyId: ({ lives, config }) => get("TransitGatewayId"),
+        },
+      },
+    },
+    {
+      type: "VpnConnectionRoute",
+      Client: EC2VpnConnectionRoute,
+      inferName: ({
+        properties: { DestinationCidrBlock },
+        dependenciesSpec: { vpnConnection },
+      }) => `vpn-conn-route::${vpnConnection}::${DestinationCidrBlock}`,
+      omitProperties: ["VpnConnectionId", "State"],
+      dependencies: {
+        vpnConnection: {
+          type: "VpnConnection",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("VpnConnectionId"),
         },
       },
     },

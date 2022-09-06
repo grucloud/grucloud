@@ -10,9 +10,20 @@ const {
   eq,
   and,
   filter,
+  any,
+  switchCase,
 } = require("rubico");
-const { callProp, find, defaultsDeep, includes } = require("rubico/x");
-
+const {
+  callProp,
+  find,
+  defaultsDeep,
+  includes,
+  isEmpty,
+  findIndex,
+  pluck,
+  flatten,
+} = require("rubico/x");
+const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const GoogleTag = require("../../GoogleTag");
 const { compareGoogle } = require("../../GoogleCommon");
 
@@ -29,9 +40,28 @@ const { GcpHttpsTargetProxy } = require("./GcpHttpsTargetProxy");
 const { GcpUrlMap } = require("./GcpUrlMap");
 const { GcpGlobalForwardingRule } = require("./GcpGlobalForwardingRule");
 const { GcpDisk } = require("./GcpDisk");
-const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const GROUP = "compute";
+
+const findEC2VpnConnectionByIp = ({ peerIp }) =>
+  find(
+    and([
+      eq(get("groupType"), "EC2::VpnConnection"),
+      pipe([
+        get("live.Options.TunnelOptions"),
+        any(eq(pipe([get("OutsideIpAddress")]), peerIp)),
+      ]),
+    ])
+  );
+
+const findVpnConnectionIndex = ({ peerIp }) =>
+  pipe([
+    get("Options.TunnelOptions"),
+    findIndex(eq(pipe([get("OutsideIpAddress")]), peerIp)),
+    tap((index) => {
+      assert(index >= 0);
+    }),
+  ]);
 
 module.exports = pipe([
   () => [
@@ -279,6 +309,79 @@ module.exports = pipe([
     },
     {
       type: "VpnTunnel",
+      dependencies: {
+        router: {
+          type: "Router",
+          group: "compute",
+          pathId: "router",
+        },
+        targetVpnGateway: {
+          type: "TargetVpnGateway",
+          group: "compute",
+          pathId: "targetVpnGateway",
+        },
+        vpnGateway: {
+          type: "VpnGateway",
+          group: "compute",
+          pathId: "vpnGateway",
+        },
+        vpnConnectionAws: {
+          type: "VpnConnection",
+          group: "EC2",
+          createOnly: true,
+          providerType: "aws",
+          dependencyId:
+            ({ lives, config }) =>
+            ({ peerIp }) =>
+              pipe([
+                tap((params) => {
+                  assert(peerIp);
+                }),
+                () =>
+                  lives.getByType({
+                    providerType: "aws",
+                    type: "VpnConnection",
+                    group: "EC2",
+                  }),
+                find(
+                  pipe([
+                    get("live.Options.TunnelOptions"),
+                    any(eq(get("OutsideIpAddress"), peerIp)),
+                  ])
+                ),
+                get("id"),
+              ])(),
+        },
+        virtualNetworkGatewayAzure: {
+          type: "VirtualNetworkGateway",
+          group: "Network",
+          createOnly: true,
+          providerType: "azure",
+          dependencyId:
+            ({ lives, config }) =>
+            ({ peerIp }) =>
+              pipe([
+                tap((params) => {
+                  assert(peerIp);
+                }),
+                () =>
+                  lives.getByType({
+                    providerType: "azure",
+                    type: "VirtualNetworkGateway",
+                    group: "Network",
+                  }),
+                find(
+                  pipe([
+                    get("live.bgpSettings.bgpPeeringAddresses"),
+                    pluck("tunnelIpAddresses"),
+                    flatten,
+                    any(includes(peerIp)),
+                  ])
+                ),
+                get("id"),
+              ])(),
+        },
+      },
       omitPropertiesExtra: ["sharedSecretHash"],
       environmentVariables: [{ path: "sharedSecret", suffix: "SHAREDSECRET" }],
       shouldRetryOnExceptionCreate: pipe([
@@ -296,6 +399,64 @@ module.exports = pipe([
           ]),
         ]),
       ]),
+      filterLiveExtra: ({ lives, providerConfig }) =>
+        pipe([
+          assign({
+            sharedSecret: ({ peerIp, sharedSecret }) =>
+              pipe([
+                () => lives,
+                findEC2VpnConnectionByIp({ peerIp }),
+                switchCase([
+                  isEmpty,
+                  () => sharedSecret,
+                  ({ id, live }) =>
+                    pipe([
+                      () => live,
+                      findVpnConnectionIndex({ peerIp }),
+                      (index) =>
+                        pipe([
+                          () => id,
+                          replaceWithName({
+                            groupType: "EC2::VpnConnection",
+                            path: `live.Options.TunnelOptions[${index}].PreSharedKey`,
+                            providerConfig,
+                            lives,
+                          }),
+                        ])(),
+                    ])(),
+                ]),
+              ])(),
+          }),
+          assign({
+            peerIp: ({ peerIp }) =>
+              pipe([
+                tap((params) => {
+                  assert(peerIp);
+                }),
+                () => lives,
+                findEC2VpnConnectionByIp({ peerIp }),
+                switchCase([
+                  isEmpty,
+                  () => peerIp,
+                  ({ id, live }) =>
+                    pipe([
+                      () => live,
+                      findVpnConnectionIndex({ peerIp }),
+                      (index) =>
+                        pipe([
+                          () => id,
+                          replaceWithName({
+                            groupType: "EC2::VpnConnection",
+                            path: `live.Options.TunnelOptions[${index}].OutsideIpAddress`,
+                            providerConfig,
+                            lives,
+                          }),
+                        ])(),
+                    ])(),
+                ]),
+              ])(),
+          }),
+        ]),
     },
   ],
   map(

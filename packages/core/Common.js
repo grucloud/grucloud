@@ -775,10 +775,11 @@ const findIdsByKeys =
               }),
               flatMap(findIdsByKeys(otherKeys)),
             ]),
-            pipe([findIdsByKeys(otherKeys), (result) => [result]]),
+            pipe([findIdsByKeys(otherKeys)]),
           ]),
         ]),
       ]),
+      filter(not(isEmpty)),
     ])();
 
 exports.findIdsByPath =

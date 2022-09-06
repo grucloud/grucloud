@@ -428,7 +428,7 @@ module.exports = GoogleClient = ({
     spec,
     config,
     findName: findName || spec.findName,
-    findId: findId || spec.findId,
+    findId: spec.findId || findId,
     pathGet,
     pathList,
     pathCreate,

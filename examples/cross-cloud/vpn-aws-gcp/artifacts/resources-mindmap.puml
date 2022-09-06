@@ -1,0 +1,35 @@
+@startmindmap
+title Resources for project vpn-aws-gcp
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ CustomerGateway (1)
+++++ Vpc (1)
+++++ Subnet (1)
+++++ RouteTable (1)
+++++ RouteTableAssociation (1)
+++++ Route (1)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (3)
+++++ Instance (1)
+++++ VpcEndpoint (3)
+++++ VpnGateway (1)
+++++ VpnGatewayAttachment (1)
+++++ VpnConnection (1)
+++++ VpnConnectionRoute (1)
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
+-- google
+--- compute
+---- Address (1)
+---- Firewall (2)
+---- ForwardingRule (3)
+---- Instance (1)
+---- Network (1)
+---- Route (2)
+---- Subnetwork (1)
+---- TargetVpnGateway (1)
+---- VpnTunnel (2)
+@endmindmap

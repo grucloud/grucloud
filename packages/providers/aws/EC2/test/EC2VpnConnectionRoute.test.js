@@ -2,15 +2,15 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("EC2VpnGatewayAttachment", async function () {
+describe("EC2VpnConnectionRoute", async function () {
   let config;
   let provider;
-  let vpnGatewayAttachment;
+  let vpnConnectionRoute;
 
   before(async function () {
     provider = await AwsProvider({ config });
-    vpnGatewayAttachment = provider.getClient({
-      groupType: "EC2::VpnGatewayAttachment",
+    vpnConnectionRoute = provider.getClient({
+      groupType: "EC2::VpnConnectionRoute",
     });
     await provider.start();
   });
@@ -19,10 +19,10 @@ describe("EC2VpnGatewayAttachment", async function () {
     "delete with invalid id",
     pipe([
       () =>
-        vpnGatewayAttachment.destroy({
+        vpnConnectionRoute.destroy({
           live: {
-            VpcId: "vpc-123456",
-            VpnGatewayId: "vpn-032cb2c8350925850",
+            VpnConnectionId: "vgw-032cb2c8350925850",
+            DestinationCidrBlock: "192.168.0.0/24",
           },
         }),
     ])
