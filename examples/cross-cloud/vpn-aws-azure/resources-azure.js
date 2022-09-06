@@ -4,6 +4,119 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "SshPublicKey",
+    group: "Compute",
+    properties: ({ config }) => ({
+      name: "machine-azure_key",
+      location: config.location,
+      properties: {
+        publicKey:
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDXMbrqlWTtPH7ochhNri6aRUn2PcSTYR1xZ1IXFV//0VO4Nm0Qp21A+C3bdTu9YurWc2fH+YM/tcU1ac/NABC3+UYNUJukeMcdX/bETHP6wkVC4nU6BDY9n+HuAJHkFgzG9xTPb7McOiTqcCYi0u17FihIULxZHScs+oeKefMl7aXxl9QVOlO1wPWs2AtQzLjYBJSDWcSeZYE6f8S7sg9A9spSqA3ppy5DnQoEQQ7dpxEXCIt68z1CtIIO7FURjr4OfJfDS38lkWHv5sRUpi/pB5sEGL/bwyn3b0mS3GuAqAU5w/WrYdjEcGcWR6p9vDdaIuXEHqN1dxpwr55gQwl1cZDcCzSG2268c8hTgXkMnTgYldgAaauaWYfqwQpE56tzD/J1K33RoXlbtUNWdVawh4PL68gzG0g4d6eJKCTssbXafxLXCQxN+ATxMIkHFgyL092oaSD2bsSH23yH3561O5b8CqFsVa5nzcpoTFbPHyPNECwo4GzmwA706r8EBvE= generated-by-azure",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
+    }),
+  },
+  {
+    type: "VirtualMachine",
+    group: "Compute",
+    properties: ({ getId }) => ({
+      name: "machine-azure",
+      properties: {
+        hardwareProfile: {
+          vmSize: "Standard_B1ls",
+        },
+        osProfile: {
+          computerName: "machine-azure",
+          adminUsername: "azureuser",
+          linuxConfiguration: {
+            disablePasswordAuthentication: true,
+            ssh: {
+              publicKeys: [
+                {
+                  path: "/home/azureuser/.ssh/authorized_keys",
+                  keyData: `${getId({
+                    type: "SshPublicKey",
+                    group: "Compute",
+                    name: "hybridrg::machine-azure_key",
+                    path: "live.properties.publicKey",
+                  })}`,
+                },
+              ],
+            },
+            enableVMAgentPlatformUpdates: false,
+          },
+          adminPassword: process.env.HYBRIDRG_MACHINE_AZURE_ADMIN_PASSWORD,
+        },
+        storageProfile: {
+          imageReference: {
+            publisher: "canonical",
+            offer: "0001-com-ubuntu-server-focal",
+            sku: "20_04-lts-gen2",
+            version: "latest",
+          },
+          osDisk: {
+            osType: "Linux",
+            name: "machine-azure_OsDisk_1_eeaa75f85bd74d19bb786d94644eba1a",
+            createOption: "FromImage",
+            caching: "ReadWrite",
+            managedDisk: {
+              storageAccountType: "Premium_LRS",
+            },
+            deleteOption: "Delete",
+            diskSizeGB: 30,
+          },
+        },
+        diagnosticsProfile: {
+          bootDiagnostics: {
+            enabled: true,
+          },
+        },
+        networkProfile: {
+          networkInterfaces: [
+            {
+              id: getId({
+                type: "NetworkInterface",
+                group: "Network",
+                name: "hybridrg::machine-azure388",
+              }),
+              properties: {
+                deleteOption: "Detach",
+              },
+            },
+          ],
+        },
+      },
+      identity: {
+        type: "SystemAssigned",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
+      sshPublicKeys: ["hybridrg::machine-azure_key"],
+      networkInterfaces: ["hybridrg::machine-azure388"],
+    }),
+  },
+  {
+    type: "VirtualMachineExtension",
+    group: "Compute",
+    properties: ({ config }) => ({
+      name: "AADSSHLoginForLinux",
+      location: config.location,
+      properties: {
+        publisher: "Microsoft.Azure.ActiveDirectory",
+        type: "AADSSHLoginForLinux",
+        typeHandlerVersion: "1.0",
+        autoUpgradeMinorVersion: true,
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
+      vm: "hybridrg::machine-azure",
+    }),
+  },
+  {
     type: "LocalNetworkGateway",
     group: "Network",
     properties: ({ config, getId }) => ({
@@ -47,6 +160,66 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       resourceGroup: "hybridrg",
       gatewayIpAddressAws: "vpn-connection",
+    }),
+  },
+  {
+    type: "NetworkInterface",
+    group: "Network",
+    properties: ({ config, getId }) => ({
+      name: "machine-azure388",
+      location: config.location,
+      properties: {
+        ipConfigurations: [
+          {
+            properties: {
+              subnet: {
+                id: `${getId({
+                  type: "Subnet",
+                  group: "Network",
+                  name: "hybridrg::vnet1::subnet1",
+                })}`,
+              },
+            },
+            name: "ipconfig1",
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
+      networkSecurityGroup: "hybridrg::machine-azure-nsg",
+      subnets: ["hybridrg::vnet1::subnet1"],
+    }),
+  },
+  {
+    type: "NetworkSecurityGroup",
+    group: "Network",
+    properties: ({}) => ({
+      name: "machine-azure-nsg",
+      properties: {
+        securityRules: [
+          {
+            name: "SSH",
+            properties: {
+              protocol: "TCP",
+              sourcePortRange: "*",
+              destinationPortRange: "22",
+              sourceAddressPrefix: "*",
+              destinationAddressPrefix: "*",
+              access: "Allow",
+              priority: 300,
+              direction: "Inbound",
+              sourcePortRanges: [],
+              destinationPortRanges: [],
+              sourceAddressPrefixes: [],
+              destinationAddressPrefixes: [],
+            },
+          },
+        ],
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
     }),
   },
   {
