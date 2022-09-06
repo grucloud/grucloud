@@ -106,7 +106,7 @@ exports.EC2VpnConnectionRoute = ({ spec, config }) =>
                 pipe([() => Routes, map(defaultsDeep({ VpnConnectionId }))])(),
             ])
           ),
-          filter(not(eq(get("State"), "detached"))),
+          filter(not(eq(get("State"), "deleted"))),
         ])(),
     getByName:
       ({ getById, endpoint }) =>
@@ -118,7 +118,7 @@ exports.EC2VpnConnectionRoute = ({ spec, config }) =>
             assert(properties({}).DestinationCidrBlock);
           }),
           () => ({
-            VpnConnectionId: [vpnConnection.live.VpnConnectionId],
+            VpnConnectionIds: [vpnConnection.live.VpnConnectionId],
           }),
           endpoint().describeVpnConnections,
           get("VpnConnections"),
