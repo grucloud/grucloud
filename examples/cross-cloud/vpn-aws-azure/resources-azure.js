@@ -117,6 +117,48 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "BastionHost",
+    group: "Network",
+    properties: ({ config, getId }) => ({
+      name: "bastion",
+      location: config.location,
+      properties: {
+        ipConfigurations: [
+          {
+            properties: {
+              privateIPAllocationMethod: "Dynamic",
+              subnet: {
+                id: `${getId({
+                  type: "Subnet",
+                  group: "Network",
+                  name: "hybridrg::vnet1::AzureBastionSubnet",
+                })}`,
+              },
+              publicIPAddress: {
+                id: `${getId({
+                  type: "PublicIPAddress",
+                  group: "Network",
+                  name: "hybridrg::vnet1-ip",
+                })}`,
+              },
+            },
+            name: "IpConf",
+          },
+        ],
+        scaleUnits: 2,
+        enableTunneling: true,
+      },
+      sku: {
+        name: "Standard",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
+      subnets: ["hybridrg::vnet1::AzureBastionSubnet"],
+      publicIpAddresses: ["hybridrg::vnet1-ip"],
+    }),
+  },
+  {
     type: "LocalNetworkGateway",
     group: "Network",
     properties: ({ config, getId }) => ({
@@ -226,6 +268,22 @@ exports.createResources = () => [
     type: "PublicIPAddress",
     group: "Network",
     properties: ({}) => ({
+      name: "vnet1-ip",
+      sku: {
+        name: "Standard",
+      },
+      properties: {
+        publicIPAllocationMethod: "Static",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
+    }),
+  },
+  {
+    type: "PublicIPAddress",
+    group: "Network",
+    properties: ({}) => ({
       name: "vnetvgwpip1",
     }),
     dependencies: ({}) => ({
@@ -260,6 +318,20 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       resourceGroup: "hybridrg",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "Network",
+    properties: ({}) => ({
+      name: "AzureBastionSubnet",
+      properties: {
+        addressPrefix: "172.16.0.0/26",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "hybridrg",
+      virtualNetwork: "hybridrg::vnet1",
     }),
   },
   {

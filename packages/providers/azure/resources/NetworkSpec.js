@@ -1126,6 +1126,9 @@ exports.fnSpecs = ({ config }) => {
             assign({
               value: ({ value }) =>
                 pipe([
+                  tap((params) => {
+                    assert(value);
+                  }),
                   () => lives,
                   find(
                     and([
