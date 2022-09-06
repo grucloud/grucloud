@@ -1,3 +1,3 @@
-# Azure deploymemt
+# Azure virtual machine with AD
 
-Boilerplate to deploy infrastructure on Azure with GruCloud.
+Deploy a virtual machine that can be connected with Azure Active directory.

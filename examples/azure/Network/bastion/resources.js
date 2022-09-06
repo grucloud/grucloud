@@ -4,68 +4,44 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
-    type: "SshPublicKey",
-    group: "Compute",
-    properties: ({ config }) => ({
-      name: "keypair",
-      location: config.location,
-      properties: {
-        publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC5bfxIqMkyPr14+GQmPOxM5yuOYJg/E/fMsTactIYtuPL6v7WYXqdJ3HJH7/XOCcxytcs4MK+FK0FMGHDQohOuCemi2gDOq9O4xrNN0RMgBZrggZBueT4t+GVHhclSH5HyocaNAYSy/5B8R9GYi4mdfeLuL3AVaUjSWjS8ETZWvqDOBncJhSrhtoS94dsLGxjHVGtiXFZ671a5AtTFfbUV6z9mqPyJbt7EKE1CJGGyotw2E0g8SxVCofGYjvu1tT91zzWbn4Tv+fug7uQ7FIKo4IHqKmN6ZXNk9y9kzaVw+mDWdMBnDIpNlBsaw7w9eG448jGdii+Ho4l7ybGdQs91AIZpT5HQXJl+pkMRuwXVUb9Mw+FUBtBJR1WRgHefXZ5hcwLJsu3ZKwbkVCkK6gAY61uImwmi+czLzv+d2d0udpFm7V53sIPStCkI3uhXm8iOMV9kbfcFxrhiU89uDfXzoYqWHBIYve3GzUxbtIRJPm6zpVUIBdM/bVddarScpjk= generated-by-azure",
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "rg-vm-ad-login",
-    }),
-  },
-  {
     type: "VirtualMachine",
     group: "Compute",
     properties: ({ getId }) => ({
-      name: "vm",
+      name: "my-machine",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_B1ls",
         },
         osProfile: {
-          computerName: "vm",
-          adminUsername: "ops",
+          computerName: "my-machine",
+          adminUsername: "azureuser",
           linuxConfiguration: {
-            disablePasswordAuthentication: true,
-            ssh: {
-              publicKeys: [
-                {
-                  path: "/home/ops/.ssh/authorized_keys",
-                  keyData: `${getId({
-                    type: "SshPublicKey",
-                    group: "Compute",
-                    name: "rg-vm-ad-login::keypair",
-                    path: "live.properties.publicKey",
-                  })}`,
-                },
-              ],
-            },
             enableVMAgentPlatformUpdates: false,
           },
-          adminPassword: process.env.RG_VM_AD_LOGIN_VM_ADMIN_PASSWORD,
+          adminPassword: process.env.RG_BASTION_MY_machine_ADMIN_PASSWORD,
         },
         storageProfile: {
           imageReference: {
-            publisher: "Canonical",
-            offer: "UbuntuServer",
-            sku: "18.04-LTS",
+            publisher: "canonical",
+            offer: "0001-com-ubuntu-server-focal",
+            sku: "20_04-lts-gen2",
             version: "latest",
           },
           osDisk: {
             osType: "Linux",
-            name: "vm_OsDisk_1_c2984015e2184ba9b90a4e0f105eed7a",
+            name: "my-machine_OsDisk_1_9d8c212be79f4e1eab372385ccc2dc52",
             createOption: "FromImage",
             caching: "ReadWrite",
             managedDisk: {
               storageAccountType: "Premium_LRS",
             },
-            deleteOption: "Detach",
+            deleteOption: "Delete",
             diskSizeGB: 30,
+          },
+        },
+        diagnosticsProfile: {
+          bootDiagnostics: {
+            enabled: true,
           },
         },
         networkProfile: {
@@ -74,10 +50,10 @@ exports.createResources = () => [
               id: getId({
                 type: "NetworkInterface",
                 group: "Network",
-                name: "rg-vm-ad-login::network-interface",
+                name: "rg-bastion::my-machine169",
               }),
               properties: {
-                primary: true,
+                deleteOption: "Detach",
               },
             },
           ],
@@ -88,9 +64,8 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "rg-vm-ad-login",
-      sshPublicKeys: ["rg-vm-ad-login::keypair"],
-      networkInterfaces: ["rg-vm-ad-login::network-interface"],
+      resourceGroup: "rg-bastion",
+      networkInterfaces: ["rg-bastion::my-machine169"],
     }),
   },
   {
@@ -107,66 +82,97 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "rg-vm-ad-login",
-      vm: "rg-vm-ad-login::vm",
+      resourceGroup: "rg-bastion",
+      vm: "rg-bastion::my-machine",
+    }),
+  },
+  {
+    type: "BastionHost",
+    group: "Network",
+    properties: ({ config, getId }) => ({
+      name: "bastion",
+      location: config.location,
+      properties: {
+        ipConfigurations: [
+          {
+            properties: {
+              privateIPAllocationMethod: "Dynamic",
+              subnet: {
+                id: `${getId({
+                  type: "Subnet",
+                  group: "Network",
+                  name: "rg-bastion::vnet::AzureBastionSubnet",
+                })}`,
+              },
+              publicIPAddress: {
+                id: `${getId({
+                  type: "PublicIPAddress",
+                  group: "Network",
+                  name: "rg-bastion::ip-bastion",
+                })}`,
+              },
+            },
+            name: "IpConf",
+          },
+        ],
+        scaleUnits: 2,
+      },
+      sku: {
+        name: "Basic",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "rg-bastion",
+      subnets: ["rg-bastion::vnet::AzureBastionSubnet"],
+      publicIpAddresses: ["rg-bastion::ip-bastion"],
     }),
   },
   {
     type: "NetworkInterface",
     group: "Network",
     properties: ({ config, getId }) => ({
-      name: "network-interface",
+      name: "my-machine169",
       location: config.location,
       properties: {
         ipConfigurations: [
           {
             properties: {
-              publicIPAddress: {
-                id: `${getId({
-                  type: "PublicIPAddress",
-                  group: "Network",
-                  name: "rg-vm-ad-login::ip-address",
-                })}`,
-              },
               subnet: {
                 id: `${getId({
                   type: "Subnet",
                   group: "Network",
-                  name: "rg-vm-ad-login::virtual-network::subnet",
+                  name: "rg-bastion::vnet::subnet",
                 })}`,
               },
             },
             name: "ipconfig1",
           },
         ],
-        enableIPForwarding: true,
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "rg-vm-ad-login",
-      networkSecurityGroup: "rg-vm-ad-login::security-group",
-      publicIpAddresses: ["rg-vm-ad-login::ip-address"],
-      subnets: ["rg-vm-ad-login::virtual-network::subnet"],
+      resourceGroup: "rg-bastion",
+      networkSecurityGroup: "rg-bastion::my-machine-nsg",
+      subnets: ["rg-bastion::vnet::subnet"],
     }),
   },
   {
     type: "NetworkSecurityGroup",
     group: "Network",
     properties: ({}) => ({
-      name: "security-group",
+      name: "my-machine-nsg",
       properties: {
         securityRules: [
           {
             name: "SSH",
             properties: {
-              description: "allow SSH",
-              protocol: "Tcp",
+              protocol: "TCP",
               sourcePortRange: "*",
               destinationPortRange: "22",
               sourceAddressPrefix: "*",
               destinationAddressPrefix: "*",
               access: "Allow",
-              priority: 1000,
+              priority: 300,
               direction: "Inbound",
               sourcePortRanges: [],
               destinationPortRanges: [],
@@ -178,17 +184,37 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "rg-vm-ad-login",
+      resourceGroup: "rg-bastion",
     }),
   },
   {
     type: "PublicIPAddress",
     group: "Network",
     properties: ({}) => ({
-      name: "ip-address",
+      name: "ip-bastion",
+      sku: {
+        name: "Standard",
+      },
+      properties: {
+        publicIPAllocationMethod: "Static",
+      },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "rg-vm-ad-login",
+      resourceGroup: "rg-bastion",
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "Network",
+    properties: ({}) => ({
+      name: "AzureBastionSubnet",
+      properties: {
+        addressPrefix: "172.16.0.0/26",
+      },
+    }),
+    dependencies: ({}) => ({
+      resourceGroup: "rg-bastion",
+      virtualNetwork: "rg-bastion::vnet",
     }),
   },
   {
@@ -197,34 +223,34 @@ exports.createResources = () => [
     properties: ({}) => ({
       name: "subnet",
       properties: {
-        addressPrefix: "10.0.0.0/24",
+        addressPrefix: "172.16.1.0/26",
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "rg-vm-ad-login",
-      virtualNetwork: "rg-vm-ad-login::virtual-network",
+      resourceGroup: "rg-bastion",
+      virtualNetwork: "rg-bastion::vnet",
     }),
   },
   {
     type: "VirtualNetwork",
     group: "Network",
     properties: ({}) => ({
-      name: "virtual-network",
+      name: "vnet",
       properties: {
         addressSpace: {
-          addressPrefixes: ["10.0.0.0/16"],
+          addressPrefixes: ["172.16.0.0/16"],
         },
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "rg-vm-ad-login",
+      resourceGroup: "rg-bastion",
     }),
   },
   {
     type: "ResourceGroup",
     group: "Resources",
     properties: ({}) => ({
-      name: "rg-vm-ad-login",
+      name: "rg-bastion",
     }),
   },
 ];

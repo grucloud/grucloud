@@ -356,6 +356,13 @@ exports.fnSpecs = ({ config }) => {
           ]),
       },
       {
+        type: "BastionHost",
+        omitPropertiesExtra: [
+          "properties.ipConfigurations[].id",
+          "properties.dnsName",
+        ],
+      },
+      {
         type: "RouteTable",
         omitPropertiesExtra: ["properties.routes"],
         dependencies: {

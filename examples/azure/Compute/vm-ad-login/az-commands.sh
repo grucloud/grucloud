@@ -17,6 +17,7 @@ vm_extension_name=AADSSHLoginForLinux
 
 # Resources::ResourceGroup
 # https://docs.microsoft.com/en-us/cli/azure/group?view=azure-cli-latest#az-group-creates
+echo "group create"
 az group create -n "$rg" -l "$location"
 
 # Network::VirtualNetwork
@@ -48,9 +49,12 @@ az sshkey create -n "$ssh_key_name" -g "$rg"
 
 # Compute::VirtualMachine
 # https://docs.microsoft.com/en-us/cli/azure/vm?view=azure-cli-latest#az-vm-create
+echo "vm create"
+
 az vm create -n "$vm_name" -g "$rg" --image UbuntuLTS --size Standard_B1ls --nics "$nic_name" --admin-username ops --assign-identity [system] --ssh-key-name "$ssh_key_name"
 
 # Compute::VirtualMachineExtension
 # https://docs.microsoft.com/en-us/cli/azure/vm/extension?view=azure-cli-latest#az-vm-extension-set
+echo "vm extension set"
 
 az vm extension set -n "$vm_extension_name" --publisher "Microsoft.Azure.ActiveDirectory" --vm-name "$vm_name"  -g "$rg"    
