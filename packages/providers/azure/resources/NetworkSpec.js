@@ -91,12 +91,17 @@ const findVpnConnectionIndex = ({ gatewayIpAddress }) =>
   ]);
 
 const findGcpVpnTunnelByIp = ({ gatewayIpAddress }) =>
-  find(
-    and([
-      eq(get("groupType"), "compute::VpnTunnel"),
-      eq(get("live.peerIp"), gatewayIpAddress),
-    ])
-  );
+  pipe([
+    tap((params) => {
+      assert(gatewayIpAddress);
+    }),
+    find(
+      and([
+        eq(get("groupType"), "compute::Address"),
+        eq(get("live.address"), gatewayIpAddress),
+      ])
+    ),
+  ]);
 
 exports.fnSpecs = ({ config }) => {
   const { location } = config;
@@ -1018,7 +1023,7 @@ exports.fnSpecs = ({ config }) => {
           },
           gatewayIpAddressGoogle: {
             providerType: "google",
-            type: "VpnTunnel",
+            type: "Address",
             group: "compute",
             dependencyId:
               ({ lives, config }) =>
@@ -1030,10 +1035,10 @@ exports.fnSpecs = ({ config }) => {
                   () =>
                     lives.getByType({
                       providerType: "google",
-                      type: "VpnTunnel",
+                      type: "Address",
                       group: "compute",
                     }),
-                  find(eq(get("live.peerIp"), properties.gatewayIpAddress)),
+                  find(eq(get("live.address"), properties.gatewayIpAddress)),
                   get("id"),
                 ])(),
           },
@@ -1081,8 +1086,8 @@ exports.fnSpecs = ({ config }) => {
                             pipe([
                               () => id,
                               replaceWithName({
-                                groupType: "compute::VpnTunnel",
-                                path: `live.peerIp`,
+                                groupType: "compute::Address",
+                                path: `live.address`,
                                 providerConfig,
                                 lives,
                               }),
@@ -1108,6 +1113,7 @@ exports.fnSpecs = ({ config }) => {
               },
             ],
           ]),
+        environmentVariables: [{ path: "value", suffix: "SHAREDSECRET" }],
         filterLiveExtra: ({ lives, providerConfig }) =>
           pipe([
             assign({
