@@ -402,7 +402,7 @@ module.exports = pipe([
       filterLiveExtra: ({ lives, providerConfig }) =>
         pipe([
           assign({
-            sharedSecret: ({ peerIp }) =>
+            sharedSecret: ({ peerIp, sharedSecret }) =>
               pipe([
                 () => lives,
                 findEC2VpnConnectionByIp({ peerIp }),

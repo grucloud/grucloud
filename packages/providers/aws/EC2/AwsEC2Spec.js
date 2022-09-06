@@ -148,15 +148,14 @@ const {
 const {
   EC2TransitGatewayRouteTablePropagation,
 } = require("./EC2TransitGatewayRouteTablePropagation");
-
 const { EC2VpcEndpoint } = require("./EC2VpcEndpoint");
 const { EC2VpnGateway } = require("./EC2VpnGateway");
 const { EC2VpnGatewayAttachment } = require("./EC2VpnGatewayAttachment");
 const {
   EC2VpnGatewayRoutePropagation,
 } = require("./EC2VpnGatewayRoutePropagation");
-
 const { EC2VpnConnection } = require("./EC2VpnConnection");
+const { EC2VpnConnectionRoute } = require("./EC2VpnConnectionRoute");
 
 const GROUP = "EC2";
 
@@ -2327,6 +2326,8 @@ module.exports = pipe([
         securityGroups: {
           type: "SecurityGroup",
           group: "EC2",
+          list: true,
+          includeDefaultDependencies: true,
           dependencyIds: ({ lives, config }) =>
             pipe([get("Groups"), pluck("GroupId")]),
         },
@@ -2792,7 +2793,6 @@ module.exports = pipe([
         "Routes",
       ],
       //filterLive Sort by PSK
-
       propertiesDefault: {
         Type: "ipsec.1",
         Options: {
@@ -2819,6 +2819,23 @@ module.exports = pipe([
           type: "TransitGateway",
           group: "EC2",
           dependencyId: ({ lives, config }) => get("TransitGatewayId"),
+        },
+      },
+    },
+    {
+      type: "VpnConnectionRoute",
+      Client: EC2VpnConnectionRoute,
+      inferName: ({
+        properties: { DestinationCidrBlock },
+        dependenciesSpec: { vpnConnection },
+      }) => `vpn-conn-route::${vpnConnection}::${DestinationCidrBlock}`,
+      omitProperties: ["VpnConnectionId", "State"],
+      dependencies: {
+        vpnConnection: {
+          type: "VpnConnection",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("VpnConnectionId"),
         },
       },
     },

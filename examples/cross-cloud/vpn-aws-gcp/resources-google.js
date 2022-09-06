@@ -2,4 +2,237 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-exports.createResources = () => [];
+exports.createResources = () => [
+  {
+    type: "Address",
+    group: "compute",
+    properties: ({}) => ({
+      name: "ip-vpn",
+      description: "",
+      networkTier: "PREMIUM",
+      addressType: "EXTERNAL",
+    }),
+  },
+  {
+    type: "Firewall",
+    group: "compute",
+    properties: ({}) => ({
+      name: "subnet-allow-icmp",
+      description:
+        "Allows ICMP connections from any source to any instance on the network.",
+      priority: 65534,
+      allowed: [
+        {
+          IPProtocol: "icmp",
+        },
+      ],
+      direction: "INGRESS",
+      logConfig: {
+        enable: false,
+      },
+    }),
+    dependencies: ({}) => ({
+      network: "network",
+    }),
+  },
+  {
+    type: "Firewall",
+    group: "compute",
+    properties: ({}) => ({
+      name: "subnet-allow-ssh",
+      description:
+        "Allows TCP connections from any source to any instance on the network using port 22.",
+      priority: 65534,
+      allowed: [
+        {
+          IPProtocol: "tcp",
+          ports: ["22"],
+        },
+      ],
+      direction: "INGRESS",
+      logConfig: {
+        enable: false,
+      },
+    }),
+    dependencies: ({}) => ({
+      network: "network",
+    }),
+  },
+  {
+    type: "ForwardingRule",
+    group: "compute",
+    properties: ({}) => ({
+      name: "vpn-1-rule-esp",
+      description: "",
+      IPProtocol: "ESP",
+      loadBalancingScheme: "EXTERNAL",
+      networkTier: "PREMIUM",
+    }),
+    dependencies: ({}) => ({
+      address: "ip-vpn",
+      targetVpnGateway: "vpn-1",
+    }),
+  },
+  {
+    type: "ForwardingRule",
+    group: "compute",
+    properties: ({}) => ({
+      name: "vpn-1-rule-udp4500",
+      description: "",
+      IPProtocol: "UDP",
+      portRange: "4500-4500",
+      loadBalancingScheme: "EXTERNAL",
+      networkTier: "PREMIUM",
+    }),
+    dependencies: ({}) => ({
+      address: "ip-vpn",
+      targetVpnGateway: "vpn-1",
+    }),
+  },
+  {
+    type: "ForwardingRule",
+    group: "compute",
+    properties: ({}) => ({
+      name: "vpn-1-rule-udp500",
+      description: "",
+      IPProtocol: "UDP",
+      portRange: "500-500",
+      loadBalancingScheme: "EXTERNAL",
+      networkTier: "PREMIUM",
+    }),
+    dependencies: ({}) => ({
+      address: "ip-vpn",
+      targetVpnGateway: "vpn-1",
+    }),
+  },
+  {
+    type: "Instance",
+    group: "compute",
+    properties: ({}) => ({
+      name: "instance-2",
+      machineType: "e2-micro",
+      keyRevocationActionType: "NONE",
+      sourceImage:
+        "projects/debian-cloud/global/images/debian-11-bullseye-v20220822",
+    }),
+    dependencies: ({}) => ({
+      subNetwork: "subnet",
+    }),
+  },
+  {
+    type: "Network",
+    group: "compute",
+    properties: ({}) => ({
+      description: "",
+      autoCreateSubnetworks: false,
+      name: "network",
+      routingConfig: {
+        routingMode: "REGIONAL",
+      },
+    }),
+  },
+  {
+    type: "Route",
+    group: "compute",
+    properties: ({}) => ({
+      name: "vpn-1-tunnel-1-route-1",
+      description: "",
+      destRange: "10.0.0.0/16",
+      priority: 1000,
+    }),
+    dependencies: ({}) => ({
+      network: "network",
+      vpnTunnel: "vpn-1-tunnel-1",
+    }),
+  },
+  {
+    type: "Route",
+    group: "compute",
+    properties: ({}) => ({
+      name: "vpn-1-tunnel-2-route-1",
+      description: "",
+      destRange: "10.0.0.0/16",
+      priority: 1000,
+    }),
+    dependencies: ({}) => ({
+      network: "network",
+      vpnTunnel: "vpn-1-tunnel-2",
+    }),
+  },
+  {
+    type: "Subnetwork",
+    group: "compute",
+    properties: ({}) => ({
+      name: "subnet",
+      ipCidrRange: "192.168.0.0/24",
+    }),
+    dependencies: ({}) => ({
+      network: "network",
+    }),
+  },
+  {
+    type: "TargetVpnGateway",
+    group: "compute",
+    properties: ({}) => ({
+      name: "vpn-1",
+      description: "",
+    }),
+    dependencies: ({}) => ({
+      network: "network",
+    }),
+  },
+  {
+    type: "VpnTunnel",
+    group: "compute",
+    properties: ({ getId }) => ({
+      name: "vpn-1-tunnel-1",
+      description: "",
+      peerIp: `${getId({
+        type: "VpnConnection",
+        group: "EC2",
+        name: "vpn-gcp",
+        path: "live.Options.TunnelOptions[0].OutsideIpAddress",
+      })}`,
+      sharedSecret: `${getId({
+        type: "VpnConnection",
+        group: "EC2",
+        name: "vpn-gcp",
+        path: "live.Options.TunnelOptions[0].PreSharedKey",
+      })}`,
+      ikeVersion: 2,
+      localTrafficSelector: ["0.0.0.0/0"],
+      remoteTrafficSelector: ["0.0.0.0/0"],
+    }),
+    dependencies: ({}) => ({
+      targetVpnGateway: "vpn-1",
+      vpnConnectionAws: "vpn-gcp",
+    }),
+  },
+  {
+    type: "VpnTunnel",
+    group: "compute",
+    properties: ({ getId }) => ({
+      name: "vpn-1-tunnel-2",
+      description: "",
+      peerIp: `${getId({
+        type: "VpnConnection",
+        group: "EC2",
+        name: "vpn-gcp",
+        path: "live.Options.TunnelOptions[1].OutsideIpAddress",
+      })}`,
+      sharedSecret: `${getId({
+        type: "VpnConnection",
+        group: "EC2",
+        name: "vpn-gcp",
+        path: "live.Options.TunnelOptions[1].PreSharedKey",
+      })}`,
+      ikeVersion: 2,
+      localTrafficSelector: ["0.0.0.0/0"],
+      remoteTrafficSelector: ["0.0.0.0/0"],
+    }),
+    dependencies: ({}) => ({
+      targetVpnGateway: "vpn-1",
+      vpnConnectionAws: "vpn-gcp",
+    }),
+  },
+];

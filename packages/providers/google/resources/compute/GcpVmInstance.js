@@ -356,7 +356,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
               }),
             () => instanceStart({ name, id }),
           ]),
-          get("updateNeedRefresh"),
+          //get("updateNeedRefresh"),
           pipe([
             tap(() => {
               logger.debug(`updateNeedRefresh`);
@@ -367,9 +367,9 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
                 fingerprint: live.fingerprint,
               }),
           ]),
-          () => {
-            assert(false, "updateNeedRestart or updateNeedRefresh not set");
-          },
+          // () => {
+          //   assert(false, "updateNeedRestart or updateNeedRefresh not set");
+          // },
         ]),
       ]),
       (error) => {
@@ -410,13 +410,13 @@ const VM_INSTANCE_ATTRIBUTES_RESTART = [
   "scheduling",
   "serviceAccount",
   "shieldedInstanceConfig",
+  "labels",
 ];
 
 const VM_INSTANCE_ATTRIBUTES_REFRESH = [
   "deletionProtection",
   "description",
   "disk",
-  "labels",
   "metadata",
   "tags",
 ];
@@ -437,15 +437,29 @@ exports.compareVmInstance = pipe([
     //   Object.keys,
     //   or([find((key) => includes(key)(["ImageId"]))]),
     // ]),
-    updateNeedRefresh: pipe([
-      get("liveDiff.updated"),
-      keys,
-      or([find((key) => includes(key)(VM_INSTANCE_ATTRIBUTES_REFRESH))]),
-    ]),
-    updateNeedRestart: pipe([
-      get("liveDiff.updated"),
-      keys,
-      or([find((key) => includes(key)(VM_INSTANCE_ATTRIBUTES_RESTART))]),
+    // updateNeedRefresh: or([
+    //   pipe([
+    //     get("liveDiff.updated"),
+    //     keys,
+    //     or([find((key) => includes(key)(VM_INSTANCE_ATTRIBUTES_REFRESH))]),
+    //   ]),
+    //   pipe([
+    //     get("liveDiff.added"),
+    //     keys,
+    //     or([find((key) => includes(key)(VM_INSTANCE_ATTRIBUTES_REFRESH))]),
+    //   ]),
+    // ]),
+    updateNeedRestart: or([
+      pipe([
+        get("liveDiff.updated"),
+        keys,
+        or([find((key) => includes(key)(VM_INSTANCE_ATTRIBUTES_RESTART))]),
+      ]),
+      pipe([
+        get("liveDiff.added"),
+        keys,
+        or([find((key) => includes(key)(VM_INSTANCE_ATTRIBUTES_RESTART))]),
+      ]),
     ]),
   }),
   tap((diff) => {

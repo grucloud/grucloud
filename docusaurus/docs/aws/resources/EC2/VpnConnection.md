@@ -39,7 +39,8 @@ exports.createResources = () => [
 
 ### Used By
 
-- [TransitGatewayAttachment](./TransitGatewayAttachment.md)
+- [EC2 Transit Gateway Attachment](./TransitGatewayAttachment.md)
+- [EC2 Vpn Connection Route](./VpnConnectionRoute.md)
 
 ### List
 

@@ -193,6 +193,31 @@ const omitDependencyIds =
       (pathIds) => pipe([() => live, deepOmit(pathIds)])(),
     ])();
 
+const addEnvironmentVariables =
+  ({ resource, environmentVariables }) =>
+  (props) =>
+    pipe([
+      tap((params) => {
+        assert(props);
+      }),
+      () => environmentVariables,
+      filter(not(get("handledByResource"))),
+      tap((params) => {
+        assert(true);
+      }),
+      tap.if(not(isEmpty), (params) => {
+        assert(true);
+      }),
+      reduce(
+        (acc, { path, suffix }) =>
+          set(
+            path,
+            () => `process.env.${envVarName({ name: resource.name, suffix })}`
+          )(acc),
+        props
+      ),
+    ])();
+
 const buildProperties = ({
   providerConfig,
   lives,
@@ -234,6 +259,7 @@ const buildProperties = ({
       pickPropertiesCreate,
     }),
     omitDependencyIds({ dependencies }),
+    addEnvironmentVariables({ resource, environmentVariables }),
     filterLiveExtra({
       providerConfig,
       lives,
@@ -294,28 +320,6 @@ const buildProperties = ({
       assert(true);
     }),
     omitIfEmpty([tagsKey]),
-    (props) =>
-      pipe([
-        tap((params) => {
-          assert(props);
-        }),
-        () => environmentVariables,
-        filter(not(get("handledByResource"))),
-        tap((params) => {
-          assert(true);
-        }),
-        tap.if(not(isEmpty), (params) => {
-          assert(true);
-        }),
-        reduce(
-          (acc, { path, suffix }) =>
-            set(
-              path,
-              () => `process.env.${envVarName({ name: resource.name, suffix })}`
-            )(acc),
-          props
-        ),
-      ])(),
   ])();
 
 const isNumeric = (num) =>
@@ -1594,8 +1598,13 @@ exports.generatorMain = ({
       ({ lives, mapping, providerConfig }) =>
         pipe([
           () => providers,
+          filter(eq(get("name"), providerName)),
           providersToSpecs,
           createWritersSpec,
+          tap((params) => {
+            assert(true);
+          }),
+
           map(({ group, types }) => ({
             group,
             types: pipe([
