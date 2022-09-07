@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project bastion
+skinparam monochrome true
++ Infra
+++ azure
++++ Compute
+++++ VirtualMachine (1)
+++++ VirtualMachineExtension (1)
++++ Network
+++++ BastionHost (1)
+++++ NetworkInterface (1)
+++++ NetworkSecurityGroup (1)
+++++ PublicIPAddress (1)
+++++ Subnet (2)
+++++ VirtualNetwork (1)
++++ Resources
+++++ ResourceGroup (1)
+@endmindmap

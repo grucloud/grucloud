@@ -18,7 +18,7 @@ exports.createResources = () => [
           linuxConfiguration: {
             enableVMAgentPlatformUpdates: false,
           },
-          adminPassword: process.env.RG_BASTION_MY_machine_ADMIN_PASSWORD,
+          adminPassword: process.env.RG_BASTION_MY_MACHINE_ADMIN_PASSWORD,
         },
         storageProfile: {
           imageReference: {
