@@ -4,18 +4,14 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ EC2
-++++ KeyPair (1)
-++++ Vpc (2)
-++++ InternetGateway (1)
-++++ InternetGatewayAttachment (1)
+++++ Vpc (1)
 ++++ Subnet (1)
 ++++ RouteTable (1)
 ++++ RouteTableAssociation (1)
-++++ Route (1)
-++++ SecurityGroup (4)
-++++ SecurityGroupRuleIngress (5)
-++++ SecurityGroupRuleEgress (1)
-++++ Instance (2)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (2)
+++++ Instance (1)
+++++ VpcEndpoint (3)
 +++ IAM
 ++++ Role (1)
 ++++ InstanceProfile (1)
