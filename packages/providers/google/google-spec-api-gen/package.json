@@ -1,6 +1,6 @@
 {
   "name": "google-spec-api-gen",
-  "version": "9.1.3",
+  "version": "9.2.0",
   "description": "Generate the grucloud gcp spec",
   "main": "index.js",
   "scripts": {
