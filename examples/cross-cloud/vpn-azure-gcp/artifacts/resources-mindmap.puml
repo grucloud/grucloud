@@ -1,0 +1,35 @@
+@startmindmap
+title Resources for project vpn-azure-gcp
+skinparam monochrome true
++ Infra
+++ azure
++++ Compute
+++++ SshPublicKey (1)
+++++ VirtualMachine (1)
+++++ VirtualMachineExtension (1)
++++ Network
+++++ LocalNetworkGateway (1)
+++++ NetworkInterface (1)
+++++ NetworkSecurityGroup (1)
+++++ PublicIPAddress (1)
+++++ Route (1)
+++++ RouteTable (1)
+++++ Subnet (2)
+++++ VirtualNetwork (1)
+++++ VirtualNetworkGateway (1)
+++++ VirtualNetworkGatewayConnection (1)
+++++ VirtualNetworkGatewayConnectionSharedKey (1)
++++ Resources
+++++ ResourceGroup (1)
+-- google
+--- compute
+---- Address (1)
+---- Firewall (2)
+---- ForwardingRule (3)
+---- Instance (1)
+---- Network (1)
+---- Route (1)
+---- Subnetwork (1)
+---- TargetVpnGateway (1)
+---- VpnTunnel (1)
+@endmindmap

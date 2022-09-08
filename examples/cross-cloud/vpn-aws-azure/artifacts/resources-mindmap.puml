@@ -9,12 +9,26 @@ skinparam monochrome true
 ++++ Subnet (1)
 ++++ RouteTable (1)
 ++++ Route (1)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (3)
+++++ Instance (1)
+++++ VpcEndpoint (3)
 ++++ VpnGateway (1)
 ++++ VpnGatewayAttachment (1)
 ++++ VpnConnection (1)
+++++ VpnConnectionRoute (1)
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
 -- azure
+--- Compute
+---- SshPublicKey (1)
+---- VirtualMachine (1)
+---- VirtualMachineExtension (1)
 --- Network
 ---- LocalNetworkGateway (2)
+---- NetworkInterface (1)
+---- NetworkSecurityGroup (1)
 ---- PublicIPAddress (1)
 ---- Route (1)
 ---- RouteTable (1)

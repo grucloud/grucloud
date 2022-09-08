@@ -2,15 +2,7 @@
 
 This example deploys a VPN tunnel between AWS and Google Cloud.
 
-```sh
-gc tree
-```
-
 ![resources-mindmap](./artifacts/resources-mindmap.svg)
-
-```sh
-gc graph
-```
 
 ![diagram-target.svg](./artifacts/diagram-target.svg)
 
@@ -24,7 +16,7 @@ gc graph
 - Click `Create VPC`
 - Select `VPC and more`
 - Choose a name prefix or set it empty.
-- In this example, select just one private subnet.a
+- In this example, select just one private subnet
 - Finally click on `Create VPC`
 
 #### AWS Virtual Private Gateway
@@ -174,6 +166,8 @@ Back to AWS on the [Site-to-Site VPN Connections](https://console.aws.amazon.com
 - Search for the service
 - Select the service
 - Select the VPC
+- Select the Subnets
+- Select the previously created security group
 - Click on `Create Endpoint`
 
 #### AWS EC2 instance
@@ -181,14 +175,13 @@ Back to AWS on the [Site-to-Site VPN Connections](https://console.aws.amazon.com
 - Visit the [AWS EC2 instances page](https://console.aws.amazon.com/ec2/home?#Instances:)
 - Click on `Launch Instances`
 - Enter a machine name such as `machine-aws`
+- Select in _Key pair_, `Proceed without a key pair`
 - Edit network settings
 - Select the VPC that was created
 - Select `Select existing security group`,
 - Choose the security group previously created
 - In _Advanced details_, select the previously created role from the _IAM Instance profile_ dropdown.
-- Click on `Launch Instance`
-- Select `Proceed without keypair`
-- Finally click on `Launch Instance` one more time
+- Finally click on `Launch Instance`
 
 # Workflow
 

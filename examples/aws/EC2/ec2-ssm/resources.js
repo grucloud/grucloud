@@ -3,7 +3,6 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "KeyPair", group: "EC2", name: "mykey" },
   {
     type: "Vpc",
     group: "EC2",
@@ -13,24 +12,14 @@ exports.createResources = () => [
       DnsHostnames: true,
     }),
   },
-  { type: "Vpc", group: "EC2", name: "vpc-default", isDefault: true },
-  { type: "InternetGateway", group: "EC2", name: "igw" },
-  {
-    type: "InternetGatewayAttachment",
-    group: "EC2",
-    dependencies: ({}) => ({
-      vpc: "vpc",
-      internetGateway: "igw",
-    }),
-  },
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `vpc::subnet-public1-${config.region}a`,
+    name: ({ config }) => `vpc::subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
-      NetworkNumber: 0,
+      NetworkNumber: 8,
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -39,7 +28,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpc::rtb-public",
+    name: ({ config }) => `vpc::rtb-private1-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "vpc",
     }),
@@ -48,60 +37,16 @@ exports.createResources = () => [
     type: "RouteTableAssociation",
     group: "EC2",
     dependencies: ({ config }) => ({
-      routeTable: "vpc::rtb-public",
-      subnet: `vpc::subnet-public1-${config.region}a`,
-    }),
-  },
-  {
-    type: "Route",
-    group: "EC2",
-    properties: ({}) => ({
-      DestinationCidrBlock: "0.0.0.0/0",
-    }),
-    dependencies: ({}) => ({
-      ig: "igw",
-      routeTable: "vpc::rtb-public",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc-default::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
+      routeTable: `vpc::rtb-private1-${config.region}a`,
+      subnet: `vpc::subnet-private1-${config.region}a`,
     }),
   },
   {
     type: "SecurityGroup",
     group: "EC2",
     properties: ({}) => ({
-      GroupName: "launch-wizard-1",
-      Description: "launch-wizard created 2022-08-18T16:55:39.697Z",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc-default",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName:
-        "aws-cloud9-gc-19bfac89663e45a4be8c0e25d0e320cb-InstanceSecurityGroup-159HC87PW800",
-      Description:
-        "Security group for AWS Cloud9 environment aws-cloud9-gc-19bfac89663e45a4be8c0e25d0e320cb",
-    }),
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "SecurityGroup",
-    group: "EC2",
-    properties: ({}) => ({
-      GroupName: "sec-group",
-      Description: "ssh",
+      GroupName: "ssm",
+      Description: "ssm",
     }),
     dependencies: ({}) => ({
       vpc: "vpc",
@@ -119,102 +64,30 @@ exports.createResources = () => [
       ],
     }),
     dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::default",
+      securityGroup: "sg::vpc::ssm",
     }),
   },
   {
     type: "SecurityGroupRuleIngress",
     group: "EC2",
     properties: ({}) => ({
-      FromPort: 22,
+      FromPort: 443,
       IpProtocol: "tcp",
       IpRanges: [
         {
           CidrIp: "0.0.0.0/0",
         },
       ],
-      ToPort: 22,
+      ToPort: 443,
     }),
     dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::default",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 22,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 22,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::launch-wizard-1",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 22,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "35.172.155.96/27",
-        },
-        {
-          CidrIp: "35.172.155.192/27",
-        },
-      ],
-      ToPort: 22,
-    }),
-    dependencies: ({}) => ({
-      securityGroup:
-        "sg::vpc::aws-cloud9-gc-19bfac89663e45a4be8c0e25d0e320cb-InstanceSecurityGroup-159HC87PW800",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleIngress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 22,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 22,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc::sec-group",
-    }),
-  },
-  {
-    type: "SecurityGroupRuleEgress",
-    group: "EC2",
-    properties: ({}) => ({
-      FromPort: 0,
-      IpProtocol: "tcp",
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-      ToPort: 0,
-    }),
-    dependencies: ({}) => ({
-      securityGroup: "sg::vpc-default::default",
+      securityGroup: "sg::vpc::ssm",
     }),
   },
   {
     type: "Instance",
     group: "EC2",
-    name: "aws-cloud9-gc-19bfac89663e45a4be8c0e25d0e320cb",
+    name: "my-machine",
     properties: ({ config, getId }) => ({
       InstanceType: "t2.micro",
       Placement: {
@@ -227,72 +100,110 @@ exports.createResources = () => [
             `${getId({
               type: "SecurityGroup",
               group: "EC2",
-              name: "sg::vpc::aws-cloud9-gc-19bfac89663e45a4be8c0e25d0e320cb-InstanceSecurityGroup-159HC87PW800",
+              name: "sg::vpc::ssm",
             })}`,
           ],
           SubnetId: `${getId({
             type: "Subnet",
             group: "EC2",
-            name: `vpc::subnet-public1-${config.region}a`,
-          })}`,
-        },
-      ],
-      Image: {
-        Description: "Cloud9 Cloud9AmazonLinux2 AMI",
-      },
-      UserData:
-        '#!/bin/bash\n\nUNIX_USER="ec2-user"\nUNIX_USER_HOME="/home/ec2-user"\nENVIRONMENT_PATH="/home/ec2-user/environment"\nUNIX_GROUP=$(id -g -n "$UNIX_USER")\n\n# Apply security patches\nOPERATING_SYSTEM=$(awk -F= \'$1=="ID" { print $2 ;}\' /etc/os-release | sed -e \'s/^"//\' -e \'s/"$//\')\nif [ "$OPERATING_SYSTEM" == "amzn" ]; then\n    yum -q -y update --security > /tmp/init-yum-update-security 2>&1 &\nelif [ "$OPERATING_SYSTEM" == "ubuntu" ]; then\n    unattended-upgrade &\nfi\n\n# add SSH key\ninstall -g "$UNIX_GROUP" -o "$UNIX_USER" -m 755 -d "$UNIX_USER_HOME"/.ssh\ncat <<\'EOF\' >> "$UNIX_USER_HOME"/.ssh/authorized_keys\n# Important\n# ---------\n# The following public key is required by Cloud9 IDE\n# Removing this key will make this EC2 instance inaccessible by the IDE\n#\ncert-authority ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDOxJlsaHpEQje2TYeSZZplDCqQrldVDR/7xF+UTm1YpAQj56jX4iGKYwO5JHE0YMyDQF0cTYGjVybqHydWPi2S+ubZLf6xuBVXsa1UMcBoJ6Q+g30Kd1/AToCqRp8kFEWYostSAMFgT6QI8pxsQekitL9VOhrUTh1u4xV8NzmGNsSasqOTiM1XTcD7uJFzm3YgRgqV9Dlj7DaesEfxTrq6gcncTXf1v3IgYCtx2A/BJcHI8YRlv/NTJ7w2Wvw4e56yZ4a5thEJLpL/b25H9OCkSwdGuJqIJeRAKdAM9AKWouRU+LQIzhir/bqH6gG9wDvgjaW9LWs0ef2yy1P22rPhS+H05J07iuS8Fz92L0gxXha9VdJAXwgis87K963hq8yoXufLsJaJBZ7USm8W28gjEfEQJZjxjH75XH+ekjp5Ht9JUtRR0kLnTmUnxBG7eIY+RbadYWroN7F8nwe3n6ZFTGjSREjRd7hioKj3yUlCUC7e68+JKmiwZbmWd+TY9d6kkVDaGiAy/02C1VHbP1uFIpWp3nCiac1Vzqac7Pf5trObq5cd2qdF2GlqWUgGALanubdFMogEzUTfY5ZBjZ73kaDQ+UIHRnrXPtk0v8xa4dVLxdZ0qgZjRdGn6sc6EWQzP416yXZNwsX1UJpvQd0LdrEp//2mKOPwlPyFS2I00Q== 19bfac89663e45a4be8c0e25d0e320cb@cloud9.amazon.com\n\n\n#\n# Add any additional keys below this line\n#\n\nEOF\n\n# allow automatic shutdown\necho "$UNIX_USER    ALL=(ALL) NOPASSWD: /sbin/poweroff, /sbin/reboot, /sbin/shutdown" >> /etc/sudoers\n\nln -s /opt/c9 "$UNIX_USER_HOME"/.c9\nchown -R "$UNIX_USER":"$UNIX_GROUP" "$UNIX_USER_HOME"/.c9 /opt/c9\ninstall -g "$UNIX_GROUP" -o "$UNIX_USER" -m 755 -d "$ENVIRONMENT_PATH"\n\nif [ "$ENVIRONMENT_PATH" == "/home/ec2-user/environment" ] && grep "alias python=python27" "$UNIX_USER_HOME"/.bashrc; then\n\n    cat <<\'EOF\' > "$UNIX_USER_HOME"/.bashrc\n# .bashrc\n\nexport PATH=$PATH:$HOME/.local/bin:$HOME/bin\n\n# load nvm\nexport NVM_DIR="$HOME/.nvm"\n[ "$BASH_VERSION" ] && npm() {\n    # hack: avoid slow npm sanity check in nvm\n    if [ "$*" == "config get prefix" ]; then which node | sed "s/bin\\/node//";\n    else $(which npm) "$@"; fi\n}\n# [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm\nrvm_silence_path_mismatch_check_flag=1 # prevent rvm complaints that nvm is first in PATH\nunset npm # end hack\n\n\n# User specific aliases and functions\nalias python=python27\n\n# modifications needed only in interactive mode\nif [ "$PS1" != "" ]; then\n    # Set default editor for git\n    git config --global core.editor nano\n\n    # Turn on checkwinsize\n    shopt -s checkwinsize\n\n    # keep more history\n    shopt -s histappend\n    export HISTSIZE=100000\n    export HISTFILESIZE=100000\n    export PROMPT_COMMAND="history -a;"\n\n    # Source for Git PS1 function\n    if ! type -t __git_ps1 && [ -e "/usr/share/git-core/contrib/completion/git-prompt.sh" ]; then\n        . /usr/share/git-core/contrib/completion/git-prompt.sh\n    fi\n\n    # Cloud9 default prompt\n    _cloud9_prompt_user() {\n        if [ "$C9_USER" = root ]; then\n            echo "$USER"\n        else\n            echo "$C9_USER"\n        fi\n    }\n\n    PS1=\'\\[\\033[01;32m\\]$(_cloud9_prompt_user)\\[\\033[00m\\]:\\[\\033[01;34m\\]\\w\\[\\033[00m\\]$(__git_ps1 " (%s)" 2>/dev/null) $ \'\nfi\n\nEOF\n\n    chown "$UNIX_USER":"$UNIX_GROUP" "$UNIX_USER_HOME"/.bashrc\nfi\n\nif [ "$ENVIRONMENT_PATH" == "/home/ec2-user/environment" ] && [ ! -f "$ENVIRONMENT_PATH"/README.md ]; then\n    cat <<\'EOF\' >> "$ENVIRONMENT_PATH"/README.md\n         ___        ______     ____ _                 _  ___\n        / \\ \\      / / ___|   / ___| | ___  _   _  __| |/ _ \\\n       / _ \\ \\ /\\ / /\\___ \\  | |   | |/ _ \\| | | |/ _` | (_) |\n      / ___ \\ V  V /  ___) | | |___| | (_) | |_| | (_| |\\__, |\n     /_/   \\_\\_/\\_/  |____/   \\____|_|\\___/ \\__,_|\\__,_|  /_/\n -----------------------------------------------------------------\n\n\nHi there! Welcome to AWS Cloud9!\n\nTo get started, create some files, play with the terminal,\nor visit https://docs.aws.amazon.com/console/cloud9/ for our documentation.\n\nHappy coding!\n\nEOF\n\n    chown "$UNIX_USER":"$UNIX_GROUP" "$UNIX_USER_HOME"/environment/README.md\nfi\n\n# Fix for permission error when trying to call `gem install`\nchown "$UNIX_USER" -R /usr/local/rvm/gems\n\n#This script is appended to another bash script, so it does not need a bash script file header.\n\nUNIX_USER_HOME="/home/ec2-user"\n\nC9_DIR=$UNIX_USER_HOME/.c9\nCONFIG_FILE_PATH="$C9_DIR"/autoshutdown-configuration\nVFS_CHECK_FILE_PATH="$C9_DIR"/stop-if-inactive.sh\n\necho "SHUTDOWN_TIMEOUT=30" > "$CONFIG_FILE_PATH"\nchmod a+w "$CONFIG_FILE_PATH"\n\necho -e \'#!/bin/bash\nset -euo pipefail\nCONFIG=$(cat \'$CONFIG_FILE_PATH\')\nSHUTDOWN_TIMEOUT=${CONFIG#*=}\nif ! [[ $SHUTDOWN_TIMEOUT =~ ^[0-9]*$ ]]; then\n    echo "shutdown timeout is invalid"\n    exit 1\nfi\nis_shutting_down() {\n    is_shutting_down_ubuntu &> /dev/null || is_shutting_down_al1 &> /dev/null || is_shutting_down_al2 &> /dev/null\n}\nis_shutting_down_ubuntu() {\n    local TIMEOUT\n    TIMEOUT=$(busctl get-property org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager ScheduledShutdown)\n    if [ "$?" -ne "0" ]; then\n        return 1\n    fi\n    if [ "$(echo $TIMEOUT | awk "{print \\$3}")" == "0" ]; then\n        return 1\n    else\n        return 0\n    fi\n}\nis_shutting_down_al1() {\n    pgrep shutdown\n}\nis_shutting_down_al2() {\n    local FILE\n    FILE=/run/systemd/shutdown/scheduled\n    if [[ -f "$FILE" ]]; then\n        return 0\n    else\n        return 1\n    fi\n}\nis_vfs_connected() {\n    pgrep -f vfs-worker >/dev/null\n}\n\nif is_shutting_down; then\n    if [[ ! $SHUTDOWN_TIMEOUT =~ ^[0-9]+$ ]] || is_vfs_connected; then\n        sudo shutdown -c\n    fi\nelse\n    if [[ $SHUTDOWN_TIMEOUT =~ ^[0-9]+$ ]] && ! is_vfs_connected; then\n        sudo shutdown -h $SHUTDOWN_TIMEOUT\n    fi\nfi\' > "$VFS_CHECK_FILE_PATH"\n\nchmod +x "$VFS_CHECK_FILE_PATH"\n\necho "* * * * * root $VFS_CHECK_FILE_PATH" > /etc/cron.d/c9-automatic-shutdown\n',
-    }),
-    dependencies: ({ config }) => ({
-      subnets: [`vpc::subnet-public1-${config.region}a`],
-      securityGroups: [
-        "sg::vpc::aws-cloud9-gc-19bfac89663e45a4be8c0e25d0e320cb-InstanceSecurityGroup-159HC87PW800",
-      ],
-    }),
-  },
-  {
-    type: "Instance",
-    group: "EC2",
-    name: "ec2-ssm",
-    properties: ({ config, getId }) => ({
-      InstanceType: "t2.micro",
-      Placement: {
-        AvailabilityZone: `${config.region}a`,
-      },
-      NetworkInterfaces: [
-        {
-          DeviceIndex: 0,
-          Groups: [
-            `${getId({
-              type: "SecurityGroup",
-              group: "EC2",
-              name: "sg::vpc::sec-group",
-            })}`,
-          ],
-          SubnetId: `${getId({
-            type: "Subnet",
-            group: "EC2",
-            name: `vpc::subnet-public1-${config.region}a`,
+            name: `vpc::subnet-private1-${config.region}a`,
           })}`,
         },
       ],
       Image: {
         Description:
-          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220719.0 x86_64 HVM gp2",
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220805.0 x86_64 HVM gp2",
       },
     }),
     dependencies: ({ config }) => ({
-      subnets: [`vpc::subnet-public1-${config.region}a`],
-      keyPair: "mykey",
-      iamInstanceProfile: "role-ec2-SSM",
-      securityGroups: ["sg::vpc::sec-group"],
+      subnets: [`vpc::subnet-private1-${config.region}a`],
+      iamInstanceProfile: "role-ec2-ssm",
+      securityGroups: ["sg::vpc::ssm"],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: "vpce-ec2-messages",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "vpc",
+      subnets: [`vpc::subnet-private1-${config.region}a`],
+      securityGroups: ["sg::vpc::ssm"],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: "vpce-ssm",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "vpc",
+      subnets: [`vpc::subnet-private1-${config.region}a`],
+      securityGroups: ["sg::vpc::ssm"],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: "vpce-ssm-messages",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "vpc",
+      subnets: [`vpc::subnet-private1-${config.region}a`],
+      securityGroups: ["sg::vpc::ssm"],
     }),
   },
   {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
-      RoleName: "role-ec2-SSM",
+      RoleName: "role-ec2-ssm",
       Description: "Allows EC2 instances to call AWS services on your behalf.",
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -317,9 +228,9 @@ exports.createResources = () => [
   {
     type: "InstanceProfile",
     group: "IAM",
-    name: "role-ec2-SSM",
+    name: "role-ec2-ssm",
     dependencies: ({}) => ({
-      roles: ["role-ec2-SSM"],
+      roles: ["role-ec2-ssm"],
     }),
   },
 ];

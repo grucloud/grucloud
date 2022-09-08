@@ -12,6 +12,7 @@ const {
   filter,
   any,
   switchCase,
+  fork,
 } = require("rubico");
 const {
   callProp,
@@ -22,6 +23,7 @@ const {
   findIndex,
   pluck,
   flatten,
+  first,
 } = require("rubico/x");
 const { omitIfEmpty, replaceWithName } = require("@grucloud/core/Common");
 const GoogleTag = require("../../GoogleTag");
@@ -62,6 +64,31 @@ const findVpnConnectionIndex = ({ peerIp }) =>
       assert(index >= 0);
     }),
   ]);
+
+const findVirtualNetworkGatewayIndex = ({ peerIp }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("properties.bgpSettings.bgpPeeringAddresses"),
+    findIndex(eq(pipe([get("tunnelIpAddresses"), first]), peerIp)),
+    tap((index) => {
+      assert(index >= 0);
+    }),
+  ]);
+
+const findAzureVirtualNetworkGateway = ({ peerIp }) =>
+  find(
+    and([
+      eq(get("groupType"), "Network::VirtualNetworkGateway"),
+      pipe([
+        get("live.properties.bgpSettings.bgpPeeringAddresses"),
+        pluck("tunnelIpAddresses"),
+        flatten,
+        any(includes(peerIp)),
+      ]),
+    ])
+  );
 
 module.exports = pipe([
   () => [
@@ -372,7 +399,7 @@ module.exports = pipe([
                   }),
                 find(
                   pipe([
-                    get("live.bgpSettings.bgpPeeringAddresses"),
+                    get("live.properties.bgpSettings.bgpPeeringAddresses"),
                     pluck("tunnelIpAddresses"),
                     flatten,
                     any(includes(peerIp)),
@@ -434,25 +461,52 @@ module.exports = pipe([
                   assert(peerIp);
                 }),
                 () => lives,
-                findEC2VpnConnectionByIp({ peerIp }),
+                fork({
+                  ec2VpnConnection: findEC2VpnConnectionByIp({ peerIp }),
+                  azureVirtualNetworkGateway: findAzureVirtualNetworkGateway({
+                    peerIp,
+                  }),
+                }),
                 switchCase([
-                  isEmpty,
+                  get("ec2VpnConnection"),
+                  pipe([
+                    get("ec2VpnConnection"),
+                    ({ id, live }) =>
+                      pipe([
+                        () => live,
+                        findVpnConnectionIndex({ peerIp }),
+                        (index) =>
+                          pipe([
+                            () => id,
+                            replaceWithName({
+                              groupType: "EC2::VpnConnection",
+                              path: `live.Options.TunnelOptions[${index}].OutsideIpAddress`,
+                              providerConfig,
+                              lives,
+                            }),
+                          ])(),
+                      ])(),
+                  ]),
+                  get("azureVirtualNetworkGateway"),
+                  pipe([
+                    get("azureVirtualNetworkGateway"),
+                    ({ id, live }) =>
+                      pipe([
+                        () => live,
+                        findVirtualNetworkGatewayIndex({ peerIp }),
+                        (index) =>
+                          pipe([
+                            () => id,
+                            replaceWithName({
+                              groupType: "Network::VirtualNetworkGateway",
+                              path: `live.properties.bgpSettings.bgpPeeringAddresses[${index}].tunnelIpAddresses[0]`,
+                              providerConfig,
+                              lives,
+                            }),
+                          ])(),
+                      ])(),
+                  ]),
                   () => peerIp,
-                  ({ id, live }) =>
-                    pipe([
-                      () => live,
-                      findVpnConnectionIndex({ peerIp }),
-                      (index) =>
-                        pipe([
-                          () => id,
-                          replaceWithName({
-                            groupType: "EC2::VpnConnection",
-                            path: `live.Options.TunnelOptions[${index}].OutsideIpAddress`,
-                            providerConfig,
-                            lives,
-                          }),
-                        ])(),
-                    ])(),
                 ]),
               ])(),
           }),

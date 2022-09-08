@@ -7,28 +7,28 @@ exports.createResources = () => [
     type: "SshPublicKey",
     group: "Compute",
     properties: ({ config }) => ({
-      name: "machine-azure_key",
+      name: "machine-az_key",
       location: config.location,
       properties: {
         publicKey:
-          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDXMbrqlWTtPH7ochhNri6aRUn2PcSTYR1xZ1IXFV//0VO4Nm0Qp21A+C3bdTu9YurWc2fH+YM/tcU1ac/NABC3+UYNUJukeMcdX/bETHP6wkVC4nU6BDY9n+HuAJHkFgzG9xTPb7McOiTqcCYi0u17FihIULxZHScs+oeKefMl7aXxl9QVOlO1wPWs2AtQzLjYBJSDWcSeZYE6f8S7sg9A9spSqA3ppy5DnQoEQQ7dpxEXCIt68z1CtIIO7FURjr4OfJfDS38lkWHv5sRUpi/pB5sEGL/bwyn3b0mS3GuAqAU5w/WrYdjEcGcWR6p9vDdaIuXEHqN1dxpwr55gQwl1cZDcCzSG2268c8hTgXkMnTgYldgAaauaWYfqwQpE56tzD/J1K33RoXlbtUNWdVawh4PL68gzG0g4d6eJKCTssbXafxLXCQxN+ATxMIkHFgyL092oaSD2bsSH23yH3561O5b8CqFsVa5nzcpoTFbPHyPNECwo4GzmwA706r8EBvE= generated-by-azure",
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDOdhXNAXLP0jryCri57hCzIFENiVH+Ab5PPKhAvJU0QSTgo/SgN0hVatQcsGqH2lv17jo5R/ZcQbok63uTGbuTN1GQXnJFWQAD3ZAg69KQCttez+p5sJ2KC/AP8yNhmffMwBGI3O5e5YAVlLUUpw6/yKYkNKWRbr+bDFf/Y4Y5Ya48jhpcevLBaC+9lcKOFNOW0zBCdBmMn4m/oIBdzc34aah6bZy2H2V8IHOIY6AdxwD7aKgEGkmQfbyl5jKBQZPONgDyIPfJE7yV3XY94PKwAaCj3e1aDZv3drVtKMfKLIS6pRUdGmiQWZiXRoRAm3mwmYmJoIBoymdpy5UaJ0OHhnattlVKjTJADOVPMNqWUtHWoZ4w0/VU6fPqdyst9q+N+EFgRM7BS27Bju6OlhRnhleKqK9PGN5UMvFO3HRVSXP9IZT64yJVNSWGze6O/zBw8Oov5etKKYt1NVvGK3dqchJNuWVjEvKWHaEcje0lLQqdjosMy7Izj1har6luXQk= generated-by-azure",
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
+      resourceGroup: "rg-hybrid",
     }),
   },
   {
     type: "VirtualMachine",
     group: "Compute",
     properties: ({ getId }) => ({
-      name: "machine-azure",
+      name: "machine-az",
       properties: {
         hardwareProfile: {
           vmSize: "Standard_B1ls",
         },
         osProfile: {
-          computerName: "machine-azure",
+          computerName: "machine-az",
           adminUsername: "azureuser",
           linuxConfiguration: {
             disablePasswordAuthentication: true,
@@ -39,7 +39,7 @@ exports.createResources = () => [
                   keyData: `${getId({
                     type: "SshPublicKey",
                     group: "Compute",
-                    name: "hybridrg::machine-azure_key",
+                    name: "rg-hybrid::machine-az_key",
                     path: "live.properties.publicKey",
                   })}`,
                 },
@@ -47,7 +47,7 @@ exports.createResources = () => [
             },
             enableVMAgentPlatformUpdates: false,
           },
-          adminPassword: process.env.HYBRIDRG_MACHINE_AZURE_ADMIN_PASSWORD,
+          adminPassword: process.env.RG_HYBRID_MACHINE_AZ_ADMIN_PASSWORD,
         },
         storageProfile: {
           imageReference: {
@@ -58,7 +58,7 @@ exports.createResources = () => [
           },
           osDisk: {
             osType: "Linux",
-            name: "machine-azure_OsDisk_1_eeaa75f85bd74d19bb786d94644eba1a",
+            name: "machine-az_OsDisk_1_e521256f15014b0c848b009f46a990de",
             createOption: "FromImage",
             caching: "ReadWrite",
             managedDisk: {
@@ -79,7 +79,7 @@ exports.createResources = () => [
               id: getId({
                 type: "NetworkInterface",
                 group: "Network",
-                name: "hybridrg::machine-azure388",
+                name: "rg-hybrid::machine-az443",
               }),
               properties: {
                 deleteOption: "Detach",
@@ -93,9 +93,9 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      sshPublicKeys: ["hybridrg::machine-azure_key"],
-      networkInterfaces: ["hybridrg::machine-azure388"],
+      resourceGroup: "rg-hybrid",
+      sshPublicKeys: ["rg-hybrid::machine-az_key"],
+      networkInterfaces: ["rg-hybrid::machine-az443"],
     }),
   },
   {
@@ -112,103 +112,38 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      vm: "hybridrg::machine-azure",
-    }),
-  },
-  {
-    type: "BastionHost",
-    group: "Network",
-    properties: ({ config, getId }) => ({
-      name: "bastion",
-      location: config.location,
-      properties: {
-        ipConfigurations: [
-          {
-            properties: {
-              privateIPAllocationMethod: "Dynamic",
-              subnet: {
-                id: `${getId({
-                  type: "Subnet",
-                  group: "Network",
-                  name: "hybridrg::vnet1::AzureBastionSubnet",
-                })}`,
-              },
-              publicIPAddress: {
-                id: `${getId({
-                  type: "PublicIPAddress",
-                  group: "Network",
-                  name: "hybridrg::vnet1-ip",
-                })}`,
-              },
-            },
-            name: "IpConf",
-          },
-        ],
-        scaleUnits: 2,
-        enableTunneling: true,
-      },
-      sku: {
-        name: "Standard",
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      subnets: ["hybridrg::vnet1::AzureBastionSubnet"],
-      publicIpAddresses: ["hybridrg::vnet1-ip"],
+      resourceGroup: "rg-hybrid",
+      vm: "rg-hybrid::machine-az",
     }),
   },
   {
     type: "LocalNetworkGateway",
     group: "Network",
     properties: ({ config, getId }) => ({
-      name: "azlngw1",
+      name: "lgn",
       location: config.location,
       properties: {
         localNetworkAddressSpace: {
           addressPrefixes: ["192.168.0.0/16"],
         },
         gatewayIpAddress: `${getId({
-          type: "VpnConnection",
-          group: "EC2",
-          name: "vpn-connection",
-          path: "live.Options.TunnelOptions[1].OutsideIpAddress",
+          type: "Address",
+          group: "compute",
+          name: "ip-vpn",
+          path: "live.address",
         })}`,
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      gatewayIpAddressAws: "vpn-connection",
-    }),
-  },
-  {
-    type: "LocalNetworkGateway",
-    group: "Network",
-    properties: ({ config, getId }) => ({
-      name: "azlngw2",
-      location: config.location,
-      properties: {
-        localNetworkAddressSpace: {
-          addressPrefixes: ["192.168.0.0/16"],
-        },
-        gatewayIpAddress: `${getId({
-          type: "VpnConnection",
-          group: "EC2",
-          name: "vpn-connection",
-          path: "live.Options.TunnelOptions[0].OutsideIpAddress",
-        })}`,
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      gatewayIpAddressAws: "vpn-connection",
+      resourceGroup: "rg-hybrid",
+      gatewayIpAddressGoogle: "ip-vpn",
     }),
   },
   {
     type: "NetworkInterface",
     group: "Network",
     properties: ({ config, getId }) => ({
-      name: "machine-azure388",
+      name: "machine-az443",
       location: config.location,
       properties: {
         ipConfigurations: [
@@ -218,7 +153,7 @@ exports.createResources = () => [
                 id: `${getId({
                   type: "Subnet",
                   group: "Network",
-                  name: "hybridrg::vnet1::subnet1",
+                  name: "rg-hybrid::vnet::subnet",
                 })}`,
               },
             },
@@ -228,16 +163,16 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      networkSecurityGroup: "hybridrg::machine-azure-nsg",
-      subnets: ["hybridrg::vnet1::subnet1"],
+      resourceGroup: "rg-hybrid",
+      networkSecurityGroup: "rg-hybrid::machine-az-nsg",
+      subnets: ["rg-hybrid::vnet::subnet"],
     }),
   },
   {
     type: "NetworkSecurityGroup",
     group: "Network",
     properties: ({}) => ({
-      name: "machine-azure-nsg",
+      name: "machine-az-nsg",
       properties: {
         securityRules: [
           {
@@ -261,14 +196,14 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
+      resourceGroup: "rg-hybrid",
     }),
   },
   {
     type: "PublicIPAddress",
     group: "Network",
     properties: ({}) => ({
-      name: "vnet1-ip",
+      name: "ip-vpn",
       sku: {
         name: "Standard",
       },
@@ -277,61 +212,38 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-    }),
-  },
-  {
-    type: "PublicIPAddress",
-    group: "Network",
-    properties: ({}) => ({
-      name: "vnetvgwpip1",
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
+      resourceGroup: "rg-hybrid",
     }),
   },
   {
     type: "Route",
     group: "Network",
     properties: ({}) => ({
-      name: "route-aws",
+      name: "route-gcp",
       properties: {
-        addressPrefix: "192.168.0.0/16",
+        addressPrefix: "192.168.0.0/24",
         nextHopType: "VirtualNetworkGateway",
+        nextHopIpAddress: "",
         hasBgpOverride: false,
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      routeTable: "hybridrg::rtb-aws",
+      resourceGroup: "rg-hybrid",
+      routeTable: "rg-hybrid::rtb-gcp",
     }),
   },
   {
     type: "RouteTable",
     group: "Network",
     properties: ({ config }) => ({
-      name: "rtb-aws",
+      name: "rtb-gcp",
       location: config.location,
       properties: {
         disableBgpRoutePropagation: false,
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-    }),
-  },
-  {
-    type: "Subnet",
-    group: "Network",
-    properties: ({}) => ({
-      name: "AzureBastionSubnet",
-      properties: {
-        addressPrefix: "172.16.0.0/26",
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      virtualNetwork: "hybridrg::vnet1",
+      resourceGroup: "rg-hybrid",
     }),
   },
   {
@@ -341,34 +253,33 @@ exports.createResources = () => [
       name: "GatewaySubnet",
       properties: {
         addressPrefix: "172.16.2.0/27",
-        privateEndpointNetworkPolicies: "Enabled",
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      virtualNetwork: "hybridrg::vnet1",
+      resourceGroup: "rg-hybrid",
+      virtualNetwork: "rg-hybrid::vnet",
     }),
   },
   {
     type: "Subnet",
     group: "Network",
     properties: ({}) => ({
-      name: "subnet1",
+      name: "subnet",
       properties: {
         addressPrefix: "172.16.1.0/24",
-        privateEndpointNetworkPolicies: "Enabled",
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      virtualNetwork: "hybridrg::vnet1",
+      resourceGroup: "rg-hybrid",
+      routeTable: "rg-hybrid::rtb-gcp",
+      virtualNetwork: "rg-hybrid::vnet",
     }),
   },
   {
     type: "VirtualNetwork",
     group: "Network",
     properties: ({}) => ({
-      name: "vnet1",
+      name: "vnet",
       properties: {
         addressSpace: {
           addressPrefixes: ["172.16.0.0/16"],
@@ -376,14 +287,14 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
+      resourceGroup: "rg-hybrid",
     }),
   },
   {
     type: "VirtualNetworkGateway",
     group: "Network",
     properties: ({ config, getId }) => ({
-      name: "myvng1",
+      name: "vng",
       location: config.location,
       properties: {
         ipConfigurations: [
@@ -394,18 +305,18 @@ exports.createResources = () => [
                 id: `${getId({
                   type: "Subnet",
                   group: "Network",
-                  name: "hybridrg::vnet1::GatewaySubnet",
+                  name: "rg-hybrid::vnet::GatewaySubnet",
                 })}`,
               },
               publicIPAddress: {
                 id: `${getId({
                   type: "PublicIPAddress",
                   group: "Network",
-                  name: "hybridrg::vnetvgwpip1",
+                  name: "rg-hybrid::ip-vpn",
                 })}`,
               },
             },
-            name: "vnetGatewayConfig",
+            name: "default",
           },
         ],
         gatewayType: "Vpn",
@@ -425,23 +336,23 @@ exports.createResources = () => [
         },
         bgpSettings: {
           asn: 65515,
-          bgpPeeringAddress: "172.16.2.14",
+          bgpPeeringAddress: "172.16.2.30",
           peerWeight: 0,
         },
         enableBgpRouteTranslationForNat: false,
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      subnets: ["hybridrg::vnet1::GatewaySubnet"],
-      publicIpAddresses: ["hybridrg::vnetvgwpip1"],
+      resourceGroup: "rg-hybrid",
+      subnets: ["rg-hybrid::vnet::GatewaySubnet"],
+      publicIpAddresses: ["rg-hybrid::ip-vpn"],
     }),
   },
   {
     type: "VirtualNetworkGatewayConnection",
     group: "Network",
     properties: ({ config }) => ({
-      name: "vngc1",
+      name: "vngconn1",
       location: config.location,
       properties: {
         connectionType: "IPsec",
@@ -456,74 +367,27 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      localNetworkGateway: "hybridrg::azlngw1",
-      virtualNetworkGateway: "hybridrg::myvng1",
-    }),
-  },
-  {
-    type: "VirtualNetworkGatewayConnection",
-    group: "Network",
-    properties: ({ config }) => ({
-      name: "vngc2",
-      location: config.location,
-      properties: {
-        connectionType: "IPsec",
-        connectionProtocol: "IKEv2",
-        routingWeight: 0,
-        dpdTimeoutSeconds: 0,
-        connectionMode: "Default",
-        enableBgp: false,
-        useLocalAzureIpAddress: false,
-        usePolicyBasedTrafficSelectors: false,
-        expressRouteGatewayBypass: false,
-      },
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      localNetworkGateway: "hybridrg::azlngw2",
-      virtualNetworkGateway: "hybridrg::myvng1",
+      resourceGroup: "rg-hybrid",
+      localNetworkGateway: "rg-hybrid::lgn",
+      virtualNetworkGateway: "rg-hybrid::vng",
     }),
   },
   {
     type: "VirtualNetworkGatewayConnectionSharedKey",
     group: "Network",
-    properties: ({ getId }) => ({
-      value: `${getId({
-        type: "VpnConnection",
-        group: "EC2",
-        name: "vpn-connection",
-        path: "live.Options.TunnelOptions[1].PreSharedKey",
-      })}`,
+    properties: ({}) => ({
+      value: process.env.RG_HYBRID_VNGCONN1_SHAREDSECRET,
     }),
     dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      virtualNetworkGatewayConnection: "hybridrg::vngc1",
-      vpnConnectionAws: "vpn-connection",
-    }),
-  },
-  {
-    type: "VirtualNetworkGatewayConnectionSharedKey",
-    group: "Network",
-    properties: ({ getId }) => ({
-      value: `${getId({
-        type: "VpnConnection",
-        group: "EC2",
-        name: "vpn-connection",
-        path: "live.Options.TunnelOptions[0].PreSharedKey",
-      })}`,
-    }),
-    dependencies: ({}) => ({
-      resourceGroup: "hybridrg",
-      virtualNetworkGatewayConnection: "hybridrg::vngc2",
-      vpnConnectionAws: "vpn-connection",
+      resourceGroup: "rg-hybrid",
+      virtualNetworkGatewayConnection: "rg-hybrid::vngconn1",
     }),
   },
   {
     type: "ResourceGroup",
     group: "Resources",
     properties: ({}) => ({
-      name: "hybridrg",
+      name: "rg-hybrid",
     }),
   },
 ];

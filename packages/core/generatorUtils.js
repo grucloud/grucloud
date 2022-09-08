@@ -210,10 +210,18 @@ const addEnvironmentVariables =
       }),
       reduce(
         (acc, { path, suffix }) =>
-          set(
-            path,
-            () => `process.env.${envVarName({ name: resource.name, suffix })}`
-          )(acc),
+          pipe([
+            () => acc,
+            unless(
+              pipe([get(path), isFunction]),
+              set(
+                path,
+                () =>
+                  `process.env.${envVarName({ name: resource.name, suffix })}`
+              )
+            ),
+            ,
+          ])(),
         props
       ),
     ])();
@@ -259,7 +267,6 @@ const buildProperties = ({
       pickPropertiesCreate,
     }),
     omitDependencyIds({ dependencies }),
-    addEnvironmentVariables({ resource, environmentVariables }),
     filterLiveExtra({
       providerConfig,
       lives,
@@ -270,6 +277,7 @@ const buildProperties = ({
       omitProperties,
       pickPropertiesCreate,
     }),
+    addEnvironmentVariables({ resource, environmentVariables }),
     tap((params) => {
       assert(Array.isArray(omitProperties));
     }),
