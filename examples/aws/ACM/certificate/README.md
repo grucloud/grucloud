@@ -2,6 +2,8 @@
 
 Deploy an SSL Certificate, validated by a DNS record.
 
+![acm-certificate.drawio.svg](./artifacts/acm-certificate.drawio.svg)
+
 ```sh
 gc tree
 ```

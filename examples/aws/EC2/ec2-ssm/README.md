@@ -2,6 +2,8 @@
 
 Connect an EC2 instance without public address with the Session Manager.
 
+![ec2-private-ssm.drawio.svg](./artifacts/ec2-private-ssm.drawio.svg)
+
 ```sh
 gc tree
 ```
