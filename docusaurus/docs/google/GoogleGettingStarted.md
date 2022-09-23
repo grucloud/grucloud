@@ -28,7 +28,7 @@ Access to the [GCP console](https://console.cloud.google.com/home/dashboard) is 
 Ensure the GCP CLI called [gcloud](https://cloud.google.com/sdk/docs/install) is installed:
 
 ```sh
-$ gcloud -v
+gcloud -v
 ```
 
 ```txt

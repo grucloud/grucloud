@@ -150,6 +150,7 @@ az::Storage::FileShare pickProperties: "properties.metadata",
 
 ## Goggle
 
+- update firewall rule
 - discover API: https://www.googleapis.com/discovery/v1/apis/compute/v1/rest
 
 - fix cannotBeDeleted for Disk:
