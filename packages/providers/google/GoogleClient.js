@@ -246,6 +246,22 @@ const pathDeleteDefault =
       }),
     ])();
 
+const pathUpdateDefault =
+  ({ spec, config }) =>
+  ({ id }) =>
+    pipe([
+      () => spec,
+      get("methods.patch"),
+      tap((patch) => {
+        assert(patch, `missing methods.patch for ${spec.groupType}`);
+      }),
+      get("path"),
+      substituteProjectRegionZone({ config }),
+      substitutePathId({ config, id }),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 const isDefaultDefault = pipe([
   tap(({ live }) => {
     assert(live);
@@ -387,7 +403,7 @@ module.exports = GoogleClient = ({
   pathList = pathListDefault({ spec, config }),
   pathCreate = pathCreateDefault({ spec, config }),
   pathDelete = pathDeleteDefault({ spec, config }),
-  pathUpdate,
+  pathUpdate = pathUpdateDefault({ spec, config }),
   verbUpdate,
   findTargetId = () => get("targetId"),
   configDefault,
