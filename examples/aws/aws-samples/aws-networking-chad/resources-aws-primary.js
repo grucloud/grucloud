@@ -269,7 +269,7 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({ config }) => ({
       routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
-      vpcEndpoint: `${config.region}-prod-main-vpc-endpoint-gw`,
+      vpcEndpoint: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-endpoint-gw`,
     }),
   },
   {
@@ -288,7 +288,7 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({ config }) => ({
       routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
-      vpcEndpoint: `${config.region}-prod-main-vpc-endpoint-gw`,
+      vpcEndpoint: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-endpoint-gw`,
     }),
   },
   {
@@ -307,7 +307,7 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({ config }) => ({
       routeTable: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
-      vpcEndpoint: `${config.region}-prod-main-vpc-endpoint-gw`,
+      vpcEndpoint: `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-endpoint-gw`,
     }),
   },
   {

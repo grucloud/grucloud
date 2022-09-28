@@ -6,18 +6,32 @@ exports.createResources = () => [
   {
     type: "Vpc",
     group: "EC2",
-    name: "my-vpc",
+    name: "vpc-primary",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+    }),
+  },
+  {
+    type: "Subnet",
+    group: "EC2",
+    name: "vpc-primary::subnet-1",
+    properties: ({ config }) => ({
+      AvailabilityZone: `${config.region}a`,
+      NewBits: 8,
+      NetworkNumber: 0,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-primary",
     }),
   },
   {
     type: "RouteTable",
     group: "EC2",
-    name: "my-vpc::rt-default",
+    name: "vpc-primary::rt-default",
     isDefault: true,
     dependencies: ({}) => ({
-      vpc: "my-vpc",
+      vpc: "vpc-primary",
     }),
   },
   {
@@ -27,8 +41,182 @@ exports.createResources = () => [
       DestinationCidrBlock: "10.1.0.0/16",
     }),
     dependencies: ({}) => ({
-      routeTable: "my-vpc::rt-default",
-      vpcPeeringConnection: "vpc-peering::my-vpc::vpc-peer",
+      routeTable: "vpc-primary::rt-default",
+      vpcPeeringConnection: "vpc-peering::vpc-primary::vpc-secondary",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "icmp",
+      Description: "icmp",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-primary",
+    }),
+  },
+  {
+    type: "SecurityGroup",
+    group: "EC2",
+    properties: ({}) => ({
+      GroupName: "ssm",
+      Description: "Session Manager",
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-primary",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      IpProtocol: "icmp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-primary::icmp",
+    }),
+  },
+  {
+    type: "SecurityGroupRuleIngress",
+    group: "EC2",
+    properties: ({}) => ({
+      FromPort: 443,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      ToPort: 443,
+    }),
+    dependencies: ({}) => ({
+      securityGroup: "sg::vpc-primary::ssm",
+    }),
+  },
+  {
+    type: "Instance",
+    group: "EC2",
+    name: "machine-1",
+    properties: ({ config, getId }) => ({
+      InstanceType: "t2.micro",
+      Placement: {
+        AvailabilityZone: `${config.region}a`,
+      },
+      NetworkInterfaces: [
+        {
+          DeviceIndex: 0,
+          Groups: [
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc-primary::ssm",
+            })}`,
+            `${getId({
+              type: "SecurityGroup",
+              group: "EC2",
+              name: "sg::vpc-primary::icmp",
+            })}`,
+          ],
+          SubnetId: `${getId({
+            type: "Subnet",
+            group: "EC2",
+            name: "vpc-primary::subnet-1",
+          })}`,
+        },
+      ],
+      Image: {
+        Description:
+          "Amazon Linux 2 Kernel 5.10 AMI 2.0.20220912.1 x86_64 HVM gp2",
+      },
+    }),
+    dependencies: ({}) => ({
+      subnets: ["vpc-primary::subnet-1"],
+      iamInstanceProfile: "role-ssm",
+      securityGroups: ["sg::vpc-primary::icmp", "sg::vpc-primary::ssm"],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: "vpce-ec2-messages",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-primary",
+      subnets: ["vpc-primary::subnet-1"],
+      securityGroups: ["sg::vpc-primary::ssm"],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: "vpce-ssm",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-primary",
+      subnets: ["vpc-primary::subnet-1"],
+      securityGroups: ["sg::vpc-primary::ssm"],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    name: "vpce-ssm-message",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+    }),
+    dependencies: ({}) => ({
+      vpc: "vpc-primary",
+      subnets: ["vpc-primary::subnet-1"],
+      securityGroups: ["sg::vpc-primary::ssm"],
     }),
   },
   {
@@ -56,8 +244,42 @@ exports.createResources = () => [
       },
     }),
     dependencies: ({}) => ({
-      vpc: "my-vpc",
-      vpcPeer: "vpc-peer",
+      vpc: "vpc-primary",
+      vpcPeer: "vpc-secondary",
+    }),
+  },
+  {
+    type: "Role",
+    group: "IAM",
+    properties: ({}) => ({
+      RoleName: "role-ssm",
+      Description: "Allows EC2 instances to call AWS services on your behalf.",
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+      AttachedPolicies: [
+        {
+          PolicyName: "AmazonSSMManagedInstanceCore",
+          PolicyArn: "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+        },
+      ],
+    }),
+  },
+  {
+    type: "InstanceProfile",
+    group: "IAM",
+    name: "role-ssm",
+    dependencies: ({}) => ({
+      roles: ["role-ssm"],
     }),
   },
 ];

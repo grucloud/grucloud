@@ -558,27 +558,41 @@ const buildPrefix = switchCase([
   () => "",
 ]);
 
-const buildName = ({ inferName, resourceName, resource, providerConfig }) =>
+const transformName = ({ providerConfig, resource }) =>
+  pipe([
+    providerConfig.transformResourceName({ resource }),
+    switchCase([
+      pipe([includes(providerConfig.region)]),
+      pipe([
+        replaceRegion({ providerConfig, asFunction: false }),
+        prepend("name: ({config}) => "),
+        append(","),
+      ]),
+      pipe([prepend('name: "'), append('",')]),
+    ]),
+  ]);
+
+const buildName = ({ spec, resourceName, resource, providerConfig }) =>
   pipe([
     tap((params) => {
       assert(providerConfig);
     }),
     switchCase([
-      and([() => inferName, () => !resource.managedByOther]),
-      () => "",
+      () => spec.getResourceName,
       pipe([
-        () => resourceName,
-        providerConfig.transformResourceName({ resource }),
+        () => spec.getResourceName({ providerConfig })(resource.live),
+        tap((params) => {
+          assert(true);
+        }),
         switchCase([
-          pipe([includes(providerConfig.region)]),
-          pipe([
-            replaceRegion({ providerConfig, asFunction: false }),
-            prepend("name: ({config}) => "),
-            append(","),
-          ]),
-          pipe([prepend('name: "'), append('",')]),
+          isEmpty,
+          () => "",
+          transformName({ providerConfig, resource }),
         ]),
       ]),
+      and([() => spec.inferName, () => !resource.managedByOther]),
+      () => "",
+      pipe([() => resourceName, transformName({ providerConfig, resource })]),
     ]),
   ])();
 
@@ -596,6 +610,7 @@ const codeTpl = ({
   properties,
   hasNoProperty,
   additionalCode = "",
+  spec,
 }) =>
   pipe([
     tap((params) => {
@@ -609,7 +624,9 @@ const codeTpl = ({
     append("group:'"),
     append(group),
     append("',"),
-    append(buildName({ inferName, resourceName, resource, providerConfig })),
+    append(
+      buildName({ spec, inferName, resourceName, resource, providerConfig })
+    ),
     append(buildPrefix(resource)),
     switchCase([
       () => additionalCode,
@@ -1467,6 +1484,7 @@ const writeResource =
               properties,
               codeBuildProperties,
               additionalCode,
+              spec,
             }),
           }),
           tap((params) => {

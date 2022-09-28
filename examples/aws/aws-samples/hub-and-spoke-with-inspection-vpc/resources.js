@@ -1323,8 +1323,230 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::NetworkFirewall::inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ec2`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-1",
+      subnets: [
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-1",
+      subnets: [
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-1",
+      subnets: [
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-1",
+      subnets: [
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ec2`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssm`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
+    properties: ({ config }) => ({
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Effect: "Allow",
+            Principal: "*",
+            Resource: "*",
+          },
+        ],
+      },
+      PrivateDnsEnabled: true,
+      RequesterManaged: false,
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+    }),
+    dependencies: ({ config }) => ({
+      vpc: "spoke-vpc-2",
+      subnets: [
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
+      ],
+    }),
+  },
+  {
+    type: "VpcEndpoint",
+    group: "EC2",
     readOnly: true,
     dependencies: ({ config }) => ({
       vpc: "inspection-vpc",
@@ -1332,246 +1554,6 @@ exports.createResources = () => [
         `inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
       ],
       firewall: "NetworkFirewall",
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    name: ({ config }) =>
-      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ec2`,
-    properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: true,
-      RequesterManaged: false,
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2`,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-1",
-      subnets: [
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    name: ({ config }) =>
-      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ec2messages`,
-    properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: true,
-      RequesterManaged: false,
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-1",
-      subnets: [
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    name: ({ config }) =>
-      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ssm`,
-    properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: true,
-      RequesterManaged: false,
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssm`,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-1",
-      subnets: [
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    name: ({ config }) =>
-      `vpce::spoke-vpc-1::com.amazonaws.${config.region}.ssmmessages`,
-    properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: true,
-      RequesterManaged: false,
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-1",
-      subnets: [
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
-        `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    name: ({ config }) =>
-      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ec2`,
-    properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: true,
-      RequesterManaged: false,
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2`,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-2",
-      subnets: [
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    name: ({ config }) =>
-      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ec2messages`,
-    properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: true,
-      RequesterManaged: false,
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ec2messages`,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-2",
-      subnets: [
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    name: ({ config }) =>
-      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ssm`,
-    properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: true,
-      RequesterManaged: false,
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssm`,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-2",
-      subnets: [
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
-      ],
-    }),
-  },
-  {
-    type: "VpcEndpoint",
-    group: "EC2",
-    name: ({ config }) =>
-      `vpce::spoke-vpc-2::com.amazonaws.${config.region}.ssmmessages`,
-    properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: true,
-      RequesterManaged: false,
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
-    }),
-    dependencies: ({ config }) => ({
-      vpc: "spoke-vpc-2",
-      subnets: [
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
-        `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
-      ],
     }),
   },
   {

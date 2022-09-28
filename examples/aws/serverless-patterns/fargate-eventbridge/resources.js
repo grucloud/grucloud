@@ -332,8 +332,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::Vpc8378EB38::com.amazonaws.${config.region}.events`,
     properties: ({ config, getId }) => ({
       PolicyDocument: {
         Version: "2012-10-17",

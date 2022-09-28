@@ -1735,7 +1735,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.athena`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1770,7 +1769,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.autoscaling`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1805,7 +1803,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ec2`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1840,7 +1837,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ec2messages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1875,7 +1871,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ecs`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1910,7 +1905,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.logs`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1945,7 +1939,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.rds`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1980,7 +1973,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.sns`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -2015,7 +2007,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.sqs`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -2050,7 +2041,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ssm`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -2085,7 +2075,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) => `com.amazonaws.${config.region}.ssmmessages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -2120,8 +2109,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}a`,
     readOnly: true,
     dependencies: ({ config }) => ({
       vpc: "inspection_vpc",
@@ -2132,8 +2119,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}b`,
     readOnly: true,
     dependencies: ({ config }) => ({
       vpc: "inspection_vpc",
@@ -2144,8 +2129,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::NetworkFirewall::inspection_vpc::inspection_inspection_${config.region}c`,
     readOnly: true,
     dependencies: ({ config }) => ({
       vpc: "inspection_vpc",
@@ -3053,7 +3036,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `athena.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `com.amazonaws.${config.region}.athena`,
+      vpcEndpoint: `endpoint_vpc::com.amazonaws.${config.region}.athena`,
     }),
   },
   {
@@ -3068,7 +3051,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `autoscaling.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `com.amazonaws.${config.region}.autoscaling`,
+      vpcEndpoint: `endpoint_vpc::com.amazonaws.${config.region}.autoscaling`,
     }),
   },
   {
@@ -3083,7 +3066,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ec2.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `com.amazonaws.${config.region}.ec2`,
+      vpcEndpoint: `endpoint_vpc::com.amazonaws.${config.region}.ec2`,
     }),
   },
   {
@@ -3098,7 +3081,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `com.amazonaws.${config.region}.ec2messages`,
+      vpcEndpoint: `endpoint_vpc::com.amazonaws.${config.region}.ec2messages`,
     }),
   },
   {
@@ -3113,7 +3096,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ecs.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `com.amazonaws.${config.region}.ecs`,
+      vpcEndpoint: `endpoint_vpc::com.amazonaws.${config.region}.ecs`,
     }),
   },
   {
@@ -3128,7 +3111,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `logs.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `com.amazonaws.${config.region}.logs`,
+      vpcEndpoint: `endpoint_vpc::com.amazonaws.${config.region}.logs`,
     }),
   },
   {
@@ -3143,7 +3126,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `rds.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `com.amazonaws.${config.region}.rds`,
+      vpcEndpoint: `endpoint_vpc::com.amazonaws.${config.region}.rds`,
     }),
   },
   {
@@ -3158,7 +3141,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `sns.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `com.amazonaws.${config.region}.sns`,
+      vpcEndpoint: `endpoint_vpc::com.amazonaws.${config.region}.sns`,
     }),
   },
   {
@@ -3173,7 +3156,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `sqs.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `com.amazonaws.${config.region}.sqs`,
+      vpcEndpoint: `endpoint_vpc::com.amazonaws.${config.region}.sqs`,
     }),
   },
   {
@@ -3188,7 +3171,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ssm.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `com.amazonaws.${config.region}.ssm`,
+      vpcEndpoint: `endpoint_vpc::com.amazonaws.${config.region}.ssm`,
     }),
   },
   {
@@ -3203,7 +3186,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `com.amazonaws.${config.region}.ssmmessages`,
+      vpcEndpoint: `endpoint_vpc::com.amazonaws.${config.region}.ssmmessages`,
     }),
   },
   {

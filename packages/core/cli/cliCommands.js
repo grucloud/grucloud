@@ -1776,6 +1776,9 @@ exports.Cli = ({
               mapGloblalNameToResource,
             }),
           }),
+        tap((params) => {
+          assert(true);
+        }),
         tap.if(() => createResources, createResources),
         tap((params) => {
           assert(true);

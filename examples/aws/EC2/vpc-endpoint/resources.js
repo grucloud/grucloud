@@ -85,7 +85,7 @@ exports.createResources = () => [
     group: "EC2",
     dependencies: ({ config }) => ({
       routeTable: `project-vpc::project-rtb-private1-${config.region}a`,
-      vpcEndpoint: "project-vpce-s3",
+      vpcEndpoint: "project-vpc::project-vpce-s3",
     }),
   },
   {

@@ -679,8 +679,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.ec2messages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -708,8 +706,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.s3`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -737,8 +733,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.ssm`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -766,8 +760,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.ssmmessages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1361,7 +1353,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `s3.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `vpce::shared-services-vpc::com.amazonaws.${config.region}.s3`,
+      vpcEndpoint: `shared-services-vpc::com.amazonaws.${config.region}.s3`,
     }),
   },
   {
@@ -1376,7 +1368,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `vpce::shared-services-vpc::com.amazonaws.${config.region}.ec2messages`,
+      vpcEndpoint: `shared-services-vpc::com.amazonaws.${config.region}.ec2messages`,
     }),
   },
   {
@@ -1391,7 +1383,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `s3.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `vpce::shared-services-vpc::com.amazonaws.${config.region}.s3`,
+      vpcEndpoint: `shared-services-vpc::com.amazonaws.${config.region}.s3`,
     }),
   },
   {
@@ -1406,7 +1398,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ssm.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `vpce::shared-services-vpc::com.amazonaws.${config.region}.ssm`,
+      vpcEndpoint: `shared-services-vpc::com.amazonaws.${config.region}.ssm`,
     }),
   },
   {
@@ -1421,7 +1413,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `vpce::shared-services-vpc::com.amazonaws.${config.region}.ssmmessages`,
+      vpcEndpoint: `shared-services-vpc::com.amazonaws.${config.region}.ssmmessages`,
     }),
   },
   {

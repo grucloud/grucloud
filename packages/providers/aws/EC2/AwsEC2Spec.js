@@ -2357,7 +2357,32 @@ module.exports = pipe([
         },
       },
       Client: EC2VpcEndpoint,
+      shortName: true,
+      getResourceName: () =>
+        pipe([get("Tags"), find(eq(get("Key"), "Name")), get("Value")]),
+      inferName: ({ resourceName, properties, dependenciesSpec }) =>
+        pipe([
+          tap((params) => {
+            assert(dependenciesSpec.vpc);
+          }),
+          () => "",
+          switchCase([
+            () => dependenciesSpec.firewall,
+            pipe([
+              append("vpce::"),
+              append(dependenciesSpec.firewall),
+              append("::"),
+              append(dependenciesSpec.subnets[0]),
+            ]),
+            pipe([
+              append(dependenciesSpec.vpc),
+              append("::"),
+              append(resourceName || properties.ServiceName),
+            ]),
+          ]),
+        ])(),
       compare: compareEC2({
+        //TODO private DNS
         filterTarget: () => pipe([pick(["PolicyDocument"])]),
         filterLive: () => pipe([pick(["PolicyDocument"])]),
       }),

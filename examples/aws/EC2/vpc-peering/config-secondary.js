@@ -5,4 +5,5 @@ module.exports = () => ({
   projectName: pkg.name,
   credentials: { profile: "regionB" },
   regionPrimary: "us-east-1",
+  noGlobalEndpoint: true, // No IAM
 });
