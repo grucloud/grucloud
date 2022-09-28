@@ -6,7 +6,9 @@
   "main": "index.js",
   "scripts": {
     "tree": "gc tree",
+    "tree-png": "gc tree -t png",
     "graph": "gc graph",
+    "graph-png": "gc graph -t png",
     "gencode": "gc gencode",
     "list": "gc list",
     "list-graph": "gc list -g",
