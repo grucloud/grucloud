@@ -20,7 +20,7 @@ const { hostedZoneIdToResourceId } = require("./Route53Common");
 const pickId = pipe([pick(["HostedZoneId", "VPC"])]);
 
 const createModel = ({ config }) => ({
-  ignoreErrorCodes: ["AccessDenied"],
+  ignoreErrorCodes: ["AccessDenied", "NoSuchHostedZone"],
   package: "route-53",
   client: "Route53",
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#associateVPCWithHostedZone-property
