@@ -262,6 +262,8 @@ exports.createResources = () => [
       EngineMode: "provisioned",
       DeletionProtection: false,
       HttpEndpointEnabled: false,
+      MasterUserPassword:
+        process.env.SAM_APP_MYSQL_CLUSTER_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
       dbSubnetGroup: "sam-app-db-subnet-group",
@@ -288,6 +290,7 @@ exports.createResources = () => [
       PerformanceInsightsRetentionPeriod: 7,
       EnablePerformanceInsights: true,
       MasterUsername: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USERNAME,
+      MasterUserPassword: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USER_PASSWORD,
     }),
     dependencies: ({ config }) => ({
       dbSubnetGroup: "sam-app-db-subnet-group",

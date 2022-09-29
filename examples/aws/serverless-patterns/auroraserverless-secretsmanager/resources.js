@@ -109,6 +109,7 @@ exports.createResources = () => [
         TimeoutAction: "RollbackCapacityChange",
         SecondsBeforeTimeout: 300,
       },
+      MasterUserPassword: process.env.AURORA_SERVERLESS_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
       dbSubnetGroup: "aurora-serverless-subnet-group",
