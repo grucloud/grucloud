@@ -57,7 +57,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "Vpc8378EB38::VpcPrivateSubnet1Subnet536B997A",
+    name: "VpcPrivateSubnet1Subnet536B997A",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 2,
@@ -70,7 +70,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "Vpc8378EB38::VpcPrivateSubnet2Subnet3788AAA1",
+    name: "VpcPrivateSubnet2Subnet3788AAA1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 2,
@@ -83,7 +83,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "Vpc8378EB38::VpcPublicSubnet1Subnet5C2D37C4",
+    name: "VpcPublicSubnet1Subnet5C2D37C4",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
@@ -97,7 +97,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "Vpc8378EB38::VpcPublicSubnet2Subnet691E08A3",
+    name: "VpcPublicSubnet2Subnet691E08A3",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
@@ -111,7 +111,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "Vpc8378EB38::VpcPrivateSubnet1RouteTableB2C5B500",
+    name: "VpcPrivateSubnet1RouteTableB2C5B500",
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
@@ -119,7 +119,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "Vpc8378EB38::VpcPrivateSubnet2RouteTableA678073B",
+    name: "VpcPrivateSubnet2RouteTableA678073B",
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
@@ -127,7 +127,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "Vpc8378EB38::VpcPublicSubnet1RouteTable6C95E38E",
+    name: "VpcPublicSubnet1RouteTable6C95E38E",
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
@@ -135,7 +135,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "Vpc8378EB38::VpcPublicSubnet2RouteTable94F7E489",
+    name: "VpcPublicSubnet2RouteTable94F7E489",
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),

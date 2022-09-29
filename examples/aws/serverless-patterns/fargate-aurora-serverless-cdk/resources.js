@@ -50,7 +50,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
+    name: "CdkStack/Vpc/PrivateSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 2,
@@ -63,7 +63,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
+    name: "CdkStack/Vpc/PrivateSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 2,
@@ -76,7 +76,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
+    name: "CdkStack/Vpc/PublicSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
@@ -90,7 +90,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
+    name: "CdkStack/Vpc/PublicSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
@@ -104,7 +104,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
+    name: "CdkStack/Vpc/PrivateSubnet1",
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
@@ -112,7 +112,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
+    name: "CdkStack/Vpc/PrivateSubnet2",
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
@@ -120,7 +120,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet1",
+    name: "CdkStack/Vpc/PublicSubnet1",
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
@@ -128,7 +128,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "CdkStack/Vpc::CdkStack/Vpc/PublicSubnet2",
+    name: "CdkStack/Vpc/PublicSubnet2",
     dependencies: ({}) => ({
       vpc: "CdkStack/Vpc",
     }),
