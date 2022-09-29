@@ -1199,8 +1199,7 @@ exports.readMapping = readMapping;
 const buildFilename = ({
   providerName,
   providers,
-
-  commandOptions: { outputDir, outputFile, provider },
+  commandOptions: { outputDir, outputFile },
   workingDirectory,
 }) =>
   pipe([
@@ -1208,18 +1207,16 @@ const buildFilename = ({
       assert(outputFile);
       assert(workingDirectory);
     }),
-    switchCase([
-      () => provider || size(providers) > 1,
-      () =>
-        path.resolve(
-          workingDirectory,
-          outputDir,
-          `${outputFile}-${providerName}.js`
-        ),
-      () => path.resolve(workingDirectory, outputDir, `${outputFile}.js`),
-    ]),
+    () => providers,
+    find(eq(get("name"), providerName)),
+    tap((provider) => {
+      assert(provider);
+    }),
+    get("directory"),
+    (directory) =>
+      path.resolve(workingDirectory, outputDir, directory, `${outputFile}.js`),
     tap((fileName) => {
-      //logger.debug(`buildFilename ${fileName}`);
+      assert(fileName);
     }),
   ])();
 

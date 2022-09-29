@@ -1,23 +1,19 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 const { AzureProvider } = require("@grucloud/provider-azure");
 
-exports.createStack = async ({ createProvider }) => {
-  return {
-    stacks: [
-      {
-        provider: await createProvider(AwsProvider, {
-          name: "aws",
-          createResources: require("./resources-aws").createResources,
-          config: require("./config-aws"),
-        }),
-      },
-      {
-        provider: await createProvider(AzureProvider, {
-          name: "azure",
-          createResources: require("./resources-azure").createResources,
-          config: require("./config-azure"),
-        }),
-      },
-    ],
-  };
-};
+exports.createStack = () => ({
+  stacks: [
+    {
+      providerFactory: AwsProvider,
+      directory: "aws",
+      createResources: require("./aws/resources").createResources,
+      config: require("./aws/config"),
+    },
+    {
+      providerFactory: AzureProvider,
+      directory: "azure",
+      createResources: require("./azure/resources").createResources,
+      config: require("./azure/config"),
+    },
+  ],
+});

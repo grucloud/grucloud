@@ -3,12 +3,12 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const { GoogleProvider } = require("@grucloud/provider-google");
 const { AzureProvider } = require("@grucloud/provider-azure");
 
-const AwsStackEC2Vpc = require("../aws/ec2/ec2-vpc/resources");
-const AzureStack = require("../azure/vm/resources");
+const AwsStackEC2Vpc = require("../aws/EC2/ec2-vpc/resources");
+const AzureStack = require("../azure/Compute/vm/resources");
 const GoogleStackVm = require("../google/vm/resources");
 
 const createAws = async ({ createProvider }) => {
-  const provider = createProvider(AwsProvider, {
+  const provider = await createProvider(AwsProvider, {
     createResources: [AwsStackEC2Vpc.createResources],
     configs: [require("./configAws")],
   });

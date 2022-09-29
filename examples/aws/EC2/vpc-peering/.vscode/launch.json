@@ -110,6 +110,17 @@
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
       "port": 9229
+    },
+    {
+      "name": "init",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "init"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
     }
   ]
 }

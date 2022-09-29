@@ -1,11 +1,5 @@
-const { assign } = require("rubico");
-const { GoogleProvider } = require("@grucloud/provider-google");
-const { createResources } = require("./resources");
-
-exports.createStack = assign({
-  provider: ({ createProvider }) =>
-    createProvider(GoogleProvider, {
-      createResources,
-      config: require("./config"),
-    }),
+exports.createStack = () => ({
+  providerFactory: require("@grucloud/provider-google").GoogleProvider,
+  createResources: require("./resources").createResources,
+  config: require("./config"),
 });
