@@ -23,7 +23,6 @@ exports.GcpRunService = ({ spec, config }) => {
     spec,
     baseURL: `https://${region}-run.googleapis.com`,
     url: `apis/serving.knative.dev/v1/namespaces/${projectId}/services`,
-    pathUpdate: ({ name }) => `/${name}`,
     verbUpdate: "PUT",
     findTargetId,
     config,
