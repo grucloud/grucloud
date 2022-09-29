@@ -19,7 +19,6 @@ const {
   first,
   size,
   append,
-  prepend,
 } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -50,27 +49,28 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
         pipe([
           () => ({ live, lives, config }),
           findNameInTagsOrId({
-            findId: () =>
-              pipe([
-                () => live.VpcId,
-                tap(() => {
-                  assert(live.VpcId);
-                }),
-                (id) =>
-                  lives.getById({
-                    id,
-                    type: "Vpc",
-                    group: "EC2",
-                    providerName: config.providerName,
-                  }),
-                get("name", live.VpcId),
-                tap((name) => {
-                  assert(name, `no Vpc name for '${live.VpcId}'`);
-                }),
-                prepend("vpce::"),
-                append(`::${live.ServiceName}`),
-              ])(),
+            findId: () => live.ServiceName,
           }),
+          (name) =>
+            pipe([
+              () => live.VpcId,
+              tap(() => {
+                assert(live.VpcId);
+                assert(name);
+              }),
+              (id) =>
+                lives.getById({
+                  id,
+                  type: "Vpc",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.VpcId),
+              tap((name) => {
+                assert(name, `no Vpc name for '${live.VpcId}'`);
+              }),
+              append(`::${name}`),
+            ])(),
         ]),
         pipe([
           get("Value"),
@@ -180,6 +180,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
 
   const configDefault = ({
     name,
+    resourceName,
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: { vpc, subnets, securityGroups, routeTables },
@@ -188,6 +189,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
       () => otherProps,
       tap((params) => {
         assert(vpc, "missing vpc dependency");
+        assert(name);
       }),
       defaultsDeep({
         ServiceName: name,
@@ -195,7 +197,12 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
         TagSpecifications: [
           {
             ResourceType: "vpc-endpoint",
-            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+            Tags: buildTags({
+              config,
+              namespace,
+              name: resourceName,
+              UserTags: Tags,
+            }),
           },
         ],
       }),

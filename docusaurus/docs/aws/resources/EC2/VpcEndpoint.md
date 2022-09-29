@@ -45,7 +45,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: "vpce::spoke-vpc-2::com.amazonaws.us-east-1.ec2",
     properties: ({}) => ({
       PolicyDocument: {
         Statement: [
@@ -60,6 +59,7 @@ exports.createResources = () => [
       PrivateDnsEnabled: true,
       RequesterManaged: false,
       VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.ec2`,
     }),
     dependencies: () => ({
       vpc: "spoke-vpc-2",
@@ -76,17 +76,24 @@ exports.createResources = () => [
 ### Examples
 
 - [vpc endpoint simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/vpc-endpoint)
+- [vpc peering](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/vpc-peering)
+- [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/hub-and-spoke-with-inspection-vpc)
+- [aws-network-hub-for-terraform](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/aws-network-hub-for-terraform)
+- [hub-and-spoke-with-shared-services-vpc-terraform](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/hub-and-spoke-with-shared-services-vpc-terraform)
+- [record-vpc-endpoint](https://github.com/grucloud/grucloud/blob/main/examples/aws/Route53/record-vpc-endpoint)
+- [serverless-patterns/cdk-vpc-lambda-sfn](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/cdk-vpc-lambda-sfn)
+- [serverless-patterns/fargate-eventbridge](https://github.com/grucloud/grucloud/blob/main/examples/aws/serverless-patterns/fargate-eventbridge)
+- [vpn-aws-azure](https://github.com/grucloud/grucloud/blob/main/examples/cross-cloud/vpn-aws-azure)
+- [vpn-aws-gcp](https://github.com/grucloud/grucloud/blob/main/examples/cross-cloud/vpn-aws-gcp)
 
-- [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/hub-and-spoke-with-inspection-vpc)
-
-### Properties
+  ### Properties
 
 - [CreateVpcEndpointCommandInput](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/createvpcendpointcommandinput.html)
 
 ### Dependencies
 
-- [Vpc](./Vpc.md)
-- [Subnet](./Subnet.md)
+- [EC2 Vpc](./Vpc.md)
+- [EC2 Subnet](./Subnet.md)
 - [IAM Role](../IAM/Role.md)
 
 ### Used By
@@ -108,7 +115,7 @@ Listing resources on 1 provider: aws
 ┌──────────────────────────────────────────────────────────────────────┐
 │ 1 EC2::VpcEndpoint from aws                                          │
 ├──────────────────────────────────────────────────────────────────────┤
-│ name: project-vpc-endpoint-vpce-s3                                   │
+│ name: project-vpc::project-vpc-endpoint-vpce-s3                      │
 │ managedByUs: Yes                                                     │
 │ live:                                                                │
 │   VpcEndpointId: vpce-04c28f6091f2009c1                              │
@@ -153,7 +160,7 @@ Provider: aws
 ┌─────────────────────────────────────────────────────────────────────┐
 │ aws                                                                 │
 ├──────────────────┬──────────────────────────────────────────────────┤
-│ EC2::VpcEndpoint │ project-vpc-endpoint-vpce-s3                     │
+│ EC2::VpcEndpoint │ project-vpc::project-vpc-endpoint-vpce-s3        │
 └──────────────────┴──────────────────────────────────────────────────┘
 1 resource, 1 type, 1 provider
 Command "gc list -t VpcEndpoint" executed in 3s, 198 MB

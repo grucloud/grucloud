@@ -228,44 +228,45 @@ const createConfig = ({ projectId, projectName }) =>
     }),
   ])();
 
-exports.createProjectGoogle = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  tap(isGcloudPresent),
-  tap(isAuthenticated),
-  assign({ projectId: promptGoogleProjectId }),
-  tap(
-    pipe([
-      tap(({ projectId }) => {
-        assert(projectId);
-      }),
-      ({ projectId }) => `config set project ${projectId}`,
-      gcloudExecCommand(),
-    ])
-  ),
-  assign({ region: promptRegion }),
-  tap(
-    pipe([
-      tap(({ region }) => {
-        assert(region);
-      }),
-      ({ region }) => `config set compute/region ${region}`,
-      gcloudExecCommand(),
-    ])
-  ),
-  assign({ zone: promptZone }),
-  tap(
-    pipe([
-      tap(({ zone }) => {
-        assert(zone);
-      }),
-      ({ zone }) => `config set compute/zone ${zone}`,
-      gcloudExecCommand(),
-    ])
-  ),
-  tap((params) => {
-    assert(true);
-  }),
-  assign({ config: createConfig }),
-]);
+exports.createProjectGoogle = ({}) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    tap(isGcloudPresent),
+    tap(isAuthenticated),
+    assign({ projectId: promptGoogleProjectId }),
+    tap(
+      pipe([
+        tap(({ projectId }) => {
+          assert(projectId);
+        }),
+        ({ projectId }) => `config set project ${projectId}`,
+        gcloudExecCommand(),
+      ])
+    ),
+    assign({ region: promptRegion }),
+    tap(
+      pipe([
+        tap(({ region }) => {
+          assert(region);
+        }),
+        ({ region }) => `config set compute/region ${region}`,
+        gcloudExecCommand(),
+      ])
+    ),
+    assign({ zone: promptZone }),
+    tap(
+      pipe([
+        tap(({ zone }) => {
+          assert(zone);
+        }),
+        ({ zone }) => `config set compute/zone ${zone}`,
+        gcloudExecCommand(),
+      ])
+    ),
+    tap((params) => {
+      assert(true);
+    }),
+    assign({ config: createConfig }),
+  ]);

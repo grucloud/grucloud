@@ -2,20 +2,20 @@
 const {} = require("rubico");
 const {} = require("rubico/x");
 
-const createResources = ({ provider }) => {
-  provider.Storage.makeBlob({
+exports.createResources = () => [
+  {
+    type: "Blob",
+    group: "Storage",
     properties: ({}) => ({
+      name: "index.html",
       properties: {
         contentType: "text/html",
       },
       source: "assets/index1.html",
-      name: "index.html",
     }),
-    dependencies: () => ({
+    dependencies: ({}) => ({
       resourceGroup: "rg-storage-web",
       container: "rg-storage-web::gcstorageweb::$web",
     }),
-  });
-};
-
-exports.createResources = createResources;
+  },
+];

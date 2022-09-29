@@ -1,5 +1,5 @@
 node_modules/
-.env
+auth.env
 .nyc_output
 coverage
 *.log

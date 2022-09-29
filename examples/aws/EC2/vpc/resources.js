@@ -32,7 +32,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc::subnet-private-a",
+    name: "subnet-private-a",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 3,
@@ -45,7 +45,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc::subnet-private-b",
+    name: "subnet-private-b",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 3,
@@ -58,7 +58,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc::subnet-public-a",
+    name: "subnet-public-a",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
@@ -72,7 +72,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc::subnet-public-b",
+    name: "subnet-public-b",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
@@ -86,7 +86,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpc::route-table-private-a",
+    name: "route-table-private-a",
     dependencies: ({}) => ({
       vpc: "vpc",
     }),
@@ -94,7 +94,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpc::route-table-private-b",
+    name: "route-table-private-b",
     dependencies: ({}) => ({
       vpc: "vpc",
     }),
@@ -102,7 +102,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpc::rt-default",
+    name: "rt-default",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc",

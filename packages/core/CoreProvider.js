@@ -162,6 +162,7 @@ const getListHofDefault = ({ getList, spec }) =>
 function CoreProvider({
   name: providerName,
   displayName = () => providerName,
+  directory = "",
   dependencies = {},
   type,
   programOptions = {},
@@ -1754,6 +1755,7 @@ List of resources for provider ${providerName}:\n
 
   const provider = {
     toString,
+    directory,
     get config() {
       return getProviderConfig();
     },

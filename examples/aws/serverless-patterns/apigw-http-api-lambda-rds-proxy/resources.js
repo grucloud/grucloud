@@ -15,7 +15,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "sam-app-vpc::sam-app-prv-sub-1",
+    name: "sam-app-prv-sub-1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -28,7 +28,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "sam-app-vpc::sam-app-prv-sub-2",
+    name: "sam-app-prv-sub-2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -41,7 +41,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "sam-app-vpc::sam-app-prv-sub-3",
+    name: "sam-app-prv-sub-3",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 8,

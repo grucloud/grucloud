@@ -1,12 +1,5 @@
-const { AzureProvider } = require("@grucloud/provider-azure");
-const { createResources } = require("./resources");
-
-exports.createStack = ({ createProvider }) => {
-  return {
-    provider: createProvider(AzureProvider, {
-      createResources,
-      config: require("./config"),
-    }),
-    hooks: [require("./hook")],
-  };
-};
+exports.createStack = () => ({
+  providerFactory: require("@grucloud/provider-azure").AzureProvider,
+  createResources: require("./resources").createResources,
+  config: require("./config"),
+});

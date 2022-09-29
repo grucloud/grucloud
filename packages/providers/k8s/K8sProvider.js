@@ -535,6 +535,25 @@ const fnSpecs = pipe([
           ]),
       }),
     },
+    // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#networkpolicy-v1-networking-k8s-io
+    {
+      type: "NetworkPolicy",
+      dependsOn: ["Namespace"],
+      dependencies: {
+        namespace: {
+          type: "Namespace",
+        },
+      },
+      inferName: inferNameNamespace,
+      Client: createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/apis/${apiVersion}/namespaces/${namespace}/networkpolicies`,
+        pathList: ({ apiVersion }) => `/apis/${apiVersion}/networkpolicies`,
+        configKey: "networkpolicy",
+        apiVersion: "networking.k8s.io/v1",
+        kind: "NetworkPolicy",
+      }),
+    },
     {
       type: "PersistentVolume",
       dependsOn: ["StorageClass"],
@@ -715,7 +734,7 @@ const fnSpecs = pipe([
         pathList: ({ apiVersion }) =>
           `/apis/${apiVersion}/poddisruptionbudgets`,
         configKey: "podDisruptionBudget",
-        apiVersion: "policy/v1beta1",
+        apiVersion: "policy/v1",
         kind: "PodDisruptionBudget",
       }),
     },

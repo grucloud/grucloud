@@ -85,7 +85,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "Vpc::PubSubnetAz1",
+    name: "PubSubnetAz1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       Tags: [
@@ -104,7 +104,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "Vpc::PubSubnetAz2",
+    name: "PubSubnetAz2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       Tags: [
@@ -123,7 +123,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "Vpc::RouteViaIgw",
+    name: "RouteViaIgw",
     properties: ({}) => ({
       Tags: [
         {

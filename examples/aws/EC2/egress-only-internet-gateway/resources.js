@@ -33,7 +33,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `eoigw-vpc::eoigw-subnet-private1-${config.region}a`,
+    name: ({ config }) => `eoigw-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -46,7 +46,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `eoigw-vpc::eoigw-subnet-public1-${config.region}a`,
+    name: ({ config }) => `eoigw-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -59,7 +59,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `eoigw-vpc::eoigw-rtb-private1-${config.region}a`,
+    name: ({ config }) => `eoigw-rtb-private1-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "eoigw-vpc",
     }),
@@ -67,7 +67,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "eoigw-vpc::eoigw-rtb-public",
+    name: "eoigw-rtb-public",
     dependencies: ({}) => ({
       vpc: "eoigw-vpc",
     }),

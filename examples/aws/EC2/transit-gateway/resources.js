@@ -16,7 +16,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-A-vpc::subnet-private1-${config.region}a`,
+    name: ({ config }) => `subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -29,7 +29,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-A-vpc::subnet-private2-${config.region}b`,
+    name: ({ config }) => `subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 4,
@@ -42,7 +42,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc-default::subnet-default-a",
+    name: "subnet-default-a",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",
@@ -51,7 +51,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc-default::subnet-default-b",
+    name: "subnet-default-b",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",
@@ -60,7 +60,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `spoke-A-vpc::rtb-private1-${config.region}a`,
+    name: ({ config }) => `rtb-private1-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "spoke-A-vpc",
     }),
@@ -68,7 +68,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `spoke-A-vpc::rtb-private2-${config.region}b`,
+    name: ({ config }) => `rtb-private2-${config.region}b`,
     dependencies: ({}) => ({
       vpc: "spoke-A-vpc",
     }),
@@ -76,7 +76,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpc-default::rt-default",
+    name: "rt-default",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",

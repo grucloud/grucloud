@@ -24,7 +24,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc-postgres::subnet-1",
+    name: "subnet-1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 3,
@@ -37,7 +37,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc-postgres::subnet-2",
+    name: "subnet-2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 3,
@@ -50,7 +50,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpc-postgres::route-table-public",
+    name: "route-table-public",
     dependencies: ({}) => ({
       vpc: "vpc-postgres",
     }),

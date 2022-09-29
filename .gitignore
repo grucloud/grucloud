@@ -12,3 +12,5 @@ list.svg
 inventory*.json
 mochawesome-report
 .clinic
+*.bkp
+*.dtmp

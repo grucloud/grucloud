@@ -4,6 +4,7 @@ const {
   pipe,
   tap,
   and,
+  fork,
   eq,
   any,
   switchCase,
@@ -15,6 +16,7 @@ const {
   set,
 } = require("rubico");
 const {
+  first,
   find,
   callProp,
   last,
@@ -251,11 +253,18 @@ const pathUpdateDefault =
   ({ id }) =>
     pipe([
       () => spec,
-      get("methods.patch"),
-      tap((patch) => {
-        assert(patch, `missing methods.patch for ${spec.groupType}`);
+      get("methods"),
+      values,
+      fork({
+        patches: filter(eq(get("httpMethod"), "PATCH")),
+        puts: filter(eq(get("httpMethod"), "PUT")),
       }),
+      ({ patches = [], puts = [] }) => [...patches, ...puts],
+      first,
       get("path"),
+      tap((path) => {
+        assert(path, `missing put or patch for ${spec.groupType}`);
+      }),
       substituteProjectRegionZone({ config }),
       substitutePathId({ config, id }),
       tap((params) => {

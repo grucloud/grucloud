@@ -3,11 +3,12 @@ title Resources for project K8S Cert Manager Module
 skinparam monochrome true
 + Infra
 ++ k8s
-+++ Namespace (2)
++++ Namespace (1)
 +++ CustomResourceDefinition (6)
 +++ ServiceAccount (3)
-+++ ClusterRole (11)
-+++ ClusterRoleBinding (9)
++++ ConfigMap (1)
++++ ClusterRole (12)
++++ ClusterRoleBinding (10)
 +++ Role (3)
 +++ RoleBinding (3)
 +++ Service (2)

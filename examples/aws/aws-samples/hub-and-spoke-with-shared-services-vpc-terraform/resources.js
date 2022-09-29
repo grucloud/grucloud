@@ -112,7 +112,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `shared-services-vpc::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 2,
@@ -125,7 +125,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `shared-services-vpc::private-${config.region}b`,
+    name: ({ config }) => `private-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 2,
@@ -138,7 +138,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `shared-services-vpc::tgw-${config.region}a`,
+    name: ({ config }) => `tgw-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -151,7 +151,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `shared-services-vpc::tgw-${config.region}b`,
+    name: ({ config }) => `tgw-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 4,
@@ -164,7 +164,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 2,
@@ -177,7 +177,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1::tgw-${config.region}a`,
+    name: ({ config }) => `tgw-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -190,7 +190,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 2,
@@ -203,7 +203,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2::tgw-${config.region}a`,
+    name: ({ config }) => `tgw-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -216,7 +216,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `shared-services-vpc::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "shared-services-vpc",
     }),
@@ -224,7 +224,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `shared-services-vpc::private-${config.region}b`,
+    name: ({ config }) => `private-${config.region}b`,
     dependencies: ({}) => ({
       vpc: "shared-services-vpc",
     }),
@@ -232,7 +232,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `shared-services-vpc::tgw-${config.region}a`,
+    name: ({ config }) => `tgw-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "shared-services-vpc",
     }),
@@ -240,7 +240,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `shared-services-vpc::tgw-${config.region}b`,
+    name: ({ config }) => `tgw-${config.region}b`,
     dependencies: ({}) => ({
       vpc: "shared-services-vpc",
     }),
@@ -248,7 +248,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
     }),
@@ -256,7 +256,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-1::tgw-${config.region}a`,
+    name: ({ config }) => `tgw-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
     }),
@@ -264,7 +264,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2::private-${config.region}a`,
+    name: ({ config }) => `private-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
     }),
@@ -272,7 +272,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `spoke-vpc-2::tgw-${config.region}a`,
+    name: ({ config }) => `tgw-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
     }),
@@ -679,8 +679,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.ec2messages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -708,8 +706,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.s3`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -737,8 +733,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.ssm`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -766,8 +760,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.ssmmessages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -1361,7 +1353,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `s3.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `vpce::shared-services-vpc::com.amazonaws.${config.region}.s3`,
+      vpcEndpoint: `shared-services-vpc::com.amazonaws.${config.region}.s3`,
     }),
   },
   {
@@ -1376,7 +1368,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ec2messages.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `vpce::shared-services-vpc::com.amazonaws.${config.region}.ec2messages`,
+      vpcEndpoint: `shared-services-vpc::com.amazonaws.${config.region}.ec2messages`,
     }),
   },
   {
@@ -1391,7 +1383,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `s3.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `vpce::shared-services-vpc::com.amazonaws.${config.region}.s3`,
+      vpcEndpoint: `shared-services-vpc::com.amazonaws.${config.region}.s3`,
     }),
   },
   {
@@ -1406,7 +1398,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ssm.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `vpce::shared-services-vpc::com.amazonaws.${config.region}.ssm`,
+      vpcEndpoint: `shared-services-vpc::com.amazonaws.${config.region}.ssm`,
     }),
   },
   {
@@ -1421,7 +1413,7 @@ exports.createResources = () => [
     }),
     dependencies: ({ config }) => ({
       hostedZone: `ssmmessages.${config.region}.amazonaws.com.`,
-      vpcEndpoint: `vpce::shared-services-vpc::com.amazonaws.${config.region}.ssmmessages`,
+      vpcEndpoint: `shared-services-vpc::com.amazonaws.${config.region}.ssmmessages`,
     }),
   },
   {

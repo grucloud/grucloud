@@ -15,7 +15,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "Vpc8378EB38::VpcauroraisolatedSubnet1Subnet5370B90B",
+    name: "VpcauroraisolatedSubnet1Subnet5370B90B",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 1,
@@ -28,7 +28,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "Vpc8378EB38::VpcauroraisolatedSubnet2SubnetCB56E2A8",
+    name: "VpcauroraisolatedSubnet2SubnetCB56E2A8",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 1,
@@ -41,7 +41,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "Vpc8378EB38::VpcauroraisolatedSubnet1RouteTableA8F6E99C",
+    name: "VpcauroraisolatedSubnet1RouteTableA8F6E99C",
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),
@@ -49,7 +49,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "Vpc8378EB38::VpcauroraisolatedSubnet2RouteTableBF363B67",
+    name: "VpcauroraisolatedSubnet2RouteTableBF363B67",
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",
     }),

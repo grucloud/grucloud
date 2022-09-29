@@ -228,6 +228,7 @@ module.exports = pipe([
                     ])(),
                     properties: () => ({
                       Arn: name,
+                      PolicyName: name,
                       Path: pipe([
                         () => name,
                         callProp("replace", "arn:aws:iam::aws:policy/", ""),
@@ -339,7 +340,17 @@ module.exports = pipe([
     {
       type: "Policy",
       Client: AwsIamPolicy,
-      inferName: get("properties.PolicyName"),
+      inferName: ({ properties }) =>
+        pipe([
+          tap((params) => {
+            assert(properties);
+          }),
+          () => properties,
+          get("PolicyName"),
+          tap((PolicyName) => {
+            assert(PolicyName);
+          }),
+        ])(),
       isOurMinion: isOurMinionIamPolicy,
       compare: compareIAM({
         filterAll: () =>

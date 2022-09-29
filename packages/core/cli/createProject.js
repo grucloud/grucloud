@@ -181,14 +181,15 @@ exports.createProject =
       }),
       assign({
         dirs: writeDirectory({ commandOptions, programOptions }),
+        profile: () => "default",
       }),
       tap((params) => {
         assert(true);
       }),
-      when(eq(get("provider"), "aws"), createProjectAws),
-      when(eq(get("provider"), "google"), createProjectGoogle),
-      when(eq(get("provider"), "azure"), createProjectAzure),
-      when(eq(get("provider"), "k8s"), createProjectK8s),
+      when(eq(get("provider"), "aws"), createProjectAws({})),
+      when(eq(get("provider"), "google"), createProjectGoogle({})),
+      when(eq(get("provider"), "azure"), createProjectAzure({})),
+      when(eq(get("provider"), "k8s"), createProjectK8s({})),
       tap((params) => {
         assert(true);
       }),

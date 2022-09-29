@@ -86,7 +86,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "VPC::SubnetPrivateUSEAST1D",
+    name: "SubnetPrivateUSEAST1D",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       Tags: [
@@ -105,7 +105,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "VPC::SubnetPrivateUSEAST1F",
+    name: "SubnetPrivateUSEAST1F",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}f`,
       Tags: [
@@ -124,7 +124,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "VPC::SubnetPublicUSEAST1D",
+    name: "SubnetPublicUSEAST1D",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       MapPublicIpOnLaunch: true,
@@ -144,7 +144,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "VPC::SubnetPublicUSEAST1F",
+    name: "SubnetPublicUSEAST1F",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}f`,
       MapPublicIpOnLaunch: true,
@@ -164,7 +164,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "VPC::PrivateRouteTableUSEAST1D",
+    name: "PrivateRouteTableUSEAST1D",
     dependencies: ({}) => ({
       vpc: "VPC",
     }),
@@ -172,7 +172,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "VPC::PrivateRouteTableUSEAST1F",
+    name: "PrivateRouteTableUSEAST1F",
     dependencies: ({}) => ({
       vpc: "VPC",
     }),
@@ -180,7 +180,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "VPC::PublicRouteTable",
+    name: "PublicRouteTable",
     dependencies: ({}) => ({
       vpc: "VPC",
     }),

@@ -27,6 +27,7 @@ const {
   find,
   last,
   append,
+  prepend,
   defaultsDeep,
   when,
   isDeepEqual,
@@ -158,6 +159,9 @@ const { EC2VpnConnection } = require("./EC2VpnConnection");
 const { EC2VpnConnectionRoute } = require("./EC2VpnConnectionRoute");
 
 const GROUP = "EC2";
+
+const getResourceNameFromTag = () =>
+  pipe([get("Tags"), find(eq(get("Key"), "Name")), get("Value")]);
 
 const getTargetTags = pipe([get("TagSpecifications"), first, get("Tags")]);
 
@@ -1293,6 +1297,30 @@ module.exports = pipe([
       type: "Subnet",
       Client: EC2Subnet,
       includeDefaultDependencies: true,
+      getResourceName: () =>
+        pipe([
+          switchCase([
+            get("DefaultForAz"),
+            pipe([
+              get("AvailabilityZone", ""),
+              last,
+              prepend("subnet-default-"),
+            ]),
+            getResourceNameFromTag(),
+          ]),
+        ]),
+      inferName: ({ resourceName, properties, dependenciesSpec }) =>
+        pipe([
+          tap((params) => {
+            assert(dependenciesSpec.vpc);
+            assert(resourceName);
+          }),
+          () => resourceName,
+          callProp("split", "::"),
+          last,
+          prepend("::"),
+          prepend(dependenciesSpec.vpc),
+        ])(),
       omitProperties: [
         "VpcId",
         "AvailabilityZoneId",
@@ -1377,6 +1405,26 @@ module.exports = pipe([
     {
       type: "RouteTable",
       Client: EC2RouteTable,
+      getResourceName: () =>
+        pipe([
+          switchCase([
+            pipe([get("Associations"), any(get("Main"))]),
+            pipe([() => "rt-default"]),
+            getResourceNameFromTag(),
+          ]),
+        ]),
+      inferName: ({ resourceName, properties, dependenciesSpec }) =>
+        pipe([
+          tap((params) => {
+            assert(dependenciesSpec.vpc);
+            assert(resourceName);
+          }),
+          () => resourceName,
+          callProp("split", "::"),
+          last,
+          prepend("::"),
+          prepend(dependenciesSpec.vpc),
+        ])(),
       omitProperties: [
         "VpcId",
         "Associations",
@@ -1698,15 +1746,21 @@ module.exports = pipe([
         filterAll: () => pipe([omit(["VpcId", "OwnerId", "GroupId"])]),
       }),
       filterLive: () => pick(["GroupName", "Description"]),
-      inferName: ({ properties, dependenciesSpec: { vpc } }) =>
+      inferName: ({ resourceName, properties, dependenciesSpec: { vpc } }) =>
         pipe([
-          () => "sg::",
-          when(() => vpc, append(`${vpc}::`)),
-          switchCase([
-            () => properties.GroupName,
-            append(properties.GroupName),
-            append("default"),
-          ]),
+          () => resourceName,
+          when(
+            isEmpty,
+            pipe([
+              () => "sg::",
+              when(() => vpc, append(`${vpc}::`)),
+              switchCase([
+                () => properties.GroupName,
+                append(properties.GroupName),
+                append("default"),
+              ]),
+            ])
+          ),
         ])(),
       dependencies: {
         vpc: {
@@ -2357,7 +2411,31 @@ module.exports = pipe([
         },
       },
       Client: EC2VpcEndpoint,
+      shortName: true,
+      getResourceName: getResourceNameFromTag,
+      inferName: ({ resourceName, properties, dependenciesSpec }) =>
+        pipe([
+          tap((params) => {
+            assert(dependenciesSpec.vpc);
+          }),
+          () => "",
+          switchCase([
+            () => dependenciesSpec.firewall,
+            pipe([
+              append("vpce::"),
+              append(dependenciesSpec.firewall),
+              append("::"),
+              append(pipe([() => dependenciesSpec.subnets, first])()),
+            ]),
+            pipe([
+              append(dependenciesSpec.vpc),
+              append("::"),
+              append(resourceName || properties.ServiceName),
+            ]),
+          ]),
+        ])(),
       compare: compareEC2({
+        //TODO private DNS
         filterTarget: () => pipe([pick(["PolicyDocument"])]),
         filterLive: () => pipe([pick(["PolicyDocument"])]),
       }),

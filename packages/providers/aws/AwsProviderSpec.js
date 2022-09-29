@@ -1,5 +1,5 @@
 const { pipe, tap, flatMap, filter, eq, get, map } = require("rubico");
-const { find, includes, append, callProp } = require("rubico/x");
+const { find, includes, append, callProp, unless } = require("rubico/x");
 
 const assert = require("assert");
 const AwsServicesAvailability = require("./AwsServicesAvailability.json");
@@ -29,7 +29,6 @@ const GROUPS = [
   ["ELBv2", "elb"],
   ["Firehose", "firehose"],
   ["Glue", "glue"],
-  ["IAM", "iam"],
   ["Kinesis", "kinesis"],
   ["KMS", "kms"],
   ["Lambda", "lambda"],
@@ -38,7 +37,6 @@ const GROUPS = [
   ["Organisations", "organizations"],
   ["RDS", "rds"],
   ["RAM", "ram"],
-  ["Route53", "route53"],
   ["Route53Resolver", "route53resolver"],
   ["Route53RecoveryControlConfig", "route53-recovery-control-config"],
   ["S3", "s3"],
@@ -50,16 +48,20 @@ const GROUPS = [
   ["WAFV2", "waf"],
 ];
 
-const GROUPS_GLOBAL = [
-  "Route53Domain", // always on us-east-1
+const GROUPS_MISSING = [
   "CloudWatchLogs", // missing from the list provider by AWS
+];
+const GROUPS_GLOBAL = [
+  "IAM",
+  "Route53",
+  "Route53Domain", // always on us-east-1
   "Route53RecoveryReadiness",
 ];
 
-const findServicesPerRegion = ({ region }) =>
+const findServicesPerRegion = ({ region = "us-east-1" }) =>
   pipe([
     tap(() => {
-      assert(region);
+      //assert(region);
     }),
     () => AwsServicesAvailability,
     find(eq(get("region"), region)),
@@ -73,7 +75,7 @@ exports.fnSpecs = (config) =>
   pipe([
     tap(() => {
       assert(config);
-      assert(config.region);
+      //assert(config.region);
     }),
     () => config,
     findServicesPerRegion,
@@ -99,7 +101,8 @@ exports.fnSpecs = (config) =>
           assert(true);
         }),
         map(([group]) => group),
-        append(GROUPS_GLOBAL),
+        append(GROUPS_MISSING),
+        unless(() => config.noGlobalEndpoint, append(GROUPS_GLOBAL)),
         callProp("sort", (a, b) => a.localeCompare(b)),
         flatMap(pipe([(group) => require(`./${group}`), (fn) => fn()])),
       ])(),

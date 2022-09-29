@@ -61,7 +61,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc::subnet-a",
+    name: "subnet-a",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 3,
@@ -74,7 +74,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc::subnet-b",
+    name: "subnet-b",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 3,
@@ -87,7 +87,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpc::rt-default",
+    name: "rt-default",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc",

@@ -86,8 +86,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `vpclink-ex-vpc::vpclink-ex-subnet-private1-${config.region}a`,
+    name: ({ config }) => `vpclink-ex-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -100,8 +99,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `vpclink-ex-vpc::vpclink-ex-subnet-private2-${config.region}b`,
+    name: ({ config }) => `vpclink-ex-subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 4,
@@ -114,8 +112,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `vpclink-ex-vpc::vpclink-ex-rtb-private1-${config.region}a`,
+    name: ({ config }) => `vpclink-ex-rtb-private1-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "vpclink-ex-vpc",
     }),
@@ -123,8 +120,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `vpclink-ex-vpc::vpclink-ex-rtb-private2-${config.region}b`,
+    name: ({ config }) => `vpclink-ex-rtb-private2-${config.region}b`,
     dependencies: ({}) => ({
       vpc: "vpclink-ex-vpc",
     }),

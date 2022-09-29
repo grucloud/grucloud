@@ -109,13 +109,12 @@ exports.ResourceMaker = ({
 
   const getResourceName = memoize(
     pipe([
-      () => resourceName,
+      tap((params) => {
+        assert(true);
+      }),
+      //
       switchCase([
-        isFunction,
-        () => resourceName({ config: provider.getConfig() }),
-        isString,
-        identity,
-        isEmpty,
+        () => spec.inferName,
         pipe([
           tap((params) => {
             assert(
@@ -123,7 +122,13 @@ exports.ResourceMaker = ({
               `resource ${spec.type} without name must implement 'inferName'`
             );
           }),
-          () => ({
+          switchCase([
+            () => isFunction(resourceName),
+            pipe([() => resourceName({ config: provider.getConfig() })]),
+            () => resourceName,
+          ]),
+          (resourceNameString) => ({
+            resourceName: resourceNameString,
             properties: properties({
               config,
               getId,
@@ -132,15 +137,15 @@ exports.ResourceMaker = ({
             dependenciesSpec: dependencies({ config }),
             dependencies: getDependencies(),
           }),
-          tap((params) => {
-            assert(true);
-          }),
           spec.inferName,
           tap((name) => {
             assert(name, `empty inferName for ${spec.groupType}`);
-            assert(isString(name));
           }),
         ]),
+        () => isFunction(resourceName),
+        () => resourceName({ config: provider.getConfig() }),
+        () => isString(resourceName),
+        () => resourceName,
         (resourceName) => {
           throw Error(
             `resource name ${JSON.stringify(
@@ -605,6 +610,7 @@ exports.ResourceMaker = ({
             (properties = {}) =>
               getClient().configDefault({
                 name: getResourceName(),
+                resourceName,
                 meta,
                 namespace,
                 properties: pipe([

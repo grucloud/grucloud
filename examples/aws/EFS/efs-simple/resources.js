@@ -14,7 +14,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "EfsLambdaVpc::EfsLambdaSubnetA",
+    name: "EfsLambdaSubnetA",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -27,7 +27,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "EfsLambdaVpc::EfsLambdaSubnetB",
+    name: "EfsLambdaSubnetB",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,

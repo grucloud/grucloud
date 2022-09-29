@@ -256,7 +256,7 @@ module.exports = pipe([
       omitProperties: [
         "SubnetIds",
         "VpcSecurityGroupIds",
-        "MasterUserPassword",
+        //"MasterUserPassword",
         "DBSubnetGroupName",
         "Capacity",
         "ScalingConfigurationInfo", //TODO
@@ -301,6 +301,7 @@ module.exports = pipe([
             "DeletionProtection",
             "BackupRetentionPeriod",
             "MasterUsername",
+            "MasterUserPassword",
           ]), //TODO kludge: updating HttpEndpointEnabled does not work
         filterTarget: () =>
           pipe([
@@ -417,7 +418,7 @@ module.exports = pipe([
       },
       omitProperties: [
         "PromotionTier", //TODO check
-        "MasterUserPassword",
+        //"MasterUserPassword",
         "VpcSecurityGroupIds",
         "DBSubnetGroupName", //TODO
         "VpcSecurityGroupIds",
@@ -447,7 +448,10 @@ module.exports = pipe([
       ],
       compare: compareRDS({
         filterAll: () =>
-          pipe([filterLiveDbInstance, omit(["EnablePerformanceInsights"])]),
+          pipe([
+            filterLiveDbInstance,
+            omit(["EnablePerformanceInsights", "MasterUserPassword"]),
+          ]),
       }),
       filterLive: () =>
         pipe([

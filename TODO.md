@@ -4,6 +4,8 @@
 
 ## Aws
 
+- client EC2::Vpc has no update function
+- EC2 instance, sort groups
 - API Gateway v1 Authorizer
 
 - doc:

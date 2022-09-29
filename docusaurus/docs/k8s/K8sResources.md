@@ -15,6 +15,7 @@ List of resources for provider k8s:
 * [Job](./resources/Job.md)
 * [MutatingWebhookConfiguration](./resources/MutatingWebhookConfiguration.md)
 * [Namespace](./resources/Namespace.md)
+* [NetworkPolicy](./resources/NetworkPolicy.md)
 * [PersistentVolume](./resources/PersistentVolume.md)
 * [PersistentVolumeClaim](./resources/PersistentVolumeClaim.md)
 * [Pod](./resources/Pod.md)

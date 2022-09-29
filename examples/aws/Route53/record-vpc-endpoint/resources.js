@@ -73,7 +73,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       hostedZone: "vpce.grucloud.org.",
-      vpcEndpoint: "endpoint-ec2",
+      vpcEndpoint: "vpc-4-record-vpc-endpoint::endpoint-ec2",
     }),
   },
   {

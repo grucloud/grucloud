@@ -218,7 +218,7 @@ exports.AzureProvider = ({
         }),
       }),
       assign({ projectName: get("config.projectName", "my-az-project") }),
-      createProjectAzure,
+      createProjectAzure({}),
       writeConfigToFile,
     ])();
 

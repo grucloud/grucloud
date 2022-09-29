@@ -40,6 +40,7 @@ const {
   defaultsDeep,
   unless,
   callProp,
+  when,
 } = require("rubico/x");
 const { envLoader } = require("../EnvLoader");
 const fse = require("fs-extra");
@@ -1767,6 +1768,7 @@ exports.Cli = ({
       infra: pipe([
         ({ programOptions }) =>
           createStack({
+            // TODO remove later on
             createProvider: createProviderMaker({
               createResources,
               programOptions,
@@ -1776,6 +1778,39 @@ exports.Cli = ({
               mapGloblalNameToResource,
             }),
           }),
+        tap((params) => {
+          assert(true);
+        }),
+        unless(get("stacks"), ({ hookGlobal, ...stack }) => ({
+          hookGlobal,
+          stacks: [{ ...stack }],
+        })),
+        assign({
+          stacks: pipe([
+            get("stacks"),
+            map(
+              when(
+                get("providerFactory"),
+                pipe([
+                  assign({
+                    provider: ({ providerFactory, ...other }) =>
+                      pipe([
+                        () =>
+                          createProviderMaker({
+                            createResources,
+                            programOptions,
+                            config,
+                            configs,
+                            stage,
+                            mapGloblalNameToResource,
+                          })(providerFactory, other),
+                      ])(),
+                  }),
+                ])
+              )
+            ),
+          ]),
+        }),
         tap.if(() => createResources, createResources),
         tap((params) => {
           assert(true);

@@ -5,13 +5,26 @@ skinparam monochrome true
 ++ aws-primary
 +++ EC2
 ++++ Vpc (1)
+++++ Subnet (1)
 ++++ RouteTable (1)
 ++++ Route (1)
+++++ SecurityGroup (2)
+++++ SecurityGroupRuleIngress (2)
+++++ Instance (1)
+++++ VpcEndpoint (3)
 ++++ VpcPeeringConnection (1)
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
 -- aws-secondary
 --- EC2
 ---- Vpc (1)
+---- Subnet (1)
 ---- RouteTable (1)
 ---- Route (1)
+---- SecurityGroup (2)
+---- SecurityGroupRuleIngress (2)
+---- Instance (1)
+---- VpcEndpoint (3)
 ---- VpcPeeringConnectionAccepter (1)
 @endmindmap

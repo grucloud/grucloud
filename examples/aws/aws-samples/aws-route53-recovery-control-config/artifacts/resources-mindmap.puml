@@ -1,0 +1,56 @@
+@startmindmap
+title Resources for project aws-route53-recovery-control-config
+skinparam monochrome true
++ Infra
+++ aws-primary
++++ CodeBuild
+++++ Project (1)
++++ CodeDeploy
+++++ Application (1)
++++ IAM
+++++ Role (5)
+++++ InstanceProfile (2)
++++ Route53
+++++ HealthCheck (2)
++++ Route53RecoveryControlConfig
+++++ SafetyRule (1)
++++ Route53RecoveryReadiness
+++++ Cell (2)
+++++ ReadinessCheck (3)
+++++ RecoveryGroup (1)
+++++ ResourceSet (3)
++++ S3
+++++ Bucket (2)
+-- aws-secondary
+--- AutoScaling
+---- AutoScalingGroup (1)
+---- LaunchConfiguration (1)
+--- DynamoDB
+---- Table (1)
+--- EC2
+---- KeyPair (1)
+---- Vpc (3)
+---- InternetGateway (2)
+---- InternetGatewayAttachment (1)
+---- NatGateway (1)
+---- Subnet (4)
+---- RouteTable (3)
+---- RouteTableAssociation (4)
+---- Route (3)
+---- SecurityGroup (5)
+---- SecurityGroupRuleIngress (4)
+---- SecurityGroupRuleEgress (1)
+---- ElasticIpAddress (1)
+--- IAM
+---- Role (5)
+---- InstanceProfile (2)
+--- Route53
+---- HealthCheck (2)
+--- Route53RecoveryControlConfig
+---- SafetyRule (1)
+--- Route53RecoveryReadiness
+---- Cell (2)
+---- ReadinessCheck (3)
+---- RecoveryGroup (1)
+---- ResourceSet (3)
+@endmindmap

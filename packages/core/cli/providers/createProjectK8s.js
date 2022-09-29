@@ -30,14 +30,15 @@ const isKubectlPresent = pipe([
   ),
 ]);
 
-exports.createProjectK8s = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  tap(isKubectlPresent),
-  assign({ config: createConfig }),
-  tap((params) => {
-    assert(true);
-  }),
-  //TODO
-]);
+exports.createProjectK8s = ({}) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    tap(isKubectlPresent),
+    assign({ config: createConfig }),
+    tap((params) => {
+      assert(true);
+    }),
+    //TODO
+  ]);

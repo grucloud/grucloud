@@ -701,8 +701,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.ec2messages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -730,8 +728,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.s3`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -759,8 +755,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.ssm`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
@@ -788,8 +782,6 @@ exports.createResources = () => [
   {
     type: "VpcEndpoint",
     group: "EC2",
-    name: ({ config }) =>
-      `vpce::shared-services-vpc::com.amazonaws.${config.region}.ssmmessages`,
     properties: ({ config }) => ({
       PolicyDocument: {
         Statement: [
