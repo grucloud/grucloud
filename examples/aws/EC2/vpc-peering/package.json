@@ -1,6 +1,6 @@
 {
   "name": "vpc-peering",
-  "version": "9.2.0",
+  "version": "10.0.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -17,13 +17,13 @@
     "onDeployed": "gc run --onDeployed",
     "onDestroyed": "gc run --onDestroyed",
     "test": "mocha",
-    "init":"gc init"
+    "init": "gc init"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^9.2.0",
-    "@grucloud/provider-aws": "^9.2.0",
+    "@grucloud/core": "^10.0.0",
+    "@grucloud/provider-aws": "^10.0.0",
     "rubico": "^1.8.11"
   },
   "devDependencies": {

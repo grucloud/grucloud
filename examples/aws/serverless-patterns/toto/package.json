@@ -1,9 +1,9 @@
 {
-  "name": "@grucloud/example-aws-rds-postgres",
+  "name": "toto",
   "version": "10.0.0",
-  "description": "",
   "private": true,
-  "main": "iac.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
     "tree": "gc tree",
     "graph": "gc graph",
@@ -22,11 +22,10 @@
   "dependencies": {
     "@grucloud/core": "^10.0.0",
     "@grucloud/provider-aws": "^10.0.0",
-    "pg": "^8.6.0",
-    "rubico": "^1.6.26"
+    "rubico": "1.8.10"
   },
   "devDependencies": {
-    "mocha": "^9.0.3",
+    "mocha": "^9.2.2",
     "mocha-junit-reporter": "^2.0.2"
   }
 }

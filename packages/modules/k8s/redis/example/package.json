@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-module-k8s-redis",
-  "version": "9.2.0",
+  "version": "10.0.0",
   "description": "Grucloud example for the k8s redis module",
   "main": "iac.js",
   "private": true,
@@ -13,9 +13,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^9.2.0",
-    "@grucloud/module-k8s-redis": "^9.2.0",
-    "@grucloud/provider-k8s": "^9.2.0",
+    "@grucloud/core": "^10.0.0",
+    "@grucloud/module-k8s-redis": "^10.0.0",
+    "@grucloud/provider-k8s": "^10.0.0",
     "rubico": "^1.6.21"
   },
   "devDependencies": {
