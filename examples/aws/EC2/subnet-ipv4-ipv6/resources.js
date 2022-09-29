@@ -15,7 +15,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc-dual::subnet-dual",
+    name: "subnet-dual",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       MapPublicIpOnLaunch: true,

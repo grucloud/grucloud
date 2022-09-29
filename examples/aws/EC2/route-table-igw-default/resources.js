@@ -13,7 +13,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpc-default::rt-default",
+    name: "rt-default",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",

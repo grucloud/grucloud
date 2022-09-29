@@ -36,7 +36,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "Vpc::PubSubnetAz1",
+    name: "PubSubnetAz1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -49,7 +49,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "Vpc::PubSubnetAz2",
+    name: "PubSubnetAz2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,

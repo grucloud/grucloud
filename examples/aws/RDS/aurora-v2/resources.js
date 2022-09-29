@@ -32,7 +32,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `pg-vpc::pg-subnet-private1-${config.region}a`,
+    name: ({ config }) => `pg-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -45,7 +45,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `pg-vpc::pg-subnet-private2-${config.region}b`,
+    name: ({ config }) => `pg-subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 4,
@@ -58,7 +58,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `pg-vpc::pg-subnet-public1-${config.region}a`,
+    name: ({ config }) => `pg-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -71,7 +71,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `pg-vpc::pg-subnet-public2-${config.region}b`,
+    name: ({ config }) => `pg-subnet-public2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 4,
@@ -84,7 +84,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `pg-vpc::pg-rtb-private1-${config.region}a`,
+    name: ({ config }) => `pg-rtb-private1-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "pg-vpc",
     }),
@@ -92,7 +92,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) => `pg-vpc::pg-rtb-private2-${config.region}b`,
+    name: ({ config }) => `pg-rtb-private2-${config.region}b`,
     dependencies: ({}) => ({
       vpc: "pg-vpc",
     }),
@@ -100,7 +100,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "pg-vpc::pg-rtb-public",
+    name: "pg-rtb-public",
     dependencies: ({}) => ({
       vpc: "pg-vpc",
     }),

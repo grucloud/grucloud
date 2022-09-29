@@ -74,8 +74,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-vpc::inspection-vpc-intra-subnet-${config.region}a`,
+    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -88,8 +87,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-vpc::inspection-vpc-intra-subnet-${config.region}b`,
+    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -102,8 +100,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-vpc::inspection-vpc-intra-subnet-${config.region}c`,
+    name: ({ config }) => `inspection-vpc-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 8,
@@ -116,8 +113,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-vpc::inspection-vpc-private-subnet-${config.region}a`,
+    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -130,8 +126,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-vpc::inspection-vpc-private-subnet-${config.region}b`,
+    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -144,8 +139,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-vpc::inspection-vpc-private-subnet-${config.region}c`,
+    name: ({ config }) => `inspection-vpc-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 8,
@@ -158,8 +152,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-vpc::inspection-vpc-public-subnet-${config.region}a`,
+    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -172,8 +165,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-vpc::inspection-vpc-public-subnet-${config.region}b`,
+    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -186,8 +178,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `inspection-vpc::inspection-vpc-public-subnet-${config.region}c`,
+    name: ({ config }) => `inspection-vpc-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 8,
@@ -200,8 +191,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}a`,
+    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -214,8 +204,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}b`,
+    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -228,8 +217,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-1::spoke-vpc-1-intra-subnet-${config.region}c`,
+    name: ({ config }) => `spoke-vpc-1-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 8,
@@ -242,8 +230,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}a`,
+    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -256,8 +243,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}b`,
+    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -270,8 +256,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-1::spoke-vpc-1-private-subnet-${config.region}c`,
+    name: ({ config }) => `spoke-vpc-1-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 8,
@@ -284,8 +269,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}a`,
+    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -298,8 +282,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}b`,
+    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -312,8 +295,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-1::spoke-vpc-1-public-subnet-${config.region}c`,
+    name: ({ config }) => `spoke-vpc-1-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 8,
@@ -326,8 +308,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}a`,
+    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -340,8 +321,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}b`,
+    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -354,8 +334,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-2::spoke-vpc-2-intra-subnet-${config.region}c`,
+    name: ({ config }) => `spoke-vpc-2-intra-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 8,
@@ -368,8 +347,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}a`,
+    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -382,8 +360,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}b`,
+    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -396,8 +373,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-2::spoke-vpc-2-private-subnet-${config.region}c`,
+    name: ({ config }) => `spoke-vpc-2-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 8,
@@ -410,8 +386,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}a`,
+    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -424,8 +399,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}b`,
+    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -438,8 +412,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `spoke-vpc-2::spoke-vpc-2-public-subnet-${config.region}c`,
+    name: ({ config }) => `spoke-vpc-2-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 8,
@@ -452,7 +425,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "inspection-vpc::inspection-vpc-intra-subnet",
+    name: "inspection-vpc-intra-subnet",
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
     }),
@@ -460,7 +433,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "inspection-vpc::inspection-vpc-private-subnet",
+    name: "inspection-vpc-private-subnet",
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
     }),
@@ -468,7 +441,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "inspection-vpc::inspection-vpc-public-subnet",
+    name: "inspection-vpc-public-subnet",
     dependencies: ({}) => ({
       vpc: "inspection-vpc",
     }),
@@ -476,7 +449,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-1::spoke-vpc-1-intra-subnet",
+    name: "spoke-vpc-1-intra-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
     }),
@@ -484,7 +457,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-1::spoke-vpc-1-private-subnet",
+    name: "spoke-vpc-1-private-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
     }),
@@ -492,7 +465,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-1::spoke-vpc-1-public-subnet",
+    name: "spoke-vpc-1-public-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-1",
     }),
@@ -500,7 +473,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-2::spoke-vpc-1-private-subnet",
+    name: "spoke-vpc-1-private-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
     }),
@@ -508,7 +481,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-2::spoke-vpc-2-intra-subnet",
+    name: "spoke-vpc-2-intra-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
     }),
@@ -516,7 +489,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "spoke-vpc-2::spoke-vpc-2-public-subnet",
+    name: "spoke-vpc-2-public-subnet",
     dependencies: ({}) => ({
       vpc: "spoke-vpc-2",
     }),

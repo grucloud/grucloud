@@ -86,7 +86,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 4,
@@ -100,7 +100,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 4,
@@ -114,7 +114,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       NewBits: 4,
@@ -128,7 +128,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}b`,
+      `${config.region}-prod-main-vpc-public-subnet-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
@@ -143,7 +143,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}c`,
+      `${config.region}-prod-main-vpc-public-subnet-${config.region}c`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       MapPublicIpOnLaunch: true,
@@ -158,7 +158,7 @@ exports.createResources = () => [
     type: "Subnet",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet-${config.region}d`,
+      `${config.region}-prod-main-vpc-public-subnet-${config.region}d`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       MapPublicIpOnLaunch: true,
@@ -173,7 +173,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}b`,
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
     }),
@@ -182,7 +182,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}c`,
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
     }),
@@ -191,7 +191,7 @@ exports.createResources = () => [
     type: "RouteTable",
     group: "EC2",
     name: ({ config }) =>
-      `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
+      `${config.region}-prod-main-vpc-private-subnet-${config.region}d`,
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
     }),
@@ -199,8 +199,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `${config.region}-prod-main-vpc::${config.region}-prod-main-vpc-public-subnet`,
+    name: ({ config }) => `${config.region}-prod-main-vpc-public-subnet`,
     dependencies: ({ config }) => ({
       vpc: `${config.region}-prod-main-vpc`,
     }),

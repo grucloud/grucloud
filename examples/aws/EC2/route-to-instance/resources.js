@@ -7,7 +7,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc-default::subnet-default-d",
+    name: "subnet-default-d",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",
@@ -16,7 +16,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpc-default::rt-default",
+    name: "rt-default",
     isDefault: true,
     dependencies: ({}) => ({
       vpc: "vpc-default",

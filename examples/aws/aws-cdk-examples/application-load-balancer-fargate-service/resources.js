@@ -47,7 +47,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
+    name: "ECSServiceStack/SkeletonVpc/applicationSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -60,7 +60,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
+    name: "ECSServiceStack/SkeletonVpc/applicationSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 4,
@@ -73,7 +73,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
+    name: "ECSServiceStack/SkeletonVpc/dataSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -86,7 +86,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
+    name: "ECSServiceStack/SkeletonVpc/dataSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 4,
@@ -99,7 +99,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
+    name: "ECSServiceStack/SkeletonVpc/publicSubnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
@@ -113,7 +113,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
+    name: "ECSServiceStack/SkeletonVpc/publicSubnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
@@ -127,7 +127,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet1",
+    name: "ECSServiceStack/SkeletonVpc/applicationSubnet1",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),
@@ -135,7 +135,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/applicationSubnet2",
+    name: "ECSServiceStack/SkeletonVpc/applicationSubnet2",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),
@@ -143,7 +143,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet1",
+    name: "ECSServiceStack/SkeletonVpc/dataSubnet1",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),
@@ -151,7 +151,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/dataSubnet2",
+    name: "ECSServiceStack/SkeletonVpc/dataSubnet2",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),
@@ -159,7 +159,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet1",
+    name: "ECSServiceStack/SkeletonVpc/publicSubnet1",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),
@@ -167,7 +167,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "ECSServiceStack/SkeletonVpc::ECSServiceStack/SkeletonVpc/publicSubnet2",
+    name: "ECSServiceStack/SkeletonVpc/publicSubnet2",
     dependencies: ({}) => ({
       vpc: "ECSServiceStack/SkeletonVpc",
     }),

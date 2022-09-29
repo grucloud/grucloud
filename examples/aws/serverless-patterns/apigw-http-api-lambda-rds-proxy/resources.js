@@ -15,7 +15,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "sam-app-vpc::sam-app-prv-sub-1",
+    name: "sam-app-prv-sub-1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -28,7 +28,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "sam-app-vpc::sam-app-prv-sub-2",
+    name: "sam-app-prv-sub-2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -41,7 +41,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "sam-app-vpc::sam-app-prv-sub-3",
+    name: "sam-app-prv-sub-3",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}c`,
       NewBits: 8,
@@ -262,8 +262,6 @@ exports.createResources = () => [
       EngineMode: "provisioned",
       DeletionProtection: false,
       HttpEndpointEnabled: false,
-      MasterUserPassword:
-        process.env.SAM_APP_MYSQL_CLUSTER_MASTER_USER_PASSWORD,
     }),
     dependencies: ({}) => ({
       dbSubnetGroup: "sam-app-db-subnet-group",
@@ -290,7 +288,6 @@ exports.createResources = () => [
       PerformanceInsightsRetentionPeriod: 7,
       EnablePerformanceInsights: true,
       MasterUsername: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USERNAME,
-      MasterUserPassword: process.env.SAM_APP_MYSQL_NODE_1_MASTER_USER_PASSWORD,
     }),
     dependencies: ({ config }) => ({
       dbSubnetGroup: "sam-app-db-subnet-group",

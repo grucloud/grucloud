@@ -42,8 +42,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}a`,
+    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -56,8 +55,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}b`,
+    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -70,8 +68,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       MapPublicIpOnLaunch: true,
@@ -85,8 +82,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}b`,
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       MapPublicIpOnLaunch: true,
@@ -100,7 +96,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpcStack/test-VPC::vpcStack/test-VPC/test-isolated-subnet-1Subnet1",
+    name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet1",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,
@@ -113,7 +109,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpcStack/test-VPC::vpcStack/test-VPC/test-isolated-subnet-1Subnet2",
+    name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet2",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 8,
@@ -126,8 +122,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}a`,
+    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
@@ -135,8 +130,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `vpcStack/test-VPC::test-VPC-test-private-subnet-1-${config.region}b`,
+    name: ({ config }) => `test-VPC-test-private-subnet-1-${config.region}b`,
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
@@ -144,8 +138,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}a`,
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
@@ -153,8 +146,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `vpcStack/test-VPC::test-VPC-test-public-subnet-1-${config.region}b`,
+    name: ({ config }) => `test-VPC-test-public-subnet-1-${config.region}b`,
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
@@ -162,7 +154,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpcStack/test-VPC::vpcStack/test-VPC/test-isolated-subnet-1Subnet1",
+    name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet1",
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),
@@ -170,7 +162,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "vpcStack/test-VPC::vpcStack/test-VPC/test-isolated-subnet-1Subnet2",
+    name: "vpcStack/test-VPC/test-isolated-subnet-1Subnet2",
     dependencies: ({}) => ({
       vpc: "vpcStack/test-VPC",
     }),

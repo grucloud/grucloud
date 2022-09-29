@@ -16,7 +16,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `dns_vpc::dns_attachment_${config.region}b`,
+    name: ({ config }) => `dns_attachment_${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       AssignIpv6AddressOnCreation: true,

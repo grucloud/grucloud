@@ -24,7 +24,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `wafv2-vpc::wafv2-subnet-public1-${config.region}a`,
+    name: ({ config }) => `wafv2-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -37,7 +37,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) => `wafv2-vpc::wafv2-subnet-public2-${config.region}b`,
+    name: ({ config }) => `wafv2-subnet-public2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 4,
@@ -50,7 +50,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "wafv2-vpc::wafv2-rtb-public",
+    name: "wafv2-rtb-public",
     dependencies: ({}) => ({
       vpc: "wafv2-vpc",
     }),

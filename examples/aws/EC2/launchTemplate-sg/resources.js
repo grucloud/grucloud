@@ -16,7 +16,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "Vpc::subnet-private",
+    name: "subnet-private",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 8,

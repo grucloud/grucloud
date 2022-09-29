@@ -24,8 +24,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `project-vpc::project-subnet-public1-${config.region}a`,
+    name: ({ config }) => `project-subnet-public1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -38,7 +37,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: "project-vpc::project-rtb-public",
+    name: "project-rtb-public",
     dependencies: ({}) => ({
       vpc: "project-vpc",
     }),
