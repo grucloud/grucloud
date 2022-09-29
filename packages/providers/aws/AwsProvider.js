@@ -9,6 +9,7 @@ const {
   not,
   map,
   fork,
+  assign,
 } = require("rubico");
 const {
   first,
@@ -144,7 +145,7 @@ exports.AwsProvider = async ({
           defaultsDeep(config),
           get("region"),
           tap((region) => {
-            assert(region);
+            //assert(region);
             logger.info(
               `using region '${region}', regionFromCredential: ${regionFromCredentialFiles}, AWS_REGION:${process.env.AWS_REGION}`
             );
@@ -223,9 +224,12 @@ exports.AwsProvider = async ({
       fork({
         dirs: () => ({
           destination: path.resolve(programOptions.workingDirectory),
+          providerDirectory: other.directory,
         }),
+        config: makeConfig,
       }),
-      createProjectAws,
+      assign({ profile: get("config.credentials.profile", "default") }),
+      createProjectAws({}),
     ])();
 
   const getListHof = ({ getList, spec }) =>

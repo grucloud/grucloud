@@ -89,7 +89,7 @@ exports.init = ({
         tap((params) => {
           assert(true);
         }),
-        createProjectGoogle,
+        createProjectGoogle({}),
         () => {
           console.log(`Initializing project ${projectId}`);
         },

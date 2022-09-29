@@ -300,28 +300,31 @@ const createConfig = ({ location }) =>
 
 const graphPrincipalId = "00000003-0000-0000-c000-000000000000";
 
-exports.createProjectAzure = pipe([
-  tap(isAzPresent),
-  tap(isAuthenticated),
-  assign({ account: promptSubscribtionId }),
-  assign({ app: fetchAppIdPassword }),
-  assign({ objectId: pipe([get("app.appId"), fetchServicePrincipalObjectId]) }),
-  assign({
-    graphObjectId: pipe([
-      () => graphPrincipalId,
-      fetchServicePrincipalObjectId,
-    ]),
-  }),
-  tap(
-    addAppPermission({
-      resourceId: graphPrincipalId,
-      // Application.Read.All
-      appRoleId: "9a5d68dd-52b0-4cc2-bd40-abcf44ac3a30",
-    })
-  ),
-  tap(createRoleAssignments),
-  assign({ location: promptLocation }),
-  assign({ config: createConfig }),
-  tap(registerNamespaces),
-  tap(writeEnv),
-]);
+exports.createProjectAzure = ({}) =>
+  pipe([
+    tap(isAzPresent),
+    tap(isAuthenticated),
+    assign({ account: promptSubscribtionId }),
+    assign({ app: fetchAppIdPassword }),
+    assign({
+      objectId: pipe([get("app.appId"), fetchServicePrincipalObjectId]),
+    }),
+    assign({
+      graphObjectId: pipe([
+        () => graphPrincipalId,
+        fetchServicePrincipalObjectId,
+      ]),
+    }),
+    tap(
+      addAppPermission({
+        resourceId: graphPrincipalId,
+        // Application.Read.All
+        appRoleId: "9a5d68dd-52b0-4cc2-bd40-abcf44ac3a30",
+      })
+    ),
+    tap(createRoleAssignments),
+    assign({ location: promptLocation }),
+    assign({ config: createConfig }),
+    tap(registerNamespaces),
+    tap(writeEnv),
+  ]);

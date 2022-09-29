@@ -58,10 +58,10 @@ const GROUPS_GLOBAL = [
   "Route53RecoveryReadiness",
 ];
 
-const findServicesPerRegion = ({ region }) =>
+const findServicesPerRegion = ({ region = "us-east-1" }) =>
   pipe([
     tap(() => {
-      assert(region);
+      //assert(region);
     }),
     () => AwsServicesAvailability,
     find(eq(get("region"), region)),
@@ -75,7 +75,7 @@ exports.fnSpecs = (config) =>
   pipe([
     tap(() => {
       assert(config);
-      assert(config.region);
+      //assert(config.region);
     }),
     () => config,
     findServicesPerRegion,

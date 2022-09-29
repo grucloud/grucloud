@@ -78,7 +78,8 @@ const promptRegion = pipe([
   }),
   assign({
     regions: pipe([
-      () => "ec2 describe-regions --region us-east-1",
+      ({ profile }) =>
+        `ec2 describe-regions --region us-east-1 --profile ${profile}`,
       awsExecCommand(),
       get("Regions"),
     ]),
@@ -86,7 +87,7 @@ const promptRegion = pipe([
   assign({
     currentRegion: tryCatch(
       pipe([
-        () => "configure get region",
+        ({ profile }) => `configure get region --profile ${profile}`,
         awsExecCommand(),
         callProp("replace", EOL, ""),
         when(includes("undefined"), () => undefined),
@@ -97,7 +98,7 @@ const promptRegion = pipe([
   tap((params) => {
     assert(true);
   }),
-  ({ regions, currentRegion }) =>
+  ({ regions, currentRegion, profile }) =>
     pipe([
       () => regions,
       map(({ RegionName }) => ({
@@ -118,84 +119,94 @@ const promptRegion = pipe([
         assert(true);
       }),
       get("region"),
+      tap((region) =>
+        pipe([
+          () => `configure set region ${region} --profile ${profile}`,
+          awsExecCommand(),
+        ])()
+      ),
     ])(),
-  tap((region) => {
-    assert(region);
-  }),
-  tap((region) =>
-    pipe([() => `configure set region ${region}`, awsExecCommand()])()
-  ),
 ]);
 
-const execAwsConfigure = pipe([
-  tap((params) => {
-    console.log(
-      "Create and retrieve the AWS Access Key ID and AWS Secret Access Key by visiting the following page:"
-    );
-  }),
-  () => ({
-    type: "confirm",
-    name: "confirmOpen",
-    message: `Open https://console.aws.amazon.com/iam/home#/security_credentials`,
-    initial: true,
-  }),
-  prompts,
-  tap.if(get("confirmOpen"), () => {
-    shell.exec(
-      "open https://console.aws.amazon.com/iam/home#/security_credentials"
-    );
-  }),
-  assign({
-    AWSAccessKeyId: promptAccessKeyId,
-  }),
-  assign({
-    AWSSecretKey: promptSecretKey,
-  }),
-  tap(({ AWSAccessKeyId, AWSSecretKey }) =>
-    pipe([
-      tap((params) => {
-        assert(AWSAccessKeyId);
-        assert(AWSSecretKey);
-      }),
-      () => `configure set aws_access_key_id ${AWSAccessKeyId}`,
-      awsExecCommand(),
-      () => `configure set aws_secret_access_key ${AWSSecretKey}`,
-      awsExecCommand({
-        displayText: "aws configure set aws_secret_access_key XXXXXXXXXXXXXXX",
-      }),
-    ])()
-  ),
-]);
-
-const isAuthenticated = pipe([
-  () => "sts get-caller-identity --region us-east-1",
-  tryCatch(
-    pipe([
-      awsExecCommand(),
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
-    (error) =>
+const execAwsConfigure = ({ profile = "default" }) =>
+  pipe([
+    tap((params) => {
+      console.log(
+        "Create and retrieve the AWS Access Key ID and AWS Secret Access Key by visiting the following page:"
+      );
+    }),
+    () => ({
+      type: "confirm",
+      name: "confirmOpen",
+      message: `Open https://console.aws.amazon.com/iam/home#/security_credentials`,
+      initial: true,
+    }),
+    prompts,
+    tap.if(get("confirmOpen"), () => {
+      shell.exec(
+        "open https://console.aws.amazon.com/iam/home#/security_credentials"
+      );
+    }),
+    assign({
+      AWSAccessKeyId: promptAccessKeyId,
+    }),
+    assign({
+      AWSSecretKey: promptSecretKey,
+    }),
+    tap(({ AWSAccessKeyId, AWSSecretKey }) =>
       pipe([
         tap((params) => {
-          assert(error);
+          assert(AWSAccessKeyId);
+          assert(AWSSecretKey);
         }),
-        execAwsConfigure,
-        isAuthenticated,
+        () =>
+          `configure set aws_access_key_id ${AWSAccessKeyId} --profile ${profile}`,
+        awsExecCommand(),
+        () =>
+          `configure set aws_secret_access_key ${AWSSecretKey} --profile ${profile}`,
+        awsExecCommand({
+          displayText: `aws configure set aws_secret_access_key XXXXXXXXXXXXXXX --profile ${profile}`,
+        }),
       ])()
-  ),
-]);
+    ),
+  ]);
 
-exports.createProjectAws = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  tap(isAwsPresent),
-  tap(isAuthenticated),
-  assign({ region: promptRegion }),
-  assign({ config: createConfig }),
-  tap((params) => {
-    assert(true);
-  }),
-]);
+const isAuthenticated = ({ profile = "default" }) =>
+  pipe([
+    () => `sts get-caller-identity --region us-east-1 --profile ${profile}`,
+    tryCatch(
+      pipe([
+        awsExecCommand(),
+        tap((params) => {
+          assert(true);
+        }),
+      ]),
+      (error) =>
+        pipe([
+          tap((params) => {
+            assert(error);
+          }),
+          execAwsConfigure({ profile }),
+          () => isAuthenticated({ profile }),
+        ])()
+    ),
+  ])();
+
+exports.createProjectAws = ({}) =>
+  pipe([
+    tap(({ profile, dirs }) => {
+      assert(true);
+      dirs.providerDirectory &&
+        console.log(
+          `Initializing AWS provider in directory: ${dirs.providerDirectory}`
+        );
+      console.log(`Using AWS profile: ${profile}`);
+    }),
+    tap(isAwsPresent),
+    tap(isAuthenticated),
+    assign({ region: promptRegion }),
+    assign({ config: createConfig }),
+    tap((params) => {
+      assert(true);
+    }),
+  ]);
