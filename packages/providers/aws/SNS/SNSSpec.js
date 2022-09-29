@@ -103,7 +103,13 @@ module.exports = pipe([
           }),
           eq(get("live.SubscriptionArn"), "PendingConfirmation"),
         ]),
-      omitProperties: ["Name", "TopicArn", "SubscriptionArn", "Owner"],
+      omitProperties: [
+        "Name",
+        "TopicArn",
+        "SubscriptionArn",
+        "Owner",
+        "SubscriptionPrincipal",
+      ],
       inferName: ({
         properties,
         dependenciesSpec: { snsTopic, lambdaFunction, sqsQueue },
