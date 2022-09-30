@@ -1,6 +1,6 @@
 {
   "name": "sfn-eventbridge",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^10.0.0",
-    "@grucloud/provider-aws": "^10.0.0",
+    "@grucloud/core": "^10.0.1",
+    "@grucloud/provider-aws": "^10.0.1",
     "rubico": "^1.8.3"
   },
   "devDependencies": {

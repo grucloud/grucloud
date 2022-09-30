@@ -1,6 +1,6 @@
 {
   "name": "cosmosdb-simple",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -21,8 +21,8 @@
   "license": "ISC",
   "dependencies": {
     "@azure/cosmos": "3.9.1",
-    "@grucloud/core": "^10.0.0",
-    "@grucloud/provider-azure": "^10.0.0",
+    "@grucloud/core": "^10.0.1",
+    "@grucloud/provider-azure": "^10.0.1",
     "rubico": "1.8.10"
   },
   "devDependencies": {
