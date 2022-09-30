@@ -52,30 +52,7 @@ exports.createResources = () => [
       role: "sam-app-TopicConsumerFunction1Role-1CWCD3G6QCTG6",
     }),
   },
-  {
-    type: "Topic",
-    group: "SNS",
-    name: "sam-app-MySnsTopic-1Q2VS8SMOPR20",
-    properties: ({}) => ({
-      Attributes: {
-        DisplayName: "",
-        DeliveryPolicy: {
-          http: {
-            defaultHealthyRetryPolicy: {
-              minDelayTarget: 20,
-              maxDelayTarget: 20,
-              numRetries: 3,
-              numMaxDelayRetries: 0,
-              numNoDelayRetries: 0,
-              numMinDelayRetries: 0,
-              backoffFunction: "linear",
-            },
-            disableSubscriptionOverrides: false,
-          },
-        },
-      },
-    }),
-  },
+  { type: "Topic", group: "SNS", name: "sam-app-MySnsTopic-1Q2VS8SMOPR20" },
   {
     type: "Subscription",
     group: "SNS",
