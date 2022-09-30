@@ -336,7 +336,12 @@ function CoreProvider({
           tap((params) => {
             assert(true);
           }),
-          (spec) => ({ ...other, provider, programOptions, spec }),
+          (spec) => ({
+            ...other,
+            provider,
+            programOptions: getProgramOptions(),
+            spec,
+          }),
           ResourceMaker,
           tap((params) => {
             assert(true);

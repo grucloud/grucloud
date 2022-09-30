@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project sns-multi-region
+skinparam monochrome true
++ Infra
+++ aws-us-east-1
++++ SNS
+++++ Topic (1)
+-- aws-us-west-1
+--- SNS
+---- Topic (1)
+++ aws-eu-west-2
++++ SNS
+++++ Topic (1)
+@endmindmap

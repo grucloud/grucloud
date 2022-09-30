@@ -137,6 +137,7 @@ exports.AwsProvider = async ({
       (regionFromCredentialFiles) =>
         pipe([
           () => ({}),
+          defaultsDeep({ region: config.region }),
           defaultsDeep({ region: regionFromCredentialFiles }),
           when(
             () => process.env.AWS_REGION,
