@@ -227,7 +227,8 @@ function Home() {
               "gencode-text gencode-text gencode-image gencode-image gencode-image"
               "gclist-image gclist-image gclist-image gclist-text gclist-text"
               "gctree-text gctree-text gctree-image gctree-image gctree-image"
-              "gccli-image gccli-image gccli-image gccli-text gccli-text";
+              "gccli-image gccli-image gccli-image gccli-text gccli-text"
+              "bookdemo bookdemo bookdemo bookdemo bookdemo";
           }
 
           > a {
@@ -333,6 +334,7 @@ function Home() {
             Visit the GruCloud CLI documentation
           </Link>
         </div>
+
         <div
           css={css`
             grid-area: gccli-image;
@@ -344,8 +346,22 @@ function Home() {
             id="asciicast-iframe-13761"
             name="asciicast-iframe-13761"
             scrolling="no"
-            style={{ width: "100%", height: "720px" }}
+            style={{ width: "100%", height: "620px" }}
           ></iframe>
+        </div>
+        <div
+          css={css`
+            grid-area: bookdemo;
+          `}
+        >
+          <h1>Book a demo</h1>
+          <p>
+            Send an email to{" "}
+            <a href="mailto:hello@grucloud.com?subject=Demo request">
+              hello@grucloud.com
+            </a>{" "}
+            for more information about a personal demo.
+          </p>
         </div>
       </section>
     </main>
