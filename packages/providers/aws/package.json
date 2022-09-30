@@ -28,7 +28,7 @@
     "test-ecs": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ECS/**/iac.test.js' ",
     "test-efs": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EFS/**/iac.test.js' ",
     "test-eks": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/EKS/**/iac.test.js' ",
-    "test-elb": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ELBv2/**/iac.test.js' ",
+    "test-elb": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ElasticLoadBalancingV2/**/iac.test.js' ",
     "test-firehose": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Firehose/**/iac.test.js' ",
     "test-iam": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/IAM/**/iac.test.js' ",
     "test-kinesis": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Kinesis/**/iac.test.js' ",
