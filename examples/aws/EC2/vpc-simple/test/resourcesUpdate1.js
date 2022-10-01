@@ -5,6 +5,8 @@ exports.createResources = () => [
     name: "my-vpc",
     properties: ({}) => ({
       CidrBlock: "10.0.0.0/16",
+      DnsHostnames: true,
+      DnsSupport: false,
       Tags: [
         {
           Key: "mytagnew",
