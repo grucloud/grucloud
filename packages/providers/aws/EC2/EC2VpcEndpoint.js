@@ -9,6 +9,7 @@ const {
   switchCase,
   fork,
   or,
+  pick,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -164,10 +165,27 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifyVpcEndpoint-property
-  //TODO update
   const update = client.update({
     method: "modifyVpcEndpoint",
     getById,
+    filterParams: ({ payload, live, diff }) =>
+      pipe([
+        () => payload,
+        pick([
+          "DnsOptions",
+          "IpAddressType",
+          "PolicyDocument",
+          "PrivateDnsEnabled",
+          "RequesterManaged",
+        ]),
+        assign({
+          VpcEndpointId: () => live.VpcEndpointId,
+          PolicyDocument: pipe([get("PolicyDocument"), JSON.stringify]),
+        }),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteVpcEndpoints-property

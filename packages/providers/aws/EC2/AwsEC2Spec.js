@@ -2434,19 +2434,56 @@ module.exports = pipe([
             ]),
           ]),
         ])(),
+      propertiesDefault: {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: "*",
+              Effect: "Allow",
+              Principal: "*",
+              Resource: "*",
+            },
+          ],
+        },
+        PrivateDnsEnabled: false,
+        RequesterManaged: false,
+      },
       compare: compareEC2({
-        //TODO private DNS
-        filterTarget: () => pipe([pick(["PolicyDocument"])]),
-        filterLive: () => pipe([pick(["PolicyDocument"])]),
+        filterAll: () =>
+          pipe([
+            when(
+              eq(get("VpcEndpointType"), "Interface"),
+              defaultsDeep({
+                IpAddressType: "ipv4",
+                DnsOptions: { DnsRecordIpType: "ipv4" },
+              })
+            ),
+            pick([
+              "PolicyDocument",
+              "PrivateDnsEnabled",
+              "RequesterManaged",
+              "DnsOptions",
+              "IpAddressType",
+            ]),
+          ]),
       }),
       filterLive: ({ providerConfig, lives }) =>
         pipe([
+          when(
+            eq(get("VpcEndpointType"), "Interface"),
+            differenceObject({
+              IpAddressType: "ipv4",
+              DnsOptions: { DnsRecordIpType: "ipv4" },
+            })
+          ),
           pick([
             "PolicyDocument",
             "PrivateDnsEnabled",
             "RequesterManaged",
             "VpcEndpointType",
             "ServiceName",
+            "IpAddressType",
+            "DnsOptions",
           ]),
           assign({
             ServiceName: pipe([

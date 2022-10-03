@@ -48,6 +48,10 @@ const config = {
               href: "https://twitter.com/grucloud_iac",
             },
             {
+              label: "YouTube",
+              href: "https://www.youtube.com/channel/UC9gB2acQaqKFkZaZ5q4QfJQ",
+            },
+            {
               label: "Stack Overflow",
               href: "https://stackoverflow.com/questions/tagged/grucloud",
             },

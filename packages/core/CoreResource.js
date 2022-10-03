@@ -107,6 +107,13 @@ exports.ResourceMaker = ({
       }),
     ])();
 
+  const resourceNameToString = (resourceName) =>
+    switchCase([
+      () => isFunction(resourceName),
+      pipe([() => resourceName({ config: provider.getConfig() })]),
+      () => resourceName,
+    ])();
+
   const getResourceName = memoize(
     pipe([
       tap((params) => {
@@ -122,11 +129,8 @@ exports.ResourceMaker = ({
               `resource ${spec.type} without name must implement 'inferName'`
             );
           }),
-          switchCase([
-            () => isFunction(resourceName),
-            pipe([() => resourceName({ config: provider.getConfig() })]),
-            () => resourceName,
-          ]),
+          () => resourceName,
+          resourceNameToString,
           (resourceNameString) => ({
             resourceName: resourceNameString,
             properties: properties({
@@ -610,7 +614,7 @@ exports.ResourceMaker = ({
             (properties = {}) =>
               getClient().configDefault({
                 name: getResourceName(),
-                resourceName,
+                resourceName: resourceNameToString(resourceName),
                 meta,
                 namespace,
                 properties: pipe([

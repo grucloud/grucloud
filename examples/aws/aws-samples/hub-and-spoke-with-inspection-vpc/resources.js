@@ -1297,18 +1297,7 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2`,
     }),
@@ -1325,18 +1314,7 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
     }),
@@ -1353,18 +1331,7 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssm`,
     }),
@@ -1381,18 +1348,7 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
     }),
@@ -1409,18 +1365,7 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2`,
     }),
@@ -1437,18 +1382,7 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
     }),
@@ -1465,18 +1399,7 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssm`,
     }),
@@ -1493,18 +1416,7 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
     }),

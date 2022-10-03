@@ -15,7 +15,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: "vpc-4-record-vpc-endpoint::subnet-public",
+    name: "subnet-public",
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}d`,
       NewBits: 8,
@@ -30,18 +30,7 @@ exports.createResources = () => [
     group: "EC2",
     name: "endpoint-ec2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2`,
     }),

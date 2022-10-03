@@ -680,18 +680,6 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: false,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
     }),
@@ -707,18 +695,6 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: false,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.s3`,
     }),
@@ -734,18 +710,6 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: false,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssm`,
     }),
@@ -761,18 +725,6 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: false,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
     }),

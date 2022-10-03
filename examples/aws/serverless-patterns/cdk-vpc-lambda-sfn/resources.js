@@ -324,18 +324,7 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: "*",
-          },
-        ],
-      },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.states`,
     }),

@@ -17,19 +17,6 @@ exports.createResources = () => [
     name: "project-vpc-endpoint-vpce-s3",
     properties: ({config}) => ({
       ServiceName: `com.amazonaws.${config.region}.s3`,
-      PolicyDocument: {
-        Version: "2008-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: "*",
-            Action: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: false,
-      RequesterManaged: false,
       VpcEndpointType: "Gateway",
     }),
     dependencies: () => ({
@@ -46,18 +33,7 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({}) => ({
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: "*",
-            Effect: "Allow",
-            Principal: "*",
-            Resource: `*`,
-          },
-        ],
-      },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2`,
     }),

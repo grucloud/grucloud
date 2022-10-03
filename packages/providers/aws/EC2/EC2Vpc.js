@@ -13,7 +13,14 @@ const {
   pick,
   omit,
 } = require("rubico");
-const { isEmpty, defaultsDeep, size, when, prepend } = require("rubico/x");
+const {
+  isEmpty,
+  defaultsDeep,
+  size,
+  when,
+  prepend,
+  callProp,
+} = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "Vpc" });
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -147,6 +154,44 @@ exports.EC2Vpc = ({ spec, config }) => {
           ),
         ])(),
   });
+
+  const update = async ({ diff, payload, live }) =>
+    pipe([
+      tap((params) => {
+        assert(live.VpcId);
+      }),
+      () => diff,
+      tap.if(
+        pipe([
+          get("liveDiff.updated"),
+          callProp("hasOwnProperty", "DnsSupport"),
+        ]),
+        pipe([
+          () => ({
+            EnableDnsSupport: {
+              Value: payload.DnsSupport,
+            },
+            VpcId: live.VpcId,
+          }),
+          ec2().modifyVpcAttribute,
+        ])
+      ),
+      tap.if(
+        pipe([
+          get("liveDiff.updated"),
+          callProp("hasOwnProperty", "DnsHostnames"),
+        ]),
+        pipe([
+          () => ({
+            EnableDnsHostnames: {
+              Value: payload.DnsHostnames,
+            },
+            VpcId: live.VpcId,
+          }),
+          ec2().modifyVpcAttribute,
+        ])
+      ),
+    ])();
 
   const destroySubnets = ({ VpcId }) =>
     pipe([
@@ -349,6 +394,7 @@ exports.EC2Vpc = ({ spec, config }) => {
     findName,
     getList,
     create,
+    update,
     destroy,
     configDefault,
     tagResource: tagResource({ endpoint: ec2 }),
