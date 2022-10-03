@@ -102,19 +102,6 @@ exports.createResources = () => [
     group: "EC2",
     name: "project-vpce-s3",
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Version: "2008-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: "*",
-            Action: "*",
-            Resource: "*",
-          },
-        ],
-      },
-      PrivateDnsEnabled: false,
-      RequesterManaged: false,
       VpcEndpointType: "Gateway",
       ServiceName: `com.amazonaws.${config.region}.s3`,
     }),

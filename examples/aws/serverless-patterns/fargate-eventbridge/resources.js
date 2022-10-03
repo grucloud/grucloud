@@ -334,7 +334,6 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({ config, getId }) => ({
       PolicyDocument: {
-        Version: "2012-10-17",
         Statement: [
           {
             Condition: {
@@ -358,9 +357,9 @@ exports.createResources = () => [
             },
           },
         ],
+        Version: "2012-10-17",
       },
       PrivateDnsEnabled: true,
-      RequesterManaged: false,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.events`,
     }),

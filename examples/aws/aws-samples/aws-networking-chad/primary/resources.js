@@ -342,17 +342,7 @@ exports.createResources = () => [
     properties: ({ config }) => ({
       PolicyDocument: {
         Version: "2008-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: "*",
-            Action: "*",
-            Resource: "*",
-          },
-        ],
       },
-      PrivateDnsEnabled: false,
-      RequesterManaged: false,
       VpcEndpointType: "Gateway",
       ServiceName: `com.amazonaws.${config.region}.s3`,
     }),
