@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project redshift-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
+++++ SecurityGroup (1)
++++ Redshift
+++++ Cluster (1)
+++++ ClusterParameterGroup (1)
+++++ ClusterSubnetGroup (1)
+@endmindmap
