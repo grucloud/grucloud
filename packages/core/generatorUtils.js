@@ -209,15 +209,24 @@ const addEnvironmentVariables =
         assert(true);
       }),
       reduce(
-        (acc, { path, suffix }) =>
+        (acc, { path, suffix, array }) =>
           pipe([
             () => acc,
             unless(
               pipe([get(path), isFunction]),
               set(
                 path,
-                () =>
-                  `process.env.${envVarName({ name: resource.name, suffix })}`
+                pipe([
+                  () =>
+                    `process.env.${envVarName({
+                      name: resource.name,
+                      suffix,
+                    })}`,
+                  when(
+                    () => array,
+                    pipe([prepend("JSON.parse("), append(")")])
+                  ),
+                ])
               )
             ),
             ,
