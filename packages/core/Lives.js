@@ -147,6 +147,7 @@ exports.createLives = () => {
         tap((mapById) => {
           logger.info(
             `live addResource ${JSON.stringify({
+              id: resource.id,
               providerName: resource.providerName,
               groupType,
               mapSize: mapById.size,

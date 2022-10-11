@@ -262,6 +262,7 @@ exports.ResourceMaker = ({
         logger.debug(
           `findLive no live for ${JSON.stringify({
             type,
+            group,
             resourceName: getResourceName(),
           })}`
         );

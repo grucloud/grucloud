@@ -142,7 +142,8 @@ exports.RedshiftCluster = ({ spec, config }) =>
         when(
           () => clusterSubnetGroup,
           assign({
-            ClusterSubnetGroup: () => clusterSubnetGroup.config.name,
+            ClusterSubnetGroup: () =>
+              clusterSubnetGroup.config.ClusterSubnetGroupName,
           })
         ),
         when(

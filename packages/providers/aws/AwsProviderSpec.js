@@ -32,6 +32,7 @@ const GROUPS = [
   ["Kinesis", "kinesis"],
   ["KMS", "kms"],
   ["Lambda", "lambda"],
+  ["MemoryDB", "memorydb"],
   ["NetworkFirewall", "network-firewall"],
   ["NetworkManager", "networkmanager"],
   ["Organisations", "organizations"],
