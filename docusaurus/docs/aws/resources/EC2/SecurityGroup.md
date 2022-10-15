@@ -42,6 +42,8 @@ exports.createResources = () => [
 - [EC2 SecurityGroup Rule Ingress](./SecurityGroupRuleIngress.md)
 - [EC2 SecurityGroup Rule Egress](./SecurityGroupRuleEgress.md)
 - [ECS Service](../ECS/Service.md)
+- [ElastiCache Cluster](../ElastiCache/Cluster.md)
+- [EMRServerless Application](../EMRServerless/Application.md)
 
 ### List
 

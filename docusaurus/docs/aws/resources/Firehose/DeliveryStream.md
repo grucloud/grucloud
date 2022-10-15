@@ -8,8 +8,7 @@ Manages an [Firehose Delivery Stream](https://console.aws.amazon.com/firehose/ho
 ## Sample code
 
 ```js
-exports.createResources = () => [
-];
+exports.createResources = () => [];
 ```
 
 ## Properties
@@ -20,9 +19,11 @@ exports.createResources = () => [
 
 - [IAM Role](../IAM/Role.md)
 
-## Used By 
+## Used By
 
 - [CloudWatchLogs Subscription Filter](../CloudWatchLogs/SubscriptionFilter.md)
+- [ElastiCache Cluster](../ElastiCache/Cluster.md)
+- [MSK ClusterV2](../MSK/ClusterV2.md)
 
 ## Full Examples
 
@@ -37,4 +38,5 @@ gc l -t Firehose::DeliveryStream
 ```
 
 ```txt
-  ```
+
+```

@@ -64,6 +64,7 @@ exports.createResources = () => [
 
 ## Used By
 
+- [Backup Vault](../Backup/Vault.md)
 - [CloudTrail Trail](../CloudTrail/Trail.md)
 - [CloudWatchLogs LogGroup](../CloudWatchLogs/LogGroup.md)
 - [DynamoDB Table](../DynamoDB/Table.md)
@@ -71,6 +72,7 @@ exports.createResources = () => [
 - [ECS Cluster](../ECS/Cluster.md)
 - [EKS Cluster](../EKS/Cluster.md)
 - [Lambda Function](../Lambda/Function.md)
+- [MSK ClusterV2](../MSK/ClusterV2.md)
 - [RDS DBInstance](../RDS/DBInstance.md)
 - [SecretsManager Secret](../SecretsManager/Secret.md)
 - [SNS Topic](../SNS/Topic.md)

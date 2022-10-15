@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project appconfig-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ AppConfig
+++++ Application (1)
+++++ Deployment (1)
+++++ DeploymentStrategy (1)
+++++ ConfigurationProfile (1)
+++++ Environment (1)
+++++ HostedConfigurationVersion (1)
+@endmindmap

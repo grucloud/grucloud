@@ -77,9 +77,11 @@ exports.createResources = () => [
 
 ## Used By
 
+- [Backup Vault Notification](../Backup/VaultNotification.md)
 - [CloudTrail Trail](../CloudTrail/Trail.md)
 - [CloudWatch MetricAlarm](../CloudWatch/MetricAlarm.md)
 - [CloudWatchEvent Target](../CloudWatchEvents/Target.md)
+- [ElastiCache Cluster](../ElastiCache/Cluster.md)
 - [SNS Subscription](./Subscription.md)
 - [SQS Queue](../SQS/Queue.md)
 - [StepFunctions StateMachine](../StepFunctions/StateMachine.md)

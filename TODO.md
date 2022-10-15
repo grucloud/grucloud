@@ -4,7 +4,6 @@
 
 ## Aws
 
-- client EC2::Vpc has no update function
 - EC2 instance, sort groups
 - API Gateway v1 Authorizer
 
@@ -40,10 +39,10 @@
 - s3 analytics configuration
 - s3 object gencode is missing ACL:public-read
 
-- CloudTrail EventDataStore,
+- CloudTrail EventDataStore EventDataStore doc
+
 - ECSTaskSet
-- EventDataStore doc
-- AWS::AmazonMQ::Broker
+- Organisation::ServiceControlPolicy
 - AWS::Cognito::IdentityPool
 - AWS::Cognito::IdentityPoolRoleAttachment
 - AWS::CloudFront::CachePolicy
@@ -54,9 +53,6 @@
 - createOrganizationalUnit
   Lambda EventSourceMapping:
 - Amazon DynamoDB Streams
-- Amazon MQ and RabbitMQ
-- Amazon MSK
-- Apache Kafka
 
 - route to NetworkInterfaceId
 

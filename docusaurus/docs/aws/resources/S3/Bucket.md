@@ -416,6 +416,7 @@ exports.createResources = () => [
 
 ## Used By
 
+- [Backup Report Plan](../Backup/ReportPlan.md)
 - [CloudFront Distribution](../CloudFront/Distribution.md)
 - [CloudFront Origin Access Identity](../CloudFront/OriginAccessIdentity.md)
 - [CloudFront Distribution](../CloudFront/Distribution.md)
@@ -424,6 +425,7 @@ exports.createResources = () => [
 - [EC2 Flow Logs](../EC2/FlowLogs.md)
 - [Lambda Function](../Lambda/Function.md)
 - [NetworkFirewall Logging Configuration](../NetworkFirewall/LoggingConfiguration.md)
+- [MSK ClusterV2](../MSK/ClusterV2.md)
 
 ## List
 

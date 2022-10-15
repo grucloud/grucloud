@@ -69,7 +69,7 @@ exports.createResources = () => [
 
 ## Used By
 
-- [Route53 Health Check](../Route53/HealthCheck.md)
+- [AppConfig Environment](../AppConfig/Environment.md)
 
 ## List
 

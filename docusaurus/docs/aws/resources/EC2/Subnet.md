@@ -117,6 +117,7 @@ exports.createResources = () => [
 - [EC2 Flow Logs](./FlowLogs.md)
 - [ECS Service](../ECS/Service.md)
 - [ECS TaskSet](../ECS/TaskSet.md)
+- [EMRServerless Application](../EMRServerless/Application.md)
 - [NetworkManager VpcAttachment](../NetworkManager/VpcAttachment.md)
 - [RAM Resource Association](../RAM/ResourceAssociation.md)
 - [RDS DBSubnetGroup](../RDS/DBSubnetGroup.md)

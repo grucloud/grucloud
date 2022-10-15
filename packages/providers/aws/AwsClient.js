@@ -258,12 +258,14 @@ const AwsClient =
         getParam,
         decorate = () => identity,
         filterParent = () => true,
+        transformListPost = () => identity,
+
         config,
       }) =>
       ({ lives }) =>
         pipe([
           tap(() => {
-            logger.debug(`getListWithParent ${type}`);
+            logger.debug(`getListWithParent ${group}::${type}`);
             assert(lives);
             assert(config);
           }),
@@ -352,6 +354,7 @@ const AwsClient =
               tap((params) => {
                 assert(true);
               }),
+              transformListPost({ lives, endpoint }),
             ])()
           ),
           filter(not(isEmpty)),
