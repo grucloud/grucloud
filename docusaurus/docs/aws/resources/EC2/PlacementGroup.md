@@ -28,6 +28,7 @@ exports.createResources = () => [
 
 ### Used By
 
+- [Batch Compute Environment](../Batch/ComputeEnvironment.md)
 - [EC2 Instance](./Instance.md)
 
 ## Listing
@@ -38,7 +39,7 @@ gc l -t PlacementGroup
 
 ```txt
 Listing resources on 1 provider: aws
-✓ aws us-east-1 
+✓ aws us-east-1
   ✓ Initialising
   ✓ Listing 1/1
 ┌─────────────────────────────────────────────────────────────────────────────────────┐

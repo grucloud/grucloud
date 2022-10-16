@@ -10,6 +10,7 @@ const {
   omit,
   pick,
   assign,
+  any,
 } = require("rubico");
 const { defaultsDeep, isEmpty, size, when } = require("rubico/x");
 
@@ -39,6 +40,12 @@ const pickId = pipe([({ clusterName }) => ({ clusters: [clusterName] })]);
 exports.ECSCluster = ({ spec, config }) => {
   const ecs = createECS(config);
   const client = AwsClient({ spec, config })(ecs);
+
+  const managedByOther = pipe([
+    get("live"),
+    get("tags"),
+    any(eq(get("key"), "AWSBatchServiceTag")),
+  ]);
 
   const autoScalingGroup = AutoScalingAutoScalingGroup({ spec, config });
 
@@ -232,6 +239,7 @@ exports.ECSCluster = ({ spec, config }) => {
   return {
     spec,
     findId,
+    managedByOther,
     findNamespace,
     findDependencies,
     getByName,

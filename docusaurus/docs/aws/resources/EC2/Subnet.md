@@ -110,6 +110,7 @@ exports.createResources = () => [
 
 ## Used By
 
+- [Batch Compute Environment](../Batch/ComputeEnvironment.md)
 - [EC2 SecurityGroup](./SecurityGroup.md)
 - [EC2 Instance](./Instance.md)
 - [EC2 RouteTableAssociation](./RouteTableAssociation.md)

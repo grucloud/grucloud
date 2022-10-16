@@ -54,13 +54,14 @@ exports.createResources = () => [
 
 ## Used By
 
-- [Resource Policy](./ResourcePolicy.md)
+- [Batch Job Definition](../Batch/JobDefinition.md)
 - [CloudWatchEvent Connection](../CloudWatchEvents/Connection.md)
 - [ECS TaskDefinition](../ECS/TaskDefinition.md)
 - [Lambda Function](../Lambda/Function.md)
 - [RDS DB Cluster](../RDS/DBCluster.md)
 - [RDS DB Instance](../RDS/DBInstance.md)
 - [RDS DB Proxy](../RDS/DBProxy.md)
+- [SecretsManager Resource Policy](./ResourcePolicy.md)
 
 ## List
 

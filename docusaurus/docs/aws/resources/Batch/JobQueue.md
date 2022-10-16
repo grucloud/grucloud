@@ -3,12 +3,35 @@ id: JobQueue
 title: Job Queue
 ---
 
-Manages a [Backup Job Queue](https://console.aws.amazon.com/batch/home#queues).
+Manages a [Batch Job Queue](https://console.aws.amazon.com/batch/home#queues).
 
 ## Sample code
 
 ```js
-exports.createResources = () => [];
+exports.createResources = () => [
+  {
+    type: "JobQueue",
+    group: "Batch",
+    properties: ({ getId }) => ({
+      computeEnvironmentOrder: [
+        {
+          computeEnvironment: `${getId({
+            type: "ComputeEnvironment",
+            group: "Batch",
+            name: "compute-environment",
+          })}`,
+          order: 1,
+        },
+      ],
+      jobQueueName: "my-job-queue",
+      priority: 1,
+    }),
+    dependencies: ({}) => ({
+      computeEnvironments: ["compute-environment"],
+      schedulingPolicy: "my-scheduling-policy",
+    }),
+  },
+];
 ```
 
 ## Properties
@@ -29,9 +52,47 @@ exports.createResources = () => [];
 ## List
 
 ```sh
-gc l -t Backup::JobQueue
+gc l -t Batch::JobQueue
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 1/1
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 1 Batch::JobQueue from aws                                                 │
+├────────────────────────────────────────────────────────────────────────────┤
+│ name: my-job-queue                                                         │
+│ managedByUs: Yes                                                           │
+│ live:                                                                      │
+│   computeEnvironmentOrder:                                                 │
+│     - computeEnvironment: arn:aws:batch:us-east-1:840541460064:compute-en… │
+│       order: 1                                                             │
+│   jobQueueArn: arn:aws:batch:us-east-1:840541460064:job-queue/my-job-queue │
+│   jobQueueName: my-job-queue                                               │
+│   priority: 1                                                              │
+│   schedulingPolicyArn: arn:aws:batch:us-east-1:840541460064:scheduling-po… │
+│   state: ENABLED                                                           │
+│   status: VALID                                                            │
+│   statusReason: JobQueue Healthy                                           │
+│   tags:                                                                    │
+│     gc-managed-by: grucloud                                                │
+│     gc-project-name: batch-simple                                          │
+│     gc-stage: dev                                                          │
+│     gc-created-by-provider: aws                                            │
+│     Name: my-job-queue                                                     │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
 
+
+List Summary:
+Provider: aws
+┌───────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                       │
+├─────────────────┬─────────────────────────────────────────────────────────┤
+│ Batch::JobQueue │ my-job-queue                                            │
+└─────────────────┴─────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t Batch::JobQueue" executed in 2s, 99 MB
 ```

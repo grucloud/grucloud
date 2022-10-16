@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project batch-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Batch
+++++ ComputeEnvironment (1)
+++++ JobDefinition (1)
+++++ JobQueue (1)
+++++ SchedulingPolicy (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ SecurityGroup (1)
++++ IAM
+++++ Role (1)
+++++ InstanceProfile (1)
+@endmindmap

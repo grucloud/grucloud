@@ -672,7 +672,7 @@ const AwsClient =
           }),
           tryCatch(
             pipe([
-              tap(() => preDestroy({ name, live, lives, endpoint })),
+              tap(() => preDestroy({ name, live, lives, endpoint, getById })),
               () => live,
               tap((params) => {
                 assert(true);

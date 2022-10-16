@@ -297,7 +297,10 @@ module.exports = pipe([
         "networkConfiguration.awsvpcConfiguration.subnets",
         "taskSets",
       ],
-      propertiesDefault: { propagateTags: "NONE" },
+      propertiesDefault: {
+        propagateTags: "NONE",
+        deploymentController: { type: "ECS" },
+      },
       compare: compareECS({
         filterAll: () =>
           pipe([
