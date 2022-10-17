@@ -72,6 +72,7 @@ exports.createResources = () => [
 - [ECS Cluster](../ECS/Cluster.md)
 - [EKS Cluster](../EKS/Cluster.md)
 - [Lambda Function](../Lambda/Function.md)
+- [MQ Broker](../MQ/Broker.md)
 - [MSK ClusterV2](../MSK/ClusterV2.md)
 - [RDS DBInstance](../RDS/DBInstance.md)
 - [SecretsManager Secret](../SecretsManager/Secret.md)

@@ -21,7 +21,7 @@ exports.createResources = () => [];
 - [EC2 Subnet](../EC2/Subnet.md)
 - [Firehose Delivery Stream](../Firehose/DeliveryStream.md)
 - [KMS Key](../KMS/Key.md)
-- [MSK Configuration](./Configuration.md)
+- [MQ Configuration](./Configuration.md)
 - [S3 Bucket](../S3/Bucket.md)
 
 ## Used By

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { tap, pipe, map, get, assign, not } = require("rubico");
+const { tap, pipe, map, get, assign, not, or, eq } = require("rubico");
 const { defaultsDeep, pluck } = require("rubico/x");
 const { replaceWithName } = require("@grucloud/core/Common");
 
@@ -98,7 +98,7 @@ module.exports = pipe([
           tap((params) => {
             assert(true);
           }),
-          not(get("live.latest")),
+          or([not(get("live.latest")), not(eq(get("live.status"), "ACTIVE"))]),
         ]),
       propertiesDefault: {
         propagateTags: false,

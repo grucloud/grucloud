@@ -45,6 +45,8 @@ exports.createResources = () => [
 - [ECS Service](../ECS/Service.md)
 - [ElastiCache Cluster](../ElastiCache/Cluster.md)
 - [EMRServerless Application](../EMRServerless/Application.md)
+- [MQ Broker](../MQ/Broker.md)
+- [MSK Cluster V2](../MSK/ClusterV2.md)
 
 ### List
 

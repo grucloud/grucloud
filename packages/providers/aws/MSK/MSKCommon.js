@@ -7,9 +7,6 @@ exports.tagResource =
   ({ endpoint }) =>
   ({ live }) =>
     pipe([
-      tap((params) => {
-        assert(live);
-      }),
       (Tags) => ({ ResourceArn: buildArn(live), Tags }),
       endpoint().tagResource,
     ]);
