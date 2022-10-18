@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project mq-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ MQ
+++++ Broker (1)
+++++ Configuration (1)
+@endmindmap

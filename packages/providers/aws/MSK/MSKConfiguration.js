@@ -15,9 +15,6 @@ const decorate =
   ({ endpoint }) =>
   (live) =>
     pipe([
-      tap((params) => {
-        assert(live.LatestRevision.Revision);
-      }),
       () => live,
       when(
         get("LatestRevision.Revision"),
