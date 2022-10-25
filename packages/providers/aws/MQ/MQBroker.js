@@ -93,6 +93,7 @@ exports.MQBroker = ({ spec, config }) =>
       properties: { Tags, ...otherProps },
       dependencies: {
         configuration,
+        //TODO
         logGroupAudit,
         logGroupGeneral,
         subnets,

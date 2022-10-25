@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project global-accelerator-loadbalancer
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ SecurityGroup (1)
++++ ElasticLoadBalancingV2
+++++ LoadBalancer (1)
+++++ TargetGroup (1)
+++++ Listener (1)
++++ GlobalAccelerator
+++++ Accelerator (1)
+++++ EndpointGroup (1)
+++++ Listener (1)
+@endmindmap

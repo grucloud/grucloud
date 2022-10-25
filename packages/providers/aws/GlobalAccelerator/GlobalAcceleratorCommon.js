@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, assign, get } = require("rubico");
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#addTagsToResource-property
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#tagResource-property
 exports.tagResource =
   ({ buildArn }) =>
   ({ endpoint }) =>
@@ -10,8 +10,8 @@ exports.tagResource =
       tap((params) => {
         assert(live);
       }),
-      (Tags) => ({ ResourceName: buildArn(live), Tags }),
-      endpoint().addTagsToResource,
+      (Tags) => ({ ResourceArn: buildArn(live), Tags }),
+      endpoint().tagResource,
     ]);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#untagResource-property
 exports.untagResource =
@@ -19,18 +19,6 @@ exports.untagResource =
   ({ endpoint }) =>
   ({ live }) =>
     pipe([
-      (TagKeys) => ({ ResourceName: buildArn(live), TagKeys }),
+      (TagKeys) => ({ ResourceArn: buildArn(live), TagKeys }),
       endpoint().untagResource,
     ]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#listTagsForResource-property
-exports.assignTags = ({ endpoint }) =>
-  pipe([
-    assign({
-      Tags: pipe([
-        ({ ARN }) => ({ ResourceName: ARN }),
-        endpoint().listTagsForResource,
-        get("TagList"),
-      ]),
-    }),
-  ]);

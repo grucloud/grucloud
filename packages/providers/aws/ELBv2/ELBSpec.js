@@ -52,6 +52,7 @@ module.exports = pipe([
       type: "TargetGroup",
       Client: ELBTargetGroup,
       inferName: get("properties.Name"),
+      includeDefaultDependencies: true,
       dependencies: {
         vpc: {
           type: "Vpc",

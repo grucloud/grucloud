@@ -31,6 +31,7 @@
     "test-elb": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/ElasticLoadBalancingV2/**/iac.test.js' ",
     "test-firehose": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Firehose/**/iac.test.js' ",
     "test-iam": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/IAM/**/iac.test.js' ",
+    "test-globalaccelerator": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/GlobalAccelerator/**/iac.test.js' ",
     "test-kinesis": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Kinesis/**/iac.test.js' ",
     "test-kms": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/KMS/**/iac.test.js' ",
     "test-lambda": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Lambda/**/iac.test.js' ",

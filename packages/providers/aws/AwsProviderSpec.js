@@ -36,7 +36,6 @@ const GROUPS = [
   ["ELBv2", "elb"],
   ["Firehose", "firehose"],
   ["Glue", "glue"],
-  ["GlobalAccelerator", "globalaccelerator"],
   ["Kinesis", "kinesis"],
   ["KMS", "kms"],
   ["Lambda", "lambda"],
@@ -69,6 +68,7 @@ const GROUPS_GLOBAL = [
   "Route53",
   "Route53Domain", // always on us-east-1
   "Route53RecoveryReadiness",
+  "GlobalAccelerator",
 ];
 
 const findServicesPerRegion = ({ region = "us-east-1" }) =>

@@ -423,6 +423,7 @@ exports.createResources = () => [
 - [CloudTrail Trail](../CloudTrail/Trail.md)
 - [CodePipeline Pipeline](../CodePipeline/Pipeline.md)
 - [EC2 Flow Logs](../EC2/FlowLogs.md)
+- [GlobalAccelerator Accelerator](../GlobalAccelerator/Accelerator.md)
 - [Lambda Function](../Lambda/Function.md)
 - [MQ Broker](../MQ/Broker.md)
 - [MSK ClusterV2](../MSK/ClusterV2.md)

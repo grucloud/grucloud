@@ -167,7 +167,7 @@ exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
     }),
     () => plans,
     pluck("resource"),
-    groupBy("type"),
+    groupBy("groupType"),
     values,
     map((resources) => ({
       type: typeFromResources(resources),

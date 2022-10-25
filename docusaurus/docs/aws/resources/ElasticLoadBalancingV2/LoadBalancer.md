@@ -83,6 +83,7 @@ The list of properties are defined in [CreateLoadBalancerCommandInput](https://d
 
 ## Used By
 
+- [GlobalAccelerator Endpoint Group](../GlobalAccelerator/EndpointGroup.md)
 - [Route53 Record](../Route53/Record.md)
 
 ## List
