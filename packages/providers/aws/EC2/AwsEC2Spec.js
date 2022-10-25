@@ -2436,6 +2436,7 @@ module.exports = pipe([
         ])(),
       propertiesDefault: {
         PolicyDocument: {
+          Version: "2008-10-17",
           Statement: [
             {
               Action: "*",

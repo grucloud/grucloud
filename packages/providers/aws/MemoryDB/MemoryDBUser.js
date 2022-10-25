@@ -88,7 +88,7 @@ exports.MemoryDBUser = ({ spec, config }) =>
             name,
             config,
             namespace,
-            userTags: Tags,
+            UserTags: Tags,
           }),
         }),
         when(

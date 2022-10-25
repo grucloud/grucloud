@@ -89,7 +89,7 @@ exports.MemoryDBParameterGroup = ({ spec, config }) =>
             name,
             config,
             namespace,
-            userTags: Tags,
+            UserTags: Tags,
           }),
         }),
       ])(),
