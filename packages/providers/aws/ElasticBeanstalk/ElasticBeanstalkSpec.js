@@ -12,6 +12,7 @@ const {
 const {
   ElasticBeanstalkEnvironment,
 } = require("./ElasticBeanstalkEnvironment");
+
 const GROUP = "ElasticBeanstalk";
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
@@ -21,24 +22,14 @@ module.exports = pipe([
     {
       type: "Application",
       Client: ElasticBeanstalkApplication,
-      omitProperties: ["ApplicationArn", "DateCreated", "DateUpdated"],
+      omitProperties: [
+        "ApplicationArn",
+        "DateCreated",
+        "DateUpdated",
+        "Versions",
+      ],
       inferName: get("properties.ApplicationName"),
-      propertiesDefault: {
-        ResourceLifecycleConfig: {
-          VersionLifecycleConfig: {
-            MaxCountRule: {
-              Enabled: false,
-              MaxCount: 200,
-              DeleteSourceFromS3: false,
-            },
-            MaxAgeRule: {
-              Enabled: false,
-              MaxAgeInDays: 180,
-              DeleteSourceFromS3: false,
-            },
-          },
-        },
-      },
+      propertiesDefault: {},
       dependencies: {
         serviceRole: {
           type: "Role",
@@ -56,6 +47,8 @@ module.exports = pipe([
         "DateCreated",
         "DateUpdated",
         "Status",
+        //TODO
+        //"ApplicationName",
       ],
       inferName: ({
         properties: { VersionLabel },
@@ -89,6 +82,8 @@ module.exports = pipe([
         "DateUpdated",
         "Health",
         "HealthStatus",
+        "ApplicationName",
+        "PlatformArn",
       ],
       inferName: ({
         properties: { EnvironmentName },
@@ -99,9 +94,6 @@ module.exports = pipe([
             assert(application);
           }),
           () => `${application}::${EnvironmentName}`,
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
       propertiesDefault: { AbortableOperationInProgress: false },
       dependencies: {

@@ -1,13 +1,18 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { pipe, tap, get, pick, omit } = require("rubico");
+const { defaultsDeep, unless, when } = require("rubico/x");
+const { omitIfEmpty } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./ElasticBeanstalkCommon");
+const {
+  tagResource,
+  untagResource,
+  assignTags,
+} = require("./ElasticBeanstalkCommon");
 const { buildTags } = require("../AwsCommon");
 
 const pickId = pipe([
@@ -16,6 +21,28 @@ const pickId = pipe([
     assert(ApplicationName);
   }),
 ]);
+const buildArn = () => pipe([get("ApplicationArn")]);
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    unless(
+      get(
+        "ResourceLifecycleConfig.VersionLifecycleConfig.MaxCountRule.Enabled"
+      ),
+      omit(["ResourceLifecycleConfig.VersionLifecycleConfig.MaxCountRule"])
+    ),
+    unless(
+      get("ResourceLifecycleConfig.VersionLifecycleConfig.MaxAgeRule.Enabled"),
+      omit(["ResourceLifecycleConfig.VersionLifecycleConfig.MaxAgeRule"])
+    ),
+    omitIfEmpty(["ResourceLifecycleConfig.VersionLifecycleConfig"]),
+
+    omitIfEmpty([
+      "ResourceLifecycleConfig.ServiceRole",
+      "ResourceLifecycleConfig",
+    ]),
+    assignTags({ endpoint, buildArn: buildArn() }),
+  ]);
 
 const model = ({ config }) => ({
   package: "elastic-beanstalk",
@@ -31,19 +58,18 @@ const model = ({ config }) => ({
       }),
       ({ ApplicationName }) => ({ ApplicationNames: [ApplicationName] }),
     ]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRServerless.html#describeApplications-property
   getList: {
     method: "describeApplications",
     getParam: "Applications",
-    // decorate: ({ getById }) =>
-    //   pipe([({ id }) => ({ applicationId: id }), getById]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRServerless.html#createApplication-property
   create: {
     method: "createApplication",
-    pickCreated: ({ payload }) => pipe([identity]),
-    //isInstanceUp: pipe([eq(get("state"), "CREATED")]),
+    pickCreated: ({ payload }) => pipe([get("Application")]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRServerless.html#updateApplication-property
   update: {
@@ -56,8 +82,6 @@ const model = ({ config }) => ({
     pickId,
   },
 });
-
-const buildArn = () => pipe([get("ApplicationArn")]);
 
 exports.ElasticBeanstalkApplication = ({ spec, config }) =>
   createAwsResource({
@@ -77,7 +101,7 @@ exports.ElasticBeanstalkApplication = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: {},
+      dependencies: { serviceRole },
     }) =>
       pipe([
         () => otherProps,
@@ -89,5 +113,13 @@ exports.ElasticBeanstalkApplication = ({ spec, config }) =>
             UserTags: Tags,
           }),
         }),
+        when(
+          () => serviceRole,
+          defaultsDeep({
+            ResourceLifecycleConfig: {
+              ServiceRole: getField(serviceRole, "Arn"),
+            },
+          })
+        ),
       ])(),
   });

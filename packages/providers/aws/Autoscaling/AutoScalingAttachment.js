@@ -28,11 +28,26 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
           type: "TargetGroup",
           group: "ElasticLoadBalancingV2",
         }),
-      get("name"),
+      get("name", live.TargetGroupARN),
       tap((targetGroupName) => {
         assert(targetGroupName);
       }),
       (targetGroupName) => `attachment::${live.name}::${targetGroupName}`,
+    ])();
+
+  const managedByOther = ({ live, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(live.TargetGroupARN);
+      }),
+      () =>
+        lives.getById({
+          id: live.TargetGroupARN,
+          providerName: config.providerName,
+          type: "TargetGroup",
+          group: "ElasticLoadBalancingV2",
+        }),
+      get("managedByOther"),
     ])();
 
   const getList = client.getListWithParent({
@@ -154,6 +169,7 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
   return {
     spec,
     findId,
+    managedByOther,
     findName,
     getByName,
     getList,

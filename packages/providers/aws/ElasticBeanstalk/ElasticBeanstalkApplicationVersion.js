@@ -7,7 +7,11 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./ElasticBeanstalkCommon");
+const {
+  tagResource,
+  untagResource,
+  assignTags,
+} = require("./ElasticBeanstalkCommon");
 const { buildTags } = require("../AwsCommon");
 
 const pickId = pipe([
@@ -17,6 +21,11 @@ const pickId = pipe([
     assert(VersionLabel);
   }),
 ]);
+
+const buildArn = () => pipe([get("ApplicationVersionArn")]);
+
+const decorate = ({ endpoint }) =>
+  pipe([assignTags({ endpoint, buildArn: buildArn() })]);
 
 const model = ({ config }) => ({
   package: "elastic-beanstalk",
@@ -36,6 +45,7 @@ const model = ({ config }) => ({
         ApplicationName,
       }),
     ]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRServerless.html#createApplicationVersion-property
   create: {
@@ -54,8 +64,6 @@ const model = ({ config }) => ({
     pickId,
   },
 });
-
-const buildArn = () => pipe([get("ApplicationVersionArn")]);
 
 exports.ElasticBeanstalkApplicationVersion = ({ spec, config }) =>
   createAwsResource({
@@ -78,12 +86,7 @@ exports.ElasticBeanstalkApplicationVersion = ({ spec, config }) =>
             method: "describeApplicationVersions",
             getParam: "ApplicationVersions",
             config,
-            decorate: ({ parent }) =>
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-              ]),
+            decorate,
           }),
       ])(),
     getByName: getByNameCore,

@@ -658,7 +658,7 @@ exports.replaceWithName =
               switchCase([
                 () => groupType,
                 switchCase([() => withSuffix, includes(id), eq(identity, id)]),
-                callProp("startsWith", id),
+                or([callProp("startsWith", id), callProp("endsWith", id)]),
               ]),
             ])(),
         ])

@@ -190,6 +190,9 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     hasKeyInTags({
       key: "AWSServiceName",
     }),
+    hasKeyInTags({
+      key: "elasticbeanstalk:",
+    }),
     isDefault,
   ]);
 

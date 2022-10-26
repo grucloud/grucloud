@@ -17,6 +17,7 @@ const {
   assign,
 } = require("rubico");
 const {
+  callProp,
   size,
   includes,
   defaultsDeep,
@@ -167,38 +168,41 @@ const SecurityGroupRuleBase = ({ config }) => {
           assert(live.GroupId);
           assert(lives.getById);
         }),
-        and([
-          pipe([
-            () => live,
-            get("UserIdGroupPairs"),
-            and([
-              lte(size, 1),
-              pipe([first, or([isEmpty, eq(get("GroupId"), live.GroupId)])]),
-            ]),
-          ]),
-          or([
-            () => IsEgress,
-            and([
-              pipe([
-                () =>
-                  lives.getById({
-                    type: "SecurityGroup",
-                    group: "EC2",
-                    providerName: config.providerName,
-                    id: live.GroupId,
-                  }),
-                get("managedByOther"),
+        () => live,
+        or([
+          // Elastic Beanstalk
+          pipe([get("GroupName"), callProp("startsWith", "awseb-")]),
+          and([
+            pipe([
+              get("UserIdGroupPairs"),
+              and([
+                lte(size, 1),
+                pipe([first, or([isEmpty, eq(get("GroupId"), live.GroupId)])]),
               ]),
             ]),
-          ]),
-          // Ingress
-          pipe([
-            () => live,
-            pick(["IpProtocol", "FromPort", "ToPort"]),
-            (IpPermission) =>
-              isDeepEqual(IpPermission, {
-                IpProtocol: "-1",
-              }),
+            or([
+              () => IsEgress,
+              and([
+                pipe([
+                  () =>
+                    lives.getById({
+                      type: "SecurityGroup",
+                      group: "EC2",
+                      providerName: config.providerName,
+                      id: live.GroupId,
+                    }),
+                  get("managedByOther"),
+                ]),
+              ]),
+            ]),
+            // Ingress
+            pipe([
+              pick(["IpProtocol", "FromPort", "ToPort"]),
+              (IpPermission) =>
+                isDeepEqual(IpPermission, {
+                  IpProtocol: "-1",
+                }),
+            ]),
           ]),
         ]),
         tap((result) => {

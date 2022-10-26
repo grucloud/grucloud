@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, map, get, omit, filter, eq, assign } = require("rubico");
+const { pipe, tap, or, get, omit, filter, eq, assign } = require("rubico");
 const { defaultsDeep, pluck, callProp, find } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
@@ -62,8 +62,14 @@ const AlarmDependenciesDimensions = {
 exports.AlarmDependenciesDimensions = AlarmDependenciesDimensions;
 
 const managedByOther = pipe([
-  get("live.AlarmDescription", ""),
-  callProp("startsWith", "DO NOT EDIT OR DELETE"),
+  get("live"),
+  or([
+    pipe([
+      get("AlarmDescription", ""),
+      callProp("startsWith", "DO NOT EDIT OR DELETE"),
+    ]),
+    pipe([get("AlarmName", ""), callProp("startsWith", "awseb-")]),
+  ]),
 ]);
 
 const decorate = ({ endpoint }) =>

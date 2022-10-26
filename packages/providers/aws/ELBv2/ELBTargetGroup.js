@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, pick } = require("rubico");
+const { pipe, tap, get, assign, pick, or } = require("rubico");
 const { first, defaultsDeep, isEmpty, unless, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -21,9 +21,16 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   const elb = createELB(config);
   const client = AwsClient({ spec, config })(elb);
 
-  const managedByOther = hasKeyInTags({
-    key: "elbv2.k8s.aws/cluster",
-  });
+  const managedByOther = pipe([
+    or([
+      hasKeyInTags({
+        key: "elbv2.k8s.aws/cluster",
+      }),
+      hasKeyInTags({
+        key: "elasticbeanstalk:environment-id",
+      }),
+    ]),
+  ]);
 
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,

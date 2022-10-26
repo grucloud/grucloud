@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, omit, pick, assign, fork, map } = require("rubico");
+const { pipe, tap, get, omit, pick, assign, or, map } = require("rubico");
 const {
   defaultsDeep,
   isEmpty,
@@ -8,8 +8,7 @@ const {
   prepend,
   includes,
   when,
-  pluck,
-  flatten,
+  callProp,
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -63,8 +62,16 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(ec2);
 
   const managedByOther = pipe([
-    get("live.CreatedBy"),
-    includes("AWSServiceRoleForAmazonEKSNodegroup"),
+    tap((params) => {
+      assert(true);
+    }),
+    or([
+      pipe([
+        get("live.CreatedBy"),
+        includes("AWSServiceRoleForAmazonEKSNodegroup"),
+      ]),
+      pipe([get("live.LaunchTemplateName"), callProp("startsWith", "AWSEB")]),
+    ]),
   ]);
 
   const findNamespace = findNamespaceInTagsOrEksCluster({

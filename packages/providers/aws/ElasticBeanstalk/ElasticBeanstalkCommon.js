@@ -24,11 +24,12 @@ exports.untagResource =
     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticBeanstalk.html#listTagsForResource-property
-exports.assignTags = ({ endpoint }) =>
+exports.assignTags = ({ endpoint, buildArn }) =>
   pipe([
     assign({
       Tags: pipe([
-        ({ ARN }) => ({ ResourceArn: ARN }),
+        buildArn,
+        (ResourceArn) => ({ ResourceArn }),
         endpoint().listTagsForResource,
         get("TagList"),
       ]),

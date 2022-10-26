@@ -7,21 +7,22 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./ElasticBeanstalkCommon");
+const {
+  tagResource,
+  untagResource,
+  assignTags,
+} = require("./ElasticBeanstalkCommon");
 const { buildTags } = require("../AwsCommon");
 
-const pickId = pipe([
-  pick(["ApplicationName", "EnvironmentName"]),
-  tap(({ ApplicationName, EnvironmentName }) => {
-    assert(ApplicationName);
-    assert(EnvironmentName);
-  }),
-]);
+const buildArn = () => pipe([get("EnvironmentArn")]);
+
+const decorate = ({ endpoint }) =>
+  pipe([assignTags({ endpoint, buildArn: buildArn() })]);
 
 const model = ({ config }) => ({
   package: "elastic-beanstalk",
   client: "ElasticBeanstalk",
-  ignoreErrorCodes: ["InvalidParameterValue"],
+  ignoreErrorCodes: ["InvalidParameterValue", "ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticBeanstalk.html#describeEnvironments-property
   getById: {
     method: "describeEnvironments",
@@ -36,6 +37,7 @@ const model = ({ config }) => ({
         ApplicationName,
       }),
     ]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRServerless.html#createEnvironment-property
   create: {
@@ -48,14 +50,18 @@ const model = ({ config }) => ({
     method: "updateEnvironment",
     filterParams: ({ payload, live }) => pipe([() => payload])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRServerless.html#deleteEnvironmentConfiguration-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRServerless.html#terminateEnvironment-property
   destroy: {
-    method: "deleteEnvironmentConfiguration",
-    pickId,
+    method: "terminateEnvironment",
+    pickId: pipe([
+      pick(["EnvironmentId"]),
+      tap(({ EnvironmentId }) => {
+        assert(EnvironmentId);
+      }),
+    ]),
+    isInstanceDown: pipe([eq(get("Status"), "Terminated")]),
   },
 });
-
-const buildArn = () => pipe([get("EnvironmentArn")]);
 
 exports.ElasticBeanstalkEnvironment = ({ spec, config }) =>
   createAwsResource({
@@ -86,12 +92,7 @@ exports.ElasticBeanstalkEnvironment = ({ spec, config }) =>
             method: "describeEnvironments",
             getParam: "Environments",
             config,
-            decorate: ({ parent }) =>
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-              ]),
+            decorate,
           }),
       ])(),
     getByName: getByNameCore,
@@ -113,8 +114,9 @@ exports.ElasticBeanstalkEnvironment = ({ spec, config }) =>
         }),
         () => otherProps,
         defaultsDeep({
+          ApplicationName: application.config.ApplicationName,
           Tags: buildTags({
-            name,
+            //name,
             config,
             namespace,
             UserTags: Tags,
