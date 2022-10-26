@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-s3-sns-test",
     properties: ({ config }) => ({
+      Name: "grucloud-s3-sns-test",
       NotificationConfiguration: {
         TopicConfigurations: [
           {

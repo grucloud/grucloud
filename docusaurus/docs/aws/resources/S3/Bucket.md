@@ -26,8 +26,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "yourgloballyuniquebucketnamehere",
     properties: () => ({
+      Name: "yourgloballyuniquebucketnamehere",
       AccelerateConfiguration: {
         Status: "Enabled",
       },
@@ -48,8 +48,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "yourgloballyuniquebucketnamehere",
     properties: () => ({
+      Name: "yourgloballyuniquebucketnamehere",
       CORSConfiguration: {
         CORSRules: [
           {
@@ -77,8 +77,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "yourgloballyuniquebucketnamehere",
     properties: () => ({
+      Name: "yourgloballyuniquebucketnamehere",
       ServerSideEncryptionConfiguration: {
         Rules: [
           {
@@ -104,8 +104,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "yourgloballyuniquebucketnamehere",
     properties: () => ({
+      Name: "yourgloballyuniquebucketnamehere",
       LifecycleConfiguration: {
         Rules: [
           {
@@ -146,16 +146,16 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: bucketLogDestination
     properties: () => ({
+      Name: bucketLogDestination,
       ACL: "log-delivery-write",
     }),
   },
   {
     type: "Bucket",
     group: "S3",
-    name: "yourgloballyuniquebucketnamehere",
     properties: () => ({
+      Name: "yourgloballyuniquebucketnamehere",
       BucketLoggingStatus: {
         LoggingEnabled: {
           TargetBucket: bucketLogDestination,
@@ -192,8 +192,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "yourgloballyuniquebucketnamehere",
     properties: () => ({
+      Name: "yourgloballyuniquebucketnamehere",
       NotificationConfiguration: {
         TopicConfigurations: [
           {
@@ -217,8 +217,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "yourgloballyuniquebucketnamehere",
     properties: () => ({
+      Name: "yourgloballyuniquebucketnamehere",
       NotificationConfiguration: {
         LambdaFunctionConfigurations: [
           {
@@ -246,8 +246,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: bucketName,
     properties: () => ({
+      Name: bucketName,
       Policy: {
         Version: "2012-10-17",
         Statement: [
@@ -283,8 +283,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: bucketName,
     properties: () => ({
+      Name: bucketName,
       ReplicationConfiguration: {
         Role: `arn:aws:iam::${iamUser}:role/examplerole`,
         Rules: [
@@ -315,8 +315,9 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: bucketName,
+
     properties: () => ({
+      Name: bucketName,
       RequestPaymentConfiguration: { Payer: "Requester" },
     }),
   },
@@ -332,8 +333,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: bucketName,
     properties: () => ({
+      Name: bucketName,
       Tags: [
         {
           Key: "Key1",
@@ -360,8 +361,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: bucketName,
     properties: () => ({
+      Name: bucketName,
       VersioningConfiguration: {
         MFADelete: "Disabled",
         Status: "Enabled",
@@ -383,8 +384,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: bucketName,
     properties: () => ({
+      Name: bucketName,
       ACL: "public-read",
       WebsiteConfiguration: {
         ErrorDocument: {

@@ -29,8 +29,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-terraform-globalnetwork-state-file-storage",
     properties: ({}) => ({
+      Name: "grucloud-terraform-globalnetwork-state-file-storage",
       ServerSideEncryptionConfiguration: {
         Rules: [
           {

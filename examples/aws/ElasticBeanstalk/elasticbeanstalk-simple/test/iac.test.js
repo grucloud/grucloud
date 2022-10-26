@@ -11,14 +11,7 @@ describe(title, async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       title,
-      steps: [
-        { createStack, configs: [config] },
-        {
-          createStack,
-          createResources: require("./resourcesUpdate1").createResources,
-          configs: [config],
-        },
-      ],
+      steps: [{ createStack, configs: [config] }],
     });
   }).timeout(30 * 60e3);
 });

@@ -504,8 +504,15 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: ({ config }) =>
-      `gt-s3-arc-code-b703ac06-d1cf-cbe3-d58b-5b55e109f5c7-${config.region}`,
+    properties: ({ config }) => ({
+      Name: `gt-s3-arc-code-b703ac06-d1cf-cbe3-d58b-5b55e109f5c7-${config.region}`,
+    }),
   },
-  { type: "Bucket", group: "S3", name: "terraform-20220708211444290400000002" },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({ config }) => ({
+      Name: "terraform-20220708211444290400000002",
+    }),
+  },
 ];

@@ -340,9 +340,6 @@ exports.createResources = () => [
     group: "EC2",
     name: ({ config }) => `${config.region}-prod-main-vpc-endpoint-gw`,
     properties: ({ config }) => ({
-      PolicyDocument: {
-        Version: "2008-10-17",
-      },
       VpcEndpointType: "Gateway",
       ServiceName: `com.amazonaws.${config.region}.s3`,
     }),
@@ -358,8 +355,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-terraform-globalnetwork-state-file-storage",
     properties: ({}) => ({
+      Name: "grucloud-terraform-globalnetwork-state-file-storage",
       ServerSideEncryptionConfiguration: {
         Rules: [
           {

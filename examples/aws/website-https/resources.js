@@ -158,8 +158,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "cloudfront.aws.test.grucloud.org",
     properties: ({}) => ({
+      Name: "cloudfront.aws.test.grucloud.org",
       ACL: "public-read",
       WebsiteConfiguration: {
         ErrorDocument: {

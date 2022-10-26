@@ -21,7 +21,7 @@ exports.createResources = () => [];
 
 ## Full Examples
 
-- [elasticache simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElasticBeanstalk/elasticBeanstalk-simple)
+- [elasticache simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElasticBeanstalk/elasticbeanstalk-simple)
 
 ## List
 

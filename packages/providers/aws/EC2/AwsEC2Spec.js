@@ -1881,9 +1881,9 @@ module.exports = pipe([
         pipe([
           tap(() => {
             assert(eip);
-            assert(instance);
           }),
-          () => `eip-attach::${eip}::${instance}`,
+          () => `eip-attach::${eip}`,
+          when(() => instance, append(`::${instance}`)),
         ])(),
     },
     {

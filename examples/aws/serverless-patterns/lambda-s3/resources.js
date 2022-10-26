@@ -89,5 +89,11 @@ exports.createResources = () => [
       s3Buckets: ["gc-destination-example"],
     }),
   },
-  { type: "Bucket", group: "S3", name: "gc-destination-example" },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "gc-destination-example",
+    }),
+  },
 ];

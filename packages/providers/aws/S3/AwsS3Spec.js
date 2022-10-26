@@ -30,6 +30,7 @@ const {
   isOurMinion,
   replaceArnWithAccountAndRegion,
   assignPolicyAccountAndRegion,
+  replaceAccountAndRegion,
 } = require("../AwsCommon");
 
 const GROUP = "S3";
@@ -124,7 +125,6 @@ module.exports = pipe([
         filterLive: () =>
           pipe([
             omit([
-              "Name",
               "CreationDate",
               "LocationConstraint",
               "ACL", //TODO
@@ -175,12 +175,14 @@ module.exports = pipe([
             ]),
           ]),
       }),
+      inferName: get("properties.Name"),
       filterLive: ({ lives, providerConfig }) =>
         pipe([
           tap((params) => {
             assert(lives);
           }),
           pick([
+            "Name",
             "AccelerateConfiguration",
             "ACL",
             "CORSConfiguration",
@@ -195,6 +197,12 @@ module.exports = pipe([
             "LifecycleConfiguration",
             "WebsiteConfiguration",
           ]),
+          assign({
+            Name: pipe([
+              get("Name"),
+              replaceAccountAndRegion({ lives, providerConfig }),
+            ]),
+          }),
           when(
             get("NotificationConfiguration"),
             assign({

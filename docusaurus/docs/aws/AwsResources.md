@@ -10,12 +10,16 @@ List of resources for provider aws:
 [Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
 * ApiGatewayV2: 
 [DomainName](./resources/ApiGatewayV2/DomainName.md), [Api](./resources/ApiGatewayV2/Api.md), [Stage](./resources/ApiGatewayV2/Stage.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
+* AppConfig: 
+[Application](./resources/AppConfig/Application.md), [Deployment](./resources/AppConfig/Deployment.md), [DeploymentStrategy](./resources/AppConfig/DeploymentStrategy.md), [ConfigurationProfile](./resources/AppConfig/ConfigurationProfile.md), [Environment](./resources/AppConfig/Environment.md), [HostedConfigurationVersion](./resources/AppConfig/HostedConfigurationVersion.md)
 * AppRunner: 
 [Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md)
 * AppSync: 
 [GraphqlApi](./resources/AppSync/GraphqlApi.md), [DataSource](./resources/AppSync/DataSource.md), [Resolver](./resources/AppSync/Resolver.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
+* Batch: 
+[ComputeEnvironment](./resources/Batch/ComputeEnvironment.md), [JobDefinition](./resources/Batch/JobDefinition.md), [JobQueue](./resources/Batch/JobQueue.md), [SchedulingPolicy](./resources/Batch/SchedulingPolicy.md)
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
 * CloudFront: 
@@ -52,8 +56,12 @@ List of resources for provider aws:
 [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
 * ElasticLoadBalancingV2: 
 [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md)
+* EMRServerless: 
+[Application](./resources/EMRServerless/Application.md)
 * Firehose: 
 [DeliveryStream](./resources/Firehose/DeliveryStream.md)
+* GlobalAccelerator: 
+[Accelerator](./resources/GlobalAccelerator/Accelerator.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
 * Glue: 
 [Job](./resources/Glue/Job.md)
 * IAM: 
@@ -64,6 +72,12 @@ List of resources for provider aws:
 [Key](./resources/KMS/Key.md)
 * Lambda: 
 [Layer](./resources/Lambda/Layer.md), [Function](./resources/Lambda/Function.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md)
+* MemoryDB: 
+[ACL](./resources/MemoryDB/ACL.md), [Cluster](./resources/MemoryDB/Cluster.md), [ParameterGroup](./resources/MemoryDB/ParameterGroup.md), [SubnetGroup](./resources/MemoryDB/SubnetGroup.md), [User](./resources/MemoryDB/User.md)
+* MQ: 
+[Broker](./resources/MQ/Broker.md), [Configuration](./resources/MQ/Configuration.md)
+* MSK: 
+[Configuration](./resources/MSK/Configuration.md), [ClusterV2](./resources/MSK/ClusterV2.md)
 * NetworkFirewall: 
 [Firewall](./resources/NetworkFirewall/Firewall.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md)
 * NetworkManager: 
@@ -74,6 +88,8 @@ List of resources for provider aws:
 [ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
 * RDS: 
 [DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [DBCluster](./resources/RDS/DBCluster.md), [DBInstance](./resources/RDS/DBInstance.md)
+* Redshift: 
+[Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md)
 * Route53: 
 [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md), [Record](./resources/Route53/Record.md)
 * Route53Domains: 

@@ -3,6 +3,18 @@ const {} = require("rubico");
 const {} = require("rubico/x");
 
 exports.createResources = () => [
-  { type: "Bucket", group: "S3", name: "grucloud-bucket-0" },
-  { type: "Bucket", group: "S3", name: "grucloud-bucket-1" },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "grucloud-bucket-0",
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "grucloud-bucket-1",
+    }),
+  },
 ];

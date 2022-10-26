@@ -198,7 +198,9 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "sample-bucket-glue-scripts-terraform-840541460064",
+    properties: () => ({
+      Name: "sample-bucket-glue-scripts-terraform-840541460064",
+    }),
   },
   {
     type: "StateMachine",

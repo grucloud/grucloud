@@ -235,8 +235,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5",
     properties: ({ getId }) => ({
+      Name: "cloudfrontcffs3cdkpythons-myhostingbucket134f0bf0-6xvzrcdh4qv5",
       Policy: {
         Version: "2012-10-17",
         Statement: [

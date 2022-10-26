@@ -32,8 +32,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "gc-flowlogs-my-vpc",
     properties: ({ config }) => ({
+      Name: "gc-flowlogs-my-vpc",
       Policy: {
         Version: "2012-10-17",
         Id: "AWSLogDeliveryWrite20150319",

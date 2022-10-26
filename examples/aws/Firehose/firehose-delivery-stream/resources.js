@@ -376,6 +376,14 @@ exports.createResources = () => [
       role: "my-firehose-transform-role-n1caari0",
     }),
   },
-  { type: "Bucket", group: "S3", name: "gc-firehose-destination" },
-  { type: "Bucket", group: "S3", name: "gc-firehose-error" },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({ Name: "gc-firehose-destination" }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({ Name: "gc-firehose-error" }),
+  },
 ];

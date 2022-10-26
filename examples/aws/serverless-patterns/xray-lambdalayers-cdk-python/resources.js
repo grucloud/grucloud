@@ -174,8 +174,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "paperino-thumbnail-upload-372",
     properties: ({ config }) => ({
+      Name: "paperino-thumbnail-upload-372",
       NotificationConfiguration: {
         LambdaFunctionConfigurations: [
           {
@@ -194,6 +194,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "paperino-thumbnail-upload-372-resized",
+    properties: ({ config }) => ({
+      Name: "paperino-thumbnail-upload-372-resized",
+    }),
   },
 ];

@@ -65,8 +65,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "gc-s3-eventbridge",
     properties: ({}) => ({
+      Name: "gc-s3-eventbridge",
       Policy: {
         Version: "2008-10-17",
         Statement: [
@@ -91,8 +91,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "gc-s3-eventbridge-cloudtrail",
     properties: ({ config }) => ({
+      Name: "gc-s3-eventbridge-cloudtrail",
       Policy: {
         Version: "2012-10-17",
         Statement: [
