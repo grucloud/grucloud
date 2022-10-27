@@ -1,6 +1,6 @@
 ---
-id: VaultNotification
-title: Vault Notification
+id: BackupVaultNotification
+title: Backup Vault Notification
 ---
 
 Manages a [Backup Vault Notification](https://console.aws.amazon.com/backup/home).
@@ -17,7 +17,7 @@ exports.createResources = () => [];
 
 ## Dependencies
 
-- [Backup Vault](./Vault.md)
+- [Backup Vault](./BackupVault.md)
 - [SNS Topic](../SNS/Topic.md)
 
 ## Used By
@@ -29,7 +29,7 @@ exports.createResources = () => [];
 ## List
 
 ```sh
-gc l -t Backup::VaultNotification
+gc l -t Backup::BackupVaultNotification
 ```
 
 ```txt

@@ -658,7 +658,14 @@ exports.replaceWithName =
               switchCase([
                 () => groupType,
                 switchCase([() => withSuffix, includes(id), eq(identity, id)]),
-                or([callProp("startsWith", id), callProp("endsWith", id)]),
+                or([
+                  callProp("startsWith", id),
+                  pipe([
+                    includes(
+                      `arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${id}`
+                    ),
+                  ]),
+                ]),
               ]),
             ])(),
         ])

@@ -175,7 +175,7 @@ const AwsClient =
             pipe([
               tap(() => {
                 assert(method);
-                assert(getParam);
+                //assert(getParam);
                 //assert(isFunction(endpoint()[method]));
               }),
               () => params,
@@ -197,7 +197,7 @@ const AwsClient =
                     NextToken,
                   });
                   NextToken = results.NextToken;
-                  const newData = get(getParam)(results);
+                  const newData = getParam ? get(getParam)(results) : results;
                   if (newData) {
                     if (Array.isArray(newData)) {
                       data = [...data, ...newData];
