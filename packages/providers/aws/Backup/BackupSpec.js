@@ -1,6 +1,8 @@
 const assert = require("assert");
-const { tap, pipe, map, get, assign, not, eq } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { tap, pipe, map, get, assign, eq } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
+
+const { replaceWithName } = require("@grucloud/core/Common");
 
 const { compareAws, assignPolicyAccountAndRegion } = require("../AwsCommon");
 
@@ -17,6 +19,7 @@ const { BackupBackupVaultPolicy } = require("./BackupBackupVaultPolicy");
 const { BackupFramework } = require("./BackupFramework");
 const { BackupGlobalSettings } = require("./BackupGlobalSettings");
 const { BackupRegionSettings } = require("./BackupRegionSettings");
+const { BackupReportPlan } = require("./BackupReportPlan");
 
 const GROUP = "Backup";
 const tagsKey = "Tags";
@@ -197,6 +200,58 @@ module.exports = pipe([
       omitProperties: [],
       inferName: () => "region",
       ignoreResource: () => true,
+    },
+    {
+      type: "ReportPlan",
+      Client: BackupReportPlan,
+      propertiesDefault: {},
+      omitProperties: [
+        "ReportPlanArn",
+        "CreationTime",
+        "DeploymentStatus",
+        "LastAttemptedExecutionTime",
+        "LastSuccessfulExecutionTime",
+        "ReportSetting.NumberOfFrameworks",
+      ],
+      inferName: get("properties.ReportPlanName"),
+      dependencies: {
+        s3Bucket: {
+          type: "Bucket",
+          group: "S3",
+          dependencyId: ({ lives, config }) =>
+            pipe([get("ReportDeliveryChannel.S3BucketName")]),
+        },
+        frameworks: {
+          type: "Framework",
+          group: "Backup",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("ReportSetting.FrameworkArns")]),
+        },
+      },
+      filterLive: ({ providerConfig, lives }) =>
+        pipe([
+          assign({
+            ReportSetting: pipe([
+              get("ReportSetting"),
+              assign({
+                FrameworkArns: pipe([
+                  get("FrameworkArns"),
+                  map(
+                    pipe([
+                      replaceWithName({
+                        groupType: "Backup::Framework",
+                        path: "id",
+                        providerConfig,
+                        lives,
+                      }),
+                    ])
+                  ),
+                ]),
+              }),
+            ]),
+          }),
+        ]),
     },
   ],
   map(

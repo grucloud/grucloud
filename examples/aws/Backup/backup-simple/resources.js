@@ -255,6 +255,56 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "ReportPlan",
+    group: "Backup",
+    properties: ({}) => ({
+      ReportDeliveryChannel: {
+        Formats: ["CSV", "JSON"],
+        S3BucketName: "gc-backup-reportplan-jobs",
+        S3KeyPrefix: "jobs-report",
+      },
+      ReportPlanDescription: "",
+      ReportPlanName: "backup_jobs_report_27_10_2022",
+      ReportSetting: {
+        FrameworkArns: [],
+        ReportTemplate: "BACKUP_JOB_REPORT",
+      },
+      Tags: {
+        mykey: "myvalue",
+      },
+    }),
+    dependencies: ({}) => ({
+      s3Bucket: "gc-backup-reportplan-jobs",
+    }),
+  },
+  {
+    type: "ReportPlan",
+    group: "Backup",
+    properties: ({ getId }) => ({
+      ReportDeliveryChannel: {
+        Formats: ["CSV", "JSON"],
+        S3BucketName: "gc-backup-reportplan-jobs",
+        S3KeyPrefix: "compliance",
+      },
+      ReportPlanDescription: "",
+      ReportPlanName: "control_compliance_report_27_10_2022",
+      ReportSetting: {
+        FrameworkArns: [
+          `${getId({
+            type: "Framework",
+            group: "Backup",
+            name: "myframework",
+          })}`,
+        ],
+        ReportTemplate: "CONTROL_COMPLIANCE_REPORT",
+      },
+    }),
+    dependencies: ({}) => ({
+      s3Bucket: "gc-backup-reportplan-jobs",
+      frameworks: ["myframework"],
+    }),
+  },
+  {
     type: "Role",
     group: "IAM",
     properties: ({}) => ({
@@ -286,6 +336,86 @@ exports.createResources = () => [
             "arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores",
         },
       ],
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({ config }) => ({
+      Name: `config-bucket-${config.accountId()}`,
+      Policy: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "AWSConfigBucketPermissionsCheck",
+            Effect: "Allow",
+            Principal: {
+              Service: "config.amazonaws.com",
+            },
+            Action: "s3:GetBucketAcl",
+            Resource: `arn:aws:s3:::config-bucket-${config.accountId()}`,
+            Condition: {
+              StringEquals: {
+                "AWS:SourceAccount": `${config.accountId()}`,
+              },
+            },
+          },
+          {
+            Sid: "AWSConfigBucketExistenceCheck",
+            Effect: "Allow",
+            Principal: {
+              Service: "config.amazonaws.com",
+            },
+            Action: "s3:ListBucket",
+            Resource: `arn:aws:s3:::config-bucket-${config.accountId()}`,
+            Condition: {
+              StringEquals: {
+                "AWS:SourceAccount": `${config.accountId()}`,
+              },
+            },
+          },
+          {
+            Sid: "AWSConfigBucketDelivery",
+            Effect: "Allow",
+            Principal: {
+              Service: "config.amazonaws.com",
+            },
+            Action: "s3:PutObject",
+            Resource: `arn:aws:s3:::config-bucket-${config.accountId()}/AWSLogs/${config.accountId()}/Config/*`,
+            Condition: {
+              StringEquals: {
+                "AWS:SourceAccount": `${config.accountId()}`,
+                "s3:x-amz-acl": "bucket-owner-full-control",
+              },
+            },
+          },
+        ],
+      },
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({ config }) => ({
+      Name: "gc-backup-reportplan-jobs",
+      Policy: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              AWS: `arn:aws:iam::${config.accountId()}:role/aws-service-role/reports.backup.amazonaws.com/AWSServiceRoleForBackupReports`,
+            },
+            Action: "s3:PutObject",
+            Resource: "arn:aws:s3:::gc-backup-reportplan-jobs/*",
+            Condition: {
+              StringEquals: {
+                "s3:x-amz-acl": "bucket-owner-full-control",
+              },
+            },
+          },
+        ],
+      },
     }),
   },
 ];

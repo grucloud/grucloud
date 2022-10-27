@@ -58,7 +58,7 @@ exports.BackupFramework = ({ spec, config }) =>
     spec,
     config,
     findName: pipe([get("live.FrameworkName")]),
-    findId: pipe([get("live.FrameworkName")]),
+    findId: pipe([get("live.FrameworkArn")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),
