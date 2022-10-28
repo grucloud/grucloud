@@ -22,7 +22,7 @@ exports.createResources = () => [];
 ## Used By
 
 - [CloudWatchLogs Subscription Filter](../CloudWatchLogs/SubscriptionFilter.md)
-- [ElastiCache Cluster](../ElastiCache/Cluster.md)
+- [ElastiCache Cluster](../ElastiCache/CacheCluster.md)
 - [MQ Broker](../MQ/Broker.md)
 - [MSK ClusterV2](../MSK/ClusterV2.md)
 

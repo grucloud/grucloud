@@ -30,5 +30,39 @@ gc l -t ElastiCache::UserGroup
 ```
 
 ```txt
+Listing resources on 1 provider: aws
+✓ aws us-east-1
+  ✓ Initialising
+  ✓ Listing 1/1
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 ElastiCache::UserGroup from aws                                                   │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│ name: mygroup                                                                       │
+│ managedByUs: Yes                                                                    │
+│ live:                                                                               │
+│   UserGroupId: mygroup                                                              │
+│   Status: active                                                                    │
+│   Engine: redis                                                                     │
+│   UserIds:                                                                          │
+│     - "myuser"                                                                      │
+│     - "default"                                                                     │
+│   MinimumEngineVersion: 6.0                                                         │
+│   ReplicationGroups: []                                                             │
+│   ARN: arn:aws:elasticache:us-east-1:840541460064:usergroup:mygroup                 │
+│   Tags:                                                                             │
+│     - Key: mykey                                                                    │
+│       Value: myvalue                                                                │
+│                                                                                     │
+└─────────────────────────────────────────────────────────────────────────────────────┘
 
+
+List Summary:
+Provider: aws
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                │
+├────────────────────────┬───────────────────────────────────────────────────────────┤
+│ ElastiCache::UserGroup │ mygroup                                                   │
+└────────────────────────┴───────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t ElastiCache::UserGroup" executed in 3s, 104 MB
 ```

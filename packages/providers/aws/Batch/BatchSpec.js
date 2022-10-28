@@ -22,7 +22,6 @@ module.exports = pipe([
       propertiesDefault: {
         state: "ENABLED",
       },
-      includeDefaultDependencies: true,
       omitProperties: [
         "status",
         "statusReason",

@@ -37,7 +37,7 @@ const model = ({ config }) => ({
       }),
     ]),
     pickCreated: ({ payload }) => pipe([get("Cluster")]),
-    isInstanceUp: pipe([eq(get("Status"), "Available")]),
+    isInstanceUp: pipe([eq(get("Status"), "available")]),
     configIsUp: { retryCount: 60 * 10, retryDelay: 5e3 },
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MemoryDB.html#deleteCluster-property
@@ -83,13 +83,7 @@ exports.MemoryDBCluster = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: {
-        acl,
-        kmsKey,
-        parameterGroup,
-        subnetGroup,
-        securityGroups,
-      },
+      dependencies: { kmsKey, subnetGroup, securityGroups },
     }) =>
       pipe([
         () => otherProps,
@@ -101,18 +95,6 @@ exports.MemoryDBCluster = ({ spec, config }) =>
             UserTags: Tags,
           }),
         }),
-        when(
-          () => acl,
-          assign({
-            ACLName: () => acl.config.Name,
-          })
-        ),
-        when(
-          () => parameterGroup,
-          assign({
-            ParameterGroupName: () => parameterGroup.config.Name,
-          })
-        ),
         when(
           () => subnetGroup,
           assign({

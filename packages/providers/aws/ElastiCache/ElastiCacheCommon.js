@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, assign, get } = require("rubico");
+const { pipe, tap, assign, get, tryCatch } = require("rubico");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#addTagsToResource-property
 exports.tagResource =
@@ -13,24 +13,28 @@ exports.tagResource =
       (Tags) => ({ ResourceName: buildArn(live), Tags }),
       endpoint().addTagsToResource,
     ]);
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#untagResource-property
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#removeTagsFromResource-property
 exports.untagResource =
   ({ buildArn }) =>
   ({ endpoint }) =>
   ({ live }) =>
     pipe([
       (TagKeys) => ({ ResourceName: buildArn(live), TagKeys }),
-      endpoint().untagResource,
+      endpoint().removeTagsFromResource,
     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#listTagsForResource-property
-exports.assignTags = ({ endpoint }) =>
+exports.assignTags = ({ endpoint, buildArn }) =>
   pipe([
     assign({
-      Tags: pipe([
-        ({ ARN }) => ({ ResourceName: ARN }),
-        endpoint().listTagsForResource,
-        get("TagList"),
-      ]),
+      Tags: tryCatch(
+        pipe([
+          buildArn,
+          (ResourceName) => ({ ResourceName }),
+          endpoint().listTagsForResource,
+          get("TagList"),
+        ]),
+        (error) => pipe([() => []])()
+      ),
     }),
   ]);

@@ -4,7 +4,7 @@ const { findNameInTagsOrId } = require("../AwsCommon");
 const { AwsClient } = require("../AwsClient");
 const { createEC2, tagResource, untagResource } = require("./EC2Common");
 
-exports.AwsNetworkAcl = ({ spec, config }) => {
+exports.EC2NetworkAcl = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
@@ -24,6 +24,7 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
     spec,
     findId,
     isDefault,
+    managedByOther: isDefault,
     findName,
     getList,
     tagResource: tagResource({ endpoint: ec2 }),

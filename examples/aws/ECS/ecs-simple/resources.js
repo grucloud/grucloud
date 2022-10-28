@@ -51,32 +51,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "JobDefinition",
-    group: "Batch",
-    properties: ({}) => ({
-      containerProperties: {
-        command: ["echo", "hello grucloud"],
-        fargatePlatformConfiguration: {
-          platformVersion: "1.4.0",
-        },
-        image: "public.ecr.aws/amazonlinux/amazonlinux:latest",
-        resourceRequirements: [
-          {
-            type: "VCPU",
-            value: "1",
-          },
-          {
-            type: "MEMORY",
-            value: "2048",
-          },
-        ],
-      },
-      jobDefinitionName: "job-definition",
-      platformCapabilities: ["FARGATE"],
-      type: "container",
-    }),
-  },
-  {
     type: "Vpc",
     group: "EC2",
     name: "Vpc",

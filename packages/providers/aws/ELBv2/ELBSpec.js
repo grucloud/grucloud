@@ -45,14 +45,12 @@ module.exports = pipe([
         "State",
         "AvailabilityZones",
       ],
-      includeDefaultDependencies: true,
       filterLive: () => pick(["Name", "Scheme", "Type", "IpAddressType"]),
     },
     {
       type: "TargetGroup",
       Client: ELBTargetGroup,
       inferName: get("properties.Name"),
-      includeDefaultDependencies: true,
       dependencies: {
         vpc: {
           type: "Vpc",

@@ -206,7 +206,6 @@ module.exports = pipe([
         "VPCId",
         "StatusMessage",
       ],
-      includeDefaultDependencies: true,
     },
   ],
   map(

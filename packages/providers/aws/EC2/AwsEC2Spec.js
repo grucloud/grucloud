@@ -123,7 +123,7 @@ const {
 const { EC2ManagedPrefixList } = require("./EC2ManagedPrefixList");
 const { EC2VolumeAttachment } = require("./EC2VolumeAttachment");
 const { EC2NetworkInterface } = require("./AwsNetworkInterface");
-const { AwsNetworkAcl } = require("./AwsNetworkAcl");
+const { EC2NetworkAcl } = require("./EC2NetworkAcl");
 const { EC2VpcPeeringConnection } = require("./EC2VpcPeeringConnection");
 const { EC2PlacementGroup } = require("./EC2PlacementGroup");
 const {
@@ -699,7 +699,6 @@ module.exports = pipe([
         "Status",
         "SecurityGroups",
       ],
-      includeDefaultDependencies: true,
       inferName: pipe([
         get("dependenciesSpec"),
         ({ clientVpnEndpoint, subnet }) =>
@@ -760,7 +759,6 @@ module.exports = pipe([
         LogFormat:
           "${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} ${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status}",
       },
-      includeDefaultDependencies: true,
       omitProperties: [
         "ResourceId",
         "CreationTime",
@@ -788,7 +786,6 @@ module.exports = pipe([
           group: "S3",
         },
       },
-      includeDefaultDependencies: true,
       compare: compareEC2({
         filterTarget: () => pipe([omit(["ResourceIds", "ResourceType"])]),
       }),
@@ -904,7 +901,6 @@ module.exports = pipe([
     {
       type: "IpamPool",
       Client: EC2IpamPool,
-      includeDefaultDependencies: true,
       omitProperties: [
         "SourceIpamPoolId",
         "IpamArn",
@@ -1296,7 +1292,6 @@ module.exports = pipe([
     {
       type: "Subnet",
       Client: EC2Subnet,
-      includeDefaultDependencies: true,
       getResourceName: () =>
         pipe([
           switchCase([
@@ -1433,23 +1428,22 @@ module.exports = pipe([
         "OwnerId",
         "Routes",
       ],
-      includeDefaultDependencies: true,
       findDefault: findDefaultWithVpcDependency,
       filterLive: () => pick([]),
-      ignoreResource: (input) =>
-        pipe([
-          and([
-            get("isDefault"),
-            pipe([
-              get("usedBy"),
-              filter(not(get("managedByOther"))),
-              tap((params) => {
-                assert(true);
-              }),
-              isEmpty,
-            ]),
-          ]),
-        ]),
+      // ignoreResource: (input) =>
+      //   pipe([
+      //     and([
+      //       get("managedByOther"),
+      //       pipe([
+      //         get("usedBy"),
+      //         filter(not(get("managedByOther"))),
+      //         tap((params) => {
+      //           assert(true);
+      //         }),
+      //         isEmpty,
+      //       ]),
+      //     ]),
+      //   ]),
       dependencies: {
         vpc: {
           type: "Vpc",
@@ -1478,7 +1472,6 @@ module.exports = pipe([
           () => `rt-assoc::${routeTable}::${subnet}`,
         ])(),
       filterLive: () => pick([]),
-      includeDefaultDependencies: true,
       dependencies: {
         routeTable: {
           type: "RouteTable",
@@ -1572,7 +1565,6 @@ module.exports = pipe([
             appendCidrSuffix(properties),
           ]),
         ])(),
-      includeDefaultDependencies: true,
       dependencies: {
         coreNetwork: {
           type: "CoreNetwork",
@@ -1692,7 +1684,6 @@ module.exports = pipe([
     {
       type: "SecurityGroup",
       Client: AwsSecurityGroup,
-      includeDefaultDependencies: true,
       findDefault: findDefaultWithVpcDependency,
       compare: compareEC2({
         filterTarget: ({ lives, config, targetResources }) =>
@@ -1822,7 +1813,6 @@ module.exports = pipe([
       Client: AwsSecurityGroupRuleIngress,
       compare: compareSecurityGroupRule,
       filterLive: securityGroupRulePickProperties,
-      includeDefaultDependencies: true,
       dependencies: securityGroupRuleDependencies,
       inferName: inferNameSecurityGroupRule({ kind: "ingress" }),
     },
@@ -1831,7 +1821,6 @@ module.exports = pipe([
       Client: AwsSecurityGroupRuleEgress,
       compare: compareSecurityGroupRule,
       filterLive: securityGroupRulePickProperties,
-      includeDefaultDependencies: true,
       dependencies: securityGroupRuleDependencies,
       inferName: inferNameSecurityGroupRule({ kind: "egress" }),
     },
@@ -1889,7 +1878,6 @@ module.exports = pipe([
     {
       type: "Instance",
       Client: EC2Instance,
-      includeDefaultDependencies: true,
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
       propertiesDefault: {
         DisableApiStop: false,
@@ -2067,8 +2055,6 @@ module.exports = pipe([
           group: "EC2",
           //TODO no list
           list: true,
-          //TODO
-          omitDefaultDependencies: true,
           dependencyId: ({ lives, config }) => get("SubnetId"),
         },
         keyPair: {
@@ -2096,8 +2082,6 @@ module.exports = pipe([
           type: "SecurityGroup",
           group: "EC2",
           list: true,
-          //TODO
-          omitDefaultDependencies: true,
           dependencyIds: ({ lives, config }) =>
             pipe([get("SecurityGroups"), pluck("GroupId")]),
         },
@@ -2130,7 +2114,6 @@ module.exports = pipe([
     {
       type: "LaunchTemplate",
       Client: EC2LaunchTemplate,
-      includeDefaultDependencies: true,
       compare: compareEC2({
         filterTarget: () => pipe([omit(["LaunchTemplateData"])]),
         filterLive: () =>
@@ -2304,7 +2287,7 @@ module.exports = pipe([
     },
     {
       type: "NetworkAcl",
-      Client: AwsNetworkAcl,
+      Client: EC2NetworkAcl,
       listOnly: true,
       ignoreResource: () => pipe([() => true]),
       dependencies: {
@@ -2312,6 +2295,7 @@ module.exports = pipe([
         subnets: {
           type: "Subnet",
           group: "EC2",
+          excludeDefaultDependencies: true,
           dependencyIds: () => pipe([get("Associations"), pluck("SubnetId")]),
         },
       },
@@ -2381,7 +2365,6 @@ module.exports = pipe([
           type: "SecurityGroup",
           group: "EC2",
           list: true,
-          includeDefaultDependencies: true,
           dependencyIds: ({ lives, config }) =>
             pipe([get("Groups"), pluck("GroupId")]),
         },
@@ -2613,7 +2596,6 @@ module.exports = pipe([
     {
       type: "TransitGatewayRoute",
       Client: EC2TransitGatewayRoute,
-      includeDefaultDependencies: true,
       omitProperties: [
         "TransitGatewayRouteTableId",
         "TransitGatewayAttachmentId",
@@ -2656,7 +2638,6 @@ module.exports = pipe([
     {
       type: "TransitGatewayPeeringAttachment",
       Client: EC2TransitGatewayPeeringAttachment,
-      includeDefaultDependencies: true,
       inferName: pipe([
         get("dependenciesSpec"),
         tap(({ transitGateway, transitGatewayPeer }) => {
@@ -2749,7 +2730,6 @@ module.exports = pipe([
     {
       type: "TransitGatewayVpcAttachment",
       Client: EC2TransitGatewayVpcAttachment,
-      includeDefaultDependencies: true,
       // TODO remove this
       ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
       omitProperties: [
@@ -2789,7 +2769,6 @@ module.exports = pipe([
     {
       type: "TransitGatewayRouteTableAssociation",
       Client: EC2TransitGatewayRouteTableAssociation,
-      includeDefaultDependencies: true,
       omitProperties: [
         "TransitGatewayAttachmentId",
         "TransitGatewayRouteTableId",
@@ -2813,7 +2792,6 @@ module.exports = pipe([
     {
       type: "TransitGatewayRouteTablePropagation",
       Client: EC2TransitGatewayRouteTablePropagation,
-      includeDefaultDependencies: true,
       omitProperties: [
         "TransitGatewayAttachmentId",
         "TransitGatewayRouteTableId",

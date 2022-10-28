@@ -50,7 +50,6 @@ module.exports = pipe([
         AutoMinorVersionUpgrade: true,
         SnapshotRetentionLimit: 1,
       },
-      //compare: compare({ filterTarget: () => omit([]) }),
       omitProperties: [
         "ARN",
         "SecurityGroups",
@@ -62,18 +61,17 @@ module.exports = pipe([
         "ParameterGroupStatus",
         "SnsTopicStatus",
         "SnsTopicArn",
-        "ACLName",
         "SubnetGroupName",
-        "ParameterGroupName",
         "SecurityGroupIds",
+        "NumberOfShards",
       ],
       inferName: get("properties.Name"),
-      includeDefaultDependencies: true,
       dependencies: {
         acl: {
           type: "ACL",
           group: GROUP,
           dependencyId: ({ lives, config }) => get("ACLName"),
+          excludeDefaultDependencies: true,
         },
         kmsKey: {
           type: "Key",
@@ -85,6 +83,7 @@ module.exports = pipe([
           group: GROUP,
           dependencyId: ({ lives, config }) =>
             pipe([get("ParameterGroupName")]),
+          excludeDefaultDependencies: true,
         },
         securityGroups: {
           type: "SecurityGroup",
@@ -121,7 +120,6 @@ module.exports = pipe([
           type: "Subnet",
           group: "EC2",
           list: true,
-          includeDefaultDependencies: true,
           dependencyIds: ({ lives, config }) =>
             pipe([get("Subnets"), pluck("Identifier")]),
         },

@@ -42,7 +42,6 @@ module.exports = pipe([
       ],
       propertiesDefault: {},
       inferName: get("properties.ClusterName"),
-      includeDefaultDependencies: true,
       dependencies: {
         subnets: {
           type: "Subnet",

@@ -4,6 +4,8 @@
 
 ## Aws
 
+- AWS OpenSearch: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html
+
 - EC2 instance, sort groups
 - API Gateway v1 Authorizer
 
