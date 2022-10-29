@@ -22,6 +22,8 @@ const decorate = ({ endpoint }) =>
     assignTags({ endpoint, buildArn: buildArn() }),
   ]);
 
+const managedByOther = pipe([get("live.ReplicationGroupId")]);
+
 const model = ({ config }) => ({
   package: "elasticache",
   client: "ElastiCache",
@@ -65,6 +67,7 @@ exports.ElastiCacheCacheCluster = ({ spec, config }) =>
     config,
     findName: pipe([get("live.CacheClusterId")]),
     findId: pipe([get("live.CacheClusterId")]),
+    managedByOther,
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),
@@ -78,11 +81,9 @@ exports.ElastiCacheCacheCluster = ({ spec, config }) =>
       properties: { Tags, ...otherProps },
       dependencies: {
         //TODO
-        cloudWatchLogGroup,
         firehoseDeliveryStream,
         securityGroups,
         snsTopic,
-        subnetGroup,
       },
     }) =>
       pipe([
@@ -90,7 +91,6 @@ exports.ElastiCacheCacheCluster = ({ spec, config }) =>
         tap((params) => {
           assert(true);
         }),
-
         defaultsDeep({
           Tags: buildTags({
             name,
@@ -100,9 +100,11 @@ exports.ElastiCacheCacheCluster = ({ spec, config }) =>
           }),
         }),
         when(
-          () => subnetGroup,
+          () => snsTopic,
           assign({
-            SubnetGroupName: () => subnetGroup.config.Name,
+            NotificationTopicArn: pipe([
+              () => getField(snsTopic, "Attributes.TopicArn"),
+            ]),
           })
         ),
         when(

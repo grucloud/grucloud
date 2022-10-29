@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project firehose-delivery-stream-http
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (2)
++++ Firehose
+++++ DeliveryStream (1)
++++ IAM
+++++ Role (2)
+++++ Policy (2)
++++ S3
+++++ Bucket (3)
+@endmindmap

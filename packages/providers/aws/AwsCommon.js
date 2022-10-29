@@ -1124,6 +1124,33 @@ const replacePrincipal = ({ providerConfig, lives, principalKind }) =>
     ),
   ]);
 
+const replaceCondition = ({ conditionCriteria, providerConfig, lives }) =>
+  when(
+    get(conditionCriteria),
+    assign({
+      [conditionCriteria]: pipe([
+        get(conditionCriteria),
+        map(
+          pipe([
+            switchCase([
+              Array.isArray,
+              map(
+                replaceArnWithAccountAndRegion({
+                  providerConfig,
+                  lives,
+                })
+              ),
+              replaceArnWithAccountAndRegion({
+                providerConfig,
+                lives,
+              }),
+            ]),
+          ])
+        ),
+      ]),
+    })
+  );
+
 const replaceStatement = ({ providerConfig, lives }) =>
   pipe([
     tap((params) => {
@@ -1168,22 +1195,16 @@ const replaceStatement = ({ providerConfig, lives }) =>
       assign({
         Condition: pipe([
           get("Condition"),
-          when(
-            get("ArnLike"),
-            assign({
-              ArnLike: pipe([
-                get("ArnLike"),
-                map(
-                  pipe([
-                    replaceArnWithAccountAndRegion({
-                      providerConfig,
-                      lives,
-                    }),
-                  ])
-                ),
-              ]),
-            })
-          ),
+          replaceCondition({
+            conditionCriteria: "ArnLike",
+            providerConfig,
+            lives,
+          }),
+          replaceCondition({
+            conditionCriteria: "StringLike",
+            providerConfig,
+            lives,
+          }),
           when(
             get("StringEquals"),
             assign({
@@ -1209,9 +1230,6 @@ const replaceStatement = ({ providerConfig, lives }) =>
                     ]),
                   })
                 ),
-                tap((params) => {
-                  assert(true);
-                }),
                 sortObject,
               ]),
             })

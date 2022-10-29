@@ -1,12 +1,40 @@
 const assert = require("assert");
-const { pipe, tap, get, omit, pick, eq } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, omit, pick, eq, assign } = require("rubico");
+const { defaultsDeep, when, first } = require("rubico/x");
 const { buildTags } = require("../AwsCommon");
 
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource, assignTags } = require("./FirehoseCommon");
 
 const pickId = pipe([pick(["DeliveryStreamName"])]);
+
+const decorate =
+  ({ endpoint }) =>
+  ({ Destinations, ...other }) =>
+    pipe([
+      () => Destinations,
+      first,
+      omit(["DestinationId"]),
+      when(
+        get("HttpEndpointDestinationDescription"),
+        assign({
+          HttpEndpointDestinationConfiguration: pipe([
+            get("HttpEndpointDestinationDescription"),
+            ({ S3DestinationDescription, ...other }) => ({
+              ...other,
+              S3Configuration: S3DestinationDescription,
+            }),
+          ]),
+        })
+      ),
+      omit(["HttpEndpointDestinationDescription"]),
+      ({ ExtendedS3DestinationDescription, ...other }) => ({
+        ...other,
+        ExtendedS3DestinationConfiguration: ExtendedS3DestinationDescription,
+      }),
+      (Destination) => ({ ...other, ...Destination }),
+      assignTags({ endpoint }),
+    ])();
 
 const model = ({ config }) => ({
   package: "firehose",
@@ -17,7 +45,7 @@ const model = ({ config }) => ({
     method: "describeDeliveryStream",
     pickId,
     getField: "DeliveryStreamDescription",
-    decorate: ({ endpoint }) => pipe([assignTags({ endpoint })]),
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Firehose.html#listDeliveryStreams-property
   getList: {
@@ -31,6 +59,7 @@ const model = ({ config }) => ({
     method: "createDeliveryStream",
     pickCreated: ({ payload }) => pipe([() => payload]),
     //filterParams: pipe([omit(["EnhancedMonitoring"])]),
+    shouldRetryOnExceptionMessages: ["Firehose is unable to assume role"],
     isInstanceUp: eq(get("DeliveryStreamStatus"), "ACTIVE"),
     getErrorMessage: get("FailureDescription", "error"),
     // postCreate:

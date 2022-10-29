@@ -634,6 +634,7 @@ module.exports = pipe([
         securityGroups: {
           type: "SecurityGroup",
           group: "EC2",
+          excludeDefaultDependencies: true,
           dependencyIds: ({ lives, config }) => get("SecurityGroupIds"),
         },
         cloudWatchLogGroup: {

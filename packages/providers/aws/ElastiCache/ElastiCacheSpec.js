@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { tap, pipe, map, get, omit, eq } = require("rubico");
-const { defaultsDeep, when, pluck } = require("rubico/x");
+const { tap, pipe, map, get, omit, eq, assign } = require("rubico");
+const { defaultsDeep, when, pluck, first, size } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
 
@@ -15,10 +15,38 @@ const {
 
 const { ElastiCacheUser } = require("./ElastiCacheUser");
 const { ElastiCacheUserGroup } = require("./ElastiCacheUserGroup");
+const {
+  ElastiCacheReplicationGroup,
+} = require("./ElastiCacheReplicationGroup");
 
 const GROUP = "ElastiCache";
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
+
+const cloudWatchLogGroupsDeps = {
+  cloudWatchLogGroups: {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    list: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([
+        get("LogDeliveryConfigurations"),
+        map(
+          pipe([
+            get("DestinationDetails.CloudWatchLogsDetails.LogGroup"),
+            (name) =>
+              lives.getByName({
+                name,
+                providerName: config.providerName,
+                type: "LogGroup",
+                group: "CloudWatchLogs",
+              }),
+            get("id"),
+          ])
+        ),
+      ]),
+  },
+};
 
 module.exports = pipe([
   () => [
@@ -27,18 +55,16 @@ module.exports = pipe([
       Client: ElastiCacheCacheCluster,
       propertiesDefault: {
         AutoMinorVersionUpgrade: true,
-        SnapshotRetentionLimit: 0,
         AuthTokenEnabled: false,
         TransitEncryptionEnabled: false,
         AtRestEncryptionEnabled: false,
-        ReplicationGroupLogDeliveryEnabled: true,
+        ReplicationGroupLogDeliveryEnabled: false,
       },
       omitProperties: [
         "ARN",
         "SecurityGroups",
         "ClientDownloadLandingPage",
         "CacheClusterStatus",
-        "NumCacheNodes",
         "PreferredOutpostArn",
         "CacheClusterCreateTime",
         "PendingModifiedValues",
@@ -47,24 +73,26 @@ module.exports = pipe([
         "ReplicationGroupId",
         "AuthTokenLastModifiedDate",
         "CacheParameterGroup",
+        "ConfigurationEndpoint",
       ],
       inferName: get("properties.CacheClusterId"),
       dependencies: {
-        cloudWatchLogGroup: {
-          type: "LogGroup",
-          group: "CloudWatchLogs",
-          dependencyId: ({ lives, config }) =>
-            get(
-              "LogDeliveryConfigurations.DestinationDetails.CloudWatchLogsDetails.LogGroup"
-            ),
-        },
-        firehoseDeliveryStream: {
+        ...cloudWatchLogGroupsDeps,
+        firehoseDeliveryStreams: {
           type: "DeliveryStream",
           group: "Firehose",
-          dependencyId: ({ lives, config }) =>
-            get(
-              "LogDeliveryConfigurations.DestinationDetails.KinesisFirehoseDetails.DeliveryStream"
-            ),
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("LogDeliveryConfigurations"),
+              map(
+                pipe([
+                  get(
+                    "DestinationDetails.KinesisFirehoseDetails.DeliveryStream"
+                  ),
+                ])
+              ),
+            ]),
         },
         parameterGroup: {
           type: "CacheParameterGroup",
@@ -87,11 +115,18 @@ module.exports = pipe([
             get("NotificationConfiguration.TopicArn"),
         },
         subnetGroup: {
-          type: "SubnetGroup",
+          type: "CacheSubnetGroup",
           group: GROUP,
           dependencyId: ({ lives, config }) => get("CacheSubnetGroupName"),
         },
       },
+      filterLive: () =>
+        pipe([
+          when(
+            eq(get("SnapshotRetentionLimit"), 0),
+            omit(["SnapshotRetentionLimit"])
+          ),
+        ]),
     },
     {
       type: "CacheParameterGroup",
@@ -113,6 +148,106 @@ module.exports = pipe([
             pipe([get("Subnets"), pluck("SubnetIdentifier")]),
         },
       },
+    },
+    {
+      type: "ReplicationGroup",
+      Client: ElastiCacheReplicationGroup,
+      propertiesDefault: {
+        Engine: "redis",
+        AuthTokenEnabled: false,
+        TransitEncryptionEnabled: false,
+        AtRestEncryptionEnabled: false,
+        DataTiering: "disabled",
+      },
+      omitProperties: [
+        "ARN",
+        "AutomaticFailover",
+        "SecurityGroups",
+        "Status",
+        "SnapshottingClusterId",
+        "LogDeliveryConfigurations[].Status",
+        "LogDeliveryConfigurations[].Message",
+        "NodeGroups",
+        "MemberClusters",
+        "PendingModifiedValues",
+        "ReplicationGroupCreateTime",
+        "MemberClustersOutpostArns",
+        "SecurityGroupIds",
+      ],
+      inferName: get("properties.ReplicationGroupId"),
+      //TODO check all deps
+      dependencies: {
+        ...cloudWatchLogGroupsDeps,
+        firehoseDeliveryStreams: {
+          type: "DeliveryStream",
+          group: "Firehose",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([
+              get("LogDeliveryConfigurations"),
+              map(
+                pipe([
+                  get(
+                    "DestinationDetails.KinesisFirehoseDetails.DeliveryStream"
+                  ),
+                ])
+              ),
+            ]),
+        },
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          dependencyId: ({ lives, config }) => pipe([get("KmsKeyId")]),
+        },
+        parameterGroup: {
+          type: "CacheParameterGroup",
+          group: GROUP,
+          excludeDefaultDependencies: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([get("CacheParameterGroupName")]),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => pipe([get("SecurityGroupIds")]),
+        },
+        snsTopic: {
+          type: "Topic",
+          group: "SNS",
+          dependencyId: ({ lives, config }) =>
+            get("NotificationConfiguration.TopicArn"),
+        },
+        subnetGroup: {
+          type: "CacheSubnetGroup",
+          group: GROUP,
+          dependencyId: ({ lives, config }) => get("CacheSubnetGroupName"),
+        },
+        userGroups: {
+          type: "UserGroup",
+          group: GROUP,
+          list: true,
+          dependencyIds: ({ lives, config }) => get("UserGroupIds"),
+        },
+      },
+      compare: compareAws({
+        filterTarget: () =>
+          pipe([
+            omit([
+              "NumCacheClusters",
+              "CacheParameterGroupName",
+              "CacheSubnetGroupName",
+            ]),
+          ]),
+      }),
+      filterLive: ({ lives, providerConfig }) =>
+        pipe([
+          when(
+            eq(get("SnapshotRetentionLimit"), 0),
+            omit(["SnapshotRetentionLimit"])
+          ),
+          assign({ NumCacheClusters: pipe([get("MemberClusters"), size]) }),
+        ]),
     },
     {
       type: "User",
@@ -158,6 +293,7 @@ module.exports = pipe([
           type: "User",
           group: "ElastiCache",
           list: true,
+          excludeDefaultDependencies: true,
           dependencyIds: () => pipe([get(["UserIds"])]),
         },
       },

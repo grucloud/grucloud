@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, pick, assign, map } = require("rubico");
-const { defaultsDeep, when, identity } = require("rubico/x");
+const { defaultsDeep, callProp, identity } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -16,6 +16,12 @@ const {
 const pickId = pipe([pick(["CacheSubnetGroupName"])]);
 const buildArn = () => pipe([get("ARN")]);
 
+const managedByOther = pipe([
+  get("live"),
+  eq(get("CacheSubnetGroupName"), "default"),
+]);
+
+//
 const decorate = ({ endpoint }) =>
   pipe([assignTags({ endpoint, buildArn: buildArn() })]);
 
@@ -60,6 +66,8 @@ exports.ElastiCacheCacheSubnetGroup = ({ spec, config }) =>
     config,
     findName: pipe([get("live.CacheSubnetGroupName")]),
     findId: pipe([get("live.CacheSubnetGroupName")]),
+    managedByOther,
+    cannotBeDeleted: managedByOther,
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

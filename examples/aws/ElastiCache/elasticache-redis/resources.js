@@ -87,79 +87,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "CacheCluster",
-    group: "ElastiCache",
-    properties: ({}) => ({
-      CacheClusterId: "my-cluster-001",
-      CacheNodeType: "cache.t2.micro",
-      Engine: "redis",
-      EngineVersion: "6.2.6",
-      PreferredAvailabilityZone: "us-east-1b",
-      PreferredMaintenanceWindow: "mon:06:00-mon:07:00",
-      CacheSubnetGroupName: "my-subnet-group",
-      SnapshotWindow: "10:00-11:00",
-      Tags: [
-        {
-          Key: "mykey",
-          Value: "myvalue",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      parameterGroup: "my-parameter-group",
-      securityGroups: ["sg::vpc::default"],
-    }),
-  },
-  {
-    type: "CacheCluster",
-    group: "ElastiCache",
-    properties: ({}) => ({
-      CacheClusterId: "my-cluster-002",
-      CacheNodeType: "cache.t2.micro",
-      Engine: "redis",
-      EngineVersion: "6.2.6",
-      PreferredAvailabilityZone: "us-east-1a",
-      PreferredMaintenanceWindow: "mon:06:00-mon:07:00",
-      CacheSubnetGroupName: "my-subnet-group",
-      SnapshotRetentionLimit: 1,
-      SnapshotWindow: "10:00-11:00",
-      Tags: [
-        {
-          Key: "mykey",
-          Value: "myvalue",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      parameterGroup: "my-parameter-group",
-      securityGroups: ["sg::vpc::default"],
-    }),
-  },
-  {
-    type: "CacheCluster",
-    group: "ElastiCache",
-    properties: ({}) => ({
-      CacheClusterId: "my-cluster-003",
-      CacheNodeType: "cache.t2.micro",
-      Engine: "redis",
-      EngineVersion: "6.2.6",
-      PreferredAvailabilityZone: "us-east-1a",
-      PreferredMaintenanceWindow: "mon:06:00-mon:07:00",
-      CacheSubnetGroupName: "my-subnet-group",
-      SnapshotWindow: "10:00-11:00",
-      Tags: [
-        {
-          Key: "mykey",
-          Value: "myvalue",
-        },
-      ],
-    }),
-    dependencies: ({}) => ({
-      parameterGroup: "my-parameter-group",
-      securityGroups: ["sg::vpc::default"],
-    }),
-  },
-  {
     type: "CacheParameterGroup",
     group: "ElastiCache",
     properties: ({}) => ({
@@ -192,6 +119,41 @@ exports.createResources = () => [
         `vpc::subnet-private1-${config.region}a`,
         `vpc::subnet-private2-${config.region}b`,
       ],
+    }),
+  },
+  {
+    type: "ReplicationGroup",
+    group: "ElastiCache",
+    properties: ({}) => ({
+      ReplicationGroupId: "my-redis-cluster",
+      Description: " ",
+      GlobalReplicationGroupInfo: {},
+      MultiAZ: "disabled",
+      SnapshotRetentionLimit: 1,
+      SnapshotWindow: "06:00-07:00",
+      ClusterEnabled: false,
+      CacheNodeType: "cache.t4g.micro",
+      LogDeliveryConfigurations: [
+        {
+          LogType: "engine-log",
+          DestinationType: "cloudwatch-logs",
+          DestinationDetails: {
+            CloudWatchLogsDetails: {
+              LogGroup: "elasticache/redis",
+            },
+          },
+          LogFormat: "json",
+        },
+      ],
+      CacheParameterGroupName: "my-parameter-group",
+      CacheSubnetGroupName: "my-subnet-group",
+      NumCacheClusters: 3,
+    }),
+    dependencies: ({}) => ({
+      cloudWatchLogGroups: ["elasticache/redis"],
+      parameterGroup: "my-parameter-group",
+      securityGroups: ["sg::vpc::default"],
+      subnetGroup: "my-subnet-group",
     }),
   },
   {
