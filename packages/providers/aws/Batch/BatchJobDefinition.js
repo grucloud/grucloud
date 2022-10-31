@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick } = require("rubico");
+const { pipe, tap, get, eq } = require("rubico");
 const { defaultsDeep, callProp, unless, append, isEmpty } = require("rubico/x");
 const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -16,6 +16,8 @@ const pickId = pipe([
     jobDefinition: jobDefinitionArn,
   }),
 ]);
+
+const cannotBeDeleted = pipe([get("live"), eq(get("status"), "INACTIVE")]);
 
 const decorate = () =>
   pipe([
@@ -91,6 +93,7 @@ exports.BatchJobDefinition = ({ spec, config }) =>
         unless(() => live.latest, append(`::${live.revision}`)),
       ])(),
     findId: pipe([get("live.jobDefinitionArn")]),
+    cannotBeDeleted,
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

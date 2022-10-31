@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap } = require("rubico");
+const { pipe, tap, eq, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -9,6 +9,11 @@ const pickId = pipe([
   tap((params) => {
     assert(true);
   }),
+]);
+
+const cannotBeDeleted = pipe([
+  get("live"),
+  eq(get("isCrossAccountBackupEnabled"), "false"),
 ]);
 
 const model = ({ config }) => ({
@@ -55,6 +60,7 @@ exports.BackupGlobalSettings = ({ spec, config }) =>
     config,
     findName: pipe([() => "global"]),
     findId: pipe([() => "global"]),
+    cannotBeDeleted,
     getByName: getByNameCore,
     configDefault: ({
       name,
