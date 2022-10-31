@@ -53,7 +53,7 @@ const model = ({ config }) => ({
   update: {
     method: "modifyUser",
     //TODO
-    filterParams: ({ payload }) => pipe[() => payload],
+    filterParams: ({ payload }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#deleteUser-property
   destroy: {

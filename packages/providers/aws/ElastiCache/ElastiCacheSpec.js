@@ -48,6 +48,31 @@ const cloudWatchLogGroupsDeps = {
   },
 };
 
+const firehoseDeliveryStreamsDeps = {
+  firehoseDeliveryStreams: {
+    type: "DeliveryStream",
+    group: "Firehose",
+    list: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([
+        get("LogDeliveryConfigurations"),
+        map(
+          pipe([
+            get("DestinationDetails.KinesisFirehoseDetails.DeliveryStream"),
+            (name) =>
+              lives.getByName({
+                name,
+                type: "DeliveryStream",
+                group: "Firehose",
+                providerConfig: config.providerConfig,
+              }),
+            get("id"),
+          ])
+        ),
+      ]),
+  },
+};
+
 module.exports = pipe([
   () => [
     {
@@ -78,22 +103,7 @@ module.exports = pipe([
       inferName: get("properties.CacheClusterId"),
       dependencies: {
         ...cloudWatchLogGroupsDeps,
-        firehoseDeliveryStreams: {
-          type: "DeliveryStream",
-          group: "Firehose",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("LogDeliveryConfigurations"),
-              map(
-                pipe([
-                  get(
-                    "DestinationDetails.KinesisFirehoseDetails.DeliveryStream"
-                  ),
-                ])
-              ),
-            ]),
-        },
+        ...firehoseDeliveryStreamsDeps,
         parameterGroup: {
           type: "CacheParameterGroup",
           group: GROUP,
@@ -173,27 +183,15 @@ module.exports = pipe([
         "ReplicationGroupCreateTime",
         "MemberClustersOutpostArns",
         "SecurityGroupIds",
+        "KmsKeyId",
+        "NotificationTopicArn",
+        "MultiAZ",
       ],
       inferName: get("properties.ReplicationGroupId"),
       //TODO check all deps
       dependencies: {
         ...cloudWatchLogGroupsDeps,
-        firehoseDeliveryStreams: {
-          type: "DeliveryStream",
-          group: "Firehose",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("LogDeliveryConfigurations"),
-              map(
-                pipe([
-                  get(
-                    "DestinationDetails.KinesisFirehoseDetails.DeliveryStream"
-                  ),
-                ])
-              ),
-            ]),
-        },
+        ...firehoseDeliveryStreamsDeps,
         kmsKey: {
           type: "Key",
           group: "KMS",
@@ -215,8 +213,7 @@ module.exports = pipe([
         snsTopic: {
           type: "Topic",
           group: "SNS",
-          dependencyId: ({ lives, config }) =>
-            get("NotificationConfiguration.TopicArn"),
+          dependencyId: ({ lives, config }) => get("NotificationTopicArn"),
         },
         subnetGroup: {
           type: "CacheSubnetGroup",
@@ -230,15 +227,8 @@ module.exports = pipe([
           dependencyIds: ({ lives, config }) => get("UserGroupIds"),
         },
       },
-      compare: compareAws({
-        filterTarget: () =>
-          pipe([
-            omit([
-              "NumCacheClusters",
-              "CacheParameterGroupName",
-              "CacheSubnetGroupName",
-            ]),
-          ]),
+      compare: compare({
+        filterTarget: () => pipe([omit(["NumCacheClusters"])]),
       }),
       filterLive: ({ lives, providerConfig }) =>
         pipe([

@@ -10,11 +10,7 @@ skinparam monochrome true
 ++++ Subnet (2)
 ++++ RouteTable (2)
 ++++ RouteTableAssociation (2)
-++++ SecurityGroup (1)
 +++ ElastiCache
-++++ CacheParameterGroup (1)
 ++++ CacheSubnetGroup (1)
 ++++ ReplicationGroup (1)
-++++ User (1)
-++++ UserGroup (1)
 @endmindmap

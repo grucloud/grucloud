@@ -82,11 +82,123 @@ exports.createResources = () => [
     }),
   },
   {
+    type: "CacheCluster",
+    group: "ElastiCache",
+    properties: ({}) => ({
+      CacheClusterId: "my-memcached",
+      CacheNodeType: "cache.t2.micro",
+      Engine: "memcached",
+      EngineVersion: "1.6.12",
+      NumCacheNodes: 1,
+      PreferredAvailabilityZone: "us-east-1a",
+      PreferredMaintenanceWindow: "sun:03:30-sun:04:30",
+      CacheSubnetGroupName: "my-memcached",
+    }),
+    dependencies: ({}) => ({
+      subnetGroup: "my-memcached",
+    }),
+  },
+  {
+    type: "CacheParameterGroup",
+    group: "ElastiCache",
+    properties: ({}) => ({
+      CacheParameterGroupName: "my-param-group-memcached",
+      CacheParameterGroupFamily: "memcached1.6",
+      Description: "My Memcached Param group",
+      Parameters: [
+        {
+          ParameterName: "binding_protocol",
+          ParameterValue: "auto",
+        },
+        {
+          ParameterName: "cas_disabled",
+          ParameterValue: "0",
+        },
+        {
+          ParameterName: "chunk_size",
+          ParameterValue: "48",
+        },
+        {
+          ParameterName: "chunk_size_growth_factor",
+          ParameterValue: "1.25",
+        },
+        {
+          ParameterName: "disable_flush_all",
+          ParameterValue: "0",
+        },
+        {
+          ParameterName: "error_on_memory_exhausted",
+          ParameterValue: "0",
+        },
+        {
+          ParameterName: "hash_algorithm",
+          ParameterValue: "jenkins",
+        },
+        {
+          ParameterName: "idle_timeout",
+          ParameterValue: "0",
+        },
+        {
+          ParameterName: "inline_ascii_resp",
+          ParameterValue: "0",
+        },
+        {
+          ParameterName: "lru_crawler",
+          ParameterValue: "0",
+        },
+        {
+          ParameterName: "lru_maintainer",
+          ParameterValue: "0",
+        },
+        {
+          ParameterName: "maxconns_fast",
+          ParameterValue: "0",
+        },
+        {
+          ParameterName: "max_item_size",
+          ParameterValue: "1048576",
+        },
+        {
+          ParameterName: "memcached_connections_overhead",
+          ParameterValue: "100",
+        },
+        {
+          ParameterName: "no_modern",
+          ParameterValue: "1",
+        },
+        {
+          ParameterName: "slab_automove",
+          ParameterValue: "0",
+        },
+        {
+          ParameterName: "slab_chunk_max",
+          ParameterValue: "524288",
+        },
+        {
+          ParameterName: "slab_reassign",
+          ParameterValue: "0",
+        },
+        {
+          ParameterName: "track_sizes",
+          ParameterValue: "0",
+        },
+        {
+          ParameterName: "watcher_logbuf_size",
+          ParameterValue: "256",
+        },
+        {
+          ParameterName: "worker_logbuf_size",
+          ParameterValue: "64",
+        },
+      ],
+    }),
+  },
+  {
     type: "CacheSubnetGroup",
     group: "ElastiCache",
     properties: ({}) => ({
       CacheSubnetGroupName: "my-memcached",
-      CacheSubnetGroupDescription: " ",
+      Description: "my subnet group",
     }),
     dependencies: ({ config }) => ({
       subnets: [

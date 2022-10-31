@@ -44,14 +44,20 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#createCacheCluster-property
   create: {
     method: "createCacheCluster",
-    pickCreated: ({ payload }) => pipe([identity]),
+    pickCreated: ({ payload }) => pipe([get("CacheCluster")]),
     isInstanceUp: pipe([eq(get("CacheClusterStatus"), "available")]),
+    postCreate: ({ endpoint, payload: { Tags } }) =>
+      pipe([
+        buildArn(),
+        (ResourceName) => ({ ResourceName, Tags }),
+        endpoint().addTagsToResource,
+      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#modifyCacheCluster-property
   update: {
     method: "modifyCacheCluster",
     // TODO
-    filterParams: ({ payload }) => pipe[() => payload],
+    filterParams: ({ payload }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#deleteCacheCluster-property
   destroy: {
@@ -79,12 +85,7 @@ exports.ElastiCacheCacheCluster = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: {
-        //TODO
-        firehoseDeliveryStream,
-        securityGroups,
-        snsTopic,
-      },
+      dependencies: { securityGroups, snsTopic },
     }) =>
       pipe([
         () => otherProps,

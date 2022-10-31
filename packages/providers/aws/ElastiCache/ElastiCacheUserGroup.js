@@ -45,7 +45,7 @@ const model = ({ config }) => ({
   update: {
     method: "modifyUserGroup",
     // TODO update UserIdsToAdd and UserIdsToRemove
-    filterParams: ({ payload, diff }) => pipe[() => payload],
+    filterParams: ({ payload, diff }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#deleteUserGroup-property
   destroy: {

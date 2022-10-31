@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, pick, assign, map } = require("rubico");
+const { pipe, tap, get, eq, pick, assign, map, omit } = require("rubico");
 const { defaultsDeep, when, identity, first, pluck } = require("rubico/x");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -13,7 +13,12 @@ const {
   assignTags,
 } = require("./ElastiCacheCommon");
 
-const pickId = pipe([pick(["ReplicationGroupId"])]);
+const pickId = pipe([
+  pick(["ReplicationGroupId"]),
+  tap(({ ReplicationGroupId }) => {
+    assert(ReplicationGroupId);
+  }),
+]);
 const buildArn = () => pipe([get("ARN")]);
 
 const decorate =
@@ -45,7 +50,21 @@ const decorate =
               pluck("SecurityGroupId"),
             ]),
           }),
-          omitIfEmpty(["GlobalReplicationGroupInfo"]),
+          assign({
+            NotificationTopicArn: pipe([
+              () => cluster,
+              get("NotificationConfiguration.TopicArn"),
+            ]),
+          }),
+          omitIfEmpty([
+            "GlobalReplicationGroupInfo.GlobalReplicationGroupId",
+            "GlobalReplicationGroupInfo.GlobalReplicationGroupMemberRole",
+          ]),
+          omitIfEmpty(["GlobalReplicationGroupInfo", "NotificationTopicArn"]),
+          ({ Description, ...other }) => ({
+            ReplicationGroupDescription: Description,
+            ...other,
+          }),
           assignTags({ endpoint, buildArn: buildArn() }),
         ])(),
     ])();
@@ -70,14 +89,32 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#createReplicationGroup-property
   create: {
     method: "createReplicationGroup",
-    pickCreated: ({ payload }) => pipe([identity]),
+    pickCreated: ({ payload }) => pipe([get("ReplicationGroup")]),
     isInstanceUp: pipe([eq(get("Status"), "available")]),
+    postCreate: ({ endpoint, payload: { Tags } }) =>
+      pipe([
+        buildArn(),
+        (ResourceName) => ({ ResourceName, Tags }),
+        endpoint().addTagsToResource,
+      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#modifyReplicationGroup-property
   update: {
     method: "modifyReplicationGroup",
     // TODO
-    filterParams: ({ payload }) => pipe[() => payload],
+    filterParams: ({ payload }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        () => payload,
+        //TODO use UserGroupIdsToAdd and UserGroupIdsToRemove
+        omit(["UserGroupIds", "Tags"]),
+        defaultsDeep({ ApplyImmediately: true }),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#deleteReplicationGroup-property
   destroy: {
@@ -104,13 +141,7 @@ exports.ElastiCacheReplicationGroup = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: {
-        //TODO
-        firehoseDeliveryStream,
-        kmsKey,
-        securityGroups,
-        snsTopic,
-      },
+      dependencies: { kmsKey, securityGroups, snsTopic },
     }) =>
       pipe([
         () => otherProps,

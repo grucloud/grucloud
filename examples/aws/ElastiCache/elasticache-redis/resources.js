@@ -78,41 +78,11 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "SecurityGroup",
-    group: "EC2",
-    name: "sg::vpc::default",
-    isDefault: true,
-    dependencies: ({}) => ({
-      vpc: "vpc",
-    }),
-  },
-  {
-    type: "CacheParameterGroup",
-    group: "ElastiCache",
-    properties: ({}) => ({
-      CacheParameterGroupName: "my-parameter-group",
-      CacheParameterGroupFamily: "redis6.x",
-      Description: "My Parameter Group",
-      Tags: [
-        {
-          Key: "mykey",
-          Value: "myvalue",
-        },
-      ],
-    }),
-  },
-  {
     type: "CacheSubnetGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      CacheSubnetGroupName: "my-subnet-group",
-      CacheSubnetGroupDescription: " ",
-      Tags: [
-        {
-          Key: "mykey",
-          Value: "myvalue",
-        },
-      ],
+      CacheSubnetGroupName: "my-sutnet-group",
+      Description: " ",
     }),
     dependencies: ({ config }) => ({
       subnets: [
@@ -125,61 +95,19 @@ exports.createResources = () => [
     type: "ReplicationGroup",
     group: "ElastiCache",
     properties: ({}) => ({
-      ReplicationGroupId: "my-redis-cluster",
-      Description: " ",
-      GlobalReplicationGroupInfo: {},
-      MultiAZ: "disabled",
+      ReplicationGroupDescription: " ",
+      ReplicationGroupId: "my-simple-redis-cluster-3",
       SnapshotRetentionLimit: 1,
-      SnapshotWindow: "06:00-07:00",
+      SnapshotWindow: "06:30-07:30",
       ClusterEnabled: false,
-      CacheNodeType: "cache.t4g.micro",
-      LogDeliveryConfigurations: [
-        {
-          LogType: "engine-log",
-          DestinationType: "cloudwatch-logs",
-          DestinationDetails: {
-            CloudWatchLogsDetails: {
-              LogGroup: "elasticache/redis",
-            },
-          },
-          LogFormat: "json",
-        },
-      ],
-      CacheParameterGroupName: "my-parameter-group",
-      CacheSubnetGroupName: "my-subnet-group",
-      NumCacheClusters: 3,
+      CacheNodeType: "cache.t2.micro",
+      LogDeliveryConfigurations: [],
+      CacheParameterGroupName: "default.redis6.x",
+      CacheSubnetGroupName: "my-sutnet-group",
+      NumCacheClusters: 2,
     }),
     dependencies: ({}) => ({
-      cloudWatchLogGroups: ["elasticache/redis"],
-      parameterGroup: "my-parameter-group",
-      securityGroups: ["sg::vpc::default"],
-      subnetGroup: "my-subnet-group",
-    }),
-  },
-  {
-    type: "User",
-    group: "ElastiCache",
-    properties: ({}) => ({
-      UserId: "myuser",
-      UserName: "myuser",
-      Engine: "redis",
-      AccessString: "on ~* +@all",
-      Authentication: {
-        Type: "password",
-        Passwords: JSON.parse(process.env.MYUSER_ELASTICACHE_USER_PASSWORDS),
-      },
-    }),
-  },
-  {
-    type: "UserGroup",
-    group: "ElastiCache",
-    properties: ({}) => ({
-      UserGroupId: "mygroup",
-      Engine: "redis",
-      UserIds: ["default", "myuser"],
-    }),
-    dependencies: ({}) => ({
-      users: ["myuser"],
+      subnetGroup: "my-sutnet-group",
     }),
   },
 ];

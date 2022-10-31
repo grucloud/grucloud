@@ -1949,6 +1949,7 @@ module.exports = pipe([
         "VirtualizationType",
         "Hypervisor",
         "CpuOptions",
+        "StateReason",
       ],
       filterLive:
         ({ lives, providerConfig }) =>

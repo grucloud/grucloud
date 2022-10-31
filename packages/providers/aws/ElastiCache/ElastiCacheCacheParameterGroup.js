@@ -1,8 +1,7 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
+const { pipe, tap, get, pick, assign, filter, map } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
-const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
 
@@ -17,7 +16,18 @@ const pickId = pipe([pick(["CacheParameterGroupName"])]);
 const buildArn = () => pipe([get("ARN")]);
 
 const decorate = ({ endpoint }) =>
-  pipe([assignTags({ endpoint, buildArn: buildArn() })]);
+  pipe([
+    assign({
+      Parameters: pipe([
+        pick(["CacheParameterGroupName"]),
+        endpoint().describeCacheParameters,
+        get("Parameters"),
+        filter(get("IsModifiable")),
+        map(pick(["ParameterName", "ParameterValue"])),
+      ]),
+    }),
+    assignTags({ endpoint, buildArn: buildArn() }),
+  ]);
 
 const managedByOther = pipe([
   get("live.CacheParameterGroupName"),
@@ -45,11 +55,42 @@ const model = ({ config }) => ({
   create: {
     method: "createCacheParameterGroup",
     pickCreated: ({ payload }) => pipe([get("CacheParameterGroup")]),
+    postCreate: ({ endpoint, payload }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        // chunks  Parameters
+        //TODO call modifyCacheParameterGroup
+      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#modifyCacheParameterGroup-property
   update: {
     method: "modifyCacheParameterGroup",
-    filterParams: ({ payload }) => pipe[() => payload],
+    filterParams: ({ payload, diff }) =>
+      pipe([
+        tap((params) => {
+          assert(diff);
+        }),
+        () => diff,
+        get("liveDiff.updated.Parameters"),
+        Object.entries,
+        map(([key, param]) =>
+          pipe([
+            () => payload,
+            get(`Parameters[${key}]`),
+            get("ParameterName"),
+            (ParameterName) => ({
+              ParameterName,
+              ParameterValue: param.ParameterValue,
+            }),
+          ])()
+        ),
+        (ParameterNameValues) => ({
+          CacheParameterGroupName: payload.CacheParameterGroupName,
+          ParameterNameValues,
+        }),
+      ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#deleteCacheParameterGroup-property
   destroy: {
