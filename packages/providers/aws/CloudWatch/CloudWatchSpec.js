@@ -12,6 +12,7 @@ const {
   CloudWatchMetricAlarm,
   AlarmDependenciesDimensions,
 } = require("./CloudWatchMetricAlarm");
+const { CloudWatchDashboard } = require("./CloudWatchDashboard");
 // const { CloudWatchCompositeAlarm } = require("./CloudWatchCompositeAlarm");
 
 const GROUP = "CloudWatch";
@@ -42,6 +43,19 @@ const replaceDimension =
 
 module.exports = pipe([
   () => [
+    {
+      type: "Dashboard",
+      Client: CloudWatchDashboard,
+      inferName: get("properties.DashboardName"),
+      omitProperties: ["DashboardArn"],
+      propertiesDefault: {},
+      filterLive: ({ lives, providerConfig }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+        ]),
+    },
     {
       type: "MetricAlarm",
       Client: CloudWatchMetricAlarm,

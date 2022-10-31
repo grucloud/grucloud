@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, pick, assign, map } = require("rubico");
-const { defaultsDeep, when, identity } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 

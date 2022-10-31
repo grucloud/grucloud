@@ -6,6 +6,8 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./CloudWatchCommon");
 
+const buildArn = () => pipe([get("AlarmArn")]);
+
 const findDependencyDimension =
   ({ type, group, dimensionId }) =>
   ({ lives, config }) =>
@@ -137,8 +139,12 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) =>
     managedByOther,
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ AlarmName: name }), getById]),
-    tagResource: tagResource,
-    untagResource: untagResource,
+    tagResource: tagResource({
+      buildArn: buildArn(config),
+    }),
+    untagResource: untagResource({
+      buildArn: buildArn(config),
+    }),
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
         () => otherProps,
