@@ -28,6 +28,5 @@ exports.OrganisationsRoot = ({ spec, config }) =>
     managedByOther: () => true,
     cannotBeDeleted: () => true,
     findName: pipe([get("live.Name")]),
-    // TODO Arn ?
     findId: pipe([get("live.Id")]),
   });

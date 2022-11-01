@@ -4,7 +4,13 @@
 
 ## Aws
 
-- AWS OpenSearch: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html
+- Account https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Account.html
+- Budgets https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Budgets.html
+- ConfigService https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html
+- CUR https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CUR.html
+- Inspector2 https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Inspector2.html
+- OpenSearch: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html
+- SecurityHub https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html
 
 - EC2 instance, sort groups
 - API Gateway v1 Authorizer
@@ -44,14 +50,12 @@
 - CloudTrail EventDataStore EventDataStore doc
 
 - ECSTaskSet
-- Organisation::ServiceControlPolicy
 - AWS::Cognito::IdentityPool
 - AWS::Cognito::IdentityPoolRoleAttachment
 - AWS::CloudFront::CachePolicy
 - AWS::Events::Endpoint
 - aws_route53_delegation_set
 - CodeStarConnections Host
-- createOrganizationalUnit
   Lambda EventSourceMapping:
 - Amazon DynamoDB Streams
 
@@ -62,8 +66,6 @@
 https://rushjs.io/
 
 ## Common:
-
-- https://rushjs.io/
 
 - https://stackshare.io/terraform/alternatives
 

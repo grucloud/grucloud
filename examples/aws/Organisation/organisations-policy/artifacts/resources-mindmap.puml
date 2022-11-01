@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project organisations-policy
+skinparam monochrome true
++ Infra
+++ aws
++++ Organisations
+++++ Policy (1)
+++++ PolicyAttachment (1)
+++++ OrganisationalUnit (1)
+++++ Root (1)
+@endmindmap

@@ -2,7 +2,7 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe.only("ElastiCache CacheCluster", async function () {
+describe("ElastiCache CacheCluster", async function () {
   let config;
   let provider;
   let cluster;
