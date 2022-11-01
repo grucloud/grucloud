@@ -37,6 +37,19 @@ const model = ({ config }) => ({
     filterPayload: ({ BackupPlanId, ...other }) =>
       pipe([() => ({ BackupPlanId, BackupSelection: other })])(),
     pickCreated: ({ payload }) => pipe([identity]),
+    shouldRetryOnExceptionMessages: [
+      "cannot be assumed by AWS Backup",
+      "is not authorized to call tag:GetResources",
+    ],
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#updateBackupSelection-property
+  update: {
+    method: "updateBackupSelection",
+    filterParams: ({ payload: { Tags, ...other }, live }) =>
+      pipe([
+        () => ({ BackupPlan: other, BackupPlanTags: Tags }),
+        defaultsDeep({ BackupPlanId: live.BackupPlanId }),
+      ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#deleteBackupSelection-property
   destroy: {
@@ -70,16 +83,13 @@ exports.BackupBackupSelection = ({ spec, config }) =>
                 pipe([() => live, getById, defaultsDeep(live)])(),
           }),
       ])(),
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#updateAccelerator-property
-    //TODO
     update:
       ({ endpoint }) =>
       async ({ pickId, payload, diff, live }) =>
         pipe([
-          tap((params) => {
-            assert(endpoint);
-          }),
-          () => diff,
+          () => {
+            throw Error("No AWS API to update a BackupSelection");
+          },
         ])(),
     configDefault: ({
       name,

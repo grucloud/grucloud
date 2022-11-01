@@ -22,8 +22,6 @@ const model = ({ config }) => ({
   package: "backup",
   client: "Backup",
   ignoreErrorCodes: ["ResourceNotFoundException", "AccessDeniedException"],
-  //getBackupVaultAccessPolicy
-  //getBackupVaultNotifications
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#describeBackupVault-property
   getById: {
     method: "describeBackupVault",
@@ -43,6 +41,14 @@ const model = ({ config }) => ({
     filterPayload: ({ Tags, ...other }) =>
       pipe([() => ({ ...other, BackupVaultTags: Tags })])(),
   },
+  update:
+    ({ endpoint }) =>
+    async ({ pickId, payload, diff, live }) =>
+      pipe([
+        () => {
+          throw Error("No AWS API to update a BackupVault");
+        },
+      ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#deleteBackupVault-property
   destroy: {
     method: "deleteBackupVault",

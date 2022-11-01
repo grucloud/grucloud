@@ -42,9 +42,9 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#updateBackupPlan-property
   update: {
     method: "updateBackupPlan",
-    filterParams: ({ payload, live }) =>
+    filterParams: ({ payload: { Tags, ...other }, live }) =>
       pipe([
-        () => payload,
+        () => ({ BackupPlan: other, BackupPlanTags: Tags }),
         defaultsDeep({ BackupPlanId: live.BackupPlanId }),
       ])(),
   },

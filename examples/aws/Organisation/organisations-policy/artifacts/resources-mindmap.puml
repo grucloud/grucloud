@@ -4,8 +4,9 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ Organisations
-++++ Policy (1)
-++++ PolicyAttachment (1)
+++++ Account (1)
+++++ Policy (2)
+++++ PolicyAttachment (2)
 ++++ OrganisationalUnit (1)
 ++++ Root (1)
 @endmindmap
