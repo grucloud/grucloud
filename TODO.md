@@ -4,6 +4,8 @@
 
 ## Aws
 
+- https://aws.amazon.com/about-aws/whats-new/2022/11/aws-app-runner-supports-privately-accessible-services-amazon-vpc/ , aws_apprunner_vpc_ingress_connection
+
 - Account https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Account.html
 - Budgets https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Budgets.html
 - ConfigService https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html
@@ -37,7 +39,6 @@
 - HostedZone name with vpc
 - omit AWSLogs S3 Objects
 - elb target group getByName
-- apprunner //TODO isInstanceUp
 - apprunner example npm test
 
 - RDS DBCluster AvailabilityZones

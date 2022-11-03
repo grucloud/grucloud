@@ -72,7 +72,9 @@ exports.createResources = () => [
 
 - [IAM Role](../IAM/Role.md)
 - [AppRunner Connection](./Connection.md)
+- [AppRunner Vpc Connector](./VpcConnector.md)
 - [ECR Repository](../ECR/Repository.md)
+- [KMS Key](../KMS/Key.md)
 
 ## List
 

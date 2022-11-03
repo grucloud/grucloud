@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, assign, pick } = require("rubico");
-const { defaultsDeep, when, identity } = require("rubico/x");
+const { pipe, tap, get, pick } = require("rubico");
+const { defaultsDeep, identity } = require("rubico/x");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 
@@ -10,6 +10,7 @@ const { tagResource, untagResource, assignTags } = require("./BackupCommon");
 
 const buildArn = () => get("BackupPlanArn");
 
+//TODO
 const decorate = ({ endpoint, live }) =>
   pipe([defaultsDeep(live), assignTags({ endpoint, buildArn: buildArn() })]);
 

@@ -64,6 +64,7 @@ exports.createResources = () => [
 
 ## Used By
 
+- [AppRunner Service](../AppRunner/Service.md)
 - [Backup Vault](../Backup/Vault.md)
 - [CloudTrail Trail](../CloudTrail/Trail.md)
 - [CloudWatchLogs LogGroup](../CloudWatchLogs/LogGroup.md)

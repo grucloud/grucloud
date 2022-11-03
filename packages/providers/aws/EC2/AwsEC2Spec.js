@@ -2419,18 +2419,20 @@ module.exports = pipe([
             ]),
           ]),
         ])(),
+      omitProperties: [
+        "VpcEndpointId",
+        "VpcId",
+        "State",
+        "RouteTableIds",
+        "SubnetIds",
+        "Groups",
+        "SecurityGroupIds",
+        "NetworkInterfaceIds",
+        "DnsEntries",
+        "CreationTimestamp",
+        "OwnerId",
+      ],
       propertiesDefault: {
-        PolicyDocument: {
-          Version: "2008-10-17",
-          Statement: [
-            {
-              Action: "*",
-              Effect: "Allow",
-              Principal: "*",
-              Resource: "*",
-            },
-          ],
-        },
         PrivateDnsEnabled: false,
         RequesterManaged: false,
       },
@@ -2444,13 +2446,19 @@ module.exports = pipe([
                 DnsOptions: { DnsRecordIpType: "ipv4" },
               })
             ),
-            pick([
-              "PolicyDocument",
-              "PrivateDnsEnabled",
-              "RequesterManaged",
-              "DnsOptions",
-              "IpAddressType",
-            ]),
+            differenceObject({
+              PolicyDocument: {
+                Version: "2008-10-17",
+                Statement: [
+                  {
+                    Action: "*",
+                    Effect: "Allow",
+                    Principal: "*",
+                    Resource: "*",
+                  },
+                ],
+              },
+            }),
           ]),
       }),
       filterLive: ({ providerConfig, lives }) =>
@@ -2462,22 +2470,29 @@ module.exports = pipe([
               DnsOptions: { DnsRecordIpType: "ipv4" },
             })
           ),
-          pick([
-            "PolicyDocument",
-            "PrivateDnsEnabled",
-            "RequesterManaged",
-            "VpcEndpointType",
-            "ServiceName",
-            "IpAddressType",
-            "DnsOptions",
-          ]),
+          differenceObject({
+            PolicyDocument: {
+              Version: "2008-10-17",
+              Statement: [
+                {
+                  Action: "*",
+                  Effect: "Allow",
+                  Principal: "*",
+                  Resource: "*",
+                },
+              ],
+            },
+          }),
           assign({
             ServiceName: pipe([
               get("ServiceName"),
               replaceRegion({ providerConfig }),
             ]),
           }),
-          assignPolicyDocumentAccountAndRegion({ providerConfig, lives }),
+          when(
+            get("PolicyDocument"),
+            assignPolicyDocumentAccountAndRegion({ providerConfig, lives })
+          ),
         ]),
       addCode: ({ resource, lives }) =>
         pipe([
