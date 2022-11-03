@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, map, omit } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, eq, map, omit, or } = require("rubico");
+const { defaultsDeep, when, unless } = require("rubico/x");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { buildTagsObject } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -67,17 +67,26 @@ const model = ({ config }) => ({
   destroy: {
     preDestroy: ({ endpoint, live, getById }) =>
       pipe([
-        () => ({
-          computeEnvironment: live.computeEnvironmentName,
-          state: "DISABLED",
-        }),
-        endpoint().updateComputeEnvironment,
-        () =>
-          retryCall({
-            name: `describeComputeEnvironments`,
-            fn: pipe([() => live, getById]),
-            isExpectedResult: eq(get("status"), "VALID"),
-          }),
+        () => live,
+        unless(
+          eq(get("state"), "DISABLED"),
+          pipe([
+            () => ({
+              computeEnvironment: live.computeEnvironmentName,
+              state: "DISABLED",
+            }),
+            endpoint().updateComputeEnvironment,
+            () =>
+              retryCall({
+                name: `describeComputeEnvironments`,
+                fn: pipe([() => live, getById]),
+                isExpectedResult: or([
+                  eq(get("status"), "VALID"),
+                  eq(get("status"), "INVALID"),
+                ]),
+              }),
+          ])
+        ),
       ])(),
     method: "deleteComputeEnvironment",
     pickId: ({ computeEnvironmentName }) => ({
@@ -105,6 +114,8 @@ exports.BatchComputeEnvironment = ({ spec, config }) =>
       namespace,
       properties: { tags, ...otherProps },
       dependencies: {
+        ecsCluster,
+        eksCluster,
         instanceRole,
         keyPair,
         launchTemplate,
@@ -128,6 +139,20 @@ exports.BatchComputeEnvironment = ({ spec, config }) =>
           },
           tags: buildTagsObject({ name, config, namespace, userTags: tags }),
         }),
+        when(
+          () => ecsCluster,
+          defaultsDeep({
+            ecsClusterArn: getField(ecsCluster, "clusterArn"),
+          })
+        ),
+        when(
+          () => eksCluster,
+          defaultsDeep({
+            eksConfiguration: {
+              eksClusterArn: getField(eksCluster, "arn"),
+            },
+          })
+        ),
         when(
           () => instanceRole,
           defaultsDeep({

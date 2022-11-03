@@ -26,6 +26,7 @@ module.exports = pipe([
         "status",
         "statusReason",
         "ecsClusterArn",
+        "eksConfiguration.eksClusterArn",
         "computeEnvironmentArn",
         "computeResources.ec2KeyPair",
         "computeResources.instanceRole",
@@ -33,9 +34,21 @@ module.exports = pipe([
         "computeResources.placementGroup",
         "computeResources.securityGroupIds",
         "computeResources.subnets",
+        "uuid",
       ],
       inferName: get("properties.computeEnvironmentName"),
       dependencies: {
+        ecsCluster: {
+          type: "Cluster",
+          group: "ECS",
+          dependencyId: ({ lives, config }) => pipe([get("ecsClusterArn")]),
+        },
+        eksCluster: {
+          type: "Cluster",
+          group: "EKS",
+          dependencyId: ({ lives, config }) =>
+            pipe([get("eksConfiguration.eksClusterArn")]),
+        },
         keyPair: {
           type: "KeyPair",
           group: "EC2",
