@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, and, assign, map } = require("rubico");
+const { pipe, tap, get, eq, and, assign, or } = require("rubico");
 const {
   defaultsDeep,
   callProp,
@@ -193,7 +193,10 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
 
   const managedByOther = pipe([
     get("live.Arn"),
-    callProp("startsWith", "arn:aws:autoscaling"),
+    or([
+      callProp("startsWith", "arn:aws:autoscaling"),
+      callProp("startsWith", "arn:aws:inspector2"),
+    ]),
   ]);
 
   const decorate = ({ parent }) =>

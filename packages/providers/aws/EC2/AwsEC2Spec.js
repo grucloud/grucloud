@@ -782,6 +782,10 @@ module.exports = pipe([
           type: "LogGroup",
           group: "CloudWatchLogs",
         },
+        firehoseDeliveryStream: {
+          type: "DeliveryStream",
+          group: "Firehose",
+        },
         s3Bucket: {
           type: "Bucket",
           group: "S3",

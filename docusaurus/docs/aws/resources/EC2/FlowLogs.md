@@ -89,6 +89,7 @@ exports.createResources = () => [
 - [EC2 Subnet](./Subnet.md)
 - [EC2 Network Interface](./NetworkInterface.md)
 - [EC2 TransitGateway](./TransitGateway.md)
+- [Firehose DeliveryStream](../Firehose/DeliveryStream.md)
 - [IAM Role](../IAM/Role.md)
 - [S3 Bucket](../S3/Bucket.md)
 

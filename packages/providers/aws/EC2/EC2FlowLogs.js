@@ -195,6 +195,20 @@ exports.EC2FlowLogs = ({ spec, config }) =>
         ],
       },
       {
+        type: "DeliveryStream",
+        group: "Firehose",
+        ids: [
+          pipe([
+            () => live,
+            switchCase([
+              eq(get("LogDestinationType"), "kinesis-data-firehose"),
+              pipe([get("LogDestination")]),
+              () => undefined,
+            ]),
+          ])(),
+        ],
+      },
+      {
         type: "Bucket",
         group: "S3",
         ids: [
@@ -219,7 +233,13 @@ exports.EC2FlowLogs = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: { s3Bucket, iamRole, cloudWatchLogGroup, ...deps },
+      dependencies: {
+        s3Bucket,
+        iamRole,
+        firehoseDeliveryStream,
+        cloudWatchLogGroup,
+        ...deps
+      },
     }) =>
       pipe([
         tap((params) => {
@@ -244,6 +264,14 @@ exports.EC2FlowLogs = ({ spec, config }) =>
           defaultsDeep({
             LogDestinationType: "cloud-watch-logs",
             LogGroupName: get("resource.name")(cloudWatchLogGroup),
+          }),
+          () => firehoseDeliveryStream,
+          defaultsDeep({
+            LogDestinationType: "kinesis-data-firehose",
+            LogDestination: getField(
+              firehoseDeliveryStream,
+              "DeliveryStreamARN"
+            ),
           }),
           () => {
             assert(false, "missing flow logs destination dependencies");

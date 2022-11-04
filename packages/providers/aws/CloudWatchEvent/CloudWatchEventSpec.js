@@ -133,7 +133,7 @@ module.exports = pipe([
     {
       type: "EventBus",
       Client: CloudWatchEventBus,
-      inferName: get("properties.Name"),
+      inferName: get("properties.Name", "default"),
       omitProperties: ["Arn"],
       filterLive: () => pipe([pick(["Name"])]),
     },

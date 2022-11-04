@@ -36,6 +36,7 @@ const GROUPS = [
   ["ELBv2", "elb"],
   ["Firehose", "firehose"],
   ["Glue", "glue"],
+  ["Inspector2", "inspector2"],
   ["Kinesis", "kinesis"],
   ["KMS", "kms"],
   ["Lambda", "lambda"],

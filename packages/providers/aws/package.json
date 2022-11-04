@@ -97,6 +97,7 @@
     "@aws-sdk/client-firehose": "3.130.0",
     "@aws-sdk/client-global-accelerator": "3.130.0",
     "@aws-sdk/client-glue": "3.130.0",
+    "@aws-sdk/client-inspector2": "3.202.0",
     "@aws-sdk/client-iam": "3.130.0",
     "@aws-sdk/client-kafka": "3.130.0",
     "@aws-sdk/client-kinesis": "3.130.0",

@@ -40,6 +40,7 @@ exports.createResources = () => [
 ## Used By
 
 - [EC2 Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
+- [EC2 FlowLogs](../EC2/FlowLogs.md)
 - [ECS Cluster](../ECS/Cluster.md)
 - [ElastiCache Cluster](../ElastiCache/Cluster.md)
 - [Log Stream](./LogStream.md)

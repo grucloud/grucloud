@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project inspector2-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Inspector2
+++++ DelegatedAdminAccount (1)
+++++ Enabler (1)
+@endmindmap

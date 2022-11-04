@@ -12,7 +12,7 @@ const {
 
 const findId = get("live.Arn");
 const pickId = pick(["Name"]);
-const findName = get("live.Name");
+const findName = get("live.Name", "default");
 
 const isDefault = eq(get("live.Name"), "default");
 

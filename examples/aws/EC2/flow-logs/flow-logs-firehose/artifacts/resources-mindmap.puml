@@ -1,0 +1,21 @@
+@startmindmap
+title Resources for project flow-logs-firehose
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ FlowLogs (1)
+++++ Vpc (1)
+++++ Subnet (1)
+++++ RouteTable (1)
+++++ RouteTableAssociation (1)
++++ Firehose
+++++ DeliveryStream (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ S3
+++++ Bucket (2)
+@endmindmap
