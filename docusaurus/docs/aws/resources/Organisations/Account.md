@@ -30,6 +30,7 @@ exports.createResources = () => [
 
 ### Used By
 
+- [Inspector2 Delegated Admin Account](../Inspector2/DelegatedAdminAccount.md)
 - [Organisations Policy Attachment](./PolicyAttachment.md)
 
 ### List

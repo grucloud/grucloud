@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { map, pipe, tap, get, omit, eq } = require("rubico");
-const { defaultsDeep, isEmpty, when } = require("rubico/x");
+const { map, pipe, tap, get, omit } = require("rubico");
+const { defaultsDeep, isEmpty, isDeepEqual } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
 
@@ -8,6 +8,9 @@ const {
   Inspector2DelegatedAdminAccount,
 } = require("./Inspector2DelegatedAdminAccount");
 const { Inspector2Enabler } = require("./Inspector2Enabler");
+const {
+  Inspector2OrganizationConfiguration,
+} = require("./Inspector2OrganizationConfiguration");
 
 const GROUP = "Inspector2";
 
@@ -21,8 +24,14 @@ module.exports = pipe([
       type: "DelegatedAdminAccount",
       Client: Inspector2DelegatedAdminAccount,
       inferName: () => "default",
-      omitProperties: ["status"],
-      propertiesDefault: {},
+      omitProperties: ["status", "delegatedAdminAccountId"],
+      dependencies: {
+        account: {
+          type: "Account",
+          group: "Organisations",
+          dependencyId: () => pipe([get("delegatedAdminAccountId")]),
+        },
+      },
     },
     {
       type: "Enabler",
@@ -33,7 +42,22 @@ module.exports = pipe([
         filterAll: () => pipe([omit(["accountIds"])]),
       }),
       omitProperties: ["state"],
-      propertiesDefault: {},
+    },
+    {
+      type: "OrganizationConfiguration",
+      Client: Inspector2OrganizationConfiguration,
+      inferName: () => "default",
+      omitProperties: ["maxAccountLimitReached"],
+      ignoreResource: () =>
+        pipe([
+          get("live"),
+          get("autoEnable"),
+          (autoEnable) =>
+            isDeepEqual(autoEnable, {
+              ec2: false,
+              ecr: false,
+            }),
+        ]),
     },
   ],
   map(

@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "DelegatedAdminAccount",
     group: "Inspector2",
-    properties: ({}) => ({
-      delegatedAdminAccountId: "840541460064",
+    dependencies: ({}) => ({
+      account: "test account",
     }),
   },
   {
@@ -15,6 +15,16 @@ exports.createResources = () => [
     group: "Inspector2",
     properties: ({}) => ({
       resourceTypes: ["EC2", "ECR"],
+    }),
+  },
+  {
+    type: "Account",
+    group: "Organisations",
+    name: "test account",
+    readOnly: true,
+    properties: ({}) => ({
+      Email: "test@grucloud.com",
+      Name: "test account",
     }),
   },
 ];

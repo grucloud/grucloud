@@ -46,9 +46,6 @@ const model = ({ config }) => ({
               resourceTypes,
               state,
             }),
-            tap((params) => {
-              assert(true);
-            }),
           ])(),
       ]),
   },
@@ -56,11 +53,6 @@ const model = ({ config }) => ({
   create: {
     method: "enable",
     pickCreated: ({ payload }) => pipe([() => payload]),
-    filterParams: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Inspector2.html#disable-property
   destroy: {
@@ -87,9 +79,6 @@ exports.Inspector2Enabler = ({ spec, config }) =>
       ({ endpoint, getById }) =>
       async ({ payload, live, diff }) =>
         pipe([
-          tap((params) => {
-            assert(diff);
-          }),
           () => diff,
           tap.if(
             or([get("liveDiff.deleted.resourceTypes")]),
