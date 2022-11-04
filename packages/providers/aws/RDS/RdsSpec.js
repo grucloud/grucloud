@@ -75,9 +75,6 @@ module.exports = pipe([
       ],
       filterLive: ({ lives, providerConfig }) =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           when(
             get("Auth"),
             assign({
@@ -103,9 +100,6 @@ module.exports = pipe([
               ]),
             })
           ),
-          tap((params) => {
-            assert(true);
-          }),
         ]),
       dependencies: {
         subnets: {
@@ -144,12 +138,6 @@ module.exports = pipe([
         "Status",
         "CreatedDate",
       ],
-      filterLive: ({ lives }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-        ]),
       dependencies: {
         dbProxy: {
           type: "DBProxy",
@@ -237,6 +225,7 @@ module.exports = pipe([
         key: {
           type: "Key",
           group: "KMS",
+          excludeDefaultDependencies: true,
           dependencyId: ({ lives, config }) => get("KmsKeyId"),
         },
         secret: {
@@ -376,6 +365,7 @@ module.exports = pipe([
         key: {
           type: "Key",
           group: "KMS",
+          excludeDefaultDependencies: true,
           dependencyId: ({ lives, config }) => get("KmsKeyId"),
         },
         dbCluster: {

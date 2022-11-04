@@ -273,8 +273,8 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
     }
     return (...args) =>
       retryCall({
-        //name: `${endpointName}.${name} ${JSON.stringify(args)}`,
         name: `${endpointName}.${name}`,
+        //name: `${endpointName}.${name} ${JSON.stringify(args)}`,
         fn: pipe([
           () => endpoint[name](...args),
           tap((params) => {
