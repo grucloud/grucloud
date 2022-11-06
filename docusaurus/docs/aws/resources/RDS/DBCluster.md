@@ -57,6 +57,7 @@ exports.createResources = () => [
 
 ## Dependencies
 
+- [ApplicationAutoScaling Target](../ApplicationAutoScaling/Target.md)
 - [EC2 Security Group](../EC2/SecurityGroup.md)
 - [RDS DB Subnet Group](./DBSubnetGroup.md)
 - [SecretsManager Secret](../SecretsManager/Secret.md)

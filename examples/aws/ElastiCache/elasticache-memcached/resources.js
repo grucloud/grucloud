@@ -198,7 +198,7 @@ exports.createResources = () => [
     group: "ElastiCache",
     properties: ({}) => ({
       CacheSubnetGroupName: "my-memcached",
-      Description: "my subnet group",
+      CacheSubnetGroupDescription: "my subnet group",
     }),
     dependencies: ({ config }) => ({
       subnets: [

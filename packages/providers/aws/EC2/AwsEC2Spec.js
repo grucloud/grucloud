@@ -2371,6 +2371,7 @@ module.exports = pipe([
           type: "SecurityGroup",
           group: "EC2",
           list: true,
+          excludeDefaultDependencies: true,
           dependencyIds: ({ lives, config }) =>
             pipe([get("Groups"), pluck("GroupId")]),
         },

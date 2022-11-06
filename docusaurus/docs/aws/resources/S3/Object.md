@@ -11,7 +11,13 @@ Manages a [S3 Object](https://docs.aws.amazon.com/s3/index.html)
 
 ```js
 exports.createResources = () => [
-  { type: "Bucket", group: "S3", name: "grucloud-simple-bucket" },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "grucloud-simple-bucket",
+    }),
+  },
   {
     type: "Object",
     group: "S3",

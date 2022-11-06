@@ -137,8 +137,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-global-accelarator",
     properties: ({ config }) => ({
+      Name: "grucloud-global-accelarator",
       Policy: {
         Version: "2012-10-17",
         Id: "AWSLogDeliveryWrite20150319",

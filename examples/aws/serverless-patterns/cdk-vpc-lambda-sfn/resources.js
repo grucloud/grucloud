@@ -324,9 +324,9 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.states`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "vpcStack/test-VPC",

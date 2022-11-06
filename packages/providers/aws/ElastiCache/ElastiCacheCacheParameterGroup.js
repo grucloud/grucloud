@@ -1,7 +1,17 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign, filter, map } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  assign,
+  filter,
+  map,
+  and,
+  eq,
+} = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 
 const { buildTags } = require("../AwsCommon");
 
@@ -22,10 +32,11 @@ const decorate = ({ endpoint }) =>
         pick(["CacheParameterGroupName"]),
         endpoint().describeCacheParameters,
         get("Parameters"),
-        filter(get("IsModifiable")),
+        filter(and([get("IsModifiable"), eq(get("Source"), "user")])),
         map(pick(["ParameterName", "ParameterValue"])),
       ]),
     }),
+    omitIfEmpty(["Parameters"]),
     assignTags({ endpoint, buildArn: buildArn() }),
   ]);
 
@@ -73,7 +84,7 @@ const model = ({ config }) => ({
           assert(diff);
         }),
         () => diff,
-        get("liveDiff.updated.Parameters"),
+        get("liveDiff.updated.Parameters", {}),
         Object.entries,
         map(([key, param]) =>
           pipe([

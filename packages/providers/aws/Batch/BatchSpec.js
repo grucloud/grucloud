@@ -38,11 +38,6 @@ module.exports = pipe([
       ],
       inferName: get("properties.computeEnvironmentName"),
       dependencies: {
-        ecsCluster: {
-          type: "Cluster",
-          group: "ECS",
-          dependencyId: ({ lives, config }) => pipe([get("ecsClusterArn")]),
-        },
         eksCluster: {
           type: "Cluster",
           group: "EKS",
@@ -114,6 +109,7 @@ module.exports = pipe([
         ]),
       propertiesDefault: {
         propagateTags: false,
+        containerOrchestrationType: "ECS",
         containerProperties: {
           networkConfiguration: {
             assignPublicIp: "DISABLED",

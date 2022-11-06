@@ -18,10 +18,11 @@ exports.createResources = () => [];
 ## Used By
 
 - [ElastiCache Global Replication Group](../ElastiCache/GlobalReplicationGroup.md)
+- [ApplicationAutoScaling Target](../ApplicationAutoScaling/Target.md)
 
 ## Full Examples
 
-- [elasticache simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElastiCache/elasticache-simple)
+- [elasticache redis](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElastiCache/elasticache-redis)
 
 ## List
 

@@ -2,6 +2,7 @@ const assert = require("assert");
 const { tap, pipe, map, get, assign, any, eq, and, not } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { envVarName } = require("@grucloud/core/generatorUtils");
+const { deepOmit } = require("@grucloud/core/deepOmit");
 
 const { compareAws } = require("../AwsCommon");
 
@@ -28,7 +29,6 @@ module.exports = pipe([
         "Configuration",
         "Logs.AuditLogGroup",
         "Logs.GeneralLogGroup",
-        "Users[].Password",
       ],
       propertiesDefault: {},
       inferName: get("properties.BrokerName"),
@@ -41,6 +41,7 @@ module.exports = pipe([
         kmsKey: {
           type: "Key",
           group: "KMS",
+          excludeDefaultDependencies: true,
           dependencyId: ({ lives, config }) =>
             get("EncryptionOptions.KmsKeyId"),
         },
@@ -58,15 +59,20 @@ module.exports = pipe([
           type: "SecurityGroup",
           group: "EC2",
           list: true,
+          excludeDefaultDependencies: true,
           dependencyIds: ({ lives, config }) => get("SecurityGroups"),
         },
         subnets: {
           type: "Subnet",
           group: "EC2",
           list: true,
+          excludeDefaultDependencies: true,
           dependencyIds: ({ lives, config }) => get("SubnetIds"),
         },
       },
+      compare: compare({
+        filterTarget: () => pipe([deepOmit(["Users[].Password"])]),
+      }),
       environmentVariables: [
         {
           path: "Users[].Password",
@@ -80,9 +86,6 @@ module.exports = pipe([
         (live) =>
           pipe([
             () => live,
-            tap((params) => {
-              assert(true);
-            }),
             assign({
               Users: pipe([
                 get("Users"),
@@ -91,9 +94,6 @@ module.exports = pipe([
                     () => user,
                     assign({
                       Password: pipe([
-                        tap((params) => {
-                          assert(true);
-                        }),
                         () => () =>
                           `JSON.parse(process.env.${envVarName({
                             name: live.BrokerName,
@@ -114,10 +114,6 @@ module.exports = pipe([
         ({ lives }) =>
         ({ live }) =>
           pipe([
-            tap((params) => {
-              assert(lives);
-              assert(live.Id);
-            }),
             () => lives,
             not(
               any(

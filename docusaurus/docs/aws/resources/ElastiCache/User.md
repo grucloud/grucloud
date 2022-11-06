@@ -8,7 +8,22 @@ Manages an [ElastiCache User](https://console.aws.amazon.com/elasticache/home#/u
 ## Sample code
 
 ```js
-exports.createResources = () => [];
+exports.createResources = () => [
+  {
+    type: "User",
+    group: "ElastiCache",
+    properties: ({}) => ({
+      UserId: "myuser",
+      UserName: "myuser",
+      Engine: "redis",
+      AccessString: "on ~* +@all",
+      Authentication: {
+        Type: "password",
+        Passwords: JSON.parse(process.env.MYUSER_ELASTICACHE_USER_PASSWORDS),
+      },
+    }),
+  },
+];
 ```
 
 ## Properties
@@ -21,7 +36,7 @@ exports.createResources = () => [];
 
 ## Full Examples
 
-- [elasticache simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElastiCache/elasticache-simple)
+- [elasticache redis-full](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElastiCache/elasticache-redis-full)
 
 ## List
 

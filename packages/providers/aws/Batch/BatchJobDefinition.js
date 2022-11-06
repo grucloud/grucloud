@@ -1,6 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, get, eq } = require("rubico");
-const { defaultsDeep, callProp, unless, append, isEmpty } = require("rubico/x");
+const {
+  defaultsDeep,
+  callProp,
+  unless,
+  append,
+  isEmpty,
+  identity,
+} = require("rubico/x");
 const { buildTagsObject, omitIfEmpty } = require("@grucloud/core/Common");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -12,6 +19,9 @@ const { tagResource, untagResource } = require("./BatchCommon");
 const buildArn = () => get("jobDefinitionArn");
 
 const pickId = pipe([
+  tap(({ jobDefinitionArn }) => {
+    assert(jobDefinitionArn);
+  }),
   ({ jobDefinitionArn }) => ({
     jobDefinition: jobDefinitionArn,
   }),
@@ -38,11 +48,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#describeJobDefinitions-property
   getById: {
     method: "describeJobDefinitions",
-    pickId: pipe([
-      ({ jobDefinitionArn }) => ({
-        jobDefinitions: [jobDefinitionArn],
-      }),
-    ]),
+    pickId,
     getField: "jobDefinitions",
     decorate,
   },
@@ -64,8 +70,8 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#registerJobDefinition-property
   create: {
     method: "registerJobDefinition",
-    pickCreated: ({ payload }) => pipe([() => payload]),
-    isInstanceUp: eq(get("status"), "ACTIVE"),
+    pickCreated: ({ payload }) => pipe([identity]),
+    isInstanceUp: pipe([eq(get("status"), "ACTIVE")]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#updateJobDefinition-property
   update: {
@@ -90,7 +96,10 @@ exports.BatchJobDefinition = ({ spec, config }) =>
       pipe([
         () => live,
         get("jobDefinitionName"),
-        unless(() => live.latest, append(`::${live.revision}`)),
+        unless(
+          eq(() => live.status, "ACTIVE"),
+          append(`::${live.revision}`)
+        ),
       ])(),
     findId: pipe([get("live.jobDefinitionArn")]),
     cannotBeDeleted,

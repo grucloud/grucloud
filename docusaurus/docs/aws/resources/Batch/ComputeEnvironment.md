@@ -38,7 +38,6 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [ECS Cluster](../ECS/Cluster.md)
 - [EKS Cluster](../EKS/Cluster.md)
 - [EC2 Launch Template](../EC2/LaunchTemplate.md)
 - [EC2 Placement Group](../EC2/PlacementGroup.md)

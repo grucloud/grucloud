@@ -6,8 +6,6 @@ skinparam monochrome true
 +++ AutoScaling
 ++++ AutoScalingGroup (1)
 ++++ LaunchConfiguration (1)
-+++ Batch
-++++ JobDefinition (1)
 +++ EC2
 ++++ Vpc (1)
 ++++ InternetGateway (1)

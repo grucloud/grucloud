@@ -82,7 +82,7 @@ exports.createResources = () => [
     group: "ElastiCache",
     properties: ({}) => ({
       CacheSubnetGroupName: "my-sutnet-group",
-      Description: " ",
+      CacheSubnetGroupDescription: " ",
     }),
     dependencies: ({ config }) => ({
       subnets: [

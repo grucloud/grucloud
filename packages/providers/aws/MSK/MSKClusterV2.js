@@ -41,6 +41,7 @@ const model = ({ config }) => ({
     isInstanceUp: eq(get("State"), "ACTIVE"),
     isInstanceError: eq(get("State"), "FAILED"),
     getErrorMessage: get("StateInfo.Message", "failed"),
+    // TODO retry on "Amazon MSK could not create your cluster because of a service issue. Retry the operation"
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Kafka.html#updateClusterConfiguration-property
   update: {

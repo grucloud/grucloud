@@ -23,13 +23,7 @@ const managedByOther = pipe([
 
 //
 const decorate = ({ endpoint }) =>
-  pipe([
-    ({ CacheSubnetGroupDescription, ...other }) => ({
-      ...other,
-      Description: CacheSubnetGroupDescription,
-    }),
-    assignTags({ endpoint, buildArn: buildArn() }),
-  ]);
+  pipe([assignTags({ endpoint, buildArn: buildArn() })]);
 
 const model = ({ config }) => ({
   package: "elasticache",
@@ -56,8 +50,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#modifyCacheSubnetGroup-property
   update: {
     method: "modifyCacheSubnetGroup",
-    filterParams: ({ payload: { Description, ...other } }) =>
-      pipe([() => ({ ...other, CacheSubnetGroupDescription: Description })])(),
+    filterParams: ({ payload }) => pipe([() => payload])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#deleteCacheSubnetGroup-property
   destroy: {

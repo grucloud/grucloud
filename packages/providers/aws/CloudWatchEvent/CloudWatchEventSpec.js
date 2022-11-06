@@ -175,6 +175,7 @@ module.exports = pipe([
         eventBus: {
           type: "EventBus",
           group: "CloudWatchEvents",
+          excludeDefaultDependencies: true,
           parent: true,
           dependencyId: ({ lives, config }) =>
             pipe([

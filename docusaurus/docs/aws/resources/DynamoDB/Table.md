@@ -49,6 +49,10 @@ exports.createResources = () => [
 
 - [KMS Key](../KMS/Key.md)
 
+## Used By
+
+- [ApplicationAutoScaling Target](../ApplicationAutoScaling/Target.md)
+
 ## Full Examples
 
 - [Simple table](https://github.com/grucloud/grucloud/tree/main/examples/aws/DynamoDB/table)

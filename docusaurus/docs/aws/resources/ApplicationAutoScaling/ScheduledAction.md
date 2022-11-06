@@ -21,7 +21,7 @@ exports.createResources = () => [];
 
 ## Full Examples
 
-- [application autoscaling simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApplicationAutoScaling/app-autoscaling-simple)
+- [appautoscaling-dynamodb](https://github.com/grucloud/grucloud/tree/main/examples/aws/ApplicationAutoScaling/appautoscaling-dynamodb)
 
 ## List
 

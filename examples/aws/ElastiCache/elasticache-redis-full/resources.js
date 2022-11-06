@@ -113,7 +113,7 @@ exports.createResources = () => [
     group: "ElastiCache",
     properties: ({}) => ({
       CacheSubnetGroupName: "my-subnet-group",
-      Description: " ",
+      CacheSubnetGroupDescription: " ",
       Tags: [
         {
           Key: "mykey",

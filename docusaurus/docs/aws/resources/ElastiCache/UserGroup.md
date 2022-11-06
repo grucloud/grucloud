@@ -8,7 +8,20 @@ Manages an [ElastiCache User Group](https://console.aws.amazon.com/elasticache/h
 ## Sample code
 
 ```js
-exports.createResources = () => [];
+exports.createResources = () => [
+  {
+    type: "UserGroup",
+    group: "ElastiCache",
+    properties: ({}) => ({
+      UserGroupId: "mygroup",
+      Engine: "redis",
+      UserIds: ["default", "myuser"],
+    }),
+    dependencies: ({}) => ({
+      users: ["myuser"],
+    }),
+  },
+];
 ```
 
 ## Properties
@@ -21,7 +34,7 @@ exports.createResources = () => [];
 
 ## Full Examples
 
-- [elasticache simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElastiCache/elasticache-simple)
+- [elasticache redis-full](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElastiCache/elasticache-redis-full)
 
 ## List
 

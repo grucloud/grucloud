@@ -15,6 +15,7 @@ const {
   and,
   flatMap,
   any,
+  or,
 } = require("rubico");
 const {
   callProp,
@@ -437,7 +438,7 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   const cannotBeDeleted = pipe([
     get("live.Path"),
-    includes("/aws-service-role"),
+    or([includes("/aws-service-role"), includes("/aws-reserved/")]),
   ]);
 
   return {

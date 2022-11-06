@@ -110,6 +110,7 @@ module.exports = pipe([
         kmsKey: {
           type: "Key",
           group: "KMS",
+          excludeDefaultDependencies: true,
           dependencyId: ({ lives, config }) => pipe([get("EncryptionKeyArn")]),
         },
       },

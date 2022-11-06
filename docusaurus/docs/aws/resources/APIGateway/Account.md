@@ -41,7 +41,7 @@ exports.createResources = () => [
 The account settings can be filtered with the _Account_ type:
 
 ```sh
-gc l -t Account
+gc l -t APIGateway::Account
 ```
 
 ```txt

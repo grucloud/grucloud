@@ -9,6 +9,11 @@ skinparam monochrome true
 ++++ BackupVault (1)
 ++++ BackupVaultLockConfiguration (1)
 ++++ BackupVaultPolicy (1)
+++++ Framework (1)
+++++ GlobalSettings (1)
+++++ ReportPlan (2)
 +++ IAM
 ++++ Role (1)
++++ S3
+++++ Bucket (2)
 @endmindmap

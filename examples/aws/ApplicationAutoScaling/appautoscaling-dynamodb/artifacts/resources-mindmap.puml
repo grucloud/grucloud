@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project appautoscaling-dynamodb
+skinparam monochrome true
++ Infra
+++ aws
++++ ApplicationAutoScaling
+++++ Policy (2)
+++++ Target (2)
++++ DynamoDB
+++++ Table (1)
+@endmindmap

@@ -114,7 +114,6 @@ exports.BatchComputeEnvironment = ({ spec, config }) =>
       namespace,
       properties: { tags, ...otherProps },
       dependencies: {
-        ecsCluster,
         eksCluster,
         instanceRole,
         keyPair,
@@ -139,12 +138,6 @@ exports.BatchComputeEnvironment = ({ spec, config }) =>
           },
           tags: buildTagsObject({ name, config, namespace, userTags: tags }),
         }),
-        when(
-          () => ecsCluster,
-          defaultsDeep({
-            ecsClusterArn: getField(ecsCluster, "clusterArn"),
-          })
-        ),
         when(
           () => eksCluster,
           defaultsDeep({

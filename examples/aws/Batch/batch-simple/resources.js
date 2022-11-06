@@ -12,6 +12,7 @@ exports.createResources = () => [
         maxvCpus: 128,
         type: "FARGATE",
       },
+      containerOrchestrationType: "ECS",
       serviceRole: `arn:aws:iam::${config.accountId()}:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch`,
       type: "MANAGED",
     }),

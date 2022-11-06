@@ -70,6 +70,7 @@ const model = ({ config }) => ({
     method: "deleteConfiguration",
     pickId,
     ignoreErrorMessages,
+    //TODO should retry on "The request could not be processed because of an internal error. Try again."
   },
 });
 

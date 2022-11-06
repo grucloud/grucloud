@@ -26,7 +26,7 @@ exports.createResources = () => [];
 
 ## Full Examples
 
-- [elasticache simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElastiCache/elasticache-simple)
+- [elasticache memcached](https://github.com/grucloud/grucloud/tree/main/examples/aws/ElastiCache/elasticache-memcached)
 
 ## List
 
