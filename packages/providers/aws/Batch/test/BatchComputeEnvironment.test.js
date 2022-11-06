@@ -27,12 +27,15 @@ describe("BatchComputeEnvironment", async function () {
   it(
     "delete with invalid id",
     pipe([
-      () =>
-        computeEnvironment.destroy({
-          live: {
-            computeEnvironmentName: "compute-environment-1",
-          },
-        }),
+      tap((params) => {
+        assert(true);
+      }),
+      () => ({
+        live: {
+          computeEnvironmentName: "compute-environment",
+        },
+      }),
+      (x) => computeEnvironment.destroy(x),
     ])
   );
   it(
@@ -40,7 +43,7 @@ describe("BatchComputeEnvironment", async function () {
     pipe([
       () =>
         computeEnvironment.getById({
-          computeEnvironmentName: "compute-environment-1",
+          computeEnvironmentName: "compute-environment",
         }),
     ])
   );

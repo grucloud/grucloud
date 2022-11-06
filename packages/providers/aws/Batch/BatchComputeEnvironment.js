@@ -25,7 +25,7 @@ const decorate = () =>
 const model = ({ config }) => ({
   package: "batch",
   client: "Batch",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["ResourceNotFoundException", "ClientException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#describeComputeEnvironments-property
   getById: {
     method: "describeComputeEnvironments",

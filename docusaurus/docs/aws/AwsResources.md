@@ -4,6 +4,10 @@ title: Resources List
 ---
 List of resources for provider aws:
 
+* AccessAnalyzer: 
+[Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
+* Account: 
+[AlternateAccount](./resources/Account/AlternateAccount.md)
 * ACM: 
 [Certificate](./resources/ACM/Certificate.md)
 * APIGateway: 
@@ -12,12 +16,16 @@ List of resources for provider aws:
 [DomainName](./resources/ApiGatewayV2/DomainName.md), [Api](./resources/ApiGatewayV2/Api.md), [Stage](./resources/ApiGatewayV2/Stage.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
 * AppConfig: 
 [Application](./resources/AppConfig/Application.md), [Deployment](./resources/AppConfig/Deployment.md), [DeploymentStrategy](./resources/AppConfig/DeploymentStrategy.md), [ConfigurationProfile](./resources/AppConfig/ConfigurationProfile.md), [Environment](./resources/AppConfig/Environment.md), [HostedConfigurationVersion](./resources/AppConfig/HostedConfigurationVersion.md)
+* ApplicationAutoScaling: 
+[Policy](./resources/ApplicationAutoScaling/Policy.md), [Target](./resources/ApplicationAutoScaling/Target.md)
 * AppRunner: 
-[Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md)
+[Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md), [VpcConnector](./resources/AppRunner/VpcConnector.md), [VpcIngressConnection](./resources/AppRunner/VpcIngressConnection.md)
 * AppSync: 
 [GraphqlApi](./resources/AppSync/GraphqlApi.md), [DataSource](./resources/AppSync/DataSource.md), [Resolver](./resources/AppSync/Resolver.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
+* Backup: 
+[BackupPlan](./resources/Backup/BackupPlan.md), [BackupSelection](./resources/Backup/BackupSelection.md), [BackupVault](./resources/Backup/BackupVault.md), [BackupVaultLockConfiguration](./resources/Backup/BackupVaultLockConfiguration.md), [BackupVaultNotification](./resources/Backup/BackupVaultNotification.md), [BackupVaultPolicy](./resources/Backup/BackupVaultPolicy.md), [Framework](./resources/Backup/Framework.md), [GlobalSettings](./resources/Backup/GlobalSettings.md), [RegionSettings](./resources/Backup/RegionSettings.md), [ReportPlan](./resources/Backup/ReportPlan.md)
 * Batch: 
 [ComputeEnvironment](./resources/Batch/ComputeEnvironment.md), [JobDefinition](./resources/Batch/JobDefinition.md), [JobQueue](./resources/Batch/JobQueue.md), [SchedulingPolicy](./resources/Batch/SchedulingPolicy.md)
 * CloudFormation: 
@@ -27,7 +35,7 @@ List of resources for provider aws:
 * CloudTrail: 
 [Trail](./resources/CloudTrail/Trail.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
 * CloudWatch: 
-[MetricAlarm](./resources/CloudWatch/MetricAlarm.md)
+[Dashboard](./resources/CloudWatch/Dashboard.md), [MetricAlarm](./resources/CloudWatch/MetricAlarm.md)
 * CloudWatchEvents: 
 [ApiDestination](./resources/CloudWatchEvents/ApiDestination.md), [Connection](./resources/CloudWatchEvents/Connection.md), [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
@@ -54,6 +62,10 @@ List of resources for provider aws:
 [FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
 [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
+* ElastiCache: 
+[CacheCluster](./resources/ElastiCache/CacheCluster.md), [CacheParameterGroup](./resources/ElastiCache/CacheParameterGroup.md), [CacheSubnetGroup](./resources/ElastiCache/CacheSubnetGroup.md), [ReplicationGroup](./resources/ElastiCache/ReplicationGroup.md), [User](./resources/ElastiCache/User.md), [UserGroup](./resources/ElastiCache/UserGroup.md)
+* ElasticBeanstalk: 
+[Application](./resources/ElasticBeanstalk/Application.md), [ApplicationVersion](./resources/ElasticBeanstalk/ApplicationVersion.md), [Environment](./resources/ElasticBeanstalk/Environment.md)
 * ElasticLoadBalancingV2: 
 [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md)
 * EMRServerless: 
@@ -66,6 +78,8 @@ List of resources for provider aws:
 [Job](./resources/Glue/Job.md)
 * IAM: 
 [OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
+* Inspector2: 
+[DelegatedAdminAccount](./resources/Inspector2/DelegatedAdminAccount.md), [Enabler](./resources/Inspector2/Enabler.md), [OrganizationConfiguration](./resources/Inspector2/OrganizationConfiguration.md)
 * Kinesis: 
 [Stream](./resources/Kinesis/Stream.md)
 * KMS: 
@@ -83,7 +97,7 @@ List of resources for provider aws:
 * NetworkManager: 
 [GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Site](./resources/NetworkManager/Site.md), [Device](./resources/NetworkManager/Device.md), [Link](./resources/NetworkManager/Link.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md), [VpcAttachment](./resources/NetworkManager/VpcAttachment.md)
 * Organisations: 
-[Root](./resources/Organisations/Root.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md)
+[Account](./resources/Organisations/Account.md), [Policy](./resources/Organisations/Policy.md), [PolicyAttachment](./resources/Organisations/PolicyAttachment.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md), [Root](./resources/Organisations/Root.md)
 * RAM: 
 [ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
 * RDS: 
