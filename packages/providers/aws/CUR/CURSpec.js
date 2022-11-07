@@ -10,17 +10,30 @@ const GROUP = "CUR";
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
-//const { ReportDefinition } = require("./CURReportDefinition");
+const { CURReportDefinition } = require("./CURReportDefinition");
 
 module.exports = pipe([
   () => [
-    // {
-    //   type: "ReportDefinition",
-    //   Client: CURReportDefinition,
-    //   propertiesDefault: {},
-    //   omitProperties: [],
-    //   inferName: get("properties.ReportName"),
-    // },
+    {
+      type: "ReportDefinition",
+      Client: CURReportDefinition,
+      propertiesDefault: {},
+      omitProperties: [],
+      inferName: get("properties.ReportName"),
+      dependencies: {
+        s3Bucket: {
+          type: "Bucket",
+          group: "S3",
+          dependencyId: () =>
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              get("S3Bucket"),
+            ]),
+        },
+      },
+    },
   ],
   map(
     defaultsDeep({

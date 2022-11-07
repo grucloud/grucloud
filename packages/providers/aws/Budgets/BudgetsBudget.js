@@ -116,9 +116,6 @@ exports.BudgetsBudget = ({ spec, config }) =>
               get("updated.Notifications"),
             ]),
             pipe([
-              tap((params) => {
-                assert(true);
-              }),
               // deleteNotification
               () => live,
               get("Notifications"),

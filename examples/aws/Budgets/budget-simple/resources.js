@@ -67,11 +67,7 @@ exports.createResources = () => [
               Sid: "AWSBudgets-notification-1",
               Effect: "Allow",
               Principal: {
-                Service: `${getId({
-                  type: "Budget",
-                  group: "Budgets",
-                  name: "budget",
-                })}s.amazonaws.com`,
+                Service: `budgets.amazonaws.com`,
               },
               Action: "SNS:Publish",
               Resource: `arn:aws:sns:${

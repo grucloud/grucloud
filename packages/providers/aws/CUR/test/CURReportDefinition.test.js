@@ -2,15 +2,15 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("BudgetsBudget", async function () {
+describe("CURReportDefinition", async function () {
   let config;
   let provider;
-  let budget;
+  let report;
 
   before(async function () {
     provider = await AwsProvider({ config });
-    budget = provider.getClient({
-      groupType: "Budgets::Budget",
+    report = provider.getClient({
+      groupType: "CUR::ReportDefinition",
     });
     await provider.start();
   });
@@ -18,22 +18,19 @@ describe("BudgetsBudget", async function () {
   it(
     "list",
     pipe([
-      () => budget.getList(),
+      () => report.getList(),
       tap((params) => {
         assert(true);
       }),
     ])
   );
-  it(
-    "delete with invalid id",
+  it("delete with invalid id", () =>
     pipe([
       () => ({
         live: {
-          AccountId: provider.getConfig().accountId(),
-          BudgetName: "b123",
+          ReportName: "b123",
         },
       }),
-      (x) => budget.destroy(x),
-    ])
-  );
+      report.destroy,
+    ]))();
 });
