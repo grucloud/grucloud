@@ -279,7 +279,7 @@ exports.createProgram = () => {
       "artifacts/inventory.json"
     )
     .option("--no-inventory-fetch", "do not fetch the inventory")
-    .option("download", "download the assets, i.e S3 Object")
+    .option("--download", "download the assets, i.e S3 Object")
     .option("-o, --outputDir <file>", "output directory", "")
     .option("--outputFile <file>", "output filename", "resources")
     .option(

@@ -747,7 +747,6 @@ exports.fnSpecs = ({ config }) => {
       {
         // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces
         type: "NetworkInterface",
-        includeDefaultDependencies: true,
         dependencies: {
           resourceGroup: {
             type: "ResourceGroup",

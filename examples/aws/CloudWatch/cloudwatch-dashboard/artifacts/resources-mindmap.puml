@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project cloudwatch-dashboard
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatch
+++++ Dashboard (1)
+@endmindmap

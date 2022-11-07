@@ -54,7 +54,6 @@ module.exports = pipe([
         },
         ...PrincipalAssociationDependencies,
       },
-      includeDefaultDependencies: true,
       Client: RAMPrincipalAssociation,
       inferName: ({
         properties: { associatedEntity },

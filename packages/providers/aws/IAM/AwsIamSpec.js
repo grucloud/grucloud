@@ -304,7 +304,6 @@ module.exports = pipe([
           }),
           omitIfEmpty(["Description", "Policies", "AttachedPolicies"]),
         ]),
-      includeDefaultDependencies: true,
       dependencies: {
         policies: {
           type: "Policy",

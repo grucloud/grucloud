@@ -28,7 +28,7 @@ describe("MemoryDB User", async function () {
     pipe([
       () =>
         user.destroy({
-          live: { UserName: "user-12345" },
+          live: { Name: "user-12345" },
         }),
     ])
   );
@@ -37,7 +37,7 @@ describe("MemoryDB User", async function () {
     pipe([
       () =>
         user.getById({
-          UserName: "user-12345",
+          Name: "user-12345",
         }),
     ])
   );
@@ -46,7 +46,7 @@ describe("MemoryDB User", async function () {
     pipe([
       () =>
         user.getByName({
-          UserName: "user-1234",
+          name: "user-1234",
         }),
     ])
   );

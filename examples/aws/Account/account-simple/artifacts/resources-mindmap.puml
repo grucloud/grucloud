@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project account-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Account
+++++ AlternateAccount (3)
+@endmindmap

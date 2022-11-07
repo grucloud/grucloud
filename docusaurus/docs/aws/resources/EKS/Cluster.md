@@ -79,6 +79,10 @@ kubectl config delete-cluster arn:aws:eks:eu-west-2:840541460064:cluster/myClust
 - [IAM Role](../IAM/Role.md)
 - [KMS Key](../KMS/Key.md)
 
+## Used By
+
+- [Batch ComputeEnvironment](../Batch/ComputeEnvironment.md)
+
 ## List
 
 ```sh

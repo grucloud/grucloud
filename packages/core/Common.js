@@ -167,7 +167,7 @@ exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
     }),
     () => plans,
     pluck("resource"),
-    groupBy("type"),
+    groupBy("groupType"),
     values,
     map((resources) => ({
       type: typeFromResources(resources),
@@ -658,7 +658,14 @@ exports.replaceWithName =
               switchCase([
                 () => groupType,
                 switchCase([() => withSuffix, includes(id), eq(identity, id)]),
-                callProp("startsWith", id),
+                or([
+                  callProp("startsWith", id),
+                  pipe([
+                    includes(
+                      `arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${id}`
+                    ),
+                  ]),
+                ]),
               ]),
             ])(),
         ])

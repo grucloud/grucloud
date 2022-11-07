@@ -30,9 +30,9 @@ exports.createResources = () => [
     group: "EC2",
     name: "endpoint-ec2",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({}) => ({
       vpc: "vpc-4-record-vpc-endpoint",

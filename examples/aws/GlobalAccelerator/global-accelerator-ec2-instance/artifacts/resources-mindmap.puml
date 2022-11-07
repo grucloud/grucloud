@@ -1,0 +1,18 @@
+@startmindmap
+title Resources for project global-accelerator-ec2-instance
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (1)
+++++ SecurityGroup (1)
+++++ SecurityGroupRuleIngress (1)
+++++ Instance (1)
++++ GlobalAccelerator
+++++ Accelerator (1)
+++++ EndpointGroup (1)
+++++ Listener (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

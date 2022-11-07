@@ -53,6 +53,7 @@ exports.createResources = () => [
 
 ## Used By
 
+- [Batch Compute Environment](../Batch/ComputeEnvironment.md)
 - [EC2 Instance](./Instance.md)
 - [EKS NodeGroup](../EKS/NodeGroup.md)
 - [AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)

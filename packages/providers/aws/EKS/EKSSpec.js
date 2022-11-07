@@ -38,28 +38,21 @@ module.exports = pipe([
           group: "EC2",
           list: true,
           dependencyIds: ({ lives, config }) =>
-            get("resourcesVpcConfig.subnetIds"),
+            pipe([get("resourcesVpcConfig.subnetIds")]),
         },
         securityGroups: {
           type: "SecurityGroup",
           group: "EC2",
           list: true,
-          dependencyIds:
-            ({ lives, config }) =>
-            (live) =>
-              [
-                get("resourcesVpcConfig.clusterSecurityGroupId")(live),
-                ...get("resourcesVpcConfig.securityGroupIds")(live),
-              ],
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("resourcesVpcConfig.securityGroupIds")]),
           filterDependency:
             ({ resource }) =>
             (dependency) =>
               pipe([
                 () => dependency,
-                not(get("managedByOther")),
-                tap((result) => {
-                  assert(true);
-                }),
+                get("live.Tags"),
+                not(find(eq(get("Key"), "aws:eks:cluster-name"))),
               ])(),
         },
         role: {

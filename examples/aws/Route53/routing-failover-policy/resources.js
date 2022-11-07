@@ -24,8 +24,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `project1-vpc::project1-subnet-private1-${config.region}a`,
+    name: ({ config }) => `project1-subnet-private1-${config.region}a`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}a`,
       NewBits: 4,
@@ -38,8 +37,7 @@ exports.createResources = () => [
   {
     type: "Subnet",
     group: "EC2",
-    name: ({ config }) =>
-      `project1-vpc::project1-subnet-private2-${config.region}b`,
+    name: ({ config }) => `project1-subnet-private2-${config.region}b`,
     properties: ({ config }) => ({
       AvailabilityZone: `${config.region}b`,
       NewBits: 4,
@@ -52,8 +50,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `project1-vpc::project1-rtb-private1-${config.region}a`,
+    name: ({ config }) => `project1-rtb-private1-${config.region}a`,
     dependencies: ({}) => ({
       vpc: "project1-vpc",
     }),
@@ -61,8 +58,7 @@ exports.createResources = () => [
   {
     type: "RouteTable",
     group: "EC2",
-    name: ({ config }) =>
-      `project1-vpc::project1-rtb-private2-${config.region}b`,
+    name: ({ config }) => `project1-rtb-private2-${config.region}b`,
     dependencies: ({}) => ({
       vpc: "project1-vpc",
     }),

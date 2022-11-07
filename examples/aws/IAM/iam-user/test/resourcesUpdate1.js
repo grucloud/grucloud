@@ -6,7 +6,6 @@ exports.createResources = () => [
   {
     type: "User",
     group: "IAM",
-    name: "my-user",
     properties: ({}) => ({
       Path: "/",
       AttachedPolicies: [
@@ -21,6 +20,7 @@ exports.createResources = () => [
           Value: "myvalue",
         },
       ],
+      UserName: "my-user",
     }),
   },
 ];

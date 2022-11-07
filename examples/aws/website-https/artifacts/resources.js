@@ -89,12 +89,7 @@ exports.createResources = () => [
           RestrictionType: "none",
         },
       },
-      Comment: `${getId({
-        type: "Bucket",
-        group: "S3",
-        name: "cloudfront.aws.test.grucloud.org",
-        path: "name",
-      })}.s3.amazonaws.com`,
+      Comment: "cloudfront.aws.test.grucloud.org.s3.amazonaws.com",
       Logging: {
         Enabled: false,
         IncludeCookies: false,
@@ -148,8 +143,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "cloudfront.aws.test.grucloud.org",
     properties: ({}) => ({
+      Name: "cloudfront.aws.test.grucloud.org",
       ACL: "public-read",
       WebsiteConfiguration: {
         ErrorDocument: {

@@ -418,8 +418,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: ({ config }) => `codepipeline-${config.region}-709458114120`,
     properties: ({ config }) => ({
+      Name: `codepipeline-${config.region}-709458114120`,
       Policy: {
         Version: "2012-10-17",
         Id: "SSEAndSSLPolicy",

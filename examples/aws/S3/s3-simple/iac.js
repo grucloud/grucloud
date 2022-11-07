@@ -8,8 +8,10 @@ const createResources = ({ provider }) => {
   const s3BucketName = `${bucketPrefix}-bucket`;
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
   const s3Bucket = provider.S3.makeBucket({
-    name: s3BucketName,
     namespace,
+    properties: () => ({
+      Name: s3BucketName,
+    }),
   });
 
   const s3Object = provider.S3.makeObject({

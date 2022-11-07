@@ -29,8 +29,8 @@ exports.createResources = (xxx) => [
   {
     type: "Bucket",
     group: "S3",
-    name: ({ config }) => config.s3BucketName,
-    properties: ({}) => ({
+    properties: ({ config }) => ({
+      Name: config.s3BucketName,
       ServerSideEncryptionConfiguration: {
         Rules: [
           {

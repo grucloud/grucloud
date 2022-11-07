@@ -38,6 +38,7 @@ exports.createResources = () => [
 
 - [EC2 Elastic Ip Address Association](./ElasticIpAddressAssociation.md)
 - [EC2 Nat Gateway](./NatGateway.md)
+- [GlobalAccelerator Endpoint Group](../GlobalAccelerator/EndpointGroup.md)
 - [Route53 Record](../Route53/Record.md)
 
 ## Listing

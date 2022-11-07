@@ -61,8 +61,9 @@ exports.createResources = () => [
 
 ## Used By
 
-- [ECS TaskSet](./TaskSet.md)
+- [ApplicationAutoScaling Target](../ApplicationAutoScaling/Target.md)
 - [CodeDeploy DeploymentGroup](../CodeDeploy/DeploymentGroup.md)
+- [ECS TaskSet](./TaskSet.md)
 
 ## Full Examples
 

@@ -1,35 +1,22 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
+const { pipe, tap, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { buildTags } = require("../AwsCommon");
 
 const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./OrganisationsCommon");
 
 const model = ({ config }) => ({
   package: "organizations",
   client: "Organizations",
-  ignoreErrorCodes: ["TODO"],
+  ignoreErrorCodes: [],
   getById: {
     method: "describeOrganization",
     getField: "Organization",
-    pickId: pipe([
-      tap(({ Arn }) => {
-        assert(Arn);
-      }),
-      pick(["Arn"]),
-    ]),
+    pickId: pipe([() => undefined]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#describeOrganization-property
   getList: {
     method: "describeOrganization",
     getParam: "Organization",
-    decorate: ({ endpoint }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#createOrganization-property
   create: {
@@ -39,7 +26,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#deleteOrganization-property
   destroy: {
     method: "deleteOrganization",
-    pickId: pipe([pick(["Arn"])]),
+    pickId: pipe([() => undefined]),
   },
 });
 
@@ -49,10 +36,10 @@ exports.OrganisationsOrganisation = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
+    //TODO
     managedByOther: () => true,
     cannotBeDeleted: () => true,
     findName: pipe([get("live.MasterAccountEmail")]),
-    // TODO Arn ?
     findId: pipe([get("live.Id")]),
     //TODO
     getByName: ({ getList, endpoint }) =>
@@ -63,24 +50,10 @@ exports.OrganisationsOrganisation = ({ spec, config }) =>
         }),
         //first,
       ]),
-    tagResource: tagResource,
-    untagResource: untagResource,
     configDefault: ({
       name,
       namespace,
       properties: { Tags, ...otherProps },
       dependencies: {},
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          name: name,
-          tags: buildTags({
-            name,
-            config,
-            namespace,
-            userTags: Tags,
-          }),
-        }),
-      ])(),
+    }) => pipe([() => otherProps, defaultsDeep({})])(),
   });

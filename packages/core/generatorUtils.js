@@ -276,6 +276,7 @@ const buildProperties = ({
       pickPropertiesCreate,
     }),
     omitDependencyIds({ dependencies }),
+    addEnvironmentVariables({ resource, environmentVariables }),
     filterLiveExtra({
       providerConfig,
       lives,
@@ -286,7 +287,6 @@ const buildProperties = ({
       omitProperties,
       pickPropertiesCreate,
     }),
-    addEnvironmentVariables({ resource, environmentVariables }),
     tap((params) => {
       assert(Array.isArray(omitProperties));
     }),
@@ -1021,33 +1021,33 @@ const removeDefaultDependencies =
                         isEmpty,
                         () => [],
                         pipe([
-                          () => resource,
-                          findResourceSpec({ writersSpec }),
-                          tap((params) => {
-                            assert(true);
-                          }),
-                          switchCase([
-                            get("includeDefaultDependencies"),
-                            () => ids,
+                          () => ({ group, type }),
+                          findDependencySpec({ writersSpec, resource }),
+                          first,
+                          ({ excludeDefaultDependencies }) =>
                             pipe([
                               () => ids,
                               filter(
-                                pipe([
-                                  findLiveById({
-                                    lives,
-                                    type,
-                                    group,
-                                    providerName,
-                                  }),
-                                  tap((params) => {
-                                    assert(true);
-                                  }),
-                                  //TODO isDefault ?
-                                  not(get("managedByOther")),
-                                ])
+                                not(
+                                  pipe([
+                                    findLiveById({
+                                      lives,
+                                      type,
+                                      group,
+                                      providerName,
+                                    }),
+                                    //TODO isDefault ?
+                                    and([
+                                      or([
+                                        get("managedByOther"),
+                                        //get("isDefault"),
+                                      ]),
+                                      () => excludeDefaultDependencies,
+                                    ]),
+                                  ])
+                                )
                               ),
-                            ]),
-                          ]),
+                            ])(),
                         ]),
                       ]),
                     ])(),
@@ -1146,6 +1146,9 @@ const addUsedBy =
           usedBy: findUsedBy({ lives, writersSpec }),
         })
       ),
+      tap((params) => {
+        assert(true);
+      }),
     ])();
 
 const readModel = ({
@@ -1424,7 +1427,7 @@ const writeResource =
         or([ignoreResource({ lives }), ignoreDefault({ lives })]),
         (resource) => {
           assert(true);
-          // console.log(" Ignore", resource.name);
+          //console.log(" Ignore", resource.name);
         },
         pipe([
           tap((params) => {

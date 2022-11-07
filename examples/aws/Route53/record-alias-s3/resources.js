@@ -38,8 +38,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "site.grucloud.org",
     properties: ({}) => ({
+      Name: "site.grucloud.org",
       WebsiteConfiguration: {
         IndexDocument: {
           Suffix: "index.html",

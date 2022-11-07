@@ -17,6 +17,7 @@ const {
   assign,
 } = require("rubico");
 const {
+  callProp,
   size,
   includes,
   defaultsDeep,
@@ -167,38 +168,41 @@ const SecurityGroupRuleBase = ({ config }) => {
           assert(live.GroupId);
           assert(lives.getById);
         }),
-        and([
-          pipe([
-            () => live,
-            get("UserIdGroupPairs"),
-            and([
-              lte(size, 1),
-              pipe([first, or([isEmpty, eq(get("GroupId"), live.GroupId)])]),
-            ]),
-          ]),
-          or([
-            () => IsEgress,
-            and([
-              pipe([
-                () =>
-                  lives.getById({
-                    type: "SecurityGroup",
-                    group: "EC2",
-                    providerName: config.providerName,
-                    id: live.GroupId,
-                  }),
-                get("managedByOther"),
+        () => live,
+        or([
+          // Elastic Beanstalk
+          pipe([get("GroupName"), callProp("startsWith", "awseb-")]),
+          and([
+            pipe([
+              get("UserIdGroupPairs"),
+              and([
+                lte(size, 1),
+                pipe([first, or([isEmpty, eq(get("GroupId"), live.GroupId)])]),
               ]),
             ]),
-          ]),
-          // Ingress
-          pipe([
-            () => live,
-            pick(["IpProtocol", "FromPort", "ToPort"]),
-            (IpPermission) =>
-              isDeepEqual(IpPermission, {
-                IpProtocol: "-1",
-              }),
+            or([
+              () => IsEgress,
+              and([
+                pipe([
+                  () =>
+                    lives.getById({
+                      type: "SecurityGroup",
+                      group: "EC2",
+                      providerName: config.providerName,
+                      id: live.GroupId,
+                    }),
+                  get("managedByOther"),
+                ]),
+              ]),
+            ]),
+            // Ingress
+            pipe([
+              pick(["IpProtocol", "FromPort", "ToPort"]),
+              (IpPermission) =>
+                isDeepEqual(IpPermission, {
+                  IpProtocol: "-1",
+                }),
+            ]),
           ]),
         ]),
         tap((result) => {
@@ -288,7 +292,12 @@ const SecurityGroupRuleBase = ({ config }) => {
           ]),
           map(
             pipe([
-              omitIfEmpty(["PrefixListIds", "IpRanges", "Ipv6Ranges"]),
+              omitIfEmpty([
+                "UserIdGroupPairs",
+                "PrefixListIds",
+                "IpRanges",
+                "Ipv6Ranges",
+              ]),
               (IpPermission) => ({ GroupId, GroupName, ...IpPermission }),
             ])
           ),
@@ -410,17 +419,18 @@ const SecurityGroupRuleBase = ({ config }) => {
           assert(live);
           assert(lives);
           logger.info(`destroy sg rule ${kind} ${name}`);
-          logger.debug(`${kind} ${name}: ${JSON.stringify(live)}`);
         }),
         () => live,
-        ({ GroupId, ...IpPermission }) => ({
+        ({ GroupId, GroupName, ...IpPermission }) => ({
           GroupId,
           ...(IpPermission && {
             IpPermissions: [IpPermission],
           }),
         }),
         tap((params) => {
-          assert(params);
+          logger.debug(
+            `rule: ${kind} ${name}: ${JSON.stringify(params, null, 4)}`
+          );
         }),
         tryCatch(revokeSecurityGroup(), (error, params) =>
           pipe([

@@ -147,7 +147,6 @@ module.exports = pipe([
         filterTarget: () => pipe([pick([])]),
         filterLive: () => pipe([pick([])]),
       }),
-      includeDefaultDependencies: true,
       inferName: ({
         properties,
         dependenciesSpec: { autoScalingGroup, targetGroup },

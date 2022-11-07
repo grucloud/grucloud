@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project msk-serverless
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (3)
+++++ SecurityGroup (1)
++++ MSK
+++++ Configuration (1)
+++++ ClusterV2 (1)
+@endmindmap

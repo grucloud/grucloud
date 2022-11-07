@@ -140,8 +140,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "cloudfront-demo.grucloud.org",
     properties: ({ config, getId }) => ({
+      Name: "cloudfront-demo.grucloud.org",
       Policy: {
         Version: "2008-10-17",
         Id: "PolicyForCloudFrontPrivateContent",
@@ -159,7 +159,7 @@ exports.createResources = () => [
               )}`,
             },
             Action: "s3:GetObject",
-            Resource: `arn:aws:s3:::cloudfront-demo.grucloud.org/*`,
+            Resource: "arn:aws:s3:::cloudfront-demo.grucloud.org/*",
           },
         ],
       },

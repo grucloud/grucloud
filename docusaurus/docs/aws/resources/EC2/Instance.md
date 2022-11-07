@@ -61,6 +61,7 @@ exports.createResources = () => [
 - [EC2 Elastic IpAddress Association](./ElasticIpAddressAssociation.md)
 - [EC2 Route](./Route.md)
 - [EC2 Volume Attachment](./VolumeAttachment.md)
+- [GlobalAccelerator Endpoint Group](../GlobalAccelerator/EndpointGroup.md)
 
 ### Update
 

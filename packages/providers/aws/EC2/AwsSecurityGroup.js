@@ -187,6 +187,12 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     hasKeyInTags({
       key: "elbv2.k8s.aws/cluster",
     }),
+    hasKeyInTags({
+      key: "AWSServiceName",
+    }),
+    hasKeyInTags({
+      key: "elasticbeanstalk:",
+    }),
     isDefault,
   ]);
 

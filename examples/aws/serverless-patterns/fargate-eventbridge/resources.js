@@ -334,15 +334,12 @@ exports.createResources = () => [
     group: "EC2",
     properties: ({ config, getId }) => ({
       PolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
             Condition: {
               ArnEquals: {
-                "aws:PrincipalArn": `${getId({
-                  type: "Role",
-                  group: "IAM",
-                  name: "CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL",
-                })}`,
+                "aws:PrincipalArn": `arn:aws:iam::${config.accountId()}:role/CdkStack-FargateServiceTaskDefTaskRole8CDCF85E-MXDABPQLCXRL`,
               },
             },
             Action: "events:PutEvents",
@@ -357,7 +354,6 @@ exports.createResources = () => [
             },
           },
         ],
-        Version: "2012-10-17",
       },
       PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",

@@ -26,7 +26,7 @@ describe("MemoryDB Cluster", async function () {
     pipe([
       () =>
         cluster.destroy({
-          live: { ClusterName: "cluster-12345" },
+          live: { Name: "cluster-12345" },
         }),
     ])
   );
@@ -35,7 +35,7 @@ describe("MemoryDB Cluster", async function () {
     pipe([
       () =>
         cluster.getById({
-          ClusterName: "cluster-12345",
+          Name: "cluster-12345",
         }),
     ])
   );
@@ -44,7 +44,7 @@ describe("MemoryDB Cluster", async function () {
     pipe([
       () =>
         cluster.getByName({
-          ClusterName: "cluster-1234",
+          name: "cluster-1234",
         }),
     ])
   );

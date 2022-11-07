@@ -4,7 +4,21 @@
 
 ## Aws
 
-- client EC2::Vpc has no update function
+- https://aws.amazon.com/about-aws/whats-new/2022/11/aws-app-runner-supports-privately-accessible-services-amazon-vpc/ , aws_apprunner_vpc_ingress_connection
+
+- Account https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Account.html
+- AccessAnalyzer https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html
+- Budgets https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Budgets.html
+- ConfigService https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html
+- CUR https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CUR.html
+- Inspector2 https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Inspector2.html
+- LakeFormation https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/LakeFormation.html
+- OpenSearch: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html
+- SecurityHub https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html
+- SESv2 https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html
+
+- SNS dep with firehose
+- Redshift::ClusterParameterGroup getParameter
 - EC2 instance, sort groups
 - API Gateway v1 Authorizer
 
@@ -30,7 +44,6 @@
 - HostedZone name with vpc
 - omit AWSLogs S3 Objects
 - elb target group getByName
-- apprunner //TODO isInstanceUp
 - apprunner example npm test
 
 - RDS DBCluster AvailabilityZones
@@ -40,23 +53,17 @@
 - s3 analytics configuration
 - s3 object gencode is missing ACL:public-read
 
-- CloudTrail EventDataStore,
+- CloudTrail EventDataStore EventDataStore doc
+
 - ECSTaskSet
-- EventDataStore doc
-- AWS::AmazonMQ::Broker
 - AWS::Cognito::IdentityPool
 - AWS::Cognito::IdentityPoolRoleAttachment
 - AWS::CloudFront::CachePolicy
-- AWS::CloudWatch::Dashboard
 - AWS::Events::Endpoint
 - aws_route53_delegation_set
 - CodeStarConnections Host
-- createOrganizationalUnit
   Lambda EventSourceMapping:
 - Amazon DynamoDB Streams
-- Amazon MQ and RabbitMQ
-- Amazon MSK
-- Apache Kafka
 
 - route to NetworkInterfaceId
 
@@ -65,8 +72,6 @@
 https://rushjs.io/
 
 ## Common:
-
-- https://rushjs.io/
 
 - https://stackshare.io/terraform/alternatives
 

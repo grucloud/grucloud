@@ -231,6 +231,7 @@ module.exports = pipe([
         account: {
           type: "Account",
           group: "APIGateway",
+          excludeDefaultDependencies: true,
           dependencyId:
             ({ lives, config }) =>
             () =>

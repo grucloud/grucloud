@@ -38,6 +38,7 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       subnets: ["VPC::SubnetPublicUSEAST1D", "VPC::SubnetPublicUSEAST1F"],
+      launchTemplate: "lt-ng-1",
     }),
   },
   {
@@ -377,6 +378,40 @@ exports.createResources = () => [
           HttpPutResponseHopLimit: 2,
         },
       },
+    }),
+  },
+  {
+    type: "LaunchTemplate",
+    group: "EC2",
+    name: "lt-ng-1",
+    readOnly: true,
+    properties: ({}) => ({
+      LaunchTemplateData: {
+        BlockDeviceMappings: [
+          {
+            DeviceName: "/dev/xvda",
+            Ebs: {
+              Iops: 3000,
+              VolumeSize: 80,
+              VolumeType: "gp3",
+              Throughput: 125,
+            },
+          },
+        ],
+        UserData:
+          'MIME-Version: 1.0\nContent-Type: multipart/mixed; boundary="//"\n\n--//\nContent-Type: text/x-shellscript; charset="us-ascii"\n#!/bin/bash\nset -ex\nB64_CLUSTER_CA=LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJeU1URXdNekU1TXpNMU1Wb1hEVE15TVRBek1URTVNek0xTVZvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTHhvCkd6OVlqM1dSMEpPeC9wOUR3a1cvbTRTdEt2VjRTVUVUUkk3SVZiOHMvcnF4TmdhV01BR2FZQkdVNkQ5RHVpbTcKLzMzaFNUUnVUY3BZR0s3UkJybzhXZ1ZPczR1NnllbWxhR3FKenV4MEU4TmE1NmJOdFU2V2t2TnpzdFZXMzhSYgplaEVzbVFlZU45UWhuYm1aNDFnNjJvYXVpRnFtOEl0cU9JTTFtZGhBWERyOW5qN2tCUHg1MmFzS2JWSE9jdkNoCitJcFcvbGdYNHVNZGdNWlhZTVg1SCs3QjB0c0dMWkxNNkY5UUJMbnNMMnNvd0tLQjhBc21rcGh5ZFRjR3RJdjIKNytrazR6Z1RJb25MWWlGTWl1b1V0NXZiVFR0cTQzSTZDbXV3cTFTSnJORkNOYnA4RkpLTVJtOVE4aE52ZVdETApSdDBaVUtVWFkwUjdOZFBtcG5VQ0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZGdHd1S3hIVElZaEFLQXd0SjBhWm1ETjV1WjNNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBQmdGdjM1Y3VIMjlCSEVzVi8vbgpUOTBJTTg5SnRGZ2RIR0ljNGxyNWV0dkZQYTZaUExSRHhzWlM1dVNJTFhBdTFvSG5HVWZlL2s3N2grMnBDWi9mCjRaRk5CNlkyblB3anYvUTZIQXRrZk9wTlZaczZNZG1TVWZmT0loRWgrbVVmZjJKQ0lWUGkxMXA3M3oxZmFxWjIKNzkvSWZWVmxMRW51Sk1Iclg2Ykp6eGVQeWxFbzBFTFlYM28wRGhNU1RBR1gvZXdyeXlKSnplaExtUXlFRXBXMQo0b2dwdzJrejFIbEFSbkYvVTFkK2ZBdzNTakplRUprUjFHY3k0RCtJZCtGazRwL0QwTGNndHdhMzVlSWQ4R3NGCjhtQktkRG55dVpwQzM5YzN4TkZIWFc3TWRod09adVcwYzRnbHlzM2VObEtHTDdMMVFHT214Qmxwck13RGNsc2UKNnRnPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==\nAPI_SERVER_URL=https://625E72B03A2BA025E106A5CE27CA803E.gr7.us-east-1.eks.amazonaws.com\nK8S_CLUSTER_DNS_IP=10.100.0.10\n/etc/eks/bootstrap.sh my-cluster --kubelet-extra-args \'--node-labels=eks.amazonaws.com/sourceLaunchTemplateVersion=1,alpha.eksctl.io/cluster-name=my-cluster,alpha.eksctl.io/nodegroup-name=ng-1,eks.amazonaws.com/nodegroup-image=ami-01179af28ec82e898,eks.amazonaws.com/capacityType=ON_DEMAND,eks.amazonaws.com/nodegroup=ng-1,eks.amazonaws.com/sourceLaunchTemplateId=lt-050c337fba49a7a71 --max-pods=17\' --b64-cluster-ca $B64_CLUSTER_CA --apiserver-endpoint $API_SERVER_URL --dns-cluster-ip $K8S_CLUSTER_DNS_IP --use-max-pods false\n\n--//--',
+        MetadataOptions: {
+          HttpTokens: "optional",
+          HttpPutResponseHopLimit: 2,
+        },
+        Image: {
+          Description:
+            "EKS Kubernetes Worker AMI with AmazonLinux2 image, (k8s: 1.23.9, docker: 20.10.17-1.amzn2, containerd: 1.6.6-1.amzn2)",
+        },
+      },
+    }),
+    dependencies: ({}) => ({
+      securityGroups: ["sg::VPC::eks-cluster-sg-my-cluster-1909614887"],
     }),
   },
   {

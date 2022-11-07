@@ -419,24 +419,30 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     });
 
   //TODO
-  const updateProperties =
-    ({ Name }) =>
-    ({ NotificationConfiguration }) =>
-      pipe([
-        tap((params) => {
-          assert(Name);
-        }),
-        tap.if(
-          () => NotificationConfiguration,
-          pipe([
-            () =>
-              s3().putBucketNotificationConfiguration({
-                Bucket: Name,
-                NotificationConfiguration,
-              }),
-          ])
-        ),
-      ])();
+  const updateProperties = ({ Bucket, Policy, NotificationConfiguration }) =>
+    pipe([
+      tap((params) => {
+        assert(Bucket);
+      }),
+      tap.if(
+        get("NotificationConfiguration"),
+        pipe([
+          () =>
+            s3().putBucketNotificationConfiguration({
+              Bucket,
+              NotificationConfiguration,
+            }),
+        ])
+      ),
+      tap.if(
+        get("Policy"),
+        pipe([
+          fork({ Policy: pipe([() => Policy, JSON.stringify]) }),
+          defaultsDeep({ Bucket }),
+          s3().putBucketPolicy,
+        ])
+      ),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
   const create = async ({ name: Bucket, namespace, payload }) => {
@@ -655,7 +661,11 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         logger.debug(tos({ payload, diff, live }));
       }),
       () => diff.liveDiff.added,
-      tryCatch(updateProperties(live), (error) => {
+      tryCatch(updateProperties(payload), (error) => {
+        throw error;
+      }),
+      () => diff.liveDiff.updated,
+      tryCatch(updateProperties(payload), (error) => {
         throw error;
       }),
       tap(() => {

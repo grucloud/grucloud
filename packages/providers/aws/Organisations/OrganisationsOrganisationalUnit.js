@@ -1,8 +1,9 @@
 const assert = require("assert");
 const { pipe, tap, get, flatMap, map, assign } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
@@ -15,10 +16,12 @@ const pickId = pipe([
   ({ Id }) => ({ OrganizationalUnitId: Id }),
 ]);
 
+const buildArn = () => pipe([get("Id")]);
+
 const model = ({ config }) => ({
   package: "organizations",
   client: "Organizations",
-  ignoreErrorCodes: ["TODO"],
+  ignoreErrorCodes: ["OrganizationalUnitNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#describeOrganizationalUnit-property
   getById: {
     method: "describeOrganizationalUnit",
@@ -47,7 +50,16 @@ const listOrganizationalUnitsForParent =
       () => ({ ParentId }),
       endpoint().listOrganizationalUnitsForParent,
       get("OrganizationalUnits", []),
-      map(assign({ ParentId: () => ParentId })),
+      map(
+        assign({
+          ParentId: () => ParentId,
+          Tags: pipe([
+            ({ Id }) => ({ ResourceId: Id }),
+            endpoint().listTagsForResource,
+            get("Tags"),
+          ]),
+        })
+      ),
       flatMap((organizationalUnit) =>
         pipe([
           tap((params) => {
@@ -67,7 +79,7 @@ exports.OrganisationsOrganisationalUnit = ({ spec, config }) =>
     spec,
     config,
     findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Arn")]),
+    findId: pipe([get("live.Id")]),
     managedByOther: () => true,
     cannotBeDeleted: () => true,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listOrganizationalUnitsForParent-property
@@ -90,25 +102,32 @@ exports.OrganisationsOrganisationalUnit = ({ spec, config }) =>
           ),
         ])(),
     getByName: getByNameCore,
-    tagResource: tagResource,
-    untagResource: untagResource,
+    tagResource: tagResource({
+      buildArn: buildArn(config),
+    }),
+    untagResource: untagResource({
+      buildArn: buildArn(config),
+    }),
     configDefault: ({
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      //TODO
       dependencies: { root, organisationalUnitParent },
     }) =>
       pipe([
         () => otherProps,
         defaultsDeep({
-          Name: name,
           Tags: buildTags({
             name,
             config,
             namespace,
-            userTags: Tags,
+            UserTags: Tags,
           }),
         }),
+        when(() => root, defaultsDeep({ ParentId: getField(root, "Id") })),
+        when(
+          () => organisationalUnitParent,
+          defaultsDeep({ ParentId: getField(organisationalUnitParent, "Id") })
+        ),
       ])(),
   });

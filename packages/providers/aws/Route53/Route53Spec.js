@@ -219,7 +219,6 @@ module.exports = pipe([
             Name: pipe([get("Name"), replaceRegion({ lives, providerConfig })]),
           }),
         ]),
-      includeDefaultDependencies: true,
     },
     {
       type: "ZoneVpcAssociation",

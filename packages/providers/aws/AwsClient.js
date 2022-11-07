@@ -175,12 +175,12 @@ const AwsClient =
             pipe([
               tap(() => {
                 assert(method);
-                assert(getParam);
+                //assert(getParam);
                 //assert(isFunction(endpoint()[method]));
               }),
               () => params,
               defaultsDeep(extraParam),
-              defaultsDeep(enhanceParams()()),
+              defaultsDeep(enhanceParams({ config })()),
               tap((params) => {
                 logger.debug(
                   `getList ${groupType}, method: ${method}, params: ${JSON.stringify(
@@ -197,7 +197,7 @@ const AwsClient =
                     NextToken,
                   });
                   NextToken = results.NextToken;
-                  const newData = get(getParam)(results);
+                  const newData = getParam ? get(getParam)(results) : results;
                   if (newData) {
                     if (Array.isArray(newData)) {
                       data = [...data, ...newData];
@@ -258,12 +258,14 @@ const AwsClient =
         getParam,
         decorate = () => identity,
         filterParent = () => true,
+        transformListPost = () => identity,
+
         config,
       }) =>
       ({ lives }) =>
         pipe([
           tap(() => {
-            logger.debug(`getListWithParent ${type}`);
+            logger.debug(`getListWithParent ${group}::${type}`);
             assert(lives);
             assert(config);
           }),
@@ -352,6 +354,7 @@ const AwsClient =
               tap((params) => {
                 assert(true);
               }),
+              transformListPost({ lives, endpoint }),
             ])()
           ),
           filter(not(isEmpty)),
@@ -632,6 +635,7 @@ const AwsClient =
         preDestroy = () => {},
         postDestroy = () => {},
         pickId,
+        enhanceParams = () => identity,
         extraParam = {},
         method,
         getById,
@@ -669,7 +673,7 @@ const AwsClient =
           }),
           tryCatch(
             pipe([
-              tap(() => preDestroy({ name, live, lives, endpoint })),
+              tap(() => preDestroy({ name, live, lives, endpoint, getById })),
               () => live,
               tap((params) => {
                 assert(true);
@@ -681,6 +685,7 @@ const AwsClient =
                 );
               }),
               defaultsDeep(extraParam),
+              enhanceParams({ config }),
               (params) =>
                 retryCall({
                   name: `destroying ${type}`,

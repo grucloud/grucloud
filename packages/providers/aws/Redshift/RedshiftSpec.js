@@ -74,7 +74,6 @@ module.exports = pipe([
         "TotalStorageCapacityInMegaBytes",
       ],
       inferName: get("properties.ClusterIdentifier"),
-      includeDefaultDependencies: true,
       dependencies: {
         clusterSubnetGroup: {
           type: "ClusterSubnetGroup",
@@ -157,7 +156,6 @@ module.exports = pipe([
           type: "Subnet",
           group: "EC2",
           list: true,
-          includeDefaultDependencies: true,
           dependencyIds: ({ lives, config }) =>
             pipe([get("Subnets"), pluck("SubnetIdentifier")]),
         },

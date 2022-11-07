@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project global-accelerator-ip-address
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ ElasticIpAddress (1)
++++ GlobalAccelerator
+++++ Accelerator (1)
+++++ EndpointGroup (1)
+++++ Listener (1)
+@endmindmap

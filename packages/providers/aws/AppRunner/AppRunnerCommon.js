@@ -1,4 +1,4 @@
-const { pipe, get } = require("rubico");
+const { pipe, get, tryCatch, assign } = require("rubico");
 
 const { createEndpoint } = require("../AwsCommon");
 
@@ -8,15 +8,37 @@ exports.ignoreErrorCodes = ["ResourceNotFoundException"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#tagResource-property
 exports.tagResource =
-  ({ appRunner }) =>
-  ({ live, id }) =>
-    pipe([(Tags) => ({ ResourceArn: id, Tags }), appRunner().tagResource]);
+  ({ buildArn }) =>
+  ({ endpoint }) =>
+  ({ live }) =>
+    pipe([
+      (Tags) => ({ ResourceArn: buildArn(live), Tags }),
+      endpoint().tagResource,
+    ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppRunner.html#untagResource-property
 exports.untagResource =
-  ({ appRunner }) =>
-  ({ live, id }) =>
+  ({ buildArn }) =>
+  ({ endpoint }) =>
+  ({ live }) =>
     pipe([
-      (TagKeys) => ({ ResourceArn: id, TagKeys }),
-      appRunner().untagResource,
+      (TagKeys) => ({ ResourceArn: buildArn(live), TagKeys }),
+      endpoint().untagResource,
     ]);
+
+exports.assignTags = ({ endpoint, buildArn }) =>
+  pipe([
+    assign({
+      Tags: tryCatch(
+        pipe([
+          buildArn,
+          (ResourceArn) => ({
+            ResourceArn,
+          }),
+          endpoint().listTagsForResource,
+          get("Tags"),
+        ]),
+        (error) => undefined
+      ),
+    }),
+  ]);

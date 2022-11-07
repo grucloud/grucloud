@@ -110,6 +110,7 @@ exports.createResources = () => [
 
 ## Used By
 
+- [Batch Compute Environment](../Batch/ComputeEnvironment.md)
 - [EC2 SecurityGroup](./SecurityGroup.md)
 - [EC2 Instance](./Instance.md)
 - [EC2 RouteTableAssociation](./RouteTableAssociation.md)
@@ -117,6 +118,9 @@ exports.createResources = () => [
 - [EC2 Flow Logs](./FlowLogs.md)
 - [ECS Service](../ECS/Service.md)
 - [ECS TaskSet](../ECS/TaskSet.md)
+- [EMRServerless Application](../EMRServerless/Application.md)
+- [MQ Broker](../MQ/Broker.md)
+- [MSK Cluster V2](../MSK/ClusterV2.md)
 - [NetworkManager VpcAttachment](../NetworkManager/VpcAttachment.md)
 - [RAM Resource Association](../RAM/ResourceAssociation.md)
 - [RDS DBSubnetGroup](../RDS/DBSubnetGroup.md)

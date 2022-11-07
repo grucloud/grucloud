@@ -41,6 +41,7 @@ exports.createResources = () => [
 
 ## Used By
 
+- [Batch ComputeEnvironment](../Batch/ComputeEnvironment.md)
 - [ECS TaskSet](./TaskSet.md)
 - [CodeDeploy DeploymentGroup](../CodeDeploy/DeploymentGroup.md)
 

@@ -1,0 +1,16 @@
+@startmindmap
+title Resources for project elasticache-redis
+skinparam monochrome true
++ Infra
+++ aws
++++ CloudWatchLogs
+++++ LogGroup (1)
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
++++ ElastiCache
+++++ CacheSubnetGroup (1)
+++++ ReplicationGroup (1)
+@endmindmap

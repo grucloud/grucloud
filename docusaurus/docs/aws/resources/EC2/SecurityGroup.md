@@ -37,11 +37,16 @@ exports.createResources = () => [
 
 ### Used By
 
+- [Batch Compute Environment](../Batch/ComputeEnvironment.md)
 - [EC2 Client Vpn Endpoint](../EC2/ClientVpnEndpoint.md)
 - [EC2 Instance](./Instance.md)
 - [EC2 SecurityGroup Rule Ingress](./SecurityGroupRuleIngress.md)
 - [EC2 SecurityGroup Rule Egress](./SecurityGroupRuleEgress.md)
 - [ECS Service](../ECS/Service.md)
+- [ElastiCache Cluster](../ElastiCache/Cluster.md)
+- [EMRServerless Application](../EMRServerless/Application.md)
+- [MQ Broker](../MQ/Broker.md)
+- [MSK Cluster V2](../MSK/ClusterV2.md)
 
 ### List
 

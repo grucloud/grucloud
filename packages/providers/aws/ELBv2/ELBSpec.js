@@ -45,7 +45,6 @@ module.exports = pipe([
         "State",
         "AvailabilityZones",
       ],
-      includeDefaultDependencies: true,
       filterLive: () => pick(["Name", "Scheme", "Type", "IpAddressType"]),
     },
     {

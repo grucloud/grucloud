@@ -32,8 +32,10 @@ exports.createResources = () => [
 
 ## Used By
 
+- [Batch Job Definition](../Batch/JobDefinition.md)
 - [EFS AccessPoint](./AccessPoint.md)
 - [EFS MountTarget](./MountTarget.md)
+- [Batch Job Definition](../Batch/JobDefinition.md)
 
 ## List
 

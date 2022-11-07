@@ -1,6 +1,16 @@
 const assert = require("assert");
-const { pipe, assign, map, omit, tap, get, eq, switchCase } = require("rubico");
-const { defaultsDeep, append, includes, when } = require("rubico/x");
+const {
+  pipe,
+  assign,
+  map,
+  omit,
+  tap,
+  get,
+  eq,
+  switchCase,
+  and,
+} = require("rubico");
+const { defaultsDeep, append, includes, when, size } = require("rubico/x");
 
 const { compareAws, assignPolicyAccountAndRegion } = require("../AwsCommon");
 
@@ -12,10 +22,15 @@ const GROUP = "SNS";
 
 const compareSNS = compareAws({});
 
-const omitDefaultPolicy = when(
-  eq(get("Policy.Id"), "__default_policy_ID"),
-  omit(["Policy"])
-);
+const omitDefaultPolicy = pipe([
+  when(
+    and([
+      eq(get("Policy.Id"), "__default_policy_ID"),
+      eq(pipe([get("Policy.Statement"), size]), 1),
+    ]),
+    omit(["Policy"])
+  ),
+]);
 
 module.exports = pipe([
   () => [
@@ -54,6 +69,11 @@ module.exports = pipe([
               disableSubscriptionOverrides: false,
             },
           },
+          LambdaSuccessFeedbackSampleRate: "0",
+          FirehoseSuccessFeedbackSampleRate: "0",
+          SQSSuccessFeedbackSampleRate: "0",
+          HTTPSuccessFeedbackSampleRate: "0",
+          ApplicationSuccessFeedbackSampleRate: "0",
         },
       },
       compare: compareSNS({

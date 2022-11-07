@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, assign, pick } = require("rubico");
-const { first, defaultsDeep, isEmpty, unless } = require("rubico/x");
+const { pipe, tap, get, assign, pick, or } = require("rubico");
+const { first, defaultsDeep, isEmpty, unless, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -21,9 +21,16 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   const elb = createELB(config);
   const client = AwsClient({ spec, config })(elb);
 
-  const managedByOther = hasKeyInTags({
-    key: "elbv2.k8s.aws/cluster",
-  });
+  const managedByOther = pipe([
+    or([
+      hasKeyInTags({
+        key: "elbv2.k8s.aws/cluster",
+      }),
+      hasKeyInTags({
+        key: "elasticbeanstalk:environment-id",
+      }),
+    ]),
+  ]);
 
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,
@@ -95,15 +102,15 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   }) =>
     pipe([
       tap(() => {
-        assert(vpc);
+        //assert(vpc);
       }),
       () => otherProps,
       defaultsDeep({
         //TODO move to propertiesDefault
         Protocol: "HTTP",
-        VpcId: getField(vpc, "VpcId"),
         Tags: buildTags({ name, namespace, config, UserTags: Tags }),
       }),
+      when(() => vpc, assign({ VpcId: () => getField(vpc, "VpcId") })),
     ])();
 
   return {

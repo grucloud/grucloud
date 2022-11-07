@@ -1,0 +1,31 @@
+{
+  "name": "application-autoscaling-simple",
+  "version": "10.0.2",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tree": "gc tree",
+    "graph": "gc graph",
+    "gencode": "gc gencode",
+    "list": "gc list",
+    "list-graph": "gc list -g",
+    "plan": "gc plan",
+    "apply": "gc apply -f",
+    "destroy": "gc destroy -f",
+    "onDeployed": "gc run --onDeployed",
+    "onDestroyed": "gc run --onDestroyed",
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^10.0.2",
+    "@grucloud/provider-aws": "^10.0.2",
+    "rubico": "1.8.10"
+  },
+  "devDependencies": {
+    "mocha": "^9.2.2",
+    "mocha-junit-reporter": "^2.0.2"
+  }
+}

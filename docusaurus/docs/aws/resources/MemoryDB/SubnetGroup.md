@@ -35,7 +35,7 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [EC2 Subnet](../EC2/Cluster.md)
+- [EC2 Subnet](../EC2/Subnet.md)
 
 ## Used By
 

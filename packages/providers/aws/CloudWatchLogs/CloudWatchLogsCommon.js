@@ -12,6 +12,7 @@ exports.ignoreErrorCodes = ["ResourceNotFoundException"];
 exports.LogGroupNameManagedByOther = [
   "/aws/APIGW",
   "API-Gateway-Execution-Logs",
+  "/aws/batch/job",
   "/aws/apigateway/",
   "/aws/lambda/",
   "/aws/ecs/",

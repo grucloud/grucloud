@@ -273,8 +273,8 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
     }
     return (...args) =>
       retryCall({
-        //name: `${endpointName}.${name} ${JSON.stringify(args)}`,
         name: `${endpointName}.${name}`,
+        //name: `${endpointName}.${name} ${JSON.stringify(args)}`,
         fn: pipe([
           () => endpoint[name](...args),
           tap((params) => {
@@ -309,6 +309,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
               pipe([
                 () => [
                   "Throttling",
+                  "ThrottlingException",
                   "UnknownEndpoint",
                   "TooManyRequestsException",
                   "OperationAborted",
@@ -1004,25 +1005,38 @@ const replaceArnWithAccountAndRegion =
       }),
       () => lives,
       switchCase([
-        any(
-          and([
-            ({ id }) => Id.startsWith(id),
-            //TODO
-            () =>
-              !Id.startsWith("arn:aws:lambda") &&
-              !Id.startsWith("arn:aws:rds") &&
-              !Id.startsWith("arn:aws:sqs") &&
-              !Id.startsWith("arn:aws:code") &&
-              !Id.startsWith("arn:aws:logs") &&
-              !Id.startsWith("arn:aws:sns"),
-          ])
-        ),
+        or([
+          () =>
+            Id.startsWith(
+              "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity"
+            ),
+          any(
+            and([
+              ({ id }) => Id.startsWith(id),
+              //TODO
+              () =>
+                !Id.endsWith("amazonaws.com") &&
+                Id != providerConfig.accountId() &&
+                !Id.startsWith("arn:aws:lambda") &&
+                !Id.startsWith("arn:aws:rds") &&
+                !Id.startsWith("arn:aws:sqs") &&
+                !Id.startsWith("arn:aws:code") &&
+                !Id.startsWith("arn:aws:logs") &&
+                !Id.startsWith(`arn:aws:iam::${providerConfig.accountId()}`) &&
+                !Id.startsWith("arn:aws:sns"),
+            ])
+          ),
+        ]),
         pipe([
           tap((params) => {
             assert(true);
           }),
           () => Id,
-          replaceWithName({ path: "id", providerConfig, lives }),
+          replaceWithName({
+            path: "id",
+            providerConfig,
+            lives,
+          }),
         ]),
         pipe([
           tap((params) => {
@@ -1113,6 +1127,33 @@ const replacePrincipal = ({ providerConfig, lives, principalKind }) =>
     ),
   ]);
 
+const replaceCondition = ({ conditionCriteria, providerConfig, lives }) =>
+  when(
+    get(conditionCriteria),
+    assign({
+      [conditionCriteria]: pipe([
+        get(conditionCriteria),
+        map(
+          pipe([
+            switchCase([
+              Array.isArray,
+              map(
+                replaceArnWithAccountAndRegion({
+                  providerConfig,
+                  lives,
+                })
+              ),
+              replaceArnWithAccountAndRegion({
+                providerConfig,
+                lives,
+              }),
+            ]),
+          ])
+        ),
+      ]),
+    })
+  );
+
 const replaceStatement = ({ providerConfig, lives }) =>
   pipe([
     tap((params) => {
@@ -1157,22 +1198,16 @@ const replaceStatement = ({ providerConfig, lives }) =>
       assign({
         Condition: pipe([
           get("Condition"),
-          when(
-            get("ArnLike"),
-            assign({
-              ArnLike: pipe([
-                get("ArnLike"),
-                map(
-                  pipe([
-                    replaceArnWithAccountAndRegion({
-                      providerConfig,
-                      lives,
-                    }),
-                  ])
-                ),
-              ]),
-            })
-          ),
+          replaceCondition({
+            conditionCriteria: "ArnLike",
+            providerConfig,
+            lives,
+          }),
+          replaceCondition({
+            conditionCriteria: "StringLike",
+            providerConfig,
+            lives,
+          }),
           when(
             get("StringEquals"),
             assign({
@@ -1198,9 +1233,6 @@ const replaceStatement = ({ providerConfig, lives }) =>
                     ]),
                   })
                 ),
-                tap((params) => {
-                  assert(true);
-                }),
                 sortObject,
               ]),
             })

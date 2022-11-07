@@ -5,13 +5,12 @@ const createResources = ({ provider }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
   const bucketBasic = provider.S3.makeBucket({
-    name: bucketName,
-    properties: () => ({}),
+    properties: () => ({ Name: bucketName }),
   });
 
   const logDestination = provider.S3.makeBucket({
-    name: bucketLogDestination,
     properties: () => ({
+      Name: bucketLogDestination,
       ACL: "log-delivery-write",
     }),
   });
@@ -61,8 +60,8 @@ const createResources = ({ provider }) => {
       // }),
       // CORS
       CORS: provider.S3.makeBucket({
-        name: `${bucketPrefix}-cors`,
         properties: () => ({
+          Name: `${bucketPrefix}-cors`,
           CORSConfiguration: {
             CORSRules: [
               {
@@ -77,8 +76,8 @@ const createResources = ({ provider }) => {
       }),
       // Encryption
       encryption: provider.S3.makeBucket({
-        name: `${bucketPrefix}-encryption`,
         properties: () => ({
+          Name: `${bucketPrefix}-encryption`,
           ServerSideEncryptionConfiguration: {
             Rules: [
               {
@@ -92,8 +91,8 @@ const createResources = ({ provider }) => {
       }),
       // LifecycleConfiguation
       lifecycleConfiguation: provider.S3.makeBucket({
-        name: `${bucketPrefix}-lifecycleconfiguration`,
         properties: () => ({
+          Name: `${bucketPrefix}-lifecycleconfiguration`,
           LifecycleConfiguration: {
             Rules: [
               {
@@ -164,8 +163,8 @@ const createResources = ({ provider }) => {
         }),*/
 
       policy: provider.S3.makeBucket({
-        name: `${bucketPrefix}-policy`,
         properties: () => ({
+          Name: `${bucketPrefix}-policy`,
           Policy: {
             Version: "2012-10-17",
             Statement: [
@@ -204,14 +203,14 @@ const createResources = ({ provider }) => {
           }),
         }),*/
       requestPayment: provider.S3.makeBucket({
-        name: `${bucketPrefix}-request-payment`,
         properties: () => ({
+          Name: `${bucketPrefix}-request-payment`,
           RequestPaymentConfiguration: { Payer: "Requester" },
         }),
       }),
       tag: provider.S3.makeBucket({
-        name: `${bucketPrefix}-tag`,
         properties: () => ({
+          Name: `${bucketPrefix}-tag`,
           Tags: [
             {
               Key: "Key1",
@@ -237,8 +236,8 @@ const createResources = ({ provider }) => {
       // }),
       // Website
       website: provider.S3.makeBucket({
-        name: `${bucketPrefix}-website`,
         properties: () => ({
+          Name: `${bucketPrefix}-website`,
           ACL: "public-read",
           WebsiteConfiguration: {
             ErrorDocument: {

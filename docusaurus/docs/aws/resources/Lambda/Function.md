@@ -125,6 +125,7 @@ exports.createResources = () => [
 ## Used By
 
 - [ApiGateway Integration](../ApiGatewayV2/Integration.md)
+- [ApplicationAutoScaling Target](../ApplicationAutoScaling/Target.md)
 - [CloudWatchLogs Subscription Filter](../CloudWatchLogs/SubscriptionFilter.md)
 - [S3 Bucket](../S3/Bucket.md)
 - [StepFunctions StateMachine](../StepFunctions/StateMachine.md)

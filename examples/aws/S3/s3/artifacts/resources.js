@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-cors",
     properties: ({}) => ({
+      Name: "grucloud-cors",
       CORSConfiguration: {
         CORSRules: [
           {
@@ -23,8 +23,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-encryption",
     properties: ({}) => ({
+      Name: "grucloud-encryption",
       ServerSideEncryptionConfiguration: {
         Rules: [
           {
@@ -39,8 +39,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-lifecycleconfiguration",
     properties: ({}) => ({
+      Name: "grucloud-lifecycleconfiguration",
       LifecycleConfiguration: {
         Rules: [
           {
@@ -63,12 +63,18 @@ exports.createResources = () => [
       },
     }),
   },
-  { type: "Bucket", group: "S3", name: "grucloud-log-destination" },
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-policy",
     properties: ({}) => ({
+      Name: "grucloud-log-destination",
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "grucloud-policy",
       Policy: {
         Version: "2012-10-17",
         Statement: [
@@ -91,8 +97,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-request-payment",
     properties: ({}) => ({
+      Name: "grucloud-request-payment",
       RequestPaymentConfiguration: {
         Payer: "Requester",
       },
@@ -101,8 +107,8 @@ exports.createResources = () => [
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-tag",
     properties: ({}) => ({
+      Name: "grucloud-tag",
       Tags: [
         {
           Key: "Key1",
@@ -115,12 +121,18 @@ exports.createResources = () => [
       ],
     }),
   },
-  { type: "Bucket", group: "S3", name: "grucloud-test-basic.txt" },
   {
     type: "Bucket",
     group: "S3",
-    name: "grucloud-website",
     properties: ({}) => ({
+      Name: "grucloud-test-basic.txt",
+    }),
+  },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "grucloud-website",
       ACL: "public-read",
       WebsiteConfiguration: {
         ErrorDocument: {

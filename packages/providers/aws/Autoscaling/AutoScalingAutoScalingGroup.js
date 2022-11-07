@@ -56,6 +56,9 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     hasKeyInTags({
       key: "eks:cluster-name",
     }),
+    hasKeyInTags({
+      key: "elasticbeanstalk:environment-id",
+    }),
   ]);
 
   const findNamespace = pipe([

@@ -77,9 +77,12 @@ exports.createResources = () => [
 
 ## Used By
 
+- [Backup Vault Notification](../Backup/VaultNotification.md)
+- [Budgets Budget](../Budgets/Budget.md)
 - [CloudTrail Trail](../CloudTrail/Trail.md)
 - [CloudWatch MetricAlarm](../CloudWatch/MetricAlarm.md)
 - [CloudWatchEvent Target](../CloudWatchEvents/Target.md)
+- [ElastiCache Cluster](../ElastiCache/Cluster.md)
 - [SNS Subscription](./Subscription.md)
 - [SQS Queue](../SQS/Queue.md)
 - [StepFunctions StateMachine](../StepFunctions/StateMachine.md)
@@ -89,6 +92,7 @@ exports.createResources = () => [
 
 - [Simple example](https://github.com/grucloud/grucloud/tree/main/examples/aws/SNS/sns-simple)
 - [graphql-alarm](https://github.com/grucloud/grucloud/tree/main/examples/aws/AppSync/graphql-alarm)
+- [budgets](https://github.com/grucloud/grucloud/tree/main/examples/aws/Budgets/budget-simple)
 - [alarm-stop-ec2](https://github.com/grucloud/grucloud/tree/main/examples/aws/CloudWatch/alarm-stop-ec2)
 - [Route53 health check](https://github.com/grucloud/grucloud/tree/main/examples/aws/Route53/health-check)
 - [s3 sns](https://github.com/grucloud/grucloud/tree/main/examples/aws/S3/s3-sns)

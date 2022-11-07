@@ -3,7 +3,6 @@ const { pipe, get, map, tap, pick } = require("rubico");
 const { defaultsDeep, find } = require("rubico/x");
 const { isOurMinionObject } = require("../AwsCommon");
 const { compareAws } = require("../AwsCommon");
-const { tagResource } = require("./CloudWatchLogsCommon");
 
 const { CloudWatchLogGroup } = require("./CloudWatchLogsGroup");
 const { CloudWatchLogStream } = require("./CloudWatchLogStream");

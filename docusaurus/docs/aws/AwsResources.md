@@ -4,18 +4,30 @@ title: Resources List
 ---
 List of resources for provider aws:
 
+* AccessAnalyzer: 
+[Analyzer](./resources/AccessAnalyzer/Analyzer.md), [ArchiveRule](./resources/AccessAnalyzer/ArchiveRule.md)
+* Account: 
+[AlternateAccount](./resources/Account/AlternateAccount.md)
 * ACM: 
 [Certificate](./resources/ACM/Certificate.md)
 * APIGateway: 
 [Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
 * ApiGatewayV2: 
 [DomainName](./resources/ApiGatewayV2/DomainName.md), [Api](./resources/ApiGatewayV2/Api.md), [Stage](./resources/ApiGatewayV2/Stage.md), [Authorizer](./resources/ApiGatewayV2/Authorizer.md), [ApiMapping](./resources/ApiGatewayV2/ApiMapping.md), [Integration](./resources/ApiGatewayV2/Integration.md), [Route](./resources/ApiGatewayV2/Route.md), [Deployment](./resources/ApiGatewayV2/Deployment.md), [VpcLink](./resources/ApiGatewayV2/VpcLink.md)
+* AppConfig: 
+[Application](./resources/AppConfig/Application.md), [Deployment](./resources/AppConfig/Deployment.md), [DeploymentStrategy](./resources/AppConfig/DeploymentStrategy.md), [ConfigurationProfile](./resources/AppConfig/ConfigurationProfile.md), [Environment](./resources/AppConfig/Environment.md), [HostedConfigurationVersion](./resources/AppConfig/HostedConfigurationVersion.md)
+* ApplicationAutoScaling: 
+[Policy](./resources/ApplicationAutoScaling/Policy.md), [Target](./resources/ApplicationAutoScaling/Target.md)
 * AppRunner: 
-[Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md)
+[Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md), [VpcConnector](./resources/AppRunner/VpcConnector.md), [VpcIngressConnection](./resources/AppRunner/VpcIngressConnection.md)
 * AppSync: 
 [GraphqlApi](./resources/AppSync/GraphqlApi.md), [DataSource](./resources/AppSync/DataSource.md), [Resolver](./resources/AppSync/Resolver.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
+* Backup: 
+[BackupPlan](./resources/Backup/BackupPlan.md), [BackupSelection](./resources/Backup/BackupSelection.md), [BackupVault](./resources/Backup/BackupVault.md), [BackupVaultLockConfiguration](./resources/Backup/BackupVaultLockConfiguration.md), [BackupVaultNotification](./resources/Backup/BackupVaultNotification.md), [BackupVaultPolicy](./resources/Backup/BackupVaultPolicy.md), [Framework](./resources/Backup/Framework.md), [GlobalSettings](./resources/Backup/GlobalSettings.md), [RegionSettings](./resources/Backup/RegionSettings.md), [ReportPlan](./resources/Backup/ReportPlan.md)
+* Batch: 
+[ComputeEnvironment](./resources/Batch/ComputeEnvironment.md), [JobDefinition](./resources/Batch/JobDefinition.md), [JobQueue](./resources/Batch/JobQueue.md), [SchedulingPolicy](./resources/Batch/SchedulingPolicy.md)
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
 * CloudFront: 
@@ -23,7 +35,7 @@ List of resources for provider aws:
 * CloudTrail: 
 [Trail](./resources/CloudTrail/Trail.md), [EventDataStore](./resources/CloudTrail/EventDataStore.md)
 * CloudWatch: 
-[MetricAlarm](./resources/CloudWatch/MetricAlarm.md)
+[Dashboard](./resources/CloudWatch/Dashboard.md), [MetricAlarm](./resources/CloudWatch/MetricAlarm.md)
 * CloudWatchEvents: 
 [ApiDestination](./resources/CloudWatchEvents/ApiDestination.md), [Connection](./resources/CloudWatchEvents/Connection.md), [EventBus](./resources/CloudWatchEvents/EventBus.md), [Rule](./resources/CloudWatchEvents/Rule.md), [Target](./resources/CloudWatchEvents/Target.md)
 * CloudWatchLogs: 
@@ -50,30 +62,48 @@ List of resources for provider aws:
 [FileSystem](./resources/EFS/FileSystem.md), [AccessPoint](./resources/EFS/AccessPoint.md), [MountTarget](./resources/EFS/MountTarget.md)
 * EKS: 
 [Cluster](./resources/EKS/Cluster.md), [NodeGroup](./resources/EKS/NodeGroup.md)
+* ElastiCache: 
+[CacheCluster](./resources/ElastiCache/CacheCluster.md), [CacheParameterGroup](./resources/ElastiCache/CacheParameterGroup.md), [CacheSubnetGroup](./resources/ElastiCache/CacheSubnetGroup.md), [ReplicationGroup](./resources/ElastiCache/ReplicationGroup.md), [User](./resources/ElastiCache/User.md), [UserGroup](./resources/ElastiCache/UserGroup.md)
+* ElasticBeanstalk: 
+[Application](./resources/ElasticBeanstalk/Application.md), [ApplicationVersion](./resources/ElasticBeanstalk/ApplicationVersion.md), [Environment](./resources/ElasticBeanstalk/Environment.md)
 * ElasticLoadBalancingV2: 
 [LoadBalancer](./resources/ElasticLoadBalancingV2/LoadBalancer.md), [TargetGroup](./resources/ElasticLoadBalancingV2/TargetGroup.md), [Listener](./resources/ElasticLoadBalancingV2/Listener.md), [Rule](./resources/ElasticLoadBalancingV2/Rule.md)
+* EMRServerless: 
+[Application](./resources/EMRServerless/Application.md)
 * Firehose: 
 [DeliveryStream](./resources/Firehose/DeliveryStream.md)
+* GlobalAccelerator: 
+[Accelerator](./resources/GlobalAccelerator/Accelerator.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
 * Glue: 
 [Job](./resources/Glue/Job.md)
 * IAM: 
 [OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
+* Inspector2: 
+[DelegatedAdminAccount](./resources/Inspector2/DelegatedAdminAccount.md), [Enabler](./resources/Inspector2/Enabler.md), [OrganizationConfiguration](./resources/Inspector2/OrganizationConfiguration.md)
 * Kinesis: 
 [Stream](./resources/Kinesis/Stream.md)
 * KMS: 
 [Key](./resources/KMS/Key.md)
 * Lambda: 
 [Layer](./resources/Lambda/Layer.md), [Function](./resources/Lambda/Function.md), [EventSourceMapping](./resources/Lambda/EventSourceMapping.md)
+* MemoryDB: 
+[ACL](./resources/MemoryDB/ACL.md), [Cluster](./resources/MemoryDB/Cluster.md), [ParameterGroup](./resources/MemoryDB/ParameterGroup.md), [SubnetGroup](./resources/MemoryDB/SubnetGroup.md), [User](./resources/MemoryDB/User.md)
+* MQ: 
+[Broker](./resources/MQ/Broker.md), [Configuration](./resources/MQ/Configuration.md)
+* MSK: 
+[Configuration](./resources/MSK/Configuration.md), [ClusterV2](./resources/MSK/ClusterV2.md)
 * NetworkFirewall: 
 [Firewall](./resources/NetworkFirewall/Firewall.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md)
 * NetworkManager: 
 [GlobalNetwork](./resources/NetworkManager/GlobalNetwork.md), [CoreNetwork](./resources/NetworkManager/CoreNetwork.md), [Site](./resources/NetworkManager/Site.md), [Device](./resources/NetworkManager/Device.md), [Link](./resources/NetworkManager/Link.md), [TransitGatewayRegistration](./resources/NetworkManager/TransitGatewayRegistration.md), [VpcAttachment](./resources/NetworkManager/VpcAttachment.md)
 * Organisations: 
-[Root](./resources/Organisations/Root.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md)
+[Account](./resources/Organisations/Account.md), [Policy](./resources/Organisations/Policy.md), [PolicyAttachment](./resources/Organisations/PolicyAttachment.md), [Organisation](./resources/Organisations/Organisation.md), [OrganisationalUnit](./resources/Organisations/OrganisationalUnit.md), [Root](./resources/Organisations/Root.md)
 * RAM: 
 [ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
 * RDS: 
 [DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [DBCluster](./resources/RDS/DBCluster.md), [DBInstance](./resources/RDS/DBInstance.md)
+* Redshift: 
+[Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md)
 * Route53: 
 [HealthCheck](./resources/Route53/HealthCheck.md), [HostedZone](./resources/Route53/HostedZone.md), [ZoneVpcAssociation](./resources/Route53/ZoneVpcAssociation.md), [VpcAssociationAuthorization](./resources/Route53/VpcAssociationAuthorization.md), [Record](./resources/Route53/Record.md)
 * Route53Domains: 

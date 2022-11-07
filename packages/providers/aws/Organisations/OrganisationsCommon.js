@@ -3,21 +3,29 @@ const { pipe, tap } = require("rubico");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#tagResource-property
 exports.tagResource =
+  ({ buildArn }) =>
   ({ endpoint }) =>
-  ({ id, live }) =>
+  ({ live }) =>
     pipe([
       tap((params) => {
         assert(live);
       }),
-      (Tags) => ({ ResourceId: id, Tags }),
+      (Tags) => ({ ResourceId: buildArn(live), Tags }),
+      tap((params) => {
+        assert(true);
+      }),
       endpoint().tagResource,
+      tap((params) => {
+        assert(true);
+      }),
     ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#untagResource-property
 exports.untagResource =
+  ({ buildArn }) =>
   ({ endpoint }) =>
-  ({ id, live }) =>
+  ({ live }) =>
     pipe([
-      (TagKeys) => ({ ResourceId: id, TagKeys }),
+      (TagKeys) => ({ ResourceId: buildArn(live), TagKeys }),
       endpoint().untagResource,
     ]);

@@ -145,19 +145,25 @@ exports.EKSCluster = ({ spec, config }) => {
     pipe([
       tap(() => {
         assert(subnets, "missing 'subnets' dependency");
-        assert(securityGroups, "missing 'securityGroups' dependency");
         assert(name);
       }),
       () => otherProps,
       defaultsDeep({
         resourcesVpcConfig: {
-          securityGroupIds: map((sg) => getField(sg, "GroupId"))(
-            securityGroups
-          ),
           subnetIds: map((subnet) => getField(subnet, "SubnetId"))(subnets),
         },
         tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
+      when(
+        () => securityGroups,
+        defaultsDeep({
+          resourcesVpcConfig: {
+            securityGroupIds: map((sg) => getField(sg, "GroupId"))(
+              securityGroups
+            ),
+          },
+        })
+      ),
       when(() => role, defaultsDeep({ roleArn: getField(role, "Arn") })),
     ])();
 

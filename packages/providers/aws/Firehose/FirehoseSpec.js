@@ -9,8 +9,17 @@ const {
   omit,
   switchCase,
   filter,
+  not,
 } = require("rubico");
-const { defaultsDeep, pluck, flatten, identity } = require("rubico/x");
+const {
+  defaultsDeep,
+  pluck,
+  flatten,
+  identity,
+  callProp,
+  isEmpty,
+  when,
+} = require("rubico/x");
 const { replaceWithName } = require("@grucloud/core/Common");
 const { isOurMinion, compareAws } = require("../AwsCommon");
 const { FirehoseDeliveryStream } = require("./FirehoseDeliveryStream");
@@ -37,71 +46,118 @@ module.exports = pipe([
         "HasMoreDestinations",
         "VersionId",
         "LastUpdateTimestamp",
+        "DeliveryStreamEncryptionConfiguration",
       ],
       filterLive: ({ lives, providerConfig }) =>
         pipe([
           tap((params) => {
             assert(true);
           }),
-          assign({
-            Destinations: pipe([
-              get("Destinations"),
-              map(
+          when(
+            get("HttpEndpointDestinationConfiguration"),
+            assign({
+              HttpEndpointDestinationConfiguration: pipe([
+                get("HttpEndpointDestinationConfiguration"),
                 assign({
-                  ExtendedS3DestinationDescription: pipe([
-                    get("ExtendedS3DestinationDescription"),
+                  RoleARN: pipe([
+                    get("RoleARN"),
+                    replaceWithName({
+                      groupType: "IAM::Role",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                  S3Configuration: pipe([
+                    get("S3Configuration"),
                     assign({
-                      ProcessingConfiguration: pipe([
-                        get("ProcessingConfiguration"),
-                        assign({
-                          Processors: pipe([
-                            get("Processors"),
-                            map(
-                              assign({
-                                Parameters: pipe([
-                                  get("Parameters"),
-                                  map(
-                                    pipe([
-                                      tap((params) => {
-                                        assert(true);
-                                      }),
-                                      switchCase([
-                                        eq(get("ParameterName"), "LambdaArn"),
-                                        assign({
-                                          ParameterValue: pipe([
-                                            get("ParameterValue"),
-                                            replaceWithName({
-                                              groupType: "Lambda::Function",
-                                              path: "id",
-                                              providerConfig,
-                                              lives,
-                                            }),
-                                          ]),
-                                        }),
-                                        eq(get("ParameterName"), "RoleArn"),
-                                        assign({
-                                          ParameterValue: pipe([
-                                            get("ParameterValue"),
-                                            replaceWithName({
-                                              groupType: "IAM::Role",
-                                              path: "id",
-                                              providerConfig,
-                                              lives,
-                                            }),
-                                          ]),
-                                        }),
-                                        identity,
-                                      ]),
-                                    ])
-                                  ),
-                                ]),
-                              })
-                            ),
-                          ]),
+                      RoleARN: pipe([
+                        get("RoleARN"),
+                        replaceWithName({
+                          groupType: "IAM::Role",
+                          path: "id",
+                          providerConfig,
+                          lives,
                         }),
                       ]),
-                      S3BackupDescription: pipe([
-                        get("S3BackupDescription"),
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          ),
+          when(
+            get("ExtendedS3DestinationConfiguration"),
+            assign({
+              ExtendedS3DestinationConfiguration: pipe([
+                get("ExtendedS3DestinationConfiguration"),
+                assign({
+                  ProcessingConfiguration: pipe([
+                    get("ProcessingConfiguration"),
+                    assign({
+                      Processors: pipe([
+                        get("Processors"),
+                        map(
+                          assign({
+                            Parameters: pipe([
+                              get("Parameters"),
+                              map(
+                                pipe([
+                                  tap((params) => {
+                                    assert(true);
+                                  }),
+                                  switchCase([
+                                    eq(get("ParameterName"), "LambdaArn"),
+                                    assign({
+                                      ParameterValue: pipe([
+                                        get("ParameterValue"),
+                                        replaceWithName({
+                                          groupType: "Lambda::Function",
+                                          path: "id",
+                                          providerConfig,
+                                          lives,
+                                        }),
+                                      ]),
+                                    }),
+                                    eq(get("ParameterName"), "RoleArn"),
+                                    assign({
+                                      ParameterValue: pipe([
+                                        get("ParameterValue"),
+                                        replaceWithName({
+                                          groupType: "IAM::Role",
+                                          path: "id",
+                                          providerConfig,
+                                          lives,
+                                        }),
+                                      ]),
+                                    }),
+                                    identity,
+                                  ]),
+                                ])
+                              ),
+                            ]),
+                          })
+                        ),
+                      ]),
+                    }),
+                  ]),
+                  RoleARN: pipe([
+                    get("RoleARN"),
+                    replaceWithName({
+                      groupType: "IAM::Role",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ]),
+                }),
+                when(
+                  get("S3BackupDescription"),
+                  assign({
+                    S3BackupDescription: pipe([
+                      get("S3BackupDescription"),
+                      when(
+                        get("RoleARN"),
                         assign({
                           RoleARN: pipe([
                             get("RoleARN"),
@@ -112,37 +168,15 @@ module.exports = pipe([
                               lives,
                             }),
                           ]),
-                        }),
-                      ]),
-                      RoleARN: pipe([
-                        get("RoleARN"),
-                        replaceWithName({
-                          groupType: "IAM::Role",
-                          path: "id",
-                          providerConfig,
-                          lives,
-                        }),
-                      ]),
-                    }),
-                  ]),
-                  S3DestinationDescription: pipe([
-                    get("S3DestinationDescription"),
-                    assign({
-                      RoleARN: pipe([
-                        get("RoleARN"),
-                        replaceWithName({
-                          groupType: "IAM::Role",
-                          path: "id",
-                          providerConfig,
-                          lives,
-                        }),
-                      ]),
-                    }),
-                  ]),
-                })
-              ),
-            ]),
-          }),
+                        })
+                      ),
+                    ]),
+                  })
+                ),
+              ]),
+            })
+          ),
+          omit(["S3DestinationDescription"]),
         ]),
       dependencies: {
         kinesisStream: {
@@ -153,21 +187,16 @@ module.exports = pipe([
         s3BucketDestination: {
           type: "Bucket",
           group: "S3",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("Destinations"),
-              pluck("S3DestinationDescription.BucketARN"),
-            ]),
+          //list: true,
+          dependencyId: ({ lives, config }) =>
+            pipe([get("S3DestinationDescription.BucketARN")]),
         },
         s3BucketBackup: {
           type: "Bucket",
           group: "S3",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
+          dependencyId: ({ lives, config }) =>
             pipe([
-              get("Destinations"),
-              pluck(
+              get(
                 "ExtendedS3DestinationDescription.S3BackupDescription.BucketARN"
               ),
             ]),
@@ -184,9 +213,7 @@ module.exports = pipe([
           lits: true,
           dependencyIds: ({ lives, config }) =>
             pipe([
-              () => live,
-              get("Destinations"),
-              pluck("ExtendedS3DestinationDescription"),
+              get("ExtendedS3DestinationDescription"),
               pluck("ProcessingConfiguration"),
               pluck("Processors"),
               flatten,
@@ -203,9 +230,9 @@ module.exports = pipe([
           list: true,
           dependencyIds: ({ lives, config }) =>
             pipe([
-              get("Destinations"),
-              pluck("ExtendedS3DestinationDescription"),
+              get("ExtendedS3DestinationDescription"),
               pluck("CloudWatchLoggingOptions"),
+              filter(not(isEmpty)),
               map(
                 pipe([
                   tap(({ LogGroupName, LogStreamName }) => {
@@ -233,12 +260,17 @@ module.exports = pipe([
           type: "Role",
           group: "IAM",
           list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([
-              get("Destinations"),
-              pluck("S3DestinationDescription"),
-              pluck("RoleARN"),
-            ]),
+          dependencyIds:
+            ({ lives, config }) =>
+            (live) =>
+              pipe([
+                () => [
+                  "HttpEndpointDestinationConfiguration.RoleARN",
+                  "S3DestinationDescription.RoleARN",
+                ],
+                map((path) => get(path)(live)),
+                filter(not(isEmpty)),
+              ])(),
         },
         // Redshift
       },

@@ -1,10 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, map, get, omit, filter, eq, assign } = require("rubico");
+const { pipe, tap, or, get, omit, filter, eq, assign } = require("rubico");
 const { defaultsDeep, pluck, callProp, find } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./CloudWatchCommon");
+
+const buildArn = () => pipe([get("AlarmArn")]);
 
 const findDependencyDimension =
   ({ type, group, dimensionId }) =>
@@ -62,8 +64,14 @@ const AlarmDependenciesDimensions = {
 exports.AlarmDependenciesDimensions = AlarmDependenciesDimensions;
 
 const managedByOther = pipe([
-  get("live.AlarmDescription", ""),
-  callProp("startsWith", "DO NOT EDIT OR DELETE"),
+  get("live"),
+  or([
+    pipe([
+      get("AlarmDescription", ""),
+      callProp("startsWith", "DO NOT EDIT OR DELETE"),
+    ]),
+    pipe([get("AlarmName", ""), callProp("startsWith", "awseb-")]),
+  ]),
 ]);
 
 const decorate = ({ endpoint }) =>
@@ -131,8 +139,12 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) =>
     managedByOther,
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ AlarmName: name }), getById]),
-    tagResource: tagResource,
-    untagResource: untagResource,
+    tagResource: tagResource({
+      buildArn: buildArn(config),
+    }),
+    untagResource: untagResource({
+      buildArn: buildArn(config),
+    }),
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
         () => otherProps,

@@ -1,0 +1,21 @@
+@startmindmap
+title Resources for project appconfig-metrics
+skinparam monochrome true
++ Infra
+++ aws
++++ AppConfig
+++++ Application (1)
+++++ Deployment (1)
+++++ DeploymentStrategy (1)
+++++ ConfigurationProfile (1)
+++++ Environment (1)
+++++ HostedConfigurationVersion (1)
++++ CloudWatch
+++++ MetricAlarm (1)
++++ IAM
+++++ Role (1)
+++++ Policy (1)
+++++ InstanceProfile (1)
++++ SNS
+++++ Topic (1)
+@endmindmap

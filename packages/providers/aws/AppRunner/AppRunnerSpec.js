@@ -13,8 +13,12 @@ const {
 const { compareAws, isOurMinion } = require("../AwsCommon");
 const { replaceWithName } = require("@grucloud/core/Common");
 
-const { AppRunnerService } = require("./Service");
-const { AppRunnerConnection } = require("./Connection");
+const { AppRunnerService } = require("./AppRunnerService");
+const { AppRunnerConnection } = require("./AppRunnerConnection");
+const { AppRunnerVpcConnector } = require("./AppRunnerVpcConnector");
+const {
+  AppRunnerVpcIngressConnection,
+} = require("./AppRunnerVpcIngressConnection");
 
 const GROUP = "AppRunner";
 
@@ -28,7 +32,6 @@ module.exports = pipe([
       type: "Connection",
       Client: AppRunnerConnection,
       inferName: get("properties.ConnectionName"),
-      isOurMinion,
       omitProperties: ["ConnectionArn", "Status", "CreatedAt"],
       filterLive: () => pipe([pick(["ConnectionName", "ProviderType"])]),
     },
@@ -37,6 +40,14 @@ module.exports = pipe([
       Client: AppRunnerService,
       inferName: get("properties.ServiceName"),
       dependencies: {
+        accessRole: {
+          type: "Role",
+          group: "IAM",
+          dependencyId: ({ lives, config }) =>
+            get(
+              "SourceConfiguration.AuthenticationConfiguration.AccessRoleArn"
+            ),
+        },
         connection: {
           type: "Connection",
           group: "AppRunner",
@@ -45,13 +56,11 @@ module.exports = pipe([
               "SourceConfiguration.AuthenticationConfiguration.ConnectionArn"
             ),
         },
-        accessRole: {
-          type: "Role",
-          group: "IAM",
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
           dependencyId: ({ lives, config }) =>
-            get(
-              "SourceConfiguration.AuthenticationConfiguration.AccessRoleArn"
-            ),
+            get("EncryptionConfiguration.KmsKey"),
         },
         repository: {
           type: "Repository",
@@ -79,6 +88,12 @@ module.exports = pipe([
               ),
             ]),
         },
+        vpcConnector: {
+          type: "VpcConnector",
+          group: "AppRunner",
+          dependencyId: ({ lives, config }) =>
+            get("NetworkConfiguration.EgressConfiguration.VpcConnectorArn"),
+        },
       },
       propertiesDefault: {
         NetworkConfiguration: {
@@ -93,44 +108,104 @@ module.exports = pipe([
         "CreatedAt",
         "UpdatedAt",
         "Status",
-        //TODO
+        "NetworkConfiguration.EgressConfiguration.VpcConnectorArn",
+        "EncryptionConfiguration.KmsKey",
         "AutoScalingConfigurationSummary",
       ],
       filterLive: ({ lives, providerConfig }) =>
         pipe([
           pick([
             "ServiceName",
+            "NetworkConfiguration",
             "SourceConfiguration",
             "InstanceConfiguration",
+            "ObservabilityConfiguration",
             "HealthCheckConfiguration",
           ]),
           omit(["SourceConfiguration.AuthenticationConfiguration"]),
           assign({
             SourceConfiguration: pipe([
               get("SourceConfiguration"),
-              assign({
-                ImageRepository: pipe([
-                  get("ImageRepository"),
-                  when(
-                    get("ImageIdentifier"),
-                    assign({
-                      ImageIdentifier: pipe([
-                        get("ImageIdentifier"),
-                        replaceWithName({
-                          groupType: "ECR::Repository",
-                          pathLive: "live.repositoryUri",
-                          path: "live.repositoryUri",
-                          providerConfig,
-                          lives,
-                        }),
-                      ]),
-                    })
-                  ),
-                ]),
-              }),
+              when(
+                get("ImageRepository"),
+                assign({
+                  ImageRepository: pipe([
+                    get("ImageRepository"),
+                    when(
+                      get("ImageIdentifier"),
+                      assign({
+                        ImageIdentifier: pipe([
+                          get("ImageIdentifier"),
+                          replaceWithName({
+                            groupType: "ECR::Repository",
+                            pathLive: "live.repositoryUri",
+                            path: "live.repositoryUri",
+                            providerConfig,
+                            lives,
+                          }),
+                        ]),
+                      })
+                    ),
+                  ]),
+                })
+              ),
             ]),
           }),
         ]),
+    },
+    {
+      type: "VpcConnector",
+      Client: AppRunnerVpcConnector,
+      inferName: get("properties.VpcConnectorName"),
+      omitProperties: [
+        "VpcConnectorArn",
+        "Status",
+        "CreatedAt",
+        "DeletedAt",
+        "Subnets",
+        "SecurityGroups",
+      ],
+      dependencies: {
+        subnets: {
+          type: "Subnet",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("Subnets"),
+        },
+        securityGroups: {
+          type: "SecurityGroup",
+          group: "EC2",
+          list: true,
+          dependencyIds: ({ lives, config }) => get("SecurityGroups"),
+        },
+      },
+    },
+    {
+      type: "VpcIngressConnection",
+      Client: AppRunnerVpcIngressConnection,
+      inferName: get("properties.VpcIngressConnectionName"),
+      omitProperties: [
+        "VpcIngressConnectionArn",
+        "Status",
+        "CreatedAt",
+        "AccountId",
+        "DomainName",
+        "IngressVpcConfiguration",
+        "ServiceArn",
+      ],
+      dependencies: {
+        service: {
+          type: "Service",
+          group: "AppRunner",
+          dependencyId: ({ lives, config }) => get("ServiceArn"),
+        },
+        vpcEndpoint: {
+          type: "VpcEndpoint",
+          group: "EC2",
+          dependencyId: ({ lives, config }) =>
+            get("IngressVpcConfiguration.VpcEndpointId"),
+        },
+      },
     },
   ],
   map(defaultsDeep({ group: GROUP, compare: compareAppRunner() })),
