@@ -309,6 +309,7 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
               pipe([
                 () => [
                   "Throttling",
+                  "ThrottlingException",
                   "UnknownEndpoint",
                   "TooManyRequestsException",
                   "OperationAborted",

@@ -17,6 +17,8 @@
 - SecurityHub https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html
 - SESv2 https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html
 
+- SNS dep with firehose
+- Redshift::ClusterParameterGroup getParameter
 - EC2 instance, sort groups
 - API Gateway v1 Authorizer
 

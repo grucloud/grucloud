@@ -1,0 +1,8 @@
+@startmindmap
+title Resources for project budget-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Budgets
+++++ Budget (1)
+@endmindmap

@@ -180,7 +180,7 @@ const AwsClient =
               }),
               () => params,
               defaultsDeep(extraParam),
-              defaultsDeep(enhanceParams()()),
+              defaultsDeep(enhanceParams({ config })()),
               tap((params) => {
                 logger.debug(
                   `getList ${groupType}, method: ${method}, params: ${JSON.stringify(
@@ -635,6 +635,7 @@ const AwsClient =
         preDestroy = () => {},
         postDestroy = () => {},
         pickId,
+        enhanceParams = () => identity,
         extraParam = {},
         method,
         getById,
@@ -684,6 +685,7 @@ const AwsClient =
                 );
               }),
               defaultsDeep(extraParam),
+              enhanceParams({ config }),
               (params) =>
                 retryCall({
                   name: `destroying ${type}`,

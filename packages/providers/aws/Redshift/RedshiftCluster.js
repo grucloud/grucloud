@@ -40,12 +40,10 @@ const model = ({ config }) => ({
       }),
     ]),
     pickCreated: ({ payload }) => pipe([get("Cluster")]),
-
     isInstanceUp: pipe([eq(get("ClusterAvailabilityStatus"), "Available")]),
     isInstanceError: pipe([eq(get("ClusterAvailabilityStatus"), "Failed")]),
     getErrorMessage: get("ClusterAvailabilityStatus", "error"),
   },
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#deleteCluster-property
   destroy: {
     method: "deleteCluster",
@@ -142,7 +140,7 @@ exports.RedshiftCluster = ({ spec, config }) =>
         when(
           () => clusterSubnetGroup,
           assign({
-            ClusterSubnetGroup: () =>
+            ClusterSubnetGroupName: () =>
               clusterSubnetGroup.config.ClusterSubnetGroupName,
           })
         ),
