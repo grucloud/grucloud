@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project config-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Config
+++++ ConfigurationRecorder (1)
+++++ ConfigurationRecorderStatus (1)
+++++ DeliveryChannel (1)
++++ S3
+++++ Bucket (1)
+@endmindmap

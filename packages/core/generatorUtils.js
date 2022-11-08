@@ -439,10 +439,18 @@ const replaceRegion = ({ providerConfig, asFunction = true }) =>
           assert(isString(resource));
         }
       }),
-      includes(providerConfig.region),
+      or([
+        includes(providerConfig.region),
+        includes(providerConfig.accountId()),
+      ]),
     ]),
     pipe([
       callProp("replaceAll", providerConfig.region, "${config.region}"),
+      callProp(
+        "replaceAll",
+        providerConfig.accountId(),
+        "${config.accountId()}"
+      ),
       switchCase([
         () => asFunction,
         (resource) => () => "`" + resource + "`",

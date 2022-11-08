@@ -423,6 +423,8 @@ exports.createResources = () => [
 - [CloudFront Distribution](../CloudFront/Distribution.md)
 - [CloudTrail Trail](../CloudTrail/Trail.md)
 - [CodePipeline Pipeline](../CodePipeline/Pipeline.md)
+- [Config Delivery Channel](../Config/DeliveryChannel.md)
+- [Config Conformance Pack](../Config/ConformancePack.md)
 - [EC2 Flow Logs](../EC2/FlowLogs.md)
 - [GlobalAccelerator Accelerator](../GlobalAccelerator/Accelerator.md)
 - [Lambda Function](../Lambda/Function.md)

@@ -210,6 +210,7 @@ exports.createResources = () => [
 - [CodeBuild Project](../CodeBuild/Project.md)
 - [CodeDeploy Application](../CodeDeploy/Application.md)
 - [CodePipeline Pipeline](../CodePipeline/Pipeline.md)
+- [Config Configuration Recorder](../Config/ConfigurationRecorder.md)
 - [EC2 Flow Logs ](../EC2/FlowLogs.md)
 - [EC2 Vpc Endpoint](../EC2/VpcEndpoint.md)
 - [ECS TaskDefinition](../ECS/TaskDefinition.md)
