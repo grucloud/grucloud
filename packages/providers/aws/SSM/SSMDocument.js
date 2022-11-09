@@ -86,7 +86,8 @@ exports.SSMDocument = ({ spec, config }) =>
       (Name) =>
         `arn:aws:ssm:${config.region}:${config.accountId()}:document/${Name}`,
     ]),
-    getByName: ({ getById }) => pipe([({ name }) => ({ Name: name }), getById]),
+    getByName: ({ getById }) =>
+      pipe([({ name }) => ({ Name: name }), getById({})]),
     update:
       ({ endpoint }) =>
       ({ payload, live }) =>

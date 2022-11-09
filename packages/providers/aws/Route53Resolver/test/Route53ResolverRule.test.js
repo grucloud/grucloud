@@ -34,7 +34,7 @@ describe("Route53ResolverRule", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        rule.getById({
+        rule.getById({})({
           Id: "12345",
         }),
     ])

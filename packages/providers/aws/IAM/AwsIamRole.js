@@ -267,7 +267,8 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = pipe([({ RoleName }) => ({ name: RoleName }), getByName]);
+  const getById = () =>
+    pipe([({ RoleName }) => ({ name: RoleName }), getByName]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createRole-property
   const attachRolePolicies = ({ name }) =>

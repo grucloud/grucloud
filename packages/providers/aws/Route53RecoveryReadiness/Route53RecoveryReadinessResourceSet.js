@@ -160,7 +160,7 @@ exports.Route53RecoveryReadinessResourceSet = ({ spec, config }) =>
     getByName: ({ getList, endpoint, getById }) =>
       pipe([
         ({ name }) => ({ ResourceSetName: name }),
-        getById,
+        getById({}),
         tap((params) => {
           assert(true);
         }),

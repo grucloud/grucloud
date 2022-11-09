@@ -34,7 +34,7 @@ describe("CodePipelinePipeline", async function () {
   );
   it(
     "getById with invalid id",
-    pipe([() => pipeline.getById({ pipeline: { name: "my-pipeline" } })])
+    pipe([() => pipeline.getById({})({ pipeline: { name: "my-pipeline" } })])
   );
   it(
     "getByName with invalid id",

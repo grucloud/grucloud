@@ -35,7 +35,7 @@ describe("Api Gateway ApiKey", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        apiKey.getById({
+        apiKey.getById({})({
           id: "12345",
         }),
     ])

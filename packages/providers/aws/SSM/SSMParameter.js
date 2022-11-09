@@ -10,9 +10,13 @@ const { tagResource, untagResource, assignTags } = require("./SSMCommon");
 const pickId = pipe([pick(["Name"])]);
 
 const decorate =
-  ({ endpoint }) =>
+  ({ endpoint, lives }) =>
   (live) =>
     pipe([
+      tap((params) => {
+        assert(lives);
+      }),
+
       () => live,
       pick(["Name"]),
       defaultsDeep({ WithDecryption: true }),
@@ -77,14 +81,19 @@ exports.SSMParameter = ({ spec, config }) =>
         assert(ARN);
       }),
     ]),
-    getByName: ({ getById }) =>
-      pipe([
-        ({ name }) => ({ Name: name }),
-        getById,
-        tap((params) => {
-          assert(true);
-        }),
-      ]),
+    getByName:
+      ({ getById }) =>
+      ({ name, lives, config }) =>
+        pipe([
+          () => ({ Name: name }),
+          tap((params) => {
+            assert(getById);
+          }),
+          getById({ lives, config }),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
     tagResource: tagResource({ ResourceType: "Parameter" }),
     untagResource: untagResource({ ResourceType: "Parameter" }),
     configDefault: ({

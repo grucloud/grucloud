@@ -34,7 +34,7 @@ describe("KMSKey", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        key.getById({
+        key.getById({})({
           KeyId: "124",
         }),
     ])

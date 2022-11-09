@@ -45,7 +45,7 @@ exports.ECSService = ({ spec, config }) => {
       pipe([
         pipe([
           (serviceArn) => ({ clusterArn, serviceName: serviceArn }),
-          getById,
+          getById({}),
         ]),
       ]),
   });

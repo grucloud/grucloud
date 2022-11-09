@@ -34,7 +34,7 @@ describe("FirehoseDeliveryStream", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        stream.getById({
+        stream.getById({})({
           DeliveryStreamName: "a-124",
         }),
     ])

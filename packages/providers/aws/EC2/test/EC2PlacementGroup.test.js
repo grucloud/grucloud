@@ -41,7 +41,7 @@ describe("PlacementGroup", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        placementGroup.getById({
+        placementGroup.getById({})({
           GroupName: "a-123",
         }),
       tap((params) => {

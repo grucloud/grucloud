@@ -38,7 +38,7 @@ describe("EC2 FlowLogs", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        flowLog.getById({
+        flowLog.getById({})({
           FlowLogId: "fl-0c95e8a96eb84d765",
         }),
     ])

@@ -30,7 +30,7 @@ describe("EC2ClientVpnTargetNetwork", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        rule.getById({
+        rule.getById({})({
           ClientVpnEndpointId: "cvpn-endpoint-087d9903708fd6756",
           AssociationId: "a-b80a4ff5123",
         }),

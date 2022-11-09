@@ -47,7 +47,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
           assert(name);
         }),
         (nodegroupName) => ({ clusterName: name, nodegroupName }),
-        getById,
+        getById({}),
       ]),
   });
 

@@ -39,7 +39,7 @@ describe("EC2TransitGateway", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        transitGateway.getById({
+        transitGateway.getById({})({
           TransitGatewayId: "tgw-032cb2c8350925850",
         }),
     ])

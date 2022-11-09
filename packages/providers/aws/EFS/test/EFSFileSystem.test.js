@@ -37,7 +37,7 @@ describe("EFSFileSystem", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        fileSystem.getById({
+        fileSystem.getById({})({
           FileSystemId:
             "arn:aws:elasticfilesystem:us-east-1:840541460064:file-system/fs-0aaaf7b0715648e5a",
         }),

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
+const { pipe, tap, get, pick, eq, assign, omit, map } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { AwsClient } = require("../AwsClient");
@@ -11,7 +11,28 @@ const ignoreErrorMessages = ["does not exist"];
 const findName = pipe([get("live.StackName")]);
 const findId = get("live.StackId");
 
-const pickId = pipe([pick(["StackName"])]);
+//TODO managedByOther
+// Description DO NOT MODIFY THIS STACK!
+
+const pickId = pipe([
+  pick(["StackName"]),
+  tap(({ StackName }) => {
+    assert(StackName);
+  }),
+]);
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      TemplateBody: pipe([pickId, endpoint().getTemplate, get("TemplateBody")]),
+      Resources: pipe([
+        pickId,
+        endpoint().describeStackResources,
+        get("StackResources"),
+        map(omit(["StackName", "StackId"])),
+      ]),
+    }),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html
 exports.CloudFormationStack = ({ spec, config }) => {
@@ -31,9 +52,10 @@ exports.CloudFormationStack = ({ spec, config }) => {
   const getList = client.getList({
     method: "describeStacks",
     getParam: "Stacks",
+    decorate,
   });
 
-  const getByName = pipe([({ name }) => ({ StackName: name }), getById]);
+  const getByName = pipe([({ name }) => ({ StackName: name }), getById({})]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#createStack-property
   const configDefault = ({ name, properties, dependencies: {} }) =>

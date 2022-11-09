@@ -59,7 +59,7 @@ exports.KinesisStream = ({ spec, config }) =>
     findName: pipe([get("live.StreamName")]),
     findId: pipe([get("live.StreamARN")]),
     getByName: ({ getList, endpoint, getById }) =>
-      pipe([({ name }) => ({ StreamName: name }), getById]),
+      pipe([({ name }) => ({ StreamName: name }), getById({})]),
     tagResource: tagResource,
     untagResource: untagResource,
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>

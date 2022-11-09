@@ -27,7 +27,7 @@ describe("Api GatewayV2 Integration", async function () {
   it(
     "getById with invalid id",
     pipe([
-      () => integration.getById({ ApiId: "12345", IntegrationId: "12345" }),
+      () => integration.getById({})({ ApiId: "12345", IntegrationId: "12345" }),
     ])
   );
 });

@@ -39,7 +39,7 @@ describe("EC2TransitGatewayVpcAttachment", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        transitGatewayAttachment.getById({
+        transitGatewayAttachment.getById({})({
           TransitGatewayAttachmentId: "tgw-attach-032cb2c8350925850",
         }),
     ])

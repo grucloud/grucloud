@@ -128,10 +128,11 @@ exports.AwsVolume = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = pipe([
-    ({ VolumeId }) => ({ id: VolumeId }),
-    getByIdCore({ fieldIds: "VolumeIds", getList }),
-  ]);
+  const getById = () =>
+    pipe([
+      ({ VolumeId }) => ({ id: VolumeId }),
+      getByIdCore({ fieldIds: "VolumeIds", getList }),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVolume-property
   const create = client.create({

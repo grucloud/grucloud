@@ -64,7 +64,10 @@ exports.EcrRepository = ({ spec, config }) => {
     ignoreErrorCodes: ["RepositoryNotFoundException"],
   });
 
-  const getByName = pipe([({ name }) => ({ repositoryName: name }), getById]);
+  const getByName = pipe([
+    ({ name }) => ({ repositoryName: name }),
+    getById({}),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html#setRepositoryPolicy-property
   const setRepositoryPolicy = ({ payload }) =>
@@ -150,6 +153,7 @@ exports.EcrRepository = ({ spec, config }) => {
     spec,
     findId,
     getByName,
+    getById,
     findName,
     create,
     update,

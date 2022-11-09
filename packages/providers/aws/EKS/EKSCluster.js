@@ -39,9 +39,10 @@ exports.EKSCluster = ({ spec, config }) => {
   const getList = client.getList({
     method: "listClusters",
     getParam: "clusters",
-    decorate: () => pipe([(name) => ({ name }), getById]),
+    decorate: () => pipe([(name) => ({ name }), getById({})]),
   });
-  const getByName = getById;
+
+  const getByName = getById({});
 
   const kubeConfigUpdate = ({ name }) =>
     pipe([

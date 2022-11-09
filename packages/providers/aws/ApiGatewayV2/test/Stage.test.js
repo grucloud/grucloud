@@ -24,6 +24,6 @@ describe("Api GatewayV2 Stage", async function () {
   );
   it(
     "getById with invalid id",
-    pipe([() => stage.getById({ ApiId: "12345", StageName: "12345" })])
+    pipe([() => stage.getById({})({ ApiId: "12345", StageName: "12345" })])
   );
 });

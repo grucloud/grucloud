@@ -46,7 +46,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
 
   const getByName = pipe([
     ({ name }) => ({ DBSubnetGroupName: name }),
-    getById,
+    getById({}),
   ]);
 
   const isInstanceUp = pipe([eq(get("SubnetGroupStatus"), "Complete")]);

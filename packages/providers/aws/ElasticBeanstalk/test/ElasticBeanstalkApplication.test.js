@@ -36,7 +36,7 @@ describe("ElasticBeanstalkApplication", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        application.getById({
+        application.getById({})({
           ApplicationName: "application12345",
         }),
     ])

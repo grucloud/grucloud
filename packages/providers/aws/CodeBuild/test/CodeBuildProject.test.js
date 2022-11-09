@@ -36,7 +36,7 @@ describe("CodeBuildProject", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        project.getById({
+        project.getById({})({
           name: "my-project",
         }),
     ])

@@ -39,7 +39,7 @@ describe("EC2VpnGateway", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        vpnGateway.getById({
+        vpnGateway.getById({})({
           VpnGatewayId: "cgw-032cb2c8350925850",
         }),
     ])

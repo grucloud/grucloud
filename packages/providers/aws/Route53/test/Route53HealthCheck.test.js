@@ -36,7 +36,7 @@ describe("Route53HealthCheck", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        healthCheck.getById({
+        healthCheck.getById({})({
           Id: "a-12345",
         }),
     ])

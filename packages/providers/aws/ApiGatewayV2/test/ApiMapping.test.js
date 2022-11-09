@@ -27,7 +27,8 @@ describe("Api GatewayV2 ApiMapping", async function () {
   it(
     "getById with invalid id",
     pipe([
-      () => apiMapping.getById({ ApiMappingId: "12345", DomainName: "12345" }),
+      () =>
+        apiMapping.getById({})({ ApiMappingId: "12345", DomainName: "12345" }),
     ])
   );
 });

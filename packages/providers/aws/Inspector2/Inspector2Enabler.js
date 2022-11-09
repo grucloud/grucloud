@@ -74,7 +74,8 @@ exports.Inspector2Enabler = ({ spec, config }) =>
     findName: pipe([() => "default"]),
     findId: pipe([() => "default"]),
     cannotBeDeleted,
-    getList: ({ endpoint, getById }) => pipe([getById, (result) => [result]]),
+    getList: ({ endpoint, getById }) =>
+      pipe([getById({}), (result) => [result]]),
     update:
       ({ endpoint, getById }) =>
       async ({ payload, live, diff }) =>
@@ -97,7 +98,7 @@ exports.Inspector2Enabler = ({ spec, config }) =>
             pipe([() => payload, endpoint().enable])
           ),
         ])(),
-    getByName: ({ getList, endpoint, getById }) => pipe([getById]),
+    getByName: ({ getList, endpoint, getById }) => pipe([getById({})]),
     configDefault: ({
       name,
       namespace,

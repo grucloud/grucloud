@@ -36,7 +36,7 @@ describe("Route53RecoveryReadinessResourceSet", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        resourceSet.getById({
+        resourceSet.getById({})({
           ResourceSetName: "a-12345",
         }),
     ])

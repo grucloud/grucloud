@@ -66,7 +66,7 @@ exports.CloudFrontOriginAccessIdentity = ({ spec, config }) => {
           assert(true);
         }),
         ({ Id }) => ({ CloudFrontOriginAccessIdentity: { Id } }),
-        getById,
+        getById({}),
       ]),
   });
 

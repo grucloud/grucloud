@@ -66,7 +66,7 @@ exports.RedshiftClusterParameterGroup = ({ spec, config }) =>
         ({ name }) => ({
           ParameterGroupName: name,
         }),
-        getById,
+        getById({}),
       ]),
     tagResource: tagResource({
       buildArn: buildArn(config),

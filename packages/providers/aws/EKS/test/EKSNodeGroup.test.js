@@ -34,7 +34,7 @@ describe("EKSNodeGroup", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        nodeGroup.getById({
+        nodeGroup.getById({})({
           clusterName: "mycluster",
           nodegroupName: "12345",
         }),

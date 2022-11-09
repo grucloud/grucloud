@@ -30,7 +30,7 @@ describe("EC2TransitGatewayRoute", async function () {
   //   "getById with invalid id",
   //   pipe([
   //     () =>
-  //       transitGatewayRoute.getById({
+  //       transitGatewayRoute.getById({})({
   //         TransitGatewayRouteTableId: "tgw-rtb-032cb2c8350925850",
   //       }),
   //   ])

@@ -168,7 +168,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       () =>
         retryCall({
           name: `create instance profile, getById: ${name}`,
-          fn: () => getById({ InstanceProfileName: name }),
+          fn: pipe([() => ({ InstanceProfileName: name }), getById({})]),
           isExpectedResult: pipe([get("Roles"), not(isEmpty)]),
           config: { retryDelay: 2e3 },
         }),

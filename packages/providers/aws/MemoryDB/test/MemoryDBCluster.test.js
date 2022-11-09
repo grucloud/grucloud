@@ -34,7 +34,7 @@ describe("MemoryDB Cluster", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        cluster.getById({
+        cluster.getById({})({
           Name: "cluster-12345",
         }),
     ])

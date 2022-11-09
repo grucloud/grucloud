@@ -36,7 +36,7 @@ describe("CloudFrontFunction", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        functionEdge.getById({
+        functionEdge.getById({})({
           Name: "a123",
           FunctionMetadata: { Stage: "DEVELOPMENT" },
         }),

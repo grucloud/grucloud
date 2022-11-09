@@ -2,15 +2,15 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { pipe, tap } = require("rubico");
 
-describe("AccountAlternateAccount", async function () {
+describe("ConfigConfigurationRecorder", async function () {
   let config;
   let provider;
-  let alternateAccount;
+  let recorder;
 
   before(async function () {
     provider = await AwsProvider({ config });
-    alternateAccount = provider.getClient({
-      groupType: "Account::AlternateAccount",
+    recorder = provider.getClient({
+      groupType: "Config::ConfigurationRecorder",
     });
     await provider.start();
   });
@@ -18,10 +18,19 @@ describe("AccountAlternateAccount", async function () {
   it(
     "list",
     pipe([
-      () => alternateAccount.getList(),
+      () => recorder.getList(),
       tap((params) => {
         assert(true);
       }),
     ])
   );
+  it("delete with invalid id", () =>
+    pipe([
+      () => ({
+        live: {
+          name: "b123",
+        },
+      }),
+      recorder.destroy,
+    ])());
 });

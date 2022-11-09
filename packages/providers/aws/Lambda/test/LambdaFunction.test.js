@@ -34,7 +34,7 @@ describe("Function", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        fun.getById({
+        fun.getById({})({
           Configuration: { FunctionArn: "a12345" },
         }),
     ])

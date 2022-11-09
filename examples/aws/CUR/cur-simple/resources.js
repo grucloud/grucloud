@@ -4,6 +4,23 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "ReportDefinition",
+    group: "CUR",
+    properties: ({ config }) => ({
+      AdditionalSchemaElements: ["RESOURCES"],
+      Compression: "GZIP",
+      Format: "textORcsv",
+      ReportName: "ExampleReport",
+      S3Bucket: "grucloud-cost-report-2022",
+      S3Prefix: "report",
+      S3Region: "us-east-1",
+      TimeUnit: "HOURLY",
+    }),
+    dependencies: ({ config }) => ({
+      s3Bucket: "grucloud-cost-report-2022",
+    }),
+  },
+  {
     type: "Bucket",
     group: "S3",
     properties: ({ config }) => ({

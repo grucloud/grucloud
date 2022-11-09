@@ -34,7 +34,7 @@ describe("GlueJob", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        job.getById({
+        job.getById({})({
           Name: "a-12345",
         }),
     ])

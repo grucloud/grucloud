@@ -6,8 +6,8 @@ exports.createResources = () => [
   {
     type: "Parameter",
     group: "SSM",
-    name: "text-param",
     properties: ({}) => ({
+      Name: "text-param",
       Type: "String",
       Value: "my-value-updated",
       DataType: "text",

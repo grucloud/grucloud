@@ -99,7 +99,10 @@ exports.CloudFrontFunction = ({ spec, config }) =>
         get("name"),
         callProp("split", "::"),
         ([Name, Stage]) => ({ Name, Stage }),
-        getById,
+        tap(({ Stage }) => {
+          assert(Stage);
+        }),
+        getById({}),
       ]),
     configDefault: ({
       name,

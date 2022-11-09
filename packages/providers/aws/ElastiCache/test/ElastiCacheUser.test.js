@@ -36,7 +36,7 @@ describe("ElastiCache User", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        user.getById({
+        user.getById({})({
           UserId: "user-12345",
         }),
     ])

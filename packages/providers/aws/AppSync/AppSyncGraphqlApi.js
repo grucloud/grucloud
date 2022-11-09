@@ -85,7 +85,7 @@ exports.AppSyncGraphqlApi = ({ spec, config }) => {
   const getList = client.getList({
     method: "listGraphqlApis",
     getParam: "graphqlApis",
-    decorate: () => getById,
+    decorate: () => getById({}),
   });
 
   const getByName = getByNameCore({ getList, findName });

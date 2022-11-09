@@ -38,7 +38,7 @@ describe("MQBroker", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        broker.getById({
+        broker.getById({})({
           BrokerId: "b-123",
         }),
     ])

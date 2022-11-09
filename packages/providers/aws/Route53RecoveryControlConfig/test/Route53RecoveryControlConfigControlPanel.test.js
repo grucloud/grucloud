@@ -30,7 +30,7 @@ describe("Route53RecoveryControlConfigControlPanel", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        controlPanel.getById({
+        controlPanel.getById({})({
           ControlPanelArn:
             "arn:aws:route53-recovery-control::840541460064:controlpanel/a5fccd99254446b4b3d85a6071013c8a",
         }),

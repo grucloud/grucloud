@@ -96,11 +96,13 @@ const AwsClient =
         ignoreErrorCodes = [],
         ignoreErrorMessages = [],
       }) =>
+      ({ lives }) =>
       (live) =>
         pipe([
           tap(() => {
             assert(method);
             logger.debug(`getById ${type}`);
+            //assert(lives);
           }),
           tryCatch(
             pipe([
@@ -121,7 +123,10 @@ const AwsClient =
               when(Array.isArray, first),
               unless(
                 isEmpty,
-                pipe([decorate({ live, endpoint, config }), assignTagsSort])
+                pipe([
+                  decorate({ live, endpoint, lives, config }),
+                  assignTagsSort,
+                ])
               ),
             ]),
             switchCase([
@@ -216,7 +221,14 @@ const AwsClient =
               tap((params) => {
                 assert(true);
               }),
-              map(decorate({ lives, endpoint, getById, config })),
+              map(
+                decorate({
+                  lives,
+                  endpoint,
+                  getById: getById ? getById({ lives, config }) : undefined,
+                  config,
+                })
+              ),
               transformListPost({ lives, endpoint }),
               tap((params) => {
                 assert(true);
@@ -259,7 +271,6 @@ const AwsClient =
         decorate = () => identity,
         filterParent = () => true,
         transformListPost = () => identity,
-
         config,
       }) =>
       ({ lives }) =>
@@ -457,7 +468,7 @@ const AwsClient =
                     name: `isUpById: ${name}`,
                     fn: pipe([
                       () => params,
-                      getById,
+                      getById({ lives, config }),
                       switchCase([
                         isInstanceUp,
                         identity,
@@ -515,7 +526,7 @@ const AwsClient =
         shouldRetryOnException = () => false,
         isExpectedException = () => false,
       }) =>
-      ({ name, payload, diff, live, compare, programOptions }) =>
+      ({ name, payload, diff, live, lives, compare, programOptions }) =>
         pipe([
           tap(() => {
             assert(method);
@@ -581,7 +592,7 @@ const AwsClient =
                     name: `isUpById: ${name}`,
                     fn: pipe([
                       () => live,
-                      getById,
+                      getById({ lives, config }),
                       tap((params) => {
                         assert(true);
                       }),
@@ -673,7 +684,15 @@ const AwsClient =
           }),
           tryCatch(
             pipe([
-              tap(() => preDestroy({ name, live, lives, endpoint, getById })),
+              tap(() =>
+                preDestroy({
+                  name,
+                  live,
+                  lives,
+                  endpoint,
+                  getById: getById ? getById({ lives, config }) : undefined,
+                })
+              ),
               () => live,
               tap((params) => {
                 assert(true);
@@ -694,7 +713,7 @@ const AwsClient =
                     endpoint()[method],
                     () => live,
                     tap(postDestroy),
-                    tap.if(
+                    when(
                       () => isFunction(getById),
                       () =>
                         retryCall({
@@ -704,7 +723,10 @@ const AwsClient =
                             tap((params) => {
                               assert(true);
                             }),
-                            getById,
+                            getById({ lives, config }),
+                            tap((params) => {
+                              assert(true);
+                            }),
                             tap.if(isInstanceError, (live) => {
                               logger.error(
                                 `isInstanceError: ${JSON.stringify(
@@ -735,6 +757,9 @@ const AwsClient =
                     }),
                   ]),
                 }),
+              tap((params) => {
+                assert(true);
+              }),
             ]),
             (error = {}, params) =>
               pipe([
@@ -758,12 +783,7 @@ const AwsClient =
                       ),
                     ]),
                   ]),
-                  pipe([
-                    tap((params) => {
-                      assert(true);
-                    }),
-                    () => undefined,
-                  ]),
+                  pipe([() => undefined]),
                   () => {
                     logger.error(error.stack);
                     throw error;
@@ -771,7 +791,7 @@ const AwsClient =
                 ]),
               ])()
           ),
-          tap(() => {
+          tap((result) => {
             logger.debug(`destroy ${type} ${name} done`);
           }),
         ])();
@@ -803,6 +823,7 @@ exports.createAwsResource = ({
   getByName = () => undefined,
   configDefault,
   findDependencies,
+  getById,
   getList,
   create,
   update,
@@ -838,7 +859,7 @@ exports.createAwsResource = ({
                 untagResource: () => untagResource({ endpoint }),
               })
             ),
-            when(
+            switchCase([
               () => model.getById,
               assign({
                 getById: ({ pickId }) =>
@@ -847,8 +868,13 @@ exports.createAwsResource = ({
                     ignoreErrorCodes: model.ignoreErrorCodes,
                     ...model.getById,
                   }),
-              })
-            ),
+              }),
+              () => getById,
+              assign({
+                getById: ({}) => getById({ client, endpoint }),
+              }),
+              identity,
+            ]),
             assign({
               getList: switchCase([
                 () => getList,

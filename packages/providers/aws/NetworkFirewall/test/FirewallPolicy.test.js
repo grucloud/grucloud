@@ -39,7 +39,7 @@ describe("NetworkFirewall Policy", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        firewallPolicy.getById({
+        firewallPolicy.getById({})({
           FirewallPolicyArn:
             "arn:aws:network-firewall:us-east-1:840541460064:firewall-policy/blabla",
         }),

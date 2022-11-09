@@ -35,6 +35,6 @@ describe("Api GatewayV2 VpcLink", async function () {
   );
   it(
     "getById with invalid id",
-    pipe([() => vpcLink.getById({ VpcLinkId: "12345" })])
+    pipe([() => vpcLink.getById({})({ VpcLinkId: "12345" })])
   );
 });

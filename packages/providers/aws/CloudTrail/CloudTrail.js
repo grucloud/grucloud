@@ -93,7 +93,8 @@ exports.CloudTrail = ({ spec, config }) =>
     config,
     findName: get("live.Name"),
     findId: pipe([get("live.TrailARN")]),
-    getByName: ({ getById }) => pipe([({ name }) => ({ Name: name }), getById]),
+    getByName: ({ getById }) =>
+      pipe([({ name }) => ({ Name: name }), getById({})]),
     tagResource: tagResource,
     untagResource: untagResource,
     update:

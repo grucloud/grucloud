@@ -40,7 +40,7 @@ describe("EC2CustomerGateway", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        customerGateway.getById({
+        customerGateway.getById({})({
           CustomerGatewayId: "cgw-032cb2c8350925850",
         }),
     ])

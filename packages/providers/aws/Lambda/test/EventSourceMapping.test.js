@@ -27,7 +27,7 @@ describe.skip("LambdaEventSourceMapping", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        eventSourceMapping.getById({
+        eventSourceMapping.getById({})({
           UUID: "12345",
         }),
     ])

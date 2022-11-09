@@ -39,7 +39,7 @@ describe("EC2TransitGatewayRouteTable", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        transitGatewayRouteTable.getById({
+        transitGatewayRouteTable.getById({})({
           TransitGatewayRouteTableId: "tgw-rtb-032cb2c8350925850",
         }),
     ])

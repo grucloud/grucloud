@@ -84,7 +84,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
-  const getByName = pipe([({ name }) => ({ Name: name }), getById]);
+  const getByName = pipe([({ name }) => ({ Name: name }), getById({})]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createLoadBalancer-property
   const configDefault = ({

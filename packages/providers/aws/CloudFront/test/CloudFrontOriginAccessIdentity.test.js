@@ -39,7 +39,7 @@ describe("CloudFrontOriginAccessIdentity", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        originAccessIdentity.getById({
+        originAccessIdentity.getById({})({
           ETag: "E3E08X4BDY57MM",
           CloudFrontOriginAccessIdentity: { Id: "E2D1PSO5NWDAJ5" },
         }),

@@ -48,7 +48,7 @@ exports.CodeBuildProject = ({ spec, config }) =>
     config,
     findName: pipe([get("live.name")]),
     findId: pipe([get("live.arn")]),
-    getByName: ({ getById }) => pipe([getById]),
+    getByName: ({ getById }) => pipe([getById({})]),
     configDefault: ({
       name,
       namespace,

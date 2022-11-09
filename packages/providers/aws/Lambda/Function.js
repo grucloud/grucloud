@@ -331,7 +331,7 @@ exports.Function = ({ spec, config }) => {
 
   const getByName = pipe([
     ({ name }) => ({ Configuration: { FunctionArn: name } }),
-    getById,
+    getById({}),
   ]);
 
   const lambdaAddPermission = ({ Policy, FunctionName }) =>

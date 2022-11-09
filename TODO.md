@@ -6,16 +6,15 @@
 
 - https://aws.amazon.com/about-aws/whats-new/2022/11/aws-app-runner-supports-privately-accessible-services-amazon-vpc/ , aws_apprunner_vpc_ingress_connection
 
-- Account https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Account.html
-- AccessAnalyzer https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html
-- Budgets https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Budgets.html
-- ConfigService https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ConfigService.html
+- AWS::Athena::WorkGroup AWS::Athena::DataCatalog
 - CUR https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CUR.html
-- Inspector2 https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Inspector2.html
 - LakeFormation https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/LakeFormation.html
 - OpenSearch: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html
 - SecurityHub https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html
+- AWS::ServiceCatalog
+- AWS::Shield
 - SESv2 https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html
+- AWS::XRay
 
 - SNS dep with firehose
 - Redshift::ClusterParameterGroup getParameter

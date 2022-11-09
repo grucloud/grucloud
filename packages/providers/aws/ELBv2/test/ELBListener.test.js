@@ -30,7 +30,7 @@ describe("ELB Listener", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        listener.getById({
+        listener.getById({})({
           ListenerArn:
             "arn:aws:elasticloadbalancing:us-east-1:840541460064:listener/app/load-balancer/e6f97c90654062f0/db2d92e8196bc8c1",
         }),

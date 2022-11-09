@@ -38,7 +38,7 @@ describe("NetworkManager CoreNetwork", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        coreNetwork.getById({
+        coreNetwork.getById({})({
           CoreNetworkId: "core-network-123456789",
         }),
     ])

@@ -28,7 +28,7 @@ describe("CloudWatchEventApiDestination", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        apiDestination.getById({
+        apiDestination.getById({})({
           Name: "api-12345",
         }),
     ])

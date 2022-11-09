@@ -38,7 +38,7 @@ describe("NetworkManager GlobalNetwork", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        globalNetwork.getById({
+        globalNetwork.getById({})({
           GlobalNetworkId: "a-123",
         }),
     ])

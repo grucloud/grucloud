@@ -40,7 +40,7 @@ exports.BackupBackupVaultNotification = ({ spec, config }) =>
     findName: pipe([get("live"), get("BackupVaultName")]),
     findId: pipe([get("live.BackupVaultName")]),
     getByName: ({ getById }) =>
-      pipe([({ name }) => ({ BackupVaultName: name }), getById]),
+      pipe([({ name }) => ({ BackupVaultName: name }), getById({})]),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Backup.html#getBackupVaultNotifications-property
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

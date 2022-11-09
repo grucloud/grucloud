@@ -57,7 +57,7 @@ exports.AutoScalingLaunchConfiguration = ({ spec, config }) => {
 
   const getByName = pipe([
     ({ name }) => ({ LaunchConfigurationName: name }),
-    getById,
+    getById({}),
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#createLaunchConfiguration-property

@@ -77,7 +77,7 @@ exports.Route53RecoveryReadinessReadinessCheck = ({ spec, config }) =>
     getByName: ({ getList, endpoint, getById }) =>
       pipe([
         ({ name }) => ({ ReadinessCheckName: name }),
-        getById,
+        getById({}),
         tap((params) => {
           assert(true);
         }),

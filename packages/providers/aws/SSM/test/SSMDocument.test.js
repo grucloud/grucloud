@@ -34,7 +34,7 @@ describe("SSMDocument", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        document.getById({
+        document.getById({})({
           Name: "12345",
         }),
     ])

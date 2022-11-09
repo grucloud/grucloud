@@ -103,7 +103,7 @@ exports.KmsKey = ({ spec, config }) => {
           return moment(b.CreationDate).isAfter(a.CreationDate) ? 1 : -1;
         }),
       ]),
-    decorate: () => getById,
+    decorate: () => getById({}),
   });
 
   const getByName = getByNameCore({ getList, findName });
@@ -166,7 +166,7 @@ exports.KmsKey = ({ spec, config }) => {
             tap(({ KeyId }) =>
               retryCall({
                 name: `key isInstanceDisabled: ${name} id: ${KeyId}`,
-                fn: pipe([() => getById({ KeyId }), isInstanceDisabled]),
+                fn: pipe([() => ({ KeyId }), getById({}), isInstanceDisabled]),
                 config,
               })
             ),
@@ -192,7 +192,7 @@ exports.KmsKey = ({ spec, config }) => {
           tap(({ KeyId }) =>
             retryCall({
               name: `key isUpById: ${name} id: ${KeyId}`,
-              fn: pipe([() => getById({ KeyId }), isInstanceUp]),
+              fn: pipe([() => ({ KeyId }), getById({}), isInstanceUp]),
               config,
             })
           ),
@@ -207,7 +207,7 @@ exports.KmsKey = ({ spec, config }) => {
           tap(({ KeyId }) =>
             retryCall({
               name: `key isUpById: ${name} id: ${KeyId}`,
-              fn: pipe([() => getById({ KeyId }), isInstanceDisabled]),
+              fn: pipe([() => ({ KeyId }), getById({}), isInstanceDisabled]),
               config,
             })
           ),

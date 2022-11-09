@@ -119,7 +119,8 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
   return {
     spec,
     findId,
-    getByName: getById,
+    getById,
+    getByName: getById({}),
     findName,
     create,
     update,

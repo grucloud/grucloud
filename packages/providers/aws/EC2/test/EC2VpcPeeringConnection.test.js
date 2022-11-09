@@ -39,7 +39,7 @@ describe("EC2VpcPeeringConnection", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        vpcPeeringConnection.getById({
+        vpcPeeringConnection.getById({})({
           VpcPeeringConnectionId: "pcx-032cb2c8350925850",
         }),
     ])

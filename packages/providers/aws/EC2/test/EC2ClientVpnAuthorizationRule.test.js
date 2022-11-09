@@ -30,7 +30,7 @@ describe("EC2ClientVpnAuthorizationRule", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        rule.getById({
+        rule.getById({})({
           ClientVpnEndpointId: "cvpn-endpoint-087d9903708fd6756",
           TargetNetworkCidr: "10.0.0.0/16",
         }),

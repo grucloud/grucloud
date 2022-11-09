@@ -26,7 +26,7 @@ describe("AppRunner Service", async function () {
     "getById not found",
     pipe([
       () =>
-        service.getById({
+        service.getById({})({
           ServiceArn:
             "arn:aws:apprunner:us-east-1:840541460064:service/mock-server/4d97761b3685416bb95d7debd86ca5a8",
         }),

@@ -39,7 +39,7 @@ describe("Route53RecoveryControlConfigCluster", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        cluster.getById({
+        cluster.getById({})({
           ClusterArn:
             "arn:aws:route53-recovery-control::840541460064:cluster/3011f1ab-0558-4627-a890-cad5e8e7ae8a",
         }),

@@ -47,13 +47,13 @@ exports.DynamoDBTable = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#describeTable-property
-  const getByName = ({ name }) => getById({ TableName: name });
+  const getByName = pipe([({ name }) => ({ TableName: name }), getById({})]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#listTables-property
   const getList = client.getList({
     method: "listTables",
     getParam: "TableNames",
-    decorate: () => (TableName) => getById({ TableName }),
+    decorate: () => pipe([(TableName) => ({ TableName }), getById({})]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#createTable-property
@@ -106,6 +106,7 @@ exports.DynamoDBTable = ({ spec, config }) => {
     spec,
     findId,
     getByName,
+    getById,
     findName,
     create,
     update,

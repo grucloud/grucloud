@@ -39,7 +39,7 @@ describe("CloudFrontCachePolicy", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        cachePolicy.getById({
+        cachePolicy.getById({})({
           CachePolicy: { Id: "658327ea-f89d-4fab-a63d-7e88639e58fa" },
         }),
     ])

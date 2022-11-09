@@ -28,7 +28,7 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
     ignoreErrorCodes: ["InvalidKeyPair.NotFound"],
   });
 
-  const getByName = pipe([({ name }) => ({ KeyName: name }), getById]);
+  const getByName = pipe([({ name }) => ({ KeyName: name }), getById({})]);
 
   const saveKeyToFile =
     ({ directory = process.cwd() }) =>

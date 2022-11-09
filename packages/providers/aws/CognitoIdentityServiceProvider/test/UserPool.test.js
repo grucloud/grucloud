@@ -36,7 +36,7 @@ describe("UserPool", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        userPool.getById({
+        userPool.getById({})({
           Id: "up_12345",
         }),
     ])

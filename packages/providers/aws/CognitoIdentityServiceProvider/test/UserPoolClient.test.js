@@ -30,7 +30,7 @@ describe("UserPoolClient", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        userPoolClient.getById({
+        userPoolClient.getById({})({
           ClientId: "3hn8tkap446tnf5unro4v0bina",
           UserPoolId: "us-east-1_AfVOlXeZB",
         }),

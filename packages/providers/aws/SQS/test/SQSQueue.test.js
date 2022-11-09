@@ -47,7 +47,7 @@ describe("SQSQueue", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        queue.getById({
+        queue.getById({})({
           QueueUrl: `https://sqs.${
             provider.config.region
           }.amazonaws.com/${provider.config.accountId()}/MyNewerQueue`,

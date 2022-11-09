@@ -34,7 +34,7 @@ describe("CloudTrail Trail", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        cloudTrail.getById({
+        cloudTrail.getById({})({
           Name: "a-12345",
         }),
     ])

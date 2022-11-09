@@ -36,7 +36,7 @@ describe("MemoryDB SubnetGroup", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        subnetGroup.getById({
+        subnetGroup.getById({})({
           Name: "subnetGroup-12345",
         }),
     ])

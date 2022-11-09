@@ -65,7 +65,7 @@ exports.RedshiftClusterSubnetGroup = ({ spec, config }) =>
         ({ name }) => ({
           ClusterSubnetGroupName: name,
         }),
-        getById,
+        getById({}),
       ]),
     tagResource: tagResource({
       buildArn: buildArn(config),

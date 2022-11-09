@@ -180,6 +180,7 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
     findNamespace,
     findName,
     getByName,
+    getById,
     findName,
     create,
     update,

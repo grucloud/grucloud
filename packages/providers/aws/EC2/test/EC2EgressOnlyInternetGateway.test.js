@@ -38,7 +38,7 @@ describe("EC2 EgressOnlyInternetGateway", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        eoig.getById({
+        eoig.getById({})({
           EgressOnlyInternetGatewayId: "eigw-0214d5aba979cedf1",
         }),
     ])

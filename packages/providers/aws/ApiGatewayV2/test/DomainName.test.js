@@ -26,7 +26,7 @@ describe("Api Gateway V2 DomainName", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        domainName.getById({
+        domainName.getById({})({
           DomainName: "12345",
         }),
     ])

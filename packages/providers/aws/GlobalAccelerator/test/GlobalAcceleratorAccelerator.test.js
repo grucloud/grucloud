@@ -39,7 +39,7 @@ describe("GlobalAcceleratorAccelerator", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        accelerator.getById({
+        accelerator.getById({})({
           AcceleratorArn:
             "arn:aws:globalaccelerator::840541460064:accelerator/123",
         }),

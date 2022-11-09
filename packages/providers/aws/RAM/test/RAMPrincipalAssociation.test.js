@@ -40,7 +40,7 @@ describe("RAMPrincipalAssociation", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        principalAssociation.getById({
+        principalAssociation.getById({})({
           resourceShareArn:
             "arn:aws:ram:us-east-1:840541460064:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807",
           associatedEntity: "161408406883",

@@ -24,10 +24,11 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
   });
 
   const getByName = getByNameCore({ getList, findName });
-  const getById = pipe([
-    ({ AllocationId }) => ({ id: AllocationId }),
-    getByIdCore({ fieldIds: "AllocationIds", getList }),
-  ]);
+  const getById = () =>
+    pipe([
+      ({ AllocationId }) => ({ id: AllocationId }),
+      getByIdCore({ fieldIds: "AllocationIds", getList }),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#allocateAddress-property
   const create = client.create({

@@ -125,7 +125,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
 
   const getByName = pipe([
     ({ name }) => ({ LaunchTemplateName: name }),
-    getById,
+    getById({}),
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createLaunchTemplate-property

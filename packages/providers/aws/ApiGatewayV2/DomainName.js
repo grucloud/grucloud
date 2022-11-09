@@ -35,7 +35,10 @@ exports.DomainName = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
-  const getByName = ({ name: DomainName }) => getById({ DomainName });
+  const getByName = pipe([
+    ({ name: DomainName }) => ({ DomainName }),
+    getById({}),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApiGatewayV2.html#createDomainName-property
   const create = client.create({

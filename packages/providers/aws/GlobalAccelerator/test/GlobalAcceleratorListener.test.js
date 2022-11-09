@@ -30,7 +30,7 @@ describe("GlobalAcceleratorListener", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        listener.getById({
+        listener.getById({})({
           ListenerArn:
             "arn:aws:globalaccelerator::840541460064:accelerator/a74affc1-eae0-427b-9011-0b04fadaf8e1/listener/f13b08ab",
         }),

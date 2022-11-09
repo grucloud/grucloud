@@ -1,1 +1,1 @@
-module.exports = require("./ConfigServiceSpec");
+module.exports = require("./ConfigSpec");

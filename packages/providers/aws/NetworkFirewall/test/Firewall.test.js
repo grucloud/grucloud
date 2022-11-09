@@ -37,7 +37,7 @@ describe("NetworkFirewall Firewall", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        firewall.getById({
+        firewall.getById({})({
           FirewallArn:
             "arn:aws:network-firewall:us-east-1:840541460064:firewall/blabla",
         }),

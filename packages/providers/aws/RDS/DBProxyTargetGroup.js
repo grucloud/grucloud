@@ -70,7 +70,7 @@ exports.DBProxyTargetGroup = ({ spec, config }) =>
           }),
       ])(),
     getByName: ({ getById }) =>
-      pipe([({ name }) => ({ TargetGroupName: name }), getById]),
+      pipe([({ name }) => ({ TargetGroupName: name }), getById({})]),
     tagResource: tagResource,
     untagResource: untagResource,
     configDefault: ({

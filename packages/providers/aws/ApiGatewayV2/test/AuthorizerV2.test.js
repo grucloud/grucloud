@@ -26,7 +26,7 @@ describe("Api Gateway Authorizer V2", async function () {
     "getByLive with invalid id",
     pipe([
       () =>
-        autorizer.getById({
+        autorizer.getById({})({
           ApiId: "12345",
           AuthorizerId: "12345",
         }),

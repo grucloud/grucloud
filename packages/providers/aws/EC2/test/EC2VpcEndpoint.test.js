@@ -35,7 +35,7 @@ describe("EC2VpcEndpoint", async function () {
     "vpcEndpoint getById not found",
     pipe([
       () =>
-        vpcEndpoint.getById({
+        vpcEndpoint.getById({})({
           VpcEndpointId: "vpce-0ceb4fc535e8d1872",
         }),
     ])

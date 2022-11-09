@@ -32,7 +32,7 @@ describe("EC2 VolumeAttachment", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        volumeAttachment.getById({
+        volumeAttachment.getById({})({
           VolumeId: "vol-035a2aa7c23edd8e0",
         }),
     ])

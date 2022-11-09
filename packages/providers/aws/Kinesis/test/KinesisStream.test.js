@@ -34,7 +34,7 @@ describe("KinesisStream", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        stream.getById({
+        stream.getById({})({
           StreamName: "a-124",
         }),
     ])

@@ -36,7 +36,7 @@ describe("CodeDeployApp", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        app.getById({
+        app.getById({})({
           applicationName: "my-project",
         }),
     ])
