@@ -10,6 +10,7 @@ const pickId = pipe([pick(["AssociationId"])]);
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
+  ignoreErrorCodes: ["InvalidAssociationID.NotFound"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateAddress-property
   create: { method: "associateAddress" },
   destroy: {

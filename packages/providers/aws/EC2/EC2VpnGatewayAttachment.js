@@ -22,6 +22,7 @@ const pickId = pick(["VpcId", "VpnGatewayId"]);
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
+  ignoreErrorCodes: ["InvalidVpnGatewayID.NotFound"],
   getById: {
     method: "describeVpnGateways",
     getField: "VpnGateways",

@@ -306,7 +306,7 @@ exports.EC2Route = ({ spec, config }) => {
           name: `modifyVpcEndpoint ${name}`,
           fn: pipe([
             () => ({ RouteTableId, GatewayId: VpcEndpointId }),
-            getById,
+            getById({}),
           ]),
           config: { retryCount: 12 * 5, retryDelay: 5e3 },
           isExpectedResult: not(isEmpty),
@@ -518,6 +518,7 @@ exports.EC2Route = ({ spec, config }) => {
     findId,
     findNamespace: findNamespaceInTags(config),
     getByName,
+    getById,
     findName,
     getList,
     create,

@@ -1,13 +1,19 @@
 const assert = require("assert");
 const { map, pipe, tap, get, pick, assign } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { defaultsDeep, when, callProp } = require("rubico/x");
 
 const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./RDSCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const pickId = pick(["DBProxyName", "TargetGroupName"]);
+const pickId = pipe([
+  tap(({ DBProxyName, TargetGroupName }) => {
+    assert(DBProxyName);
+    assert(TargetGroupName);
+  }),
+  pick(["DBProxyName", "TargetGroupName"]),
+]);
 
 const decorate = ({ endpoint }) =>
   pipe([
@@ -26,7 +32,7 @@ const model = {
   package: "rds",
   client: "RDS",
   ignoreErrorCodes: ["DBProxyNotFoundFault", "DBProxyTargetGroupNotFoundFault"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBProxyEndpoints-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBProxyTargetGroups-property
   getById: {
     method: "describeDBProxyTargetGroups",
     pickId,
@@ -55,7 +61,11 @@ exports.DBProxyTargetGroup = ({ spec, config }) =>
     managedByOther,
     isDefault: managedByOther,
     cannotBeDeleted: managedByOther,
-    findName: get("live.TargetGroupName"),
+    findName: pipe([
+      get("live"),
+      ({ DBProxyName, TargetGroupName }) =>
+        `${DBProxyName}::${TargetGroupName}`,
+    ]),
     findId: get("live.TargetGroupArn"),
     getList: ({ client, endpoint, getById, config }) =>
       pipe([
@@ -70,7 +80,12 @@ exports.DBProxyTargetGroup = ({ spec, config }) =>
           }),
       ])(),
     getByName: ({ getById }) =>
-      pipe([({ name }) => ({ TargetGroupName: name }), getById({})]),
+      pipe([
+        get("name"),
+        callProp("split", "::"),
+        ([DBProxyName, TargetGroupName]) => ({ DBProxyName, TargetGroupName }),
+        getById({}),
+      ]),
     tagResource: tagResource,
     untagResource: untagResource,
     configDefault: ({

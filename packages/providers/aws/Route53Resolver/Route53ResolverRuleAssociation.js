@@ -2,6 +2,7 @@ const assert = require("assert");
 const { pipe, tap, get, pick, eq, fork } = require("rubico");
 const { defaultsDeep, first, find } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
 
@@ -27,7 +28,12 @@ const model = ({ config }) => ({
   getById: {
     method: "getResolverRuleAssociation",
     getField: "ResolverRuleAssociation",
-    pickId: pipe([({ Id }) => ({ ResolverRuleAssociationId: Id })]),
+    pickId: pipe([
+      tap(({ Id }) => {
+        assert(Id);
+      }),
+      ({ Id }) => ({ ResolverRuleAssociationId: Id }),
+    ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#listResolverRuleAssociations-property
   getList: {
@@ -45,7 +51,13 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53Resolver.html#disassociateResolverRule-property
   destroy: {
     method: "disassociateResolverRule",
-    pickId: pipe([pick(["VPCId", "ResolverRuleId"])]),
+    pickId: pipe([
+      tap(({ VPCId, ResolverRuleId }) => {
+        assert(VPCId);
+        assert(ResolverRuleId);
+      }),
+      pick(["VPCId", "ResolverRuleId"]),
+    ]),
   },
 });
 
@@ -88,14 +100,8 @@ exports.Route53ResolverRuleAssociation = ({ spec, config }) =>
         }),
       ])(),
     findId: pipe([get("live.Id")]),
-    getByName: ({ getList, endpoint }) =>
-      pipe([
-        ({ name }) => ({
-          Filters: [{ Name: "Name", Values: [name] }],
-        }),
-        getList,
-        first,
-      ]),
+    // listResolverRuleAssociations with Name as a filter does not work
+    getByName: getByNameCore,
     configDefault: ({
       name,
       namespace,

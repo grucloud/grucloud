@@ -138,12 +138,18 @@ exports.EC2InternetGateway = ({ spec, config }) => {
         }),
     ])();
 
-  const detachInternetGateways = ({ live: { InternetGatewayId } }) =>
+  const detachInternetGateways = ({ live }) =>
     pipe([
       tap(() => {
-        assert(InternetGatewayId);
+        assert(true);
       }),
-      () => getById({ InternetGatewayId }),
+      () => live,
+
+      getById({}),
+      tap((params) => {
+        assert(true);
+      }),
+
       get("Attachments"),
       map(
         tryCatch(
@@ -178,7 +184,10 @@ exports.EC2InternetGateway = ({ spec, config }) => {
     pickId,
     method: "deleteInternetGateway",
     getById,
-    ignoreErrorCodes: ["InvalidInternetGatewayID.NotFound"],
+    ignoreErrorCodes: [
+      "InvalidInternetGatewayID.NotFound",
+      "InvalidInternetGatewayId.Malformed",
+    ],
   });
 
   const configDefault = ({
@@ -204,6 +213,7 @@ exports.EC2InternetGateway = ({ spec, config }) => {
     findName,
     findNamespace: findNamespaceInTags(config),
     getByName,
+    getById,
     isDefault: isDefault(config),
     cannotBeDeleted: isDefault(config),
     managedByOther: isDefault(config),

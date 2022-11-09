@@ -292,6 +292,7 @@ exports.AwsIamUser = ({ spec, config }) => {
     spec,
     findId,
     getByName,
+    getById,
     findName,
     create,
     update,

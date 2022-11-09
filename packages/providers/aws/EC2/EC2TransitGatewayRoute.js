@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, fork, switchCase, omit, map } = require("rubico");
 const { defaultsDeep, append } = require("rubico/x");
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
@@ -75,9 +75,6 @@ exports.EC2TransitGatewayRoute = ({ spec, config }) =>
           parent: { type: "TransitGatewayRouteTable", group: "EC2" },
           config,
           pickKey: pipe([
-            tap((params) => {
-              assert(true);
-            }),
             pick(["TransitGatewayRouteTableId"]),
             defaultsDeep({
               Filters: [
@@ -100,6 +97,7 @@ exports.EC2TransitGatewayRoute = ({ spec, config }) =>
                   pipe([
                     () => route,
                     omit(["TransitGatewayAttachments", "Type"]),
+                    omitIfEmpty(["TransitGatewayRouteTableAnnouncementId"]),
                     defaultsDeep({
                       TransitGatewayRouteTableId,
                       TransitGatewayAttachmentId,

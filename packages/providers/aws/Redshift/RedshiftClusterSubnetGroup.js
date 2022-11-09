@@ -9,7 +9,12 @@ const { buildTags } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./RedshiftCommon");
 
-const pickId = pipe([pick(["ClusterSubnetGroupName"])]);
+const pickId = pipe([
+  tap(({ ClusterSubnetGroupName }) => {
+    assert(ClusterSubnetGroupName);
+  }),
+  pick(["ClusterSubnetGroupName"]),
+]);
 
 const model = ({ config }) => ({
   package: "redshift",

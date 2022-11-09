@@ -11,7 +11,8 @@ const { createAwsResource } = require("../AwsClient");
 const createModel = ({ config }) => ({
   package: "networkmanager",
   client: "NetworkManager",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["ValidationException"],
+  ignoreErrorMessages: ["Incorrect input"],
   getById: {
     method: "getTransitGatewayRegistrations",
     pickId: pipe([

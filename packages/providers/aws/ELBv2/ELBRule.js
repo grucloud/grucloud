@@ -226,6 +226,7 @@ exports.ELBRule = ({ spec, config }) => {
     findId,
     findNamespace,
     getByName,
+    getById,
     findName,
     create,
     destroy,

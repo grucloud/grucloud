@@ -1,11 +1,19 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, filter, not, fork, switchCase } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  eq,
+  filter,
+  not,
+  fork,
+  switchCase,
+  pick,
+} = require("rubico");
 const { prepend } = require("rubico/x");
 
 const { findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
-
-const { findDependenciesTransitGateway } = require("./EC2TransitGatewayCommon");
 
 const isInstanceDown = pipe([eq(get("State"), "deleted")]);
 

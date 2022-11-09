@@ -390,6 +390,7 @@ exports.EC2Vpc = ({ spec, config }) => {
     managedByOther,
     cannotBeDeleted,
     findId,
+    getById,
     findNamespace: findNamespaceInTags(config),
     getByName,
     findName,

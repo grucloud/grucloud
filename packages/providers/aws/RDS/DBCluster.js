@@ -147,6 +147,7 @@ exports.DBCluster = ({ spec, config }) => {
     spec,
     findName,
     findId,
+    getById,
     create,
     update,
     destroy,

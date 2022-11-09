@@ -166,6 +166,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
   return {
     spec,
     findId,
+    getById,
     getByName,
     findName,
     create,

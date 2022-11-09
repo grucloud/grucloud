@@ -39,7 +39,7 @@ exports.UserPool = ({ spec, config }) => {
     extraParam: { MaxResults: 10 },
     method: "listUserPools",
     getParam: "UserPools",
-    decorate: () => pipe([getById]),
+    decorate: () => pipe([getById({})]),
   });
 
   const getByName = getByNameCore({ getList, findName });

@@ -8,6 +8,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { createAwsResource } = require("../AwsClient");
 
 const ignoreErrorMessages = ["Configuration ARN does not exist"];
+const ignoreErrorCodes = ["NotFoundException"];
 
 const pickId = pipe([
   tap(({ Id, LatestRevision }) => {
@@ -47,6 +48,7 @@ const dataToBase64 = assign({
 const model = ({ config }) => ({
   package: "mq",
   client: "Mq",
+  ignoreErrorCodes,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MQ.html#describeConfiguration-property
   getById: {
     method: "describeConfiguration",
@@ -74,21 +76,9 @@ const model = ({ config }) => ({
       pipe([
         () => payload,
         pick(["Data", "Description"]),
-        tap((params) => {
-          assert(live);
-        }),
         dataToBase64,
         defaultsDeep({ ConfigurationId: live.Id }),
-        tap((params) => {
-          assert(true);
-        }),
       ])(),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MQ.html#deleteConfiguration-property
-  destroy: {
-    method: "deleteConfiguration",
-    pickId,
-    ignoreErrorMessages,
   },
 });
 

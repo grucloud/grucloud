@@ -268,6 +268,7 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
     managedByOther,
     findNamespace,
     getByName,
+    getById,
     findName,
     create,
     update,

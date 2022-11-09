@@ -378,6 +378,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     findId,
     findNamespace,
     getByName,
+    getById,
     findName,
     create,
     update,

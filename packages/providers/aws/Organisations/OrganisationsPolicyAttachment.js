@@ -35,6 +35,7 @@ const model = ({ config }) => ({
   package: "organizations",
   client: "Organizations",
   ignoreErrorCodes: ["PolicyNotFoundException"],
+  // TODO add getById
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#attachPolicy-property
   create: {
     method: "attachPolicy",

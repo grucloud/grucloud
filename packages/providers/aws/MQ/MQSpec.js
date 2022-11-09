@@ -13,6 +13,7 @@ const compare = compareAws({ tagsKey, key: "Key" });
 const { MQBroker } = require("./MQBroker");
 const { MQConfiguration } = require("./MQConfiguration");
 
+// TODO MQUser
 module.exports = pipe([
   () => [
     {

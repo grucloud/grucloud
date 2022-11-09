@@ -227,6 +227,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
         ),
       ])(),
     getByName,
+    getById,
     findName,
     create,
     destroy,

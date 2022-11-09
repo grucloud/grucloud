@@ -324,6 +324,7 @@ exports.EC2Subnet = ({ spec, config }) => {
     cannotBeDeleted,
     managedByOther,
     findId,
+    getById,
     findName,
     findNamespace: findNamespaceInTags(config),
     getByName,

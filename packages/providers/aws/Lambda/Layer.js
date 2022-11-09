@@ -151,7 +151,7 @@ exports.Layer = ({ spec, config }) => {
     update,
     destroy,
     getByName,
-    //getById,
+    getById,
     getList,
     configDefault,
   };

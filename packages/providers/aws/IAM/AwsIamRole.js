@@ -448,6 +448,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     findNamespace: findNamespaceInTags(config),
     findId,
     getByName,
+    getById,
     cannotBeDeleted,
     findName,
     create,
