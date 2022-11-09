@@ -36,7 +36,7 @@ describe("MemoryDB ACL", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        acl.getById({
+        acl.getById({})({
           Name: "acl-12345",
         }),
     ])

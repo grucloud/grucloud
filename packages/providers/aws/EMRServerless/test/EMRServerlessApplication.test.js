@@ -36,7 +36,7 @@ describe("EMRServerlessApplication", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        application.getById({
+        application.getById({})({
           applicationId: "application12345",
         }),
     ])

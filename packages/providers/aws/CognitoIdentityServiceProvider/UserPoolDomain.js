@@ -48,7 +48,7 @@ exports.UserPoolDomain = ({ spec, config }) => {
     config,
   });
 
-  const getByName = pipe([({ name }) => ({ Domain: name }), getById]);
+  const getByName = pipe([({ name }) => ({ Domain: name }), getById({})]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentityServiceProvider.html#createUserPoolDomain-property
   const create = client.create({

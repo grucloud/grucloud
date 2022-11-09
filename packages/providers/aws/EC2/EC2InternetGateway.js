@@ -66,10 +66,11 @@ exports.EC2InternetGateway = ({ spec, config }) => {
   });
 
   const getByName = getByNameCore({ getList, findName });
-  const getById = pipe([
-    ({ InternetGatewayId }) => ({ id: InternetGatewayId }),
-    getByIdCore({ fieldIds: "InternetGatewayIds", getList }),
-  ]);
+  const getById = () =>
+    pipe([
+      ({ InternetGatewayId }) => ({ id: InternetGatewayId }),
+      getByIdCore({ fieldIds: "InternetGatewayIds", getList }),
+    ]);
 
   const getStateName = pipe([
     get("Attachments"),

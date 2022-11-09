@@ -91,7 +91,8 @@ exports.GlueJob = ({ spec, config }) =>
     findName: pipe([get("live.Name")]),
     findId,
     getByName: ({ getList, endpoint, getById }) =>
-      pipe([({ name }) => ({ Name: name }), getById]),
+      pipe([({ name }) => ({ Name: name }), getById({})]),
+    //TODO
     findDependencies: ({ live }) => [
       {
         type: "Role",

@@ -39,7 +39,7 @@ describe("EC2ClientVpnEndpoint", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        client.getById({
+        client.getById({})({
           ClientVpnEndpointId: "cvpn-endpoint-087d9903708fd6756",
         }),
     ])

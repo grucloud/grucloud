@@ -36,7 +36,7 @@ describe("MemoryDB User", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        user.getById({
+        user.getById({})({
           Name: "user-12345",
         }),
     ])

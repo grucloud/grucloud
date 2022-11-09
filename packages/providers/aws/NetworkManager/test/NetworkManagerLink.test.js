@@ -31,7 +31,7 @@ describe("NetworkManager Link", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        site.getById({
+        site.getById({})({
           GlobalNetworkId: "global-network-004d81c3933d7e5a1",
           SiteId: "site-0d621fa7de7691161",
           LinkId: "device-0d621fa7de7691161",

@@ -170,7 +170,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
       map.pool(
         mapPoolSize,
-        tryCatch(getById, (error, policy) =>
+        tryCatch(getById({}), (error, policy) =>
           pipe([
             tap(() => {
               logger.error(

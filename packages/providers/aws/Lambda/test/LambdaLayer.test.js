@@ -34,7 +34,7 @@ describe("Layer", async function () {
   //   "getById with invalid id",
   //   pipe([
   //     () =>
-  //       layer.getById({
+  //       layer.getById({})({
   //         Configuration: { FunctionArn: "a12345" },
   //       }),
   //   ])

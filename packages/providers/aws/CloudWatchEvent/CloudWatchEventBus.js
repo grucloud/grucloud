@@ -55,7 +55,7 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
     ignoreErrorCodes,
   });
 
-  const getByName = pipe([({ name }) => ({ Name: name }), getById]);
+  const getByName = pipe([({ name }) => ({ Name: name }), getById({})]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#createEventBus-property
   const create = client.create({
@@ -92,6 +92,7 @@ exports.CloudWatchEventBus = ({ spec, config }) => {
     create,
     destroy,
     getByName,
+    getById,
     getList,
     configDefault,
     findDependencies,

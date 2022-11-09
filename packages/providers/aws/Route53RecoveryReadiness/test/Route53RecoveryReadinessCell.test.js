@@ -36,7 +36,7 @@ describe("Route53RecoveryReadinessCell", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        cell.getById({
+        cell.getById({})({
           CellName: "a-12345",
         }),
     ])

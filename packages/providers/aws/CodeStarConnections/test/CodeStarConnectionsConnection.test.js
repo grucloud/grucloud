@@ -39,7 +39,7 @@ describe("CodeStarConnectionsConnection", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        connection.getById({
+        connection.getById({})({
           ConnectionArn:
             "arn:aws:codestar-connections:us-east-1:840541460064:connection/6ba9de29-73f2-436c-82e2-4ef7de54f061",
         }),

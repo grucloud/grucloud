@@ -92,13 +92,14 @@ exports.EC2Vpc = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
 
-  const getById = pipe([
-    tap(({ VpcId }) => {
-      assert(VpcId);
-    }),
-    ({ VpcId }) => ({ id: VpcId }),
-    getByIdCore({ fieldIds: "VpcIds", getList }),
-  ]);
+  const getById = () =>
+    pipe([
+      tap(({ VpcId }) => {
+        assert(VpcId);
+      }),
+      ({ VpcId }) => ({ id: VpcId }),
+      getByIdCore({ fieldIds: "VpcIds", getList }),
+    ]);
 
   const isInstanceUp = eq(get("State"), "available");
 

@@ -27,6 +27,7 @@ const pickId = pipe([
   }),
 ]);
 
+const ignoreErrorCodes = ["InvalidParameterException", "ClientException"];
 const ignoreErrorMessages = ["The specified task definition does not exist."];
 
 exports.findDependenciesInEnvironment =
@@ -67,6 +68,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     extraParams: { include: ["TAGS"] },
     method: "describeTaskDefinition",
     ignoreErrorMessages,
+    ignoreErrorCodes,
     decorate: () =>
       pipe([({ taskDefinition, tags }) => ({ ...taskDefinition, tags })]),
   });
@@ -77,7 +79,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     getParam: "taskDefinitionArns",
     extraParam: { sort: "DESC" },
     decorate: () =>
-      pipe([(taskDefinitionArn) => ({ taskDefinitionArn }), getById]),
+      pipe([(taskDefinitionArn) => ({ taskDefinitionArn }), getById({})]),
   });
   //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeTaskDefinition-property
 
@@ -107,7 +109,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
     pickId,
     method: "deregisterTaskDefinition",
     //getById,
-    ignoreErrorCodes: ["InvalidParameterException"],
+    ignoreErrorCodes,
     ignoreErrorMessages,
   });
 
@@ -139,6 +141,7 @@ exports.ECSTaskDefinition = ({ spec, config }) => {
   return {
     spec,
     findId,
+    getById,
     getByName,
     findName,
     create,

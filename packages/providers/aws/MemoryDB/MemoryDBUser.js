@@ -67,7 +67,7 @@ exports.MemoryDBUser = ({ spec, config }) =>
         ({ name }) => ({
           Name: name,
         }),
-        getById,
+        getById({}),
       ]),
     tagResource: tagResource({
       buildArn: buildArn(config),

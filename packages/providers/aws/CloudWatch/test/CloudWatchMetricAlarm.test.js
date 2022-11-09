@@ -36,7 +36,7 @@ describe("CloudWatchMetricAlarm", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        alarm.getById({
+        alarm.getById({})({
           Name: "api-12345",
         }),
     ])

@@ -86,6 +86,10 @@ const createModel = ({ config }) => ({
   destroy: {
     method: "deleteLogStream",
     pickId: pipe([
+      tap((params) => {
+        assert(true);
+      }),
+
       fork({
         logGroupName: pipe([logGroupNameFromArn]),
         logStreamName: pipe([logStreamNameFromArn]),

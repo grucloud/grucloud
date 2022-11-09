@@ -74,7 +74,7 @@ exports.CodeDeployApplication = ({ spec, config }) =>
     findName: pipe([get("live.applicationName")]),
     findId: pipe([get("live.applicationId")]),
     getByName: ({ getById }) =>
-      pipe([({ name }) => ({ applicationName: name }), getById]),
+      pipe([({ name }) => ({ applicationName: name }), getById({})]),
     tagResource: tagResource({ buildArn: buildArn({ config }) }),
     untagResource: untagResource({ buildArn: buildArn({ config }) }),
     configDefault: ({

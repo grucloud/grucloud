@@ -79,7 +79,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
       dependencies,
       get("eventBus.name"),
       (EventBusName) => ({ Name: name, EventBusName }),
-      getById,
+      getById({}),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatchEvents.html#putRule-property
@@ -137,6 +137,7 @@ exports.CloudWatchEventRule = ({ spec, config }) => {
     spec,
     findName,
     findId,
+    getById,
     create,
     update,
     destroy,

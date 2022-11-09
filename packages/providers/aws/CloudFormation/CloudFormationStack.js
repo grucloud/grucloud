@@ -55,7 +55,7 @@ exports.CloudFormationStack = ({ spec, config }) => {
     decorate,
   });
 
-  const getByName = pipe([({ name }) => ({ StackName: name }), getById]);
+  const getByName = pipe([({ name }) => ({ StackName: name }), getById({})]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFormation.html#createStack-property
   const configDefault = ({ name, properties, dependencies: {} }) =>

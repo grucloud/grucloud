@@ -101,7 +101,7 @@ exports.ECSCluster = ({ spec, config }) => {
     ignoreErrorCodes: ["ClusterNotFoundException"],
   });
 
-  const getByName = pipe([({ name }) => ({ clusterName: name }), getById]);
+  const getByName = pipe([({ name }) => ({ clusterName: name }), getById({})]);
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#listClusters-property
   const getList = client.getList({
     method: "listClusters",
@@ -112,7 +112,7 @@ exports.ECSCluster = ({ spec, config }) => {
           assert(clusters);
         }),
         (cluster) => ({ clusterName: cluster }),
-        getById,
+        getById({}),
       ]),
   });
 
@@ -242,6 +242,7 @@ exports.ECSCluster = ({ spec, config }) => {
     managedByOther,
     findNamespace,
     findDependencies,
+    getById,
     getByName,
     findName,
     create,

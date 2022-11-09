@@ -36,7 +36,7 @@ describe("Route53RecoveryReadinessRecoveryGroup", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        recoveryGroup.getById({
+        recoveryGroup.getById({})({
           RecoveryGroupName: "a-12345",
         }),
     ])

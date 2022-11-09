@@ -38,7 +38,7 @@ describe("EC2 DhcpOptions", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        dhcpOptions.getById({
+        dhcpOptions.getById({})({
           DhcpOptionsId: "dopt-036a6462c18e0cce1",
         }),
     ])

@@ -30,7 +30,7 @@ describe("DBProxyTargetGroup", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        dbProxyTargetGroup.getById({
+        dbProxyTargetGroup.getById({})({
           DBProxyName: "proxyName-12345",
           TargetGroupName: "target",
         }),

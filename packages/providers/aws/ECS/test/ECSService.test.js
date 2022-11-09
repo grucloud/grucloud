@@ -38,7 +38,7 @@ describe("ECSService", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        service.getById({
+        service.getById({})({
           serviceName: "124",
           clusterArn: "arn:aws:ecs:eu-west-2:840541460064:cluster/not-existing",
         }),

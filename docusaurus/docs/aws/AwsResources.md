@@ -28,6 +28,8 @@ List of resources for provider aws:
 [BackupPlan](./resources/Backup/BackupPlan.md), [BackupSelection](./resources/Backup/BackupSelection.md), [BackupVault](./resources/Backup/BackupVault.md), [BackupVaultLockConfiguration](./resources/Backup/BackupVaultLockConfiguration.md), [BackupVaultNotification](./resources/Backup/BackupVaultNotification.md), [BackupVaultPolicy](./resources/Backup/BackupVaultPolicy.md), [Framework](./resources/Backup/Framework.md), [GlobalSettings](./resources/Backup/GlobalSettings.md), [RegionSettings](./resources/Backup/RegionSettings.md), [ReportPlan](./resources/Backup/ReportPlan.md)
 * Batch: 
 [ComputeEnvironment](./resources/Batch/ComputeEnvironment.md), [JobDefinition](./resources/Batch/JobDefinition.md), [JobQueue](./resources/Batch/JobQueue.md), [SchedulingPolicy](./resources/Batch/SchedulingPolicy.md)
+* Budgets: 
+[Budget](./resources/Budgets/Budget.md)
 * CloudFormation: 
 [Stack](./resources/CloudFormation/Stack.md)
 * CloudFront: 
@@ -50,6 +52,8 @@ List of resources for provider aws:
 [Connection](./resources/CodeStarConnections/Connection.md)
 * CognitoIdentityServiceProvider: 
 [IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md), [UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [UserPoolClient](./resources/CognitoIdentityServiceProvider/UserPoolClient.md), [UserPoolDomain](./resources/CognitoIdentityServiceProvider/UserPoolDomain.md)
+* Config: 
+[ConfigRule](./resources/Config/ConfigRule.md), [ConfigurationRecorder](./resources/Config/ConfigurationRecorder.md), [ConfigurationRecorderStatus](./resources/Config/ConfigurationRecorderStatus.md), [ConformancePack](./resources/Config/ConformancePack.md), [DeliveryChannel](./resources/Config/DeliveryChannel.md)
 * DynamoDB: 
 [Table](./resources/DynamoDB/Table.md), [KinesisStreamingDestination](./resources/DynamoDB/KinesisStreamingDestination.md)
 * EC2: 

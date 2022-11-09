@@ -27,7 +27,7 @@ describe("AppSynGraphqlApi", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        graphqlApi.getById({
+        graphqlApi.getById({})({
           apiId: "12345",
         }),
     ])

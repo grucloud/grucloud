@@ -39,7 +39,7 @@ describe("NetworkFirewall RuleGroup", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        ruleGroup.getById({
+        ruleGroup.getById({})({
           RuleGroupArn:
             "arn:aws:network-firewall:us-east-1:840541460064:stateful-rulegroup/blabla",
         }),

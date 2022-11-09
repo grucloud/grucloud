@@ -36,7 +36,7 @@ describe("Route53ResolverRuleAssociation", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        ruleAssociation.getById({
+        ruleAssociation.getById({})({
           Id: "12345",
         }),
     ])

@@ -34,7 +34,7 @@ describe("DBProxy", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        dbProxy.getById({
+        dbProxy.getById({})({
           DBProxyName: "dbProxy-12345",
         }),
     ])

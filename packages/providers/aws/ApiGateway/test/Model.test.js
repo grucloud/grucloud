@@ -26,7 +26,7 @@ describe.skip("Api Gateway Model", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        model.getById({
+        model.getById({})({
           restApiId: "12345",
           name: "12345",
         }),

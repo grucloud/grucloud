@@ -74,13 +74,13 @@ exports.SQSQueue = ({ spec, config }) => {
   const getList = client.getList({
     method: "listQueues",
     getParam: "QueueUrls",
-    decorate: () => pipe([(QueueUrl) => ({ QueueUrl }), getById]),
+    decorate: () => pipe([(QueueUrl) => ({ QueueUrl }), getById({})]),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueUrl-property
   const getByName = pipe([
     tryCatch(
-      pipe([({ name }) => sqs().getQueueUrl({ QueueName: name }), getById]),
+      pipe([({ name }) => sqs().getQueueUrl({ QueueName: name }), getById({})]),
       throwIfNotAwsError("AWS.SimpleQueueService.NonExistentQueue")
     ),
   ]);

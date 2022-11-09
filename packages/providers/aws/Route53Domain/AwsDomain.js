@@ -25,10 +25,10 @@ exports.AwsDomain = ({ spec, config }) => {
   const getList = client.getList({
     method: "listDomains",
     getParam: "Domains",
-    decorate: () => pipe([getById]),
+    decorate: () => pipe([getById({})]),
   });
 
-  const getByName = ({ name }) => getById({ DomainName: name });
+  const getByName = pipe([({ name }) => ({ DomainName: name }), getById({})]);
 
   const configDefault = async ({ name, properties }) =>
     defaultsDeep({

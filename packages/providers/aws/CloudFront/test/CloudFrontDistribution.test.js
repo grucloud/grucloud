@@ -36,7 +36,7 @@ describe("CloudFrontDistribution", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        distribution.getById({
+        distribution.getById({})({
           Id: "123",
         }),
     ])

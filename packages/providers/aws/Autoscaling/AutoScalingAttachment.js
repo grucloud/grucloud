@@ -13,6 +13,8 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createAutoScaling } = require("./AutoScalingCommon");
 
+const ignoreErrorMessages = ["not found"];
+
 exports.AutoScalingAttachment = ({ spec, config }) => {
   const autoScaling = createAutoScaling(config);
 
@@ -137,6 +139,7 @@ exports.AutoScalingAttachment = ({ spec, config }) => {
     }),
     method: "detachLoadBalancerTargetGroups",
     config,
+    ignoreErrorMessages,
   });
 
   const configDefault = ({

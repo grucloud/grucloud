@@ -36,7 +36,7 @@ describe("Route53RecoveryReadinessReadinessCheck", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        readinessCheck.getById({
+        readinessCheck.getById({})({
           ReadinessCheckName: "a-12345",
         }),
     ])

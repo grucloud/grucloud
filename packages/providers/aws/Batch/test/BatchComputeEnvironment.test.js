@@ -42,7 +42,7 @@ describe("BatchComputeEnvironment", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        computeEnvironment.getById({
+        computeEnvironment.getById({})({
           computeEnvironmentName: "compute-environment",
         }),
     ])

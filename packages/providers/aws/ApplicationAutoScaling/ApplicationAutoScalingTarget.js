@@ -22,7 +22,7 @@ const findName = pipe([
 const model = ({ config }) => ({
   package: "application-auto-scaling",
   client: "ApplicationAutoScaling",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["ObjectNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ApplicationAutoScaling.html#describeScalableTargets-property
   getById: {
     pickId: pipe([

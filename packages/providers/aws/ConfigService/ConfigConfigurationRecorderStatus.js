@@ -24,7 +24,7 @@ const decorate = ({ parent }) =>
 const model = ({ config }) => ({
   package: "config-service",
   client: "ConfigService",
-  ignoreErrorCodes: ["NotFoundException"],
+  ignoreErrorCodes: ["NoSuchConfigurationRecorderException"],
   getById: {
     method: "describeConfigurationRecorderStatus",
     pickId: pipe([

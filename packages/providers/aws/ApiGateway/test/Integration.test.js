@@ -26,7 +26,7 @@ describe.skip("Api Gateway Integration", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        integration.getById({
+        integration.getById({})({
           restApiId: "12345",
           resourceId: "12345",
           httpMethod: "get",

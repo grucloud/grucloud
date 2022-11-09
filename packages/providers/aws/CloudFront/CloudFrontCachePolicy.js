@@ -78,7 +78,8 @@ exports.CloudFrontCachePolicy = ({ spec, config }) =>
     cannotBeDeleted: managedByOther,
     findName: pipe([get("live.CachePolicy.CachePolicyConfig.Name")]),
     findId: get("live.CachePolicy.CachePolicyConfig.Name"),
-    getByName: ({ getById }) => pipe([({ name }) => ({ Name: name }), getById]),
+    getByName: ({ getById }) =>
+      pipe([({ name }) => ({ Name: name }), getById({})]),
     configDefault: ({ name, namespace, properties }) =>
       pipe([
         () => properties,

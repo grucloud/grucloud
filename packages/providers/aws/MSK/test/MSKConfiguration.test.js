@@ -38,7 +38,7 @@ describe("MSKConfiguration", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        configuration.getById({
+        configuration.getById({})({
           Arn: "arn:aws:kafka:us-east-1:840541460064:configuration/my-configuration/9d0f971d-1873-4615-8cfd-7c8dba612825-19",
         }),
     ])

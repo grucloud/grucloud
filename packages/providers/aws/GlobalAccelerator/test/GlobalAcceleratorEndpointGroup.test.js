@@ -30,7 +30,7 @@ describe("GlobalAcceleratorEndpointGroup", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        endpointGroup.getById({
+        endpointGroup.getById({})({
           EndpointGroupArn:
             "arn:aws:globalaccelerator::840541460064:accelerator/310c604a-5013-416e-b940-e53d61b2da2d/listener/686088c5/endpoint-group/98de4326d002",
         }),

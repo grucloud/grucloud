@@ -46,10 +46,11 @@ exports.AwsNatGateway = ({ spec, config }) => {
   });
 
   const getByName = getByNameCore({ getList, findName });
-  const getById = pipe([
-    ({ NatGatewayId }) => ({ id: NatGatewayId }),
-    getByIdCore({ fieldIds: "NatGatewayIds", getList }),
-  ]);
+  const getById = () =>
+    pipe([
+      ({ NatGatewayId }) => ({ id: NatGatewayId }),
+      getByIdCore({ fieldIds: "NatGatewayIds", getList }),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createNatGateway-property
   const create = client.create({

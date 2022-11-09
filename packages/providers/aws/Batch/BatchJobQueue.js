@@ -15,7 +15,7 @@ const buildArn = () => get("jobQueueArn");
 const model = ({ config }) => ({
   package: "batch",
   client: "Batch",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["ClientException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Batch.html#describeJobQueues-property
   getById: {
     method: "describeJobQueues",

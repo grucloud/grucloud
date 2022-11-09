@@ -66,7 +66,7 @@ exports.CloudWatchLogGroup = ({ spec, config }) => {
     decorate,
   });
 
-  const getByName = pipe([({ name }) => ({ logGroupName: name }), getById]);
+  const getByName = pipe([({ name }) => ({ logGroupName: name }), getById({})]);
 
   const putRetentionPolicy = pipe([
     tap.if(

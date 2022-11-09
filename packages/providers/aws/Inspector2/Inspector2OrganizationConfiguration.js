@@ -51,8 +51,9 @@ exports.Inspector2OrganizationConfiguration = ({ spec, config }) =>
     findName: pipe([() => "default"]),
     findId: pipe([() => "default"]),
     cannotBeDeleted,
-    getList: ({ endpoint, getById }) => pipe([getById, (result) => [result]]),
-    getByName: ({ getList, endpoint, getById }) => pipe([getById]),
+    getList: ({ endpoint, getById }) =>
+      pipe([getById({}), (result) => [result]]),
+    getByName: ({ getList, endpoint, getById }) => pipe([getById({})]),
     configDefault: ({ name, namespace, properties: { ...otherProps } }) =>
       pipe([() => otherProps, defaultsDeep({})])(),
   });

@@ -36,7 +36,7 @@ describe("ElastiCache CacheCluster", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        cluster.getById({
+        cluster.getById({})({
           CacheClusterId: "cluster-12345",
         }),
     ])

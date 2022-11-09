@@ -58,11 +58,13 @@ exports.CURReportDefinition = ({ spec, config }) =>
     getByName: getByNameCore,
     getById:
       ({ endpoint }) =>
+      ({ lives }) =>
       (live) =>
         pipe([
           tap((params) => {
             assert(live);
           }),
+          () => ({}),
           endpoint().describeReportDefinitions,
           get("ReportDefinitions"),
           find(eq(get("ReportName"), live.ReportName)),

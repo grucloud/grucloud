@@ -41,7 +41,7 @@ describe("IamOpenIDConnectProvider", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        iamOpenIDConnectProvider.getById({
+        iamOpenIDConnectProvider.getById({})({
           Arn: "arn:aws:iam::840541460064:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/D37114C060BC22C04E5BE2E1BF4717A2",
         }),
       tap((params) => {

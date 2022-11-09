@@ -34,7 +34,7 @@ describe("Route53ResolverEndpoint", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        endpoint.getById({
+        endpoint.getById({})({
           Id: "12345",
         }),
     ])

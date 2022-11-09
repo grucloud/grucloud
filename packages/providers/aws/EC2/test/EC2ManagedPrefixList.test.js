@@ -35,7 +35,7 @@ describe("EC2ManagedPrefixList", async function () {
     "prefixList getById not found",
     pipe([
       () =>
-        prefixList.getById({
+        prefixList.getById({})({
           PrefixListId: "pl-63a5400b",
         }),
     ])

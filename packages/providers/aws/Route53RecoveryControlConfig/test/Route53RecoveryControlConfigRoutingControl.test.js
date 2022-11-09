@@ -30,7 +30,7 @@ describe("Route53RecoveryControlConfigRoutingControl", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        routingControl.getById({
+        routingControl.getById({})({
           RoutingControlArn:
             "arn:aws:route53-recovery-control::840541460064:controlpanel/b95ba5f33ba04c3ca6dc231654a1604d/routingcontrol/21d6c872221c4961",
         }),

@@ -38,7 +38,7 @@ describe("EC2 IpamScope", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        ipamScope.getById({
+        ipamScope.getById({})({
           IpamScopeId: "ipam-scope-xxxxxxxxxxxxxxxxx",
         }),
     ])

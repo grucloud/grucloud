@@ -36,7 +36,7 @@ describe("CloudTrail EventDataStore", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        eventDataStore.getById({
+        eventDataStore.getById({})({
           EventDataStoreArn: "a-12345",
         }),
     ])

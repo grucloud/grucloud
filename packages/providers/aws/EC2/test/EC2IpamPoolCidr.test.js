@@ -31,7 +31,7 @@ describe("EC2 IpamPoolCidr", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        ipamPoolCidr.getById({
+        ipamPoolCidr.getById({})({
           IpamPoolId: "ipam-pool-xxxxxxxxxxxxxxxxx",
           Cidr: "10.0.0.0/24",
         }),

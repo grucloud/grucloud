@@ -99,6 +99,7 @@ exports.AppSyncResolver = ({ spec, config }) => {
     findId,
     getByName,
     findName,
+    getById,
     create,
     destroy,
     getList,

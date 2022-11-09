@@ -36,7 +36,7 @@ describe("Secrets Manager Secret", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        secret.getById({
+        secret.getById({})({
           Name: "my-secret",
         }),
     ])

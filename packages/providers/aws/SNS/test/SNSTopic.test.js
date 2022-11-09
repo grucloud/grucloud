@@ -38,7 +38,7 @@ describe("SNS Topic", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        topic.getById({
+        topic.getById({})({
           Attributes: {
             TopicArn: "arn:aws:sns:us-east-1:840541460064:idnonotexist",
           },

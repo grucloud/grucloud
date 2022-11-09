@@ -89,7 +89,7 @@ exports.FirehoseDeliveryStream = ({ spec, config }) =>
     findName: pipe([get("live.DeliveryStreamName")]),
     findId: pipe([get("live.DeliveryStreamARN")]),
     getByName: ({ getList, endpoint, getById }) =>
-      pipe([({ name }) => ({ DeliveryStreamName: name }), getById]),
+      pipe([({ name }) => ({ DeliveryStreamName: name }), getById({})]),
     tagResource: tagResource,
     untagResource: untagResource,
     configDefault: ({

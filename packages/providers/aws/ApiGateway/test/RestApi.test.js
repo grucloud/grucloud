@@ -26,7 +26,7 @@ describe("RestApi", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        restApi.getById({
+        restApi.getById({})({
           id: "12345",
         }),
     ])

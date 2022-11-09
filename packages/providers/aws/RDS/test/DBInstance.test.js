@@ -34,7 +34,7 @@ describe("DBInstance", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        dbInstance.getById({
+        dbInstance.getById({})({
           DBInstanceIdentifier: "instance-12345",
         }),
     ])

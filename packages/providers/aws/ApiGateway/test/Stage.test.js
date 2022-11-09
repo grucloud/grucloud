@@ -26,7 +26,7 @@ describe("Api Gateway Stage", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        stage.getById({
+        stage.getById({})({
           restApiId: "12345",
           stageName: "12345",
         }),

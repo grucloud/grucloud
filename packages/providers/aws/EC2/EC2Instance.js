@@ -280,10 +280,11 @@ exports.EC2Instance = ({ spec, config }) => {
   });
 
   const getByName = getByNameCore({ getList, findName });
-  const getById = pipe([
-    ({ InstanceId }) => ({ id: InstanceId }),
-    getByIdCore({ fieldIds: "InstanceIds", getList }),
-  ]);
+  const getById = () =>
+    pipe([
+      ({ InstanceId }) => ({ id: InstanceId }),
+      getByIdCore({ fieldIds: "InstanceIds", getList }),
+    ]);
 
   const isUpById = pipe([getById, isInstanceUp]);
   const isDownById = pipe([getById, isInstanceDown]);

@@ -135,10 +135,11 @@ exports.EC2RouteTable = ({ spec, config }) => {
       first,
     ])();
 
-  const getById = pipe([
-    ({ RouteTableId }) => ({ id: RouteTableId }),
-    getByIdCore({ fieldIds: "RouteTableIds", getList }),
-  ]);
+  const getById = () =>
+    pipe([
+      ({ RouteTableId }) => ({ id: RouteTableId }),
+      getByIdCore({ fieldIds: "RouteTableIds", getList }),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
   const create = client.create({

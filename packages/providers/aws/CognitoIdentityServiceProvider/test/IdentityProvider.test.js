@@ -27,7 +27,7 @@ describe("IdentityProvider", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        identityProvider.getById({
+        identityProvider.getById({})({
           UserPoolId: "up_12345",
           ProviderName: "aaaa",
         }),

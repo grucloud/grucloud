@@ -26,7 +26,7 @@ describe("Api Gateway V2 Deployment", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        deployment.getById({
+        deployment.getById({})({
           ApiId: "12345",
           DeploymentId: "12345",
         }),

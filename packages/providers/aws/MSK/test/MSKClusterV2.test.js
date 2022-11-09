@@ -39,7 +39,7 @@ describe("MSKClusterV2", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        cluster.getById({
+        cluster.getById({})({
           ClusterArn:
             "arn:aws:kafka:us-east-1:840541460064:cluster/demo-cluster-1/5db24fe7-4e03-4fb2-adb6-254e707209c5-s4",
         }),

@@ -314,6 +314,7 @@ exports.CloudWatchEventTarget = ({ spec, config }) => {
     spec,
     findName,
     findId,
+    getById,
     create,
     update,
     destroy,

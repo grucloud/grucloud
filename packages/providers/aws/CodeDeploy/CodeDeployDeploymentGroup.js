@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { pipe, map, tap, get, pick, assign, flatMap } = require("rubico");
 const { defaultsDeep, when, callProp } = require("rubico/x");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
@@ -9,6 +10,9 @@ const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./CodeDeployCommon");
 
 const pickId = pipe([
+  tap((params) => {
+    assert(true);
+  }),
   tap(({ applicationName, deploymentGroupName }) => {
     assert(applicationName);
     assert(deploymentGroupName);
@@ -125,8 +129,7 @@ exports.CodeDeployDeploymentGroup = ({ spec, config }) =>
             config,
           }),
       ])(),
-    getByName: ({ getById }) =>
-      pipe([({ properties }) => properties({ getId: () => ({}) }), getById]),
+    getByName: getByNameCore,
     tagResource: tagResource({ buildArn: buildArn({ config }) }),
     untagResource: untagResource({ buildArn: buildArn({ config }) }),
     configDefault: ({

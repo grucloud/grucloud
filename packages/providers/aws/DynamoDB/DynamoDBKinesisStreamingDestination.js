@@ -17,6 +17,8 @@ const pickId = pipe([
 const createModel = ({ config }) => ({
   package: "dynamodb",
   client: "DynamoDB",
+  ignoreErrorCodes: ["ResourceNotFoundException"],
+  // TODO getById
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#enableKinesisStreamingDestination-property
   create: { method: "enableKinesisStreamingDestination" },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#disableKinesisStreamingDestination-property

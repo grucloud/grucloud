@@ -20,7 +20,7 @@ exports.Account = ({ spec, config }) => {
 
   const getList = () => pipe([getAccount, (account) => [account]])();
   const getByName = getAccount;
-  const getById = getAccount;
+  const getById = () => getAccount;
 
   const configDefault = ({
     name,

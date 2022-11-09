@@ -2,9 +2,9 @@ exports.createResources = () => [
   {
     type: "Function",
     group: "Lambda",
-    name: "lambda-hello-world",
     properties: ({}) => ({
       Configuration: {
+        FunctionName: "lambda-hello-world",
         Handler: "helloworld.handler",
         Runtime: "nodejs14.x",
       },

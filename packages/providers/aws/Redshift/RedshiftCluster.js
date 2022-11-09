@@ -71,7 +71,7 @@ exports.RedshiftCluster = ({ spec, config }) =>
         ({ name }) => ({
           ClusterIdentifier: name,
         }),
-        getById,
+        getById({}),
       ]),
     tagResource: tagResource({
       buildArn: buildArn(config),

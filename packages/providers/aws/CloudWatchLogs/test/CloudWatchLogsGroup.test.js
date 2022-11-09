@@ -26,7 +26,7 @@ describe("CloudWatchLogsGroup", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        logGroup.getById({
+        logGroup.getById({})({
           logGroupName: "lg-124",
         }),
     ])

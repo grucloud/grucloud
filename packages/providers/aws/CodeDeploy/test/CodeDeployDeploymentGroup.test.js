@@ -27,7 +27,7 @@ describe("CodeDeployDeploymentGroup", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        deploymentGroup.getById({
+        deploymentGroup.getById({})({
           applicationName: "my-app",
           deploymentGroupName: "aaaa",
         }),

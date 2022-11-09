@@ -138,7 +138,7 @@ exports.CloudWatchMetricAlarm = ({ spec, config }) =>
     findId: pipe([get("live.AlarmArn")]),
     managedByOther,
     getByName: ({ getList, endpoint, getById }) =>
-      pipe([({ name }) => ({ AlarmName: name }), getById]),
+      pipe([({ name }) => ({ AlarmName: name }), getById({})]),
     tagResource: tagResource({
       buildArn: buildArn(config),
     }),

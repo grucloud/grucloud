@@ -24,6 +24,6 @@ describe("Api GatewayV2 Route", async function () {
   );
   it(
     "getById with invalid id",
-    pipe([() => route.getById({ ApiId: "12345", RouteId: "12345" })])
+    pipe([() => route.getById({})({ ApiId: "12345", RouteId: "12345" })])
   );
 });

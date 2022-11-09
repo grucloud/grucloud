@@ -28,7 +28,7 @@ describe("EFSMountTarget", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        fileSystem.getById({
+        fileSystem.getById({})({
           MountTargetId: "fsmt-0fda94134613a4f1b",
         }),
     ])

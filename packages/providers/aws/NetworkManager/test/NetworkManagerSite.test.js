@@ -30,7 +30,7 @@ describe("NetworkManager Site", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        site.getById({
+        site.getById({})({
           GlobalNetworkId: "global-network-12345678",
           SiteId: "site-123456789",
         }),

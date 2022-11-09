@@ -28,7 +28,7 @@ describe("UsagePlan", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        usagePlan.getById({
+        usagePlan.getById({})({
           id: "12345",
         }),
     ])

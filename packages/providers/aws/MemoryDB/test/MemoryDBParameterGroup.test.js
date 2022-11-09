@@ -36,7 +36,7 @@ describe("MemoryDB ParameterGroup", async function () {
     "getById with invalid id",
     pipe([
       () =>
-        parameterGroup.getById({
+        parameterGroup.getById({})({
           Name: "parameterGroup-12345",
         }),
     ])

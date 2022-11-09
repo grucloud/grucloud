@@ -22,5 +22,8 @@ describe("Api GatewayV2 Api", async function () {
         }),
     ])
   );
-  it("getById with invalid id", pipe([() => api.getById({ ApiId: "12345" })]));
+  it(
+    "getById with invalid id",
+    pipe([() => api.getById({})({ ApiId: "12345" })])
+  );
 });
