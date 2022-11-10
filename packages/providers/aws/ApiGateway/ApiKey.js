@@ -1,99 +1,78 @@
 const assert = require("assert");
 const { pipe, tap, get } = require("rubico");
 const { defaultsDeep, first } = require("rubico/x");
+
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { AwsClient } = require("../AwsClient");
-const {
-  createAPIGateway,
-  ignoreErrorCodes,
-  tagResource,
-  untagResource,
-} = require("./ApiGatewayCommon");
+const { createAwsResource } = require("../AwsClient");
+const { getField } = require("@grucloud/core/ProviderCommon");
+const { ignoreErrorCodes, Tagger } = require("./ApiGatewayCommon");
 
 const findName = get("live.name");
 const findId = get("live.id");
 const pickId = ({ id }) => ({ apiKey: id });
 
+const buildArn =
+  ({ config }) =>
+  ({ id }) =>
+    `arn:aws:apigateway:${config.region}::/apikeys/${id}`;
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html
-exports.ApiKey = ({ spec, config }) => {
-  const endpoint = createAPIGateway(config);
-  const client = AwsClient({ spec, config })(endpoint);
 
-  const buildResourceArn =
-    ({ config }) =>
-    ({ id }) =>
-      `arn:aws:apigateway:${config.region}::/apikeys/${id}`;
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getApiKey-property
-  const getById = client.getById({
-    pickId,
+const model = ({ config }) => ({
+  package: "api-gateway",
+  client: "APIGateway",
+  ignoreErrorCodes,
+  getById: {
     method: "getApiKey",
-    ignoreErrorCodes,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#getApiKeys-property
-  const getList = client.getList({
+    pickId,
+  },
+  getList: {
     method: "getApiKeys",
     getParam: "items",
-  });
-
-  const getByName = pipe([
-    ({ name }) => getList({ params: { nameQuery: name } }),
-    first,
-  ]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createApiKey-property
-  const configDefault = ({
-    name,
-    namespace,
-    properties: { Tags, ...otherProps },
-    dependencies: {},
-  }) =>
-    pipe([
-      () => otherProps,
-      defaultsDeep({
-        name: name,
-        enabled: true,
-        tags: buildTagsObject({ name, config, namespace, UserTags: Tags }),
-      }),
-    ])();
-
-  const create = client.create({
+  },
+  create: {
     method: "createApiKey",
-    getById,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateApiKey-property
-  const update = client.update({
+  },
+  update: {
     pickId,
     method: "updateApiKey",
-    getById,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#deleteApiKey-property
-  const destroy = client.destroy({
+    //filterParams: ({ payload, live, diff }) => pipe([() => payload])(),
+  },
+  destroy: {
     pickId,
     method: "deleteApiKey",
-    getById,
-    ignoreErrorCodes,
-  });
+  },
+});
 
-  return {
+exports.ApiKey = ({ spec, config }) =>
+  createAwsResource({
+    model: model({ config }),
     spec,
-    findId,
-    getByName,
-    getById,
+    config,
     findName,
-    create,
-    update,
-    destroy,
-    getList,
-    configDefault,
-    tagResource: tagResource({
-      buildResourceArn: buildResourceArn({ config }),
-    })({ endpoint }),
-    untagResource: untagResource({
-      buildResourceArn: buildResourceArn({ config }),
-    })({ endpoint }),
-  };
-};
+    findId,
+    getByName: ({ getList }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        ({ name }) => ({ params: { nameQuery: name } }),
+        getList,
+        first,
+      ]),
+    ...Tagger({ buildArn: buildArn({ config }) }),
+    configDefault: ({
+      name,
+      namespace,
+      properties: { tags, ...otherProps },
+      dependencies: {},
+    }) =>
+      pipe([
+        () => otherProps,
+        defaultsDeep({
+          name: name,
+          enabled: true,
+          tags: buildTagsObject({ name, config, namespace, userTags: tags }),
+        }),
+      ])(),
+  });

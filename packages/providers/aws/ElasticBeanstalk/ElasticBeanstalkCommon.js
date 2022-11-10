@@ -1,6 +1,16 @@
 const assert = require("assert");
 const { pipe, tap, assign, get } = require("rubico");
 
+const { createTagger } = require("../AwsTagger");
+
+exports.Tagger = createTagger({
+  methodTagResource: "updateTagsForResource",
+  methodUnTagResource: "updateTagsForResource",
+  ResourceArn: "ResourceArn",
+  TagsKey: "TagsToAdd",
+  UnTagsKey: "TagsToRemove",
+});
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticBeanstalk.html#updateTagsForResource-property
 exports.tagResource =
   ({ buildArn }) =>

@@ -1,6 +1,17 @@
 const assert = require("assert");
 const { pipe, tap, get, assign } = require("rubico");
 
+const { createTagger } = require("../AwsTagger");
+
+// TODO ResourceType
+// exports.Tagger = createTagger({
+//   methodTagResource: "addTagsToResource",
+//   methodUnTagResource: "removeTagsFromResource",
+//   ResourceArn: "resourceArn",
+//   TagsKey: "tags",
+//   UnTagsKey: "tagKeys",
+// });
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html#addTagsToResource-property
 exports.tagResource =
   ({ ResourceType }) =>

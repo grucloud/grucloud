@@ -2,6 +2,16 @@ const assert = require("assert");
 const { pipe, tap } = require("rubico");
 const { createEndpoint } = require("../AwsCommon");
 
+const { createTagger } = require("../AwsTagger");
+
+exports.Tagger = createTagger({
+  methodTagResource: "tagLogGroup",
+  methodUnTagResource: "untagLogGroup",
+  ResourceArn: "logGroupName",
+  TagsKey: "tags",
+  UnTagsKey: "tags",
+});
+
 exports.createCloudWatchLogs = createEndpoint(
   "cloudwatch-logs",
   "CloudWatchLogs"

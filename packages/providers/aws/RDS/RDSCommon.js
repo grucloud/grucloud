@@ -1,10 +1,19 @@
 const assert = require("assert");
 const { pipe, tap, assign, omit, get, eq } = require("rubico");
 const { find } = require("rubico/x");
+const { createTagger } = require("../AwsTagger");
 
 const { createEndpoint } = require("../AwsCommon");
 
 exports.createRDS = createEndpoint("rds", "RDS");
+
+exports.Tagger = createTagger({
+  methodTagResource: "addTagsToResource",
+  methodUnTagResource: "removeTagsFromResource",
+  ResourceArn: "ResourceName",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
+});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#addTagsToResource-property
 exports.tagResource =

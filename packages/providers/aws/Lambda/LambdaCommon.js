@@ -6,6 +6,7 @@ const fs = require("fs").promises;
 const zipDir = require("zip-dir");
 const crypto = require("crypto");
 const { createEndpoint } = require("../AwsCommon");
+const { createTagger } = require("../AwsTagger");
 
 exports.createLambda = createEndpoint("lambda", "Lambda");
 
@@ -65,6 +66,14 @@ exports.computeHash256 = (ZipFile) =>
     (hash256) =>
       pipe([() => hash256.update(ZipFile), () => hash256.digest("base64")])(),
   ])();
+
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "Resource",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
+});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#tagResource-property
 exports.tagResource =

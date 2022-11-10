@@ -4,6 +4,16 @@ const { find } = require("rubico/x");
 
 const { createEndpoint } = require("../AwsCommon");
 
+const { createTagger } = require("../AwsTagger");
+
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "resourceArn",
+  TagsKey: "tags",
+  UnTagsKey: "tagKeys",
+});
+
 exports.createAppSync = createEndpoint("appsync", "AppSync");
 
 exports.ignoreErrorCodes = ["NotFoundException"];

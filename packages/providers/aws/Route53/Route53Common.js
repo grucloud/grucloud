@@ -2,6 +2,7 @@ const assert = require("assert");
 const { pipe, tap } = require("rubico");
 const { callProp, when, append } = require("rubico/x");
 const { createEndpoint } = require("../AwsCommon");
+const { createTagger } = require("../AwsTagger");
 
 exports.createRoute53 = createEndpoint("route-53", "Route53");
 
@@ -16,6 +17,15 @@ exports.buildRecordName = ({ Name, Type, SetIdentifier }) =>
     () => `record::${Type}::${Name}`,
     when(() => SetIdentifier, append(`::${SetIdentifier}`)),
   ])();
+
+//TODO ResourceType
+exports.Tagger = createTagger({
+  methodTagResource: "changeTagsForResource",
+  methodUnTagResource: "changeTagsForResource",
+  ResourceArn: "ResourceId",
+  TagsKey: "AddTags",
+  UnTagsKey: "RemoveTagKeys",
+});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
 exports.tagResource =

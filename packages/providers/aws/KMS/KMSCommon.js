@@ -1,8 +1,17 @@
 const assert = require("assert");
 const { pipe, tap } = require("rubico");
 const { createEndpoint } = require("../AwsCommon");
+const { createTagger } = require("../AwsTagger");
 
 exports.createKMS = createEndpoint("kms", "KMS");
+
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "KeyId",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
+});
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#tagResource-property
 exports.tagResource =

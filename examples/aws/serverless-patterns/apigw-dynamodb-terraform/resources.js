@@ -165,6 +165,9 @@ exports.createResources = () => [
         offset: 0,
         period: "MONTH",
       },
+      tags: {
+        mykey1: "myvalue",
+      },
       throttle: {
         burstLimit: 20,
         rateLimit: 100,

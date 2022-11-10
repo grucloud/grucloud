@@ -1,6 +1,16 @@
 const assert = require("assert");
 const { pipe, tap } = require("rubico");
 
+const { createTagger } = require("../AwsTagger");
+
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "ResourceId",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
+});
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#tagResource-property
 exports.tagResource =
   ({ buildArn }) =>

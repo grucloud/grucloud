@@ -375,15 +375,17 @@ exports.MyModuleMyResource = ({ spec, config }) =>
     //   ]),
 
     // Custom create
-    // create: ({ endpoint, getById }) =>
-    //   pipe([
-    //     get("payload"),
-    //     switchCase([
-    //       get("Certificate"),
-    //       importCertificate({ endpoint }),
-    //       requestCertificate({ endpoint, getById }),
-    //     ]),
-    //   ]),
+    // create:
+    //   ({ endpoint, getById }) =>
+    //   ({ payload, resolvedDependencies }) =>
+    //     pipe([
+    //       () => payload,
+    //       switchCase([
+    //         get("Certificate"),
+    //         importCertificate({ endpoint }),
+    //         requestCertificate({ endpoint, getById }),
+    //       ]),
+    //     ])(),
 
     // Custome update
     // update:
