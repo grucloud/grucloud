@@ -21,10 +21,10 @@ exports.createResources = () => [
     properties: ({}) => ({
       Id: "terraform-20220331194525125100000008",
     }),
-    dependencies: ({}) => ({
+    dependencies: ({ config }) => ({
       rule: "terraform-20220331194511828000000002",
       role: "terraform-20220331194511828200000005",
-      sfnStateMachine: "eventbridge-state-machine-demo-840541460064",
+      sfnStateMachine: `eventbridge-state-machine-demo-${config.accountId()}`,
     }),
   },
   {
@@ -127,8 +127,8 @@ exports.createResources = () => [
       },
       Path: "/",
     }),
-    dependencies: ({}) => ({
-      stateMachines: ["eventbridge-state-machine-demo-840541460064"],
+    dependencies: ({ config }) => ({
+      stateMachines: [`eventbridge-state-machine-demo-${config.accountId()}`],
     }),
   },
   {

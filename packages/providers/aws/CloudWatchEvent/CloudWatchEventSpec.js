@@ -54,6 +54,7 @@ module.exports = pipe([
         secret: {
           type: "Secret",
           group: "SecretsManager",
+          excludeDefaultDependencies: true,
           dependencyId: ({ lives, config }) => get("SecretArn"),
         },
       },

@@ -1,0 +1,45 @@
+const assert = require("assert");
+const { pipe, tap } = require("rubico");
+
+const { awsResourceTest } = require("../../AwsResourceTester");
+
+describe("RAM", async function () {
+  it("PrincipalAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "RAM::PrincipalAssociation",
+        livesNotFound: ({ config }) => [
+          {
+            resourceShareArn: `arn:aws:ram:us-east-1:${config.accountId()}:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
+            associatedEntity: "123456789012",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("ResourceAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "RAM::ResourceAssociation",
+        livesNotFound: ({ config }) => [
+          {
+            resourceShareArn: `arn:aws:ram:us-east-1:${config.accountId()}:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
+            associatedEntity: `arn:aws:ec2:us-east-1:${config.accountId()}:subnet/subnet-02635c742ca4543ba`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("ResourceShare", () =>
+    pipe([
+      () => ({
+        groupType: "RAM::ResourceShare",
+        livesNotFound: ({ config }) => [
+          {
+            resourceShareArn: `arn:aws:ram:us-east-1:${config.accountId()}:resource-share/e4b6b5bd-74db-4776-9967-dc13aa3b2807`,
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+});

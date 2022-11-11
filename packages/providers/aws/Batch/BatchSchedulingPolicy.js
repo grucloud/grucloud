@@ -18,6 +18,9 @@ const model = ({ config }) => ({
   getById: {
     method: "describeSchedulingPolicies",
     pickId: pipe([
+      tap((params) => {
+        assert(true);
+      }),
       ({ arn }) => ({
         arns: [arn],
       }),

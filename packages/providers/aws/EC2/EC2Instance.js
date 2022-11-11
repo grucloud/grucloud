@@ -286,8 +286,8 @@ exports.EC2Instance = ({ spec, config }) => {
       getByIdCore({ fieldIds: "InstanceIds", getList }),
     ]);
 
-  const isUpById = pipe([getById, isInstanceUp]);
-  const isDownById = pipe([getById, isInstanceDown]);
+  const isUpById = pipe([getById({}), isInstanceUp]);
+  const isDownById = pipe([getById({}), isInstanceDown]);
 
   const updateAttributes = ({ InstanceId, updated, added }) =>
     pipe([
@@ -434,6 +434,7 @@ exports.EC2Instance = ({ spec, config }) => {
     findNamespace,
     getByName,
     findName,
+    getById,
     create,
     update,
     destroy,

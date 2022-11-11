@@ -35,7 +35,7 @@ exports.UserPoolClient = ({ spec, config }) => {
     method: "listUserPoolClients",
     getParam: "UserPoolClients",
     config,
-    decorate: ({ lives, parent }) => pipe([getById]),
+    decorate: ({ lives, parent }) => pipe([getById({})]),
   });
 
   const getByName = getByNameCore({ getList, findName });

@@ -27,6 +27,8 @@ const { createAwsResource } = require("../AwsClient");
 
 //TODO dependencyId use lives.getById
 
+const ignoreErrorCodes = ["WAFNonexistentItemException"];
+
 const WebAclDependencies = {
   loadBalancer: {
     type: "LoadBalancer",
@@ -68,6 +70,7 @@ exports.WebAclDependencies = WebAclDependencies;
 const createModel = ({ config }) => ({
   package: "wafv2",
   client: "WAFV2",
+  ignoreErrorCodes,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#associateWebACL-property
   create: {
     method: "associateWebACL",
@@ -78,7 +81,12 @@ const createModel = ({ config }) => ({
   destroy: {
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#disassociateWebACL-property
     method: "disassociateWebACL",
-    pickId: pipe([pick(["ResourceArn"])]),
+    pickId: pipe([
+      tap(({ ResourceArn }) => {
+        assert(ResourceArn);
+      }),
+      pick(["ResourceArn"]),
+    ]),
   },
 });
 

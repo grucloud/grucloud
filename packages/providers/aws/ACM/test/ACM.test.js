@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe.only("ACM", async function () {
+describe("ACM", async function () {
   it("Certificate", () =>
     pipe([
       () => ({

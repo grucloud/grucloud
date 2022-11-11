@@ -333,6 +333,8 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config, getId }) => ({
+      VpcEndpointType: "Interface",
+      ServiceName: `com.amazonaws.${config.region}.events`,
       PolicyDocument: {
         Version: "2012-10-17",
         Statement: [
@@ -356,8 +358,6 @@ exports.createResources = () => [
         ],
       },
       PrivateDnsEnabled: true,
-      VpcEndpointType: "Interface",
-      ServiceName: `com.amazonaws.${config.region}.events`,
     }),
     dependencies: ({}) => ({
       vpc: "Vpc8378EB38",

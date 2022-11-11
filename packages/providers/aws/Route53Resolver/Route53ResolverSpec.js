@@ -76,7 +76,6 @@ module.exports = pipe([
               get("IpAddresses"),
               map(
                 fork({
-                  //Ip: get("Ip"),
                   SubnetId: pipe([
                     get("SubnetId"),
                     replaceWithName({

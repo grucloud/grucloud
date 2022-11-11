@@ -227,6 +227,7 @@ exports.ECSCluster = ({ spec, config }) => {
       tap(destroyAutoScalingGroup),
     ]),
     method: "deleteCluster",
+    //TODO no or
     isInstanceDown: or([isEmpty, eq(get("status"), "INACTIVE")]),
     getById,
     ignoreErrorCodes: ["ClusterNotFoundException"],

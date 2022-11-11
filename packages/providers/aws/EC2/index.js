@@ -1,1 +1,1 @@
-module.exports = require("./AwsEC2Spec");
+module.exports = require("./EC2Spec");

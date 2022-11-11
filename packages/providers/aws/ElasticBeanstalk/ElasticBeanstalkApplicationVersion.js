@@ -30,7 +30,7 @@ const decorate = ({ endpoint }) =>
 const model = ({ config }) => ({
   package: "elastic-beanstalk",
   client: "ElasticBeanstalk",
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["InvalidParameterValue"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticBeanstalk.html#describeApplicationVersions-property
   getById: {
     method: "describeApplicationVersions",

@@ -25,6 +25,7 @@ const pickId = pipe([
 const createModel = ({ config }) => ({
   package: "ec2",
   client: "EC2",
+  ignoreErrorCodes: ["InvalidRouteTableID.NotFound"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#enableTransitGatewayRouteTablePropagation-property
   create: {
     method: "enableTransitGatewayRouteTablePropagation",

@@ -118,6 +118,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     findId,
     findNamespace,
     getByName,
+    getById,
     findName,
     create,
     destroy,

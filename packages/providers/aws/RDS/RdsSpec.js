@@ -131,7 +131,17 @@ module.exports = pipe([
     {
       type: "DBProxyTargetGroup",
       Client: DBProxyTargetGroup,
-      inferName: get("properties.TargetGroupName"),
+      inferName: ({
+        properties: { TargetGroupName },
+        dependenciesSpec: { dbProxy },
+      }) =>
+        pipe([
+          tap((params) => {
+            assert(dbProxy);
+            assert(TargetGroupName);
+          }),
+          () => `${dbProxy}::${TargetGroupName}`,
+        ]),
       omitProperties: [
         "DBClusterIdentifiers",
         "TargetGroupArn",
@@ -202,6 +212,7 @@ module.exports = pipe([
         dbSubnetGroup: {
           type: "DBSubnetGroup",
           group: "RDS",
+          excludeDefaultDependencies: true,
           dependencyId: ({ lives, config }) =>
             pipe([
               get("DBSubnetGroup"),

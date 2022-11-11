@@ -107,7 +107,7 @@ exports.CloudFrontDistribution = ({ spec, config }) => {
   });
 
   const isInstanceUp = eq(get("Status"), "Deployed");
-  const isUpById = pipe([getById, isInstanceUp]);
+  const isUpById = pipe([getById({}), isInstanceUp]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createDistributionWithTags-property
 

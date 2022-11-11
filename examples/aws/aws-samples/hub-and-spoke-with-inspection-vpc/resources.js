@@ -1297,9 +1297,9 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-1",
@@ -1314,9 +1314,9 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-1",
@@ -1331,9 +1331,9 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssm`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-1",
@@ -1348,9 +1348,9 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-1",
@@ -1365,9 +1365,9 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-2",
@@ -1382,9 +1382,9 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ec2messages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-2",
@@ -1399,9 +1399,9 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssm`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-2",
@@ -1416,9 +1416,9 @@ exports.createResources = () => [
     type: "VpcEndpoint",
     group: "EC2",
     properties: ({ config }) => ({
-      PrivateDnsEnabled: true,
       VpcEndpointType: "Interface",
       ServiceName: `com.amazonaws.${config.region}.ssmmessages`,
+      PrivateDnsEnabled: true,
     }),
     dependencies: ({ config }) => ({
       vpc: "spoke-vpc-2",

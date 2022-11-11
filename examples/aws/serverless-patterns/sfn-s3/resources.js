@@ -37,7 +37,13 @@ exports.createResources = () => [
       ],
     }),
   },
-  { type: "Bucket", group: "S3", name: "gc-my-sfn-bucket-destination" },
+  {
+    type: "Bucket",
+    group: "S3",
+    properties: ({}) => ({
+      Name: "gc-my-sfn-bucket-destination",
+    }),
+  },
   {
     type: "StateMachine",
     group: "StepFunctions",

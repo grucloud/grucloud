@@ -2008,7 +2008,7 @@ exports.createResources = () => [
     type: "TransitGatewayRoute",
     group: "EC2",
     properties: ({}) => ({
-      DestinationCidrBlock: "0:0:0:0:0:0:0:0/0",
+      DestinationCidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
       transitGatewayRouteTable: "dev",
@@ -2032,7 +2032,7 @@ exports.createResources = () => [
     type: "TransitGatewayRoute",
     group: "EC2",
     properties: ({}) => ({
-      DestinationCidrBlock: "0:0:0:0:0:0:0:0/0",
+      DestinationCidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
       transitGatewayRouteTable: "prod",
@@ -2056,7 +2056,7 @@ exports.createResources = () => [
     type: "TransitGatewayRoute",
     group: "EC2",
     properties: ({}) => ({
-      DestinationCidrBlock: "0:0:0:0:0:0:0:0/0",
+      DestinationCidrBlock: "::/0",
     }),
     dependencies: ({}) => ({
       transitGatewayRouteTable: "shared",

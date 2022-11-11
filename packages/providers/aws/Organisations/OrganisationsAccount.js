@@ -16,14 +16,14 @@ const pickId = pipe([
 const model = ({ config }) => ({
   package: "organizations",
   client: "Organizations",
-  ignoreErrorCodes: [],
+  ignoreErrorCodes: ["AccountNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#describeAccount-property
-  // getById: {
-  //   method: "describeAccount",
-  //   getField: "Account",
-  //   pickId,
-  // },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listAccounts-property
+  getById: {
+    method: "describeAccount",
+    getField: "Account",
+    pickId,
+  },
+  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listAccounts-property
   getList: {
     method: "listAccounts",
     getParam: "Accounts",

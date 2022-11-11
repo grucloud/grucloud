@@ -172,6 +172,7 @@ exports.EKSCluster = ({ spec, config }) => {
     spec,
     findId,
     findNamespace: findNamespaceInTagsObject(config),
+    getById,
     getByName,
     findName,
     create,
