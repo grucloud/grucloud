@@ -1,0 +1,23 @@
+@startmindmap
+title Resources for project lightsail-wordpress
+skinparam monochrome true
++ Infra
+++ aws
++++ Lightsail
+++++ Database (1)
+++++ Disk (1)
+++++ DiskAttachment (1)
+++++ Instance (1)
+++++ InstancePublicPorts (1)
+++++ KeyPair (1)
+++++ LoadBalancer (1)
+++++ LoadBalancerAttachment (1)
+++++ LoadBalancerCertificate (1)
+++++ StaticIp (1)
+++++ StaticIpAttachment (1)
++++ Route53
+++++ HostedZone (1)
+++++ Record (1)
++++ Route53Domains
+++++ Domain (1)
+@endmindmap

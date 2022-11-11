@@ -3,6 +3,7 @@ const {
   pipe,
   tap,
   get,
+  pick,
   eq,
   assign,
   map,
@@ -28,8 +29,7 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { createAwsResource } = require("../AwsClient");
 
 // const {
-//   tagResource,
-//   untagResource,
+//   Tagger,
 //   //assignTags,
 // } = require("./MyModuleCommon");
 
@@ -49,10 +49,10 @@ const buildArn = () =>
 //////////
 
 // const pickId = pipe([
-//   tap((params) => {
-//     assert(true);
+//   tap(({ name }) => {
+//     assert(name);
 //   }),
-//   ({ Id }) => ({ MyResourceId: Id }),
+//   ({ name }) => ({ loadBalancerName: name }),
 // ]);
 
 const pickId = pipe([
@@ -70,6 +70,7 @@ const decorate = ({ endpoint }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    //({ name, ...other }) => ({ loadBalancerName: name, ...other }),
     //assign({ MyJSON: pipe([get("MyJSON", JSON.parse)]) }),
     //assignTags({ endpoint }),
   ]);
@@ -118,7 +119,7 @@ const decorate = ({ endpoint }) =>
 // ]);
 
 const model = ({ config }) => ({
-  package: "MyModule",
+  package: "myModule",
   client: "MyModule",
   ignoreErrorCodes: ["ResourceNotFoundException"],
   //managedByOther,
@@ -157,6 +158,11 @@ const model = ({ config }) => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#createMyResource-property
   create: {
+    // filterPayload: ({ Tags, ...other }) =>
+    //   pipe([() => ({ ...other, BackupVaultTags: Tags })])(),
+
+    //filterPayload: pipe([omit(SELECTORS)]),
+
     method: "createMyResource",
     pickCreated: ({ payload }) => pipe([get("MyResource")]),
     // pickCreated: ({ payload }) => pipe([() => payload]),
@@ -236,222 +242,319 @@ const model = ({ config }) => ({
     // ]),
     method: "deleteMyResource",
     pickId,
-    isInstanceDown: pipe([eq(get("status"), "INACTIVE")]),
+    // isInstanceDown: pipe([eq(get("status"), "INACTIVE")]),
     // ignoreErrorCodes: ["ClusterNotFoundException"],
     // ignoreErrorMessages: [
     //   "The specified cluster is inactive. Specify an active cluster and try again.",
     // ],
+    // shouldRetryOnExceptionCodes = [],
+    // shouldRetryOnExceptionMessages = [],
   },
 });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
-exports.MyModuleMyResource = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: pipe([
-      get("live"),
-      get("Name"),
-      tap((name) => {
-        assert(name);
-      }),
-    ]),
-    // Find name from dependencies
-    // findName: ({ live, lives }) =>
-    //   pipe([
-    //     () => live,
-    //     fork({
-    //       vpc: pipe([
-    //         get("VPC.VPCId"),
-    //         tap((id) => {
-    //           assert(id);
-    //         }),
-    //         (id) =>
-    //           lives.getById({
-    //             id,
-    //             type: "Vpc",
-    //             group: "EC2",
-    //           }),
-    //         get("name"),
-    //       ]),
-    //       hostedZone: pipe([
-    //         get("HostedZoneId"),
-    //         tap((id) => {
-    //           assert(id);
-    //         }),
-    //         (id) =>
-    //           pipe([
-    //             () =>
-    //               lives.getById({
-    //                 id,
-    //                 type: "HostedZone",
-    //                 group: "Route53",
-    //                 providerName: config.providerName,
-    //               }),
-    //             get("name", id),
-    //           ])(),
-    //       ]),
-    //     }),
-    //     tap(({ vpc, hostedZone }) => {
-    //       assert(vpc);
-    //       assert(hostedZone);
-    //     }),
-    //     ({ vpc, hostedZone }) => `zone-assoc::${hostedZone}::${vpc}`,
-    //   ])(),
-    findId: pipe([
-      get("live"),
-      get("Arn"),
-      tap((id) => {
-        assert(id);
-      }),
-    ]),
-    // findId: pipe([
-    //   get("live"),
-    //   ({ resourceShareArn, associatedEntity }) =>
-    //     `${resourceShareArn}::${associatedEntity}`,
-    // ]),
-    getByName: getByNameCore,
-    // getByName: ({ getById }) =>
-    //   pipe([({ name }) => ({ ConnectionName: name }), getById({})]),
+exports.MyModuleMyResource = ({ compare }) => ({
+  type: "MyResource",
+  propertiesDefault: {},
+  omitProperties: [],
+  inferName: get("properties.name"),
 
-    // getByName: ({ getList, endpoint }) =>
-    //   pipe([
-    //     tap((params) => {
-    //       assert(true);
-    //     }),
-    //     ({ name }) => ({ Filters: [{ Name: "Name", Values: [name] }] }),
-    //     endpoint().listMyResources,
-    //     get("MyResources"),
-    //     first,
-    //     unless(isEmpty, decorate({ endpoint })),
-    //   ]),
+  // inferName: ({
+  //   properties: { certificateName },
+  //   dependencieSpec: { loadBalancer },
+  // }) =>
+  //   pipe([
+  //     tap((params) => {
+  //       assert(loadBalancer);
+  //       assert(certificateName);
+  //     }),
+  //     () => `${loadBalancer}::${certificateName}`,
+  //   ])(),
+  // inferName: pipe([
+  //   get("dependencieSpec"),
+  //   ({ staticIp, instance }) => `${staticIp}::${instance}`,
+  // ]),
 
-    //  getList for child resource
+  // environmentVariables: [
+  //   { path: "masterUsername", suffix: "MASTER_USERNAME" },
+  //   { path: "masterUserPassword", suffix: "MASTER_USER_PASSWORD" },
+  // ],
 
-    // getList: ({ client, endpoint, getById, config }) =>
-    //   pipe([
-    //     () =>
-    //       client.getListWithParent({
-    //         parent: { type: "LogGroup", group: "CloudWatchLogs" },
-    //         pickKey: pipe([pick(["logGroupName"])]),
-    //         method: "describeSubscriptionFilters",
-    //         getParam: "subscriptionFilters",
-    //         config,
-    //         decorate: () =>
-    //           pipe([
-    //             tap((params) => {
-    //               assert(true);
-    //             }),
-    //           ]),
-    //       }),
-    //   ])(),
-
-    // Custom getList
-
-    // getList: ({ endpoint }) =>
-    //   pipe([
-    //     () => ["BILLING", "OPERATIONS", "SECURITY"],
-    //     map(
-    //       tryCatch(
-    //         pipe([
-    //           (AlternateContactType) => ({
-    //             AlternateContactType,
-    //           }),
-    //           endpoint().getAlternateContact,
-    //           get("AlternateContact"),
-    //         ]),
-    //         // TODO throw if not  "ResourceNotFoundException" or "AccessDeniedException",
-    //         (error) =>
-    //           pipe([
-    //             tap((params) => {
-    //               assert(error);
-    //             }),
-    //             () => undefined,
-    //           ])()
-    //       )
-    //     ),
-    //     filter(not(isEmpty)),
-    //   ]),
-
-    // Custom create
-    // create:
-    //   ({ endpoint, getById }) =>
-    //   ({ payload, resolvedDependencies }) =>
-    //     pipe([
-    //       () => payload,
-    //       switchCase([
-    //         get("Certificate"),
-    //         importCertificate({ endpoint }),
-    //         requestCertificate({ endpoint, getById }),
-    //       ]),
-    //     ])(),
-
-    // Custome update
-    // update:
-    //   ({ endpoint, getById }) =>
-    //   async ({ payload, live, diff }) =>
-    //     pipe([
-    //       () => diff,
-    //       tap.if(
-    //         or([get("liveDiff.deleted.resourceTypes")]),
-    //         pipe([
-    //           () => payload.resourceTypes,
-    //           differenceWith(isDeepEqual, resourceTypesAll),
-    //           (resourceTypes) => ({
-    //             accountIds: payload.accountIds,
-    //             resourceTypes,
-    //           }),
-    //           endpoint().disable,
-    //         ])
-    //       ),
-    //       tap.if(
-    //         or([get("liveDiff.added.resourceTypes")]),
-    //         pipe([() => payload, endpoint().enable])
-    //       ),
-    //     ])(),
-    ...Tagger({ buildArn: buildArn(config) }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          // cluster: getField(cluster, "clusterArn"),
-          Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-          //Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+  // compare: compare({
+  //   filterTarget: () => pipe([omit(["compare"])]),
+  // }),
+  // dependencies: {
+  //   alarmRoles: {
+  //     type: "Role",
+  //     group: "IAM",
+  //     list: true,
+  //     dependencyIds: ({ lives, config }) =>
+  //       pipe([get("Monitors"), pluck("AlarmRoleArn")]),
+  //   },
+  //   kmsKey: {
+  //     type: "Key",
+  //     group: "KMS",
+  //     dependencyId: ({ lives, config }) => get("Attributes.KmsMasterKeyId"),
+  //   },
+  //   table: {
+  //     type: "Table",
+  //     group: "DynamoDB",
+  //     parent: true,
+  //     dependencyId: ({ lives, config }) =>
+  //       pipe([
+  //         (live) =>
+  //           lives.getByName({
+  //             name: live.TableName,
+  //             type: "Table",
+  //             group: "DynamoDB",
+  //             providerName: config.providerName,
+  //           }),
+  //         get("id"),
+  //         tap((id) => {
+  //           assert(id);
+  //         }),
+  //       ]),
+  //   },
+  //   stage: {
+  //     type: "Stage",
+  //     group: "ApiGatewayV2",
+  //     parent: true,
+  //     dependencyId:
+  //       ({ lives, config }) =>
+  //       (live) =>
+  //         pipe([
+  //           () =>
+  //             lives.getByType({
+  //               providerName: config.providerName,
+  //               type: "Stage",
+  //               group: "ApiGatewayV2",
+  //             }),
+  //           find(
+  //             and([
+  //               eq(get("live.StageName"), live.Stage),
+  //               eq(get("live.ApiId"), live.ApiId),
+  //             ])
+  //           ),
+  //           get("id"),
+  //         ])(),
+  //   },
+  // },
+  Client: ({ spec, config }) =>
+    createAwsResource({
+      model: model({ config }),
+      spec,
+      config,
+      findName: pipe([
+        get("live"),
+        get("Name"),
+        tap((name) => {
+          assert(name);
         }),
+      ]),
+      // Find name from dependencies
+      // findName: ({ live, lives }) =>
+      //   pipe([
+      //     () => live,
+      //     fork({
+      //       vpc: pipe([
+      //         get("VPC.VPCId"),
+      //         tap((id) => {
+      //           assert(id);
+      //         }),
+      //         (id) =>
+      //           lives.getById({
+      //             id,
+      //             type: "Vpc",
+      //             group: "EC2",
+      //           }),
+      //         get("name"),
+      //       ]),
+      //       hostedZone: pipe([
+      //         get("HostedZoneId"),
+      //         tap((id) => {
+      //           assert(id);
+      //         }),
+      //         (id) =>
+      //           pipe([
+      //             () =>
+      //               lives.getById({
+      //                 id,
+      //                 type: "HostedZone",
+      //                 group: "Route53",
+      //                 providerName: config.providerName,
+      //               }),
+      //             get("name", id),
+      //           ])(),
+      //       ]),
+      //     }),
+      //     tap(({ vpc, hostedZone }) => {
+      //       assert(vpc);
+      //       assert(hostedZone);
+      //     }),
+      //     ({ vpc, hostedZone }) => `zone-assoc::${hostedZone}::${vpc}`,
+      //   ])(),
+      findId: pipe([
+        get("live"),
+        get("Arn"),
+        tap((id) => {
+          assert(id);
+        }),
+      ]),
+      // findId: pipe([
+      //   get("live"),
+      //   ({ resourceShareArn, associatedEntity }) =>
+      //     `${resourceShareArn}::${associatedEntity}`,
+      // ]),
+      getByName: getByNameCore,
+      // getByName: ({ getById }) =>
+      //   pipe([({ name }) => ({ ConnectionName: name }), getById({})]),
 
-        // Optional dependency for IAM Role
-        // when(
-        //   () => iamRole,
-        //   assign({ RetrievalRoleArn: getField(iamRole, "Arn") })
-        // ),
+      // getByName: ({ getList, endpoint }) =>
+      //   pipe([
+      //     tap((params) => {
+      //       assert(true);
+      //     }),
+      //     ({ name }) => ({ Filters: [{ Name: "Name", Values: [name] }] }),
+      //     endpoint().listMyResources,
+      //     get("MyResources"),
+      //     first,
+      //     unless(isEmpty, decorate({ endpoint })),
+      //   ]),
 
-        // Optional dependency for KMS Key
+      //  getList for child resource
 
-        // when(
-        //   () => kmsKey,
-        //   defaultsDeep({
-        //     configuration: {
-        //       executeCommandConfiguration: { kmsKeyId: getField(kmsKey, "Arn") },
-        //     },
-        //   })
-        // ),
+      // getList: ({ client, endpoint, getById, config }) =>
+      //   pipe([
+      //     () =>
+      //       client.getListWithParent({
+      //         parent: { type: "LogGroup", group: "CloudWatchLogs" },
+      //         pickKey: pipe([pick(["logGroupName"])]),
+      //         method: "describeSubscriptionFilters",
+      //         getParam: "subscriptionFilters",
+      //         config,
+      //         decorate: () =>
+      //           pipe([
+      //             tap((params) => {
+      //               assert(true);
+      //             }),
+      //           ]),
+      //       }),
+      //   ])(),
 
-        // Optional dependency with array
+      // Custom getList
 
-        // when(
-        //   () => securityGroups,
-        //   defaultsDeep({
-        //     SecurityGroupIds: pipe([
-        //       () => securityGroups,
-        //       map((sg) => getField(sg, "GroupId")),
-        //     ])(),
-        //   })
-        // ),
-      ])(),
-  });
+      // getList: ({ endpoint }) =>
+      //   pipe([
+      //     () => ["BILLING", "OPERATIONS", "SECURITY"],
+      //     map(
+      //       tryCatch(
+      //         pipe([
+      //           (AlternateContactType) => ({
+      //             AlternateContactType,
+      //           }),
+      //           endpoint().getAlternateContact,
+      //           get("AlternateContact"),
+      //         ]),
+      //         // TODO throw if not  "ResourceNotFoundException" or "AccessDeniedException",
+      //         (error) =>
+      //           pipe([
+      //             tap((params) => {
+      //               assert(error);
+      //             }),
+      //             () => undefined,
+      //           ])()
+      //       )
+      //     ),
+      //     filter(not(isEmpty)),
+      //   ]),
+
+      // Custom create
+      // create:
+      //   ({ endpoint, getById }) =>
+      //   ({ payload, resolvedDependencies }) =>
+      //     pipe([
+      //       () => payload,
+      //       switchCase([
+      //         get("Certificate"),
+      //         importCertificate({ endpoint }),
+      //         requestCertificate({ endpoint, getById }),
+      //       ]),
+      //     ])(),
+
+      // Custom update
+      // update:
+      //   ({ endpoint, getById }) =>
+      //   async ({ payload, live, diff }) =>
+      //     pipe([
+      //       () => diff,
+      //       tap.if(
+      //         or([get("liveDiff.deleted.resourceTypes")]),
+      //         pipe([
+      //           () => payload.resourceTypes,
+      //           differenceWith(isDeepEqual, resourceTypesAll),
+      //           (resourceTypes) => ({
+      //             accountIds: payload.accountIds,
+      //             resourceTypes,
+      //           }),
+      //           endpoint().disable,
+      //         ])
+      //       ),
+      //       tap.if(
+      //         or([get("liveDiff.added.resourceTypes")]),
+      //         pipe([() => payload, endpoint().enable])
+      //       ),
+      //     ])(),
+      ...Tagger({ buildArn: buildArn(config) }),
+      configDefault: ({
+        name,
+        namespace,
+        properties: { Tags, ...otherProps },
+        dependencies: {},
+      }) =>
+        pipe([
+          () => otherProps,
+          defaultsDeep({
+            // cluster: getField(cluster, "clusterArn"),
+            Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+            // tags: buildTags({
+            //   name,
+            //   config,
+            //   namespace,
+            //   UserTags: tags,
+            //   key: "key",
+            //   value: "value",
+            // }),
+            //Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
+          }),
+
+          // Optional dependency for IAM Role
+          // when(
+          //   () => iamRole,
+          //   assign({ RetrievalRoleArn: getField(iamRole, "Arn") })
+          // ),
+
+          // Optional dependency for KMS Key
+
+          // when(
+          //   () => kmsKey,
+          //   defaultsDeep({
+          //     configuration: {
+          //       executeCommandConfiguration: { kmsKeyId: getField(kmsKey, "Arn") },
+          //     },
+          //   })
+          // ),
+
+          // Optional dependency with array
+
+          // when(
+          //   () => securityGroups,
+          //   defaultsDeep({
+          //     SecurityGroupIds: pipe([
+          //       () => securityGroups,
+          //       map((sg) => getField(sg, "GroupId")),
+          //     ])(),
+          //   })
+          // ),
+        ])(),
+    }),
+});

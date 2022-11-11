@@ -28,7 +28,7 @@ describe("Route53Resolver", async function () {
       }),
       awsResourceTest,
     ])());
-  it.only("FirewallConfig", () =>
+  it.skip("FirewallConfig", () =>
     pipe([
       () => ({
         groupType: "Route53Resolver::FirewallConfig",
@@ -36,7 +36,7 @@ describe("Route53Resolver", async function () {
       }),
       awsResourceTest,
     ])());
-  it.only("FirewallDomainList", () =>
+  it.skip("FirewallDomainList", () =>
     pipe([
       () => ({
         groupType: "Route53Resolver::FirewallDomainList",
@@ -44,7 +44,7 @@ describe("Route53Resolver", async function () {
       }),
       awsResourceTest,
     ])());
-  it.only("FirewallRule", () =>
+  it.skip("FirewallRule", () =>
     pipe([
       () => ({
         groupType: "Route53Resolver::FirewallRule",
@@ -52,7 +52,7 @@ describe("Route53Resolver", async function () {
       }),
       awsResourceTest,
     ])());
-  it.only("FirewallRuleGroup", () =>
+  it.skip("FirewallRuleGroup", () =>
     pipe([
       () => ({
         groupType: "Route53Resolver::FirewallRuleGroup",
@@ -60,7 +60,7 @@ describe("Route53Resolver", async function () {
       }),
       awsResourceTest,
     ])());
-  it.only("FirewallRuleAssociation", () =>
+  it.skip("FirewallRuleAssociation", () =>
     pipe([
       () => ({
         groupType: "Route53Resolver::FirewallRuleAssociation",
