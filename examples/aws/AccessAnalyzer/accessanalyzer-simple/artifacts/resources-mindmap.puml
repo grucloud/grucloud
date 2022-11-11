@@ -3,6 +3,7 @@ title Resources for project accessanalyzer-simple
 skinparam monochrome true
 + Infra
 ++ aws
-+++ AcessAnalyzer
++++ AccessAnalyzer
 ++++ Analyzer (1)
+++++ ArchiveRule (1)
 @endmindmap

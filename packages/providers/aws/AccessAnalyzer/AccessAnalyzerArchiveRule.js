@@ -37,6 +37,9 @@ const model = ({ config }) => ({
 
 const findName = pipe([
   get("live"),
+  tap(({ analyzerName }) => {
+    assert(analyzerName);
+  }),
   ({ analyzerName, ruleName }) => `${analyzerName}::${ruleName}`,
 ]);
 
@@ -70,6 +73,7 @@ exports.AccessAnalyzerArchiveRule = ({ spec, config }) =>
       pipe([
         tap((params) => {
           assert(analyzer);
+          assert(analyzer.config.analyzerName);
         }),
         () => otherProps,
         defaultsDeep({ analyzerName: analyzer.config.analyzerName }),
