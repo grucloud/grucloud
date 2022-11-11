@@ -1,6 +1,6 @@
 {
   "name": "resource-share",
-  "version": "10.0.2",
+  "version": "10.1.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^10.0.2",
-    "@grucloud/provider-aws": "^10.0.2",
+    "@grucloud/core": "^10.1.0",
+    "@grucloud/provider-aws": "^10.1.0",
     "rubico": "1.8.10"
   },
   "devDependencies": {
