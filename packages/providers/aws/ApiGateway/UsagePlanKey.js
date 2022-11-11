@@ -3,21 +3,21 @@ const { pipe, tap, get, map } = require("rubico");
 const { defaultsDeep, pluck, unless, isEmpty } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./ApiGatewayCommon");
+//const { tagResource, untagResource } = require("./ApiGatewayCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findId = pipe([get("live.id")]);
 
-const buildResourceArn = ({ config }) =>
-  pipe([
-    tap(({ usagePlanId, keyId }) => {
-      assert(usagePlanId);
-      assert(keyId);
-    }),
-    ({ usagePlanId, keyId }) =>
-      `arn:aws:apigateway:${config.region}::/usageplans/${usagePlanId}/keys/${keyId}`,
-  ]);
+// const buildResourceArn = ({ config }) =>
+//   pipe([
+//     tap(({ usagePlanId, keyId }) => {
+//       assert(usagePlanId);
+//       assert(keyId);
+//     }),
+//     ({ usagePlanId, keyId }) =>
+//       `arn:aws:apigateway:${config.region}::/usageplans/${usagePlanId}/keys/${keyId}`,
+//   ]);
 
 const pickId = pipe([
   tap(({ usagePlanId, keyId }) => {
@@ -48,13 +48,7 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#createUsagePlanKey-property
   create: {
     method: "createUsagePlanKey",
-    pickCreated: ({ payload }) =>
-      pipe([
-        tap((params) => {
-          assert(params);
-        }),
-        () => payload,
-      ]),
+    pickCreated: ({ payload }) => pipe([() => payload]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#updateUsagePlanKey-property
   update: {
@@ -103,12 +97,12 @@ exports.UsagePlanKey = ({ spec, config }) =>
               ])(),
         }),
       ]),
-    tagResource: tagResource({
-      buildResourceArn: buildResourceArn({ config }),
-    }),
-    untagResource: untagResource({
-      buildResourceArn: buildResourceArn({ config }),
-    }),
+    // tagResource: tagResource({
+    //   buildResourceArn: buildResourceArn({ config }),
+    // }),
+    // untagResource: untagResource({
+    //   buildResourceArn: buildResourceArn({ config }),
+    // }),
     configDefault: ({ properties, dependencies: { usagePlan, apiKey } }) =>
       pipe([
         tap((params) => {

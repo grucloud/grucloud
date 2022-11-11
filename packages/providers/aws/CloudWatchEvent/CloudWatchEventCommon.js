@@ -1,6 +1,16 @@
 const { pipe, get } = require("rubico");
 const { createEndpoint } = require("../AwsCommon");
 
+const { createTagger } = require("../AwsTagger");
+
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "ResourceARN",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
+});
+
 exports.createCloudWatchEvents = createEndpoint(
   "cloudwatch-events",
   "CloudWatchEvents"

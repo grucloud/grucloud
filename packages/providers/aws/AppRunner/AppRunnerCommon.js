@@ -2,6 +2,16 @@ const { pipe, get, tryCatch, assign } = require("rubico");
 
 const { createEndpoint } = require("../AwsCommon");
 
+const { createTagger } = require("../AwsTagger");
+
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "ResourceArn",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
+});
+
 exports.createAppRunner = createEndpoint("apprunner", "AppRunner");
 
 exports.ignoreErrorCodes = ["ResourceNotFoundException"];

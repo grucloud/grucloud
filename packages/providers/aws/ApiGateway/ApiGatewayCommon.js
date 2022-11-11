@@ -2,9 +2,15 @@ const assert = require("assert");
 const { pipe, omit, tap, assign, fork, map, get } = require("rubico");
 const { callProp, values, flatten } = require("rubico/x");
 
-const { createEndpoint } = require("../AwsCommon");
+const { createTagger } = require("../AwsTagger");
 
-exports.createAPIGateway = createEndpoint("api-gateway", "APIGateway");
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "resourceArn",
+  TagsKey: "tags",
+  UnTagsKey: "tagKeys",
+});
 
 exports.ignoreErrorCodes = ["NotFoundException"];
 
@@ -46,29 +52,3 @@ exports.diffToPatch = ({ diff }) =>
     values,
     flatten,
   ])();
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#tagResource-property
-exports.tagResource =
-  ({ buildResourceArn }) =>
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      (tags) => ({ resourceArn: buildResourceArn(live), tags }),
-      tap((params) => {
-        assert(params);
-      }),
-      endpoint().tagResource,
-    ]);
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/APIGateway.html#untagResource-property
-exports.untagResource =
-  ({ buildResourceArn }) =>
-  ({ endpoint }) =>
-  ({ live }) =>
-    pipe([
-      (tagKeys) => ({
-        resourceArn: buildResourceArn(live),
-        tagKeys,
-      }),
-      endpoint().untagResource,
-    ]);

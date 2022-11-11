@@ -15,6 +15,9 @@ exports.createResources = () => [
     group: "APIGateway",
     properties: ({}) => ({
       name: "my-key",
+      tags: {
+        mykey: "myvalue",
+      },
     }),
   },
   {

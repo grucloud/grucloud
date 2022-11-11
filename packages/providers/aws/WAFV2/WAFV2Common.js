@@ -2,6 +2,16 @@ const assert = require("assert");
 const { pipe, tap, get, assign, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
+const { createTagger } = require("../AwsTagger");
+
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "ResourceARN",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
+});
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html#tagResource-property
 exports.tagResource =
   ({ findId }) =>

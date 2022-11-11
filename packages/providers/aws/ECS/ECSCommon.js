@@ -3,6 +3,16 @@ const { buildTags } = require("../AwsCommon");
 
 const { createEndpoint } = require("../AwsCommon");
 
+const { createTagger } = require("../AwsTagger");
+
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "resourceArn",
+  TagsKey: "tags",
+  UnTagsKey: "tagKeys",
+});
+
 exports.createECS = createEndpoint("ecs", "ECS");
 
 exports.buildTagsEcs = ({ name, config, namespace, tags }) =>

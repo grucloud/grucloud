@@ -13,6 +13,14 @@ exports.createResources = () => [
   //   }),
   // },
   {
+    type: "ApiKey",
+    group: "APIGateway",
+    properties: ({}) => ({
+      name: "my-key",
+      tags: { mykeynew: "myvalue" },
+    }),
+  },
+  {
     type: "Stage",
     group: "APIGateway",
     properties: ({}) => ({

@@ -3,12 +3,12 @@ const { pipe, tap, get, map } = require("rubico");
 const { defaultsDeep, pluck, unless, isEmpty } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./ApiGatewayCommon");
+const { Tagger } = require("./ApiGatewayCommon");
 const { buildTagsObject, getByNameCore } = require("@grucloud/core/Common");
 
 const findId = pipe([get("live.id")]);
 
-const buildResourceArn =
+const buildArn =
   ({ config }) =>
   ({ id }) =>
     `arn:aws:apigateway:${config.region}::/usageplans/${id}`;
@@ -82,12 +82,7 @@ exports.UsagePlan = ({ spec, config }) =>
     findName: pipe([get("live.name")]),
     findId,
     getByName: getByNameCore,
-    tagResource: tagResource({
-      buildResourceArn: buildResourceArn({ config }),
-    }),
-    untagResource: untagResource({
-      buildResourceArn: buildResourceArn({ config }),
-    }),
+    ...Tagger({ buildArn: buildArn({ config }) }),
     configDefault: ({
       name,
       namespace,

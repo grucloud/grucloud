@@ -2,6 +2,16 @@ const { pipe, tap, eq, get } = require("rubico");
 
 const { createEndpoint } = require("../AwsCommon");
 
+const { createTagger } = require("../AwsTagger");
+
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "ResourceArn",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
+});
+
 exports.createCognitoIdentityProvider = createEndpoint(
   "cognito-identity-provider",
   "CognitoIdentityProvider"

@@ -59,6 +59,7 @@ const testGetByName = ({ client, provider, nameNotFound }) =>
       lives: provider.lives,
       config: provider.getConfig(),
       properties: ({}) => ({}),
+      resolvedDependencies: {},
     }),
     client.getByName,
     tap((result) => {

@@ -2,13 +2,13 @@ const assert = require("assert");
 const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
-//TODO
-describe.skip("Lightsail", async function () {
+
+describe("Lightsail", async function () {
   it("Certificate", () =>
     pipe([
       () => ({
         groupType: "Lightsail::Certificate",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ certificateName: "a123" }],
       }),
       awsResourceTest,
     ])());
@@ -16,11 +16,11 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::ContainerService",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ serviceName: "a123" }],
       }),
       awsResourceTest,
     ])());
-  it("ContainerServiceDeploymentVersion", () =>
+  it.skip("ContainerServiceDeploymentVersion", () =>
     pipe([
       () => ({
         groupType: "Lightsail::ContainerServiceDeploymentVersion",
@@ -32,7 +32,7 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::Database",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ relationalDatabaseName: "db123" }],
       }),
       awsResourceTest,
     ])());
@@ -40,7 +40,7 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::Disk",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ diskName: "d123" }],
       }),
       awsResourceTest,
     ])());
@@ -48,23 +48,16 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::DiskAttachment",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ diskName: "d123" }],
       }),
       awsResourceTest,
     ])());
-  it("Domain", () =>
+  it.skip("Domain", () =>
     pipe([
       () => ({
         groupType: "Lightsail::Domain",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it("DomainEntry", () =>
-    pipe([
-      () => ({
-        groupType: "Lightsail::DomainEntry",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ domainName: "d123.com" }],
+        nameNotFound: "d123.com",
       }),
       awsResourceTest,
     ])());
@@ -72,15 +65,15 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::Instance",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ instanceName: "i123" }],
       }),
       awsResourceTest,
     ])());
-  it("InstancePublicPort", () =>
+  it("InstancePublicPorts", () =>
     pipe([
       () => ({
-        groupType: "Lightsail::InstancePublicPort",
-        livesNotFound: ({ config }) => [{}],
+        groupType: "Lightsail::InstancePublicPorts",
+        livesNotFound: ({ config }) => [{ instanceName: "i123", portInfo: {} }],
       }),
       awsResourceTest,
     ])());
@@ -88,7 +81,7 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::KeyPair",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ keyPairName: "k123" }],
       }),
       awsResourceTest,
     ])());
@@ -96,7 +89,7 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::LoadBalancer",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ loadBalancerName: "a123" }],
       }),
       awsResourceTest,
     ])());
@@ -104,7 +97,9 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::LoadBalancerAttachment",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { loadBalancerName: "lb123", instanceName: "i123" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -112,7 +107,9 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::LoadBalancerCertificate",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { loadBalancerName: "lb123", certificateName: "c123" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -120,15 +117,11 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::LoadBalancerCertificateAttachment",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it("LoadBalancerStickynessPolicy", () =>
-    pipe([
-      () => ({
-        groupType: "Lightsail::LoadBalancerStickynessPolicy",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { loadBalancerName: "lb123", certificateName: "c123" },
+        ],
+        skipDelete: true,
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
@@ -136,7 +129,7 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::StaticIp",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ staticIpName: "ip123" }],
       }),
       awsResourceTest,
     ])());
@@ -144,7 +137,7 @@ describe.skip("Lightsail", async function () {
     pipe([
       () => ({
         groupType: "Lightsail::StaticIpAttachment",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ staticIpName: "ip123" }],
       }),
       awsResourceTest,
     ])());

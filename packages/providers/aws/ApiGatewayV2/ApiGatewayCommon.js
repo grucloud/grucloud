@@ -6,6 +6,16 @@ const { createEndpoint } = require("../AwsCommon");
 
 exports.createApiGatewayV2 = createEndpoint("apigatewayv2", "ApiGatewayV2");
 
+const { createTagger } = require("../AwsTagger");
+
+exports.Tagger = createTagger({
+  methodTagResource: "tagResource",
+  methodUnTagResource: "untagResource",
+  ResourceArn: "ResourceArn",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
+});
+
 exports.ignoreErrorCodes = ["NotFoundException"];
 
 exports.buildPayloadDescriptionTags = pipe([

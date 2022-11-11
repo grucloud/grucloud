@@ -1,6 +1,16 @@
 const assert = require("assert");
 const { pipe, tap } = require("rubico");
 
+const { createTagger } = require("../AwsTagger");
+
+exports.Tagger = createTagger({
+  methodTagResource: "createTags",
+  methodUnTagResource: "deleteTags",
+  ResourceArn: "ResourceName",
+  TagsKey: "Tags",
+  UnTagsKey: "TagKeys",
+});
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#createTags-property
 exports.tagResource =
   ({ buildArn }) =>
