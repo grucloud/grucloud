@@ -34,7 +34,7 @@ const decorate = ({ endpoint }) =>
 const model = {
   package: "sns",
   client: "SNS",
-  ignoreErrorCodes: ["NotFound"],
+  ignoreErrorCodes: ["NotFound", "NotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SNS.html#getTopicAttributes-property
   getById: {
     method: "getTopicAttributes",

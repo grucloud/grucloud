@@ -23,7 +23,7 @@ const decorate = ({ endpoint }) =>
 const model = ({ config }) => ({
   package: "elasticache",
   client: "ElastiCache",
-  ignoreErrorCodes: ["UserNotFound"],
+  ignoreErrorCodes: ["UserNotFound", "UserNotFoundFault"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#describeUsers-property
   getById: {
     method: "describeUsers",

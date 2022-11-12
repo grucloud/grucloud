@@ -84,6 +84,8 @@ module.exports = pipe([
         TransitEncryptionEnabled: false,
         AtRestEncryptionEnabled: false,
         ReplicationGroupLogDeliveryEnabled: false,
+        IpDiscovery: "ipv4",
+        NetworkType: "ipv4",
       },
       omitProperties: [
         "ARN",
@@ -147,6 +149,7 @@ module.exports = pipe([
     {
       type: "CacheSubnetGroup",
       Client: ElastiCacheCacheSubnetGroup,
+      propertiesDefault: { SupportedNetworkTypes: ["ipv4"] },
       omitProperties: ["ARN", "VpcId", "Subnets", "SubnetIds"],
       inferName: get("properties.CacheSubnetGroupName"),
       dependencies: {
@@ -168,6 +171,9 @@ module.exports = pipe([
         TransitEncryptionEnabled: false,
         AtRestEncryptionEnabled: false,
         DataTiering: "disabled",
+        IpDiscovery: "ipv4",
+        NetworkType: "ipv4",
+        AutoMinorVersionUpgrade: true,
       },
       omitProperties: [
         "ARN",

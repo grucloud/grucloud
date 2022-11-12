@@ -4,6 +4,14 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Route53", async function () {
+  it.skip("DelegationSet", () =>
+    pipe([
+      () => ({
+        groupType: "Route53::DelegationSet",
+        livesNotFound: ({ config }) => [{ Id: "a-12345" }],
+      }),
+      awsResourceTest,
+    ])());
   it("HealthCheck", () =>
     pipe([
       () => ({
@@ -19,6 +27,32 @@ describe("Route53", async function () {
         livesNotFound: ({ config }) => [{ Id: "QS1234567" }],
         skipGetByName: true,
         skipGetById: true,
+      }),
+      awsResourceTest,
+    ])());
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listTrafficPolicies-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createTrafficPolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createTrafficPolicyVersion-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteTrafficPolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getTrafficPolicy-property
+  it.skip("TrafficPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "Route53::TrafficPolicy",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listTrafficPolicyInstancesByHostedZone-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteTrafficPolicyInstance-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createTrafficPolicyInstance-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getTrafficPolicyInstance-property
+  it.skip("TrafficPolicyInstance", () =>
+    pipe([
+      () => ({
+        groupType: "Route53::TrafficPolicyInstance",
+        livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());

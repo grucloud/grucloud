@@ -4,6 +4,7 @@
 
 ## Aws
 
+- throwIfNotAwsError accepts an array of errors
 - https://aws.amazon.com/about-aws/whats-new/2022/11/aws-app-runner-supports-privately-accessible-services-amazon-vpc/ , aws_apprunner_vpc_ingress_connection
 
 - AWS::Athena::WorkGroup AWS::Athena::DataCatalog
@@ -17,7 +18,6 @@
 - AWS::XRay
 
 - SNS dep with firehose
-- Redshift::ClusterParameterGroup getParameter
 - EC2 instance, sort groups
 - API Gateway v1 Authorizer
 

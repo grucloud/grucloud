@@ -3,13 +3,38 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("RDS", async function () {
+describe.only("RDS", async function () {
   it("DBCluster", () =>
     pipe([
       () => ({
         groupType: "RDS::DBCluster",
         livesNotFound: ({ config }) => [
           { DBClusterIdentifier: "cluster-12345" },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("DBClusterEndpoint", () =>
+    pipe([
+      () => ({
+        groupType: "RDS::DBClusterEndpoint",
+        livesNotFound: ({ config }) => [
+          {
+            DBClusterIdentifier: "cluster-12345",
+            DBClusterEndpointIdentifier: "ce123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
+  it("DBClusterParameterGroup", () =>
+    pipe([
+      () => ({
+        groupType: "RDS::DBClusterParameterGroup",
+        livesNotFound: ({ config }) => [
+          {
+            DBClusterParameterGroupName: "p123",
+          },
         ],
       }),
       awsResourceTest,
@@ -48,6 +73,14 @@ describe("RDS", async function () {
       () => ({
         groupType: "RDS::DBSubnetGroup",
         livesNotFound: ({ config }) => [{ DBSubnetGroupName: "a12344" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("EventSubscription", () =>
+    pipe([
+      () => ({
+        groupType: "RDS::EventSubscription",
+        livesNotFound: ({ config }) => [{ SubscriptionName: "s123" }],
       }),
       awsResourceTest,
     ])());

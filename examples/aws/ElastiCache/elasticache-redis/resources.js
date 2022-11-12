@@ -102,7 +102,7 @@ exports.createResources = () => [
       ClusterEnabled: false,
       CacheNodeType: "cache.t2.micro",
       LogDeliveryConfigurations: [],
-      CacheParameterGroupName: "default.redis6.x",
+      CacheParameterGroupName: "default.redis7",
       CacheSubnetGroupName: "my-sutnet-group",
       NumCacheClusters: 2,
     }),

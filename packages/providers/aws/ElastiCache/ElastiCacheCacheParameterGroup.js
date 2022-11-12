@@ -1,15 +1,5 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  pick,
-  assign,
-  filter,
-  map,
-  and,
-  eq,
-} = require("rubico");
+const { pipe, tap, get, pick, assign, not, map } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 
@@ -25,14 +15,16 @@ const {
 const pickId = pipe([pick(["CacheParameterGroupName"])]);
 const buildArn = () => pipe([get("ARN")]);
 
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#describeCacheParameters-property
+
 const decorate = ({ endpoint }) =>
   pipe([
     assign({
       Parameters: pipe([
-        pick(["CacheParameterGroupName"]),
+        pickId,
+        defaultsDeep({ Source: "user" }),
         endpoint().describeCacheParameters,
         get("Parameters"),
-        filter(and([get("IsModifiable"), eq(get("Source"), "user")])),
         map(pick(["ParameterName", "ParameterValue"])),
       ]),
     }),
@@ -40,17 +32,23 @@ const decorate = ({ endpoint }) =>
     assignTags({ endpoint, buildArn: buildArn() }),
   ]);
 
-const managedByOther = pipe([
-  get("live.CacheParameterGroupName"),
-  callProp("startsWith", "default."),
+const isDefaultParameterGroup = pipe([
+  get("CacheParameterGroupName"),
+  callProp("startsWith", "default"),
 ]);
+
+const managedByOther = pipe([get("live"), isDefaultParameterGroup]);
 
 const model = ({ config }) => ({
   package: "elasticache",
   client: "ElastiCache",
-  ignoreErrorCodes: ["CacheParameterGroupNotFound"],
+  ignoreErrorCodes: [
+    "CacheParameterGroupNotFound",
+    "CacheParameterGroupNotFoundFault",
+  ],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#describeCacheParameterGroups-property
   getById: {
+    // TODO use describeCacheParameters
     method: "describeCacheParameterGroups",
     getField: "CacheParameterGroups",
     pickId,
@@ -60,6 +58,9 @@ const model = ({ config }) => ({
   getList: {
     method: "describeCacheParameterGroups",
     getParam: "CacheParameterGroups",
+    filterResource: pipe([not(isDefaultParameterGroup)]),
+    // TODO use
+    //decorate: ({ getById }) => pipe([getById]),
     decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#createCacheParameterGroup-property

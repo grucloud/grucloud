@@ -27,7 +27,7 @@ const managedByOther = pipe([get("live.ReplicationGroupId")]);
 const model = ({ config }) => ({
   package: "elasticache",
   client: "ElastiCache",
-  ignoreErrorCodes: ["CacheClusterNotFound"],
+  ignoreErrorCodes: ["CacheClusterNotFound", "CacheClusterNotFoundFault"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#describeCacheClusters-property
   getById: {
     method: "describeCacheClusters",

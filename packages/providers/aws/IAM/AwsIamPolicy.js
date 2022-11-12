@@ -37,6 +37,7 @@ const {
   createFetchPolicyDocument,
   dependenciesPoliciesKind,
   findInStatement,
+  ignoreErrorCodes,
 } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagPolicy-property
@@ -196,7 +197,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     pickId,
     method: "getPolicy",
     getField: "Policy",
-    ignoreErrorCodes: ["NoSuchEntity"],
+    ignoreErrorCodes,
     decorate: () =>
       pipe([
         assign({
@@ -339,7 +340,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     pickId,
     method: "deletePolicy",
     getById,
-    ignoreErrorCodes: ["NoSuchEntity"],
+    ignoreErrorCodes,
   });
 
   const configDefault = ({

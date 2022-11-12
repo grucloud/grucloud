@@ -70,14 +70,23 @@ exports.AppConfigDeployment = ({ spec, config }) =>
     config,
     findName: ({ live, lives }) =>
       pipe([
-        () =>
+        () => live,
+        get("EnvironmentId"),
+        tap((id) => {
+          assert(id);
+        }),
+        (id) =>
           lives.getById({
-            id: live.EnvironmentId,
+            id,
             type: "Environment",
             group: "AppConfig",
             providerName: config.providerName,
           }),
         get("name", live.EnvironmentId),
+        tap((params) => {
+          assert(true);
+        }),
+
         unless(() => live.Latest, append(`::${live.DeploymentNumber}`)),
       ])(),
     findId: pipe([get("live"), buildArn(config)]),
@@ -102,6 +111,10 @@ exports.AppConfigDeployment = ({ spec, config }) =>
             config,
             transformListPost: () =>
               pipe([
+                tap((params) => {
+                  assert(true);
+                }),
+
                 callProp(
                   "sort",
                   (a, b) => b.DeploymentNumber - a.DeploymentNumber
@@ -118,7 +131,7 @@ exports.AppConfigDeployment = ({ spec, config }) =>
                   EnvironmentId: parent.Id,
                   ApplicationId: parent.ApplicationId,
                 }),
-                getById,
+                getById({}),
               ]),
           }),
       ])(),

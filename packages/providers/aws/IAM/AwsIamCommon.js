@@ -25,6 +25,8 @@ const { createEndpoint } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamCommon" });
 
+exports.ignoreErrorCodes = ["NoSuchEntity", "NoSuchEntityException"];
+
 exports.dependenciesPoliciesKind = [
   { type: "Table", group: "DynamoDB" },
   { type: "Topic", group: "SNS" },

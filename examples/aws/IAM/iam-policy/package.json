@@ -8,7 +8,7 @@
     "test": "mocha",
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",
-    "gencode": "gc gencode --no-inventory-fetch",
+    "gencode": "gc gencode",
     "list": "gc list -g",
     "plan": "gc plan",
     "apply": "gc apply -f",

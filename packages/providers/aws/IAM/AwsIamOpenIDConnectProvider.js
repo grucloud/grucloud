@@ -15,6 +15,7 @@ const {
   createIAM,
   tagResourceIam,
   untagResourceIam,
+  ignoreErrorCodes,
 } = require("./AwsIamCommon");
 
 const formatThumbPrint = pipe([
@@ -69,8 +70,6 @@ const fetchThumbprint = ({ Url }) =>
   ])();
 
 exports.fetchThumbprint = fetchThumbprint;
-
-const ignoreErrorCodes = ["NoSuchEntity"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagOpenIDConnectProvider-property
 const tagResource = tagResourceIam({

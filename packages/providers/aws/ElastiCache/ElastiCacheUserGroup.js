@@ -21,7 +21,7 @@ const decorate = ({ endpoint }) =>
 const model = ({ config }) => ({
   package: "elasticache",
   client: "ElastiCache",
-  ignoreErrorCodes: ["UserGroupNotFound"],
+  ignoreErrorCodes: ["UserGroupNotFound", "UserGroupNotFoundFault"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#describeUserGroups-property
   getById: {
     method: "describeUserGroups",

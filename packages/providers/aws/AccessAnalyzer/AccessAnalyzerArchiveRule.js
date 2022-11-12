@@ -20,8 +20,8 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html#getArchiveRule-property
   getById: {
     method: "getArchiveRule",
-    getField: "analyzer",
-    //decorate,
+    getField: "archiveRule",
+    pickId,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html#createArchiveRule-property
   create: {

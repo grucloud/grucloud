@@ -31,7 +31,10 @@ const queueUrlToName = pipe([
 
 const findName = pipe([get("live"), queueUrlToName]);
 
-const ignoreErrorCodes = ["AWS.SimpleQueueService.NonExistentQueue"];
+const ignoreErrorCodes = [
+  "AWS.SimpleQueueService.NonExistentQueue",
+  "QueueDoesNotExist",
+];
 
 exports.SQSQueue = ({ spec, config }) => {
   const sqs = createSQS(config);
@@ -81,7 +84,7 @@ exports.SQSQueue = ({ spec, config }) => {
   const getByName = pipe([
     tryCatch(
       pipe([({ name }) => sqs().getQueueUrl({ QueueName: name }), getById({})]),
-      throwIfNotAwsError("AWS.SimpleQueueService.NonExistentQueue")
+      throwIfNotAwsError("QueueDoesNotExist")
     ),
   ]);
 

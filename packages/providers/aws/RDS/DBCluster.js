@@ -1,7 +1,7 @@
 const assert = require("assert");
-const { assign, map, pipe, tap, get, eq, pick, omit } = require("rubico");
+const { assign, map, pipe, tap, get, eq, pick, omit, or } = require("rubico");
 const { defaultsDeep, pluck, when } = require("rubico/x");
-
+const { omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, createEndpoint } = require("../AwsCommon");
@@ -11,10 +11,10 @@ const {
   tagResource,
   untagResource,
   renameTagList,
-  findDependenciesSecret,
+  omitAllocatedStorage,
 } = require("./RDSCommon");
 
-const ignoreErrorCodes = ["DBClusterNotFoundFault"];
+const ignoreErrorCodes = ["DBClusterNotFoundFault", ""];
 
 const findId = get("live.DBClusterArn");
 const pickId = pipe([pick(["DBClusterIdentifier"])]);
@@ -30,7 +30,16 @@ exports.DBCluster = ({ spec, config }) => {
 
   const client = AwsClient({ spec, config })(rds);
 
-  const decorate = () => pipe([renameTagList]);
+  const decorate = () =>
+    pipe([
+      renameTagList,
+      omitIfEmpty(["AssociatedRoles"]),
+      omitAllocatedStorage,
+      ({ ScalingConfigurationInfo, ...other }) => ({
+        ScalingConfiguration: ScalingConfigurationInfo,
+        ...other,
+      }),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBClusters-property
   const getList = client.getList({
@@ -54,7 +63,14 @@ exports.DBCluster = ({ spec, config }) => {
     name,
     namespace,
     properties: { Tags, ...otherProps },
-    dependencies: { dbSubnetGroup, securityGroups, secret, monitoringRole },
+    dependencies: {
+      dbSubnetGroup,
+      globalCluster,
+      kmsKey,
+      securityGroups,
+      secret,
+      monitoringRole,
+    },
   }) =>
     pipe([
       () => otherProps,
@@ -63,17 +79,25 @@ exports.DBCluster = ({ spec, config }) => {
         Tags: buildTags({ config, namespace, name, UserTags: Tags }),
       }),
       when(
-        () => securityGroups,
-        defaultsDeep({
-          VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
-            securityGroups
-          ),
-        })
-      ),
-      when(
         () => dbSubnetGroup,
         assign({
           DBSubnetGroupName: () => dbSubnetGroup.config.DBSubnetGroupName,
+        })
+      ),
+      when(
+        () => globalCluster,
+        defaultsDeep({
+          GlobalClusterIdentifier: getField(
+            globalCluster,
+            "GlobalClusterIdentifier"
+          ),
+        })
+      ),
+      when(() => kmsKey, defaultsDeep({ KmsKeyId: getField(kmsKey, "Arn") })),
+      when(
+        () => monitoringRole,
+        defaultsDeep({
+          MonitoringRoleArn: getField(monitoringRole, "Arn"),
         })
       ),
       when(
@@ -84,9 +108,12 @@ exports.DBCluster = ({ spec, config }) => {
         })
       ),
       when(
-        () => monitoringRole,
+        () => securityGroups,
         defaultsDeep({
-          MonitoringRoleArn: getField(monitoringRole, "Arn"),
+          VpcSecurityGroupIds: pipe([
+            () => securityGroups,
+            map((securityGroup) => getField(securityGroup, "GroupId")),
+          ])(),
         })
       ),
     ])();

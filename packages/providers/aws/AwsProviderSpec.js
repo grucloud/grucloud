@@ -52,7 +52,7 @@ const GROUPS = [
   ["MSK", "kafka"],
   ["NetworkFirewall", "network-firewall"],
   ["NetworkManager", "networkmanager"],
-  ["Neptune", "neptune"],
+  //["Neptune", "neptune"],
   //["OpenSearch", "opensearch"],
   ["Organisations", "organizations"],
   ["RAM", "ram"],

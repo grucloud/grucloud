@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { map, pipe, tap, get, eq, pick, switchCase, omit } = require("rubico");
-const { defaultsDeep, isEmpty, pluck, when } = require("rubico/x");
+const { defaultsDeep, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { buildTags, createEndpoint } = require("../AwsCommon");
@@ -11,13 +11,28 @@ const {
   tagResource,
   untagResource,
   renameTagList,
-  findDependenciesSecret,
+  omitAllocatedStorage,
 } = require("./RDSCommon");
 
 const findId = get("live.DBInstanceArn");
 const pickId = pipe([pick(["DBInstanceIdentifier"])]);
 const findName = get("live.DBInstanceIdentifier");
 const isInstanceUp = pipe([eq(get("DBInstanceStatus"), "available")]);
+
+const ignoreErrorCodes = [
+  "DBInstanceNotFound",
+  "DBInstanceNotFoundFault",
+  "InvalidDBInstanceStateFault",
+  "InvalidDBInstanceState",
+];
+
+const omitStorageThroughput = when(
+  eq(get("StorageThroughput"), 0),
+  omit(["StorageThroughput"])
+);
+
+const decorate = ({ endpoint }) =>
+  pipe([renameTagList, omitStorageThroughput, omitAllocatedStorage]);
 
 exports.DBInstance = ({ spec, config }) => {
   const rds = createRDS(config);
@@ -26,69 +41,6 @@ exports.DBInstance = ({ spec, config }) => {
     "secrets-manager",
     "SecretsManager"
   )(config);
-
-  // const findDependencies = ({ live, lives }) => [
-  //   findDependenciesSecret({
-  //     live,
-  //     lives,
-  //     config,
-  //     secretField: "username",
-  //     rdsUsernameField: "MasterUsername",
-  //   }),
-  //   {
-  //     type: "DBCluster",
-  //     group: "RDS",
-  //     ids: [
-  //       pipe([
-  //         () => live,
-  //         get("DBClusterIdentifier"),
-  //         (name) =>
-  //           lives.getByName({
-  //             name,
-  //             providerName: config.providerName,
-  //             type: "DBCluster",
-  //             group: "RDS",
-  //           }),
-  //         get("id"),
-  //       ])(),
-  //     ],
-  //   },
-  //   {
-  //     type: "DBSubnetGroup",
-  //     group: "RDS",
-  //     ids: [
-  //       pipe([
-  //         () => live,
-  //         get("DBSubnetGroup.DBSubnetGroupName"),
-  //         (name) =>
-  //           lives.getByName({
-  //             name,
-  //             providerName: config.providerName,
-  //             type: "DBSubnetGroup",
-  //             group: "RDS",
-  //           }),
-  //         get("id"),
-  //       ])(),
-  //     ],
-  //   },
-  //   {
-  //     type: "SecurityGroup",
-  //     group: "EC2",
-  //     ids: pipe([get("VpcSecurityGroups"), pluck("VpcSecurityGroupId")])(live),
-  //   },
-  //   {
-  //     type: "Role",
-  //     group: "IAM",
-  //     ids: [live.MonitoringRoleArn],
-  //   },
-  //   {
-  //     type: "Key",
-  //     group: "KMS",
-  //     ids: [live.KmsKeyId],
-  //   },
-  // ];
-
-  const decorate = () => pipe([renameTagList]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#describeDBInstances-property
   const getList = client.getList({
@@ -103,7 +55,7 @@ exports.DBInstance = ({ spec, config }) => {
     pickId,
     method: "describeDBInstances",
     getField: "DBInstances",
-    ignoreErrorCodes: ["DBInstanceNotFound"],
+    ignoreErrorCodes,
     decorate,
   });
 
@@ -115,10 +67,10 @@ exports.DBInstance = ({ spec, config }) => {
     dependencies: {
       dbCluster,
       dbSubnetGroup,
-      securityGroups,
       kmsKey,
-      secret,
       monitoringRole,
+      secret,
+      securityGroups,
     },
   }) =>
     pipe([
@@ -220,11 +172,7 @@ exports.DBInstance = ({ spec, config }) => {
     },
     method: "deleteDBInstance",
     getById,
-    ignoreErrorCodes: [
-      "DBInstanceNotFound",
-      "InvalidDBInstanceStateFault",
-      "InvalidDBInstanceState",
-    ],
+    ignoreErrorCodes,
     config,
   });
 

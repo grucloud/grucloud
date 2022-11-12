@@ -49,6 +49,7 @@ const {
   dependenciesPoliciesKind,
   findInStatement,
   sortPolicies,
+  ignoreErrorCodes,
 } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagRole-property
@@ -377,7 +378,7 @@ exports.AwsIamRole = ({ spec, config }) => {
           ])(),
       ])(),
     method: "deleteRole",
-    ignoreErrorCodes: ["NoSuchEntity"],
+    ignoreErrorCodes,
     getById,
     config,
   });

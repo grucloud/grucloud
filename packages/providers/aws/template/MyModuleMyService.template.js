@@ -26,6 +26,8 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
+const { replaceWithName } = require("@grucloud/core/Common");
+
 const { createAwsResource } = require("../AwsClient");
 
 // const {
@@ -247,8 +249,8 @@ const model = ({ config }) => ({
     // ignoreErrorMessages: [
     //   "The specified cluster is inactive. Specify an active cluster and try again.",
     // ],
-    // shouldRetryOnExceptionCodes = [],
-    // shouldRetryOnExceptionMessages = [],
+    // shouldRetryOnExceptionCodes: [],
+    // shouldRetryOnExceptionMessages: [],
   },
 });
 
@@ -261,7 +263,7 @@ exports.MyModuleMyResource = ({ compare }) => ({
 
   // inferName: ({
   //   properties: { certificateName },
-  //   dependencieSpec: { loadBalancer },
+  //   dependenciesSpec: { loadBalancer },
   // }) =>
   //   pipe([
   //     tap((params) => {
@@ -270,8 +272,9 @@ exports.MyModuleMyResource = ({ compare }) => ({
   //     }),
   //     () => `${loadBalancer}::${certificateName}`,
   //   ])(),
+
   // inferName: pipe([
-  //   get("dependencieSpec"),
+  //   get("dependenciesSpec"),
   //   ({ staticIp, instance }) => `${staticIp}::${instance}`,
   // ]),
 
@@ -295,6 +298,12 @@ exports.MyModuleMyResource = ({ compare }) => ({
   //     type: "Key",
   //     group: "KMS",
   //     dependencyId: ({ lives, config }) => get("Attributes.KmsMasterKeyId"),
+  //   },
+  //   subnets: {
+  //     type: "Subnet",
+  //     group: "EC2",
+  //     list: true,
+  //     dependencyIds: ({ lives, config }) => get("VpcSubnetIds"),
   //   },
   //   table: {
   //     type: "Table",

@@ -98,6 +98,8 @@ List of resources for provider aws:
 [Broker](./resources/MQ/Broker.md), [Configuration](./resources/MQ/Configuration.md)
 * MSK: 
 [Configuration](./resources/MSK/Configuration.md), [ClusterV2](./resources/MSK/ClusterV2.md)
+* Neptune: 
+[DBCluster](./resources/Neptune/DBCluster.md), [DBSubnetGroup](./resources/Neptune/DBSubnetGroup.md), [DBClusterParameterGroup](./resources/Neptune/DBClusterParameterGroup.md)
 * NetworkFirewall: 
 [Firewall](./resources/NetworkFirewall/Firewall.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md)
 * NetworkManager: 

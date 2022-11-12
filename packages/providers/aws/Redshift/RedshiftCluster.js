@@ -14,7 +14,7 @@ const pickId = pipe([pick(["ClusterIdentifier"])]);
 const model = ({ config }) => ({
   package: "redshift",
   client: "Redshift",
-  ignoreErrorCodes: ["ClusterNotFound"],
+  ignoreErrorCodes: ["ClusterNotFound", "ClusterNotFoundFault"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#describeClusters-property
   getById: {
     method: "describeClusters",
