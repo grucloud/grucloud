@@ -74,6 +74,7 @@ const GROUPS = [
 
 const GROUPS_MISSING = [
   "CloudWatchLogs", // missing from the list provider by AWS
+  "Scheduler",
 ];
 const GROUPS_GLOBAL = [
   "IAM",

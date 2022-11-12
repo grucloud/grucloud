@@ -93,6 +93,7 @@ exports.SQSQueue = ({ spec, config }) => {
     method: "createQueue",
     shouldRetryOnExceptionCodes: [
       "AWS.SimpleQueueService.QueueDeletedRecently",
+      "QueueDeletedRecently",
     ],
     getById,
     isInstanceUp: pipe([

@@ -230,21 +230,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "DBSubnetGroup",
-    group: "RDS",
-    properties: ({}) => ({
-      DBSubnetGroupName: "sam-app-db-subnet-group",
-      DBSubnetGroupDescription: "subnets allowed for deploying DB instances",
-    }),
-    dependencies: ({}) => ({
-      subnets: [
-        "sam-app-vpc::sam-app-prv-sub-1",
-        "sam-app-vpc::sam-app-prv-sub-2",
-        "sam-app-vpc::sam-app-prv-sub-3",
-      ],
-    }),
-  },
-  {
     type: "DBCluster",
     group: "RDS",
     properties: ({}) => ({
@@ -269,6 +254,21 @@ exports.createResources = () => [
       dbSubnetGroup: "sam-app-db-subnet-group",
       securityGroups: ["sg::sam-app-vpc::sam-app-database-sg"],
       secret: "sam-app-cluster-secret",
+    }),
+  },
+  {
+    type: "DBSubnetGroup",
+    group: "RDS",
+    properties: ({}) => ({
+      DBSubnetGroupName: "sam-app-db-subnet-group",
+      DBSubnetGroupDescription: "subnets allowed for deploying DB instances",
+    }),
+    dependencies: ({}) => ({
+      subnets: [
+        "sam-app-vpc::sam-app-prv-sub-1",
+        "sam-app-vpc::sam-app-prv-sub-2",
+        "sam-app-vpc::sam-app-prv-sub-3",
+      ],
     }),
   },
   {

@@ -174,6 +174,9 @@ const model = ({ config }) => ({
     // isInstanceError: pipe([eq(get("Status"), "ACTION_NEEDED")]),
     // getErrorMessage: get("StatusMessage", "error"),
 
+    // shouldRetryOnExceptionCodes: [],
+    // shouldRetryOnExceptionMessages: [],
+
     // postCreate: ({ name, payload }) =>
     //   pipe([tap(createAlias({ name })), tap(putKeyPolicy(payload))]),
 
@@ -513,6 +516,29 @@ exports.MyModuleMyResource = ({ compare }) => ({
       //         pipe([() => payload, endpoint().enable])
       //       ),
       //     ])(),
+
+      // filterLive: ({ lives, providerConfig }) =>
+      //   pipe([
+      //     assign({
+      //       apiStages: pipe([
+      //         get("apiStages"),
+      //         map(
+      //           assign({
+      //             apiId: pipe([
+      //               get("apiId"),
+      //               replaceWithName({
+      //                 groupType: "APIGateway::RestApi",
+      //                 path: "id",
+      //                 pathLive: "live.id",
+      //                 providerConfig,
+      //                 lives,
+      //               }),
+      //             ]),
+      //           })
+      //         ),
+      //       ]),
+      //     }),
+      //   ]),
       ...Tagger({ buildArn: buildArn(config) }),
       configDefault: ({
         name,

@@ -36,8 +36,8 @@ exports.DBCluster = ({ spec, config }) => {
       omitIfEmpty(["AssociatedRoles"]),
       omitAllocatedStorage,
       ({ ScalingConfigurationInfo, ...other }) => ({
-        ScalingConfiguration: ScalingConfigurationInfo,
         ...other,
+        ScalingConfiguration: ScalingConfigurationInfo,
       }),
     ]);
 

@@ -145,6 +145,7 @@
     "@aws-sdk/client-route53-recovery-readiness": "3.208.0",
     "@aws-sdk/client-route53resolver": "3.208.0",
     "@aws-sdk/client-s3": "3.208.0",
+    "@aws-sdk/client-scheduler": "3.209.0",
     "@aws-sdk/client-secrets-manager": "3.208.0",
     "@aws-sdk/client-securityhub": "3.208.0",
     "@aws-sdk/client-sesv2": "3.208.0",

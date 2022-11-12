@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project scheduler-lambda
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (2)
+++++ Policy (2)
++++ Lambda
+++++ Function (1)
++++ Scheduler
+++++ Schedule (1)
+@endmindmap

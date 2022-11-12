@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project scheduler-sqs
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ Scheduler
+++++ Schedule (1)
+++++ ScheduleGroup (1)
++++ SQS
+++++ Queue (1)
+@endmindmap

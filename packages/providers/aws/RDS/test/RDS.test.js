@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe.only("RDS", async function () {
+describe("RDS", async function () {
   it("DBCluster", () =>
     pipe([
       () => ({
