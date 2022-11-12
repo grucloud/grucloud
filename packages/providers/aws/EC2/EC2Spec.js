@@ -1721,19 +1721,23 @@ module.exports = pipe([
                 filterPermissions,
                 filter(
                   pipe([
-                    assign({
-                      IpRanges: pipe([
-                        get("IpRanges"),
-                        map(omit(["Description"])),
-                      ]),
+                    tap((params) => {
+                      assert(true);
                     }),
-                    (rule) =>
-                      !isDeepEqual(rule, {
-                        FromPort: undefined,
-                        IpProtocol: "-1",
-                        IpRanges: [{ CidrIp: "0.0.0.0/0" }],
-                        ToPort: undefined,
-                      }),
+                    not(eq(get("IpProtocol"), "-1")),
+                    // assign({
+                    //   IpRanges: pipe([
+                    //     get("IpRanges"),
+                    //     map(omit(["Description"])),
+                    //   ]),
+                    // }),
+                    // (rule) =>
+                    //   !isDeepEqual(rule, {
+                    //     FromPort: undefined,
+                    //     IpProtocol: "-1",
+                    //     IpRanges: [{ CidrIp: "0.0.0.0/0" }],
+                    //     ToPort: undefined,
+                    //   }),
                   ])
                 ),
               ]),

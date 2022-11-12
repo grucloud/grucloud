@@ -94,11 +94,11 @@ exports.createResources = () => [
 
 ## Code Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Instance/ec2-vpc)
 
-- [dual ipv4/ipv6](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/subnet-ipv4-ipv6)
+- [dual ipv4/ipv6](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Subnet/subnet-ipv4-ipv6)
 
-- [ipv6 only](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/subnet-ipv6)
+- [ipv6 only](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Subnet/subnet-ipv6)
 
 ## Properties
 

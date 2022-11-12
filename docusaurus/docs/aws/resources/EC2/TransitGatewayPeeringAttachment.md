@@ -30,7 +30,7 @@ exports.createResources = () => [
 
 ### Examples
 
-- [transit gateway peering](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/transit-gateway-peering)
+- [transit gateway peering](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/TransitGateway/transit-gateway-peering)
 
 ### Properties
 

@@ -29,10 +29,10 @@ exports.createResources = () => [
 
 ### Examples
 
-- [transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/transit-gateway)
-- [transit gateway peering](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/transit-gateway-peering)
-- [flow logs with transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs-tgw)
-- [flow logs with transit gateway vpn connection](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs-tgw-vpn)
+- [transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/TransitGateway/transit-gateway)
+- [transit gateway peering](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/TransitGateway/transit-gateway-peering)
+- [flow logs with transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-tgw)
+- [flow logs with transit gateway vpn connection](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-tgw-vpn)
 - [hub-and-spoke-with-inspection-vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/hub-and-spoke-with-inspection-vpc)
 - [aws-network-hub-for-terraform](https://github.com/grucloud/grucloud/blob/main/examples/aws/aws-samples/aws-network-hub-for-terraform)
 - [hub-and-spoke-with-shared-services-vpc-terraform](https://github.com/grucloud/grucloud/tree/main/examples/aws/aws-samples/hub-and-spoke-with-shared-services-vpc-terraform)
@@ -44,8 +44,8 @@ exports.createResources = () => [
 
 ### Used By
 
-- [TransitGatewayVpcAttachment](./TransitGatewayVpcAttachment.md)
-- [TransitGatewayAttachment](./TransitGatewayAttachment.md)
+- [EC2 TransitGatewayVpcAttachment](./TransitGatewayVpcAttachment.md)
+- [EC2 TransitGatewayAttachment](./TransitGatewayAttachment.md)
 
 ### Used By
 

@@ -4,10 +4,11 @@ skinparam monochrome true
 + Infra
 ++ aws
 +++ CloudWatchLogs
-++++ LogGroup (5)
+++++ LogGroup (7)
 +++ EC2
 ++++ DhcpOptions (3)
 ++++ DhcpOptionsAssociation (3)
+++++ FlowLogs (3)
 ++++ Ipam (1)
 ++++ IpamScope (1)
 ++++ IpamPool (1)
@@ -26,20 +27,34 @@ skinparam monochrome true
 ++++ ElasticIpAddress (3)
 ++++ VpcEndpoint (14)
 ++++ TransitGateway (1)
+++++ TransitGatewayRoute (6)
 ++++ TransitGatewayRouteTable (3)
 ++++ TransitGatewayVpcAttachment (3)
 ++++ TransitGatewayRouteTableAssociation (3)
+++++ TransitGatewayRouteTablePropagation (9)
 +++ IAM
 ++++ Role (2)
 ++++ Policy (1)
++++ KMS
+++++ Key (1)
 +++ NetworkFirewall
 ++++ Firewall (1)
 ++++ Policy (1)
 ++++ RuleGroup (1)
 ++++ LoggingConfiguration (1)
++++ Organisations
+++++ Organisation (1)
++++ RAM
+++++ ResourceShare (3)
+++++ PrincipalAssociation (3)
+++++ ResourceAssociation (3)
 +++ Route53
 ++++ HostedZone (12)
 ++++ Record (11)
++++ Route53Resolver
+++++ Endpoint (2)
+++++ Rule (1)
+++++ RuleAssociation (1)
 +++ SSM
 ++++ Parameter (1)
 @endmindmap

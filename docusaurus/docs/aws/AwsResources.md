@@ -98,8 +98,6 @@ List of resources for provider aws:
 [Broker](./resources/MQ/Broker.md), [Configuration](./resources/MQ/Configuration.md)
 * MSK: 
 [Configuration](./resources/MSK/Configuration.md), [ClusterV2](./resources/MSK/ClusterV2.md)
-* Neptune: 
-[DBCluster](./resources/Neptune/DBCluster.md), [DBSubnetGroup](./resources/Neptune/DBSubnetGroup.md), [DBClusterParameterGroup](./resources/Neptune/DBClusterParameterGroup.md)
 * NetworkFirewall: 
 [Firewall](./resources/NetworkFirewall/Firewall.md), [Policy](./resources/NetworkFirewall/Policy.md), [RuleGroup](./resources/NetworkFirewall/RuleGroup.md), [LoggingConfiguration](./resources/NetworkFirewall/LoggingConfiguration.md)
 * NetworkManager: 
@@ -109,7 +107,7 @@ List of resources for provider aws:
 * RAM: 
 [ResourceShare](./resources/RAM/ResourceShare.md), [PrincipalAssociation](./resources/RAM/PrincipalAssociation.md), [ResourceAssociation](./resources/RAM/ResourceAssociation.md)
 * RDS: 
-[DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [DBCluster](./resources/RDS/DBCluster.md), [DBInstance](./resources/RDS/DBInstance.md)
+[DBProxy](./resources/RDS/DBProxy.md), [DBProxyTargetGroup](./resources/RDS/DBProxyTargetGroup.md), [DBCluster](./resources/RDS/DBCluster.md), [DBClusterEndpoint](./resources/RDS/DBClusterEndpoint.md), [DBClusterParameterGroup](./resources/RDS/DBClusterParameterGroup.md), [DBSubnetGroup](./resources/RDS/DBSubnetGroup.md), [DBInstance](./resources/RDS/DBInstance.md), [EventSubscription](./resources/RDS/EventSubscription.md)
 * Redshift: 
 [Cluster](./resources/Redshift/Cluster.md), [ClusterParameterGroup](./resources/Redshift/ClusterParameterGroup.md), [ClusterSubnetGroup](./resources/Redshift/ClusterSubnetGroup.md)
 * Route53: 
@@ -124,6 +122,8 @@ List of resources for provider aws:
 [Endpoint](./resources/Route53Resolver/Endpoint.md), [Rule](./resources/Route53Resolver/Rule.md), [RuleAssociation](./resources/Route53Resolver/RuleAssociation.md)
 * S3: 
 [Bucket](./resources/S3/Bucket.md), [Object](./resources/S3/Object.md)
+* Scheduler: 
+[Schedule](./resources/Scheduler/Schedule.md), [ScheduleGroup](./resources/Scheduler/ScheduleGroup.md)
 * SecretsManager: 
 [Secret](./resources/SecretsManager/Secret.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
 * SNS: 

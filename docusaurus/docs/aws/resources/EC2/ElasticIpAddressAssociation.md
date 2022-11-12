@@ -21,7 +21,7 @@ exports.createResources = () => [
 
 ### Examples
 
-- [simple ec2 example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2)
+- [simple ec2 example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Instance/ec2)
 
 ### Depenencies
 

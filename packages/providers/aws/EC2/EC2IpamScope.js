@@ -67,15 +67,14 @@ exports.EC2IpamScope = ({ spec, config }) =>
           pipe([
             () =>
               lives.getByType({
-                id: live.IpamId,
                 type: "Ipam",
                 group: "EC2",
                 providerName: config.providerName,
               }),
             find(eq(get("live.IpamArn"), live.IpamArn)),
-            get("name"),
+            get("name", live.IpamArn),
             tap((name) => {
-              assert(name);
+              //assert(name);
             }),
             prepend(`ipam-scope::default::`),
             append(live.IpamScopeType),

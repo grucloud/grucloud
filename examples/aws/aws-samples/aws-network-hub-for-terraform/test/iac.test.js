@@ -6,8 +6,8 @@ const config = require("../config");
 
 const title = pkg.name;
 
-describe.skip(title, async function () {
-  it.skip("run", async function () {
+describe(title, async function () {
+  it("run", async function () {
     await testEnd2End({
       programOptions: { workingDirectory: path.resolve(__dirname, "../") },
       title,

@@ -34,11 +34,11 @@ exports.createResources = () => [
 
 ## Full Examples
 
-- [Launch Template simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/launchTemplate)
+- [Launch Template simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/LaunchTemplate/launchTemplate)
 
 - [ElasticLoadBalancingV2 Load Balancer](https://github.com/grucloud/grucloud/blob/main/examples/aws/ElasticLoadBalancingV2/load-balancer)
 
-- [EKS simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/eks-simple)
+- [EKS simple](https://github.com/grucloud/grucloud/blob/main/examples/aws/EKS/eks-simple)
 
 ## Properties
 
@@ -46,17 +46,16 @@ exports.createResources = () => [
 
 ## Dependencies
 
-- [Security Group](./SecurityGroup.md)
-- [KeyPair](./KeyPair.md)
-- [Image](./Image.md)
-- [Instance Profile](../IAM/InstanceProfile.md)
+- [EC2 Security Group](./SecurityGroup.md)
+- [EC2 KeyPair](./KeyPair.md)
+- [IAM Instance Profile](../IAM/InstanceProfile.md)
 
 ## Used By
 
 - [Batch Compute Environment](../Batch/ComputeEnvironment.md)
 - [EC2 Instance](./Instance.md)
 - [EKS NodeGroup](../EKS/NodeGroup.md)
-- [AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
+- [AutoScaling AutoScalingGroup](../AutoScaling/AutoScalingGroup.md)
 
 ## List
 
