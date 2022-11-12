@@ -13,6 +13,7 @@ const GROUPS = [
   ["AppRunner", "apprunner"],
   ["ApplicationAutoScaling", "application-autoscaling"],
   ["AppSync", "appsync"],
+  ["Athena", "athena"],
   ["Autoscaling", "autoscaling"],
   ["Backup", "backup"],
   ["Batch", "batch"],

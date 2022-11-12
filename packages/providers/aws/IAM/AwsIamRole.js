@@ -330,6 +330,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     config,
   });
 
+  // TODO error: Cannot delete entity, must delete policies first.
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteRole-property
   const destroy = client.destroy({
     pickId,

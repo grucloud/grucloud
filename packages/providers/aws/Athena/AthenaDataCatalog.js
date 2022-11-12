@@ -25,26 +25,26 @@ const {
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
-const { buildTagsObject } = require("@grucloud/core/Common");
 const { replaceWithName } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
 
-// const {
-//   Tagger,
-//   //assignTags,
-// } = require("./MyModuleCommon");
+const { Tagger } = require("./AthenaCommon");
 
-//////////////
-// buildArn
-//////////////
-const buildArn = () =>
-  pipe([
-    get("Arn"),
-    tap((arn) => {
-      assert(arn);
-    }),
-  ]);
+const ignoreErrorMessages = ["was not found"];
+
+const buildArn =
+  ({ region, accountId }) =>
+  ({ Name }) =>
+    `arn:aws:athena:${region}:${accountId()}:datacatalog/${Name}`;
+
+// const buildArn = () =>
+//   pipe([
+//     get("Arn"),
+//     tap((arn) => {
+//       assert(arn);
+//     }),
+//   ]);
 
 //////////
 // pickId
@@ -58,10 +58,10 @@ const buildArn = () =>
 // ]);
 
 const pickId = pipe([
-  tap(({ MyId }) => {
-    assert(MyId);
+  tap(({ Name }) => {
+    assert(Name);
   }),
-  pick(["MyId"]),
+  pick(["Name"]),
 ]);
 
 //////////
@@ -103,7 +103,7 @@ const decorate = ({ endpoint }) =>
 // cannotBeDeleted
 ////////////////////
 
-//  const cannotBeDeleted = pipe([get("live"), eq(get("status"), "INACTIVE")]);
+const cannotBeDeleted = pipe([get("live"), eq(get("Name"), "AwsDataCatalog")]);
 
 // const cannotBeDeleted = pipe([
 //   get("live"),
@@ -121,26 +121,25 @@ const decorate = ({ endpoint }) =>
 // ]);
 
 const model = ({ config }) => ({
-  package: "myModule",
-  client: "MyModule",
+  package: "athena",
+  client: "Athena",
   ignoreErrorCodes: ["ResourceNotFoundException"],
   //managedByOther,
   //cannotBeDeleted
-  // ignoreErrorMessages: [
-  //   "The specified cluster is inactive. Specify an active cluster and try again.",
-  // ],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#getMyResource-property
+  ignoreErrorMessages,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#getDataCatalog-property
   getById: {
-    method: "getMyResource",
-    getField: "MyResource",
+    method: "getDataCatalog",
+    getField: "DataCatalog",
     pickId,
     // pickId: ({ AlarmName }) => ({
     //   AlarmNames: [AlarmName],
     //   AlarmTypes: ["MetricAlarm"],
     // }),
+    ignoreErrorMessages,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#listMyResources-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#listDataCatalogs-property
   getList: {
     //enhanceParams: () => () => ({ AlarmTypes: ["MetricAlarm"] }),
     //transformListPre: () => pipe([filter(not(isInstanceDown))]),
@@ -152,22 +151,27 @@ const model = ({ config }) => ({
     //   ]),
     //filterResource: pipe([not(eq(get("State"), "deleted"))]),
 
-    method: "listMyResources",
-    getParam: "MyResources",
-    decorate,
-    //decorate: ({ getById }) => pipe([getById]),
-    //decorate: ({ getById }) => pipe([(name) => ({ name }), getById]),
+    method: "listDataCatalogs",
+    getParam: "DataCatalogsSummary",
+    decorate: ({ getById }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        ({ CatalogName }) => ({ Name: CatalogName }),
+        getById,
+      ]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#createMyResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#createDataCatalog-property
   create: {
     // filterPayload: ({ Tags, ...other }) =>
     //   pipe([() => ({ ...other, BackupVaultTags: Tags })])(),
 
     //filterPayload: pipe([omit(SELECTORS)]),
 
-    method: "createMyResource",
-    pickCreated: ({ payload }) => pipe([get("MyResource")]),
-    // pickCreated: ({ payload }) => pipe([() => payload]),
+    method: "createDataCatalog",
+    //pickCreated: ({ payload }) => pipe([get("DataCatalog")]),
+    pickCreated: ({ payload }) => pipe([() => payload]),
     // pickCreated: ({ payload }) => pipe([identity]),
 
     // isInstanceUp: pipe([eq(get("Status"), "OPERATIONAL")]),
@@ -204,9 +208,9 @@ const model = ({ config }) => ({
     //       ),
     //     ])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#updateMyResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#updateDataCatalog-property
   update: {
-    method: "updateMyResource",
+    method: "updateDataCatalog",
     filterParams: ({ pickId, payload, diff, live }) =>
       pipe([
         () => payload,
@@ -215,7 +219,7 @@ const model = ({ config }) => ({
         // }),
       ])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#deleteMyResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#deleteDataCatalog-property
   destroy: {
     // preDestroy: ({ endpoint, live }) =>
     //   pipe([
@@ -245,25 +249,27 @@ const model = ({ config }) => ({
     //   defaultsDeep({ PendingWindowInDays: 7 }),
     //   (params) => kms().scheduleKeyDeletion(params),
     // ]),
-    method: "deleteMyResource",
+    method: "deleteDataCatalog",
     pickId,
     // isInstanceDown: pipe([eq(get("status"), "INACTIVE")]),
     // ignoreErrorCodes: ["ClusterNotFoundException"],
     // ignoreErrorMessages: [
     //   "The specified cluster is inactive. Specify an active cluster and try again.",
     // ],
+    ignoreErrorMessages,
     // shouldRetryOnExceptionCodes: [],
     // shouldRetryOnExceptionMessages: [],
   },
 });
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
-exports.MyModuleMyResource = ({ compare }) => ({
-  type: "MyResource",
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html
+exports.AthenaDataCatalog = ({ compare }) => ({
+  type: "DataCatalog",
   propertiesDefault: {},
   omitProperties: [],
-  inferName: get("properties.name"),
-
+  inferName: get("properties.Name"),
+  cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
   // inferName: ({
   //   properties: { certificateName },
   //   dependenciesSpec: { loadBalancer },
@@ -300,7 +306,6 @@ exports.MyModuleMyResource = ({ compare }) => ({
   //   kmsKey: {
   //     type: "Key",
   //     group: "KMS",
-  //     excludeDefaultDependencies: true,
   //     dependencyId: ({ lives, config }) => get("Attributes.KmsMasterKeyId"),
   //   },
   //   subnets: {
@@ -408,7 +413,7 @@ exports.MyModuleMyResource = ({ compare }) => ({
       //   ])(),
       findId: pipe([
         get("live"),
-        get("Arn"),
+        get("Name"),
         tap((id) => {
           assert(id);
         }),
@@ -428,8 +433,8 @@ exports.MyModuleMyResource = ({ compare }) => ({
       //       assert(true);
       //     }),
       //     ({ name }) => ({ Filters: [{ Name: "Name", Values: [name] }] }),
-      //     endpoint().listMyResources,
-      //     get("MyResources"),
+      //     endpoint().listDataCatalogs,
+      //     get("DataCatalogs"),
       //     first,
       //     unless(isEmpty, decorate({ endpoint })),
       //   ]),
@@ -550,7 +555,6 @@ exports.MyModuleMyResource = ({ compare }) => ({
         pipe([
           () => otherProps,
           defaultsDeep({
-            // cluster: getField(cluster, "clusterArn"),
             Tags: buildTags({ name, config, namespace, UserTags: Tags }),
             // tags: buildTags({
             //   name,

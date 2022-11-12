@@ -30,38 +30,34 @@ const { replaceWithName } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
 
-// const {
-//   Tagger,
-//   //assignTags,
-// } = require("./MyModuleCommon");
+const { Tagger } = require("./AthenaCommon");
+
+const ignoreErrorMessages = ["not found"];
 
 //////////////
 // buildArn
 //////////////
-const buildArn = () =>
-  pipe([
-    get("Arn"),
-    tap((arn) => {
-      assert(arn);
-    }),
-  ]);
 
+const buildArn =
+  ({ region, accountId }) =>
+  ({ WorkGroup }) =>
+    `arn:aws:athena:${region}:${accountId()}:workgroup/${WorkGroup}`;
 //////////
 // pickId
 //////////
 
 // const pickId = pipe([
-//   tap(({ name }) => {
-//     assert(name);
+//   tap(({ Name }) => {
+//     assert(Name);
 //   }),
-//   ({ name }) => ({ loadBalancerName: name }),
+//   ({ Name }) => ({ WorkGroup: Name }),
 // ]);
 
 const pickId = pipe([
-  tap(({ MyId }) => {
-    assert(MyId);
+  tap(({ WorkGroup }) => {
+    assert(WorkGroup);
   }),
-  pick(["MyId"]),
+  pick(["WorkGroup"]),
 ]);
 
 //////////
@@ -72,6 +68,7 @@ const decorate = ({ endpoint }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    ({ Name }) => ({ WorkGroup: Name }),
     //({ name, ...other }) => ({ loadBalancerName: name, ...other }),
     //assign({ MyJSON: pipe([get("MyJSON", JSON.parse)]) }),
     //assignTags({ endpoint }),
@@ -79,6 +76,8 @@ const decorate = ({ endpoint }) =>
 ////////////////////
 // managedByOther
 ////////////////////
+
+const cannotBeDeleted = pipe([get("live"), eq(get("WorkGroup"), "primary")]);
 
 // const managedByOther = pipe([eq(get("live.Type"), "managed")]);
 
@@ -121,26 +120,23 @@ const decorate = ({ endpoint }) =>
 // ]);
 
 const model = ({ config }) => ({
-  package: "myModule",
-  client: "MyModule",
+  package: "athena",
+  client: "Athena",
   ignoreErrorCodes: ["ResourceNotFoundException"],
   //managedByOther,
   //cannotBeDeleted
   // ignoreErrorMessages: [
   //   "The specified cluster is inactive. Specify an active cluster and try again.",
   // ],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#getMyResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#getWorkGroup-property
   getById: {
-    method: "getMyResource",
-    getField: "MyResource",
+    method: "getWorkGroup",
+    getField: "WorkGroup",
     pickId,
-    // pickId: ({ AlarmName }) => ({
-    //   AlarmNames: [AlarmName],
-    //   AlarmTypes: ["MetricAlarm"],
-    // }),
     decorate,
+    ignoreErrorMessages,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#listMyResources-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#listWorkGroups-property
   getList: {
     //enhanceParams: () => () => ({ AlarmTypes: ["MetricAlarm"] }),
     //transformListPre: () => pipe([filter(not(isInstanceDown))]),
@@ -152,22 +148,19 @@ const model = ({ config }) => ({
     //   ]),
     //filterResource: pipe([not(eq(get("State"), "deleted"))]),
 
-    method: "listMyResources",
-    getParam: "MyResources",
-    decorate,
-    //decorate: ({ getById }) => pipe([getById]),
-    //decorate: ({ getById }) => pipe([(name) => ({ name }), getById]),
+    method: "listWorkGroups",
+    getParam: "WorkGroups",
+    decorate: ({ getById }) =>
+      pipe([({ Name }) => ({ WorkGroup: Name }), getById]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#createMyResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#createWorkGroup-property
   create: {
-    // filterPayload: ({ Tags, ...other }) =>
-    //   pipe([() => ({ ...other, BackupVaultTags: Tags })])(),
+    filterPayload: ({ WorkGroup, ...other }) =>
+      pipe([() => ({ Name: WorkGroup, ...other })])(),
 
-    //filterPayload: pipe([omit(SELECTORS)]),
-
-    method: "createMyResource",
-    pickCreated: ({ payload }) => pipe([get("MyResource")]),
-    // pickCreated: ({ payload }) => pipe([() => payload]),
+    method: "createWorkGroup",
+    //pickCreated: ({ payload }) => pipe([get("WorkGroup")]),
+    pickCreated: ({ payload }) => pipe([() => payload]),
     // pickCreated: ({ payload }) => pipe([identity]),
 
     // isInstanceUp: pipe([eq(get("Status"), "OPERATIONAL")]),
@@ -204,18 +197,19 @@ const model = ({ config }) => ({
     //       ),
     //     ])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#updateMyResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#updateWorkGroup-property
   update: {
-    method: "updateMyResource",
+    method: "updateWorkGroup",
     filterParams: ({ pickId, payload, diff, live }) =>
       pipe([
         () => payload,
-        // assign({
-        //   SecretId: () => live.ARN,
-        // }),
+        ({ Configuration, ...other }) => ({
+          ConfigurationUpdates: Configuration,
+          ...other,
+        }),
       ])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#deleteMyResource-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html#deleteWorkGroup-property
   destroy: {
     // preDestroy: ({ endpoint, live }) =>
     //   pipe([
@@ -245,25 +239,27 @@ const model = ({ config }) => ({
     //   defaultsDeep({ PendingWindowInDays: 7 }),
     //   (params) => kms().scheduleKeyDeletion(params),
     // ]),
-    method: "deleteMyResource",
+    method: "deleteWorkGroup",
     pickId,
     // isInstanceDown: pipe([eq(get("status"), "INACTIVE")]),
     // ignoreErrorCodes: ["ClusterNotFoundException"],
     // ignoreErrorMessages: [
     //   "The specified cluster is inactive. Specify an active cluster and try again.",
     // ],
+    ignoreErrorMessages,
     // shouldRetryOnExceptionCodes: [],
     // shouldRetryOnExceptionMessages: [],
   },
 });
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
-exports.MyModuleMyResource = ({ compare }) => ({
-  type: "MyResource",
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Athena.html
+exports.AthenaWorkGroup = ({ compare }) => ({
+  type: "WorkGroup",
   propertiesDefault: {},
-  omitProperties: [],
-  inferName: get("properties.name"),
-
+  omitProperties: ["CreationTime"],
+  inferName: get("properties.WorkGroup"),
+  cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
   // inferName: ({
   //   properties: { certificateName },
   //   dependenciesSpec: { loadBalancer },
@@ -281,77 +277,23 @@ exports.MyModuleMyResource = ({ compare }) => ({
   //   ({ staticIp, instance }) => `${staticIp}::${instance}`,
   // ]),
 
-  // environmentVariables: [
-  //   { path: "masterUsername", suffix: "MASTER_USERNAME" },
-  //   { path: "masterUserPassword", suffix: "MASTER_USER_PASSWORD" },
-  // ],
-
   // compare: compare({
   //   filterTarget: () => pipe([omit(["compare"])]),
   // }),
-  // dependencies: {
-  //   alarmRoles: {
-  //     type: "Role",
-  //     group: "IAM",
-  //     list: true,
-  //     dependencyIds: ({ lives, config }) =>
-  //       pipe([get("Monitors"), pluck("AlarmRoleArn")]),
-  //   },
-  //   kmsKey: {
-  //     type: "Key",
-  //     group: "KMS",
-  //     excludeDefaultDependencies: true,
-  //     dependencyId: ({ lives, config }) => get("Attributes.KmsMasterKeyId"),
-  //   },
-  //   subnets: {
-  //     type: "Subnet",
-  //     group: "EC2",
-  //     list: true,
-  //     dependencyIds: ({ lives, config }) => get("VpcSubnetIds"),
-  //   },
-  //   table: {
-  //     type: "Table",
-  //     group: "DynamoDB",
-  //     parent: true,
-  //     dependencyId: ({ lives, config }) =>
-  //       pipe([
-  //         (live) =>
-  //           lives.getByName({
-  //             name: live.TableName,
-  //             type: "Table",
-  //             group: "DynamoDB",
-  //             providerName: config.providerName,
-  //           }),
-  //         get("id"),
-  //         tap((id) => {
-  //           assert(id);
-  //         }),
-  //       ]),
-  //   },
-  //   stage: {
-  //     type: "Stage",
-  //     group: "ApiGatewayV2",
-  //     parent: true,
-  //     dependencyId:
-  //       ({ lives, config }) =>
-  //       (live) =>
-  //         pipe([
-  //           () =>
-  //             lives.getByType({
-  //               providerName: config.providerName,
-  //               type: "Stage",
-  //               group: "ApiGatewayV2",
-  //             }),
-  //           find(
-  //             and([
-  //               eq(get("live.StageName"), live.Stage),
-  //               eq(get("live.ApiId"), live.ApiId),
-  //             ])
-  //           ),
-  //           get("id"),
-  //         ])(),
-  //   },
-  // },
+  dependencies: {
+    s3BucketOutput: {
+      type: "Bucket",
+      group: "S3",
+      dependencyId: ({ lives, config }) =>
+        pipe([get("Configuration.ResultConfiguration.OutputLocation")]),
+    },
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      dependencyId: ({ lives, config }) =>
+        get("Configuration.ResultConfiguration.EncryptionConfiguration.KmsKey"),
+    },
+  },
   Client: ({ spec, config }) =>
     createAwsResource({
       model: model({ config }),
@@ -359,7 +301,7 @@ exports.MyModuleMyResource = ({ compare }) => ({
       config,
       findName: pipe([
         get("live"),
-        get("Name"),
+        get("WorkGroup"),
         tap((name) => {
           assert(name);
         }),
@@ -408,7 +350,7 @@ exports.MyModuleMyResource = ({ compare }) => ({
       //   ])(),
       findId: pipe([
         get("live"),
-        get("Arn"),
+        get("WorkGroup"),
         tap((id) => {
           assert(id);
         }),
@@ -418,9 +360,9 @@ exports.MyModuleMyResource = ({ compare }) => ({
       //   ({ resourceShareArn, associatedEntity }) =>
       //     `${resourceShareArn}::${associatedEntity}`,
       // ]),
-      getByName: getByNameCore,
-      // getByName: ({ getById }) =>
-      //   pipe([({ name }) => ({ ConnectionName: name }), getById({})]),
+      //getByName: getByNameCore,
+      getByName: ({ getById }) =>
+        pipe([({ name }) => ({ WorkGroup: name }), getById({})]),
 
       // getByName: ({ getList, endpoint }) =>
       //   pipe([
@@ -428,8 +370,8 @@ exports.MyModuleMyResource = ({ compare }) => ({
       //       assert(true);
       //     }),
       //     ({ name }) => ({ Filters: [{ Name: "Name", Values: [name] }] }),
-      //     endpoint().listMyResources,
-      //     get("MyResources"),
+      //     endpoint().listWorkGroups,
+      //     get("WorkGroups"),
       //     first,
       //     unless(isEmpty, decorate({ endpoint })),
       //   ]),
@@ -545,52 +487,25 @@ exports.MyModuleMyResource = ({ compare }) => ({
         name,
         namespace,
         properties: { Tags, ...otherProps },
-        dependencies: {},
+        dependencies: { kmsKey },
       }) =>
         pipe([
           () => otherProps,
           defaultsDeep({
-            // cluster: getField(cluster, "clusterArn"),
             Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-            // tags: buildTags({
-            //   name,
-            //   config,
-            //   namespace,
-            //   UserTags: tags,
-            //   key: "key",
-            //   value: "value",
-            // }),
-            //Tags: buildTagsObject({ name, config, namespace, userTags: Tags }),
           }),
-
-          // Optional dependency for IAM Role
-          // when(
-          //   () => iamRole,
-          //   assign({ RetrievalRoleArn: getField(iamRole, "Arn") })
-          // ),
-
-          // Optional dependency for KMS Key
-
-          // when(
-          //   () => kmsKey,
-          //   defaultsDeep({
-          //     configuration: {
-          //       executeCommandConfiguration: { kmsKeyId: getField(kmsKey, "Arn") },
-          //     },
-          //   })
-          // ),
-
-          // Optional dependency with array
-
-          // when(
-          //   () => securityGroups,
-          //   defaultsDeep({
-          //     SecurityGroupIds: pipe([
-          //       () => securityGroups,
-          //       map((sg) => getField(sg, "GroupId")),
-          //     ])(),
-          //   })
-          // ),
+          when(
+            () => kmsKey,
+            defaultsDeep({
+              Configuration: {
+                ResultConfiguration: {
+                  EncryptionConfiguration: {
+                    KmsKey: getField(kmsKey, "Arn"),
+                  },
+                },
+              },
+            })
+          ),
         ])(),
     }),
 });
