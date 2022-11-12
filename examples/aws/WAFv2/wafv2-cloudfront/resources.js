@@ -65,6 +65,7 @@ exports.createResources = () => [
             OriginShield: {
               Enabled: false,
             },
+            OriginAccessControlId: "",
           },
         ],
       },
