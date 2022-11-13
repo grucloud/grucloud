@@ -49,6 +49,7 @@ module.exports = pipe([
         TLSEnabled: true,
         AutoMinorVersionUpgrade: true,
         SnapshotRetentionLimit: 1,
+        DataTiering: "false",
       },
       omitProperties: [
         "ARN",
