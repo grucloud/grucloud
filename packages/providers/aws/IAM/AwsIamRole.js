@@ -380,6 +380,7 @@ exports.AwsIamRole = ({ spec, config }) => {
       ])(),
     method: "deleteRole",
     ignoreErrorCodes,
+    shouldRetryOnExceptionCodes: ["DeleteConflictException"],
     getById,
     config,
   });

@@ -20,6 +20,7 @@ const {
   when,
   isEmpty,
   unless,
+  identity,
 } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -262,8 +263,12 @@ exports.MyModuleMyResource = ({ compare }) => ({
   type: "MyResource",
   propertiesDefault: {},
   omitProperties: [],
-  inferName: get("properties.name"),
-
+  inferName: pipe([
+    get("properties.Name"),
+    tap((Name) => {
+      assert(Name);
+    }),
+  ]),
   // inferName: ({
   //   properties: { certificateName },
   //   dependenciesSpec: { loadBalancer },

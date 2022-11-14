@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project memorydb-parameter-group-default
+skinparam monochrome true
++ Infra
+++ aws
++++ EC2
+++++ Vpc (1)
+++++ Subnet (2)
+++++ RouteTable (2)
+++++ RouteTableAssociation (2)
+++++ SecurityGroup (1)
++++ MemoryDB
+++++ Cluster (1)
+++++ SubnetGroup (1)
+@endmindmap

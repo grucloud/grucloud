@@ -71,20 +71,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "DBSubnetGroup",
-    group: "RDS",
-    properties: ({}) => ({
-      DBSubnetGroupName: "aurora-serverless-subnet-group",
-      DBSubnetGroupDescription: "Subnet group to access aurora",
-    }),
-    dependencies: ({}) => ({
-      subnets: [
-        "Vpc8378EB38::VpcauroraisolatedSubnet1Subnet5370B90B",
-        "Vpc8378EB38::VpcauroraisolatedSubnet2SubnetCB56E2A8",
-      ],
-    }),
-  },
-  {
     type: "DBCluster",
     group: "RDS",
     properties: ({}) => ({
@@ -114,6 +100,20 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       dbSubnetGroup: "aurora-serverless-subnet-group",
       secret: "demordsservice-demostage-credentials",
+    }),
+  },
+  {
+    type: "DBSubnetGroup",
+    group: "RDS",
+    properties: ({}) => ({
+      DBSubnetGroupName: "aurora-serverless-subnet-group",
+      DBSubnetGroupDescription: "Subnet group to access aurora",
+    }),
+    dependencies: ({}) => ({
+      subnets: [
+        "Vpc8378EB38::VpcauroraisolatedSubnet1Subnet5370B90B",
+        "Vpc8378EB38::VpcauroraisolatedSubnet2SubnetCB56E2A8",
+      ],
     }),
   },
   {

@@ -869,7 +869,7 @@ exports.removeRoleFromInstanceProfile =
       pipe([() => params, iam().removeRoleFromInstanceProfile]),
       switchCase([
         //TODO use throwIfNotAwsError
-        isAwsError("NoSuchEntity"),
+        isAwsError("NoSuchEntityException"),
         () => undefined,
         (error) => {
           logger.error(`iam role removeRoleFromInstanceProfile ${tos(error)}`);

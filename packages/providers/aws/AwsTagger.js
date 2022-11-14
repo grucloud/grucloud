@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { pipe, tap } = require("rubico");
+const { when, defaultsDeep } = require("rubico/x");
 
 exports.createTagger =
   ({
@@ -9,7 +10,7 @@ exports.createTagger =
     TagsKey = "Tags",
     UnTagsKey = "TagKeys",
   }) =>
-  ({ buildArn }) => ({
+  ({ buildArn, additionalParams }) => ({
     tagResource:
       ({ endpoint }) =>
       ({ live }) =>
@@ -21,6 +22,14 @@ exports.createTagger =
             assert(buildArn(live));
           }),
           (Tags) => ({ [ResourceArn]: buildArn(live), [TagsKey]: Tags }),
+          when(
+            () => additionalParams,
+            (input) => ({ ...input, ...additionalParams(live) })
+          ),
+          tap((params) => {
+            assert(true);
+          }),
+
           endpoint()[methodTagResource],
         ]),
     untagResource:

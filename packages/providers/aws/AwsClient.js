@@ -227,13 +227,14 @@ const AwsClient =
               tap((params) => {
                 assert(true);
               }),
-              map(
+              map.withIndex((item, index) =>
                 decorate({
                   lives,
+                  index,
                   endpoint,
                   getById: getById ? getById({ lives, config }) : undefined,
                   config,
-                })
+                })(item)
               ),
               transformListPost({ lives, endpoint }),
               tap((params) => {
