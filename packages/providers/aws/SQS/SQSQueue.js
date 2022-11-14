@@ -1,21 +1,38 @@
 const assert = require("assert");
-const { assign, pipe, tap, get, pick, tryCatch, set, not } = require("rubico");
 const {
-  isEmpty,
-  defaultsDeep,
-  last,
-  callProp,
-  when,
-  first,
-} = require("rubico/x");
+  assign,
+  pipe,
+  tap,
+  get,
+  pick,
+  tryCatch,
+  set,
+  omit,
+  eq,
+  flatMap,
+} = require("rubico");
+const { defaultsDeep, last, callProp, when } = require("rubico/x");
 
 const { buildTagsObject } = require("@grucloud/core/Common");
-const { AwsClient } = require("../AwsClient");
-const { createSQS, tagResource, untagResource } = require("./SQSCommon");
-const { throwIfNotAwsError } = require("../AwsCommon");
+const { findInStatement } = require("../IAM/AwsIamCommon");
+
+const {
+  throwIfNotAwsError,
+  assignPolicyAccountAndRegion,
+} = require("../AwsCommon");
+
+const { Tagger } = require("./SQSCommon");
+
+const buildArn = () =>
+  pipe([
+    get("QueueUrl"),
+    tap((arn) => {
+      assert(arn);
+    }),
+  ]);
 
 const findId = get("live.Attributes.QueueArn");
-const pickId = pick(["QueueUrl"]);
+const pickId = pipe([pick(["QueueUrl"])]);
 
 const queueUrlToName = pipe([
   get("QueueUrl"),
@@ -36,78 +53,114 @@ const ignoreErrorCodes = [
   "QueueDoesNotExist",
 ];
 
-exports.SQSQueue = ({ spec, config }) => {
-  const sqs = createSQS(config);
-  const client = AwsClient({ spec, config })(sqs);
-
-  const assignTags = pipe([
+const assignTags = ({ endpoint }) =>
+  pipe([
     assign({
-      tags: pipe([
-        pickId,
-        (params) => sqs().listQueueTags(params),
-        get("Tags"),
-      ]),
+      tags: pipe([pickId, endpoint().listQueueTags, get("Tags")]),
     }),
   ]);
 
-  const decorate = ({ live }) =>
-    pipe([
-      when(
-        get("Policy"),
-        assign({
-          Policy: pipe([get("Policy"), JSON.parse]),
-        })
-      ),
-      (Attributes) => ({ ...live, Attributes }),
-      assign({ QueueName: pipe([queueUrlToName]) }),
-      assignTags,
-    ]);
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueAttributes-property
-  const getById = client.getById({
-    pickId,
-    extraParams: { AttributeNames: ["All"] },
-    method: "getQueueAttributes",
-    getField: "Attributes",
-    decorate,
-    ignoreErrorCodes,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#listQueues-property
-  const getList = client.getList({
-    method: "listQueues",
-    getParam: "QueueUrls",
-    decorate: () => pipe([(QueueUrl) => ({ QueueUrl }), getById({})]),
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#getQueueUrl-property
-  const getByName = pipe([
-    tryCatch(
-      pipe([({ name }) => sqs().getQueueUrl({ QueueName: name }), getById({})]),
-      throwIfNotAwsError("QueueDoesNotExist")
-    ),
+const decorate = ({ endpoint, live }) =>
+  pipe([
+    (QueueUrl) => ({ QueueUrl }),
+    assign({
+      Attributes: pipe([
+        pickId,
+        defaultsDeep({ AttributeNames: ["All"] }),
+        endpoint().getQueueAttributes,
+        get("Attributes"),
+        when(
+          get("Policy"),
+          assign({
+            Policy: pipe([get("Policy"), JSON.parse]),
+          })
+        ),
+      ]),
+    }),
+    assign({ QueueName: pipe([queueUrlToName]) }),
+    assignTags({ endpoint }),
   ]);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#createQueue-property
-  const create = client.create({
+exports.SQSQueue = () => ({
+  type: "Queue",
+  package: "sqs",
+  client: "SQS",
+  ignoreErrorCodes,
+  findName,
+  findId,
+  inferName: get("properties.QueueName"),
+  propertiesDefault: {
+    Attributes: {
+      VisibilityTimeout: "30",
+      MaximumMessageSize: "262144",
+      MessageRetentionPeriod: "345600",
+      DelaySeconds: "0",
+      ReceiveMessageWaitTimeSeconds: "0",
+    },
+  },
+  dependencies: {
+    snsTopics: {
+      type: "Topic",
+      group: "SNS",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          get("Attributes.Policy.Statement", []),
+          flatMap(
+            findInStatement({ type: "Topic", group: "SNS", lives, config })
+          ),
+        ]),
+    },
+  },
+  omitProperties: [
+    "QueueUrl",
+    "Attributes.QueueArn",
+    "Attributes.ApproximateNumberOfMessages",
+    "Attributes.ApproximateNumberOfMessagesNotVisible",
+    "Attributes.ApproximateNumberOfMessagesDelayed",
+    "Attributes.CreatedTimestamp",
+    "Attributes.LastModifiedTimestamp",
+    "Attributes.SqsManagedSseEnabled",
+  ],
+  filterLive: ({ providerConfig, lives }) =>
+    pipe([
+      omit(["QueueUrl"]),
+      assign({
+        Attributes: pipe([
+          get("Attributes"),
+          when(
+            get("Policy"),
+            assign({
+              Policy: pipe([
+                get("Policy"),
+                assignPolicyAccountAndRegion({ providerConfig, lives }),
+              ]),
+            })
+          ),
+          when(eq(get("Policy.Id"), "__default_policy_ID"), omit(["Policy"])),
+        ]),
+      }),
+    ]),
+  getById: {
+    pickId: pipe([queueUrlToName, (QueueNamePrefix) => ({ QueueNamePrefix })]),
+    method: "listQueues",
+    getField: "QueueUrls",
+    decorate,
+    ignoreErrorCodes,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#listMyResources-property
+  getList: {
+    method: "listQueues",
+    getParam: "QueueUrls",
+    decorate: ({ getById }) => pipe([(QueueUrl) => ({ QueueUrl }), getById]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#createMyResource-property
+  create: {
     method: "createQueue",
     shouldRetryOnExceptionCodes: [
       "AWS.SimpleQueueService.QueueDeletedRecently",
       "QueueDeletedRecently",
     ],
-    getById,
-    isInstanceUp: pipe([
-      (live) => ({ live }),
-      findName,
-      (QueueNamePrefix) =>
-        pipe([
-          () => ({ QueueNamePrefix }),
-          sqs().listQueues,
-          get("QueueUrls"),
-          first,
-          not(isEmpty),
-        ])(),
-    ]),
     filterPayload: pipe([
       assign({
         Attributes: pipe([
@@ -120,10 +173,9 @@ exports.SQSQueue = ({ spec, config }) => {
     ]),
     config: { retryDelay: 65e3, retryCount: 2 },
     configIsUp: { repeatCount: 1, repeatDelay: 60e3 },
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#setQueueAttributes-property
-  const update = client.update({
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#updateMyResource-property
+  update: {
     pickId,
     filterParams: ({ payload, live }) =>
       pipe([
@@ -133,27 +185,36 @@ exports.SQSQueue = ({ spec, config }) => {
           set("Attributes.Policy", JSON.stringify(payload.Attributes.Policy))
         ),
         defaultsDeep(pickId(live)),
-        tap((params) => {
-          assert(true);
-        }),
       ])(),
     method: "setQueueAttributes",
-    getById,
-  });
-
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SQS.html#deleteQueue-property
-  const destroy = client.destroy({
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#deleteMyResource-property
+  destroy: {
     pickId,
     method: "deleteQueue",
-    getById,
     ignoreErrorCodes,
-  });
-
-  const configDefault = async ({
+  },
+  getByName: ({ endpoint, getById }) =>
+    pipe([
+      tryCatch(
+        pipe([
+          ({ name }) => ({ QueueName: name }),
+          endpoint().getQueueUrl,
+          getById({}),
+        ]),
+        throwIfNotAwsError("QueueDoesNotExist")
+      ),
+    ]),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn(config),
+    }),
+  configDefault: ({
     name,
     namespace,
     properties: { tags, ...otherProps },
     dependencies: {},
+    config,
   }) =>
     pipe([
       () => otherProps,
@@ -161,20 +222,5 @@ exports.SQSQueue = ({ spec, config }) => {
         QueueName: name,
         tags: buildTagsObject({ config, namespace, name, userTags: tags }),
       }),
-    ])();
-
-  return {
-    spec,
-    findName,
-    findId,
-    create,
-    update,
-    destroy,
-    getByName,
-    getById,
-    getList,
-    configDefault,
-    tagResource: tagResource({ sqs }),
-    untagResource: untagResource({ sqs }),
-  };
-};
+    ])(),
+});
