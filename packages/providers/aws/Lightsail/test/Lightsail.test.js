@@ -100,6 +100,7 @@ describe("Lightsail", async function () {
         livesNotFound: ({ config }) => [
           { loadBalancerName: "lb123", instanceName: "i123" },
         ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
@@ -110,6 +111,7 @@ describe("Lightsail", async function () {
         livesNotFound: ({ config }) => [
           { loadBalancerName: "lb123", certificateName: "c123" },
         ],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());

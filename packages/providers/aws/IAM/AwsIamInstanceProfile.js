@@ -29,6 +29,7 @@ const {
   createIAM,
   tagResourceIam,
   untagResourceIam,
+  ignoreErrorCodes,
 } = require("./AwsIamCommon");
 
 //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagInstanceProfile-property
@@ -122,7 +123,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     pickId,
     method: "getInstanceProfile",
     getField: "InstanceProfile",
-    ignoreErrorCodes: ["NoSuchEntity"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createInstanceProfile-property
@@ -196,7 +197,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           ])(),
       ])(),
     method: "deleteInstanceProfile",
-    ignoreErrorCodes: ["NoSuchEntity"],
+    ignoreErrorCodes,
     getById,
   });
 

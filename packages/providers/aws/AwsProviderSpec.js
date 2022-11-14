@@ -13,6 +13,7 @@ const GROUPS = [
   ["AppRunner", "apprunner"],
   ["ApplicationAutoScaling", "application-autoscaling"],
   ["AppSync", "appsync"],
+  ["Athena", "athena"],
   ["Autoscaling", "autoscaling"],
   ["Backup", "backup"],
   ["Batch", "batch"],
@@ -41,6 +42,7 @@ const GROUPS = [
   ["ELBv2", "elb"],
   ["Firehose", "firehose"],
   ["Glue", "glue"],
+  ["IdentityStore", "identitystore"],
   ["Inspector2", "inspector2"],
   ["Kinesis", "kinesis"],
   ["KMS", "kms"],
@@ -52,7 +54,6 @@ const GROUPS = [
   ["MSK", "kafka"],
   ["NetworkFirewall", "network-firewall"],
   ["NetworkManager", "networkmanager"],
-  ["Neptune", "neptune"],
   //["OpenSearch", "opensearch"],
   ["Organisations", "organizations"],
   ["RAM", "ram"],
@@ -67,6 +68,7 @@ const GROUPS = [
   ["SESV2", "ses"],
   ["StepFunctions", "sns"],
   ["SNS", "sns"],
+  ["SSOAdmin", "sso"],
   ["SQS", "sqs"],
   ["SSM", "ssm"],
   ["WAFV2", "waf"],
@@ -74,6 +76,7 @@ const GROUPS = [
 
 const GROUPS_MISSING = [
   "CloudWatchLogs", // missing from the list provider by AWS
+  "Scheduler",
 ];
 const GROUPS_GLOBAL = [
   "IAM",

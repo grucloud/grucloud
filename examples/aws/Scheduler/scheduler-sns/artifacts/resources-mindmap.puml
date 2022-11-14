@@ -1,0 +1,13 @@
+@startmindmap
+title Resources for project scheduler-sns
+skinparam monochrome true
++ Infra
+++ aws
++++ IAM
+++++ Role (1)
+++++ Policy (1)
++++ Scheduler
+++++ Schedule (1)
++++ SNS
+++++ Topic (1)
+@endmindmap

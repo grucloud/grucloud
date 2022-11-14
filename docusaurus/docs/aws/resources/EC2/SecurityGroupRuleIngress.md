@@ -35,7 +35,7 @@ exports.createResources = () => [
 
 ### Examples
 
-- [ec2 in vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
+- [ec2 in vpc](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Instance/ec2-vpc)
 
 ### Dependencies
 

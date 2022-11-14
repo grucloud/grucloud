@@ -68,7 +68,7 @@ The list of properties can be found in [DescribeImagesCommandInput](https://docs
 
 ## Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Instance/ec2)
 
 ## Used By
 

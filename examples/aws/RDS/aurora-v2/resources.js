@@ -231,22 +231,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "DBSubnetGroup",
-    group: "RDS",
-    properties: ({}) => ({
-      DBSubnetGroupName: "default-vpc-07c0392e5e3359f2e",
-      DBSubnetGroupDescription: "Created from the RDS Management Console",
-    }),
-    dependencies: ({ config }) => ({
-      subnets: [
-        `pg-vpc::pg-subnet-private1-${config.region}a`,
-        `pg-vpc::pg-subnet-private2-${config.region}b`,
-        `pg-vpc::pg-subnet-public1-${config.region}a`,
-        `pg-vpc::pg-subnet-public2-${config.region}b`,
-      ],
-    }),
-  },
-  {
     type: "DBCluster",
     group: "RDS",
     properties: ({}) => ({
@@ -272,6 +256,22 @@ exports.createResources = () => [
     dependencies: ({}) => ({
       dbSubnetGroup: "default-vpc-07c0392e5e3359f2e",
       securityGroups: ["sg::pg-vpc::pg"],
+    }),
+  },
+  {
+    type: "DBSubnetGroup",
+    group: "RDS",
+    properties: ({}) => ({
+      DBSubnetGroupName: "default-vpc-07c0392e5e3359f2e",
+      DBSubnetGroupDescription: "Created from the RDS Management Console",
+    }),
+    dependencies: ({ config }) => ({
+      subnets: [
+        `pg-vpc::pg-subnet-private1-${config.region}a`,
+        `pg-vpc::pg-subnet-private2-${config.region}b`,
+        `pg-vpc::pg-subnet-public1-${config.region}a`,
+        `pg-vpc::pg-subnet-public2-${config.region}b`,
+      ],
     }),
   },
   {

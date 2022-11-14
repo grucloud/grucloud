@@ -4,12 +4,24 @@
 
 ## Aws
 
+- throwIfNotAwsError accepts an array of errors
 - https://aws.amazon.com/about-aws/whats-new/2022/11/aws-app-runner-supports-privately-accessible-services-amazon-vpc/ , aws_apprunner_vpc_ingress_connection
 
 - AWS::Athena::WorkGroup AWS::Athena::DataCatalog
+
+- AWS::Cognito::IdentityPool
+- AWS::Cognito::IdentityPoolRoleAttachment
+- AWS::CloudFront::CachePolicy
+- AWS::Events::Endpoint
+- CodeStarConnections Host
+  Lambda EventSourceMapping:
+- Amazon DynamoDB Streams
 - CUR https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CUR.html
+- ECSTaskSet
 - LakeFormation https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/LakeFormation.html
 - OpenSearch: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html
+- aws_route53_delegation_set
+
 - SecurityHub https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html
 - AWS::ServiceCatalog
 - AWS::Shield
@@ -17,7 +29,6 @@
 - AWS::XRay
 
 - SNS dep with firehose
-- Redshift::ClusterParameterGroup getParameter
 - EC2 instance, sort groups
 - API Gateway v1 Authorizer
 
@@ -53,16 +64,6 @@
 - s3 object gencode is missing ACL:public-read
 
 - CloudTrail EventDataStore EventDataStore doc
-
-- ECSTaskSet
-- AWS::Cognito::IdentityPool
-- AWS::Cognito::IdentityPoolRoleAttachment
-- AWS::CloudFront::CachePolicy
-- AWS::Events::Endpoint
-- aws_route53_delegation_set
-- CodeStarConnections Host
-  Lambda EventSourceMapping:
-- Amazon DynamoDB Streams
 
 - route to NetworkInterfaceId
 

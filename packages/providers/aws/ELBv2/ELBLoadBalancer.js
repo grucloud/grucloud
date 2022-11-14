@@ -15,6 +15,11 @@ const logger = require("@grucloud/core/logger")({
   prefix: "LoadBalancer",
 });
 
+const ignoreErrorCodes = [
+  "LoadBalancerNotFound",
+  "LoadBalancerNotFoundException",
+];
+
 const findName = get("live.Name");
 const findId = get("live.LoadBalancerArn");
 const pickId = pick(["LoadBalancerArn"]);
@@ -72,7 +77,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     ]),
     method: "describeLoadBalancers",
     getField: "LoadBalancers",
-    ignoreErrorCodes: ["LoadBalancerNotFound"],
+    ignoreErrorCodes,
     decorate,
   });
 
@@ -134,7 +139,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     pickId,
     method: "deleteLoadBalancer",
     getById,
-    ignoreErrorCodes: ["LoadBalancerNotFound"],
+    ignoreErrorCodes,
   });
 
   return {

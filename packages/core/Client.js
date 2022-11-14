@@ -99,8 +99,13 @@ const decorateLive =
             client.findName,
             tap((name) => {
               if (!isString(name)) {
-                logger.error(`no name in ${tos(live)}`);
-                assert(false, `no name in ${tos(live)}`);
+                logger.error(
+                  `no name in ${tos({ live })}, ${client.spec.groupType}`
+                );
+                assert(
+                  false,
+                  `no name in  ${client.spec.groupType} ${tos({ live })}`
+                );
               }
             }),
           ]),

@@ -27,6 +27,7 @@ const {
   tagResourceIam,
   untagResourceIam,
   assignAttachedPolicies,
+  ignoreErrorCodes,
 } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagUser-property
@@ -49,7 +50,7 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const fetchLoginProfile = tryCatch(
     pipe([pick(["UserName"]), iam().getLoginProfile, get("LoginProfile")]),
-    throwIfNotAwsError("NoSuchEntity")
+    throwIfNotAwsError("NoSuchEntityException")
   );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listUsers-property
@@ -96,7 +97,7 @@ exports.AwsIamUser = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getUser",
-    ignoreErrorCodes: ["NoSuchEntity"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createUser-property
@@ -148,6 +149,9 @@ exports.AwsIamUser = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#attachUserPolicy-property
   const attachUserPolicy = ({ name }) =>
     pipe([
+      tap((params) => {
+        assert(name);
+      }),
       forEach(
         pipe([
           tap(({ PolicyArn }) => {
@@ -189,21 +193,13 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const updateAttachedPolicies = ({ name, diff }) =>
     pipe([
-      tap((params) => {
-        assert(true);
-      }),
       () => diff,
       get("liveDiff.added.AttachedPolicies", []),
-      //putUserAttachedPolicies({ name }),
+      attachUserPolicy({ name }),
     ]);
 
   const update = async ({ name, diff }) =>
-    pipe([
-      tap((params) => {
-        assert(diff);
-      }),
-      updateAttachedPolicies({ name, diff }),
-    ])();
+    pipe([updateAttachedPolicies({ name, diff })])();
 
   const destroyAccessKey = ({ UserName }) =>
     pipe([
@@ -266,7 +262,7 @@ exports.AwsIamUser = ({ spec, config }) => {
   const deleteLoginProfile = ({ UserName }) =>
     tryCatch(
       pipe([() => ({ UserName }), iam().deleteLoginProfile]),
-      throwIfNotAwsError("NoSuchEntity")
+      throwIfNotAwsError("NoSuchEntityException")
     )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
@@ -283,7 +279,7 @@ exports.AwsIamUser = ({ spec, config }) => {
       }),
     ]),
     method: "deleteUser",
-    ignoreErrorCodes: ["NoSuchEntity"],
+    ignoreErrorCodes,
     getById,
     config,
   });

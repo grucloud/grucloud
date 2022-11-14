@@ -17,6 +17,11 @@ const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./AppConfigCommon");
 
 const pickId = pipe([
+  tap(({ VersionNumber, ApplicationId, ConfigurationProfileId }) => {
+    assert(VersionNumber);
+    assert(ApplicationId);
+    assert(ConfigurationProfileId);
+  }),
   pick(["VersionNumber", "ApplicationId", "ConfigurationProfileId"]),
 ]);
 
@@ -100,7 +105,7 @@ exports.AppConfigHostedConfigurationVersion = ({ spec, config }) =>
                 ]),
                 callProp("reverse"),
               ]),
-            decorate: () => pipe([getById]),
+            decorate: () => pipe([getById({})]),
           }),
       ])(),
     update:
@@ -127,6 +132,9 @@ exports.AppConfigHostedConfigurationVersion = ({ spec, config }) =>
       dependencies: { configurationProfile },
     }) =>
       pipe([
+        tap((params) => {
+          assert(configurationProfile);
+        }),
         () => otherProps,
         defaultsDeep({
           ApplicationId: getField(configurationProfile, "ApplicationId"),

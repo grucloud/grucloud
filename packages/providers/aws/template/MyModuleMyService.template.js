@@ -20,12 +20,15 @@ const {
   when,
   isEmpty,
   unless,
+  identity,
 } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
+const { replaceWithName } = require("@grucloud/core/Common");
+
 const { createAwsResource } = require("../AwsClient");
 
 // const {
@@ -172,6 +175,9 @@ const model = ({ config }) => ({
     // isInstanceError: pipe([eq(get("Status"), "ACTION_NEEDED")]),
     // getErrorMessage: get("StatusMessage", "error"),
 
+    // shouldRetryOnExceptionCodes: [],
+    // shouldRetryOnExceptionMessages: [],
+
     // postCreate: ({ name, payload }) =>
     //   pipe([tap(createAlias({ name })), tap(putKeyPolicy(payload))]),
 
@@ -247,8 +253,8 @@ const model = ({ config }) => ({
     // ignoreErrorMessages: [
     //   "The specified cluster is inactive. Specify an active cluster and try again.",
     // ],
-    // shouldRetryOnExceptionCodes = [],
-    // shouldRetryOnExceptionMessages = [],
+    // shouldRetryOnExceptionCodes: [],
+    // shouldRetryOnExceptionMessages: [],
   },
 });
 
@@ -257,11 +263,15 @@ exports.MyModuleMyResource = ({ compare }) => ({
   type: "MyResource",
   propertiesDefault: {},
   omitProperties: [],
-  inferName: get("properties.name"),
-
+  inferName: pipe([
+    get("properties.Name"),
+    tap((Name) => {
+      assert(Name);
+    }),
+  ]),
   // inferName: ({
   //   properties: { certificateName },
-  //   dependencieSpec: { loadBalancer },
+  //   dependenciesSpec: { loadBalancer },
   // }) =>
   //   pipe([
   //     tap((params) => {
@@ -270,8 +280,9 @@ exports.MyModuleMyResource = ({ compare }) => ({
   //     }),
   //     () => `${loadBalancer}::${certificateName}`,
   //   ])(),
+
   // inferName: pipe([
-  //   get("dependencieSpec"),
+  //   get("dependenciesSpec"),
   //   ({ staticIp, instance }) => `${staticIp}::${instance}`,
   // ]),
 
@@ -294,7 +305,14 @@ exports.MyModuleMyResource = ({ compare }) => ({
   //   kmsKey: {
   //     type: "Key",
   //     group: "KMS",
+  //     excludeDefaultDependencies: true,
   //     dependencyId: ({ lives, config }) => get("Attributes.KmsMasterKeyId"),
+  //   },
+  //   subnets: {
+  //     type: "Subnet",
+  //     group: "EC2",
+  //     list: true,
+  //     dependencyIds: ({ lives, config }) => get("VpcSubnetIds"),
   //   },
   //   table: {
   //     type: "Table",
@@ -504,6 +522,29 @@ exports.MyModuleMyResource = ({ compare }) => ({
       //         pipe([() => payload, endpoint().enable])
       //       ),
       //     ])(),
+
+      // filterLive: ({ lives, providerConfig }) =>
+      //   pipe([
+      //     assign({
+      //       apiStages: pipe([
+      //         get("apiStages"),
+      //         map(
+      //           assign({
+      //             apiId: pipe([
+      //               get("apiId"),
+      //               replaceWithName({
+      //                 groupType: "APIGateway::RestApi",
+      //                 path: "id",
+      //                 pathLive: "live.id",
+      //                 providerConfig,
+      //                 lives,
+      //               }),
+      //             ]),
+      //           })
+      //         ),
+      //       ]),
+      //     }),
+      //   ]),
       ...Tagger({ buildArn: buildArn(config) }),
       configDefault: ({
         name,

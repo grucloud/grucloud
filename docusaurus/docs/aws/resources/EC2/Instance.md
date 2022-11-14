@@ -33,17 +33,17 @@ exports.createResources = () => [
 
 ### Examples
 
-- [one ec2](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-simple/)
-- [ec2 with elastic ip address, key pair](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2)
-- [attached an EBS volume](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/volume)
+- [one ec2](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Instanceec2-simple/)
+- [ec2 with elastic ip address, key pair](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Instanceec2)
+- [attached an EBS volume](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Instancevolume)
 - [example with IAM](https://github.com/grucloud/grucloud/blob/main/examples/aws/IAM/iam)
-- [full example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
-- [EC2 based launch template](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/launchTemplate)
-- [EC2 based launch template](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/launchTemplate-sg)
+- [full example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Instanceec2-vpc)
+- [EC2 based launch template](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/InstancelaunchTemplate)
+- [EC2 based launch template](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/InstancelaunchTemplate-sg)
 
 ### Properties
 
-- [RunInstancesCommandInput list](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ec2/interfaces/runinstancescommandinput.html)
+- [RunInstancesCommandInput list](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-EC2/Instanceinterfaces/runinstancescommandinput.html)
 
 ### Dependencies
 

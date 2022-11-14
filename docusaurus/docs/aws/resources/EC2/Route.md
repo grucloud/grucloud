@@ -130,13 +130,13 @@ exports.createResources = () => [
 
 ## Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Instance/ec2-vpc)
 - [vpc endpoint](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/vpc-endpoint)
-- [transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/transit-gateway)
+- [transit gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/TransitGateway/transit-gateway)
 - [egress-only-internet-gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/egress-only-internet-gateway)
 - [route to instance](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/route-to-instance)
 - [route with prefix list](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/route-prefix-list)
-- [route to a vpc peering connection](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/vpc-peering)
+- [route to a vpc peering connection](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Vpc/vpc-peering)
 - [route to a vpn gateway](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/site2site)
 
 ## Properties

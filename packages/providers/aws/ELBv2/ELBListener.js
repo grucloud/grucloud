@@ -8,7 +8,7 @@ const { buildTags } = require("../AwsCommon");
 const { tagResource, untagResource } = require("./ELBCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
-const ignoreErrorCodes = ["ListenerNotFound"];
+const ignoreErrorCodes = ["ListenerNotFound", "ListenerNotFoundException"];
 
 const findId = get("live.ListenerArn");
 const pickId = pick(["ListenerArn"]);

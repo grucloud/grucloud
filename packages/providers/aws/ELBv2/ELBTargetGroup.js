@@ -15,6 +15,10 @@ const { createELB, tagResource, untagResource } = require("./ELBCommon");
 
 const findName = get("live.Name");
 const findId = get("live.TargetGroupArn");
+const ignoreErrorCodes = [
+  "TargetGroupNotFound",
+  "TargetGroupNotFoundException",
+];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 exports.ELBTargetGroup = ({ spec, config }) => {
@@ -75,7 +79,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     }),
     method: "describeTargetGroups",
     getField: "TargetGroups",
-    ignoreErrorCodes: ["TargetGroupNotFound"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property
@@ -89,7 +93,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   const destroy = client.destroy({
     pickId: pick(["TargetGroupArn"]),
     method: "deleteTargetGroup",
-    ignoreErrorCodes: ["TargetGroupNotFound"],
+    ignoreErrorCodes,
     getById,
   });
 

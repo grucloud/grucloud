@@ -9,6 +9,7 @@ const {
   createIAM,
   assignAttachedPolicies,
   sortPolicies,
+  ignoreErrorCodes,
 } = require("./AwsIamCommon");
 
 const findName = get("live.GroupName");
@@ -49,7 +50,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
   const getById = client.getById({
     pickId,
     method: "getGroup",
-    ignoreErrorCodes: ["NoSuchEntity"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createGroup-property
@@ -159,7 +160,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
       tap(removeUserFromGroup),
     ]),
     method: "deleteGroup",
-    ignoreErrorCodes: ["NoSuchEntity"],
+    ignoreErrorCodes,
     getById,
   });
 

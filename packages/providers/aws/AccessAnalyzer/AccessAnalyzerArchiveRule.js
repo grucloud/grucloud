@@ -20,8 +20,8 @@ const model = ({ config }) => ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html#getArchiveRule-property
   getById: {
     method: "getArchiveRule",
-    getField: "analyzer",
-    //decorate,
+    getField: "archiveRule",
+    pickId,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AccessAnalyzer.html#createArchiveRule-property
   create: {
@@ -37,6 +37,9 @@ const model = ({ config }) => ({
 
 const findName = pipe([
   get("live"),
+  tap(({ analyzerName }) => {
+    assert(analyzerName);
+  }),
   ({ analyzerName, ruleName }) => `${analyzerName}::${ruleName}`,
 ]);
 
@@ -70,6 +73,7 @@ exports.AccessAnalyzerArchiveRule = ({ spec, config }) =>
       pipe([
         tap((params) => {
           assert(analyzer);
+          assert(analyzer.config.analyzerName);
         }),
         () => otherProps,
         defaultsDeep({ analyzerName: analyzer.config.analyzerName }),

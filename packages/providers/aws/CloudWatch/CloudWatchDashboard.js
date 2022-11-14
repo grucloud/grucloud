@@ -14,7 +14,7 @@ const stringifyDashboardBody = assign({
 const model = ({ config }) => ({
   package: "cloudwatch",
   client: "CloudWatch",
-  ignoreErrorCodes: ["ResourceNotFound"],
+  ignoreErrorCodes: ["ResourceNotFound", "DashboardNotFoundError"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudWatch.html#getDashboard-property
   getById: {
     method: "getDashboard",

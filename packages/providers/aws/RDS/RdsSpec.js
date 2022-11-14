@@ -8,18 +8,27 @@ const {
   get,
   pick,
   switchCase,
+  eq,
 } = require("rubico");
 const { defaultsDeep, callProp, when, pluck } = require("rubico/x");
 const { replaceWithName } = require("@grucloud/core/Common");
-
-const { findDependenciesSecret } = require("./RDSCommon");
-
 const { isOurMinionFactory, compareAws } = require("../AwsCommon");
+
+const {
+  findDependenciesSecret,
+  isAuroraEngine,
+  omitUsernamePassword,
+} = require("./RDSCommon");
+
 const { DBCluster } = require("./DBCluster");
+const { RDSClusterEndpoint } = require("./RDSClusterEndpoint");
+const { RDSEventSubscription } = require("./RDSEventSubscription");
+
 const { DBInstance } = require("./DBInstance");
-const { DBSubnetGroup } = require("./DBSubnetGroup");
+const { RDSDBSubnetGroup } = require("./RDSDBSubnetGroup");
 const { DBProxy } = require("./DBProxy");
 const { DBProxyTargetGroup } = require("./DBProxyTargetGroup");
+const { RDSDBClusterParameterGroup } = require("./RDSDBClusterParameterGroup");
 
 const GROUP = "RDS";
 const compareRDS = compareAws({});
@@ -28,8 +37,6 @@ const environmentVariables = [
   { path: "MasterUsername", suffix: "MASTER_USERNAME" },
   { path: "MasterUserPassword", suffix: "MASTER_USER_PASSWORD" },
 ];
-
-const isAuroraEngine = pipe([get("Engine"), callProp("startsWith", "aurora")]);
 
 // TODO
 // When MultiAZ = true, here is the error:
@@ -180,30 +187,33 @@ module.exports = pipe([
         },
       },
     },
-    {
-      type: "DBSubnetGroup",
-      Client: DBSubnetGroup,
-      inferName: get("properties.DBSubnetGroupName"),
-      omitProperties: [
-        "SubnetIds",
-        "VpcId",
-        "SubnetGroupStatus",
-        "Subnets",
-        "DBSubnetGroupArn",
-      ],
-      propertiesDefault: { SupportedNetworkTypes: ["IPV4"] },
-      ignoreResource: () => pipe([get("isDefault")]),
-      filterLive: () => pick(["DBSubnetGroupName", "DBSubnetGroupDescription"]),
-      dependencies: {
-        subnets: {
-          type: "Subnet",
-          group: "EC2",
-          list: true,
-          dependencyIds: ({ lives, config }) =>
-            pipe([get("Subnets"), pluck("SubnetIdentifier")]),
-        },
-      },
-    },
+    // {
+    //   type: "DBSubnetGroup",
+    //   Client: DBSubnetGroup,
+    //   inferName: get("properties.DBSubnetGroupName"),
+    //   omitProperties: [
+    //     "SubnetIds",
+    //     "VpcId",
+    //     "SubnetGroupStatus",
+    //     "Subnets",
+    //     "DBSubnetGroupArn",
+    //   ],
+    //   propertiesDefault: {
+    //     SupportedNetworkTypes: ["IPV4"],
+    //     NetworkType: "IPV4",
+    //   },
+    //   ignoreResource: () => pipe([get("isDefault")]),
+    //   filterLive: () => pick(["DBSubnetGroupName", "DBSubnetGroupDescription"]),
+    //   dependencies: {
+    //     subnets: {
+    //       type: "Subnet",
+    //       group: "EC2",
+    //       list: true,
+    //       dependencyIds: ({ lives, config }) =>
+    //         pipe([get("Subnets"), pluck("SubnetIdentifier")]),
+    //     },
+    //   },
+    // },
     {
       type: "DBCluster",
       Client: DBCluster,
@@ -226,6 +236,24 @@ module.exports = pipe([
               get("id"),
             ]),
         },
+        globalCluster: {
+          type: "GlobalCluster",
+          group: "Neptune",
+          dependencyId: ({ lives, config }) => get("GlobalClusterIdentifier"),
+        },
+        iamRoles: {
+          type: "Role",
+          group: "IAM",
+          list: true,
+          dependencyIds: ({ lives, config }) =>
+            pipe([get("AssociatedRoles"), pluck("RoleArn")]),
+        },
+        kmsKey: {
+          type: "Key",
+          group: "KMS",
+          excludeDefaultDependencies: true,
+          dependencyId: ({ lives, config }) => get("KmsKeyId"),
+        },
         securityGroups: {
           type: "SecurityGroup",
           group: "EC2",
@@ -233,12 +261,6 @@ module.exports = pipe([
           excludeDefaultDependencies: true,
           dependencyIds: ({ lives, config }) =>
             pipe([get("VpcSecurityGroups"), pluck("VpcSecurityGroupId")]),
-        },
-        key: {
-          type: "Key",
-          group: "KMS",
-          excludeDefaultDependencies: true,
-          dependencyId: ({ lives, config }) => get("KmsKeyId"),
         },
         secret: {
           type: "Secret",
@@ -292,6 +314,7 @@ module.exports = pipe([
         StorageEncrypted: true,
         CopyTagsToSnapshot: false,
         CrossAccountClone: false,
+        NetworkType: "IPV4",
       },
       compare: compareRDS({
         filterAll: () =>
@@ -304,40 +327,37 @@ module.exports = pipe([
             "MasterUsername",
             "MasterUserPassword",
           ]), //TODO kludge: updating HttpEndpointEnabled does not work
-        filterTarget: () =>
-          pipe([
-            switchCase([
-              isAuroraEngine,
-              defaultsDeep({
-                AllocatedStorage: 1,
-              }),
-              defaultsDeep({}),
-            ]),
-          ]),
-        filterLive: () =>
-          pipe([
-            assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
-            omitAutoMinorVersionUpgrade,
-          ]),
+        filterLive: () => pipe([omitAutoMinorVersionUpgrade]),
       }),
-      filterLive: () =>
+      filterLive: ({ lives, providerConfig }) =>
         pipe([
-          when(
-            get("ScalingConfigurationInfo"),
-            pipe([
-              assign({ ScalingConfiguration: get("ScalingConfigurationInfo") }),
-              omit(["ScalingConfigurationInfo"]),
-            ])
-          ),
           omitAutoMinorVersionUpgrade,
-          switchCase([
-            isAuroraEngine,
-            omit(["AllocatedStorage"]),
-            defaultsDeep({}),
-          ]),
+          when(
+            get("AssociatedRoles"),
+            assign({
+              AssociatedRoles: pipe([
+                get("AssociatedRoles"),
+                map(
+                  pipe([
+                    get("RoleArn"),
+                    replaceWithName({
+                      groupType: "IAM::Role",
+                      path: "id",
+                      providerConfig,
+                      lives,
+                    }),
+                  ])
+                ),
+              ]),
+            })
+          ),
         ]),
+      filterLiveExtra: () => pipe([omitUsernamePassword]),
       environmentVariables,
     },
+    RDSClusterEndpoint({ compare: compareRDS }),
+    RDSDBClusterParameterGroup({ compare: compareRDS }),
+    RDSDBSubnetGroup({ compare: compareRDS }),
     {
       type: "DBInstance",
       Client: DBInstance,
@@ -374,7 +394,7 @@ module.exports = pipe([
             rdsUsernameField: "MasterUsername",
           }),
         },
-        key: {
+        kmsKey: {
           type: "Key",
           group: "KMS",
           excludeDefaultDependencies: true,
@@ -477,11 +497,13 @@ module.exports = pipe([
           ),
           filterLiveDbInstance,
         ]),
+      filterLiveExtra: () => pipe([omitUsernamePassword]),
       environmentVariables: pipe([
         () => environmentVariables,
         defaultsDeep({ handledByResource: true }),
       ])(),
     },
+    RDSEventSubscription({ compare: compareRDS }),
   ],
   map(
     defaultsDeep({

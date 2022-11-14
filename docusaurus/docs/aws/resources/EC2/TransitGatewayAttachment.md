@@ -25,7 +25,7 @@ exports.createResources = () => [
 
 ### Examples
 
-- [flow-logs-tgw-vpn](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs-tgw-vpn)
+- [flow-logs-tgw-vpn](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/flow-logs/flow-logs-tgw-vpn)
 
 ### Properties
 

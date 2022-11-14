@@ -1,11 +1,26 @@
 const assert = require("assert");
-const { pipe, tap, assign, omit, get, eq } = require("rubico");
-const { find } = require("rubico/x");
+const { pipe, tap, assign, omit, get, eq, or } = require("rubico");
+const { find, when, callProp } = require("rubico/x");
 const { createTagger } = require("../AwsTagger");
 
 const { createEndpoint } = require("../AwsCommon");
 
 exports.createRDS = createEndpoint("rds", "RDS");
+
+const isAuroraEngine = pipe([get("Engine"), callProp("startsWith", "aurora")]);
+exports.isAuroraEngine = isAuroraEngine;
+
+const isNeptune = pipe([get("Engine"), callProp("startsWith", "neptune")]);
+exports.isNeptune = isNeptune;
+
+exports.omitAllocatedStorage = pipe([
+  when(or([isAuroraEngine, isNeptune]), omit(["AllocatedStorage"])),
+]);
+
+exports.omitUsernamePassword = when(
+  isNeptune,
+  omit(["MasterUsername", "MasterUserPassword"])
+);
 
 exports.Tagger = createTagger({
   methodTagResource: "addTagsToResource",

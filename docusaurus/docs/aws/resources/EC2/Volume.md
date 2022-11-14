@@ -25,7 +25,7 @@ exports.createResources = () => [
 ### Examples
 
 - [basic volume example](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/volume)
-- [instance in a VPC with volume](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/ec2-vpc)
+- [instance in a VPC with volume](https://github.com/grucloud/grucloud/blob/main/examples/aws/EC2/Instance/ec2-vpc)
 
 ### Properties
 

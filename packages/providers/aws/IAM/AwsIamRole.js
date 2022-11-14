@@ -49,6 +49,7 @@ const {
   dependenciesPoliciesKind,
   findInStatement,
   sortPolicies,
+  ignoreErrorCodes,
 } = require("./AwsIamCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#tagRole-property
@@ -329,6 +330,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     config,
   });
 
+  // TODO error: Cannot delete entity, must delete policies first.
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteRole-property
   const destroy = client.destroy({
     pickId,
@@ -377,7 +379,8 @@ exports.AwsIamRole = ({ spec, config }) => {
           ])(),
       ])(),
     method: "deleteRole",
-    ignoreErrorCodes: ["NoSuchEntity"],
+    ignoreErrorCodes,
+    shouldRetryOnExceptionCodes: ["DeleteConflictException"],
     getById,
     config,
   });

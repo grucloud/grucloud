@@ -1,32 +1,62 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map, assign } = require("rubico");
+const { pipe, tap, get, pick, not, map, assign } = require("rubico");
 const { defaultsDeep, callProp } = require("rubico/x");
+const { omitIfEmpty } = require("@grucloud/core/Common");
+
 const { buildTags } = require("../AwsCommon");
 
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./RedshiftCommon");
 
-const pickId = pipe([pick(["ParameterGroupName"])]);
+const pickId = pipe([
+  tap(({ ParameterGroupName }) => {
+    assert(ParameterGroupName);
+  }),
+  pick(["ParameterGroupName"]),
+]);
 
-const managedByOther = pipe([
-  get("live.ParameterGroupName"),
+const isDefaultParameterGroup = pipe([
+  get("ParameterGroupName"),
   callProp("startsWith", "default"),
 ]);
+
+const managedByOther = pipe([get("live"), isDefaultParameterGroup]);
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#describeClusterParameters-property
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      Parameters: pipe([
+        pickId,
+        defaultsDeep({ Source: "user" }),
+        endpoint().describeClusterParameters,
+        get("Parameters"),
+        map(pick(["ParameterName", "ParameterValue"])),
+      ]),
+    }),
+    omitIfEmpty(["Parameters"]),
+  ]);
 
 const model = ({ config }) => ({
   package: "redshift",
   client: "Redshift",
-  ignoreErrorCodes: ["ClusterParameterGroupNotFound"],
+  ignoreErrorCodes: [
+    "ClusterParameterGroupNotFound",
+    "ClusterParameterGroupNotFoundFault",
+  ],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#describeClusterParameterGroups-property
   getById: {
     method: "describeClusterParameterGroups",
     getField: "ParameterGroups",
     pickId,
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#describeClusterParameterGroups-property
   getList: {
     method: "describeClusterParameterGroups",
+    filterResource: pipe([not(isDefaultParameterGroup)]),
     getParam: "ParameterGroups",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#createClusterParameterGroup-property
   create: {

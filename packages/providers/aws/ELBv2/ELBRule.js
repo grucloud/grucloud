@@ -19,6 +19,8 @@ const findId = get("live.RuleArn");
 
 const pickId = pick(["RuleArn"]);
 
+const ignoreErrorCodes = ["RuleNotFound", "RuleNotFoundException"];
+
 const { AwsClient } = require("../AwsClient");
 const { createELB, tagResource, untagResource } = require("./ELBCommon");
 
@@ -155,7 +157,7 @@ exports.ELBRule = ({ spec, config }) => {
     pickId: ({ RuleArn }) => ({ RuleArns: [RuleArn] }),
     method: "describeRules",
     getField: "Rules",
-    ignoreErrorCodes: ["RuleNotFound"],
+    ignoreErrorCodes,
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createRule-property
@@ -170,7 +172,7 @@ exports.ELBRule = ({ spec, config }) => {
   const destroy = client.destroy({
     pickId,
     method: "deleteRule",
-    ignoreErrorCodes: ["RuleNotFound"],
+    ignoreErrorCodes,
     getById,
   });
 

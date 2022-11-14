@@ -129,28 +129,34 @@ const AwsClient =
                 ])
               ),
             ]),
-            switchCase([
-              or([
-                ({ message }) =>
-                  pipe([
-                    () => ignoreErrorMessages,
-                    any((ignoreMessage) =>
-                      pipe([() => message, includes(ignoreMessage)])()
-                    ),
-                  ])(),
-                ({ name }) => pipe([() => ignoreErrorCodes, includes(name)])(),
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              switchCase([
+                or([
+                  ({ message }) =>
+                    pipe([
+                      () => ignoreErrorMessages,
+                      any((ignoreMessage) =>
+                        pipe([() => message, includes(ignoreMessage)])()
+                      ),
+                    ])(),
+                  ({ name }) =>
+                    pipe([() => ignoreErrorCodes, includes(name)])(),
+                ]),
+                () => undefined,
+                (error) => {
+                  logger.error(
+                    `getById ${type} name: ${error.name}, message: ${
+                      error.message
+                    }, error: ${util.inspect(
+                      error
+                    )}, ignoreErrorMessages: ${ignoreErrorMessages}, ignoreErrorCodes: ${ignoreErrorCodes}`
+                  );
+                  throw error;
+                },
               ]),
-              () => undefined,
-              (error) => {
-                logger.error(
-                  `getById ${type} name: ${error.name}, message: ${
-                    error.message
-                  }, error: ${util.inspect(
-                    error
-                  )}, ignoreErrorMessages: ${ignoreErrorMessages}, ignoreErrorCodes: ${ignoreErrorCodes}`
-                );
-                throw error;
-              },
             ])
           ),
           tap((result) => {
@@ -221,13 +227,14 @@ const AwsClient =
               tap((params) => {
                 assert(true);
               }),
-              map(
+              map.withIndex((item, index) =>
                 decorate({
                   lives,
+                  index,
                   endpoint,
                   getById: getById ? getById({ lives, config }) : undefined,
                   config,
-                })
+                })(item)
               ),
               transformListPost({ lives, endpoint }),
               tap((params) => {
