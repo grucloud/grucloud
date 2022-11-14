@@ -12,12 +12,15 @@ const compare = compareAws({ tagsKey, key: "Key" });
 const { SSOAdminInstance } = require("./SSOAdminInstance");
 const { SSOAdminPermissionSet } = require("./SSOAdminPermissionSet");
 
+const { createAwsService } = require("../AwsService");
+
 module.exports = pipe([
   () => [
     //
-    SSOAdminInstance({ compare }),
-    SSOAdminPermissionSet({ compare }),
+    SSOAdminInstance({}),
+    SSOAdminPermissionSet({}),
   ],
+  map(createAwsService),
   map(
     defaultsDeep({
       group: GROUP,

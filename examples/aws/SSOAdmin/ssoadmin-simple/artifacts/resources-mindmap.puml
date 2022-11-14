@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project ssoadmin-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ IdentityStore
+++++ User (1)
++++ SSOAdmin
+++++ Instance (1)
+++++ PermissionSet (1)
+@endmindmap

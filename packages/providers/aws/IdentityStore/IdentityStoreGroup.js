@@ -6,11 +6,11 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const pickId = pipe([
-  tap(({ IdentityStoreId, UserId }) => {
+  tap(({ IdentityStoreId, GroupId }) => {
     assert(IdentityStoreId);
-    assert(UserId);
+    assert(GroupId);
   }),
-  pick(["IdentityStoreId", "UserId"]),
+  pick(["IdentityStoreId", "GroupId"]),
 ]);
 
 const decorate = ({ endpoint, live }) =>
@@ -23,17 +23,31 @@ const decorate = ({ endpoint, live }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html
-exports.IdentityStoreUser = () => ({
-  type: "User",
+exports.IdentityStoreGroup = ({}) => ({
+  type: "Group",
   propertiesDefault: {},
-  omitProperties: ["UserId", "IdentityStoreId", "InstanceArn"],
-  // TODO prefix with store name ?
+  omitProperties: ["GroupId", "IdentityStoreId", "InstanceArn"],
   inferName: pipe([
-    get("properties.UserName"),
-    tap((UserName) => {
-      assert(UserName);
+    get("properties.DisplayName"),
+    tap((GroupName) => {
+      assert(GroupName);
     }),
   ]),
+  findName: pipe([
+    get("live"),
+    get("DisplayName"),
+    tap((name) => {
+      assert(name);
+    }),
+  ]),
+  findId: pipe([
+    get("live"),
+    get("GroupId"),
+    tap((id) => {
+      assert(id);
+    }),
+  ]),
+
   dependencies: {
     identityStore: {
       type: "Instance",
@@ -52,44 +66,28 @@ exports.IdentityStoreUser = () => ({
   package: "identitystore",
   client: "Identitystore",
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#describeUser-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#describeGroup-property
   getById: {
-    method: "describeUser",
+    method: "describeGroup",
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#listUsers-property
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#createUser-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#listGroups-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#createGroup-property
   create: {
-    method: "createUser",
+    method: "createGroup",
     pickCreated: ({ payload }) => pipe([identity]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#updateUser-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#updateGroup-property
   update: {
-    method: "updateUser",
+    method: "updateGroup",
     filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#deleteUser-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#deleteGroup-property
   destroy: {
-    method: "deleteUser",
+    method: "deleteGroup",
     pickId,
   },
-  // TODO prefix with store name ?
-  findName: pipe([
-    get("live"),
-    get("UserName"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  // TODO prefix with store id ?
-  findId: pipe([
-    get("live"),
-    get("UserId"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
   getByName: getByNameCore,
   getList: ({ client, endpoint, getById, config }) =>
     pipe([
@@ -102,8 +100,8 @@ exports.IdentityStoreUser = () => ({
             }),
             pick(["IdentityStoreId", "InstanceArn"]),
           ]),
-          method: "listUsers",
-          getParam: "Users",
+          method: "listGroups",
+          getParam: "Groups",
           config,
           decorate: ({ parent }) =>
             pipe([

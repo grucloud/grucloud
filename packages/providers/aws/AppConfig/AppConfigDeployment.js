@@ -37,12 +37,6 @@ const model = ({ config }) => ({
     pickId,
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#listDeployments-property
-  getList: {
-    method: "listDeployments",
-    getParam: "Items",
-    decorate,
-  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#startDeployment-property
   create: {
     method: "startDeployment",

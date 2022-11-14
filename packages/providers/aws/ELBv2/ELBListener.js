@@ -40,7 +40,7 @@ const targetGroupProperties = ({ targetGroup }) =>
             TargetGroups: [
               {
                 TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
-                Weight: 1,
+                Weight: 100,
               },
             ],
             TargetGroupStickinessConfig: {

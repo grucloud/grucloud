@@ -1,34 +1,10 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  pick,
-  eq,
-  assign,
-  map,
-  and,
-  or,
-  not,
-  filter,
-} = require("rubico");
-const {
-  defaultsDeep,
-  first,
-  pluck,
-  callProp,
-  when,
-  isEmpty,
-  unless,
-} = require("rubico/x");
+const { pipe, tap, get, pick, eq, assign, map } = require("rubico");
+const { defaultsDeep, isEmpty, unless } = require("rubico/x");
 
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
-const { buildTagsObject } = require("@grucloud/core/Common");
-const { replaceWithName } = require("@grucloud/core/Common");
-
-const { createAwsResource } = require("../AwsClient");
 
 const { Tagger } = require("./SSOAdminCommon");
 
@@ -160,13 +136,51 @@ const attachCustomerPolicy = ({ endpoint, live }) =>
     endpoint().attachCustomerManagedPolicyReferenceToPermissionSet,
   ]);
 
-const model = ({ config }) => ({
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html
+exports.SSOAdminPermissionSet = ({}) => ({
   package: "sso-admin",
   client: "SSOAdmin",
+  type: "PermissionSet",
+  propertiesDefault: {},
+  omitProperties: ["PermissionSetArn", "CreatedDate", "InstanceArn"],
+  inferName: pipe([
+    get("properties.Name"),
+    tap((Name) => {
+      assert(Name);
+    }),
+  ]),
+  dependencies: {
+    identityStore: {
+      type: "Instance",
+      group: "SSOAdmin",
+      parent: true,
+      //excludeDefaultDependencies: true,
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("InstanceArn"),
+          tap((InstanceArn) => {
+            assert(InstanceArn);
+          }),
+        ]),
+    },
+  },
+  cannotBeDeleted,
+  managedByOther: cannotBeDeleted,
+  findName: pipe([
+    get("live"),
+    get("Name"),
+    tap((name) => {
+      assert(name);
+    }),
+  ]),
+  findId: pipe([
+    get("live"),
+    get("PermissionSetArn"),
+    tap((id) => {
+      assert(id);
+    }),
+  ]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  // ignoreErrorMessages: [
-  //   "The specified cluster is inactive. Specify an active cluster and try again.",
-  // ],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#getPermissionSet-property
   getById: {
     method: "describePermissionSet",
@@ -204,8 +218,6 @@ const model = ({ config }) => ({
           ),
           tap.if(get("InlinePolicy"), createInlinePolicy({ endpoint, live })),
         ])(),
-    // shouldRetryOnExceptionCodes: [],
-    // shouldRetryOnExceptionMessages: [],
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#updatePermissionSet-property
   update: {
@@ -217,142 +229,90 @@ const model = ({ config }) => ({
     method: "deletePermissionSet",
     pickId,
   },
-});
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html
-exports.SSOAdminPermissionSet = ({ compare }) => ({
-  type: "PermissionSet",
-  propertiesDefault: {},
-  omitProperties: ["PermissionSetArn", "CreatedDate", "InstanceArn"],
-  inferName: pipe([
-    get("properties.Name"),
-    tap((Name) => {
-      assert(Name);
-    }),
-  ]),
-  dependencies: {
-    identityStore: {
-      type: "Instance",
-      group: "SSOAdmin",
-      parent: true,
-      //excludeDefaultDependencies: true,
-      dependencyId: ({ lives, config }) =>
-        pipe([
-          get("InstanceArn"),
-          tap((InstanceArn) => {
-            assert(InstanceArn);
-          }),
-        ]),
-    },
-  },
-  Client: ({ spec, config }) =>
-    createAwsResource({
-      model: model({ config }),
-      spec,
-      config,
-      cannotBeDeleted,
-      managedByOther: cannotBeDeleted,
-      findName: pipe([
-        get("live"),
-        get("Name"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findId: pipe([
-        get("live"),
-        get("PermissionSetArn"),
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
-      getByName: getByNameCore,
-      getList: ({ client, endpoint, getById, config }) =>
-        pipe([
-          () =>
-            client.getListWithParent({
-              parent: { type: "Instance", group: "SSOAdmin" },
-              pickKey: pipe([
-                pick(["InstanceArn"]),
-                tap(({ InstanceArn }) => {
-                  assert(InstanceArn);
-                }),
-              ]),
-              method: "listPermissionSets",
-              getParam: "PermissionSets",
-              config,
-              decorate: ({ parent }) =>
-                pipe([
-                  (PermissionSetArn) => ({
-                    InstanceArn: parent.InstanceArn,
-                    PermissionSetArn,
-                  }),
-                  getById({}),
-                ]),
+  getByName: getByNameCore,
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () =>
+        client.getListWithParent({
+          parent: { type: "Instance", group: "SSOAdmin" },
+          pickKey: pipe([
+            pick(["InstanceArn"]),
+            tap(({ InstanceArn }) => {
+              assert(InstanceArn);
             }),
-        ])(),
-      update:
-        ({ endpoint, getById }) =>
-        async ({ payload, live, diff }) =>
+          ]),
+          method: "listPermissionSets",
+          getParam: "PermissionSets",
+          config,
+          decorate: ({ parent }) =>
+            pipe([
+              (PermissionSetArn) => ({
+                InstanceArn: parent.InstanceArn,
+                PermissionSetArn,
+              }),
+              getById({}),
+            ]),
+        }),
+    ])(),
+  update:
+    ({ endpoint, getById }) =>
+    async ({ payload, live, diff }) =>
+      pipe([
+        () => diff.liveDiff,
+        tap.if(
+          get("added.ManagedPolicy"),
           pipe([
-            () => diff.liveDiff,
             tap((params) => {
               assert(true);
             }),
-
-            tap.if(
-              get("added.ManagedPolicy"),
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                () => live,
-                pickId,
-                endpoint().deleteInlinePolicyFromPermissionSet,
-              ])
-            ),
-            tap.if(
-              get("deleted.InlinePolicy"),
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                () => live,
-                pickId,
-                endpoint().deleteInlinePolicyFromPermissionSet,
-              ])
-            ),
-            tap.if(
-              get("added.InlinePolicy"),
-              pipe([
-                tap((params) => {
-                  assert(true);
-                }),
-                () => payload,
-                createInlinePolicy({ endpoint, live }),
-              ])
-            ),
-          ])(),
-
-      ...Tagger({
-        buildArn: buildArn(config),
-        additionalParams: pipe([pick(["InstanceArn"])]),
-      }),
-      configDefault: ({
-        name,
-        namespace,
-        properties: { Tags, ...otherProps },
-        dependencies: { identityStore },
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(identityStore);
-          }),
-          () => otherProps,
-          defaultsDeep({
-            InstanceArn: getField(identityStore, "InstanceArn"),
-            Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-          }),
-        ])(),
+            () => live,
+            pickId,
+            endpoint().deleteInlinePolicyFromPermissionSet,
+          ])
+        ),
+        tap.if(
+          get("deleted.InlinePolicy"),
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => live,
+            pickId,
+            endpoint().deleteInlinePolicyFromPermissionSet,
+          ])
+        ),
+        tap.if(
+          get("added.InlinePolicy"),
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => payload,
+            createInlinePolicy({ endpoint, live }),
+          ])
+        ),
+      ])(),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn(config),
+      additionalParams: pipe([pick(["InstanceArn"])]),
     }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { identityStore },
+    config,
+  }) =>
+    pipe([
+      tap((params) => {
+        assert(config);
+        assert(identityStore);
+      }),
+      () => otherProps,
+      defaultsDeep({
+        InstanceArn: getField(identityStore, "InstanceArn"),
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+    ])(),
 });

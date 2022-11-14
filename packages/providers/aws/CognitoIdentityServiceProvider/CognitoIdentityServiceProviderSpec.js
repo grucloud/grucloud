@@ -63,6 +63,7 @@ module.exports = pipe([
         "SchemaAttributes",
       ],
       propertiesDefault: {
+        DeletionProtection: "INACTIVE",
         AccountRecoverySetting: {
           RecoveryMechanisms: [
             {
@@ -130,6 +131,7 @@ module.exports = pipe([
           RefreshToken: "days",
         },
         EnablePropagateAdditionalUserContextData: false,
+        AuthSessionValidity: 3,
       },
       dependencies: {
         userPool: {

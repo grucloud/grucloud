@@ -9,15 +9,18 @@ const GROUP = "IdentityStore";
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
+const { createAwsService } = require("../AwsService");
+
 const { IdentityStoreUser } = require("./IdentityStoreUser");
-//const { IdentityStoreGroup } = require("./IdentityStoreGroup");
+const { IdentityStoreGroup } = require("./IdentityStoreGroup");
 
 module.exports = pipe([
   () => [
     //
-    IdentityStoreUser({ compare }),
-    //IdentityStoreGroup({ compare }),
+    IdentityStoreUser({}),
+    IdentityStoreGroup({}),
   ],
+  map(createAwsService),
   map(
     defaultsDeep({
       group: GROUP,
