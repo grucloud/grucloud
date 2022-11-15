@@ -11,6 +11,7 @@ const {
   or,
   not,
   filter,
+  fork,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -132,6 +133,7 @@ exports.MyModuleMyResource = ({ compare }) => ({
       assert(Name);
     }),
   ]),
+
   // inferName: ({
   //   properties: { certificateName },
   //   dependenciesSpec: { loadBalancer },
@@ -148,7 +150,67 @@ exports.MyModuleMyResource = ({ compare }) => ({
   //   get("dependenciesSpec"),
   //   ({ staticIp, instance }) => `${staticIp}::${instance}`,
   // ]),
-
+  findName: pipe([
+    get("live"),
+    get("Name"),
+    tap((name) => {
+      assert(name);
+    }),
+  ]),
+  // Find name from dependencies
+  // findName: ({ live, lives }) =>
+  //   pipe([
+  //     () => live,
+  //     fork({
+  //       vpc: pipe([
+  //         get("VPC.VPCId"),
+  //         tap((id) => {
+  //           assert(id);
+  //         }),
+  //         (id) =>
+  //           lives.getById({
+  //             id,
+  //             type: "Vpc",
+  //             group: "EC2",
+  //           }),
+  //         get("name"),
+  //       ]),
+  //       hostedZone: pipe([
+  //         get("HostedZoneId"),
+  //         tap((id) => {
+  //           assert(id);
+  //         }),
+  //         (id) =>
+  //           pipe([
+  //             () =>
+  //               lives.getById({
+  //                 id,
+  //                 type: "HostedZone",
+  //                 group: "Route53",
+  //                 providerName: config.providerName,
+  //               }),
+  //             get("name", id),
+  //           ])(),
+  //       ]),
+  //     }),
+  //     tap(({ vpc, hostedZone }) => {
+  //       assert(vpc);
+  //       assert(hostedZone);
+  //     }),
+  //     ({ vpc, hostedZone }) => `zone-assoc::${hostedZone}::${vpc}`,
+  //   ])(),
+  findId: pipe([
+    get("live"),
+    get("Arn"),
+    tap((id) => {
+      assert(id);
+    }),
+  ]),
+  // findId: pipe([
+  //   get("live"),
+  //   ({ resourceShareArn, associatedEntity }) =>
+  //     `${resourceShareArn}::${associatedEntity}`,
+  // ]),
   // environmentVariables: [
   //   { path: "masterUsername", suffix: "MASTER_USERNAME" },
   //   { path: "masterUserPassword", suffix: "MASTER_USER_PASSWORD" },
@@ -222,67 +284,6 @@ exports.MyModuleMyResource = ({ compare }) => ({
   // },
 
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  findName: pipe([
-    get("live"),
-    get("Name"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  // Find name from dependencies
-  // findName: ({ live, lives }) =>
-  //   pipe([
-  //     () => live,
-  //     fork({
-  //       vpc: pipe([
-  //         get("VPC.VPCId"),
-  //         tap((id) => {
-  //           assert(id);
-  //         }),
-  //         (id) =>
-  //           lives.getById({
-  //             id,
-  //             type: "Vpc",
-  //             group: "EC2",
-  //           }),
-  //         get("name"),
-  //       ]),
-  //       hostedZone: pipe([
-  //         get("HostedZoneId"),
-  //         tap((id) => {
-  //           assert(id);
-  //         }),
-  //         (id) =>
-  //           pipe([
-  //             () =>
-  //               lives.getById({
-  //                 id,
-  //                 type: "HostedZone",
-  //                 group: "Route53",
-  //                 providerName: config.providerName,
-  //               }),
-  //             get("name", id),
-  //           ])(),
-  //       ]),
-  //     }),
-  //     tap(({ vpc, hostedZone }) => {
-  //       assert(vpc);
-  //       assert(hostedZone);
-  //     }),
-  //     ({ vpc, hostedZone }) => `zone-assoc::${hostedZone}::${vpc}`,
-  //   ])(),
-  findId: pipe([
-    get("live"),
-    get("Arn"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
-  // findId: pipe([
-  //   get("live"),
-  //   ({ resourceShareArn, associatedEntity }) =>
-  //     `${resourceShareArn}::${associatedEntity}`,
-  // ]),
 
   //managedByOther,
   //cannotBeDeleted
@@ -318,6 +319,52 @@ exports.MyModuleMyResource = ({ compare }) => ({
     //decorate: ({ getById }) => pipe([getById]),
     //decorate: ({ getById }) => pipe([(name) => ({ name }), getById]),
   },
+  //  getList for child resource
+
+  // getList: ({ client, endpoint, getById, config }) =>
+  //   pipe([
+  //     () =>
+  //       client.getListWithParent({
+  //         parent: { type: "LogGroup", group: "CloudWatchLogs" },
+  //         pickKey: pipe([pick(["logGroupName"])]),
+  //         method: "describeSubscriptionFilters",
+  //         getParam: "subscriptionFilters",
+  //         config,
+  //         decorate: () =>
+  //           pipe([
+  //             tap((params) => {
+  //               assert(true);
+  //             }),
+  //           ]),
+  //       }),
+  //   ])(),
+
+  // Custom getList
+
+  // getList: ({ endpoint }) =>
+  //   pipe([
+  //     () => ["BILLING", "OPERATIONS", "SECURITY"],
+  //     map(
+  //       tryCatch(
+  //         pipe([
+  //           (AlternateContactType) => ({
+  //             AlternateContactType,
+  //           }),
+  //           endpoint().getAlternateContact,
+  //           get("AlternateContact"),
+  //         ]),
+  //         // TODO throw if not  "ResourceNotFoundException" or "AccessDeniedException",
+  //         (error) =>
+  //           pipe([
+  //             tap((params) => {
+  //               assert(error);
+  //             }),
+  //             () => undefined,
+  //           ])()
+  //       )
+  //     ),
+  //     filter(not(isEmpty)),
+  //   ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#createMyResource-property
   create: {
     // filterPayload: ({ Tags, ...other }) =>
@@ -364,6 +411,18 @@ exports.MyModuleMyResource = ({ compare }) => ({
     //       ),
     //     ])(),
   },
+  // Custom create
+  // create:
+  //   ({ endpoint, getById }) =>
+  //   ({ payload, resolvedDependencies }) =>
+  //     pipe([
+  //       () => payload,
+  //       switchCase([
+  //         get("Certificate"),
+  //         importCertificate({ endpoint }),
+  //         requestCertificate({ endpoint, getById }),
+  //       ]),
+  //     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#updateMyResource-property
   update: {
     method: "updateMyResource",
@@ -375,6 +434,29 @@ exports.MyModuleMyResource = ({ compare }) => ({
         // }),
       ])(),
   },
+  // Custom update
+  // update:
+  //   ({ endpoint, getById }) =>
+  //   async ({ payload, live, diff }) =>
+  //     pipe([
+  //       () => diff,
+  //       tap.if(
+  //         or([get("liveDiff.deleted.resourceTypes")]),
+  //         pipe([
+  //           () => payload.resourceTypes,
+  //           differenceWith(isDeepEqual, resourceTypesAll),
+  //           (resourceTypes) => ({
+  //             accountIds: payload.accountIds,
+  //             resourceTypes,
+  //           }),
+  //           endpoint().disable,
+  //         ])
+  //       ),
+  //       tap.if(
+  //         or([get("liveDiff.added.resourceTypes")]),
+  //         pipe([() => payload, endpoint().enable])
+  //       ),
+  //     ])(),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html#deleteMyResource-property
   destroy: {
     // preDestroy: ({ endpoint, live }) =>
@@ -430,90 +512,6 @@ exports.MyModuleMyResource = ({ compare }) => ({
   //     first,
   //     unless(isEmpty, decorate({ endpoint })),
   //   ]),
-
-  //  getList for child resource
-
-  // getList: ({ client, endpoint, getById, config }) =>
-  //   pipe([
-  //     () =>
-  //       client.getListWithParent({
-  //         parent: { type: "LogGroup", group: "CloudWatchLogs" },
-  //         pickKey: pipe([pick(["logGroupName"])]),
-  //         method: "describeSubscriptionFilters",
-  //         getParam: "subscriptionFilters",
-  //         config,
-  //         decorate: () =>
-  //           pipe([
-  //             tap((params) => {
-  //               assert(true);
-  //             }),
-  //           ]),
-  //       }),
-  //   ])(),
-
-  // Custom getList
-
-  // getList: ({ endpoint }) =>
-  //   pipe([
-  //     () => ["BILLING", "OPERATIONS", "SECURITY"],
-  //     map(
-  //       tryCatch(
-  //         pipe([
-  //           (AlternateContactType) => ({
-  //             AlternateContactType,
-  //           }),
-  //           endpoint().getAlternateContact,
-  //           get("AlternateContact"),
-  //         ]),
-  //         // TODO throw if not  "ResourceNotFoundException" or "AccessDeniedException",
-  //         (error) =>
-  //           pipe([
-  //             tap((params) => {
-  //               assert(error);
-  //             }),
-  //             () => undefined,
-  //           ])()
-  //       )
-  //     ),
-  //     filter(not(isEmpty)),
-  //   ]),
-
-  // Custom create
-  // create:
-  //   ({ endpoint, getById }) =>
-  //   ({ payload, resolvedDependencies }) =>
-  //     pipe([
-  //       () => payload,
-  //       switchCase([
-  //         get("Certificate"),
-  //         importCertificate({ endpoint }),
-  //         requestCertificate({ endpoint, getById }),
-  //       ]),
-  //     ])(),
-
-  // Custom update
-  // update:
-  //   ({ endpoint, getById }) =>
-  //   async ({ payload, live, diff }) =>
-  //     pipe([
-  //       () => diff,
-  //       tap.if(
-  //         or([get("liveDiff.deleted.resourceTypes")]),
-  //         pipe([
-  //           () => payload.resourceTypes,
-  //           differenceWith(isDeepEqual, resourceTypesAll),
-  //           (resourceTypes) => ({
-  //             accountIds: payload.accountIds,
-  //             resourceTypes,
-  //           }),
-  //           endpoint().disable,
-  //         ])
-  //       ),
-  //       tap.if(
-  //         or([get("liveDiff.added.resourceTypes")]),
-  //         pipe([() => payload, endpoint().enable])
-  //       ),
-  //     ])(),
 
   // filterLive: ({ lives, providerConfig }) =>
   //   pipe([

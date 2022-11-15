@@ -306,6 +306,9 @@ const AwsClient =
                   tryCatch(
                     pipe([
                       (param) => endpoint()[method](param),
+                      tap((params) => {
+                        assert(true);
+                      }),
                       when(() => getParam, get(getParam)),
                       tap((params) => {
                         assert(true);
@@ -925,9 +928,9 @@ exports.createAwsResource = ({
               ]),
               update: switchCase([
                 () => isFunction(update),
-                ({ getById }) => update({ endpoint, getById }),
+                ({ getById }) => update({ endpoint, getById, pickId }),
                 () => isFunction(model.update),
-                ({ getById }) => model.update({ endpoint, getById }),
+                ({ getById }) => model.update({ endpoint, getById, pickId }),
                 () => isObject(model.update),
                 ({ getById, pickId }) =>
                   client.update({

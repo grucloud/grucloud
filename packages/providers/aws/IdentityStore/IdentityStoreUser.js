@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, pick } = require("rubico");
+const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -66,8 +66,36 @@ exports.IdentityStoreUser = () => ({
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#updateUser-property
   update: {
+    pickId,
     method: "updateUser",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
+    filterParams: ({ pickId, payload, diff, live }) =>
+      pipe([
+        tap((params) => {
+          assert(live);
+          assert(pickId);
+          assert(diff);
+        }),
+
+        () => live,
+        pickId,
+        assign({
+          Operations: pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            () => diff,
+            get("liveDiff.updated"),
+            tap((params) => {
+              assert(true);
+            }),
+
+            () => [],
+          ]),
+        }),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#deleteUser-property
   destroy: {
@@ -91,17 +119,13 @@ exports.IdentityStoreUser = () => ({
     }),
   ]),
   getByName: getByNameCore,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#listUsers-property
   getList: ({ client, endpoint, getById, config }) =>
     pipe([
       () =>
         client.getListWithParent({
           parent: { type: "Instance", group: "SSOAdmin" },
-          pickKey: pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick(["IdentityStoreId", "InstanceArn"]),
-          ]),
+          pickKey: pipe([pick(["IdentityStoreId"])]),
           method: "listUsers",
           getParam: "Users",
           config,

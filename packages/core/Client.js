@@ -442,6 +442,7 @@ const createClient = ({
                   client.getList({
                     options,
                     lives,
+                    config,
                     deep: true,
                     params,
                     // resources: provider.getResourcesByType(client.spec),

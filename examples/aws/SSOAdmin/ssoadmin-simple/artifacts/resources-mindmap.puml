@@ -3,9 +3,14 @@ title Resources for project ssoadmin-simple
 skinparam monochrome true
 + Infra
 ++ aws
++++ IAM
+++++ Policy (2)
 +++ IdentityStore
 ++++ User (1)
++++ Organisations
+++++ Account (1)
 +++ SSOAdmin
+++++ AccountAssignment (1)
 ++++ Instance (1)
 ++++ PermissionSet (1)
 @endmindmap

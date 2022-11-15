@@ -27,6 +27,7 @@
 - AWS::Shield
 - SESv2 https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html
 - AWS::XRay
+- aws_servicequotas_service_quota
 
 - SNS dep with firehose
 - EC2 instance, sort groups

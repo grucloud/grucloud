@@ -1,6 +1,13 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, map } = require("rubico");
-const { defaultsDeep, isEmpty, unless } = require("rubico/x");
+const { pipe, tap, get, pick, eq, assign, map, or, filter } = require("rubico");
+const {
+  defaultsDeep,
+  isEmpty,
+  unless,
+  keys,
+  isDeepEqual,
+} = require("rubico/x");
+const Diff = require("diff");
 
 const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -42,14 +49,13 @@ const assignTags = ({ buildArn, endpoint, InstanceArn }) =>
 
 const decorate = ({ endpoint, live }) =>
   pipe([
-    tap((params) => {
-      assert(endpoint);
-    }),
     defaultsDeep({ InstanceArn: live.InstanceArn }),
-    tap((params) => {
-      assert(true);
-    }),
     assign({
+      AccountIds: pipe([
+        pickId,
+        endpoint().listAccountsForProvisionedPermissionSet,
+        get("AccountIds"),
+      ]),
       ManagedPolicies: pipe([
         pickId,
         endpoint().listManagedPoliciesInPermissionSet,
@@ -64,13 +70,7 @@ const decorate = ({ endpoint, live }) =>
         pickId,
         endpoint().getInlinePolicyForPermissionSet,
         get("InlinePolicy"),
-        tap((params) => {
-          assert(true);
-        }),
         unless(isEmpty, JSON.parse),
-        tap((params) => {
-          assert(true);
-        }),
       ]),
     }),
     omitIfEmpty(["ManagedPolicies", "CustomerManagedPolicies", "InlinePolicy"]),
@@ -88,36 +88,30 @@ const cannotBeDeleted = pipe([
 
 const createInlinePolicy = ({ endpoint, live }) =>
   pipe([
-    tap((params) => {
-      assert(live);
-    }),
     get("InlinePolicy"),
     JSON.stringify,
     (InlinePolicy) => ({ InlinePolicy }),
     defaultsDeep(pickId(live)),
-    tap((params) => {
-      assert(true);
-    }),
     endpoint().putInlinePolicyToPermissionSet,
   ]);
 
 const attachManagedPolicy = ({ endpoint, live }) =>
   pipe([
-    tap((params) => {
-      assert(live);
-    }),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#attachManagedPolicyToPermissionSet-property
-    tap((params) => {
-      assert(true);
-    }),
     ({ Arn }) => ({
       ManagedPolicyArn: Arn,
     }),
     defaultsDeep(pickId(live)),
-    tap((params) => {
-      assert(true);
-    }),
     endpoint().attachManagedPolicyToPermissionSet,
+  ]);
+
+const detachManagedPolicy = ({ endpoint, live }) =>
+  pipe([
+    ({ Arn }) => ({
+      ManagedPolicyArn: Arn,
+    }),
+    defaultsDeep(pickId(live)),
+    endpoint().detachManagedPolicyFromPermissionSet,
   ]);
 
 const attachCustomerPolicy = ({ endpoint, live }) =>
@@ -130,11 +124,27 @@ const attachCustomerPolicy = ({ endpoint, live }) =>
       CustomerManagedPolicyReference: { Name, Path },
     }),
     defaultsDeep(pickId(live)),
-    tap((params) => {
-      assert(true);
-    }),
     endpoint().attachCustomerManagedPolicyReferenceToPermissionSet,
   ]);
+
+const detachCustomerPolicy = ({ endpoint, live }) =>
+  pipe([
+    tap(({ Name, Path }) => {
+      assert(Path);
+      assert(Name);
+    }),
+    ({ Name, Path }) => ({
+      CustomerManagedPolicyReference: { Name, Path },
+    }),
+    defaultsDeep(pickId(live)),
+    endpoint().detachCustomerManagedPolicyReferenceFromPermissionSet,
+  ]);
+
+const diffArrayOptions = {
+  comparator: (left, right) => {
+    return isDeepEqual(left, right);
+  },
+};
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html
 exports.SSOAdminPermissionSet = ({}) => ({
@@ -142,7 +152,12 @@ exports.SSOAdminPermissionSet = ({}) => ({
   client: "SSOAdmin",
   type: "PermissionSet",
   propertiesDefault: {},
-  omitProperties: ["PermissionSetArn", "CreatedDate", "InstanceArn"],
+  omitProperties: [
+    "PermissionSetArn",
+    "CreatedDate",
+    "InstanceArn",
+    "AccountIds",
+  ],
   inferName: pipe([
     get("properties.Name"),
     tap((Name) => {
@@ -161,6 +176,31 @@ exports.SSOAdminPermissionSet = ({}) => ({
           tap((InstanceArn) => {
             assert(InstanceArn);
           }),
+        ]),
+    },
+    iamPolicies: {
+      type: "Policy",
+      group: "IAM",
+      list: true,
+      dependencyIds: ({ lives, config }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          get("CustomerManagedPolicies"),
+          map(
+            pipe([
+              get("Name"),
+              (name) =>
+                lives.getByName({
+                  name,
+                  type: "Policy",
+                  group: "IAM",
+                  providerName: config.providerName,
+                }),
+              get("id"),
+            ])
+          ),
         ]),
     },
   },
@@ -206,26 +246,51 @@ exports.SSOAdminPermissionSet = ({}) => ({
             get("ManagedPolicies"),
             pipe([
               get("ManagedPolicies"),
-              map(attachManagedPolicy({ endpoint, live })),
+              map.series(attachManagedPolicy({ endpoint, live })),
             ])
           ),
           tap.if(
             get("CustomerManagedPolicies"),
             pipe([
               get("CustomerManagedPolicies"),
-              map(attachCustomerPolicy({ endpoint, live })),
+              map.series(attachCustomerPolicy({ endpoint, live })),
             ])
           ),
           tap.if(get("InlinePolicy"), createInlinePolicy({ endpoint, live })),
         ])(),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#updatePermissionSet-property
-  update: {
-    method: "updatePermissionSet",
-    filterParams: ({ pickId, payload, diff, live }) => pipe([() => payload])(),
-  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#deletePermissionSet-property
   destroy: {
+    preDestroy: ({ endpoint, live }) =>
+      pipe([
+        () => live,
+        get("AccountIds"),
+        map(
+          pipe([
+            (AccountId) => ({
+              AccountId,
+              PermissionSetArn: live.PermissionSetArn,
+              InstanceArn: live.InstanceArn,
+            }),
+            endpoint().listAccountAssignments,
+            get("AccountAssignments"),
+            map(
+              pipe([
+                ({ AccountId, ...other }) => ({
+                  TargetId: AccountId,
+                  ...other,
+                }),
+                defaultsDeep({
+                  PermissionSetArn: live.PermissionSetArn,
+                  InstanceArn: live.InstanceArn,
+                  TargetType: "AWS_ACCOUNT",
+                }),
+                endpoint().deleteAccountAssignment,
+              ])
+            ),
+          ])
+        ),
+      ])(),
     method: "deletePermissionSet",
     pickId,
   },
@@ -254,42 +319,97 @@ exports.SSOAdminPermissionSet = ({}) => ({
             ]),
         }),
     ])(),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#updatePermissionSet-property
   update:
     ({ endpoint, getById }) =>
     async ({ payload, live, diff }) =>
       pipe([
-        () => diff.liveDiff,
+        tap((params) => {
+          assert(true);
+        }),
+        () => diff,
         tap.if(
-          get("added.ManagedPolicy"),
+          or([
+            get("liveDiff.updated.ManagedPolicies"),
+            get("targetDiff.added.ManagedPolicies"),
+            get("liveDiff.added.ManagedPolicies"),
+          ]),
           pipe([
-            tap((params) => {
-              assert(true);
-            }),
+            () =>
+              Diff.diffArrays(
+                live.ManagedPolicies || [],
+                payload.ManagedPolicies || [],
+                diffArrayOptions
+              ),
+            (arrayDiff) =>
+              pipe([
+                () => arrayDiff,
+                filter(get("removed")),
+                map(
+                  pipe([
+                    get("value"),
+                    map.series(detachManagedPolicy({ endpoint, live })),
+                  ])
+                ),
+                () => arrayDiff,
+                filter(get("added")),
+                map(
+                  pipe([
+                    get("value"),
+                    map.series(attachManagedPolicy({ endpoint, live })),
+                  ])
+                ),
+              ])(),
+          ])
+        ),
+        tap.if(
+          or([
+            get("liveDiff.updated.CustomerManagedPolicies"),
+            get("targetDiff.added.CustomerManagedPolicies"),
+            get("liveDiff.added.CustomerManagedPolicies"),
+          ]),
+          pipe([
+            () =>
+              Diff.diffArrays(
+                live.CustomerManagedPolicies || [],
+                payload.CustomerManagedPolicies || [],
+                diffArrayOptions
+              ),
+            (arrayDiff) =>
+              pipe([
+                () => arrayDiff,
+                filter(get("removed")),
+                map(
+                  pipe([
+                    get("value"),
+                    map.series(detachCustomerPolicy({ endpoint, live })),
+                  ])
+                ),
+                () => arrayDiff,
+                filter(get("added")),
+                map(
+                  pipe([
+                    get("value"),
+                    map.series(attachCustomerPolicy({ endpoint, live })),
+                  ])
+                ),
+              ])(),
+          ])
+        ),
+        tap.if(
+          get("targetDiff.added.InlinePolicy"),
+          pipe([
             () => live,
             pickId,
             endpoint().deleteInlinePolicyFromPermissionSet,
           ])
         ),
         tap.if(
-          get("deleted.InlinePolicy"),
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            () => live,
-            pickId,
-            endpoint().deleteInlinePolicyFromPermissionSet,
-          ])
-        ),
-        tap.if(
-          get("added.InlinePolicy"),
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            () => payload,
-            createInlinePolicy({ endpoint, live }),
-          ])
+          or([
+            get("liveDiff.added.InlinePolicy"),
+            get("liveDiff.updated.InlinePolicy"),
+          ]),
+          pipe([() => payload, createInlinePolicy({ endpoint, live })])
         ),
       ])(),
   tagger: ({ config }) =>
