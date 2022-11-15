@@ -4,6 +4,37 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "GroupMembership",
+    group: "IdentityStore",
+    dependencies: ({}) => ({
+      identityStore: "default",
+      group: "my-group",
+      user: "gctest",
+    }),
+  },
+  {
+    type: "User",
+    group: "IdentityStore",
+    properties: ({}) => ({
+      DisplayName: "test grucloud",
+      Emails: [
+        {
+          Primary: true,
+          Type: "work",
+          Value: "test@grucloud.com",
+        },
+      ],
+      Name: {
+        FamilyName: "grucloud",
+        GivenName: "test",
+      },
+      UserName: "gctest",
+    }),
+    dependencies: ({}) => ({
+      identityStore: "default",
+    }),
+  },
+  {
     type: "Group",
     group: "IdentityStore",
     properties: ({}) => ({

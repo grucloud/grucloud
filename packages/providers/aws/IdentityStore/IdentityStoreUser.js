@@ -25,6 +25,8 @@ const decorate = ({ endpoint, live }) =>
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html
 exports.IdentityStoreUser = () => ({
   type: "User",
+  package: "identitystore",
+  client: "Identitystore",
   propertiesDefault: {},
   omitProperties: ["UserId", "IdentityStoreId", "InstanceArn"],
   // TODO prefix with store name ?
@@ -49,8 +51,7 @@ exports.IdentityStoreUser = () => ({
         ]),
     },
   },
-  package: "identitystore",
-  client: "Identitystore",
+
   ignoreErrorCodes: ["ResourceNotFoundException"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#describeUser-property
   getById: {

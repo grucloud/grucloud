@@ -11,12 +11,15 @@ const compare = compareAws({ tagsKey, key: "Key" });
 
 const { createAwsService } = require("../AwsService");
 
-const { IdentityStoreUser } = require("./IdentityStoreUser");
+const {
+  IdentityStoreGroupMembership,
+} = require("./IdentityStoreGroupMembership");
 const { IdentityStoreGroup } = require("./IdentityStoreGroup");
+const { IdentityStoreUser } = require("./IdentityStoreUser");
 
 module.exports = pipe([
   () => [
-    //
+    IdentityStoreGroupMembership({}),
     IdentityStoreUser({}),
     IdentityStoreGroup({}),
   ],

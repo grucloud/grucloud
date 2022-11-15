@@ -15,7 +15,7 @@ describe("SSOAdmin", async function () {
       }),
       awsResourceTest,
     ])());
-  it.only("PermissionSet", () =>
+  it("PermissionSet", () =>
     pipe([
       () => ({
         groupType: "SSOAdmin::PermissionSet",

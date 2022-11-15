@@ -158,7 +158,7 @@ exports.MyModuleMyResource = ({ compare }) => ({
     }),
   ]),
   // Find name from dependencies
-  // findName: ({ live, lives }) =>
+  // findName: ({ live, lives, config }) =>
   //   pipe([
   //     () => live,
   //     fork({
