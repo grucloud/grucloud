@@ -310,7 +310,11 @@ exports.ResourceMaker = ({
                     resource: resource.toJSON(),
                     target: resource.spec.displayResource()(target),
                     live: resource.spec.displayResource()(live),
-                    id: getClient().findId({ live, lives: provider.lives }),
+                    id: getClient().findId({
+                      live,
+                      lives: provider.lives,
+                      config: provider.getConfig(),
+                    }),
                     diff,
                     providerName: resource.toJSON().providerName,
                   },
@@ -766,7 +770,11 @@ exports.ResourceMaker = ({
                     live,
                     lives: provider.lives,
                     //TODO do we need that id ?
-                    id: client.findId({ live, lives: provider.lives }),
+                    id: client.findId({
+                      live,
+                      lives: provider.lives,
+                      config: provider.getConfig(),
+                    }),
                     programOptions,
                     compare: spec.compare,
                   }),

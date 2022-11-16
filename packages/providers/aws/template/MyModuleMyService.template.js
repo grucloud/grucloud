@@ -46,6 +46,13 @@ const buildArn = () =>
     }),
   ]);
 
+// const buildArn =
+// ({ config }) =>
+// ({ ConfigurationSetName }) =>
+//   `arn:aws:ses:${
+//     config.region
+//   }:${config.accountId()}:/configurationset/${ConfigurationSetName}`;
+
 //////////
 // pickId
 //////////
@@ -537,7 +544,7 @@ exports.MyModuleMyResource = ({ compare }) => ({
   //   ]),
   tagger: ({ config }) =>
     Tagger({
-      buildArn: buildArn(config),
+      buildArn: buildArn({ config }),
       additionalParams: pipe([pick(["InstanceArn"])]),
     }),
   configDefault: ({
@@ -545,6 +552,7 @@ exports.MyModuleMyResource = ({ compare }) => ({
     namespace,
     properties: { Tags, ...otherProps },
     dependencies: {},
+    config,
   }) =>
     pipe([
       () => otherProps,

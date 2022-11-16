@@ -29,7 +29,6 @@ exports.createTagger =
           tap((params) => {
             assert(true);
           }),
-
           endpoint()[methodTagResource],
         ]),
     untagResource:
@@ -45,6 +44,10 @@ exports.createTagger =
             [ResourceArn]: buildArn(live),
             [UnTagsKey]: TagKeys,
           }),
+          when(
+            () => additionalParams,
+            (input) => ({ ...input, ...additionalParams(live) })
+          ),
           endpoint()[methodUnTagResource],
         ]),
   });

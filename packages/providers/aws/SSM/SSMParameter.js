@@ -4,19 +4,16 @@ const { defaultsDeep, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource, assignTags } = require("./SSMCommon");
+const { assignTags, Tagger } = require("./SSMCommon");
 
 const pickId = pipe([pick(["Name"])]);
 
+const buildArn = () => get("Name");
+
 const decorate =
-  ({ endpoint, lives }) =>
+  ({ endpoint }) =>
   (live) =>
     pipe([
-      tap((params) => {
-        assert(lives);
-      }),
-
       () => live,
       pick(["Name"]),
       defaultsDeep({ WithDecryption: true }),
@@ -26,9 +23,39 @@ const decorate =
       assignTags({ endpoint, ResourceType: "Parameter" }),
     ])();
 
-const model = {
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html
+exports.SSMParameter = () => ({
+  type: "Parameter",
   package: "ssm",
   client: "SSM",
+  findName: get("live.Name"),
+  findId: pipe([
+    get("live.ARN"),
+    tap((ARN) => {
+      assert(ARN);
+    }),
+  ]),
+  inferName: get("properties.Name"),
+  ignoreResource: () =>
+    pipe([get("name"), callProp("startsWith", "/cdk-bootstrap/")]),
+  dependencies: {
+    kmsKey: {
+      type: "Key",
+      group: "KMS",
+      dependencyId: ({ lives, config }) => get("KeyId"),
+    },
+  },
+  omitProperties: [
+    "Version",
+    "LastModifiedDate",
+    "ARN",
+    "Tier",
+    "LastModifiedUser",
+    "KeyId",
+    "Policies",
+  ],
+  filterLive: () =>
+    pick(["Name", "Type", "Value", "Description", "Tier", "DataType"]),
   ignoreErrorCodes: ["ParameterNotFound"],
   getById: {
     method: "describeParameters",
@@ -54,60 +81,35 @@ const model = {
     method: "putParameter",
     extraParam: { Overwrite: true },
     filterParams: ({ pickId, payload, live }) =>
-      pipe([
-        () => payload,
-        tap((params) => {
-          assert(pickId);
-        }),
-        omit(["Tags"]),
+      pipe([() => payload, omit(["Tags"])])(),
+  },
+  destroy: { method: "deleteParameter", pickId },
+  getByName:
+    ({ getById }) =>
+    ({ name, lives, config }) =>
+      pipe([() => ({ Name: name }), getById({ lives, config })])(),
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn(config),
+      additionalParams: pipe([
         tap((params) => {
           assert(true);
         }),
-      ])(),
-  },
-  destroy: { method: "deleteParameter", pickId },
-};
-
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html
-exports.SSMParameter = ({ spec, config }) =>
-  createAwsResource({
-    model,
-    spec,
+        () => ({ ResourceType: "Parameter" }),
+      ]),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { kmsKey },
     config,
-    findName: get("live.Name"),
-    findId: pipe([
-      get("live.ARN"),
-      tap((ARN) => {
-        assert(ARN);
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
       }),
-    ]),
-    getByName:
-      ({ getById }) =>
-      ({ name, lives, config }) =>
-        pipe([
-          () => ({ Name: name }),
-          tap((params) => {
-            assert(getById);
-          }),
-          getById({ lives, config }),
-          tap((params) => {
-            assert(true);
-          }),
-        ])(),
-    tagResource: tagResource({ ResourceType: "Parameter" }),
-    untagResource: untagResource({ ResourceType: "Parameter" }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { kmsKey },
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Name: name,
-          Tags: buildTags({ name, config, namespace, UserTags: Tags }),
-        }),
-        when(() => kmsKey, defaultsDeep({ KeyId: getField(kmsKey, "Arn") })),
-      ])(),
-  });
+      when(() => kmsKey, defaultsDeep({ KeyId: getField(kmsKey, "Arn") })),
+    ])(),
+});
