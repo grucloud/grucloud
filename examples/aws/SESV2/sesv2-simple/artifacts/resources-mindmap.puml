@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project sesv2-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ SESV2
+++++ ConfigurationSet (1)
+++++ EmailIdentity (1)
+@endmindmap

@@ -4,13 +4,13 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("SESV2", async function () {
-  it.skip("ConfigurationSet", () =>
+  it("ConfigurationSet", () =>
     pipe([
       () => ({
-        groupType: "SESV2::XXX",
+        groupType: "SESV2::ConfigurationSet",
         livesNotFound: ({ config }) => [
           {
-            Arn: ``,
+            ConfigurationSetName: `c123`,
           },
         ],
       }),
@@ -40,13 +40,13 @@ describe("SESV2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("EmailIdentity", () =>
+  it("EmailIdentity", () =>
     pipe([
       () => ({
         groupType: "SESV2::EmailIdentity",
         livesNotFound: ({ config }) => [
           {
-            Arn: ``,
+            EmailIdentity: `pipo`,
           },
         ],
       }),

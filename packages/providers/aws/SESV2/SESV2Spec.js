@@ -3,29 +3,31 @@ const { tap, pipe, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
+const { createAwsService } = require("../AwsService");
 
 const GROUP = "SESV2";
 
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
-//const { ReportDefinition } = require("./CURReportDefinition");
+const { SESV2ConfigurationSet } = require("./SESV2ConfigurationSet");
+
+const { SESV2EmailIdentity } = require("./SESV2EmailIdentity");
 
 module.exports = pipe([
   () => [
-    // {
-    //   type: "ReportDefinition",
-    //   Client: CURReportDefinition,
-    //   propertiesDefault: {},
-    //   omitProperties: [],
-    //   inferName: get("properties.ReportName"),
-    // },
+    //
+    SESV2ConfigurationSet({}),
+    SESV2EmailIdentity({}),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-      tagsKey,
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+        tagsKey,
+      }),
+    ])
   ),
 ]);
