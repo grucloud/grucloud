@@ -28,6 +28,7 @@ const GROUPS = [
   ["CloudTrail", "cloudtrail"],
   ["CloudWatch", "cloudwatch"],
   ["CloudWatchEvent", "cloudwatch"],
+  ["CognitoIdentity", "cognito-identity"],
   ["CognitoIdentityServiceProvider", "cognito-idp"],
   ["CUR", "cur"],
   ["DynamoDB", "dynamodb"],

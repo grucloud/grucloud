@@ -88,7 +88,7 @@ exports.createResources = () => [
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
     properties: ({}) => ({
-      Name: "UserPool-3Fx2HozhHSsp",
+      PoolName: "UserPool-3Fx2HozhHSsp",
       Policies: {
         PasswordPolicy: {
           RequireLowercase: false,

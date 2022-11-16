@@ -1028,9 +1028,6 @@ const replaceArnWithAccountAndRegion =
           ),
         ]),
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           () => Id,
           replaceWithName({
             path: "id",
@@ -1039,9 +1036,6 @@ const replaceArnWithAccountAndRegion =
           }),
         ]),
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           () => Id,
           callProp(
             "replace",

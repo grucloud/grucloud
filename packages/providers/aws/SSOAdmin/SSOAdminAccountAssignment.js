@@ -253,6 +253,9 @@ exports.SSOAdminAccountAssignment = ({ compare }) => ({
     ({ endpoint }) =>
     ({ lives, config }) =>
       pipe([
+        tap((params) => {
+          assert(config);
+        }),
         () =>
           lives.getByType({
             providerName: config.providerName,
@@ -291,13 +294,6 @@ exports.SSOAdminAccountAssignment = ({ compare }) => ({
   create: {
     method: "createAccountAssignment",
     pickCreated: ({ payload }) => pipe([() => payload]),
-    // isInstanceUp: () =>
-    //   pipe([
-    //     tap((params) => {
-    //       assert(true);
-    //     }),
-    //     () => true,
-    //   ]),
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#updateAccountAssignment-property
   update: {

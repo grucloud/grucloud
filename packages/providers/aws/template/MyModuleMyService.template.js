@@ -74,6 +74,29 @@ const pickId = pipe([
 //////////
 // decorate
 //////////
+
+// const assignArn = ({ config }) =>
+//   pipe([
+//     assign({
+//       Arn: pipe([
+//         ({ IdentityPoolId }) =>
+//           `arn:aws:cognito-identity:${
+//             config.region
+//           }:${config.accountId()}:identitypool/${IdentityPoolId}`,
+//       ]),
+//     }),
+//   ]);
+
+// const liveToTags = ({ IdentityPoolTags, ...other }) => ({
+//   ...other,
+//   Tags: IdentityPoolTags,
+// });
+
+// const tagsToPayload = ({ Tags, ...other }) => ({
+//   ...other,
+//   IdentityPoolTags: Tags,
+// });
+
 const decorate = ({ endpoint }) =>
   pipe([
     tap((params) => {
@@ -82,6 +105,8 @@ const decorate = ({ endpoint }) =>
     //({ name, ...other }) => ({ loadBalancerName: name, ...other }),
     //assign({ MyJSON: pipe([get("MyJSON", JSON.parse)]) }),
     //assignTags({ endpoint }),
+    //liveToTags
+    //assignArn({ config }),
   ]);
 ////////////////////
 // managedByOther
@@ -376,7 +401,7 @@ exports.MyModuleMyResource = ({ compare }) => ({
   create: {
     // filterPayload: ({ Tags, ...other }) =>
     //   pipe([() => ({ ...other, BackupVaultTags: Tags })])(),
-
+    // filterPayload: pipe([tagsToPayload]),
     //filterPayload: pipe([omit(SELECTORS)]),
 
     method: "createMyResource",
@@ -545,7 +570,7 @@ exports.MyModuleMyResource = ({ compare }) => ({
   tagger: ({ config }) =>
     Tagger({
       buildArn: buildArn({ config }),
-      additionalParams: pipe([pick(["InstanceArn"])]),
+      //additionalParams: pipe([pick(["InstanceArn"])]),
     }),
   configDefault: ({
     name,

@@ -15,14 +15,14 @@ exports.createResources = () => [
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
     properties: ({}) => ({
-      Name: "my-user-pool",
+      PoolName: "my-user-pool",
       Policies: {
         PasswordPolicy: {
           MinimumLength: 10,
           TemporaryPasswordValidityDays: 10,
         },
       },
-      UserPoolTags: {
+      Tags: {
         mykey: "myvalue",
       },
     }),
