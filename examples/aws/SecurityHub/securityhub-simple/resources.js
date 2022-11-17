@@ -6,11 +6,11 @@ exports.createResources = () => [
   {
     type: "Account",
     group: "Organisations",
-    name: "test account",
+    name: "frederic heem",
     readOnly: true,
     properties: ({}) => ({
-      Email: "test@grucloud.com",
-      Name: "test account",
+      Email: "frederic.heem@gmail.com",
+      Name: "frederic heem",
     }),
   },
   { type: "Account", group: "SecurityHub" },
@@ -30,7 +30,18 @@ exports.createResources = () => [
     type: "OrganizationAdminAccount",
     group: "SecurityHub",
     dependencies: ({}) => ({
-      accountDelegated: "test account",
+      accountDelegated: "frederic heem",
+    }),
+  },
+  {
+    type: "OrganizationConfiguration",
+    group: "SecurityHub",
+    properties: ({}) => ({
+      AutoEnable: false,
+      AutoEnableStandards: "NONE",
+    }),
+    dependencies: ({}) => ({
+      securityHubAccount: "default",
     }),
   },
   {
