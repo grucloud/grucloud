@@ -13,6 +13,16 @@ exports.createResources = () => [
       Name: "frederic heem",
     }),
   },
+  {
+    type: "Account",
+    group: "Organisations",
+    name: "test account",
+    readOnly: true,
+    properties: ({}) => ({
+      Email: "test@grucloud.com",
+      Name: "test account",
+    }),
+  },
   { type: "Account", group: "SecurityHub" },
   {
     type: "FindingAggregator",
@@ -24,6 +34,13 @@ exports.createResources = () => [
     }),
     dependencies: ({}) => ({
       securityHubAccount: "default",
+    }),
+  },
+  {
+    type: "Member",
+    group: "SecurityHub",
+    dependencies: ({}) => ({
+      account: "test account",
     }),
   },
   {

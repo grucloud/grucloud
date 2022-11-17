@@ -3,7 +3,13 @@ title Resources for project securityhub-simple
 skinparam monochrome true
 + Infra
 ++ aws
++++ Organisations
+++++ Account (2)
 +++ SecurityHub
 ++++ Account (1)
+++++ FindingAggregator (1)
+++++ Member (1)
+++++ OrganizationAdminAccount (1)
+++++ OrganizationConfiguration (1)
 ++++ StandardsSubscription (2)
 @endmindmap

@@ -64,13 +64,7 @@ exports.SecurityHubOrganizationAdminAccount = () => ({
       type: "Account",
       group: "Organisations",
       parent: true,
-      dependencyId: ({ lives, config }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          get("AdminAccountId"),
-        ]),
+      dependencyId: ({ lives, config }) => pipe([get("AdminAccountId")]),
     },
   },
   ignoreErrorCodes: ["ResourceNotFoundException"],

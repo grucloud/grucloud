@@ -177,7 +177,11 @@ const AwsClient =
         filterResource = () => true,
         extraParam = {},
         enhanceParams = () => identity,
-        ignoreErrorCodes = ["AccessDeniedException", "InvalidAccessException"],
+        ignoreErrorCodes = [
+          "AccessDeniedException",
+          "InvalidAccessException",
+          "BadRequestException",
+        ],
         getById,
       }) =>
       ({ lives, params = {} } = {}) =>

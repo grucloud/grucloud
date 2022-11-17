@@ -23,6 +23,7 @@ const cannotBeDeleted = pipe([
   pick(keys(configurationDefault)),
   (value) => isDeepEqual(value, configurationDefault),
 ]);
+const ignoreErrorMessages = ["is not an administrator for this organization"];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html
 exports.SecurityHubOrganizationConfiguration = () => ({
@@ -37,6 +38,7 @@ exports.SecurityHubOrganizationConfiguration = () => ({
   findName: pipe([() => "default"]),
   findId: pipe([() => "default"]),
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorMessages,
   dependencies: {
     securityHubAccount: {
       type: "Account",
@@ -49,11 +51,15 @@ exports.SecurityHubOrganizationConfiguration = () => ({
     method: "describeOrganizationConfiguration",
     pickId,
     decorate,
+    ignoreErrorMessages,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#describeOrganizationConfiguration-property
   getList: {
     method: "describeOrganizationConfiguration",
     decorate,
+  },
+  create: {
+    method: "updateOrganizationConfiguration",
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#updateOrganizationConfiguration-property
   update: {
@@ -65,6 +71,7 @@ exports.SecurityHubOrganizationConfiguration = () => ({
     method: "updateOrganizationConfiguration",
     pickId: () => configurationDefault,
     isInstanceDown: () => true,
+    ignoreErrorMessages,
   },
   getByName: getByNameCore,
   configDefault: ({ properties: { ...otherProps }, dependencies: {} }) =>

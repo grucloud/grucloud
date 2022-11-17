@@ -15,6 +15,8 @@ const { SecurityHubActionTarget } = require("./SecurityHubActionTarget");
 const {
   SecurityHubFindingAggregator,
 } = require("./SecurityHubFindingAggregator");
+const { SecurityHubMember } = require("./SecurityHubMember");
+
 const {
   SecurityHubOrganizationAdminAccount,
 } = require("./SecurityHubOrganizationAdminAccount");
@@ -32,6 +34,7 @@ module.exports = pipe([
     SecurityHubAccount({}),
     SecurityHubActionTarget({}),
     SecurityHubFindingAggregator({}),
+    SecurityHubMember({}),
     SecurityHubOrganizationAdminAccount({}),
     SecurityHubOrganizationConfiguration({}),
     SecurityHubStandardsSubscription({}),
