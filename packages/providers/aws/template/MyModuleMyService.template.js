@@ -153,7 +153,7 @@ const decorate = ({ endpoint }) =>
 // ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/MyModule.html
-exports.MyModuleMyResource = ({ compare }) => ({
+exports.MyModuleMyResource = () => ({
   type: "MyResource",
   package: "myModule",
   client: "MyModule",
@@ -459,12 +459,14 @@ exports.MyModuleMyResource = ({ compare }) => ({
   update: {
     method: "updateMyResource",
     filterParams: ({ pickId, payload, diff, live }) =>
-      pipe([
-        () => payload,
-        // assign({
-        //   SecretId: () => live.ARN,
-        // }),
-      ])(),
+      pipe([() => payload, defaultsDeep(pickId(live))])(),
+    // filterParams: ({ pickId, payload, diff, live }) =>
+    //   pipe([
+    //     () => payload,
+    //     // assign({
+    //     //   SecretId: () => live.ARN,
+    //     // }),
+    //   ])(),
   },
   // Custom update
   // update:

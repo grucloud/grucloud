@@ -118,19 +118,12 @@ exports.CognitoIdentityIdentityPoolProviderPrincipalTag = ({ compare }) => ({
     ({ client, endpoint, getById }) =>
     ({ lives, config }) =>
       pipe([
-        tap((params) => {
-          assert(lives);
-          assert(config);
-        }),
         () =>
           lives.getByType({
             type: "IdentityPool",
             group: "Cognito",
             providerName: config.providerName,
           }),
-        tap((params) => {
-          assert(true);
-        }),
         flatMap(
           pipe([
             get("live"),
@@ -147,9 +140,6 @@ exports.CognitoIdentityIdentityPoolProviderPrincipalTag = ({ compare }) => ({
                       endpoint().getPrincipalTagAttributeMap,
                       (error) => undefined
                     ),
-                    tap((params) => {
-                      assert(true);
-                    }),
                   ])
                 ),
               ])(),

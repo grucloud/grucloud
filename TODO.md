@@ -9,7 +9,6 @@
 
 - AWS::Athena::WorkGroup AWS::Athena::DataCatalog
 
-- AWS::Cognito::IdentityPoolRoleAttachment
 - AWS::CloudFront::CachePolicy
 - AWS::Events::Endpoint
 - CodeStarConnections Host

@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project securityhub-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ SecurityHub
+++++ Account (1)
+++++ StandardsSubscription (2)
+@endmindmap

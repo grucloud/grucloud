@@ -962,7 +962,14 @@ const findUsedBy =
       }),
       () => lives,
       filter(hasResourceInDependency(resource)),
-      filter(not(eq(get("id"), resource.id))),
+      filter(
+        not(
+          and([
+            eq(get("id"), resource.id),
+            eq(get("groupType"), resource.groupType),
+          ])
+        )
+      ),
       tap((params) => {
         assert(true);
       }),

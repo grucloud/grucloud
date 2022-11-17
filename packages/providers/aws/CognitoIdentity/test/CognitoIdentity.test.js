@@ -8,7 +8,9 @@ describe("CognitoIdentity", async function () {
     pipe([
       () => ({
         groupType: "Cognito::IdentityPool",
-        livesNotFound: ({ config }) => [{ IdentityPoolId: "i-12345" }],
+        livesNotFound: ({ config }) => [
+          { IdentityPoolId: "us-east-1:64a8f1cb-e5e1-4d32-9405-ca6e7ff4ee4a" },
+        ],
       }),
       awsResourceTest,
     ])());

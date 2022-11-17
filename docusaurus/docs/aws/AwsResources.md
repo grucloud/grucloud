@@ -22,6 +22,8 @@ List of resources for provider aws:
 [Connection](./resources/AppRunner/Connection.md), [Service](./resources/AppRunner/Service.md), [VpcConnector](./resources/AppRunner/VpcConnector.md), [VpcIngressConnection](./resources/AppRunner/VpcIngressConnection.md)
 * AppSync: 
 [GraphqlApi](./resources/AppSync/GraphqlApi.md), [DataSource](./resources/AppSync/DataSource.md), [Resolver](./resources/AppSync/Resolver.md)
+* Athena: 
+[DataCatalog](./resources/Athena/DataCatalog.md), [WorkGroup](./resources/Athena/WorkGroup.md)
 * AutoScaling: 
 [AutoScalingGroup](./resources/AutoScaling/AutoScalingGroup.md), [AutoScalingAttachment](./resources/AutoScaling/AutoScalingAttachment.md), [LaunchConfiguration](./resources/AutoScaling/LaunchConfiguration.md)
 * Backup: 
@@ -50,6 +52,8 @@ List of resources for provider aws:
 [Pipeline](./resources/CodePipeline/Pipeline.md)
 * CodeStarConnections: 
 [Connection](./resources/CodeStarConnections/Connection.md)
+* Cognito: 
+[IdentityPool](./resources/Cognito/IdentityPool.md), [IdentityPoolProviderPrincipalTag](./resources/Cognito/IdentityPoolProviderPrincipalTag.md), [IdentityPoolRolesAttachments](./resources/Cognito/IdentityPoolRolesAttachments.md)
 * CognitoIdentityServiceProvider: 
 [IdentityProvider](./resources/CognitoIdentityServiceProvider/IdentityProvider.md), [UserPool](./resources/CognitoIdentityServiceProvider/UserPool.md), [UserPoolClient](./resources/CognitoIdentityServiceProvider/UserPoolClient.md), [UserPoolDomain](./resources/CognitoIdentityServiceProvider/UserPoolDomain.md)
 * Config: 
@@ -82,6 +86,8 @@ List of resources for provider aws:
 [Job](./resources/Glue/Job.md)
 * IAM: 
 [OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
+* IdentityStore: 
+[GroupMembership](./resources/IdentityStore/GroupMembership.md), [User](./resources/IdentityStore/User.md), [Group](./resources/IdentityStore/Group.md)
 * Inspector2: 
 [DelegatedAdminAccount](./resources/Inspector2/DelegatedAdminAccount.md), [Enabler](./resources/Inspector2/Enabler.md), [OrganizationConfiguration](./resources/Inspector2/OrganizationConfiguration.md)
 * Kinesis: 
@@ -126,12 +132,18 @@ List of resources for provider aws:
 [Schedule](./resources/Scheduler/Schedule.md), [ScheduleGroup](./resources/Scheduler/ScheduleGroup.md)
 * SecretsManager: 
 [Secret](./resources/SecretsManager/Secret.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
+* SecurityHub: 
+[Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
+* SESV2: 
+[ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md)
 * SNS: 
 [Topic](./resources/SNS/Topic.md), [Subscription](./resources/SNS/Subscription.md)
 * SQS: 
 [Queue](./resources/SQS/Queue.md)
 * SSM: 
 [Document](./resources/SSM/Document.md), [Parameter](./resources/SSM/Parameter.md)
+* SSOAdmin: 
+[AccountAssignment](./resources/SSOAdmin/AccountAssignment.md), [Instance](./resources/SSOAdmin/Instance.md), [PermissionSet](./resources/SSOAdmin/PermissionSet.md)
 * StepFunctions: 
 [StateMachine](./resources/StepFunctions/StateMachine.md)
 * WAFv2: 
