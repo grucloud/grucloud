@@ -68,6 +68,7 @@ const GROUPS = [
   ["SecretsManager", "secretsmanager"],
   ["SecurityHub", "securityhub"],
   ["SESV2", "ses"],
+  ["ServiceCatalog", "servicecatalog"],
   ["StepFunctions", "sns"],
   ["SNS", "sns"],
   ["SSOAdmin", "sso"],
