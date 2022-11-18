@@ -36,3 +36,17 @@ exports.untagResource =
     ]);
 
 exports.ignoreErrorCodes = ["ResourceNotFoundException"];
+
+exports.dependencyIdUserPool =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      () =>
+        lives.getByType({
+          providerName: config.providerName,
+          type: "UserPool",
+          group: "CognitoIdentityServiceProvider",
+        }),
+      find(eq(get("live.Id"), live.UserPoolId)),
+      get("id"),
+    ])();

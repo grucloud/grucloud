@@ -1,0 +1,14 @@
+@startmindmap
+title Resources for project cognito-identity-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ Cognito
+++++ IdentityPool (1)
+++++ IdentityPoolRolesAttachments (1)
++++ CognitoIdentityServiceProvider
+++++ UserPool (1)
+++++ UserPoolClient (1)
++++ IAM
+++++ Role (2)
+@endmindmap

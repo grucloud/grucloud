@@ -13,8 +13,8 @@ exports.createResources = () => [
     type: "UserPool",
     group: "CognitoIdentityServiceProvider",
     properties: () => ({
-      Name: "my-user-pool",
-      UserPoolTags: {
+      PoolName: "my-user-pool",
+      Tags: {
         mykey1: "myvalue",
       },
     }),
@@ -241,7 +241,7 @@ Listing resources on 1 provider: aws
 │       NumberAttributeConstraints:                                   │
 │         MinValue: 0                                                 │
 │       Required: false                                               │
-│   UserPoolTags:                                                     │
+│   Tags:                                                             │
 │     Name: my-user-pool                                              │
 │     gc-created-by-provider: aws                                     │
 │     gc-managed-by: grucloud                                         │

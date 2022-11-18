@@ -4,25 +4,83 @@ const {} = require("rubico/x");
 
 exports.createResources = () => [
   {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "policy-ec2",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "VisualEditor0",
+            Effect: "Allow",
+            Action: "ec2:*",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+    }),
+  },
+  {
+    type: "Policy",
+    group: "IAM",
+    properties: ({}) => ({
+      PolicyName: "policy-rds",
+      PolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "VisualEditor0",
+            Effect: "Allow",
+            Action: "rds:*",
+            Resource: "*",
+          },
+        ],
+      },
+      Path: "/",
+    }),
+  },
+  {
     type: "User",
     group: "IdentityStore",
     properties: ({}) => ({
-      DisplayName: "fred heem",
+      DisplayName: "test grucloud",
       Emails: [
         {
           Primary: true,
           Type: "work",
-          Value: "frederic.heem+gc-user@gmail.com",
+          Value: "test@grucloud.com",
         },
       ],
       Name: {
-        FamilyName: "heem",
-        GivenName: "fred",
+        FamilyName: "grucloud",
+        GivenName: "test",
       },
-      UserName: "gc-user",
+      UserName: "testuser",
     }),
     dependencies: ({}) => ({
       identityStore: "default",
+    }),
+  },
+  {
+    type: "Account",
+    group: "Organisations",
+    name: "test account",
+    readOnly: true,
+    properties: ({}) => ({
+      Email: "test@grucloud.com",
+      Name: "test account",
+    }),
+  },
+  {
+    type: "AccountAssignment",
+    group: "SSOAdmin",
+    dependencies: ({}) => ({
+      identityStore: "default",
+      permissionSet: "ViewOnlyAccess",
+      user: "testuser",
+      targetAccount: "test account",
     }),
   },
   {

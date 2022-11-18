@@ -28,4 +28,20 @@ describe("OpenSearch", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("InboundConnectionAccepter", () =>
+    pipe([
+      () => ({
+        groupType: "OpenSearch::InboundConnectionAccepter",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("OutboundConnection", () =>
+    pipe([
+      () => ({
+        groupType: "OpenSearch::OutboundConnection",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
 });

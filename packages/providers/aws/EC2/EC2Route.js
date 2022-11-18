@@ -38,6 +38,7 @@ const { createEC2 } = require("./EC2Common");
 const { appendCidrSuffix } = require("./EC2Common");
 
 const ignoreErrorCodes = [
+  "InvalidRouteTableID.NotFound",
   "InvalidRoute.NotFound",
   "InvalidVpcEndpointId.NotFound",
 ];

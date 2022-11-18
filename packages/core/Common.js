@@ -264,7 +264,7 @@ exports.getByNameCore =
         assert(findName, "findName");
         assert(getList, "getList");
       }),
-      () => getList({ deep, lives, resources }),
+      () => getList({ deep, lives, config, resources }),
       tap((items) => {
         assert(Array.isArray(items));
         logger.debug(`getByNameCore ${name}: #${size(items)}`);
@@ -464,7 +464,6 @@ const removeOurTagObject = ({ tags = "tags" }) =>
 const removeOurTags = pipe([
   removeOurTagObject({ tags: "tags" }),
   removeOurTagObject({ tags: "Tags" }),
-  removeOurTagObject({ tags: "UserPoolTags" }),
 ]);
 
 exports.removeOurTags = removeOurTags;

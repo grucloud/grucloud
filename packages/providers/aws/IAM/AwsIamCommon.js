@@ -11,13 +11,16 @@ const {
 } = require("rubico");
 const {
   isEmpty,
+  isObject,
   unless,
   when,
+  values,
   keys,
   first,
   append,
   find,
   callProp,
+  includes,
 } = require("rubico/x");
 const querystring = require("querystring");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -28,6 +31,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "IamCommon" });
 exports.ignoreErrorCodes = ["NoSuchEntity", "NoSuchEntityException"];
 
 exports.dependenciesPoliciesKind = [
+  { type: "IdentityPool", group: "Cognito" },
   { type: "Table", group: "DynamoDB" },
   { type: "Topic", group: "SNS" },
   { type: "Queue", group: "SQS" },
@@ -50,6 +54,7 @@ exports.dependenciesPolicy = {
     group: "IAM",
     parent: true,
   },
+  cognitoIdentityPool: { type: "IdentityPool", group: "Cognito", parent: true },
   table: { type: "Table", group: "DynamoDB", parent: true },
   queue: { type: "Queue", group: "SQS", parent: true },
   snsTopic: { type: "Topic", group: "SNS", parent: true },
@@ -175,6 +180,7 @@ exports.assignAttachedPolicies = ({ policies = [] }) =>
 const findArnInCondition = ({ Condition }) =>
   pipe([
     () => [
+      "StringEquals",
       "StringEquals.aws:PrincipalOrgID",
       "StringEquals.elasticfilesystem:AccessPointArn",
       "ArnLike.AWS:SourceArn",
@@ -203,7 +209,13 @@ exports.findInStatement =
               type,
               group,
             }),
-          find(({ id }) => arn.includes(id)),
+          find(({ id }) =>
+            pipe([
+              () => arn,
+              when(isObject, pipe([values, first])),
+              includes(id),
+            ])()
+          ),
         ])()
       ),
       tap((params) => {

@@ -58,13 +58,12 @@ describe("ECS", async function () {
       }),
       awsResourceTest,
     ])());
-  // TODO
-  // it("TaskSet", () =>
-  //   pipe([
-  //     () => ({
-  //       groupType: "ECS::TaskSet",
-  //       livesNotFound: ({ config }) => [{}],
-  //     }),
-  //     awsResourceTest,
-  //   ])());
+  it.skip("TaskSet", () =>
+    pipe([
+      () => ({
+        groupType: "ECS::TaskSet",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
 });

@@ -1,8 +1,19 @@
 const assert = require("assert");
-const { pipe, tap, get } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { pipe, tap, get, assign } = require("rubico");
+const { defaultsDeep, pluck } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
+
+const decorate = ({ endpoint }) =>
+  pipe([
+    assign({
+      serviceAccessPrincipals: pipe([
+        endpoint().listAWSServiceAccessForOrganization,
+        get("EnabledServicePrincipals"),
+        pluck("ServicePrincipal"),
+      ]),
+    }),
+  ]);
 
 const model = ({ config }) => ({
   package: "organizations",
@@ -17,6 +28,7 @@ const model = ({ config }) => ({
   getList: {
     method: "describeOrganization",
     getParam: "Organization",
+    decorate,
   },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#createOrganization-property
   create: {

@@ -1,12 +1,18 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq } = require("rubico");
+const { pipe, tap, get, pick, eq, or } = require("rubico");
 const { defaultsDeep, when, first } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { createAwsResource } = require("../AwsClient");
 
-const managedByOther = pipe([get("live"), eq(get("Source.Owner"), "AWS")]);
+const managedByOther = pipe([
+  get("live"),
+  or([
+    eq(get("Source.Owner"), "AWS"),
+    eq(get("CreatedBy"), "securityhub.amazonaws.com"),
+  ]),
+]);
 
 const pickId = pipe([
   tap(({ ConfigRuleName }) => {

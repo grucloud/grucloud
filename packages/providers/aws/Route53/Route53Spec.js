@@ -26,8 +26,10 @@ const {
   first,
   pluck,
 } = require("rubico/x");
+
 const { omitIfEmpty, buildGetId } = require("@grucloud/core/Common");
 const { hasDependency } = require("@grucloud/core/generatorUtils");
+const { createAwsService } = require("../AwsService");
 
 const {
   isOurMinion,
@@ -50,6 +52,10 @@ const {
   Route53VpcAssociationAuthorization,
 } = require("./Route53VpcAssociationAuthorization");
 const { Route53HealthCheck } = require("./Route53HealthCheck");
+const { Route53TrafficPolicy } = require("./Route53TrafficPolicy");
+const {
+  Route53TrafficPolicyInstance,
+} = require("./Route53TrafficPolicyInstance");
 
 const GROUP = "Route53";
 
@@ -221,60 +227,6 @@ module.exports = pipe([
         ]),
     },
     {
-      type: "ZoneVpcAssociation",
-      Client: Route53ZoneVpcAssociation,
-      dependencies: {
-        hostedZone: {
-          type: "HostedZone",
-          group: "Route53",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("HostedZoneId"),
-        },
-        vpc: {
-          type: "Vpc",
-          group: "EC2",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("VPC.VPCId"),
-        },
-      },
-      omitProperties: ["HostedZoneId", "Name", "Owner", "VPC"],
-      inferName: ({ properties, dependenciesSpec: { hostedZone, vpc } }) =>
-        pipe([() => `zone-assoc::${hostedZone}::${vpc}`])(),
-      compare: compareRoute53({
-        filterTarget: () => pipe([() => ({})]),
-        filterLive: () => pipe([() => ({})]),
-      }),
-      // TODO region
-      //filterLive: () => pick([]),
-    },
-    {
-      type: "VpcAssociationAuthorization",
-      Client: Route53VpcAssociationAuthorization,
-      dependencies: {
-        hostedZone: {
-          type: "HostedZone",
-          group: "Route53",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("HostedZoneId"),
-        },
-        vpc: {
-          type: "Vpc",
-          group: "EC2",
-          parent: true,
-          dependencyId: ({ lives, config }) => get("VPC.VPCId"),
-        },
-      },
-      omitProperties: ["HostedZoneId", "VPC"],
-      inferName: ({ properties, dependenciesSpec: { hostedZone, vpc } }) =>
-        pipe([() => `vpc-assoc-auth::${hostedZone}::${vpc}`])(),
-      compare: compareRoute53({
-        filterTarget: () => pipe([() => ({})]),
-        filterLive: () => pipe([() => ({})]),
-      }),
-      // TODO region
-      //filterLive: () => pick([]),
-    },
-    {
       type: "Record",
       dependencies: {
         hostedZone: {
@@ -407,6 +359,62 @@ module.exports = pipe([
       //TODO remove ?
       ignoreResource: () => get("cannotBeDeleted"),
     },
+    createAwsService(Route53TrafficPolicy({})),
+    createAwsService(Route53TrafficPolicyInstance({})),
+    {
+      type: "ZoneVpcAssociation",
+      Client: Route53ZoneVpcAssociation,
+      dependencies: {
+        hostedZone: {
+          type: "HostedZone",
+          group: "Route53",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("HostedZoneId"),
+        },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("VPC.VPCId"),
+        },
+      },
+      omitProperties: ["HostedZoneId", "Name", "Owner", "VPC"],
+      inferName: ({ properties, dependenciesSpec: { hostedZone, vpc } }) =>
+        pipe([() => `zone-assoc::${hostedZone}::${vpc}`])(),
+      compare: compareRoute53({
+        filterTarget: () => pipe([() => ({})]),
+        filterLive: () => pipe([() => ({})]),
+      }),
+      // TODO region
+      //filterLive: () => pick([]),
+    },
+    {
+      type: "VpcAssociationAuthorization",
+      Client: Route53VpcAssociationAuthorization,
+      dependencies: {
+        hostedZone: {
+          type: "HostedZone",
+          group: "Route53",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("HostedZoneId"),
+        },
+        vpc: {
+          type: "Vpc",
+          group: "EC2",
+          parent: true,
+          dependencyId: ({ lives, config }) => get("VPC.VPCId"),
+        },
+      },
+      omitProperties: ["HostedZoneId", "VPC"],
+      inferName: ({ properties, dependenciesSpec: { hostedZone, vpc } }) =>
+        pipe([() => `vpc-assoc-auth::${hostedZone}::${vpc}`])(),
+      compare: compareRoute53({
+        filterTarget: () => pipe([() => ({})]),
+        filterLive: () => pipe([() => ({})]),
+      }),
+      // TODO region
+      //filterLive: () => pick([]),
+    },
   ],
-  map(defaultsDeep({ group: GROUP, isOurMinion })),
+  map(defaultsDeep({ group: GROUP, compare: compareRoute53({}), isOurMinion })),
 ]);

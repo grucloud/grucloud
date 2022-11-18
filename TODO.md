@@ -9,8 +9,6 @@
 
 - AWS::Athena::WorkGroup AWS::Athena::DataCatalog
 
-- AWS::Cognito::IdentityPool
-- AWS::Cognito::IdentityPoolRoleAttachment
 - AWS::CloudFront::CachePolicy
 - AWS::Events::Endpoint
 - CodeStarConnections Host
@@ -27,7 +25,9 @@
 - AWS::Shield
 - SESv2 https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html
 - AWS::XRay
-
+- aws_servicequotas_service_quota
+- Network Manager SiteToSiteVpnAttachment
+  aws_networkmanager_attachment_accepter
 - SNS dep with firehose
 - EC2 instance, sort groups
 - API Gateway v1 Authorizer

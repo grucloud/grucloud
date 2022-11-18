@@ -3,29 +3,54 @@ const { tap, pipe, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const { compareAws } = require("../AwsCommon");
+const { createAwsService } = require("../AwsService");
 
 const GROUP = "SecurityHub";
 
 const tagsKey = "Tags";
 const compare = compareAws({ tagsKey, key: "Key" });
 
-//const { ReportDefinition } = require("./CURReportDefinition");
+const { SecurityHubAccount } = require("./SecurityHubAccount");
+const { SecurityHubActionTarget } = require("./SecurityHubActionTarget");
+const {
+  SecurityHubFindingAggregator,
+} = require("./SecurityHubFindingAggregator");
+
+const { SecurityHubInsight } = require("./SecurityHubInsight");
+
+const { SecurityHubMember } = require("./SecurityHubMember");
+
+const {
+  SecurityHubOrganizationAdminAccount,
+} = require("./SecurityHubOrganizationAdminAccount");
+
+const {
+  SecurityHubOrganizationConfiguration,
+} = require("./SecurityHubOrganizationConfiguration");
+
+const {
+  SecurityHubStandardsSubscription,
+} = require("./SecurityHubStandardsSubscription");
 
 module.exports = pipe([
   () => [
-    // {
-    //   type: "ReportDefinition",
-    //   Client: CURReportDefinition,
-    //   propertiesDefault: {},
-    //   omitProperties: [],
-    //   inferName: get("properties.ReportName"),
-    // },
+    SecurityHubAccount({}),
+    SecurityHubActionTarget({}),
+    SecurityHubFindingAggregator({}),
+    SecurityHubInsight({}),
+    SecurityHubMember({}),
+    SecurityHubOrganizationAdminAccount({}),
+    SecurityHubOrganizationConfiguration({}),
+    SecurityHubStandardsSubscription({}),
   ],
   map(
-    defaultsDeep({
-      group: GROUP,
-      compare: compare({}),
-      tagsKey,
-    })
+    pipe([
+      createAwsService,
+      defaultsDeep({
+        group: GROUP,
+        compare: compare({}),
+        tagsKey,
+      }),
+    ])
   ),
 ]);

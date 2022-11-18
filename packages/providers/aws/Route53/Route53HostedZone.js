@@ -64,7 +64,14 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const octalReplace = pipe([callProp("replaceAll", "\\052", "*")]);
 
-const findId = pipe([get("live.Id"), hostedZoneIdToResourceId]);
+const findId = pipe([
+  get("live"),
+  get("HostedZoneId"),
+  tap((id) => {
+    assert(id);
+  }),
+]);
+
 const pickId = pick(["Id"]);
 
 const canDeleteRecord = (zoneName) =>
@@ -98,11 +105,10 @@ const decorate = ({ endpoint }) =>
     tap(({ Id }) => {
       assert(Id);
     }),
+    assign({ HostedZoneId: pipe([get("Id"), hostedZoneIdToResourceId]) }),
     assign({
       RecordSet: pipe([
-        (hostedZone) => ({
-          HostedZoneId: hostedZone.Id,
-        }),
+        pick(["HostedZoneId"]),
         endpoint().listResourceRecordSets,
         get("ResourceRecordSets"),
         map(
@@ -125,8 +131,8 @@ const decorate = ({ endpoint }) =>
         ),
       ]),
       Tags: pipe([
-        (hostedZone) => ({
-          ResourceId: hostedZoneIdToResourceId(hostedZone.Id),
+        ({ HostedZoneId }) => ({
+          ResourceId: HostedZoneId,
           ResourceType: "hostedzone",
         }),
         endpoint().listTagsForResource,
@@ -192,11 +198,9 @@ exports.Route53HostedZone = ({ spec, config }) => {
                   () => hostedZones,
                   map(
                     assign({
-                      VpcAssociations: ({ Id }) =>
+                      VpcAssociations: ({ HostedZoneId }) =>
                         pipe([
-                          () => Id,
-                          hostedZoneIdToResourceId,
-                          (id) => mapZone.get(id),
+                          () => mapZone.get(HostedZoneId),
                           map(pick(["VPCId", "VPCRegion", "Owner"])),
                         ])(),
                     })
@@ -392,9 +396,10 @@ exports.Route53HostedZone = ({ spec, config }) => {
             assert(live.Id);
           }),
           () => live,
-          get("Id"),
-          hostedZoneIdToResourceId,
-          (Id) => ({ Id, Comment: payload.HostedZoneConfig.Comment }),
+          ({ HostedZoneId }) => ({
+            Id: HostedZoneId,
+            Comment: payload.HostedZoneConfig.Comment,
+          }),
           tap((params) => {
             assert(params);
           }),

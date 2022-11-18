@@ -32,7 +32,7 @@ const {
 const util = require("util");
 const { omitIfEmpty } = require("@grucloud/core/Common");
 
-const { compareAws, throwIfNotAwsError } = require("../AwsCommon");
+const { compareAws, throwIfNotAwsError, isAwsError } = require("../AwsCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
@@ -437,11 +437,14 @@ const SecurityGroupRuleBase = ({ config }) => {
             tap(() => {
               logger.error(`destroy sg rule error ${tos({ error, params })}`);
             }),
-            // TODO The specified rule does not exist in this security group
-            // InvalidPermission.NotFound
-            () => {
-              throw Error(error.message);
-            },
+            () => error,
+            switchCase([
+              isAwsError("InvalidGroup.NotFound"),
+              () => undefined,
+              () => {
+                throw Error(error.message);
+              },
+            ]),
           ])()
         ),
         tap(() => {

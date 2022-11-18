@@ -33,3 +33,8 @@ exports.untagResource =
       (TagKeys) => ({ ResourceArn: buildArn(live), TagKeys }),
       endpoint().untagResource,
     ]);
+
+exports.ignoreErrorCodes = [
+  "ResourceNotFoundException",
+  "InvalidAccessException",
+];

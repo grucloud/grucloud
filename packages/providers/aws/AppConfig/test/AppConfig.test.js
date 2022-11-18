@@ -61,6 +61,22 @@ describe("AppConfig", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("Extension", () =>
+    pipe([
+      () => ({
+        groupType: "AppConfig::Extension",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("ExtensionAssociation", () =>
+    pipe([
+      () => ({
+        groupType: "AppConfig::ExtensionAssociation",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("HostedConfigurationVersion", () =>
     pipe([
       () => ({

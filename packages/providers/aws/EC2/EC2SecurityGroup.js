@@ -318,6 +318,7 @@ exports.EC2SecurityGroup = ({ spec, config }) => {
     isDefault,
     cannotBeDeleted,
     managedByOther,
+    getById,
     getList,
     create,
     update,

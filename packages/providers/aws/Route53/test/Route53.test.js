@@ -35,11 +35,11 @@ describe("Route53", async function () {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createTrafficPolicyVersion-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteTrafficPolicy-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getTrafficPolicy-property
-  it.skip("TrafficPolicy", () =>
+  it("TrafficPolicy", () =>
     pipe([
       () => ({
         groupType: "Route53::TrafficPolicy",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "i123", Version: "123" }],
       }),
       awsResourceTest,
     ])());
@@ -48,11 +48,11 @@ describe("Route53", async function () {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteTrafficPolicyInstance-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createTrafficPolicyInstance-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getTrafficPolicyInstance-property
-  it.skip("TrafficPolicyInstance", () =>
+  it("TrafficPolicyInstance", () =>
     pipe([
       () => ({
         groupType: "Route53::TrafficPolicyInstance",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ Id: "i123" }],
       }),
       awsResourceTest,
     ])());

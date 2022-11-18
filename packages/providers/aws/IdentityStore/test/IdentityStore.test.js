@@ -4,29 +4,42 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("IdentityStore", async function () {
-  it.skip("User", () =>
+  it("User", () =>
     pipe([
       () => ({
         groupType: "IdentityStore::User",
         livesNotFound: ({ config }) => [
-          { IdentityStoreId: "i1234", UserName: "u123" },
+          {
+            IdentityStoreId: "d-9067ba8993",
+            UserId: "54c8e428-10c1-70ac-8e9a-f19de0ce9d7a",
+          },
         ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Group", () =>
+  it("Group", () =>
     pipe([
       () => ({
         groupType: "IdentityStore::Group",
-        livesNotFound: ({ config }) => [{ Name: "d123" }],
+        livesNotFound: ({ config }) => [
+          {
+            IdentityStoreId: "d-9067ba8993",
+            GroupId: "54c8e428-10c1-70ac-8e9a-f19de0ce9d7b",
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("GroupMembership", () =>
+  it("GroupMembership", () =>
     pipe([
       () => ({
         groupType: "IdentityStore::GroupMembership",
-        livesNotFound: ({ config }) => [{ Name: "d123" }],
+        livesNotFound: ({ config }) => [
+          {
+            IdentityStoreId: "d-9067ba8993",
+            MembershipId: "54c8e428-10c1-70ac-8e9a-f19de0ce9d7c",
+          },
+        ],
       }),
       awsResourceTest,
     ])());

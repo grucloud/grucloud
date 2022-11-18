@@ -15,7 +15,6 @@ const { defaultsDeep, find, first, identity } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
-const { hostedZoneIdToResourceId } = require("./Route53Common");
 
 const pickId = pipe([pick(["HostedZoneId", "VPC"])]);
 
@@ -182,12 +181,7 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
           }),
           endpoint().listHostedZonesByVPC,
           get("HostedZoneSummaries"),
-          find(
-            eq(
-              get("HostedZoneId"),
-              hostedZoneIdToResourceId(getField(hostedZone, "Id"))
-            )
-          ),
+          find(eq(get("HostedZoneId"), getField(hostedZone, "HostedZoneId"))),
           defaultsDeep({
             VPC: {
               VPCId: getField(vpc, "VpcId"),
@@ -207,7 +201,7 @@ exports.Route53ZoneVpcAssociation = ({ spec, config }) =>
             VPCId: getField(vpc, "VpcId"),
             VPCRegion: get("resource.provider.config.region")(vpc),
           },
-          HostedZoneId: hostedZoneIdToResourceId(getField(hostedZone, "Id")),
+          HostedZoneId: getField(hostedZone, "HostedZoneId"),
         }),
       ])(),
   });

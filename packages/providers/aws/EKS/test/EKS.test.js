@@ -4,6 +4,19 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("EKS", async function () {
+  it.skip("Addon", () =>
+    pipe([
+      () => ({
+        groupType: "EKS::Addon",
+        livesNotFound: ({ config }) => [
+          {
+            addonName: "12345",
+            clusterName: "c123",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("Cluster", () =>
     pipe([
       () => ({

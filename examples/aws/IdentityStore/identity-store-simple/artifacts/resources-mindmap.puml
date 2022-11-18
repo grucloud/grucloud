@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project identity-store-simple
+skinparam monochrome true
++ Infra
+++ aws
++++ IdentityStore
+++++ GroupMembership (1)
+++++ User (1)
+++++ Group (1)
++++ SSOAdmin
+++++ Instance (1)
+@endmindmap

@@ -1,13 +1,15 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign, eq } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { defaultsDeep, when, pluck } = require("rubico/x");
 
+const { replaceAccountAndRegion } = require("../AwsCommon");
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource, assignTags } = require("./SSMCommon");
+const { assignTags, Tagger } = require("./SSMCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const pickId = pipe([pick(["Name"])]);
+
+const buildArn = () => get("Name");
 
 const stringifyContent = assign({
   Content: pipe([get("Content"), JSON.stringify]),
@@ -25,9 +27,80 @@ const decorate =
       assignTags({ endpoint, ResourceType: "Document" }),
     ])();
 
-const model = ({ config }) => ({
+exports.SSMDocument = () => ({
   package: "ssm",
   client: "SSM",
+  type: "Document",
+  inferName: ({ properties, dependenciesSpec }) =>
+    pipe([
+      () => properties,
+      get("Name"),
+      tap((Name) => {
+        assert(Name);
+      }),
+    ])(),
+  findName: get("live.Name"),
+  findId: ({ config, live }) =>
+    pipe([
+      tap((params) => {
+        assert(config);
+      }),
+
+      () => live,
+      get("Name"),
+      (Name) =>
+        `arn:aws:ssm:${config.region}:${config.accountId()}:document/${Name}`,
+    ])(),
+  omitProperties: [
+    "Content.assumeRole",
+    "Owner",
+    "DocumentVersion",
+    "CreatedDate",
+    "Status",
+    "StatusInformation",
+    "ReviewStatus",
+    "SchemaVersion",
+    "Category",
+    "CategoryEnum",
+    "DefaultVersion",
+    "Hash",
+    "HashType",
+    "LatestVersion",
+    "Description",
+  ],
+  propertiesDefault: { DocumentFormat: "JSON" },
+  dependencies: {
+    role: {
+      type: "Role",
+      group: "IAM",
+      dependencyId: ({ lives, config }) => get("Content.assumeRole"),
+    },
+    lambdaFunction: {
+      type: "Function",
+      group: "Lambda",
+      dependencyId: ({ lives, config }) =>
+        pipe([
+          get("Content.mainSteps"),
+          pluck("inputs"),
+          pluck("FunctionName"),
+        ]),
+    },
+  },
+  filterLive: ({ providerConfig, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      assign({
+        Name: pipe([
+          get("Name"),
+          replaceAccountAndRegion({
+            providerConfig,
+            lives,
+          }),
+        ]),
+      }),
+    ]),
   ignoreErrorCodes: ["InvalidDocument"],
   getById: {
     method: "describeDocument",
@@ -72,61 +145,51 @@ const model = ({ config }) => ({
   //     ])(),
   // },
   destroy: { method: "deleteDocument", pickId },
-});
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSM.html
-exports.SSMDocument = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: get("live.Name"),
-    findId: pipe([
-      get("live.Name"),
-      (Name) =>
-        `arn:aws:ssm:${config.region}:${config.accountId()}:document/${Name}`,
-    ]),
-    getByName: ({ getById }) =>
-      pipe([({ name }) => ({ Name: name }), getById({})]),
-    update:
-      ({ endpoint }) =>
-      ({ payload, live }) =>
-        pipe([
-          tap((params) => {
-            assert(live);
-            assert(endpoint);
-          }),
-          () => payload,
-          stringifyContent,
-          defaultsDeep({
-            DocumentVersion: live.LatestVersion,
-          }),
-          // TODO Ignore ErrCodeDuplicateDocumentContent
-          // DefaultVersion  VS DocumentVersion VS LatestVersion
-          endpoint().updateDocument,
-          get("DocumentDescription"),
-          pick(["Name", "DocumentVersion"]),
-          endpoint().updateDocumentDefaultVersion,
-        ])(),
-    tagResource: tagResource({ ResourceType: "Document" }),
-    untagResource: untagResource({ ResourceType: "Document" }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { iamRole },
-    }) =>
+  getByName: ({ getById }) =>
+    pipe([({ name }) => ({ Name: name }), getById({})]),
+  update:
+    ({ endpoint }) =>
+    ({ payload, live }) =>
       pipe([
-        () => otherProps,
-        defaultsDeep({
-          Name: name,
-          Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+        tap((params) => {
+          assert(live);
+          assert(endpoint);
         }),
-        when(
-          () => iamRole,
-          defaultsDeep({
-            Content: { assumeRole: getField(iamRole, "Arn") },
-          })
-        ),
+        () => payload,
+        stringifyContent,
+        defaultsDeep({
+          DocumentVersion: live.LatestVersion,
+        }),
+        // TODO Ignore ErrCodeDuplicateDocumentContent
+        // DefaultVersion  VS DocumentVersion VS LatestVersion
+        endpoint().updateDocument,
+        get("DocumentDescription"),
+        pick(["Name", "DocumentVersion"]),
+        endpoint().updateDocumentDefaultVersion,
       ])(),
-  });
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn(config),
+      additionalParams: pipe([() => ({ ResourceType: "Document" })]),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { iamRole },
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({ name, config, namespace, UserTags: Tags }),
+      }),
+      when(
+        () => iamRole,
+        defaultsDeep({
+          Content: { assumeRole: getField(iamRole, "Arn") },
+        })
+      ),
+    ])(),
+});

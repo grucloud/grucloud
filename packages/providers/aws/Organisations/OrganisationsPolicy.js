@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, assign, flatMap, map } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  pick,
+  eq,
+  assign,
+  flatMap,
+  map,
+  tryCatch,
+} = require("rubico");
 const { defaultsDeep, unless } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
@@ -97,12 +107,17 @@ exports.OrganisationsPolicy = ({ spec, config }) =>
           "AISERVICES_OPT_OUT_POLICY",
         ],
         flatMap(
-          pipe([
-            (Filter) => ({ Filter }),
-            endpoint().listPolicies,
-            get("Policies"),
-            map(pipe([({ Id }) => ({ PolicyId: Id }), getById])),
-          ])
+          tryCatch(
+            pipe([
+              (Filter) => ({ Filter }),
+              endpoint().listPolicies,
+              get("Policies"),
+              map(pipe([({ Id }) => ({ PolicyId: Id }), getById])),
+            ]),
+            //TODO
+            // AccessDeniedException
+            (error) => undefined
+          )
         ),
       ]),
     tagResource: tagResource({

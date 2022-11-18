@@ -51,6 +51,7 @@ const virtualMachineDependenciesCommon = {
     type: "Disk",
     group: "Compute",
     list: true,
+    excludeDefaultDependencies: true,
     createOnly: true,
   },
   managedIdentities: {

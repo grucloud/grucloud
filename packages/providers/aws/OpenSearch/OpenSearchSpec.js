@@ -2,30 +2,32 @@ const assert = require("assert");
 const { tap, pipe, map, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
+const { createAwsService } = require("../AwsService");
 const { compareAws } = require("../AwsCommon");
 
 const GROUP = "OpenSearch";
 
-const tagsKey = "tags";
-const compare = compareAws({ tagsKey, key: "key" });
+const compare = compareAws({});
 
-//const { ReportDefinition } = require("./CURReportDefinition");
+//const { OpenSearchDomain } = require("./OpenSearchDomain");
+//const { OpenSearchDomainPolicy } = require("./OpenSearchDomainPolicy");
+//const { OpenSearchDomainSamlOption } = require("./OpenSearchDomainSamlOption");
+//const { OpenSearchInboundConnectionAccepter } = require("./OpenSearchInboundConnectionAccepter");
+//const { OpenSearchOutboundConnection } = require("./OpenSearchOutboundConnection");
 
 module.exports = pipe([
   () => [
-    // {
-    //   type: "ReportDefinition",
-    //   Client: CURReportDefinition,
-    //   propertiesDefault: {},
-    //   omitProperties: [],
-    //   inferName: get("properties.ReportName"),
-    // },
+    // OpenSearchDomain({})
+    // OpenSearchDomainPolicy({})
+    // OpenSearchDomainSamlOption({})
+    // OpenSearchInboundConnectionAccepter({})
+    // OpenSearchOutboundConnection({})
   ],
+  map(createAwsService),
   map(
     defaultsDeep({
       group: GROUP,
       compare: compare({}),
-      tagsKey,
     })
   ),
 ]);

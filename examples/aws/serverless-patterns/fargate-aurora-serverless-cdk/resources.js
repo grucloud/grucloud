@@ -640,21 +640,6 @@ exports.createResources = () => [
     }),
   },
   {
-    type: "DBSubnetGroup",
-    group: "RDS",
-    properties: ({}) => ({
-      DBSubnetGroupName:
-        "cdkstack-auroraserverlessclustersubnets734af39a-c9biv9kwphqk",
-      DBSubnetGroupDescription: "Subnets for AuroraServerlessCluster database",
-    }),
-    dependencies: ({}) => ({
-      subnets: [
-        "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
-        "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
-      ],
-    }),
-  },
-  {
     type: "DBCluster",
     group: "RDS",
     properties: ({}) => ({
@@ -693,6 +678,21 @@ exports.createResources = () => [
         "sg::CdkStack/Vpc::CdkStack-AuroraServerlessClusterSecurityGroup5A67466E-X9V6DZN5GHP3",
       ],
       secret: "aurora-user-secret",
+    }),
+  },
+  {
+    type: "DBSubnetGroup",
+    group: "RDS",
+    properties: ({}) => ({
+      DBSubnetGroupName:
+        "cdkstack-auroraserverlessclustersubnets734af39a-c9biv9kwphqk",
+      DBSubnetGroupDescription: "Subnets for AuroraServerlessCluster database",
+    }),
+    dependencies: ({}) => ({
+      subnets: [
+        "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet1",
+        "CdkStack/Vpc::CdkStack/Vpc/PrivateSubnet2",
+      ],
     }),
   },
   {

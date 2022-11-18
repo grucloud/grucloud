@@ -82,7 +82,7 @@ const shouldRetryOnExceptionDefault = ({
 const AwsClient =
   ({ spec, config }) =>
   (endpoint) => {
-    const { type, group, groupType } = spec;
+    const { type, groupType } = spec;
     assert(config);
     assert(endpoint);
 
@@ -177,7 +177,11 @@ const AwsClient =
         filterResource = () => true,
         extraParam = {},
         enhanceParams = () => identity,
-        ignoreErrorCodes = ["AccessDeniedException"],
+        ignoreErrorCodes = [
+          "AccessDeniedException",
+          "InvalidAccessException",
+          "BadRequestException",
+        ],
         getById,
       }) =>
       ({ lives, params = {} } = {}) =>
@@ -185,7 +189,7 @@ const AwsClient =
           tryCatch(
             pipe([
               tap(() => {
-                assert(method);
+                assert(method, `no method for ${spec.groupType}`);
                 //assert(getParam);
                 //assert(isFunction(endpoint()[method]));
               }),
@@ -306,6 +310,9 @@ const AwsClient =
                   tryCatch(
                     pipe([
                       (param) => endpoint()[method](param),
+                      tap((params) => {
+                        assert(true);
+                      }),
                       when(() => getParam, get(getParam)),
                       tap((params) => {
                         assert(true);
@@ -867,7 +874,15 @@ exports.createAwsResource = ({
               })
             ),
             switchCase([
-              () => model.getById,
+              () => isFunction(getById),
+              assign({
+                getById: ({}) => getById({ client, endpoint }),
+              }),
+              () => isFunction(model.getById),
+              assign({
+                getById: ({}) => model.getById({ client, endpoint }),
+              }),
+              () => isObject(model.getById),
               assign({
                 getById: ({ pickId }) =>
                   client.getById({
@@ -876,53 +891,73 @@ exports.createAwsResource = ({
                     ...model.getById,
                   }),
               }),
-              () => getById,
-              assign({
-                getById: ({}) => getById({ client, endpoint }),
-              }),
               identity,
             ]),
             assign({
               getList: switchCase([
-                () => getList,
+                () => isFunction(getList),
                 pipe([
                   ({ getById }) =>
                     getList({ client, endpoint, getById, config }),
                 ]),
+                () => isFunction(model.getList),
+                pipe([
+                  ({ getById }) =>
+                    model.getList({ client, endpoint, getById, config }),
+                ]),
+                () => isObject(model.getList),
                 ({ getById }) =>
                   client.getList({
                     getById,
                     ...model.getList,
                   }),
+                pipe([
+                  tap((params) => {
+                    assert(true);
+                  }),
+                ]),
               ]),
               create: switchCase([
-                () => create,
+                () => isFunction(create),
                 ({ getById }) => create({ endpoint, getById }),
+                () => isFunction(model.create),
+                ({ getById }) => model.create({ endpoint, getById }),
+                () => isObject(model.create),
                 ({ getById }) =>
                   client.create({
                     getById,
                     ...model.create,
                   }),
+                identity,
               ]),
               update: switchCase([
-                () => update,
-                ({ getById }) => update({ endpoint, getById }),
+                () => isFunction(update),
+                ({ getById }) => update({ endpoint, getById, pickId }),
+                () => isFunction(model.update),
+                ({ getById }) => model.update({ endpoint, getById, pickId }),
+                () => isObject(model.update),
                 ({ getById, pickId }) =>
                   client.update({
                     pickId,
                     getById,
                     ...model.update,
                   }),
+
+                identity,
               ]),
               destroy: switchCase([
-                () => destroy,
+                () => isFunction(destroy),
                 ({ getById }) => destroy({ endpoint, getById }),
+                () => isFunction(model.destroy),
+                ({ getById }) => model.destroy({ endpoint, getById }),
+                () => isObject(model.destroy),
                 ({ getById }) =>
                   client.destroy({
                     getById,
                     ignoreErrorCodes: model.ignoreErrorCodes,
                     ...model.destroy,
                   }),
+                identity,
               ]),
             }),
             assign({

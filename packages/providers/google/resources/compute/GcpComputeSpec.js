@@ -175,7 +175,11 @@ module.exports = pipe([
       type: "Firewall",
       Client: GcpFirewall,
       dependencies: {
-        network: { type: "Network", group: "compute" },
+        network: {
+          type: "Network",
+          group: "compute",
+          excludeDefaultDependencies: true,
+        },
       },
       compare: compareGoogle({
         filterTarget: () =>
@@ -226,8 +230,17 @@ module.exports = pipe([
       dependsOnList: ["compute::Disk"],
       dependencies: {
         ip: { type: "Address", group: "compute" },
-        subNetwork: { type: "Subnetwork", group: "compute" },
-        disks: { type: "Disk", group: "compute", list: true },
+        subNetwork: {
+          type: "Subnetwork",
+          group: "compute",
+          excludeDefaultDependencies: true,
+        },
+        disks: {
+          type: "Disk",
+          group: "compute",
+          excludeDefaultDependencies: true,
+          list: true,
+        },
         firewall: { type: "Firewall", group: "compute" },
         serviceAccount: { type: "ServiceAccount", group: "iam" },
       },

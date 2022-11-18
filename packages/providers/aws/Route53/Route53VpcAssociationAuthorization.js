@@ -5,8 +5,6 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { createAwsResource } = require("../AwsClient");
 
-const { hostedZoneIdToResourceId } = require("./Route53Common");
-
 const model = ({ config }) => ({
   package: "route-53",
   client: "Route53",
@@ -95,14 +93,7 @@ exports.Route53VpcAssociationAuthorization = ({ spec, config }) =>
         () =>
           client.getListWithParent({
             parent: { type: "HostedZone", group: "Route53" },
-            pickKey: pipe([
-              tap((params) => {
-                assert(true);
-              }),
-              get("Id"),
-              hostedZoneIdToResourceId,
-              (Id) => ({ HostedZoneId: Id }),
-            ]),
+            pickKey: pipe([pick(["HostedZoneId"])]),
             method: "listVPCAssociationAuthorizations",
             decorate:
               ({ lives, parent }) =>
@@ -157,7 +148,7 @@ exports.Route53VpcAssociationAuthorization = ({ spec, config }) =>
         }),
         () => otheProps,
         defaultsDeep({
-          HostedZoneId: hostedZoneIdToResourceId(getField(hostedZone, "Id")),
+          HostedZoneId: getField(hostedZone, "HostedZoneId"),
           VPC: {
             VPCId: getField(vpc, "VpcId"),
             VPCRegion: get("resource.provider.config.region")(vpc),

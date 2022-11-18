@@ -13,8 +13,8 @@ skinparam monochrome true
 ++++ Role (2)
 +++ RDS
 ++++ DBProxy (1)
-++++ DBSubnetGroup (1)
 ++++ DBCluster (1)
+++++ DBSubnetGroup (1)
 ++++ DBInstance (1)
 +++ SecretsManager
 ++++ Secret (1)
