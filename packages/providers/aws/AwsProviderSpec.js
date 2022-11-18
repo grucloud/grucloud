@@ -49,6 +49,7 @@ const GROUPS = [
   ["EMRServerless", "emr-serverless"],
   ["ELBv2", "elb"],
   ["Firehose", "firehose"],
+  ["IVS", "ivs"],
   ["Glue", "glue"],
   ["Grafana", "grafana"],
   ["IdentityStore", "identitystore"],
