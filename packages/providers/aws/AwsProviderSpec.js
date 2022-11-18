@@ -81,6 +81,7 @@ const GROUPS = [
 const GROUPS_MISSING = [
   "CloudWatchLogs", // missing from the list provider by AWS
   //"Scheduler", Not yet available from SSM
+  // "DirectoryService" Not available from SSM
 ];
 const GROUPS_GLOBAL = [
   "IAM",
