@@ -270,11 +270,13 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Route", () =>
+  it("Route", () =>
     pipe([
       () => ({
         groupType: "EC2::Route",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { RouteTableId: "rtb-12345", DestinationCidrBlock: "0.0.0.0/0" },
+        ],
       }),
       awsResourceTest,
     ])());
@@ -288,27 +290,39 @@ describe("EC2", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("SecurityGroup", () =>
+  it("SecurityGroup", () =>
     pipe([
       () => ({
         groupType: "EC2::SecurityGroup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ GroupId: "sg-06ff67cc5474ec7c7" }],
+        skipGetByName: true,
       }),
       awsResourceTest,
     ])());
-  it.skip("SecurityGroupRuleIngress", () =>
+  it("SecurityGroupRuleIngress", () =>
     pipe([
       () => ({
         groupType: "EC2::SecurityGroupRuleIngress",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ GroupId: "sg-06ff67cc5474ec7c7" }],
+        skipGetByName: true,
+        skipGetById: true,
       }),
       awsResourceTest,
     ])());
-  it.skip("SecurityGroupRuleEgress", () =>
+  it("SecurityGroupRuleEgress", () =>
     pipe([
       () => ({
         groupType: "EC2::SecurityGroupRuleEgress",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            GroupId: "sg-06ff67cc5474ec7c7",
+            FromPort: 80,
+            IpProtocol: "tcp",
+            ToPort: 80,
+          },
+        ],
+        skipGetByName: true,
+        skipGetById: true,
       }),
       awsResourceTest,
     ])());
