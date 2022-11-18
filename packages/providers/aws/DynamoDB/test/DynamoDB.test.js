@@ -16,6 +16,18 @@ describe("DynamoDB", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("TableItem", () =>
+    pipe([
+      () => ({
+        groupType: "DynamoDB::TableItem",
+        livesNotFound: ({ config }) => [
+          {
+            TableName: "12345",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
   it("KinesisStreamingDestination", () =>
     pipe([
       () => ({

@@ -3,43 +3,35 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("OpenSearch", async function () {
-  it.skip("Domain", () =>
+describe("CostExplorer", async function () {
+  it.skip("AnomalyMonitor", () =>
     pipe([
       () => ({
-        groupType: "OpenSearch::Domain",
+        groupType: "CostExplorer::AnomalyMonitor",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
-  it.skip("DomainPolicy", () =>
+  it.skip("AnomalySubscription", () =>
     pipe([
       () => ({
-        groupType: "OpenSearch::DomainPolicy",
+        groupType: "CostExplorer::AnomalySubscription",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
-  it.skip("DomainSamlOption", () =>
+  it.skip("CostAllocationTag", () =>
     pipe([
       () => ({
-        groupType: "OpenSearch::DomainSamlOption",
+        groupType: "CostExplorer::CostAllocationTag",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
-  it.skip("InboundConnectionAccepter", () =>
+  it.skip("CostCategory", () =>
     pipe([
       () => ({
-        groupType: "OpenSearch::InboundConnectionAccepter",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it.skip("OutboundConnection", () =>
-    pipe([
-      () => ({
-        groupType: "OpenSearch::OutboundConnection",
+        groupType: "CostExplorer::CostCategory",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,

@@ -4,6 +4,14 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("SSM", async function () {
+  it.skip("DefaultPatchBaseline", () =>
+    pipe([
+      () => ({
+        groupType: "SSM::DefaultPatchBaseline",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("Document", () =>
     pipe([
       () => ({

@@ -67,6 +67,14 @@ describe("Route53", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("ResolverConfig", () =>
+    pipe([
+      () => ({
+        groupType: "Route53::ResolverConfig",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("VpcAssociationAuthorization", () =>
     pipe([
       () => ({

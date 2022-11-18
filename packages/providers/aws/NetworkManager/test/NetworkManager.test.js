@@ -103,4 +103,17 @@ describe("NetworkManager", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("SiteToSiteVpnAttachment", () =>
+    pipe([
+      () => ({
+        config,
+        groupType: "NetworkManager::SiteToSiteVpnAttachment",
+        livesNotFound: ({ config }) => [
+          {
+            AttachmentId: "attachment-01484f6f707aacf96",
+          },
+        ],
+      }),
+      awsResourceTest,
+    ])());
 });
