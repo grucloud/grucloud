@@ -1,6 +1,6 @@
 {
   "name": "cognito-identity-simple",
-  "version": "10.0.2",
+  "version": "10.2.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -9,7 +9,6 @@
     "graph": "gc graph",
     "gencode": "gc gencode",
     "gencode-no-fetch": "gc gencode --no-inventory-fetch",
-
     "list": "gc list",
     "list-graph": "gc list -g",
     "plan": "gc plan",
@@ -22,8 +21,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^10.0.2",
-    "@grucloud/provider-aws": "^10.0.2",
+    "@grucloud/core": "^10.2.0",
+    "@grucloud/provider-aws": "^10.2.0",
     "rubico": "1.8.10"
   },
   "devDependencies": {
