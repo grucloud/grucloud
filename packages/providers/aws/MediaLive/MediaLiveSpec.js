@@ -11,7 +11,7 @@ const { createAwsService } = require("../AwsService");
 //const { MediaLiveInput} = require("./MediaLiveInput");
 //const { MediaLiveInputSecurityGroup } = require("./MediaLiveInputSecurityGroup");
 //const { MediaLiveMultiplex } = require("./MediaLiveMultiplex");
-//const { MultiplexMultiplexProgram } = require("./MultiplexMultiplexProgram");
+//const { MediaLiveMultiplexProgram } = require("./MediaLiveMultiplexProgram");
 
 const GROUP = "MediaLive";
 
@@ -23,7 +23,7 @@ module.exports = pipe([
     // MediaLiveInput({})
     // MediaLiveInputSecurityGroup({})
     // MediaLiveMultiplex({})
-    // MultiplexMultiplexProgram({})
+    // MediaLiveMultiplexProgram({})
   ],
   map(createAwsService),
   map(
