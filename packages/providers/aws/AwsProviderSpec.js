@@ -76,6 +76,7 @@ const GROUPS = [
   ["S3", "s3"],
   ["SecretsManager", "secretsmanager"],
   ["SecurityHub", "securityhub"],
+  ["ServiceQuotas", "service-quotas"],
   ["SESV2", "ses"],
   ["ServiceCatalog", "servicecatalog"],
   ["Shield", "shield"],
