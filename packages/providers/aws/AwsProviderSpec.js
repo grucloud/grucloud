@@ -77,6 +77,7 @@ const GROUPS = [
   ["SecurityHub", "securityhub"],
   ["SESV2", "ses"],
   ["ServiceCatalog", "servicecatalog"],
+  ["Shield", "shield"],
   ["StepFunctions", "sns"],
   ["SNS", "sns"],
   ["SSOAdmin", "sso"],
