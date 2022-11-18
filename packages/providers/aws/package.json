@@ -93,6 +93,7 @@
     "@aws-sdk/client-api-gateway": "3.208.0",
     "@aws-sdk/client-apigatewayv2": "3.208.0",
     "@aws-sdk/client-appconfig": "3.208.0",
+    "@aws-sdk/client-appflow": "3.213.0",
     "@aws-sdk/client-application-auto-scaling": "3.208.0",
     "@aws-sdk/client-apprunner": "3.208.0",
     "@aws-sdk/client-appsync": "3.208.0",
