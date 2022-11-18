@@ -25,6 +25,7 @@ const GROUPS = [
   ["ConfigService", "config"],
   ["CloudFront", "cloudfront"],
   ["CloudFormation", "cloudformation"],
+  ["CloudHSMV2", "cloudhsmv2"],
   ["CloudTrail", "cloudtrail"],
   ["CloudWatch", "cloudwatch"],
   ["CloudWatchEvent", "cloudwatch"],
