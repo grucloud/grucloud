@@ -25,7 +25,7 @@ const pickId = pipe([
 const model = {
   package: "sns",
   client: "SNS",
-  ignoreErrorCodes: ["NotFound"],
+  ignoreErrorCodes: ["NotFoundException", "NotFound"],
   getById: {
     method: "getSubscriptionAttributes",
     getField: "Attributes",
