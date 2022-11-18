@@ -54,6 +54,7 @@ const GROUPS = [
   ["Firehose", "firehose"],
   ["FSx", "fsx"],
   ["IVS", "ivs"],
+  ["GuardDuty", "guardduty"],
   ["Glue", "glue"],
   ["Grafana", "grafana"],
   ["IdentityStore", "identitystore"],
