@@ -52,6 +52,14 @@ describe("ElastiCache", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("GlobalReplicationGroup", () =>
+    pipe([
+      () => ({
+        groupType: "ElastiCache::GlobalReplicationGroup",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("User", () =>
     pipe([
       () => ({
