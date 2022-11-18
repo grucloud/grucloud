@@ -11,6 +11,7 @@ const GROUPS = [
   ["ApiGateway", "apigateway"],
   ["ApiGatewayV2", "apigatewayv2"],
   ["AppConfig", "appconfig"],
+  ["AppMesh", "appmesh"],
   ["AppRunner", "apprunner"],
   ["ApplicationAutoScaling", "application-autoscaling"],
   ["Appflow", "appflow"],

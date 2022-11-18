@@ -12,6 +12,14 @@ describe("SSM", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("MaintenanceWindowTask", () =>
+    pipe([
+      () => ({
+        groupType: "SSM::MaintenanceWindowTask",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
   it("Parameter", () =>
     pipe([
       () => ({
