@@ -48,6 +48,7 @@ const GROUPS = [
   ["ElastiCache", "elasticache"],
   ["EMRServerless", "emr-serverless"],
   ["ELBv2", "elb"],
+  ["Evidently", "evidently"],
   ["Firehose", "firehose"],
   ["IVS", "ivs"],
   ["Glue", "glue"],
