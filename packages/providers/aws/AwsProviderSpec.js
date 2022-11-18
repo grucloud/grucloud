@@ -75,6 +75,7 @@ const GROUPS = [
   ["Route53Resolver", "route53resolver"],
   ["Route53RecoveryControlConfig", "route53-recovery-control-config"],
   ["S3", "s3"],
+  ["Schemas", "schemas"],
   ["SecretsManager", "secretsmanager"],
   ["SecurityHub", "securityhub"],
   ["ServiceQuotas", "service-quotas"],
