@@ -34,6 +34,7 @@ const GROUPS = [
   ["CognitoIdentityServiceProvider", "cognito-idp"],
   ["ControlTower", "controltower"],
   ["CUR", "cur"],
+  ["DMS", "dms"],
   ["DynamoDB", "dynamodb"],
   ["EC2", "ec2"],
   ["ECR", "ecr"],
