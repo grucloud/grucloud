@@ -30,6 +30,7 @@ const GROUPS = [
   ["CloudWatchEvent", "cloudwatch"],
   ["CognitoIdentity", "cognito-identity"],
   ["CognitoIdentityServiceProvider", "cognito-idp"],
+  ["ControlTower", "controltower"],
   ["CUR", "cur"],
   ["DynamoDB", "dynamodb"],
   ["EC2", "ec2"],
