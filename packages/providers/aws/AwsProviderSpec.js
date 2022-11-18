@@ -58,6 +58,7 @@ const GROUPS = [
   ["LakeFormation", "lakeformation"],
   ["Lambda", "lambda"],
   ["Lightsail", "lightsail"],
+  ["Macie2", "macie"],
   ["MediaLive", "medialive"],
   ["MemoryDB", "memorydb"],
   ["MQ", "mq"],
