@@ -61,6 +61,42 @@ const untagResource = untagResourceIam({
   method: "untagRole",
 });
 
+const cannotBeDeleted = pipe([
+  get("live.Path"),
+  or([includes("/aws-service-role"), includes("/aws-reserved/")]),
+  tap((params) => {
+    assert(true);
+  }),
+]);
+
+const managedByOther = ({ live, lives, config }) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    or([
+      () => cannotBeDeleted({ live, lives, config }),
+      pipe([
+        tap((params) => {
+          assert(config);
+        }),
+        () =>
+          lives.getByType({
+            type: "Stack",
+            group: "CloudFormation",
+            providerName: config.providerName,
+          }),
+        any(
+          pipe([
+            get("name"),
+            append("-AWS"),
+            (stackName) => live.RoleName.includes(stackName),
+          ])
+        ),
+      ]),
+    ]),
+  ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamRole = ({ spec, config }) => {
   const iam = createIAM(config);
@@ -70,23 +106,6 @@ exports.AwsIamRole = ({ spec, config }) => {
   const findName = get("live.RoleName");
   const findId = get("live.Arn");
   const pickId = pick(["RoleName"]);
-
-  const managedByOther = ({ live, lives }) =>
-    pipe([
-      () =>
-        lives.getByType({
-          type: "Stack",
-          group: "CloudFormation",
-          providerName: config.providerName,
-        }),
-      any(
-        pipe([
-          get("name"),
-          append("-AWS"),
-          (stackName) => live.RoleName.includes(stackName),
-        ])
-      ),
-    ])();
 
   const findDependencyRoleCommon = ({ type, group, live, lives, config }) => ({
     type,
@@ -439,11 +458,6 @@ exports.AwsIamRole = ({ spec, config }) => {
         }),
       }),
     ])();
-
-  const cannotBeDeleted = pipe([
-    get("live.Path"),
-    or([includes("/aws-service-role"), includes("/aws-reserved/")]),
-  ]);
 
   return {
     spec,
