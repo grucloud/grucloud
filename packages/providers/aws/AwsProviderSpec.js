@@ -15,6 +15,7 @@ const GROUPS = [
   ["ApplicationAutoScaling", "application-autoscaling"],
   ["AppSync", "appsync"],
   ["Athena", "athena"],
+  ["AuditManager", "auditmanager"],
   ["Autoscaling", "autoscaling"],
   ["Backup", "backup"],
   ["Batch", "batch"],
