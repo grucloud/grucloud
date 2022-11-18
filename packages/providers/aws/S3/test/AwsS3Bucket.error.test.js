@@ -12,37 +12,6 @@ describe("AwsS3BucketErrors", async function () {
   before(async function () {});
   after(async () => {});
 
-  //TODO
-  it.skip("s3Bucket already exist", async function () {
-    const provider = await AwsProvider({
-      config: () => ({ projectName: "gru-test" }),
-    });
-
-    const cli = await Cli({
-      createStack: () => ({
-        provider,
-      }),
-      config,
-    });
-
-    provider.S3.makeBucket({
-      name: "bucket",
-      properties: () => ({}),
-    });
-    try {
-      await cli.planApply({
-        commandOptions: { force: true },
-      });
-      assert(false, "should not be here");
-    } catch (exception) {
-      assert(exception.error);
-      const result =
-        exception.error.resultDeploy.results[0].resultCreate.results[0];
-      assert.equal(result.error.code, "BucketAlreadyExists");
-      assert.equal(result.item.resource.name, "bucket");
-    }
-  });
-
   it("s3Bucket acl error", async function () {
     const provider = await AwsProvider({
       config: () => ({ projectName: "gru-test" }),

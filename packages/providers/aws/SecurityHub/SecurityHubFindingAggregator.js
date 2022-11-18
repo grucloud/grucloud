@@ -3,6 +3,7 @@ const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
+const { ignoreErrorCodes } = require("./SecurityHubCommon");
 
 const pickId = pipe([
   tap(({ FindingAggregatorArn }) => {
@@ -61,7 +62,7 @@ exports.SecurityHubFindingAggregator = () => ({
       dependencyId: ({ lives, config }) => pipe([() => "default"]),
     },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#getFindingAggregator-property
   getById: {
     method: "getFindingAggregator",

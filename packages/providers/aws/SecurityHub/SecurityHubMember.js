@@ -5,6 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { getByNameCore } = require("@grucloud/core/Common");
+const { ignoreErrorCodes } = require("./SecurityHubCommon");
 
 const pickId = pipe([
   tap(({ AccountId }) => {
@@ -77,7 +78,7 @@ exports.SecurityHubMember = () => ({
       dependencyId: ({ lives, config }) => pipe([get("AccountId")]),
     },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#getMembers-property
   getById: {
     method: "getMembers",

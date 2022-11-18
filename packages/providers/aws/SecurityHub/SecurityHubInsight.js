@@ -3,6 +3,7 @@ const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, identity } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
+const { ignoreErrorCodes } = require("./SecurityHubCommon");
 
 const pickId = pipe([
   tap(({ InsightArn }) => {
@@ -48,10 +49,10 @@ exports.SecurityHubInsight = () => ({
       dependencyId: ({ lives, config }) => pipe([() => "default"]),
     },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#getInsight-property
+  ignoreErrorCodes,
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#getInsights-property
   getById: {
-    method: "getInsight",
+    method: "getInsights",
     getField: "Insights",
     pickId: pipe([
       tap(({ InsightArn }) => {
@@ -63,9 +64,9 @@ exports.SecurityHubInsight = () => ({
     ]),
     decorate,
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#listInsights-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#getInsights-property
   getList: {
-    method: "describeInsights",
+    method: "getInsights",
     getParam: "Insights",
     decorate,
   },

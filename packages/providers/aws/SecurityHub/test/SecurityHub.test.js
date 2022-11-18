@@ -4,7 +4,7 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("SecurityHub", async function () {
-  it.skip("Account", () =>
+  it("Account", () =>
     pipe([
       () => ({
         groupType: "SecurityHub::Account",
@@ -12,27 +12,45 @@ describe("SecurityHub", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("ActionTarget", () =>
+  it("ActionTarget", () =>
     pipe([
       () => ({
         groupType: "SecurityHub::ActionTarget",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            ActionTargetArn: `arn:aws:securityhub:${
+              config.region
+            }:${config.accountId()}:action/custom/Remediation`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("FindingAggregator", () =>
+  it("FindingAggregator", () =>
     pipe([
       () => ({
         groupType: "SecurityHub::FindingAggregator",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            FindingAggregatorArn: `arn:aws:securityhub:${
+              config.region
+            }:${config.accountId()}:finding-aggregator/123e4567-e89b-12d3-a456-426652340000`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Insight", () =>
+  it("Insight", () =>
     pipe([
       () => ({
         groupType: "SecurityHub::Insight",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          {
+            InsightArn: `arn:aws:securityhub:${
+              config.region
+            }:${config.accountId()}:insight/123456789012/custom/a1b2c3d4-5678-90ab-cdef-EXAMPLE11111`,
+          },
+        ],
       }),
       awsResourceTest,
     ])());

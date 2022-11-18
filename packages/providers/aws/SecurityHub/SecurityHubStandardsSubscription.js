@@ -4,6 +4,7 @@ const { defaultsDeep, first } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { replaceAccountAndRegion } = require("../AwsCommon");
+const { ignoreErrorCodes } = require("./SecurityHubCommon");
 
 const pickId = pipe([
   tap(({ StandardsSubscriptionArn }) => {
@@ -55,7 +56,7 @@ exports.SecurityHubStandardsSubscription = () => ({
       dependencyId: ({ lives, config }) => pipe([() => "default"]),
     },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes,
   filterLive: ({ lives, providerConfig }) =>
     pipe([
       assign({

@@ -4,6 +4,7 @@ const { defaultsDeep, isEmpty, unless, find } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { ignoreErrorCodes } = require("./SecurityHubCommon");
 
 const pickId = pipe([
   tap(({ AdminAccountId }) => {
@@ -67,7 +68,7 @@ exports.SecurityHubOrganizationAdminAccount = () => ({
       dependencyId: ({ lives, config }) => pipe([get("AdminAccountId")]),
     },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html#listOrganizationAdminAccounts-property
   getById: {
     method: "listOrganizationAdminAccounts",

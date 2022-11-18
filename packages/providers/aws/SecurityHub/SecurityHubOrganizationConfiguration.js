@@ -3,6 +3,7 @@ const { pipe, tap, get, pick } = require("rubico");
 const { defaultsDeep, keys, isDeepEqual } = require("rubico/x");
 
 const { getByNameCore } = require("@grucloud/core/Common");
+const { ignoreErrorCodes } = require("./SecurityHubCommon");
 
 const configurationDefault = {
   AutoEnable: false,
@@ -37,7 +38,7 @@ exports.SecurityHubOrganizationConfiguration = () => ({
   inferName: pipe([() => "default"]),
   findName: pipe([() => "default"]),
   findId: pipe([() => "default"]),
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes,
   ignoreErrorMessages,
   dependencies: {
     securityHubAccount: {
