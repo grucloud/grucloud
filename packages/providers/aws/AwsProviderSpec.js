@@ -82,6 +82,7 @@ const GROUPS = [
   ["SSOAdmin", "sso"],
   ["SQS", "sqs"],
   ["SSM", "ssm"],
+  ["Transfer", "transfer"],
   ["WAFV2", "waf"],
 ];
 
