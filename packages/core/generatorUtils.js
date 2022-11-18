@@ -441,14 +441,14 @@ const replaceRegion = ({ providerConfig, asFunction = true }) =>
       }),
       or([
         includes(providerConfig.region),
-        includes(providerConfig.accountId()),
+        includes(providerConfig.accountId && providerConfig.accountId()),
       ]),
     ]),
     pipe([
       callProp("replaceAll", providerConfig.region, "${config.region}"),
       callProp(
         "replaceAll",
-        providerConfig.accountId(),
+        providerConfig.accountId && providerConfig.accountId(),
         "${config.accountId()}"
       ),
       switchCase([
@@ -485,6 +485,10 @@ const dependencyValue = ({ key, list, resource, providerConfig }) =>
     callProp("sort"),
     map(
       pipe([
+        tap((params) => {
+          assert(true);
+        }),
+
         replaceRegion({ providerConfig, asFunction: false }),
         providerConfig.transformResourceName({ resource }),
         unless(includes("`"), pipe([prepend('"'), append('"')])),
@@ -1039,30 +1043,36 @@ const removeDefaultDependencies =
                           () => ({ group, type }),
                           findDependencySpec({ writersSpec, resource }),
                           first,
-                          ({ excludeDefaultDependencies }) =>
-                            pipe([
-                              () => ids,
-                              filter(
-                                not(
-                                  pipe([
-                                    findLiveById({
-                                      lives,
-                                      type,
-                                      group,
-                                      providerName,
-                                    }),
-                                    //TODO isDefault ?
-                                    and([
-                                      or([
-                                        get("managedByOther"),
-                                        //get("isDefault"),
+                          switchCase([
+                            isEmpty,
+                            tap((params) => {
+                              assert(true);
+                            }),
+                            ({ excludeDefaultDependencies }) =>
+                              pipe([
+                                () => ids,
+                                filter(
+                                  not(
+                                    pipe([
+                                      findLiveById({
+                                        lives,
+                                        type,
+                                        group,
+                                        providerName,
+                                      }),
+                                      //TODO isDefault ?
+                                      and([
+                                        or([
+                                          get("managedByOther"),
+                                          //get("isDefault"),
+                                        ]),
+                                        () => excludeDefaultDependencies,
                                       ]),
-                                      () => excludeDefaultDependencies,
-                                    ]),
-                                  ])
-                                )
-                              ),
-                            ])(),
+                                    ])
+                                  )
+                                ),
+                              ])(),
+                          ]),
                         ]),
                       ]),
                     ])(),
