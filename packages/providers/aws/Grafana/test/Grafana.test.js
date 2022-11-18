@@ -3,51 +3,43 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("DMS", async function () {
-  it.skip("Certificate", () =>
+describe("Grafana", async function () {
+  it.skip("LicenseAssociation", () =>
     pipe([
       () => ({
-        groupType: "DMS::Certificate",
+        groupType: "Grafana::LicenseAssociation",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
-  it.skip("Endpoint", () =>
+  it.skip("RoleAssociation", () =>
     pipe([
       () => ({
-        groupType: "DMS::Endpoint",
+        groupType: "Grafana::RoleAssociation",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
-  it.skip("EventSubscription", () =>
+  it.skip("Workspace", () =>
     pipe([
       () => ({
-        groupType: "DMS::EventSubscription",
+        groupType: "Grafana::Workspace",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
-  it.skip("ReplicationInstance ", () =>
+  it.skip("WorkspaceApiKey  ", () =>
     pipe([
       () => ({
-        groupType: "DMS::ReplicationInstance",
+        groupType: "Grafana::WorkspaceApiKey",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,
     ])());
-  it.skip("ReplicationSubnetGroup", () =>
+  it.skip("WorkspaceSamlConfiguration", () =>
     pipe([
       () => ({
-        groupType: "DMS::ReplicationSubnetGroup",
-        livesNotFound: ({ config }) => [{}],
-      }),
-      awsResourceTest,
-    ])());
-  it.skip("ReplicationTask", () =>
-    pipe([
-      () => ({
-        groupType: "DMS::ReplicationTask",
+        groupType: "Grafana::WorkspaceSamlConfiguration",
         livesNotFound: ({ config }) => [{}],
       }),
       awsResourceTest,

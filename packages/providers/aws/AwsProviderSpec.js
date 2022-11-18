@@ -49,6 +49,7 @@ const GROUPS = [
   ["ELBv2", "elb"],
   ["Firehose", "firehose"],
   ["Glue", "glue"],
+  ["Grafana", "grafana"],
   ["IdentityStore", "identitystore"],
   ["Inspector2", "inspector2"],
   ["Kinesis", "kinesis"],

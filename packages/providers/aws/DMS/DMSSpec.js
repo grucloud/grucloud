@@ -25,6 +25,7 @@ module.exports = pipe([
     // DMSEventSubscription({})
     // DMSReplicationInstance({})
     // DMSReplicationSubnetGroup({})
+    // DMSReplicationTask({})
   ],
   map(createAwsService),
   map(
