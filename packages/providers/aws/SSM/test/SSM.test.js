@@ -36,4 +36,12 @@ describe("SSM", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("ServiceSetting", () =>
+    pipe([
+      () => ({
+        groupType: "SSM::ServiceSetting",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
 });

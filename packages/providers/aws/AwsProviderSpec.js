@@ -38,6 +38,7 @@ const GROUPS = [
   ["ControlTower", "controltower"],
   ["CostExplorer", "costexplorer"],
   ["CUR", "cur"],
+  ["DirectConnect", "directconnect"],
   ["DMS", "dms"],
   ["DynamoDB", "dynamodb"],
   ["EC2", "ec2"],

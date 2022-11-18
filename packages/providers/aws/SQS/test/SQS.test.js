@@ -18,4 +18,20 @@ describe("SQS", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("RedriveAllowPolicy", () =>
+    pipe([
+      () => ({
+        groupType: "SQS::RedriveAllowPolicy",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
+  it.skip("RedrivePolicy", () =>
+    pipe([
+      () => ({
+        groupType: "SQS::RedrivePolicy",
+        livesNotFound: ({ config }) => [{}],
+      }),
+      awsResourceTest,
+    ])());
 });
