@@ -17,7 +17,7 @@ exports.createResources = () => [
         type: "SystemAssigned",
       },
       properties: {
-        kubernetesVersion: "1.24.0",
+        kubernetesVersion: "1.24.6",
         dnsPrefix: "cluster-dns",
         agentPoolProfiles: [
           {

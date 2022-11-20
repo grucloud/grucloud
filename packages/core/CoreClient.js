@@ -226,7 +226,13 @@ module.exports = CoreClient = ({
         defaultsDeep({
           getByName: getByNameCore(client),
           isUpById: pipe([client.getById, isInstanceUp]),
-          isDownById: pipe([client.getById, isInstanceDown]),
+          isDownById: pipe([
+            client.getById,
+            tap((params) => {
+              assert(true);
+            }),
+            isInstanceDown,
+          ]),
         }),
       ])(),
     assign({

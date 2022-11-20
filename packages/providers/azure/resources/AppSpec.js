@@ -11,6 +11,12 @@ exports.fnSpecs = ({ config }) =>
       {
         // https://docs.microsoft.com/en-us/rest/api/app/
         type: "ManagedEnvironment",
+        isInstanceDown: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          eq(get("properties.provisioningState"), "ScheduledForDelete"),
+        ]),
         findDependencies: ({ live, lives }) => [
           findDependenciesResourceGroup({ live, lives, config }),
           {

@@ -37,6 +37,7 @@ const { findIdsByPath } = require("@grucloud/core/Common");
 
 const {
   isInstanceUp: isInstanceUpDefault,
+  isInstanceDown: isInstanceDownDefault,
   AZURE_MANAGEMENT_BASE_URL,
   isSubstituable,
   configDefaultGeneric,
@@ -240,6 +241,7 @@ exports.AzClient = ({
   lives,
   spec,
   isInstanceUp = isInstanceUpDefault,
+  isInstanceDown = isInstanceDownDefault,
   config,
   findTargetId = ({ path }) =>
     (result) =>
@@ -571,6 +573,7 @@ exports.AzClient = ({
     verbUpdate: verbUpdateFromMethods(methods),
     onCreateFilterPayload,
     isInstanceUp,
+    isInstanceDown,
     isDefault: spec.isDefault,
     cannotBeDeleted: ({ lives, config }) =>
       pipe([
