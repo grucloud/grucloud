@@ -12,4 +12,12 @@ describe("SecretsManager", async function () {
       }),
       awsResourceTest,
     ])());
+  it.skip("SecretRotation", () =>
+    pipe([
+      () => ({
+        groupType: "SecretsManager::SecretRotation",
+        livesNotFound: ({ config }) => [{ Name: "my-secret" }],
+      }),
+      awsResourceTest,
+    ])());
 });

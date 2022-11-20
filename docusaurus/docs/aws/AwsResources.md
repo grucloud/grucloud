@@ -86,6 +86,8 @@ List of resources for provider aws:
 [Accelerator](./resources/GlobalAccelerator/Accelerator.md), [EndpointGroup](./resources/GlobalAccelerator/EndpointGroup.md), [Listener](./resources/GlobalAccelerator/Listener.md)
 * Glue: 
 [Job](./resources/Glue/Job.md)
+* Grafana: 
+[Workspace](./resources/Grafana/Workspace.md)
 * IAM: 
 [OpenIDConnectProvider](./resources/IAM/OpenIDConnectProvider.md), [User](./resources/IAM/User.md), [Group](./resources/IAM/Group.md), [Role](./resources/IAM/Role.md), [Policy](./resources/IAM/Policy.md), [InstanceProfile](./resources/IAM/InstanceProfile.md)
 * IdentityStore: 
@@ -133,7 +135,7 @@ List of resources for provider aws:
 * SecretsManager: 
 [Secret](./resources/SecretsManager/Secret.md), [ResourcePolicy](./resources/SecretsManager/ResourcePolicy.md)
 * SecurityHub: 
-[Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
+[Account](./resources/SecurityHub/Account.md), [ActionTarget](./resources/SecurityHub/ActionTarget.md), [FindingAggregator](./resources/SecurityHub/FindingAggregator.md), [Insight](./resources/SecurityHub/Insight.md), [Member](./resources/SecurityHub/Member.md), [OrganizationAdminAccount](./resources/SecurityHub/OrganizationAdminAccount.md), [OrganizationConfiguration](./resources/SecurityHub/OrganizationConfiguration.md), [StandardsSubscription](./resources/SecurityHub/StandardsSubscription.md)
 * SESV2: 
 [ConfigurationSet](./resources/SESV2/ConfigurationSet.md), [EmailIdentity](./resources/SESV2/EmailIdentity.md)
 * SNS: 
