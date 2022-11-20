@@ -132,7 +132,7 @@ exports.RedshiftServerlessNamespace = () => ({
   configDefault: ({
     name,
     namespace,
-    properties: { Tags, ...otherProps },
+    properties: { tags, ...otherProps },
     dependencies: { iamRoleDefault, iamRoles, kmsKey },
     config,
   }) =>
@@ -143,7 +143,7 @@ exports.RedshiftServerlessNamespace = () => ({
           name,
           config,
           namespace,
-          UserTags: Tags,
+          UserTags: tags,
           key: "key",
           value: "value",
         }),

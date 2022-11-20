@@ -3,16 +3,16 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe("RedshiftServerless", async function () {
-  it.skip("EndpointAccess", () =>
+describe.skip("RedshiftServerless", async function () {
+  it("EndpointAccess", () =>
     pipe([
       () => ({
         groupType: "RedshiftServerless::EndpointAccess",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ endpointName: "e123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("Namespace", () =>
+  it("Namespace", () =>
     pipe([
       () => ({
         groupType: "RedshiftServerless::Namespace",
@@ -28,11 +28,19 @@ describe("RedshiftServerless", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Workgroup", () =>
+  it("UsageLimit", () =>
+    pipe([
+      () => ({
+        groupType: "RedshiftServerless::UsageLimit",
+        livesNotFound: ({ config }) => [{ usageLimitId: "u123" }],
+      }),
+      awsResourceTest,
+    ])());
+  it("Workgroup", () =>
     pipe([
       () => ({
         groupType: "RedshiftServerless::Workgroup",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ workgroupName: "w123" }],
       }),
       awsResourceTest,
     ])());
