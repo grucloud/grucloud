@@ -20,7 +20,7 @@ describe("Grafana", async function () {
       }),
       awsResourceTest,
     ])());
-  it.only("Workspace", () =>
+  it("Workspace", () =>
     pipe([
       () => ({
         groupType: "Grafana::Workspace",

@@ -70,6 +70,7 @@ const findNameByDependency =
     pipe([
       tap((params) => {
         assert(arnKey);
+        assert(live);
         assert(live.associatedEntity);
       }),
       () => lives.getByType({ type, group, providerName: config.providerName }),
@@ -80,10 +81,13 @@ const findNameByDependency =
       get("name"),
     ])();
 
-const findResoureName =
+const findResourceName =
   ({ lives, config }) =>
   (live) =>
     pipe([
+      tap((params) => {
+        assert(live);
+      }),
       () => RamResourceDependencies,
       map(pipe([findNameByDependency({ lives, config })(live)])),
       find(not(isEmpty)),
@@ -157,12 +161,15 @@ exports.RAMResourceAssociation = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ lives, config }) =>
-      pipe([
-        findResoureName({ lives, config }),
-        (resourceName) =>
-          `ram-resource-assoc::${live.resourceShareName}::${resourceName}`,
-      ]),
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () => live,
+          findResourceName({ lives, config }),
+          (resourceName) =>
+            `ram-resource-assoc::${live.resourceShareName}::${resourceName}`,
+        ])(),
     findId: () =>
       pipe([
         ({ resourceShareArn, associatedEntity }) =>

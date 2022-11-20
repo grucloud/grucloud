@@ -344,6 +344,7 @@ exports.EC2Route = ({ spec, config }) => {
         shouldRetryOnExceptionCodes: [
           "InvalidTransitGatewayID.NotFound",
           "InvalidGatewayID.NotFound",
+          "InvalidVpcEndpointId.NotFound",
         ],
         shouldRetryOnExceptionMessages: [
           "VPC Endpoints of this type cannot be used as route targets",

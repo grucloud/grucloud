@@ -52,7 +52,7 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
           pipe([
             () => live,
             findNameInTagsOrId({
-              findId: () => live.ServiceName,
+              findId: () => get("ServiceName"),
             })({ lives, config }),
             (name) =>
               pipe([

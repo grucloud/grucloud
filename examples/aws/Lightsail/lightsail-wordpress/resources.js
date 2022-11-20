@@ -10,7 +10,7 @@ exports.createResources = () => [
       relationalDatabaseName: "Database-1",
       availabilityZone: `${config.region}a`,
       engine: "postgres",
-      engineVersion: "12.11",
+      engineVersion: "12.12",
       hardware: {
         cpuCount: 2,
         diskSizeInGb: 40,
