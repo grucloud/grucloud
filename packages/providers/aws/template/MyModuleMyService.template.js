@@ -345,8 +345,8 @@ exports.MyModuleMyResource = () => ({
 
     method: "listMyResources",
     getParam: "MyResources",
-    decorate,
-    //decorate: ({ getById }) => pipe([getById]),
+    decorate: ({ getById }) => pipe([getById]),
+    //decorate,
     //decorate: ({ getById }) => pipe([(name) => ({ name }), getById]),
   },
   //  getList for child resource

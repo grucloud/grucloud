@@ -16,7 +16,7 @@ describe("RedshiftServerless", async function () {
     pipe([
       () => ({
         groupType: "RedshiftServerless::Namespace",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ namespaceName: "n123" }],
       }),
       awsResourceTest,
     ])());

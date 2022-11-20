@@ -8,7 +8,9 @@ const { createAwsService } = require("../AwsService");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html
 
 //const { RedshiftServerlessEndpointAccess } = require("./RedshiftServerlessEndpointAccess");
-//const { RedshiftServerlessNamespace} = require("./RedshiftServerlessNamespace");
+const {
+  RedshiftServerlessNamespace,
+} = require("./RedshiftServerlessNamespace");
 //const { RedshiftServerlessSnapshot } = require("./RedshiftServerlessSnapshot");
 //const { RedshiftServerlessUsageLimit } = require("./RedshiftServerlessUsageLimit");
 //const { RedshiftServerlessWorkgroup } = require("./RedshiftServerlessWorkgroup");
@@ -21,7 +23,7 @@ const compare = compareAws({ tagKeys, key: "key" });
 module.exports = pipe([
   () => [
     // RedshiftServerlessEndpointAccess({})
-    // RedshiftServerlessNamespace({})
+    RedshiftServerlessNamespace({}),
     // RedshiftServerlessSnapshot({})
     // RedshiftServerlessUsageLimit({})
     // RedshiftServerlessWorkgroup({})
