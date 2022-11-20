@@ -12,8 +12,8 @@ const {
   untagResource,
 } = require("./ECSCommon");
 
-const findId = get("live.taskSetArn");
-const findName = get("live.taskDefinition");
+const findId = () => get("taskSetArn");
+const findName = () => get("taskDefinition");
 const pickId = pick(["cluster", "service", "taskSet"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html

@@ -10,7 +10,7 @@ exports.GcpNetwork = ({ spec, config }) => {
   assert(config);
 
   const { projectId, managedByDescription } = config;
-  const isDefault = eq(get("live.name"), "default");
+  const isDefault = () => eq(get("name"), "default");
   const cannotBeDeleted = isDefault;
   const managedByOther = isDefault;
 

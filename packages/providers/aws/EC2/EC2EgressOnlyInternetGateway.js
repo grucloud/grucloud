@@ -8,7 +8,7 @@ const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
-const findId = pipe([get("live.EgressOnlyInternetGatewayId")]);
+const findId = () => pipe([get("EgressOnlyInternetGatewayId")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",

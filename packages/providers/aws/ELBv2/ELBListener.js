@@ -10,7 +10,7 @@ const { tagResource, untagResource } = require("./ELBCommon");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 const ignoreErrorCodes = ["ListenerNotFound", "ListenerNotFoundException"];
 
-const findId = get("live.ListenerArn");
+const findId = () => get("ListenerArn");
 const pickId = pick(["ListenerArn"]);
 
 const { createAwsResource } = require("../AwsClient");
@@ -114,36 +114,40 @@ exports.ELBListener = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        tap(() => {
-          assert(lives);
-        }),
-        () =>
-          lives.getById({
-            id: live.LoadBalancerArn,
-            type: "LoadBalancer",
-            group: "ElasticLoadBalancingV2",
-            providerName: config.providerName,
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          tap(() => {
+            assert(lives);
           }),
-        get("name"),
-        tap((name) => {
-          assert(name);
-        }),
-        (name) => `listener::${name}::${live.Protocol}::${live.Port}`,
-      ])(),
+          () =>
+            lives.getById({
+              id: live.LoadBalancerArn,
+              type: "LoadBalancer",
+              group: "ElasticLoadBalancingV2",
+              providerName: config.providerName,
+            }),
+          get("name"),
+          tap((name) => {
+            assert(name);
+          }),
+          (name) => `listener::${name}::${live.Protocol}::${live.Port}`,
+        ])(),
     findId,
-    managedByOther: ({ live, lives }) =>
-      pipe([
-        () =>
-          lives.getById({
-            type: "LoadBalancer",
-            group: "ElasticLoadBalancingV2",
-            providerName: config.providerName,
-            id: live.LoadBalancerArn,
-          }),
-        get("managedByOther"),
-      ])(),
+    managedByOther:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () =>
+            lives.getById({
+              type: "LoadBalancer",
+              group: "ElasticLoadBalancingV2",
+              providerName: config.providerName,
+              id: live.LoadBalancerArn,
+            }),
+          get("managedByOther"),
+        ])(),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listControlPanels-property
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

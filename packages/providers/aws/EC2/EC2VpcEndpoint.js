@@ -29,7 +29,7 @@ const { createEC2, tagResource, untagResource } = require("./EC2Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const ignoreErrorCodes = ["InvalidVpcEndpointId.NotFound"];
 
-const findId = get("live.VpcEndpointId");
+const findId = () => get("VpcEndpointId");
 
 const pickId = pipe([
   ({ VpcEndpointId }) => ({ VpcEndpointIds: [VpcEndpointId] }),
@@ -40,93 +40,91 @@ exports.EC2VpcEndpoint = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const findName = ({ live, lives, config }) =>
-    pipe([
-      () => live,
-      get("Tags"),
-      find(eq(get("Key"), "Firewall")),
-      switchCase([
-        isEmpty,
-        pipe([
-          () => ({ live, lives, config }),
-          findNameInTagsOrId({
-            findId: () => live.ServiceName,
-          }),
-          (name) =>
-            pipe([
-              () => live.VpcId,
-              tap(() => {
-                assert(live.VpcId);
-                assert(name);
-              }),
-              (id) =>
-                lives.getById({
-                  id,
-                  type: "Vpc",
-                  group: "EC2",
-                  providerName: config.providerName,
+  const findName =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        get("Tags"),
+        find(eq(get("Key"), "Firewall")),
+        switchCase([
+          isEmpty,
+          pipe([
+            () => live,
+            findNameInTagsOrId({
+              findId: () => live.ServiceName,
+            })({ lives, config }),
+            (name) =>
+              pipe([
+                () => live.VpcId,
+                tap(() => {
+                  assert(live.VpcId);
+                  assert(name);
                 }),
-              get("name", live.VpcId),
-              tap((name) => {
-                assert(name, `no Vpc name for '${live.VpcId}'`);
-              }),
-              append(`::${name}`),
-            ])(),
-        ]),
-        pipe([
-          get("Value"),
-          (id) =>
-            pipe([
-              fork({
-                firewall: pipe([
-                  () =>
-                    lives.getById({
-                      id,
-                      type: "Firewall",
-                      group: "NetworkFirewall",
-                      providerName: config.providerName,
-                    }),
-                  get("name", id),
-                ]),
-                subnet: pipe([
-                  () => live,
-                  get("SubnetIds"),
-                  tap((SubnetIds) => {
-                    assert.equal(size(SubnetIds), 1);
+                (id) =>
+                  lives.getById({
+                    id,
+                    type: "Vpc",
+                    group: "EC2",
+                    providerName: config.providerName,
                   }),
-                  first,
-                  (id) =>
-                    lives.getById({
-                      id,
-                      type: "Subnet",
-                      group: "EC2",
-                      providerName: config.providerName,
+                get("name", live.VpcId),
+                tap((name) => {
+                  assert(name, `no Vpc name for '${live.VpcId}'`);
+                }),
+                append(`::${name}`),
+              ])(),
+          ]),
+          pipe([
+            get("Value"),
+            (id) =>
+              pipe([
+                fork({
+                  firewall: pipe([
+                    () =>
+                      lives.getById({
+                        id,
+                        type: "Firewall",
+                        group: "NetworkFirewall",
+                        providerName: config.providerName,
+                      }),
+                    get("name", id),
+                  ]),
+                  subnet: pipe([
+                    () => live,
+                    get("SubnetIds"),
+                    tap((SubnetIds) => {
+                      assert.equal(size(SubnetIds), 1);
                     }),
-                  get("name"),
-                ]),
-              }),
-              tap(({ firewall, subnet }) => {
-                assert(firewall);
-                assert(subnet);
-              }),
-              ({ firewall, subnet }) => `vpce::${firewall}::${subnet}`,
-            ])(),
+                    first,
+                    (id) =>
+                      lives.getById({
+                        id,
+                        type: "Subnet",
+                        group: "EC2",
+                        providerName: config.providerName,
+                      }),
+                    get("name"),
+                  ]),
+                }),
+                tap(({ firewall, subnet }) => {
+                  assert(firewall);
+                  assert(subnet);
+                }),
+                ({ firewall, subnet }) => `vpce::${firewall}::${subnet}`,
+              ])(),
+          ]),
         ]),
-      ]),
-    ])();
+      ])();
 
-  const cannotBeDeleted = pipe([
-    get("live.Tags"),
-    find(eq(get("Key"), "Firewall")),
-  ]);
+  const cannotBeDeleted = () =>
+    pipe([get("Tags"), find(eq(get("Key"), "Firewall"))]);
 
-  const managedByOther = or([
-    cannotBeDeleted,
-    pipe([
-      get("live.ServiceName"),
-      callProp("startsWith", "com.amazonaws.vpce"),
-    ]),
-  ]);
+  const managedByOther = ({ lives, config }) =>
+    or([
+      cannotBeDeleted({ lives, config }),
+      pipe([get("ServiceName"), callProp("startsWith", "com.amazonaws.vpce")]),
+    ]);
 
   const decorate = () =>
     pipe([

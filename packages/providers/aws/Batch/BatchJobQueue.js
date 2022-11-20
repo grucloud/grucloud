@@ -73,8 +73,8 @@ exports.BatchJobQueue = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.jobQueueName")]),
-    findId: pipe([get("live.jobQueueArn")]),
+    findName: () => pipe([get("jobQueueName")]),
+    findId: () => pipe([get("jobQueueArn")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

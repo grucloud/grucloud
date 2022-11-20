@@ -13,8 +13,8 @@ const {
   untagResource,
 } = require("./ApiGatewayCommon");
 
-const findId = get("live.DomainName");
-const findName = get("live.DomainName");
+const findId = () => get("DomainName");
+const findName = () => get("DomainName");
 const pickId = pipe([pick(["DomainName"])]);
 
 exports.DomainName = ({ spec, config }) => {

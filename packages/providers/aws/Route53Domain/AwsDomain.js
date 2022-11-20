@@ -5,7 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const { AwsClient } = require("../AwsClient");
 const { createRoute53Domains } = require("./Route53DomainCommon");
 
-const findName = get("live.DomainName");
+const findName = () => get("DomainName");
 const findId = findName;
 const pickId = pick(["DomainName"]);
 
@@ -41,8 +41,8 @@ exports.AwsDomain = ({ spec, config }) => {
     findId,
     getByName,
     getById,
-    cannotBeDeleted: () => true,
-    managedByOther: () => true,
+    cannotBeDeleted: () => () => true,
+    managedByOther: () => () => true,
     findName,
     getList,
   };

@@ -55,22 +55,24 @@ exports.GlobalAcceleratorEndpointGroup = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        () =>
-          lives.getById({
-            id: live.ListenerArn,
-            type: "Listener",
-            group: "GlobalAccelerator",
-            providerName: config.providerName,
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () =>
+            lives.getById({
+              id: live.ListenerArn,
+              type: "Listener",
+              group: "GlobalAccelerator",
+              providerName: config.providerName,
+            }),
+          get("name"),
+          tap((name) => {
+            assert(name);
           }),
-        get("name"),
-        tap((name) => {
-          assert(name);
-        }),
-        append(`::${live.EndpointGroupRegion}`),
-      ])(),
-    findId: pipe([get("live.EndpointGroupArn")]),
+          append(`::${live.EndpointGroupRegion}`),
+        ])(),
+    findId: () => pipe([get("EndpointGroupArn")]),
     getByName: getByNameCore,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#listEndpointGroups-property
     getList: ({ client, endpoint, getById, config }) =>

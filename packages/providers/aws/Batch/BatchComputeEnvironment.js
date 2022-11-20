@@ -100,8 +100,8 @@ exports.BatchComputeEnvironment = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.computeEnvironmentName")]),
-    findId: pipe([get("live.computeEnvironmentArn")]),
+    findName: () => pipe([get("computeEnvironmentName")]),
+    findId: () => pipe([get("computeEnvironmentArn")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

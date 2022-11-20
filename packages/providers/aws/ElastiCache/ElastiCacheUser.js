@@ -15,7 +15,7 @@ const {
 const pickId = pipe([pick(["UserId"])]);
 const buildArn = () => pipe([get("ARN")]);
 
-const managedByOther = pipe([eq(get("live.UserName"), "default")]);
+const managedByOther = () => pipe([eq(get("UserName"), "default")]);
 
 const decorate = ({ endpoint }) =>
   pipe([assignTags({ endpoint, buildArn: buildArn() })]);
@@ -67,8 +67,8 @@ exports.ElastiCacheUser = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.UserName")]),
-    findId: pipe([get("live.UserId")]),
+    findName: () => pipe([get("UserName")]),
+    findId: () => pipe([get("UserId")]),
     managedByOther,
     cannotBeDeleted: managedByOther,
     getByName: getByNameCore,

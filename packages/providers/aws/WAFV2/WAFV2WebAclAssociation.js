@@ -90,10 +90,11 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([
-  get("live"),
-  ({ WebACLArn, ResourceArn }) => `webacl-assoc::${WebACLArn}::${ResourceArn}`,
-]);
+const findId = () =>
+  pipe([
+    ({ WebACLArn, ResourceArn }) =>
+      `webacl-assoc::${WebACLArn}::${ResourceArn}`,
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/WAFV2.html
 exports.WAFV2WebACLAssociation = ({ spec, config }) =>
@@ -101,51 +102,53 @@ exports.WAFV2WebACLAssociation = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        tap((params) => {
-          assert(true);
-        }),
-        fork({
-          webACLName: pipe([
-            () =>
-              lives.getById({
-                id: live.WebACLArn,
-                type: "WebACL",
-                group: "WAFv2",
-                providerName: config.providerName,
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          fork({
+            webACLName: pipe([
+              () =>
+                lives.getById({
+                  id: live.WebACLArn,
+                  type: "WebACL",
+                  group: "WAFv2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.WebACLArn),
+            ]),
+            resourceName: pipe([
+              () => WebAclDependencies,
+              values,
+              map(
+                pipe([
+                  ({ type, group }) =>
+                    lives.getById({
+                      id: live.ResourceArn,
+                      type,
+                      group,
+                      providerName: config.providerName,
+                    }),
+                  get("name"),
+                ])
+              ),
+              filter(not(isEmpty)),
+              first,
+              tap((name) => {
+                assert(name);
               }),
-            get("name", live.WebACLArn),
-          ]),
-          resourceName: pipe([
-            () => WebAclDependencies,
-            values,
-            map(
-              pipe([
-                ({ type, group }) =>
-                  lives.getById({
-                    id: live.ResourceArn,
-                    type,
-                    group,
-                    providerName: config.providerName,
-                  }),
-                get("name"),
-              ])
-            ),
-            filter(not(isEmpty)),
-            first,
-            tap((name) => {
-              assert(name);
-            }),
-          ]),
-        }),
-        tap(({ webACLName, resourceName }) => {
-          assert(webACLName);
-          assert(resourceName);
-        }),
-        ({ webACLName, resourceName }) =>
-          `webacl-assoc::${webACLName}::${resourceName}`,
-      ])(),
+            ]),
+          }),
+          tap(({ webACLName, resourceName }) => {
+            assert(webACLName);
+            assert(resourceName);
+          }),
+          ({ webACLName, resourceName }) =>
+            `webacl-assoc::${webACLName}::${resourceName}`,
+        ])(),
     findId,
     getList:
       ({ endpoint }) =>

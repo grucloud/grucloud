@@ -13,21 +13,18 @@ const { tagResource, untagResource } = require("./EC2Common");
 
 const isInstanceDown = pipe([eq(get("State"), "deleted")]);
 
-const managedByOther =
-  ({ config }) =>
-  ({ live, lives }) =>
-    pipe([
-      () => live,
-      get("AccepterTgwInfo.TransitGatewayId"),
-      (id) =>
-        lives.getById({
-          id,
-          type: "TransitGateway",
-          group: "EC2",
-          providerName: config.providerName,
-        }),
-      eq(get("providerName"), config.providerName),
-    ])();
+const managedByOther = ({ lives, config }) =>
+  pipe([
+    get("AccepterTgwInfo.TransitGatewayId"),
+    (id) =>
+      lives.getById({
+        id,
+        type: "TransitGateway",
+        group: "EC2",
+        providerName: config.providerName,
+      }),
+    eq(get("providerName"), config.providerName),
+  ]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -73,11 +70,11 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.TransitGatewayAttachmentId")]);
+const findId = () => pipe([get("TransitGatewayAttachmentId")]);
 
 const findNamePeeringAttachment =
-  ({ config }) =>
-  ({ live, lives }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       () => live,
       fork({
@@ -124,10 +121,10 @@ exports.EC2TransitGatewayPeeringAttachment = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    managedByOther: managedByOther({ config }),
-    findName: findNamePeeringAttachment({ config }),
+    managedByOther,
+    findName: findNamePeeringAttachment,
     findId,
-    cannotBeDeleted: eq(get("live.State"), "deleted"),
+    cannotBeDeleted: () => eq(get("State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

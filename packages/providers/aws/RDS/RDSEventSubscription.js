@@ -126,20 +126,20 @@ exports.RDSEventSubscription = ({ compare }) => ({
       model: model({ config }),
       spec,
       config,
-      findName: pipe([
-        get("live"),
-        get("SubscriptionName"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findId: pipe([
-        get("live"),
-        get("SubscriptionName"),
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
+      findName: () =>
+        pipe([
+          get("SubscriptionName"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
+      findId: () =>
+        pipe([
+          get("SubscriptionName"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
       getByName: ({ getById }) =>
         pipe([({ name }) => ({ SubscriptionName: name }), getById({})]),
       ...Tagger({ buildArn: buildArn(config) }),

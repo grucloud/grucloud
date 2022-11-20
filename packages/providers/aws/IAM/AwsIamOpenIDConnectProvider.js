@@ -90,35 +90,37 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
 
-  const findId = get("live.Arn");
+  const findId = () => get("Arn");
   const pickId = pipe([({ Arn }) => ({ OpenIDConnectProviderArn: Arn })]);
 
-  const findName = ({ live, lives, config }) =>
-    pipe([
-      () => live,
-      get("Url"),
-      (Url) =>
-        pipe([
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type: "Cluster",
-              group: "EKS",
-            }),
-          find(eq(get("live.identity.oidc.issuer"), `https://${Url}`)),
-          get("name"),
-          switchCase([
-            isEmpty,
-            pipe([() => Url, callProp("replace", "https://", "")]),
-            prepend("eks-cluster::"),
-          ]),
-        ])(),
-      prepend("oidp::"),
-    ])();
+  const findName =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        get("Url"),
+        (Url) =>
+          pipe([
+            () =>
+              lives.getByType({
+                providerName: config.providerName,
+                type: "Cluster",
+                group: "EKS",
+              }),
+            find(eq(get("live.identity.oidc.issuer"), `https://${Url}`)),
+            get("name"),
+            switchCase([
+              isEmpty,
+              pipe([() => Url, callProp("replace", "https://", "")]),
+              prepend("eks-cluster::"),
+            ]),
+          ])(),
+        prepend("oidp::"),
+      ])();
 
-  const findNamespace = (param) =>
+  const findNamespace = (param) => (live) =>
     pipe([
-      () => [findNamespaceInTags(config)(param)],
+      () => [findNamespaceInTags(param)(live)],
       find(not(isEmpty)),
       tap((namespace) => {
         logger.debug(`findNamespace ${namespace}`);

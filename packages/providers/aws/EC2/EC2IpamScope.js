@@ -32,24 +32,26 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findName = ({ live, lives, config }) =>
-  pipe([
-    () => [
-      findNameInTags({}),
-      get("live.Description"),
-      // TODO add locale ?
-      () => "ipam-scope",
-    ],
-    map((fn) => fn({ live, lives, config })),
-    find(not(isEmpty)),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
+const findName =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      () => [
+        findNameInTags({}),
+        get("Description"),
+        // TODO add locale ?
+        () => "ipam-scope",
+      ],
+      map((fn) => fn(live)),
+      find(not(isEmpty)),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
-const findId = pipe([get("live.IpamScopeId")]);
+const findId = () => pipe([get("IpamScopeId")]);
 
-const managedByOther = get("live.IsDefault");
+const managedByOther = () => get("IsDefault");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2IpamScope = ({ spec, config }) =>
@@ -57,31 +59,32 @@ exports.EC2IpamScope = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      switchCase([
-        get("live.IsDefault"),
-        ({ live, lives }) =>
-          pipe([
-            () =>
-              lives.getByType({
-                type: "Ipam",
-                group: "EC2",
-                providerName: config.providerName,
+    findName: ({ lives, config }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        switchCase([
+          get("IsDefault"),
+          (live) =>
+            pipe([
+              () =>
+                lives.getByType({
+                  type: "Ipam",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              find(eq(get("live.IpamArn"), live.IpamArn)),
+              get("name", live.IpamArn),
+              tap((name) => {
+                //assert(name);
               }),
-            find(eq(get("live.IpamArn"), live.IpamArn)),
-            get("name", live.IpamArn),
-            tap((name) => {
-              //assert(name);
-            }),
-            prepend(`ipam-scope::default::`),
-            append(live.IpamScopeType),
-          ])(),
-        findName,
+              prepend(`ipam-scope::default::`),
+              append(live.IpamScopeType),
+            ])(),
+          findName({ lives, config }),
+        ]),
       ]),
-    ]),
     findId,
     cannotBeDeleted: managedByOther,
     managedByOther,

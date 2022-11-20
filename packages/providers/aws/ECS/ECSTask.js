@@ -14,7 +14,7 @@ const {
   untagResource,
 } = require("./ECSCommon");
 
-const findId = get("live.taskArn");
+const findId = () => get("taskArn");
 const findName = findNameInTagsOrId({ findId });
 
 const pickId = pipe([
@@ -30,8 +30,8 @@ exports.ECSTask = ({ spec, config }) => {
   const ecs = createECS(config);
   const client = AwsClient({ spec, config })(ecs);
 
-  const managedByOther = ({ live }) =>
-    pipe([() => live, get("group"), callProp("startsWith", "service:")])();
+  const managedByOther = () =>
+    pipe([get("group"), callProp("startsWith", "service:")]);
 
   const ignoreErrorCodes = [
     "ClusterNotFoundException",

@@ -17,8 +17,8 @@ const {
   untagResource,
 } = require("./EKSCommon");
 
-const findName = get("live.name");
-const findId = get("live.arn");
+const findName = () => get("name");
+const findId = () => get("arn");
 const pickId = pick(["name"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
@@ -171,7 +171,7 @@ exports.EKSCluster = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace: findNamespaceInTagsObject(config),
+    findNamespace: findNamespaceInTagsObject,
     getById,
     getByName,
     findName,

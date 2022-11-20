@@ -4,7 +4,7 @@ const { defaultsDeep } = require("rubico/x");
 
 const { createAwsResource } = require("../AwsClient");
 
-const findName = pipe([get("live"), get("loadBalancerName")]);
+const findName = () => pipe([get("loadBalancerName")]);
 
 const pickId = pipe([
   tap(({ loadBalancerName, instanceName }) => {
@@ -80,7 +80,7 @@ exports.LightsailLoadBalancerCertificateAttachment = ({ compare }) => ({
       assert(name);
     }),
   ]),
-  cannotBeDeleted: () => true,
+  cannotBeDeleted: () => () => true,
   dependencies: {
     loadBalancer: {
       type: "LoadBalancer",

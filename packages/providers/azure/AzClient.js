@@ -134,8 +134,8 @@ const onCreateFilterPayload = pipe([
 //TODO remove
 const specDefault = {
   operations: { getAll: {} },
-  cannotBeDeleted: () => false,
-  managedByOther: () => false,
+  cannotBeDeleted: () => () => false,
+  managedByOther: () => () => false,
 };
 
 const substituteDependency =
@@ -572,19 +572,20 @@ exports.AzClient = ({
     onCreateFilterPayload,
     isInstanceUp,
     isDefault: spec.isDefault,
-    cannotBeDeleted: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      or([
-        managedByOther,
-        cannotBeDeleted,
-        pipe([() => methods, get("delete"), isEmpty]),
+    cannotBeDeleted: ({ lives, config }) =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        or([
+          managedByOther({ lives, config }),
+          cannotBeDeleted({ lives, config }),
+          pipe([() => methods, get("delete"), isEmpty]),
+        ]),
+        tap((params) => {
+          assert(true);
+        }),
       ]),
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
     managedByOther,
     axios,
   });

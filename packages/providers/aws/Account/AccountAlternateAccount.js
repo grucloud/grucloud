@@ -44,8 +44,8 @@ exports.AccountAlternateAccount = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live"), get("AlternateContactType")]),
-    findId: pipe([get("live"), get("AlternateContactType")]),
+    findName: () => pipe([get("AlternateContactType")]),
+    findId: () => pipe([get("AlternateContactType")]),
     getList: ({ endpoint }) =>
       pipe([
         () => ["BILLING", "OPERATIONS", "SECURITY"],

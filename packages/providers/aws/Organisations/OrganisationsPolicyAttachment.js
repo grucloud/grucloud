@@ -8,8 +8,8 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { createAwsResource } = require("../AwsClient");
 
 const managedByOther =
-  ({ config }) =>
-  ({ live, lives }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       () => live,
       get("PolicyId"),
@@ -60,77 +60,77 @@ exports.OrganisationsPolicyAttachment = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    managedByOther: managedByOther({ config }),
-    cannotBeDeleted: managedByOther({ config }),
-    findName: ({ live, lives }) =>
-      pipe([
-        () => live,
-        fork({
-          policy: pipe([
-            get("PolicyId"),
-            (id) =>
-              lives.getById({
-                id,
-                type: "Policy",
-                group: "Organisations",
-                providerName: config.providerName,
-              }),
-            get("name", live.PolicyId),
-          ]),
-          target: pipe([
-            switchCase([
-              eq(get("Type"), "ACCOUNT"),
-              pipe([
-                get("TargetId"),
-                (id) =>
-                  lives.getById({
-                    id,
-                    type: "Account",
-                    group: "Organisations",
-                    providerName: config.providerName,
-                  }),
-                get("name"),
-              ]),
-              eq(get("Type"), "ROOT"),
-              pipe([
-                get("TargetId"),
-                (id) =>
-                  lives.getById({
-                    id,
-                    type: "Root",
-                    group: "Organisations",
-                    providerName: config.providerName,
-                  }),
-                get("name"),
-              ]),
-              eq(get("Type"), "ORGANIZATIONAL_UNIT"),
-              pipe([
-                get("TargetId"),
-                (id) =>
-                  lives.getById({
-                    id,
-                    type: "OrganisationalUnit",
-                    group: "Organisations",
-                    providerName: config.providerName,
-                  }),
-                get("name"),
-              ]),
-              () => {
-                assert(false, "missing target");
-              },
+    managedByOther,
+    cannotBeDeleted: managedByOther,
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          () => live,
+          fork({
+            policy: pipe([
+              get("PolicyId"),
+              (id) =>
+                lives.getById({
+                  id,
+                  type: "Policy",
+                  group: "Organisations",
+                  providerName: config.providerName,
+                }),
+              get("name", live.PolicyId),
             ]),
-          ]),
-        }),
-        tap(({ policy, target }) => {
-          assert(policy);
-          assert(target);
-        }),
-        ({ policy, target }) => `policy-attach::${policy}::${target}`,
-      ])(),
-    findId: pipe([
-      get("live"),
-      ({ PolicyId, TargetId }) => `${PolicyId}::${TargetId}`,
-    ]),
+            target: pipe([
+              switchCase([
+                eq(get("Type"), "ACCOUNT"),
+                pipe([
+                  get("TargetId"),
+                  (id) =>
+                    lives.getById({
+                      id,
+                      type: "Account",
+                      group: "Organisations",
+                      providerName: config.providerName,
+                    }),
+                  get("name"),
+                ]),
+                eq(get("Type"), "ROOT"),
+                pipe([
+                  get("TargetId"),
+                  (id) =>
+                    lives.getById({
+                      id,
+                      type: "Root",
+                      group: "Organisations",
+                      providerName: config.providerName,
+                    }),
+                  get("name"),
+                ]),
+                eq(get("Type"), "ORGANIZATIONAL_UNIT"),
+                pipe([
+                  get("TargetId"),
+                  (id) =>
+                    lives.getById({
+                      id,
+                      type: "OrganisationalUnit",
+                      group: "Organisations",
+                      providerName: config.providerName,
+                    }),
+                  get("name"),
+                ]),
+                () => {
+                  assert(false, "missing target");
+                },
+              ]),
+            ]),
+          }),
+          tap(({ policy, target }) => {
+            assert(policy);
+            assert(target);
+          }),
+          ({ policy, target }) => `policy-attach::${policy}::${target}`,
+        ])(),
+    findId: () =>
+      pipe([({ PolicyId, TargetId }) => `${PolicyId}::${TargetId}`]),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listTargetsForPolicy-property
     getList: ({ client }) =>
       pipe([

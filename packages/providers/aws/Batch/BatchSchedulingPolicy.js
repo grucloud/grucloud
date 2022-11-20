@@ -56,8 +56,8 @@ exports.BatchSchedulingPolicy = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.name")]),
-    findId: pipe([get("live.arn")]),
+    findName: () => pipe([get("name")]),
+    findId: () => pipe([get("arn")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

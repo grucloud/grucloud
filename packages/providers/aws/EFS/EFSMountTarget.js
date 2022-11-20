@@ -28,28 +28,30 @@ exports.EFSMountTarget = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        tap(() => {
-          assert(live.FileSystemId);
-        }),
-        () =>
-          lives.getByType({
-            type: "FileSystem",
-            group: "EFS",
-            providerName: config.providerName,
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          tap(() => {
+            assert(live.FileSystemId);
           }),
-        find(eq(get("live.FileSystemId"), live.FileSystemId)),
-        get("name"),
-        tap((name) => {
-          assert(name);
-        }),
-        prepend("mount-target::"),
-        append("::"),
-        append(pipe([() => live.AvailabilityZoneName, last])()),
-      ])(),
+          () =>
+            lives.getByType({
+              type: "FileSystem",
+              group: "EFS",
+              providerName: config.providerName,
+            }),
+          find(eq(get("live.FileSystemId"), live.FileSystemId)),
+          get("name"),
+          tap((name) => {
+            assert(name);
+          }),
+          prepend("mount-target::"),
+          append("::"),
+          append(pipe([() => live.AvailabilityZoneName, last])()),
+        ])(),
 
-    findId: pipe([get("live.MountTargetId")]),
+    findId: () => pipe([get("MountTargetId")]),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

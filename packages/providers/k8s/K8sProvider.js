@@ -54,18 +54,25 @@ const {
   isOurMinionPersistentVolumeClaim,
 } = require("./K8sPersistentVolumeClaim");
 
-const cannotBeDeletedDefault = ({ live, config }) =>
-  pipe([
-    () => live.metadata.annotations,
-    switchCase([
-      eq(get(config.managedByKey), config.managedByValue),
-      () => false,
-      () => true,
-    ]),
-    tap((result) => {
-      //logger.debug(`cannotBeDeletedDefault ${live.metadata.name}: ${result}`);
-    }),
-  ])();
+const cannotBeDeletedDefault =
+  ({ config }) =>
+  (live) =>
+    pipe([
+      tap((params) => {
+        assert(config);
+        assert(live);
+      }),
+      () => live,
+      get("metadata.annotations"),
+      switchCase([
+        eq(get(config.managedByKey), config.managedByValue),
+        () => false,
+        () => true,
+      ]),
+      tap((result) => {
+        //logger.debug(`cannotBeDeletedDefault ${live.metadata.name}: ${result}`);
+      }),
+    ])();
 
 const findDependenciesService = ({ live, lives, config }) =>
   pipe([
@@ -511,13 +518,14 @@ const fnSpecs = pipe([
         configKey: "namespace",
         apiVersion: "v1",
         kind: "Namespace",
-        cannotBeDeleted: pipe([
-          get("live.metadata.name", ""),
-          or([
-            (name) => name.startsWith("default"),
-            (name) => name.startsWith("kube"),
+        cannotBeDeleted: () =>
+          pipe([
+            get("metadata.name", ""),
+            or([
+              (name) => name.startsWith("default"),
+              (name) => name.startsWith("kube"),
+            ]),
           ]),
-        ]),
       }),
       //TODO use compareK8s
       compare: compare({

@@ -10,7 +10,7 @@ const logger = require("@grucloud/core/logger")({
   prefix: "ClientVpnEndpoint",
 });
 
-const findId = pipe([get("live.AssociationId")]);
+const findId = () => pipe([get("AssociationId")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -66,43 +66,45 @@ exports.EC2ClientVpnTargetNetwork = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        fork({
-          clientVpnEndpoint: pipe([
-            tap(() => {
-              assert(live.ClientVpnEndpointId);
-            }),
-            () =>
-              lives.getById({
-                id: live.ClientVpnEndpointId,
-                type: "ClientVpnEndpoint",
-                group: "EC2",
-                providerName: config.providerName,
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          fork({
+            clientVpnEndpoint: pipe([
+              tap(() => {
+                assert(live.ClientVpnEndpointId);
               }),
-            get("name", live.ClientVpnEndpointId),
-          ]),
-          subnet: pipe([
-            tap(() => {
-              assert(live.SubnetId);
-            }),
-            () =>
-              lives.getById({
-                id: live.SubnetId,
-                type: "Subnet",
-                group: "EC2",
-                providerName: config.providerName,
+              () =>
+                lives.getById({
+                  id: live.ClientVpnEndpointId,
+                  type: "ClientVpnEndpoint",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.ClientVpnEndpointId),
+            ]),
+            subnet: pipe([
+              tap(() => {
+                assert(live.SubnetId);
               }),
-            get("name", live.SubnetId),
-          ]),
-        }),
-        tap(({ clientVpnEndpoint, subnet }) => {
-          assert(clientVpnEndpoint);
-          assert(subnet);
-        }),
-        ({ clientVpnEndpoint, subnet }) =>
-          `client-vpn-target-assoc::${clientVpnEndpoint}::${subnet}`,
-      ])(),
+              () =>
+                lives.getById({
+                  id: live.SubnetId,
+                  type: "Subnet",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.SubnetId),
+            ]),
+          }),
+          tap(({ clientVpnEndpoint, subnet }) => {
+            assert(clientVpnEndpoint);
+            assert(subnet);
+          }),
+          ({ clientVpnEndpoint, subnet }) =>
+            `client-vpn-target-assoc::${clientVpnEndpoint}::${subnet}`,
+        ])(),
     findId,
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

@@ -16,8 +16,8 @@ const {
   tagResource,
   untagResource,
 } = require("./EKSCommon");
-const findName = get("live.nodegroupName");
-const findId = get("live.nodegroupArn");
+const findName = () => get("nodegroupName");
+const findId = () => get("nodegroupArn");
 const pickId = pick(["nodegroupName", "clusterName"]);
 const ignoreErrorCodes = ["ResourceNotFoundException"];
 
@@ -164,7 +164,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   return {
     spec,
     findId,
-    findNamespace: findNamespaceInTagsObject(config),
+    findNamespace: findNamespaceInTagsObject,
     getById,
     getByName,
     findName,

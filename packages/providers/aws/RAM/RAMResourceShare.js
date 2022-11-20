@@ -74,8 +74,8 @@ exports.RAMResourceShare = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.name")]),
-    findId: pipe([get("live.resourceShareArn")]),
+    findName: () => pipe([get("name")]),
+    findId: () => pipe([get("resourceShareArn")]),
     getByName: ({ getList, endpoint }) =>
       pipe([
         ({ name }) => ({

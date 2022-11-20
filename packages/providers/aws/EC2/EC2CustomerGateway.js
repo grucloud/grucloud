@@ -38,7 +38,7 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.CustomerGatewayId")]);
+const findId = () => pipe([get("CustomerGatewayId")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2CustomerGateway = ({ spec, config }) =>
@@ -48,7 +48,7 @@ exports.EC2CustomerGateway = ({ spec, config }) =>
     config,
     findName: findNameInTagsOrId({ findId }),
     findId,
-    cannotBeDeleted: eq(get("live.State"), "deleted"),
+    cannotBeDeleted: () => eq(get("State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

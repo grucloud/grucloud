@@ -59,8 +59,8 @@ exports.ElastiCacheUserGroup = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.UserGroupId")]),
-    findId: pipe([get("live.UserGroupId")]),
+    findName: () => pipe([get("UserGroupId")]),
+    findId: () => pipe([get("UserGroupId")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),
@@ -72,7 +72,7 @@ exports.ElastiCacheUserGroup = ({ spec, config }) =>
       name,
       namespace,
       properties: { Tags, ...otherProps },
-      dependencies: { users },
+      dependencies: {},
     }) =>
       pipe([
         () => otherProps,

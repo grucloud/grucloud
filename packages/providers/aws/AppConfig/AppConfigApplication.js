@@ -57,8 +57,8 @@ exports.AppConfigApplication = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Id")]),
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("Id")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

@@ -90,20 +90,20 @@ exports.LightsailCertificate = () => ({
       model: model({ config }),
       spec,
       config,
-      findName: pipe([
-        get("live"),
-        get("certificateName"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findId: pipe([
-        get("live"),
-        get("certificateName"),
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
+      findName: () =>
+        pipe([
+          get("certificateName"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
+      findId: () =>
+        pipe([
+          get("certificateName"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
       getByName: ({ getById }) =>
         pipe([({ name }) => ({ certificateName: name }), getById({})]),
       update:

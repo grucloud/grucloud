@@ -131,39 +131,41 @@ exports.RAMPrincipalAssociation = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        tap(() => {
-          assert(live.associatedEntity);
-        }),
-        () =>
-          lives.getByType({
-            type: "Organisation",
-            group: "Organisations",
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          tap(() => {
+            assert(live.associatedEntity);
           }),
-        find(eq(get("live.Arn"), live.associatedEntity)),
-        get("name"),
-        //TODO
-        when(
-          isEmpty,
-          pipe([
-            () =>
-              lives.getById({
-                id: live.associatedEntity,
-                type: "User",
-                group: "IAM",
-              }),
-            get("name"),
-          ])
-        ),
-        when(isEmpty, () => live.associatedEntity),
-        prepend(`ram-principal-assoc::${live.resourceShareName}::`),
-      ])(),
-    findId: pipe([
-      get("live"),
-      ({ resourceShareArn, associatedEntity }) =>
-        `${resourceShareArn}::${associatedEntity}`,
-    ]),
+          () =>
+            lives.getByType({
+              type: "Organisation",
+              group: "Organisations",
+            }),
+          find(eq(get("live.Arn"), live.associatedEntity)),
+          get("name"),
+          //TODO
+          when(
+            isEmpty,
+            pipe([
+              () =>
+                lives.getById({
+                  id: live.associatedEntity,
+                  type: "User",
+                  group: "IAM",
+                }),
+              get("name"),
+            ])
+          ),
+          when(isEmpty, () => live.associatedEntity),
+          prepend(`ram-principal-assoc::${live.resourceShareName}::`),
+        ])(),
+    findId: () =>
+      pipe([
+        ({ resourceShareArn, associatedEntity }) =>
+          `${resourceShareArn}::${associatedEntity}`,
+      ]),
     getByName: ({ getList, endpoint }) =>
       pipe([
         ({ name }) => ({ params: { name, resourceShareStatus: "ACTIVE" } }),

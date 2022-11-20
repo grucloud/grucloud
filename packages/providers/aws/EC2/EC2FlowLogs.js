@@ -60,7 +60,7 @@ const FlowLogsDependencies = {
 
 exports.FlowLogsDependencies = FlowLogsDependencies;
 
-const findId = pipe([get("live.FlowLogId")]);
+const findId = () => pipe([get("FlowLogId")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -129,21 +129,23 @@ const findNameInDependency =
       get("name"),
     ])();
 
-const findNameInDependencies = ({ live, lives, config }) =>
-  pipe([
-    tap((params) => {
-      assert(config);
-      assert(live);
-    }),
-    () => FlowLogsDependencies,
-    values,
-    map(findNameInDependency({ live, lives, config })),
-    find(not(isEmpty)),
-    tap((name) => {
-      assert(name, `cannot find flowlog dependency name`);
-    }),
-    prepend("flowlog::"),
-  ])();
+const findNameInDependencies =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap((params) => {
+        assert(config);
+        assert(live);
+      }),
+      () => FlowLogsDependencies,
+      values,
+      map(findNameInDependency({ live, lives, config })),
+      find(not(isEmpty)),
+      tap((name) => {
+        assert(name, `cannot find flowlog dependency name`);
+      }),
+      prepend("flowlog::"),
+    ])();
 
 const findDependenciesFlowLog = ({ live, lives, config }) =>
   pipe([

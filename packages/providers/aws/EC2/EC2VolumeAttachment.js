@@ -13,49 +13,49 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
   const ec2 = createEC2(config);
 
   const client = AwsClient({ spec, config })(ec2);
-  const findId = pipe([
-    get("live"),
-    ({ VolumeId, InstanceId }) => `${VolumeId}::${InstanceId}`,
-  ]);
+  const findId = () =>
+    pipe([({ VolumeId, InstanceId }) => `${VolumeId}::${InstanceId}`]);
 
-  const findName = ({ live, lives }) =>
-    pipe([
-      fork({
-        volume: pipe([
-          tap(() => {
-            assert(live.VolumeId);
-          }),
-          () =>
-            lives.getById({
-              id: live.VolumeId,
-              providerName: config.providerName,
-              type: "Volume",
-              group: "EC2",
+  const findName =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        fork({
+          volume: pipe([
+            tap(() => {
+              assert(live.VolumeId);
             }),
-          get("name"),
-          tap((volume) => {
-            assert(volume);
-          }),
-        ]),
-        instance: pipe([
-          tap(() => {
-            assert(live.InstanceId);
-          }),
-          () =>
-            lives.getById({
-              id: live.InstanceId,
-              providerName: config.providerName,
-              type: "Instance",
-              group: "EC2",
+            () =>
+              lives.getById({
+                id: live.VolumeId,
+                providerName: config.providerName,
+                type: "Volume",
+                group: "EC2",
+              }),
+            get("name"),
+            tap((volume) => {
+              assert(volume);
             }),
-          get("name"),
-          tap((instance) => {
-            assert(instance);
-          }),
-        ]),
-      }),
-      ({ volume, instance }) => `vol-attachment::${volume}::${instance}`,
-    ])();
+          ]),
+          instance: pipe([
+            tap(() => {
+              assert(live.InstanceId);
+            }),
+            () =>
+              lives.getById({
+                id: live.InstanceId,
+                providerName: config.providerName,
+                type: "Instance",
+                group: "EC2",
+              }),
+            get("name"),
+            tap((instance) => {
+              assert(instance);
+            }),
+          ]),
+        }),
+        ({ volume, instance }) => `vol-attachment::${volume}::${instance}`,
+      ])();
 
   const getList = client.getListWithParent({
     parent: { type: "Volume", group: "EC2" },
@@ -159,7 +159,7 @@ exports.EC2VolumeAttachment = ({ spec, config }) => {
     ])();
 
   const isOurMinion = () => isOurMinion;
-  const managedByOther = () => false;
+  const managedByOther = () => () => false;
 
   return {
     spec,

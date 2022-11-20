@@ -8,7 +8,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createLambda } = require("./LambdaCommon");
 
-const findId = get("live.UUID");
+const findId = () => get("UUID");
 const pickId = pipe([pick(["UUID"])]);
 
 const getNameFromSource = ({ lives, config, type, group }) =>
@@ -27,41 +27,43 @@ const getNameFromSource = ({ lives, config, type, group }) =>
     get("name"),
   ]);
 
-const findName = ({ live, lives, config }) =>
-  pipe([
-    () => live,
-    tap(({ FunctionArn, EventSourceArn }) => {
-      assert(FunctionArn);
-      assert(EventSourceArn);
-    }),
-    fork({
-      functionName: pipe([
-        get("FunctionArn"),
-        (id) =>
-          lives.getById({
-            providerName: config.providerName,
-            id,
-            type: "Function",
-            group: "Lambda",
-          }),
-        get("name"),
-      ]),
-      sqsQueueName: getNameFromSource({
-        lives,
-        config,
-        type: "Queue",
-        group: "SQS",
+const findName =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      () => live,
+      tap(({ FunctionArn, EventSourceArn }) => {
+        assert(FunctionArn);
+        assert(EventSourceArn);
       }),
-      kinesisStreamName: getNameFromSource({
-        lives,
-        config,
-        type: "Stream",
-        group: "Kinesis",
+      fork({
+        functionName: pipe([
+          get("FunctionArn"),
+          (id) =>
+            lives.getById({
+              providerName: config.providerName,
+              id,
+              type: "Function",
+              group: "Lambda",
+            }),
+          get("name"),
+        ]),
+        sqsQueueName: getNameFromSource({
+          lives,
+          config,
+          type: "Queue",
+          group: "SQS",
+        }),
+        kinesisStreamName: getNameFromSource({
+          lives,
+          config,
+          type: "Stream",
+          group: "Kinesis",
+        }),
       }),
-    }),
-    ({ functionName, sqsQueueName, kinesisStreamName }) =>
-      `mapping::${functionName}::${sqsQueueName || kinesisStreamName}`,
-  ])();
+      ({ functionName, sqsQueueName, kinesisStreamName }) =>
+        `mapping::${functionName}::${sqsQueueName || kinesisStreamName}`,
+    ])();
 
 exports.EventSourceMapping = ({ spec, config }) => {
   const lambda = createLambda(config);

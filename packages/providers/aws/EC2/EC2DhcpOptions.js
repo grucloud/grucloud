@@ -82,12 +82,13 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([
-  get("live.DhcpOptionsId"),
-  tap((DhcpOptionsId) => {
-    assert(DhcpOptionsId);
-  }),
-]);
+const findId = () =>
+  pipe([
+    get("DhcpOptionsId"),
+    tap((DhcpOptionsId) => {
+      assert(DhcpOptionsId);
+    }),
+  ]);
 
 const domainNameByRegion = pipe([
   tap(({ region }) => {
@@ -100,9 +101,11 @@ const domainNameByRegion = pipe([
   ]),
 ]);
 
-const managedByOther = (config) =>
+const managedByOther = ({ config }) =>
   pipe([
-    get("live"),
+    tap((params) => {
+      assert(config);
+    }),
     or([
       and([
         pipe([get("Tags"), isEmpty]),
@@ -133,8 +136,8 @@ exports.EC2DhcpOptions = ({ spec, config }) =>
     config,
     findName: findNameInTagsOrId({ findId }),
     findId,
-    cannotBeDeleted: managedByOther(config),
-    managedByOther: managedByOther(config),
+    cannotBeDeleted: managedByOther,
+    managedByOther: managedByOther,
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

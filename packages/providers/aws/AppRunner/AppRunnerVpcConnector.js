@@ -61,8 +61,8 @@ exports.AppRunnerVpcConnector = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.VpcConnectorName")]),
-    findId: pipe([get("live.VpcConnectorArn")]),
+    findName: () => pipe([get("VpcConnectorName")]),
+    findId: () => pipe([get("VpcConnectorArn")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

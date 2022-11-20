@@ -40,8 +40,8 @@ exports.ApiGatewayV2VpcLink = ({ spec, config }) => {
     model,
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: get("live.VpcLinkId"),
+    findName: () => pipe([get("Name")]),
+    findId: () => get("VpcLinkId"),
     getByName: getByNameCore,
     configDefault: ({
       name,

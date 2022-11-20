@@ -50,9 +50,9 @@ exports.BackupRegionSettings = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    cannotBeDeleted: () => true,
-    findName: pipe([() => "region"]),
-    findId: pipe([() => "region"]),
+    cannotBeDeleted: () => () => true,
+    findName: () => pipe([() => "region"]),
+    findId: () => pipe([() => "region"]),
     getByName: getByNameCore,
     configDefault: ({
       name,

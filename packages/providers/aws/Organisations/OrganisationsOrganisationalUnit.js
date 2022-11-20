@@ -78,10 +78,10 @@ exports.OrganisationsOrganisationalUnit = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Id")]),
-    managedByOther: () => true,
-    cannotBeDeleted: () => true,
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("Id")]),
+    managedByOther: () => () => true,
+    cannotBeDeleted: () => () => true,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listOrganizationalUnitsForParent-property
     getList:
       ({ endpoint }) =>

@@ -7,16 +7,18 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
-const findId = get("live.ApiMappingId");
-const findName = pipe([
-  get("live"),
-  tap(({ DomainName, ApiName, Stage, ApiMappingKey }) => {
-    assert(Stage);
-    assert(ApiName);
-  }),
-  ({ DomainName, ApiName, Stage, ApiMappingKey }) =>
-    `apimapping::${DomainName}::${ApiName}::${Stage}::${ApiMappingKey}`,
-]);
+const findId = () => get("ApiMappingId");
+
+const findName = () =>
+  pipe([
+    tap(({ DomainName, ApiName, Stage, ApiMappingKey }) => {
+      assert(DomainName);
+      assert(Stage);
+      assert(ApiName);
+    }),
+    ({ DomainName, ApiName, Stage, ApiMappingKey }) =>
+      `apimapping::${DomainName}::${ApiName}::${Stage}::${ApiMappingKey}`,
+  ]);
 
 const pickId = pick(["ApiMappingId", "DomainName"]);
 

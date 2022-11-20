@@ -58,8 +58,8 @@ exports.Route53RecoveryReadinessRecoveryGroup = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.RecoveryGroupName")]),
-    findId: pipe([get("live.RecoveryGroupArn")]),
+    findName: () => pipe([get("RecoveryGroupName")]),
+    findId: () => pipe([get("RecoveryGroupArn")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ RecoveryGroupName: name }), getById({})]),
     tagResource: tagResource,

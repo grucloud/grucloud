@@ -1654,10 +1654,9 @@ function CoreProvider({
             client.destroy({
               live,
               id: client.findId({
-                live,
                 lives: getLives(),
                 config: getProviderConfig(),
-              }), // TODO remove id, only use live
+              })(live), // TODO remove id, only use live
               name: resource.name,
               resource,
               lives: getLives(),

@@ -66,7 +66,7 @@ const model = {
   },
 };
 
-const managedByOther = pipe([eq(get("live.Type"), "managed")]);
+const managedByOther = () => pipe([eq(get("Type"), "managed")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.CloudFrontCachePolicy = ({ spec, config }) =>
@@ -76,8 +76,8 @@ exports.CloudFrontCachePolicy = ({ spec, config }) =>
     config,
     managedByOther,
     cannotBeDeleted: managedByOther,
-    findName: pipe([get("live.CachePolicy.CachePolicyConfig.Name")]),
-    findId: get("live.CachePolicy.CachePolicyConfig.Name"),
+    findName: () => pipe([get("CachePolicy.CachePolicyConfig.Name")]),
+    findId: () => get("CachePolicy.CachePolicyConfig.Name"),
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ Name: name }), getById({})]),
     configDefault: ({ name, namespace, properties }) =>

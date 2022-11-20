@@ -25,22 +25,21 @@ const {
 
 const ResourceType = "auto-scaling-group";
 
-const findId = get("live.AutoScalingGroupARN");
+const findId = () => get("AutoScalingGroupARN");
 const pickId = pipe([pick(["AutoScalingGroupName"])]);
 
-const findNameEks = pipe([
-  get("live"),
-  findValueInTags({ key: "eks:nodegroup-name" }),
-  unless(isEmpty, prepend("asg-")),
-]);
+const findNameEks = () =>
+  pipe([
+    findValueInTags({ key: "eks:nodegroup-name" }),
+    unless(isEmpty, prepend("asg-")),
+  ]);
 
-const findName = (params) => {
-  assert(params.live);
+const findName = (params) => (live) => {
   assert(params.lives);
 
-  const fns = [findNameEks, get("live.AutoScalingGroupName")];
+  const fns = [findNameEks(params), get("AutoScalingGroupName")];
   for (fn of fns) {
-    const name = fn(params);
+    const name = fn(live);
     if (!isEmpty(name)) {
       return name;
     }
@@ -52,14 +51,15 @@ exports.AutoScalingAutoScalingGroup = ({ spec, config }) => {
   const autoScaling = createAutoScaling(config);
   const client = AwsClient({ spec, config })(autoScaling);
 
-  const managedByOther = or([
-    hasKeyInTags({
-      key: "eks:cluster-name",
-    }),
-    hasKeyInTags({
-      key: "elasticbeanstalk:environment-id",
-    }),
-  ]);
+  const managedByOther = () =>
+    or([
+      hasKeyInTags({
+        key: "eks:cluster-name",
+      }),
+      hasKeyInTags({
+        key: "elasticbeanstalk:environment-id",
+      }),
+    ]);
 
   const findNamespace = pipe([
     findNamespaceInTagsOrEksCluster({

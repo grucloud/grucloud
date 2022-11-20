@@ -73,8 +73,8 @@ exports.BackupReportPlan = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ReportPlanName")]),
-    findId: pipe([get("live.ReportPlanName")]),
+    findName: () => pipe([get("ReportPlanName")]),
+    findId: () => pipe([get("ReportPlanName")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

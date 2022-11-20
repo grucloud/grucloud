@@ -57,7 +57,8 @@ const buildDefaultSpec = fork({
       callProp("replace", new RegExp(`({.*})`), id),
   findName:
     ({ methods, dependencies }) =>
-    ({ live }) =>
+    () =>
+    (live) =>
       pipe([
         tap((params) => {
           assert(live);

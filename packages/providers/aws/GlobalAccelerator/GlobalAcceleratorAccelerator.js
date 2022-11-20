@@ -103,8 +103,8 @@ exports.GlobalAcceleratorAccelerator = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.AcceleratorArn")]),
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("AcceleratorArn")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

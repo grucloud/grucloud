@@ -30,7 +30,7 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const cannotBeDeleted = () => true;
+const cannotBeDeleted = () => () => true;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html
 exports.CognitoIdentityIdentityPoolProviderPrincipalTag = ({ compare }) => ({
@@ -45,38 +45,34 @@ exports.CognitoIdentityIdentityPoolProviderPrincipalTag = ({ compare }) => ({
       assert(Name);
     }),
   ]),
-  findName: pipe([
-    get("live"),
-    get("IdentityPoolName"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findName: ({ live, lives, config }) =>
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        get("IdentityPoolId"),
+        tap((id) => {
+          assert(id);
+        }),
+        (id) =>
+          lives.getById({
+            id,
+            type: "IdentityPool",
+            group: "Cognito",
+            providerName: config.providerName,
+          }),
+        get("name"),
+        tap((name) => {
+          assert(name);
+        }),
+      ])(),
+  findId: () =>
     pipe([
-      () => live,
       get("IdentityPoolId"),
       tap((id) => {
         assert(id);
       }),
-      (id) =>
-        lives.getById({
-          id,
-          type: "IdentityPool",
-          group: "Cognito",
-        }),
-      get("name"),
-      tap((name) => {
-        assert(name);
-      }),
-    ])(),
-  findId: pipe([
-    get("live"),
-    get("IdentityPoolId"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+    ]),
   dependencies: {
     identityPool: {
       type: "IdentityPool",

@@ -21,22 +21,23 @@ const {
 } = require("./CloudWatchLogsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findId = pipe([get("live.arn"), callProp("replace", ":*", "")]);
+const findId = () => pipe([get("arn"), callProp("replace", ":*", "")]);
 const pickId = pick(["logGroupName"]);
-const findName = get("live.logGroupName");
+const findName = () => get("logGroupName");
 
 exports.CloudWatchLogGroup = ({ spec, config }) => {
   const endpoint = createCloudWatchLogs(config);
   const client = AwsClient({ spec, config })(endpoint);
 
-  const managedByOther = pipe([
-    get("live.logGroupName"),
-    (logGroupName) =>
-      pipe([
-        () => LogGroupNameManagedByOther,
-        any((prefix) => logGroupName.startsWith(prefix)),
-      ])(),
-  ]);
+  const managedByOther = () =>
+    pipe([
+      get("logGroupName"),
+      (logGroupName) =>
+        pipe([
+          () => LogGroupNameManagedByOther,
+          any((prefix) => logGroupName.startsWith(prefix)),
+        ])(),
+    ]);
 
   const decorate = () =>
     pipe([

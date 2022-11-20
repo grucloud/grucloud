@@ -31,7 +31,11 @@ module.exports = pipe([
       type: "Account",
       Client: Account,
       inferName: () => "default",
-      isOurMinion: ({ live, config }) => true,
+      // TODO remove
+      isOurMinion:
+        ({ config }) =>
+        () =>
+          true,
       omitProperties: ["apiKeyVersion", "throttleSettings"],
       propertiesDefault: {
         features: ["UsagePlans"],
@@ -342,8 +346,9 @@ module.exports = pipe([
       group: GROUP,
       tagsKey,
       compare: compareAPIGateway({}),
-      isOurMinion: ({ live, config }) =>
-        isOurMinionObject({ tags: live.tags, config }),
+      // TODO remove
+      // isOurMinion: ({ live, config }) =>
+      //   isOurMinionObject({ tags: live.tags, config }),
     })
   ),
 ]);

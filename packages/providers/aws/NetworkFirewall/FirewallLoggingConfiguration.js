@@ -55,8 +55,8 @@ exports.FirewallLoggingConfiguration = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: get("live.FirewallName"),
-    findId: pipe([get("live.FirewallArn")]),
+    findName: () => get("FirewallName"),
+    findId: () => pipe([get("FirewallArn")]),
     pickId: pipe([pick(["FirewallArn"])]),
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

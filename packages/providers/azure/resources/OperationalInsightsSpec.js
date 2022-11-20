@@ -2,13 +2,14 @@ const assert = require("assert");
 const { pipe, get, tap, assign } = require("rubico");
 const { callProp } = require("rubico/x");
 
-const isDefaultSavedSearch = pipe([
-  tap((params) => {
-    assert(params.live);
-  }),
-  get("live.name"),
-  callProp("startsWith", "LogManagement("),
-]);
+const isDefaultSavedSearch = () =>
+  pipe([
+    tap((params) => {
+      assert(params.name);
+    }),
+    get("name"),
+    callProp("startsWith", "LogManagement("),
+  ]);
 
 exports.fnSpecs = ({ config }) => {
   return pipe([

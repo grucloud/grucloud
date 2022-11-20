@@ -38,8 +38,8 @@ exports.CloudTrailEventDataStore = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: get("live.Name"),
-    findId: pipe([get("live.EventDataStoreArn")]),
+    findName: () => get("Name"),
+    findId: () => pipe([get("EventDataStoreArn")]),
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ EventDataStoreArn: name }), getById({})]),
     tagResource: tagResource,

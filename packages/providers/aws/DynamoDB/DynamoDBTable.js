@@ -11,8 +11,8 @@ const {
   untagResource,
 } = require("./DynamoDBCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const findName = get("live.TableName");
-const findId = get("live.TableArn");
+const findName = () => get("TableName");
+const findId = () => get("TableArn");
 const pickId = pick(["TableName"]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html

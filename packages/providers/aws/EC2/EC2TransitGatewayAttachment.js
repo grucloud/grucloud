@@ -97,12 +97,13 @@ const findNameInDependency = ({ live, lives, config }) =>
     ({ tgwName, resourceName }) => `tgw-attach::${tgwName}::${resourceName}`,
   ])();
 
-const findId = pipe([
-  get("live.TransitGatewayAttachmentId"),
-  tap((TransitGatewayAttachmentId) => {
-    assert(TransitGatewayAttachmentId);
-  }),
-]);
+const findId = () =>
+  pipe([
+    get("TransitGatewayAttachmentId"),
+    tap((TransitGatewayAttachmentId) => {
+      assert(TransitGatewayAttachmentId);
+    }),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2TransitGatewayAttachment = ({ spec, config }) =>
@@ -112,6 +113,6 @@ exports.EC2TransitGatewayAttachment = ({ spec, config }) =>
     config,
     findName: findNameInTagsOrId({ findId: findNameInDependency }),
     findId,
-    cannotBeDeleted: () => true,
-    managedByOther: () => true,
+    cannotBeDeleted: () => () => true,
+    managedByOther: () => () => true,
   });

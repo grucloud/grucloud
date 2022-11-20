@@ -102,7 +102,7 @@ exports.EC2TransitGateway = ({ spec, config }) =>
       ({ TransitGatewayId }) => ({ TransitGatewayIds: [TransitGatewayId] }),
     ]),
     findId,
-    cannotBeDeleted: eq(get("live.State"), "deleted"),
+    cannotBeDeleted: () => eq(get("State"), "deleted"),
     getByName: getByNameCore,
     tagResource: tagResource,
     untagResource: untagResource,

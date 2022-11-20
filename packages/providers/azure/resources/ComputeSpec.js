@@ -467,21 +467,23 @@ exports.fnSpecs = ({ config }) =>
       },
       {
         type: "Disk",
-        managedByOther: ({ live, lives }) =>
-          pipe([
-            () =>
-              lives.getById({
-                id: live.managedBy,
-                type: "VirtualMachine",
-                group: "Compute",
-                providerName: config.providerName,
-              }),
-            get("live.properties.storageProfile.osDisk.managedDisk.id", ""),
-            eq(
-              callProp("toUpperCase"),
-              pipe([() => live, get("id"), callProp("toUpperCase")])()
-            ),
-          ])(),
+        managedByOther:
+          ({ lives, config }) =>
+          (live) =>
+            pipe([
+              () =>
+                lives.getById({
+                  id: live.managedBy,
+                  type: "VirtualMachine",
+                  group: "Compute",
+                  providerName: config.providerName,
+                }),
+              get("live.properties.storageProfile.osDisk.managedDisk.id", ""),
+              eq(
+                callProp("toUpperCase"),
+                pipe([() => live, get("id"), callProp("toUpperCase")])()
+              ),
+            ])(),
       },
       {
         type: "DiskEncryptionSet",
@@ -565,7 +567,7 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "VirtualMachineScaleSetVM",
         ignoreResource: () => () => true,
-        managedByOther: () => true,
+        managedByOther: () => () => true,
       },
       {
         type: "VirtualMachineScaleSet",

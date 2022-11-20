@@ -53,7 +53,7 @@ const useParams = ({ params, provider, programOptions, spec }) => ({
 const SpecDefault = ({ providerName }) => ({
   providerName,
   listOnly: false,
-  isOurMinion: () => false,
+  isOurMinion: () => () => false,
   propertiesDefault: {},
   propertiesDefaultArray: [],
   omitProperties: [],

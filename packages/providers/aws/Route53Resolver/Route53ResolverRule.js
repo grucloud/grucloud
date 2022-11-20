@@ -13,10 +13,8 @@ const {
   assignTags,
 } = require("./Route53ResolverCommon");
 
-const cannotBeDeleted =
-  ({ config }) =>
-  (live) =>
-    pipe([() => live, not(eq(get("live.OwnerId"), config.accountId()))])();
+const cannotBeDeleted = ({ config }) =>
+  pipe([not(eq(get("OwnerId"), config.accountId()))]);
 
 const pickId = pipe([({ Id }) => ({ ResolverRuleId: Id })]);
 
@@ -80,10 +78,10 @@ exports.Route53ResolverRule = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    cannotBeDeleted: cannotBeDeleted({ config }),
-    managedByOther: cannotBeDeleted({ config }),
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Arn")]),
+    cannotBeDeleted: cannotBeDeleted,
+    managedByOther: cannotBeDeleted,
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("Arn")]),
     getByName: ({ endpoint }) =>
       pipe([
         ({ name }) => ({ Filters: [{ Name: "Name", Values: [name] }] }),

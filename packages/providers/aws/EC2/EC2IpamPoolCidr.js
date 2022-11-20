@@ -26,7 +26,7 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.Cidr")]);
+const findId = () => pipe([get("Cidr")]);
 
 const isDeprovisioned = eq(get("State"), "deprovisioned");
 
@@ -36,7 +36,7 @@ exports.EC2IpamPoolCidr = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    cannotBeDeleted: eq(get("live.State"), "deprovisioned"),
+    cannotBeDeleted: () => isDeprovisioned,
     findName: findNameInTagsOrId({ findId }),
     findId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#getIpamPoolCidrs-property

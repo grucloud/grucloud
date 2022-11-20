@@ -61,41 +61,45 @@ const untagResource = untagResourceIam({
   method: "untagRole",
 });
 
-const cannotBeDeleted = pipe([
-  get("live.Path"),
-  or([includes("/aws-service-role"), includes("/aws-reserved/")]),
-  tap((params) => {
-    assert(true);
-  }),
-]);
-
-const managedByOther = ({ live, lives, config }) =>
+const cannotBeDeleted = () =>
   pipe([
+    get("Path"),
+    or([includes("/aws-service-role"), includes("/aws-reserved/")]),
     tap((params) => {
       assert(true);
     }),
-    or([
-      () => cannotBeDeleted({ live, lives, config }),
-      pipe([
-        tap((params) => {
-          assert(config);
-        }),
-        () =>
-          lives.getByType({
-            type: "Stack",
-            group: "CloudFormation",
-            providerName: config.providerName,
+  ]);
+
+const managedByOther =
+  ({ lives, config }) =>
+  (live) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => live,
+      or([
+        cannotBeDeleted({ lives, config }),
+        pipe([
+          tap((params) => {
+            assert(config);
           }),
-        any(
-          pipe([
-            get("name"),
-            append("-AWS"),
-            (stackName) => live.RoleName.includes(stackName),
-          ])
-        ),
+          () =>
+            lives.getByType({
+              type: "Stack",
+              group: "CloudFormation",
+              providerName: config.providerName,
+            }),
+          any(
+            pipe([
+              get("name"),
+              append("-AWS"),
+              (stackName) => live.RoleName.includes(stackName),
+            ])
+          ),
+        ]),
       ]),
-    ]),
-  ])();
+    ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamRole = ({ spec, config }) => {
@@ -103,8 +107,8 @@ exports.AwsIamRole = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(iam);
   const { providerName } = config;
 
-  const findName = get("live.RoleName");
-  const findId = get("live.Arn");
+  const findName = () => get("RoleName");
+  const findId = () => get("Arn");
   const pickId = pick(["RoleName"]);
 
   const findDependencyRoleCommon = ({ type, group, live, lives, config }) => ({
@@ -462,7 +466,7 @@ exports.AwsIamRole = ({ spec, config }) => {
   return {
     spec,
     findDependencies,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace: findNamespaceInTags,
     findId,
     getByName,
     getById,

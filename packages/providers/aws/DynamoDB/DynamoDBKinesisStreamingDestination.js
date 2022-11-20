@@ -28,38 +28,40 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([
-  get("live"),
-  tap(({ StreamArn, TableName }) => {
-    assert(StreamArn);
-    assert(TableName);
-  }),
-  ({ TableName, StreamArn }) =>
-    `table-kinesis-stream::${TableName}::${StreamArn}`,
-]);
+const findId = () =>
+  pipe([
+    tap(({ StreamArn, TableName }) => {
+      assert(StreamArn);
+      assert(TableName);
+    }),
+    ({ TableName, StreamArn }) =>
+      `table-kinesis-stream::${TableName}::${StreamArn}`,
+  ]);
 
 exports.DynamoDBKinesisStreamingDestination = ({ spec, config }) =>
   createAwsResource({
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        fork({
-          table: () => live.TableName,
-          stream: pipe([
-            () =>
-              lives.getById({
-                id: live.StreamArn,
-                type: "Stream",
-                group: "Kinesis",
-                providerName: config.providerName,
-              }),
-            get("name", live.StreamArn),
-          ]),
-        }),
-        ({ table, stream }) => `table-kinesis-stream::${table}::${stream}`,
-      ])(),
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          fork({
+            table: () => live.TableName,
+            stream: pipe([
+              () =>
+                lives.getById({
+                  id: live.StreamArn,
+                  type: "Stream",
+                  group: "Kinesis",
+                  providerName: config.providerName,
+                }),
+              get("name", live.StreamArn),
+            ]),
+          }),
+          ({ table, stream }) => `table-kinesis-stream::${table}::${stream}`,
+        ])(),
     findId,
     //TODO getListWithParent
     getList:

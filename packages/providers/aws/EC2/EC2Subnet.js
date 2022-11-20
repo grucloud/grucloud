@@ -121,41 +121,38 @@ exports.EC2Subnet = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const isDefault = get("live.DefaultForAz");
+  const isDefault = () => get("DefaultForAz");
   const cannotBeDeleted = isDefault;
   const managedByOther = isDefault;
 
-  const findId = get("live.SubnetId");
+  const findId = () => get("SubnetId");
   const pickId = pick(["SubnetId"]);
 
-  const findName = pipe([
-    fork({
-      vpcName: ({ live, lives, config }) =>
-        pipe([
-          () =>
-            lives.getById({
-              id: live.VpcId,
-              type: "Vpc",
-              group: "EC2",
-              providerName: config.providerName,
+  const findName = ({ lives, config }) =>
+    pipe([
+      fork({
+        vpcName: (live) =>
+          pipe([
+            () =>
+              lives.getById({
+                id: live.VpcId,
+                type: "Vpc",
+                group: "EC2",
+                providerName: config.providerName,
+              }),
+            get("name", live.VpcId),
+            tap((name) => {
+              assert(name, "no vpc name in subnet");
             }),
-          get("name", live.VpcId),
-          tap((name) => {
-            assert(name, "no vpc name in subnet");
-          }),
-        ])(),
-      subnetName: switchCase([
-        get("live.DefaultForAz"),
-        pipe([
-          get("live.AvailabilityZone", ""),
-          last,
-          prepend("subnet-default-"),
+          ])(),
+        subnetName: switchCase([
+          get("DefaultForAz"),
+          pipe([get("AvailabilityZone", ""), last, prepend("subnet-default-")]),
+          findNameInTagsOrId({ findId })({ lives, config }),
         ]),
-        findNameInTagsOrId({ findId }),
-      ]),
-    }),
-    ({ vpcName, subnetName }) => `${vpcName}::${subnetName}`,
-  ]);
+      }),
+      ({ vpcName, subnetName }) => `${vpcName}::${subnetName}`,
+    ]);
 
   const getList = client.getList({
     method: "describeSubnets",
@@ -326,7 +323,7 @@ exports.EC2Subnet = ({ spec, config }) => {
     findId,
     getById,
     findName,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace: findNamespaceInTags,
     getByName,
     getList,
     create,

@@ -49,7 +49,7 @@ const isDefaultParameterGroup = pipe([
   callProp("startsWith", "default."),
 ]);
 
-const managedByOther = pipe([get("live"), isDefaultParameterGroup]);
+const managedByOther = () => pipe([isDefaultParameterGroup]);
 
 const model = ({ config }) => ({
   package: "rds",
@@ -113,20 +113,20 @@ exports.RDSDBClusterParameterGroup = ({ compare }) => ({
       config,
       managedByOther,
       cannotBeDeleted: managedByOther,
-      findName: pipe([
-        get("live"),
-        get("DBClusterParameterGroupName"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findId: pipe([
-        get("live"),
-        get("DBClusterParameterGroupName"),
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
+      findName: () =>
+        pipe([
+          get("DBClusterParameterGroupName"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
+      findId: () =>
+        pipe([
+          get("DBClusterParameterGroupName"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
       getByName: ({ getById }) =>
         pipe([
           ({ name }) => ({ DBClusterParameterGroupName: name }),

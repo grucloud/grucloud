@@ -61,7 +61,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
   const fetchPolicyDocument = createFetchPolicyDocument({ iam });
-  const findId = get("live.Arn");
+  const findId = () => get("Arn");
 
   const findDependencyPolicyCommon = ({
     type,
@@ -91,7 +91,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     ...findDependenciesPolicyCommon({ live, lives, config }),
   ];
 
-  const findName = ({ live }) =>
+  const findName = () => (live) =>
     pipe([
       () => live,
       get("name"),
@@ -103,18 +103,20 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
     ])();
 
-  const findNamespace = ({ live }) =>
-    pipe([
-      tap((params) => {
-        assert(live);
-      }),
-      () => live,
-      get("namespace"),
-      when(isEmpty, () => findNamespaceInTags(config)({ live })),
-      tap((namespace) => {
-        logger.debug(`findNamespace ${namespace}`);
-      }),
-    ])();
+  const findNamespace =
+    ({ config }) =>
+    (live) =>
+      pipe([
+        tap((params) => {
+          assert(live);
+        }),
+        () => live,
+        get("namespace"),
+        when(isEmpty, () => findNamespaceInTags({ config })({ live })),
+        tap((namespace) => {
+          logger.debug(`findNamespace ${namespace}`);
+        }),
+      ])();
 
   const addTargets = ({ resources = [], policies } = {}) =>
     pipe([
@@ -357,12 +359,8 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
     ])();
 
-  const cannotBeDeleted = ({ live }) =>
+  const cannotBeDeleted = () =>
     pipe([
-      tap(() => {
-        assert(live);
-      }),
-      () => live,
       get("name"),
       tap((name) => {
         //assert(name);
@@ -372,7 +370,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           () => ["Amazon", "AWS"],
           any((prefix) => includes(prefix)(name)),
         ])(),
-    ])();
+    ]);
 
   return {
     spec,

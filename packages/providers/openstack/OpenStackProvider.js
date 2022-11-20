@@ -77,12 +77,13 @@ const fnSpecs = (config) => {
           isInstanceUp,
           config,
           configDefault: ({ properties }) => defaultsDeep({})(properties),
-          isDefault: pipe([
-            tap((xxx) => {
-              //logger.debug(``);
-            }),
-            eq(get("live.name"), "Ext-Net"),
-          ]),
+          isDefault: () =>
+            pipe([
+              tap((xxx) => {
+                //logger.debug(``);
+              }),
+              eq(get("name"), "Ext-Net"),
+            ]),
         }),
       isOurMinion,
     },
@@ -98,15 +99,14 @@ const fnSpecs = (config) => {
           isInstanceUp,
           config,
           configDefault: ({ properties }) => defaultsDeep({})(properties),
-          findName: ({ live }) =>
+          findName: () =>
             pipe([
-              () => live,
               get("name"),
               switchCase([isEmpty, () => live.cidr, identity]),
               tap((name) => {
                 assert(name, `missing name in ${tos(live)}`);
               }),
-            ])(),
+            ]),
           findDependencies: ({ live }) => [
             {
               type: "Network",

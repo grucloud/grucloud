@@ -49,48 +49,52 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const iam = createIAM(config);
   const client = AwsClient({ spec, config })(iam);
 
-  const findId = get("live.Arn");
+  const findId = () => get("Arn");
   const pickId = pick(["InstanceProfileName"]);
 
-  const findNameEks = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        assert(live.InstanceProfileName);
-      }),
-      () =>
-        lives.getByType({
-          type: "LaunchTemplate",
-          group: "EC2",
-          providerName: config.providerName,
+  const findNameEks =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(lives);
+          assert(live.InstanceProfileName);
         }),
-      find(eq(get("live.LaunchTemplateName"), live.InstanceProfileName)),
-      get("name"),
-      unless(isEmpty, prepend("instance-profile-")),
-    ])();
+        () =>
+          lives.getByType({
+            type: "LaunchTemplate",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
+        find(eq(get("live.LaunchTemplateName"), live.InstanceProfileName)),
+        get("name"),
+        unless(isEmpty, prepend("instance-profile-")),
+      ])();
 
-  const findName = (params) => {
-    const fns = [findNameEks, get("live.InstanceProfileName")];
+  const findName = (params) => (live) => {
+    const fns = [findNameEks(params), get("InstanceProfileName")];
     for (fn of fns) {
-      const name = fn(params);
+      const name = fn(live);
       if (!isEmpty(name)) {
         return name;
       }
     }
   };
 
-  const managedByOther = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(live.InstanceProfileName);
-      }),
-      () => live,
-      get("InstanceProfileName"),
-      or([callProp("startsWith", "eks-")]),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+  const managedByOther =
+    ({ lives }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(live.InstanceProfileName);
+        }),
+        () => live,
+        get("InstanceProfileName"),
+        or([callProp("startsWith", "eks-")]),
+        tap((params) => {
+          assert(true);
+        }),
+      ])();
 
   const findDependencies = ({ live }) => [
     {
@@ -205,28 +209,30 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
-    findNamespace: ({ live, lives }) =>
-      pipe([
-        () => live,
-        get("Roles"),
-        tap((roles) => {
-          logger.info(`IamInstanceProfile ${roles}`);
-        }),
-        first,
-        unless(
-          isEmpty,
-          pipe([
-            ({ RoleName }) =>
-              lives.getByName({
-                name: RoleName,
-                type: "Role",
-                group: "IAM",
-                providerName: config.providerName,
-              }),
-            unless(isEmpty, findNamespaceInTags(config)),
-          ])
-        ),
-      ])(),
+    findNamespace:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () => live,
+          get("Roles"),
+          tap((roles) => {
+            logger.info(`IamInstanceProfile ${roles}`);
+          }),
+          first,
+          unless(
+            isEmpty,
+            pipe([
+              ({ RoleName }) =>
+                lives.getByName({
+                  name: RoleName,
+                  type: "Role",
+                  group: "IAM",
+                  providerName: config.providerName,
+                }),
+              unless(isEmpty, findNamespaceInTags({ config })),
+            ])
+          ),
+        ])(),
     getByName,
     getById,
     findName,

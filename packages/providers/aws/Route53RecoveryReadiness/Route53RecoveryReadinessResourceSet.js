@@ -155,8 +155,8 @@ exports.Route53RecoveryReadinessResourceSet = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ResourceSetName")]),
-    findId: pipe([get("live.ResourceSetArn")]),
+    findName: () => pipe([get("ResourceSetName")]),
+    findId: () => pipe([get("ResourceSetArn")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([
         ({ name }) => ({ ResourceSetName: name }),

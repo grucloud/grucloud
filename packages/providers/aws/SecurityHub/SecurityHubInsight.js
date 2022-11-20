@@ -34,14 +34,14 @@ exports.SecurityHubInsight = () => ({
   propertiesDefault: {},
   omitProperties: ["InsightArn"],
   inferName: pipe([get("properties"), extractName]),
-  findName: pipe([get("live"), extractName]),
-  findId: pipe([
-    get("live"),
-    get("InsightArn"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () => pipe([extractName]),
+  findId: () =>
+    pipe([
+      get("InsightArn"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   dependencies: {
     securityHubAccount: {
       type: "Account",

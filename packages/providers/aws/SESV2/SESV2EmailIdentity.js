@@ -48,24 +48,23 @@ exports.SESV2EmailIdentity = ({ compare }) => ({
       assert(Name);
     }),
   ]),
-  findName: pipe([
-    get("live"),
-    get("EmailIdentity"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    tap((params) => {
-      assert(true);
-    }),
-
-    get("EmailIdentity"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("EmailIdentity"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      get("EmailIdentity"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   dependencies: {
     configurationSet: {
       type: "ConfigurationSet",

@@ -58,20 +58,20 @@ exports.CognitoIdentityServiceProviderUserPool = () => ({
       assert(Name);
     }),
   ]),
-  findName: pipe([
-    get("live"),
-    get("PoolName"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    get("Id"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("PoolName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("Id"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   omitProperties: [
     "Arn",
     "ProviderName",

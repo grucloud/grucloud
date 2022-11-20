@@ -37,8 +37,8 @@ exports.CloudWatchEventApiDestination = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: get("live.ApiDestinationArn"),
+    findName: () => pipe([get("Name")]),
+    findId: () => get("ApiDestinationArn"),
     getByName: getByNameCore,
     getList: ({ client, endpoint, getById, config }) =>
       pipe([

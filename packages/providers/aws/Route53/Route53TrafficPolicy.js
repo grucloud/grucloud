@@ -32,20 +32,20 @@ exports.Route53TrafficPolicy = () => ({
       assert(Name);
     }),
   ]),
-  findName: pipe([
-    get("live"),
-    get("Name"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    get("Id"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("Id"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   ignoreErrorCodes: ["NoSuchTrafficPolicy"],
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getTrafficPolicy-property
   getById: {

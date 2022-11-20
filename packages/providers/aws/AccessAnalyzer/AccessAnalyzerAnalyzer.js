@@ -52,8 +52,8 @@ exports.AccessAnalyzerAnalyzer = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.analyzerName")]),
-    findId: pipe([get("live.analyzerName")]),
+    findName: () => pipe([get("analyzerName")]),
+    findId: () => pipe([get("analyzerName")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

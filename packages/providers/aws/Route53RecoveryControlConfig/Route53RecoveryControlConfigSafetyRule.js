@@ -10,7 +10,7 @@ const {
   assignTags,
 } = require("./Route53RecoveryControlConfigCommon");
 
-const findId = ({ live }) =>
+const findId = () => (live) =>
   pipe([
     () => live,
     get("AssertionRule.SafetyRuleArn"),
@@ -18,15 +18,15 @@ const findId = ({ live }) =>
   ])();
 
 const pickId = pipe([
-  (live) => ({ live }),
-  findId,
+  findId(),
   tap((SafetyRuleArn) => {
     assert(SafetyRuleArn);
   }),
   (SafetyRuleArn) => ({ SafetyRuleArn }),
 ]);
 
-const decorate = ({ endpoint }) => pipe([assignTags({ endpoint, findId })]);
+const decorate = ({ endpoint }) =>
+  pipe([assignTags({ endpoint, findId: findId() })]);
 
 const model = ({ config }) => ({
   package: "route53-recovery-control-config",
@@ -69,9 +69,8 @@ exports.Route53RecoveryControlConfigSafetyRule = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ live }) =>
+    findName: () =>
       pipe([
-        () => live,
         switchCase([
           get("AssertionRule.Name"),
           get("AssertionRule.Name"),
@@ -84,7 +83,7 @@ exports.Route53RecoveryControlConfigSafetyRule = ({ spec, config }) =>
         tap((name) => {
           assert(name);
         }),
-      ])(),
+      ]),
     findId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53RecoveryControlConfig.html#listSafetyRules-property
     getList: ({ client, endpoint, getById, config }) =>
@@ -118,14 +117,14 @@ exports.Route53RecoveryControlConfigSafetyRule = ({ spec, config }) =>
                   AssertionRule: ASSERTION,
                   GatingRule: GATING,
                 }),
-                assignTags({ endpoint, findId }),
+                assignTags({ endpoint, findId: findId() }),
               ]),
             config,
           }),
       ])(),
     getByName: getByNameCore,
-    tagResource: tagResource({ findId }),
-    untagResource: untagResource({ findId }),
+    tagResource: tagResource({ findId: findId() }),
+    untagResource: untagResource({ findId: findId() }),
     configDefault: ({
       name,
       namespace,

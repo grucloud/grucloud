@@ -128,8 +128,8 @@ exports.ElastiCacheReplicationGroup = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ReplicationGroupId")]),
-    findId: pipe([get("live.ReplicationGroupId")]),
+    findName: () => pipe([get("ReplicationGroupId")]),
+    findId: () => pipe([get("ReplicationGroupId")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

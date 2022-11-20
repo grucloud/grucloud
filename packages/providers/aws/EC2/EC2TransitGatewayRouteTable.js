@@ -8,11 +8,9 @@ const { buildTags, findNameInTagsOrId } = require("../AwsCommon");
 const { createAwsResource } = require("../AwsClient");
 const { tagResource, untagResource } = require("./EC2Common");
 
-const { findDependenciesTransitGateway } = require("./EC2TransitGatewayCommon");
+const managedByOther = () => get("DefaultAssociationRouteTable");
 
-const managedByOther = get("live.DefaultAssociationRouteTable");
-
-const findId = pipe([get("live.TransitGatewayRouteTableId")]);
+const findId = () => pipe([get("TransitGatewayRouteTableId")]);
 
 const createModel = ({ config }) => ({
   package: "ec2",
@@ -47,29 +45,32 @@ exports.EC2TransitGatewayRouteTable = ({ spec, config }) =>
     config,
     managedByOther,
     cannotBeDeleted: managedByOther,
-    findName: pipe([
-      switchCase([
-        get("live.DefaultAssociationRouteTable"),
-        ({ live, lives }) =>
-          pipe([
-            () =>
-              lives.getByType({
-                id: live.TransitGatewayId,
-                type: "TransitGateway",
-                group: "EC2",
-                providerName: config.providerName,
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () => live,
+          switchCase([
+            get("DefaultAssociationRouteTable"),
+            pipe([
+              () =>
+                lives.getByType({
+                  id: live.TransitGatewayId,
+                  type: "TransitGateway",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              find(eq(get("live.TransitGatewayId"), live.TransitGatewayId)),
+              get("name", ""),
+              tap((name) => {
+                //assert(name);
               }),
-            find(eq(get("live.TransitGatewayId"), live.TransitGatewayId)),
-            get("name", ""),
-            tap((name) => {
-              //assert(name);
-            }),
-            append("-default"),
-            prepend("tgw-rtb-"),
-          ])(),
-        findNameInTagsOrId({ findId }),
-      ]),
-    ]),
+              append("-default"),
+              prepend("tgw-rtb-"),
+            ]),
+            findNameInTagsOrId({ findId })({ lives, config }),
+          ]),
+        ])(),
     pickId: pipe([
       tap(({ TransitGatewayRouteTableId }) => {
         assert(TransitGatewayRouteTableId);

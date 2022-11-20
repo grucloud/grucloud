@@ -311,10 +311,9 @@ exports.ResourceMaker = ({
                     target: resource.spec.displayResource()(target),
                     live: resource.spec.displayResource()(live),
                     id: getClient().findId({
-                      live,
                       lives: provider.lives,
                       config: provider.getConfig(),
-                    }),
+                    })(live),
                     diff,
                     providerName: resource.toJSON().providerName,
                   },
@@ -717,7 +716,11 @@ exports.ResourceMaker = ({
           }),
           (client) =>
             pipe([
-              () => client.findId({ live }),
+              () => live,
+              client.findId({
+                lives: provider.lives,
+                config: provider.getConfig(),
+              }),
               (id) =>
                 pipe([
                   //Tag
@@ -771,10 +774,9 @@ exports.ResourceMaker = ({
                     lives: provider.lives,
                     //TODO do we need that id ?
                     id: client.findId({
-                      live,
                       lives: provider.lives,
                       config: provider.getConfig(),
-                    }),
+                    })(live),
                     programOptions,
                     compare: spec.compare,
                   }),

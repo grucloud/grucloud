@@ -10,32 +10,36 @@ const GoogleClient = require("../../GoogleClient");
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 const { retryCallOnError } = require("@grucloud/core/Retry");
 
-const findName = pipe([get("live.email"), callProp("split", "@"), first]);
+const findName = () => pipe([get("email"), callProp("split", "@"), first]);
 
-const isOurMinionServiceAccount = ({ config, live }) =>
-  pipe([
-    tap(() => {
-      assert(config);
-      assert(config.managedByDescription, `missing managedByDescription`);
-      assert(live, "live");
-    }),
-    () => live,
-    eq(get("description"), config.managedByDescription),
-    tap((isOur) => {
-      logger.info(`isOurMinionServiceAccount: name: ${live.email} ${isOur}`);
-    }),
-  ])();
+const isOurMinionServiceAccount =
+  ({ config }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(config);
+        assert(config.managedByDescription, `missing managedByDescription`);
+        assert(live, "live");
+      }),
+      () => live,
+      eq(get("description"), config.managedByDescription),
+      tap((isOur) => {
+        logger.info(`isOurMinionServiceAccount: name: ${live.email} ${isOur}`);
+      }),
+    ])();
 
-const managedByGoogle = ({ config, live }) =>
-  pipe([
-    tap(() => {
-      assert(config);
-      assert(live, "live");
-    }),
-    () => live,
-    get("name"),
-    callProp("endsWith", "-compute@developer.gserviceaccount.com"),
-  ])();
+const managedByGoogle =
+  ({ config }) =>
+  (live) =>
+    pipe([
+      tap(() => {
+        assert(config);
+        assert(live, "live");
+      }),
+      () => live,
+      get("name"),
+      callProp("endsWith", "-compute@developer.gserviceaccount.com"),
+    ])();
 
 exports.isOurMinionServiceAccount = isOurMinionServiceAccount;
 // https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts
@@ -71,7 +75,7 @@ exports.GcpServiceAccount = ({ spec, config }) => {
       },
     })(properties);
 
-  const findId = get("live.uniqueId");
+  const findId = () => get("uniqueId");
   const findTargetId = () => get("uniqueId");
 
   const onResponseGet = ({ data }) =>
@@ -101,7 +105,11 @@ exports.GcpServiceAccount = ({ spec, config }) => {
         ),
       ])();
 
-  const cannotBeDeleted = or([managedByGoogle, not(isOurMinionServiceAccount)]);
+  const cannotBeDeleted = ({ config }) =>
+    or([
+      managedByGoogle({ config }),
+      not(isOurMinionServiceAccount({ config })),
+    ]);
 
   return GoogleClient({
     spec,

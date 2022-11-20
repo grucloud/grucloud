@@ -39,16 +39,15 @@ exports.EC2Volume = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(ec2);
   const awsEC2 = EC2Instance({ config, spec });
 
-  const managedByOther = or([
-    hasKeyInTags({
-      key: "kubernetes.io/cluster/",
-    }),
-    ({ live, lives }) =>
+  const managedByOther = ({ lives, config }) =>
+    or([
+      hasKeyInTags({
+        key: "kubernetes.io/cluster/",
+      }),
       pipe([
         tap(() => {
           assert(lives);
         }),
-        () => live,
         get("Attachments", []),
         any(({ Device, InstanceId }) =>
           pipe([
@@ -65,30 +64,34 @@ exports.EC2Volume = ({ spec, config }) => {
             eq(get("live.RootDeviceName"), Device),
           ])()
         ),
-      ])(),
-  ]);
+      ]),
+    ]);
 
-  const findId = get("live.VolumeId");
+  const findId = () => get("VolumeId");
   const pickId = pick(["VolumeId"]);
 
-  const findNameKubernetes = switchCase([
-    managedByOther,
+  const findNameKubernetes = ({ lives, config }) =>
     pipe([
-      get("live"),
-      findValueInTags({ key: "kubernetes.io/created-for/pvc/name" }),
-      tap((pvcName) => {
-        //assert(pvcName);
-      }),
-      unless(isEmpty, prepend("kubernetes-")),
-    ]),
-    () => undefined,
-  ]);
+      switchCase([
+        managedByOther({ lives, config }),
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          findValueInTags({ key: "kubernetes.io/created-for/pvc/name" }),
+          tap((pvcName) => {
+            //assert(pvcName);
+          }),
+          unless(isEmpty, prepend("kubernetes-")),
+        ]),
+        () => undefined,
+      ]),
+    ]);
 
-  const findNameEC2 = switchCase([
-    managedByOther,
-    ({ live, lives }) =>
+  const findNameEC2 = ({ lives, config }) =>
+    switchCase([
+      managedByOther({ lives, config }),
       pipe([
-        () => live,
         get("Attachments"),
         first,
         ({ InstanceId }) =>
@@ -100,18 +103,18 @@ exports.EC2Volume = ({ spec, config }) => {
           }),
         get("name"),
         prepend("vol-"),
-      ])(),
-    () => undefined,
-  ]);
+      ]),
+      () => undefined,
+    ]);
 
-  const findName = (params) => {
+  const findName = (params) => (live) => {
     const fns = [
       findNameKubernetes,
       findNameEC2,
       findNameInTagsOrId({ findId }),
     ];
     for (fn of fns) {
-      const name = fn(params);
+      const name = fn(params)(live);
       if (!isEmpty(name)) {
         return name;
       }
@@ -172,11 +175,8 @@ exports.EC2Volume = ({ spec, config }) => {
       }),
     ])();
 
-  const cannotBeDeleted = pipe([
-    get("live.Attachments"),
-    first,
-    get("DeleteOnTermination"),
-  ]);
+  const cannotBeDeleted = () =>
+    pipe([get("Attachments"), first, get("DeleteOnTermination")]);
 
   const findInstanceId = pipe([get("Attachments"), first, get("InstanceId")]);
 
@@ -203,14 +203,19 @@ exports.EC2Volume = ({ spec, config }) => {
       }),
     ])();
 
-  const findNamespace = ({ live, lives }) =>
-    pipe([
-      () => findNamespaceInTags(config)({ live }),
-      when(isEmpty, () => findNamespaceFromInstanceId({ live, lives })),
-      tap((namespace) => {
-        logger.debug(`findNamespace`, namespace);
-      }),
-    ])();
+  const findNamespace =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        findNamespaceInTags({ live, config }),
+        when(isEmpty, () =>
+          findNamespaceFromInstanceId({ lives, config })(live)
+        ),
+        tap((namespace) => {
+          logger.debug(`findNamespace`, namespace);
+        }),
+      ])();
 
   return {
     spec,

@@ -20,14 +20,14 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([
-  get("live"),
-  unless(
-    isEmpty,
-    ({ InstanceId, AllocationId }) =>
-      `eip-attach::${AllocationId}::${InstanceId}`
-  ),
-]);
+const findId = () =>
+  pipe([
+    unless(
+      isEmpty,
+      ({ InstanceId, AllocationId }) =>
+        `eip-attach::${AllocationId}::${InstanceId}`
+    ),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2ElasticIpAddressAssociation = ({ spec, config }) =>
@@ -35,36 +35,38 @@ exports.EC2ElasticIpAddressAssociation = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        fork({
-          instance: pipe([
-            () =>
-              lives.getById({
-                id: live.InstanceId,
-                type: "Instance",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
-          ]),
-          eip: pipe([
-            () =>
-              lives.getById({
-                id: live.AllocationId,
-                type: "ElasticIpAddress",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
-          ]),
-        }),
-        tap(({ instance, eip }) => {
-          assert(instance);
-          assert(eip);
-        }),
-        ({ instance, eip }) => `eip-attach::${eip}::${instance}`,
-      ])(),
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          fork({
+            instance: pipe([
+              () =>
+                lives.getById({
+                  id: live.InstanceId,
+                  type: "Instance",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name"),
+            ]),
+            eip: pipe([
+              () =>
+                lives.getById({
+                  id: live.AllocationId,
+                  type: "ElasticIpAddress",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name"),
+            ]),
+          }),
+          tap(({ instance, eip }) => {
+            assert(instance);
+            assert(eip);
+          }),
+          ({ instance, eip }) => `eip-attach::${eip}::${instance}`,
+        ])(),
     findId,
     pickId,
     getList:

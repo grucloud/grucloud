@@ -27,8 +27,8 @@ exports.GcpIamPolicy = ({ spec, config }) => {
   assert(config);
   const { projectId } = config;
 
-  const findName = () => "policy";
-  const findId = () => "policy";
+  const findName = () => () => "policy";
+  const findId = () => () => "policy";
 
   const axios = createAxiosMakerGoogle({
     baseURL: `https://cloudresourcemanager.googleapis.com/v1`,
@@ -121,7 +121,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
     update,
     getByName,
     configDefault,
-    cannotBeDeleted: () => true,
+    cannotBeDeleted: () => () => true,
   };
 };
 

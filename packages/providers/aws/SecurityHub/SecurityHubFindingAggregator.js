@@ -41,20 +41,20 @@ exports.SecurityHubFindingAggregator = () => ({
       assert(Name);
     }),
   ]),
-  findName: pipe([
-    get("live"),
-    extractName,
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    get("FindingAggregatorArn"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      extractName,
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("FindingAggregatorArn"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   dependencies: {
     securityHubAccount: {
       type: "Account",

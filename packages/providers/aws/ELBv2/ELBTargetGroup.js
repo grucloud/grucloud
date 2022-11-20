@@ -13,8 +13,8 @@ const {
 const { AwsClient } = require("../AwsClient");
 const { createELB, tagResource, untagResource } = require("./ELBCommon");
 
-const findName = get("live.Name");
-const findId = get("live.TargetGroupArn");
+const findName = () => get("Name");
+const findId = () => get("TargetGroupArn");
 const ignoreErrorCodes = [
   "TargetGroupNotFound",
   "TargetGroupNotFoundException",
@@ -25,19 +25,19 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   const elb = createELB(config);
   const client = AwsClient({ spec, config })(elb);
 
-  const managedByOther = pipe([
-    or([
-      hasKeyInTags({
-        key: "elbv2.k8s.aws/cluster",
-      }),
-      hasKeyInTags({
-        key: "elasticbeanstalk:environment-id",
-      }),
-    ]),
-  ]);
+  const managedByOther = () =>
+    pipe([
+      or([
+        hasKeyInTags({
+          key: "elbv2.k8s.aws/cluster",
+        }),
+        hasKeyInTags({
+          key: "elasticbeanstalk:environment-id",
+        }),
+      ]),
+    ]);
 
   const findNamespace = findNamespaceInTagsOrEksCluster({
-    config,
     key: "elbv2.k8s.aws/cluster",
   });
 

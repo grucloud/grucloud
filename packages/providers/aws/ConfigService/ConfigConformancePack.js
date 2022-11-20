@@ -97,8 +97,8 @@ exports.ConfigConformancePack = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ConformancePackName")]),
-    findId: pipe([get("live.ConformancePackName")]),
+    findName: () => pipe([get("ConformancePackName")]),
+    findId: () => pipe([get("ConformancePackName")]),
     getByName: getByNameCore,
     configDefault: ({
       name,

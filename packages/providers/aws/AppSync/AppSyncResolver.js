@@ -13,12 +13,10 @@ const {
   untagResource,
 } = require("./AppSyncCommon");
 
-const findId = get("live.resolverArn");
+const findId = () => get("resolverArn");
 
-const findName = pipe([
-  get("live"),
-  ({ typeName, fieldName }) => `resolver::${typeName}::${fieldName}`,
-]);
+const findName = () =>
+  pipe([({ typeName, fieldName }) => `resolver::${typeName}::${fieldName}`]);
 
 const pickId = pick(["apiId", "fieldName", "typeName"]);
 

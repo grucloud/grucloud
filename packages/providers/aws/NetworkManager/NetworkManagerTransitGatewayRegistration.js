@@ -41,11 +41,11 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([
-  get("live"),
-  ({ TransitGatewayArn, GlobalNetworkId }) =>
-    `${TransitGatewayArn}::${GlobalNetworkId}`,
-]);
+const findId = () =>
+  pipe([
+    ({ TransitGatewayArn, GlobalNetworkId }) =>
+      `${TransitGatewayArn}::${GlobalNetworkId}`,
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html
 exports.NetworkManagerTransitGatewayRegistration = ({ spec, config }) =>
@@ -53,33 +53,35 @@ exports.NetworkManagerTransitGatewayRegistration = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        fork({
-          globalNetworkName: pipe([
-            () =>
-              lives.getById({
-                id: live.GlobalNetworkId,
-                type: "GlobalNetwork",
-                group: "NetworkManager",
-                providerName: config.providerName,
-              }),
-            get("name", live.GlobalNetworkId),
-          ]),
-          transitGatewayName: pipe([
-            () =>
-              lives.getByType({
-                type: "TransitGateway",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            find(eq(get("live.TransitGatewayArn"), live.TransitGatewayArn)),
-            get("name", live.TransitGatewayArn),
-          ]),
-        }),
-        ({ globalNetworkName, transitGatewayName }) =>
-          `tgw-assoc::${globalNetworkName}::${transitGatewayName}`,
-      ])(),
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          fork({
+            globalNetworkName: pipe([
+              () =>
+                lives.getById({
+                  id: live.GlobalNetworkId,
+                  type: "GlobalNetwork",
+                  group: "NetworkManager",
+                  providerName: config.providerName,
+                }),
+              get("name", live.GlobalNetworkId),
+            ]),
+            transitGatewayName: pipe([
+              () =>
+                lives.getByType({
+                  type: "TransitGateway",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              find(eq(get("live.TransitGatewayArn"), live.TransitGatewayArn)),
+              get("name", live.TransitGatewayArn),
+            ]),
+          }),
+          ({ globalNetworkName, transitGatewayName }) =>
+            `tgw-assoc::${globalNetworkName}::${transitGatewayName}`,
+        ])(),
     findId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#getTransitGatewayRegistrations-property
     getList: ({ client, endpoint, getById, config }) =>

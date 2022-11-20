@@ -18,11 +18,11 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([
-  get("live"),
-  ({ DhcpOptionsId, VpcId }) =>
-    `dhcp-options-assoc::${DhcpOptionsId}::${VpcId}`,
-]);
+const findId = () =>
+  pipe([
+    ({ DhcpOptionsId, VpcId }) =>
+      `dhcp-options-assoc::${DhcpOptionsId}::${VpcId}`,
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
@@ -30,40 +30,43 @@ exports.EC2DhcpOptionsAssociation = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        fork({
-          vpc: pipe([
-            () =>
-              lives.getById({
-                id: live.VpcId,
-                type: "Vpc",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name", live.VpcId),
-          ]),
-          dhcpOptions: pipe([
-            () =>
-              lives.getById({
-                id: live.DhcpOptionsId,
-                type: "DhcpOptions",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name", live.DhcpOptionsId),
-          ]),
-        }),
-        tap(({ dhcpOptions, vpc }) => {
-          assert(dhcpOptions);
-          assert(vpc);
-        }),
-        ({ vpc, dhcpOptions }) => `dhcp-options-assoc::${vpc}::${dhcpOptions}`,
-      ])(),
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          fork({
+            vpc: pipe([
+              () =>
+                lives.getById({
+                  id: live.VpcId,
+                  type: "Vpc",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.VpcId),
+            ]),
+            dhcpOptions: pipe([
+              () =>
+                lives.getById({
+                  id: live.DhcpOptionsId,
+                  type: "DhcpOptions",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.DhcpOptionsId),
+            ]),
+          }),
+          tap(({ dhcpOptions, vpc }) => {
+            assert(dhcpOptions);
+            assert(vpc);
+          }),
+          ({ vpc, dhcpOptions }) =>
+            `dhcp-options-assoc::${vpc}::${dhcpOptions}`,
+        ])(),
     findId,
     getList:
       ({ endpoint }) =>
-      ({ lives }) =>
+      ({ lives, config }) =>
         pipe([
           () =>
             lives.getByType({

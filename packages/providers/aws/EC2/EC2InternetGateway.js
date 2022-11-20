@@ -30,8 +30,8 @@ const { createEC2, tagResource, untagResource } = require("./EC2Common");
 const findVpcId = pipe([get("Attachments"), first, get("VpcId")]);
 
 const isDefault =
-  ({ providerName }) =>
-  ({ live, lives }) =>
+  ({ lives, config: { providerName } }) =>
+  (live) =>
     pipe([
       () => lives.getByType({ type: "Vpc", group: "EC2", providerName }),
       find(get("isDefault")),
@@ -49,15 +49,16 @@ exports.EC2InternetGateway = ({ spec, config }) => {
   const client = AwsClient({ spec, config })(ec2);
 
   const pickId = pick(["InternetGatewayId"]);
-  const findId = get("live.InternetGatewayId");
+  const findId = () => get("InternetGatewayId");
 
-  const findName = pipe([
-    switchCase([
-      isDefault(config),
-      () => "ig-default",
-      findNameInTagsOrId({ findId }),
-    ]),
-  ]);
+  const findName = ({ lives, config }) =>
+    pipe([
+      switchCase([
+        isDefault({ lives, config }),
+        () => "ig-default",
+        findNameInTagsOrId({ findId })({ lives, config }),
+      ]),
+    ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
   const getList = client.getList({
@@ -88,7 +89,7 @@ exports.EC2InternetGateway = ({ spec, config }) => {
     method: "createInternetGateway",
     pickCreated: () => get("InternetGateway"),
     getById,
-    //TODO
+    //TODO do we need this ?
     postCreate:
       ({ resolvedDependencies: { vpc } }) =>
       ({ InternetGatewayId }) =>
@@ -211,12 +212,12 @@ exports.EC2InternetGateway = ({ spec, config }) => {
     spec,
     findId,
     findName,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace: findNamespaceInTags,
     getByName,
     getById,
-    isDefault: isDefault(config),
-    cannotBeDeleted: isDefault(config),
-    managedByOther: isDefault(config),
+    isDefault: isDefault,
+    cannotBeDeleted: isDefault,
+    managedByOther: isDefault,
     getList,
     create,
     destroy,

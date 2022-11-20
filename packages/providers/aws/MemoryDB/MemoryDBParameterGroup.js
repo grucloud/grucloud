@@ -8,10 +8,8 @@ const { tagResource, untagResource, assignTags } = require("./MemoryDBCommon");
 
 const pickId = pipe([({ Name }) => ({ ParameterGroupName: Name })]);
 
-const managedByOther = pipe([
-  get("live.Name"),
-  callProp("startsWith", "default"),
-]);
+const managedByOther = () =>
+  pipe([get("Name"), callProp("startsWith", "default")]);
 
 const model = ({ config }) => ({
   package: "memorydb",
@@ -59,8 +57,8 @@ exports.MemoryDBParameterGroup = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Name")]),
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("Name")]),
     managedByOther,
     cannotBeDeleted: managedByOther,
     getByName: ({ getList, endpoint, getById }) =>

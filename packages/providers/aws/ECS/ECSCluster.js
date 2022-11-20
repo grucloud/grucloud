@@ -32,8 +32,8 @@ const {
   untagResource,
 } = require("./ECSCommon");
 
-const findName = get("live.clusterName");
-const findId = get("live.clusterArn");
+const findName = () => get("clusterName");
+const findId = () => get("clusterArn");
 const pickId = pipe([({ clusterName }) => ({ clusters: [clusterName] })]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
@@ -41,11 +41,8 @@ exports.ECSCluster = ({ spec, config }) => {
   const ecs = createECS(config);
   const client = AwsClient({ spec, config })(ecs);
 
-  const managedByOther = pipe([
-    get("live"),
-    get("tags"),
-    any(eq(get("key"), "AWSBatchServiceTag")),
-  ]);
+  const managedByOther = () =>
+    pipe([get("tags"), any(eq(get("key"), "AWSBatchServiceTag"))]);
 
   const autoScalingGroup = AutoScalingAutoScalingGroup({ spec, config });
 
@@ -81,8 +78,6 @@ exports.ECSCluster = ({ spec, config }) => {
       ],
     },
   ];
-
-  const findNamespace = pipe([() => ""]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html#describeClusters-property
   const getById = client.getById({
@@ -241,7 +236,6 @@ exports.ECSCluster = ({ spec, config }) => {
     spec,
     findId,
     managedByOther,
-    findNamespace,
     findDependencies,
     getById,
     getByName,

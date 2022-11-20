@@ -146,20 +146,20 @@ exports.LightsailInstance = ({ compare }) => ({
       model: model({ config }),
       spec,
       config,
-      findName: pipe([
-        get("live"),
-        get("instanceName"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findId: pipe([
-        get("live"),
-        get("instanceName"),
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
+      findName: () =>
+        pipe([
+          get("instanceName"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
+      findId: () =>
+        pipe([
+          get("instanceName"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
       ...Tagger({ buildArn: buildArn(config) }),
       getByName: ({ getById }) =>
         pipe([({ name }) => ({ instanceName: name }), getById({})]),

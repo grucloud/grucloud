@@ -52,8 +52,8 @@ exports.Route53RecoveryReadinessCell = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.CellName")]),
-    findId: pipe([get("live.CellArn")]),
+    findName: () => pipe([get("CellName")]),
+    findId: () => pipe([get("CellArn")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([({ name }) => ({ CellName: name }), getById({})]),
     tagResource: tagResource,

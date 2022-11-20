@@ -37,13 +37,12 @@ exports.GlobalAcceleratorListener = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([
-      //TODO
-      get("live"),
-      ({ AcceleratorName, Protocol, PortRanges }) =>
-        `${AcceleratorName}::${Protocol}::${PortRanges[0].FromPort}::${PortRanges[0].ToPort}`,
-    ]),
-    findId: pipe([get("live.ListenerArn")]),
+    findName: () =>
+      pipe([
+        ({ AcceleratorName, Protocol, PortRanges }) =>
+          `${AcceleratorName}::${Protocol}::${PortRanges[0].FromPort}::${PortRanges[0].ToPort}`,
+      ]),
+    findId: () => pipe([get("ListenerArn")]),
     getByName: getByNameCore,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/GlobalAccelerator.html#listListeners-property
     getList: ({ client, endpoint, getById, config }) =>

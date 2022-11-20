@@ -75,7 +75,7 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([get("live.CoreNetworkId")]);
+const findId = () => pipe([get("CoreNetworkId")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html#updateCoreNetwork-property
 const updateCoreNetwork =

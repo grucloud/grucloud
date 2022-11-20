@@ -7,11 +7,9 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { AwsClient } = require("../AwsClient");
 const { createApiGatewayV2, ignoreErrorCodes } = require("./ApiGatewayCommon");
 
-const findId = get("live.RouteId");
-const findName = pipe([
-  get("live"),
-  ({ ApiName, RouteKey }) => `route::${ApiName}::${RouteKey}`,
-]);
+const findId = () => get("RouteId");
+const findName = () =>
+  pipe([({ ApiName, RouteKey }) => `route::${ApiName}::${RouteKey}`]);
 
 const pickId = pick(["ApiId", "RouteId"]);
 

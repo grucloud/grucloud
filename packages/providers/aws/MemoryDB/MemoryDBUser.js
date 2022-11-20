@@ -9,7 +9,7 @@ const { tagResource, untagResource, assignTags } = require("./MemoryDBCommon");
 
 const pickId = pipe([({ Name }) => ({ UserName: Name })]);
 
-const managedByOther = pipe([eq(get("live.Name"), "default")]);
+const managedByOther = () => pipe([eq(get("Name"), "default")]);
 
 const model = ({ config }) => ({
   package: "memorydb",
@@ -58,8 +58,8 @@ exports.MemoryDBUser = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Name")]),
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("Name")]),
     managedByOther,
     cannotBeDeleted: managedByOther,
     getByName: ({ getList, endpoint, getById }) =>

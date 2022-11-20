@@ -12,26 +12,29 @@ const {
 } = require("./CloudFrontCommon");
 const ignoreErrorCodes = ["NoSuchCloudFrontOriginAccessIdentity"];
 
-const findName = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  get(
-    "live.CloudFrontOriginAccessIdentity.CloudFrontOriginAccessIdentityConfig.Comment"
-  ),
-  tap((Comment) => {
-    assert(Comment);
-  }),
-]);
-const findId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
-  get("live.CloudFrontOriginAccessIdentity.Id"),
-  tap((Id) => {
-    assert(Id);
-  }),
-]);
+const findName = () =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get(
+      "CloudFrontOriginAccessIdentity.CloudFrontOriginAccessIdentityConfig.Comment"
+    ),
+    tap((Comment) => {
+      assert(Comment);
+    }),
+  ]);
+
+const findId = () =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("CloudFrontOriginAccessIdentity.Id"),
+    tap((Id) => {
+      assert(Id);
+    }),
+  ]);
 
 const pickId = pipe([
   tap((params) => {

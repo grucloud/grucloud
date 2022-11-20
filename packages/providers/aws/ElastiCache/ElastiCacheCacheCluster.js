@@ -22,7 +22,7 @@ const decorate = ({ endpoint }) =>
     assignTags({ endpoint, buildArn: buildArn() }),
   ]);
 
-const managedByOther = pipe([get("live.ReplicationGroupId")]);
+const managedByOther = () => pipe([get("ReplicationGroupId")]);
 
 const model = ({ config }) => ({
   package: "elasticache",
@@ -71,8 +71,8 @@ exports.ElastiCacheCacheCluster = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.CacheClusterId")]),
-    findId: pipe([get("live.CacheClusterId")]),
+    findName: () => pipe([get("CacheClusterId")]),
+    findId: () => pipe([get("CacheClusterId")]),
     managedByOther,
     getByName: getByNameCore,
     tagResource: tagResource({

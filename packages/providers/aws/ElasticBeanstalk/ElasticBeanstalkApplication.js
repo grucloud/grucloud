@@ -88,8 +88,8 @@ exports.ElasticBeanstalkApplication = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ApplicationName")]),
-    findId: pipe([get("live.ApplicationName")]),
+    findName: () => pipe([get("ApplicationName")]),
+    findId: () => pipe([get("ApplicationName")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

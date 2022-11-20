@@ -84,20 +84,20 @@ exports.CognitoIdentityIdentityPool = ({ compare }) => ({
       assert(Name);
     }),
   ]),
-  findName: pipe([
-    get("live"),
-    get("IdentityPoolName"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    get("IdentityPoolId"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("IdentityPoolName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("IdentityPoolId"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   dependencies: {
     cognitoIdentityProviders: {
       type: "UserPoolClient",

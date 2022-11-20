@@ -46,8 +46,8 @@ exports.CloudWatchEventConnection = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: get("live.ConnectionArn"),
+    findName: () => pipe([get("Name")]),
+    findId: () => get("ConnectionArn"),
     getByName: getByNameCore,
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([

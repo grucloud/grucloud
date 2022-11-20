@@ -49,10 +49,10 @@ exports.OrganisationsOrganisation = ({ spec, config }) =>
     spec,
     config,
     //TODO
-    managedByOther: () => true,
-    cannotBeDeleted: () => true,
-    findName: pipe([get("live.MasterAccountEmail")]),
-    findId: pipe([get("live.Id")]),
+    managedByOther: () => () => true,
+    cannotBeDeleted: () => () => true,
+    findName: () => pipe([get("MasterAccountEmail")]),
+    findId: () => pipe([get("Id")]),
     //TODO
     getByName: ({ getList, endpoint }) =>
       pipe([

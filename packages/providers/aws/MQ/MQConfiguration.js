@@ -87,9 +87,9 @@ exports.MQConfiguration = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Id")]),
-    cannotBeDeleted: () => true,
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("Id")]),
+    cannotBeDeleted: () => () => true,
     getByName: getByNameCore,
     configDefault: ({
       name,

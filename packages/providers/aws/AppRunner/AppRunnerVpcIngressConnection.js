@@ -63,8 +63,8 @@ exports.AppRunnerVpcIngressConnection = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.VpcIngressConnectionName")]),
-    findId: pipe([get("live.VpcIngressConnectionArn")]),
+    findName: () => pipe([get("VpcIngressConnectionName")]),
+    findId: () => pipe([get("VpcIngressConnectionArn")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

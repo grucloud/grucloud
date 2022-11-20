@@ -11,10 +11,8 @@ const pickId = pipe([
   }),
 ]);
 
-const cannotBeDeleted = pipe([
-  get("live"),
-  eq(get("isCrossAccountBackupEnabled"), "false"),
-]);
+const cannotBeDeleted = () =>
+  pipe([eq(get("isCrossAccountBackupEnabled"), "false")]);
 
 const model = ({ config }) => ({
   package: "backup",
@@ -58,8 +56,8 @@ exports.BackupGlobalSettings = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([() => "global"]),
-    findId: pipe([() => "global"]),
+    findName: () => pipe([() => "global"]),
+    findId: () => pipe([() => "global"]),
     cannotBeDeleted,
     getByName: getByNameCore,
     configDefault: ({

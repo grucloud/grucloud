@@ -1775,11 +1775,7 @@ module.exports = pipe([
           group: "EKS",
           ignoreOnDestroy: true,
           dependencyId: ({ lives, config }) =>
-            pipe([
-              (live) => ({ live, lives }),
-              findEksCluster({ config }),
-              get("id"),
-            ]),
+            pipe([findEksCluster({ config, lives }), get("id")]),
         },
       },
       addCode: ({ resource, lives }) =>
@@ -2898,6 +2894,7 @@ module.exports = pipe([
     {
       type: "VpnConnection",
       Client: EC2VpnConnection,
+      // TODO managedByOther ?
       ignoreResource: () => pipe([get("live"), eq(get("State"), "deleted")]),
       omitProperties: [
         "CustomerGatewayId",

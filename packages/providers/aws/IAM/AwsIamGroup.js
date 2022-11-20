@@ -12,7 +12,7 @@ const {
   ignoreErrorCodes,
 } = require("./AwsIamCommon");
 
-const findName = get("live.GroupName");
+const findName = () => get("GroupName");
 const findId = findName;
 const pickId = pick(["GroupName"]);
 

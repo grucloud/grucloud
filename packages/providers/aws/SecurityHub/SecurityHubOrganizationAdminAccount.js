@@ -35,9 +35,8 @@ exports.SecurityHubOrganizationAdminAccount = () => ({
       }),
       () => accountDelegated,
     ])(),
-  findName: ({ live, lives, config }) =>
+  findName: ({ lives, config }) =>
     pipe([
-      () => live,
       get("AdminAccountId"),
       tap((id) => {
         assert(id);
@@ -52,14 +51,14 @@ exports.SecurityHubOrganizationAdminAccount = () => ({
       tap((name) => {
         assert(name);
       }),
-    ])(),
-  findId: pipe([
-    get("live"),
-    get("AdminAccountId"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+    ]),
+  findId: () =>
+    pipe([
+      get("AdminAccountId"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   dependencies: {
     accountDelegated: {
       type: "Account",

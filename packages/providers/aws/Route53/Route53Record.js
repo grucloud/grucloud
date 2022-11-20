@@ -42,7 +42,7 @@ const omitFieldRecord = omit(["HostedZoneId", "namespace"]);
 
 const liveToResourceSet = pipe([omitFieldRecord, filterEmptyResourceRecords]);
 
-const findId = pipe([get("live"), buildRecordName]);
+const findId = () => pipe([buildRecordName]);
 
 const getHostedZone = ({
   resource: { name, dependencies },
@@ -271,58 +271,65 @@ exports.Route53Record = ({ spec, config }) => {
   const { providerName } = config;
   const route53 = createRoute53(config);
 
-  const findNameInDependencies = ({ live, lives }) =>
-    pipe([
-      () => Route53RecordDependencies,
-      values,
-      tap((params) => {
-        assert(true);
-      }),
-      //TODO
-      map(({ type, group, dependencyId }) =>
-        pipe([
-          () => live,
-          dependencyId({ lives, config }),
-          (id) => ({ type, group, id }),
-        ])()
-      ),
-      tap((params) => {
-        assert(true);
-      }),
-      find(pipe([get("id"), not(isEmpty)])),
-      unless(
-        isEmpty,
-        pipe([
-          tap(({ id }) => {
-            assert(id);
-          }),
-          switchCase([
-            eq(get("type"), "VpcEndpoint"),
-            ({ group, type }) =>
-              `record::${group}::${type}::${live.Type}::${live.Name}`,
-            pipe([
-              ({ group, type, id }) =>
-                `record::${group}::${type}::${live.Type}::${id.name}`,
-              when(() => live.SetIdentifier, append(`::${live.SetIdentifier}`)),
+  const findNameInDependencies =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => Route53RecordDependencies,
+        values,
+        tap((params) => {
+          assert(true);
+        }),
+        //TODO
+        map(({ type, group, dependencyId }) =>
+          pipe([
+            () => live,
+            dependencyId({ lives, config }),
+            (id) => ({ type, group, id }),
+          ])()
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+        find(pipe([get("id"), not(isEmpty)])),
+        unless(
+          isEmpty,
+          pipe([
+            tap(({ id }) => {
+              assert(id);
+            }),
+            switchCase([
+              eq(get("type"), "VpcEndpoint"),
+              ({ group, type }) =>
+                `record::${group}::${type}::${live.Type}::${live.Name}`,
+              pipe([
+                ({ group, type, id }) =>
+                  `record::${group}::${type}::${live.Type}::${id.name}`,
+                when(
+                  () => live.SetIdentifier,
+                  append(`::${live.SetIdentifier}`)
+                ),
+              ]),
             ]),
-          ]),
-        ])
-      ),
-    ])();
+          ])
+        ),
+      ])();
 
-  const findName = ({ live, lives }) =>
-    pipe([
-      () => {
-        for (fn of [findNameInDependencies, findId]) {
-          const name = fn({ live, lives, config });
-          if (!isEmpty(name)) {
-            return name;
+  const findName =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => {
+          for (fn of [findNameInDependencies, findId]) {
+            const name = fn({ lives, config })(live);
+            if (!isEmpty(name)) {
+              return name;
+            }
           }
-        }
-      },
-    ])();
+        },
+      ])();
 
-  const findNamespace = get("live.namespace", "");
+  const findNamespace = () => get("namespace", "");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
   const getList = ({ lives }) =>
@@ -662,36 +669,39 @@ exports.Route53Record = ({ spec, config }) => {
       defaultsDeep({ Name: name }),
     ])();
 
-  const cannotBeDeleted = pipe([
-    get("live.Type"),
-    tap((Type) => {
-      assert(Type);
-    }),
-    (Type) => pipe([() => ["SOA", "NS"], includes(Type)])(),
-  ]);
-
-  const isOurMinion = ({ live, lives, config }) =>
+  const cannotBeDeleted = () =>
     pipe([
-      () => live,
-      tap((HostedZoneId) => {
-        assert(HostedZoneId);
+      get("Type"),
+      tap((Type) => {
+        assert(Type);
       }),
-      get("HostedZoneId"),
-      (id) =>
-        lives.getById({
-          id,
-          type: "HostedZone",
-          group: "Route53",
-          providerName: config.providerName,
+      (Type) => pipe([() => ["SOA", "NS"], includes(Type)])(),
+    ]);
+
+  const isOurMinion =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        tap((HostedZoneId) => {
+          assert(HostedZoneId);
         }),
-      tap.if(isEmpty, () => {
-        logger.error(`missing hostedZone ${live.HostedZoneId} in cache`);
-      }),
-      get("managedByUs"),
-      tap((params) => {
-        assert(true);
-      }),
-    ])();
+        get("HostedZoneId"),
+        (id) =>
+          lives.getById({
+            id,
+            type: "HostedZone",
+            group: "Route53",
+            providerName: config.providerName,
+          }),
+        tap.if(isEmpty, () => {
+          logger.error(`missing hostedZone ${live.HostedZoneId} in cache`);
+        }),
+        get("managedByUs"),
+        tap((params) => {
+          assert(true);
+        }),
+      ])();
 
   return {
     spec,

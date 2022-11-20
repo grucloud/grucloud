@@ -25,8 +25,9 @@ const {
   tagResource,
   untagResource,
 } = require("./AppSyncCommon");
-const findName = get("live.name");
-const findId = get("live.arn");
+
+const findName = () => get("name");
+const findId = () => get("arn");
 
 const pickId = pipe([
   tap(({ apiId }) => {

@@ -100,8 +100,8 @@ exports.BudgetsBudget = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.BudgetName")]),
-    findId: pipe([get("live.BudgetName")]),
+    findName: () => pipe([get("BudgetName")]),
+    findId: () => pipe([get("BudgetName")]),
     getByName: getByNameCore,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Budgets.html#updateBudget-property
     update:

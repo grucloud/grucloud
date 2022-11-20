@@ -91,8 +91,8 @@ exports.CloudTrail = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: get("live.Name"),
-    findId: pipe([get("live.TrailARN")]),
+    findName: () => get("Name"),
+    findId: () => pipe([get("TrailARN")]),
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ Name: name }), getById({})]),
     tagResource: tagResource,

@@ -62,28 +62,29 @@ exports.AppConfigDeployment = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        () => live,
-        get("EnvironmentId"),
-        tap((id) => {
-          assert(id);
-        }),
-        (id) =>
-          lives.getById({
-            id,
-            type: "Environment",
-            group: "AppConfig",
-            providerName: config.providerName,
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          () => live,
+          get("EnvironmentId"),
+          tap((id) => {
+            assert(id);
           }),
-        get("name", live.EnvironmentId),
-        tap((params) => {
-          assert(true);
-        }),
-
-        unless(() => live.Latest, append(`::${live.DeploymentNumber}`)),
-      ])(),
-    findId: pipe([get("live"), buildArn(config)]),
+          (id) =>
+            lives.getById({
+              id,
+              type: "Environment",
+              group: "AppConfig",
+              providerName: config.providerName,
+            }),
+          get("name", live.EnvironmentId),
+          tap((params) => {
+            assert(true);
+          }),
+          unless(() => live.Latest, append(`::${live.DeploymentNumber}`)),
+        ])(),
+    findId: () => pipe([buildArn(config)]),
     getByName: getByNameCore,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AppConfig.html#listDeployments-property
     getList: ({ client, endpoint, getById, config }) =>

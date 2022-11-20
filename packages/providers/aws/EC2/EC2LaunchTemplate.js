@@ -29,22 +29,21 @@ const {
   assignUserDataToBase64,
 } = require("./EC2Common");
 
-const findId = get("live.LaunchTemplateId");
+const findId = () => get("LaunchTemplateId");
 const pickId = pick(["LaunchTemplateId"]);
 
 const findNameEks = pipe([
   tap((params) => {
     assert(true);
   }),
-  get("live"),
   findValueInTags({ key: "eks:nodegroup-name" }),
   unless(isEmpty, prepend("lt-")),
 ]);
 
-const findName = (params) => {
-  const fns = [findNameEks, get("live.LaunchTemplateName")];
+const findName = (params) => (live) => {
+  const fns = [findNameEks, get("LaunchTemplateName")];
   for (fn of fns) {
-    const name = fn(params);
+    const name = fn(live);
     if (!isEmpty(name)) {
       return name;
     }
@@ -61,18 +60,16 @@ exports.EC2LaunchTemplate = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const managedByOther = pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    or([
-      pipe([
-        get("live.CreatedBy"),
-        includes("AWSServiceRoleForAmazonEKSNodegroup"),
+  const managedByOther = () =>
+    pipe([
+      or([
+        pipe([
+          get("CreatedBy"),
+          includes("AWSServiceRoleForAmazonEKSNodegroup"),
+        ]),
+        pipe([get("LaunchTemplateName"), callProp("startsWith", "AWSEB")]),
       ]),
-      pipe([get("live.LaunchTemplateName"), callProp("startsWith", "AWSEB")]),
-    ]),
-  ]);
+    ]);
 
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,

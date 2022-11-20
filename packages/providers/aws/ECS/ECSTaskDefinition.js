@@ -18,8 +18,8 @@ const {
   untagResource,
 } = require("./ECSCommon");
 
-const findId = get("live.taskDefinitionArn");
-const findName = get("live.family");
+const findId = () => get("taskDefinitionArn");
+const findName = () => get("family");
 
 const pickId = pipe([
   ({ taskDefinitionArn }) => ({

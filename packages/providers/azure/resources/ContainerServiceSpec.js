@@ -116,7 +116,7 @@ exports.fnSpecs = ({ config }) =>
       {
         type: "AgentPool",
         ignoreResource: () => () => true,
-        cannotBeDeleted: () => true,
+        cannotBeDeleted: () => () => true,
       },
       {
         type: "ManagedCluster",

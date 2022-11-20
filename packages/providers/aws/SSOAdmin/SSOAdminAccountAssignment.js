@@ -101,8 +101,8 @@ const decorate = ({ endpoint }) =>
     }),
   ]);
 
-const cannotBeDeleted = ({ lives, live, config }) =>
-  pipe([() => live, getPrincipalName({ lives, config }), isEmpty])();
+const cannotBeDeleted = ({ lives, config }) =>
+  pipe([getPrincipalName({ lives, config }), isEmpty]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html
 exports.SSOAdminAccountAssignment = ({ compare }) => ({
@@ -182,56 +182,58 @@ exports.SSOAdminAccountAssignment = ({ compare }) => ({
     },
   },
   ignoreErrorCodes: ["ResourceNotFoundException"],
-  findName: ({ live, lives, config }) =>
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        fork({
+          permissionSetName: pipe([
+            get("PermissionSetArn"),
+            tap((id) => {
+              assert(id);
+            }),
+            (id) =>
+              lives.getById({
+                id,
+                type: "PermissionSet",
+                group: "SSOAdmin",
+                providerName: config.providerName,
+              }),
+            get("name", live.PermissionSetArn),
+          ]),
+          accountName: pipe([
+            get("TargetId"),
+            tap((id) => {
+              assert(id);
+            }),
+            (id) =>
+              lives.getById({
+                id,
+                type: "Account",
+                group: "Organisations",
+                providerName: config.providerName,
+              }),
+            get("name", live.TargetId),
+          ]),
+          principalName: pipe([
+            getPrincipalName({ lives, config }),
+            when(isEmpty, () => live.PrincipalId),
+          ]),
+        }),
+        tap(({ permissionSetName, accountName, principalName }) => {
+          assert(permissionSetName);
+          assert(accountName);
+          assert(principalName);
+        }),
+        ({ permissionSetName, accountName, principalName }) =>
+          `assignment::${permissionSetName}::${accountName}::${principalName}`,
+      ])(),
+  findId: () =>
     pipe([
-      () => live,
-      fork({
-        permissionSetName: pipe([
-          get("PermissionSetArn"),
-          tap((id) => {
-            assert(id);
-          }),
-          (id) =>
-            lives.getById({
-              id,
-              type: "PermissionSet",
-              group: "SSOAdmin",
-              providerName: config.providerName,
-            }),
-          get("name", live.PermissionSetArn),
-        ]),
-        accountName: pipe([
-          get("TargetId"),
-          tap((id) => {
-            assert(id);
-          }),
-          (id) =>
-            lives.getById({
-              id,
-              type: "Account",
-              group: "Organisations",
-              providerName: config.providerName,
-            }),
-          get("name", live.TargetId),
-        ]),
-        principalName: pipe([
-          getPrincipalName({ lives, config }),
-          when(isEmpty, () => live.PrincipalId),
-        ]),
-      }),
-      tap(({ permissionSetName, accountName, principalName }) => {
-        assert(permissionSetName);
-        assert(accountName);
-        assert(principalName);
-      }),
-      ({ permissionSetName, accountName, principalName }) =>
-        `assignment::${permissionSetName}::${accountName}::${principalName}`,
-    ])(),
-  findId: pipe([
-    get("live"),
-    ({ PermissionSetArn, TargetId, PrincipalId }) =>
-      `${PermissionSetArn}::${TargetId}::${PrincipalId}`,
-  ]),
+      ({ PermissionSetArn, TargetId, PrincipalId }) =>
+        `${PermissionSetArn}::${TargetId}::${PrincipalId}`,
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SSOAdmin.html#getAccountAssignment-property
   getById: {
     method: "listAccountAssignments",

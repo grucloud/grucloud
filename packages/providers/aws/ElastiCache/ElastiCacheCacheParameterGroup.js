@@ -37,7 +37,7 @@ const isDefaultParameterGroup = pipe([
   callProp("startsWith", "default"),
 ]);
 
-const managedByOther = pipe([get("live"), isDefaultParameterGroup]);
+const managedByOther = () => pipe([isDefaultParameterGroup]);
 
 const model = ({ config }) => ({
   package: "elasticache",
@@ -116,8 +116,8 @@ exports.ElastiCacheCacheParameterGroup = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.CacheParameterGroupName")]),
-    findId: pipe([get("live.CacheParameterGroupName")]),
+    findName: () => pipe([get("CacheParameterGroupName")]),
+    findId: () => pipe([get("CacheParameterGroupName")]),
     managedByOther,
     cannotBeDeleted: managedByOther,
     getByName: getByNameCore,

@@ -64,8 +64,8 @@ exports.EMRServerlessApplication = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.name")]),
-    findId: pipe([get("live.applicationId")]),
+    findName: () => pipe([get("name")]),
+    findId: () => pipe([get("applicationId")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

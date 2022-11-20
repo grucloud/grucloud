@@ -15,7 +15,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const logger = require("@grucloud/core/logger")({ prefix: "ELBRule" });
 const { buildTags, findNamespaceInTags } = require("../AwsCommon");
 
-const findId = get("live.RuleArn");
+const findId = () => get("RuleArn");
 
 const pickId = pick(["RuleArn"]);
 
@@ -29,74 +29,77 @@ exports.ELBRule = ({ spec, config }) => {
   const elb = createELB(config);
   const client = AwsClient({ spec, config })(elb);
 
-  const findName = ({ live, lives }) =>
-    pipe([
-      tap(() => {
-        assert(lives);
-        assert(live.ListenerArn);
-      }),
-      () =>
-        lives.getById({
-          type: "Listener",
-          group: "ElasticLoadBalancingV2",
-          id: live.ListenerArn,
-          providerName: config.providerName,
+  const findName =
+    ({ lives }) =>
+    (live) =>
+      pipe([
+        tap(() => {
+          assert(lives);
+          assert(live.ListenerArn);
         }),
-      tap((listener) => {
-        assert(listener);
-      }),
-      get("name"),
-      tap((listenerName) => {
-        assert(listenerName);
-      }),
-      switchCase([
-        () => live.IsDefault,
-        prepend("rule-default-"),
-        prepend("rule::"),
+        () =>
+          lives.getById({
+            type: "Listener",
+            group: "ElasticLoadBalancingV2",
+            id: live.ListenerArn,
+            providerName: config.providerName,
+          }),
+        tap((listener) => {
+          assert(listener);
+        }),
+        get("name"),
+        tap((listenerName) => {
+          assert(listenerName);
+        }),
+        switchCase([
+          () => live.IsDefault,
+          prepend("rule-default-"),
+          prepend("rule::"),
+        ]),
+        append(`::${live.Priority}`),
+      ])();
+
+  const isDefault = () => get("IsDefault");
+
+  const managedByOther = ({ lives, config }) =>
+    pipe([
+      or([
+        isDefault({ lives, config }),
+        (live) =>
+          pipe([
+            tap(() => {
+              assert(lives);
+              assert(live.ListenerArn);
+            }),
+            () =>
+              lives.getById({
+                type: "Listener",
+                group: "ElasticLoadBalancingV2",
+                providerName: config.providerName,
+                id: live.ListenerArn,
+              }),
+            tap((listener) => {
+              assert(listener);
+            }),
+            get("live.LoadBalancerArn"),
+            tap((LoadBalancerArn) => {
+              assert(LoadBalancerArn);
+            }),
+            (LoadBalancerArn) =>
+              lives.getById({
+                type: "LoadBalancer",
+                group: "ElasticLoadBalancingV2",
+                providerName: config.providerName,
+                id: LoadBalancerArn,
+              }),
+            get("managedByOther"),
+          ])(),
       ]),
-      append(`::${live.Priority}`),
-    ])();
-
-  const isDefault = get("live.IsDefault");
-
-  const managedByOther = pipe([
-    or([
-      isDefault,
-      ({ live, lives }) =>
-        pipe([
-          tap(() => {
-            assert(lives);
-            assert(live.ListenerArn);
-          }),
-          () =>
-            lives.getById({
-              type: "Listener",
-              group: "ElasticLoadBalancingV2",
-              providerName: config.providerName,
-              id: live.ListenerArn,
-            }),
-          tap((listener) => {
-            assert(listener);
-          }),
-          get("live.LoadBalancerArn"),
-          tap((LoadBalancerArn) => {
-            assert(LoadBalancerArn);
-          }),
-          (LoadBalancerArn) =>
-            lives.getById({
-              type: "LoadBalancer",
-              group: "ElasticLoadBalancingV2",
-              providerName: config.providerName,
-              id: LoadBalancerArn,
-            }),
-          get("managedByOther"),
-        ])(),
-    ]),
-  ]);
+    ]);
 
   const findNamespaceInListener =
-    (config) =>
-    ({ live, lives }) =>
+    ({ lives, config }) =>
+    (live) =>
       pipe([
         () => live,
         get("ListenerArn"),
@@ -116,18 +119,21 @@ exports.ELBRule = ({ spec, config }) => {
         }),
       ])();
 
-  const findNamespace = ({ live, lives }) =>
-    pipe([
-      () => findNamespaceInTags(config)({ live }),
-      switchCase([
-        not(isEmpty),
-        identity,
-        () => findNamespaceInListener(config)({ live, lives }),
-      ]),
-      tap((namespace) => {
-        logger.debug(`findNamespace rules ${namespace}`);
-      }),
-    ])();
+  const findNamespace =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        findNamespaceInTags({ lives, config }),
+        switchCase([
+          not(isEmpty),
+          identity,
+          findNamespaceInListener({ lives, config }),
+        ]),
+        tap((namespace) => {
+          logger.debug(`findNamespace rules ${namespace}`);
+        }),
+      ])();
 
   const getList = client.getListWithParent({
     parent: { type: "Listener", group: "ElasticLoadBalancingV2" },

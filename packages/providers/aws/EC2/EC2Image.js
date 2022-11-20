@@ -25,7 +25,7 @@ exports.EC2Image = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const findId = get("live.ImageId");
+  const findId = () => get("ImageId");
   const findName = findNameInTagsOrId({ findId });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeImages-property
@@ -104,7 +104,7 @@ exports.EC2Image = ({ spec, config }) => {
     findName,
     getList,
     configDefault,
-    cannotBeDeleted: () => true,
+    cannotBeDeleted: () => () => true,
     tagResource: tagResource({ endpoint: ec2 }),
     untagResource: untagResource({ endpoint: ec2 }),
   };

@@ -14,10 +14,11 @@ const pickId = pipe([
   }),
 ]);
 
-const findName = pipe([
-  get("live"),
-  ({ ResourceId, ScalableDimension }) => `${ResourceId}::${ScalableDimension}`,
-]);
+const findName = () =>
+  pipe([
+    ({ ResourceId, ScalableDimension }) =>
+      `${ResourceId}::${ScalableDimension}`,
+  ]);
 
 const model = ({ config }) => ({
   package: "application-auto-scaling",
@@ -93,6 +94,7 @@ exports.ApplicationAutoScalingTarget = ({ spec, config }) =>
           ])
         ),
       ]),
+    //TODO Tags
     configDefault: ({
       name,
       namespace,

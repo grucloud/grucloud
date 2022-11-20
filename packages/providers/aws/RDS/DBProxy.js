@@ -57,8 +57,8 @@ exports.DBProxy = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: get("live.DBProxyName"),
-    findId: get("live.DBProxyArn"),
+    findName: () => get("DBProxyName"),
+    findId: () => get("DBProxyArn"),
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ DBProxyName: name }), getById({})]),
     tagResource: tagResource,

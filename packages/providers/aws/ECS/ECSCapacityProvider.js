@@ -13,8 +13,22 @@ const {
   tagResource,
   untagResource,
 } = require("./ECSCommon");
-const findId = get("live.capacityProviderArn");
-const findName = get("live.name");
+
+const findId = () =>
+  pipe([
+    get("capacityProviderArn"),
+    tap((id) => {
+      assert(id);
+    }),
+  ]);
+
+const findName = () =>
+  pipe([
+    get("name"),
+    tap((name) => {
+      assert(name);
+    }),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECS.html
 exports.ECSCapacityProvider = ({ spec, config }) => {
@@ -113,7 +127,8 @@ exports.ECSCapacityProvider = ({ spec, config }) => {
     ],
   });
 
-  const cannotBeDeleted = ({ live }) =>
+  // TODO isIn
+  const cannotBeDeleted = () => (live) =>
     pipe([() => ["FARGATE", "FARGATE_SPOT"], includes(live.name)])();
 
   return {

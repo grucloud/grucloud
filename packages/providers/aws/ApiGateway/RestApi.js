@@ -45,8 +45,8 @@ const buildArn =
   ({ id }) =>
     `arn:aws:apigateway:${config.region}::/restapis/${id}`;
 
-const findId = get("live.id");
-const findName = get("live.name");
+const findId = () => get("id");
+const findName = () => get("name");
 
 const pickId = pipe([({ id }) => ({ restApiId: id })]);
 

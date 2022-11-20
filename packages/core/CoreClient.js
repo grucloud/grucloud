@@ -56,18 +56,16 @@ module.exports = CoreClient = ({
     name,
     ...properties,
   }),
-  findName = ({ live }) =>
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      () => live,
-      get("name"),
-      tap((name) => {
-        assert(name, `missing name in live ${JSON.stringify(live)}`);
-      }),
-    ])(),
-  findId = get("live.id"),
+  findName = ({}) =>
+    (live) =>
+      pipe([
+        () => live,
+        get("name"),
+        tap((name) => {
+          assert(name, `missing name in live ${JSON.stringify(live)}`);
+        }),
+      ])(),
+  findId = () => get("id"),
   findTargetId = () => get("id"),
   decorate = () => identity,
   //TODO curry

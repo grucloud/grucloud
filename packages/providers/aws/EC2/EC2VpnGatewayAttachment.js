@@ -61,10 +61,10 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([
-  get("live"),
-  ({ VpcId, VpnGatewayId }) => `vpn-gw-attach::${VpnGatewayId}::${VpcId}`,
-]);
+const findId = () =>
+  pipe([
+    ({ VpcId, VpnGatewayId }) => `vpn-gw-attach::${VpnGatewayId}::${VpcId}`,
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2VpnGatewayAttachment = ({ spec, config }) =>
@@ -72,36 +72,38 @@ exports.EC2VpnGatewayAttachment = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        fork({
-          vpc: pipe([
-            () =>
-              lives.getById({
-                id: live.VpcId,
-                type: "Vpc",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name", live.VpcId),
-          ]),
-          vpnGateway: pipe([
-            () =>
-              lives.getById({
-                id: live.VpnGatewayId,
-                type: "VpnGateway",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
-          ]),
-        }),
-        tap(({ vpc, vpnGateway }) => {
-          assert(vpc);
-          assert(vpnGateway);
-        }),
-        ({ vpc, vpnGateway }) => `vpn-gw-attach::${vpnGateway}::${vpc}`,
-      ])(),
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          fork({
+            vpc: pipe([
+              () =>
+                lives.getById({
+                  id: live.VpcId,
+                  type: "Vpc",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name", live.VpcId),
+            ]),
+            vpnGateway: pipe([
+              () =>
+                lives.getById({
+                  id: live.VpnGatewayId,
+                  type: "VpnGateway",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name"),
+            ]),
+          }),
+          tap(({ vpc, vpnGateway }) => {
+            assert(vpc);
+            assert(vpnGateway);
+          }),
+          ({ vpc, vpnGateway }) => `vpn-gw-attach::${vpnGateway}::${vpc}`,
+        ])(),
     findId,
     pickId,
     getList:

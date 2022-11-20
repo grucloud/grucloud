@@ -11,7 +11,7 @@ exports.GcpRunService = ({ spec, config }) => {
   assert(config.stage);
   const { projectId, region } = config;
 
-  const findName = get("live.metadata.name");
+  const findName = () => get("metadata.name");
   const findId = findName;
   const findTargetId = () => get("metadata.name");
 

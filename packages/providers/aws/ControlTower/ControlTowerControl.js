@@ -43,30 +43,32 @@ exports.ControlTowerControl = () => ({
       }),
       () => `${organisationalUnit}::${controlIdentifier}`,
     ])(),
-  findName: ({ live, lives, config }) =>
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        get("targetIdentifier"),
+        tap((id) => {
+          assert(id);
+        }),
+        (id) =>
+          lives.getById({
+            id,
+            type: "OrganisationalUnit",
+            group: "Organisations",
+          }),
+        get("name"),
+        (organisationalUnit) =>
+          `${organisationalUnit}::${live.controlIdentifier}`,
+      ])(),
+  findId: () =>
     pipe([
-      () => live,
-      get("targetIdentifier"),
+      get("controlIdentifier"),
       tap((id) => {
         assert(id);
       }),
-      (id) =>
-        lives.getById({
-          id,
-          type: "OrganisationalUnit",
-          group: "Organisations",
-        }),
-      get("name"),
-      (organisationalUnit) =>
-        `${organisationalUnit}::${live.controlIdentifier}`,
-    ])(),
-  findId: pipe([
-    get("live"),
-    get("controlIdentifier"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+    ]),
   dependencies: {
     organisationalUnit: {
       type: "OrganisationalUnit",

@@ -72,8 +72,8 @@ exports.Route53RecoveryReadinessReadinessCheck = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ReadinessCheckName")]),
-    findId: pipe([get("live.ReadinessCheckArn")]),
+    findName: () => pipe([get("ReadinessCheckName")]),
+    findId: () => pipe([get("ReadinessCheckArn")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([
         ({ name }) => ({ ReadinessCheckName: name }),

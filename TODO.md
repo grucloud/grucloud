@@ -5,25 +5,12 @@
 ## Aws
 
 - throwIfNotAwsError accepts an array of errors
-- https://aws.amazon.com/about-aws/whats-new/2022/11/aws-app-runner-supports-privately-accessible-services-amazon-vpc/ , aws_apprunner_vpc_ingress_connection
 
-- AWS::Athena::WorkGroup AWS::Athena::DataCatalog
-
-- AWS::CloudFront::CachePolicy
 - AWS::Events::Endpoint
 - CodeStarConnections Host
   Lambda EventSourceMapping:
 - Amazon DynamoDB Streams
-- CUR https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CUR.html
 - ECSTaskSet
-- LakeFormation https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/LakeFormation.html
-- OpenSearch: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/OpenSearch.html
-- aws_route53_delegation_set
-
-- SecurityHub https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SecurityHub.html
-- AWS::ServiceCatalog
-- AWS::Shield
-- SESv2 https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html
 - AWS::XRay
 - aws_servicequotas_service_quota
 - Network Manager SiteToSiteVpnAttachment

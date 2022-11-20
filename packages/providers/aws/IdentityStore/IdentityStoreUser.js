@@ -104,21 +104,21 @@ exports.IdentityStoreUser = () => ({
     pickId,
   },
   // TODO prefix with store name ?
-  findName: pipe([
-    get("live"),
-    get("UserName"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
+  findName: () =>
+    pipe([
+      get("UserName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
   // TODO prefix with store id ?
-  findId: pipe([
-    get("live"),
-    get("UserId"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+  findId: () =>
+    pipe([
+      get("UserId"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   getByName: getByNameCore,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IdentityStore.html#listUsers-property
   getList: ({ client, endpoint, getById, config }) =>

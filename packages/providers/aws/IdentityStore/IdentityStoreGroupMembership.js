@@ -41,54 +41,56 @@ exports.IdentityStoreGroupMembership = ({ compare }) => ({
       }),
       () => `membership::${group}::${user}`,
     ])(),
-  findName: ({ live, lives, config }) =>
-    pipe([
-      () => live,
-      fork({
-        group: pipe([
-          get("GroupId"),
-          tap((id) => {
-            assert(id);
-          }),
-          (id) =>
-            lives.getById({
-              id,
-              type: "Group",
-              group: "IdentityStore",
+  findName:
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () => live,
+        fork({
+          group: pipe([
+            get("GroupId"),
+            tap((id) => {
+              assert(id);
             }),
-          get("name"),
-        ]),
-        user: pipe([
-          get("MemberId.UserId"),
-          tap((id) => {
-            assert(id);
-          }),
-          (id) =>
-            pipe([
-              () =>
-                lives.getById({
-                  id,
-                  type: "User",
-                  group: "IdentityStore",
-                  providerName: config.providerName,
-                }),
-              get("name", id),
-            ])(),
-        ]),
+            (id) =>
+              lives.getById({
+                id,
+                type: "Group",
+                group: "IdentityStore",
+              }),
+            get("name"),
+          ]),
+          user: pipe([
+            get("MemberId.UserId"),
+            tap((id) => {
+              assert(id);
+            }),
+            (id) =>
+              pipe([
+                () =>
+                  lives.getById({
+                    id,
+                    type: "User",
+                    group: "IdentityStore",
+                    providerName: config.providerName,
+                  }),
+                get("name", id),
+              ])(),
+          ]),
+        }),
+        tap(({ group, user }) => {
+          assert(group);
+          assert(user);
+        }),
+        ({ group, user }) => `membership::${group}::${user}`,
+      ])(),
+  findId: () =>
+    pipe([
+      get("MembershipId"),
+      tap((id) => {
+        assert(id);
       }),
-      tap(({ group, user }) => {
-        assert(group);
-        assert(user);
-      }),
-      ({ group, user }) => `membership::${group}::${user}`,
-    ])(),
-  findId: pipe([
-    get("live"),
-    get("MembershipId"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
+    ]),
   dependencies: {
     identityStore: {
       type: "Instance",

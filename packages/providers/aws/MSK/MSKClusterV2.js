@@ -61,8 +61,8 @@ exports.MSKClusterV2 = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ClusterName")]),
-    findId: pipe([get("live.ClusterArn")]),
+    findName: () => pipe([get("ClusterName")]),
+    findId: () => pipe([get("ClusterArn")]),
     getByName: getByNameCore,
     tagResource: tagResource({
       buildArn: buildArn(config),

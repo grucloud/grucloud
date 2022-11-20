@@ -16,10 +16,7 @@ const {
 const pickId = pipe([pick(["CacheSubnetGroupName"])]);
 const buildArn = () => pipe([get("ARN")]);
 
-const managedByOther = pipe([
-  get("live"),
-  eq(get("CacheSubnetGroupName"), "default"),
-]);
+const managedByOther = () => pipe([eq(get("CacheSubnetGroupName"), "default")]);
 
 //
 const decorate = ({ endpoint }) =>
@@ -64,8 +61,8 @@ exports.ElastiCacheCacheSubnetGroup = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.CacheSubnetGroupName")]),
-    findId: pipe([get("live.CacheSubnetGroupName")]),
+    findName: () => pipe([get("CacheSubnetGroupName")]),
+    findId: () => pipe([get("CacheSubnetGroupName")]),
     managedByOther,
     cannotBeDeleted: managedByOther,
     getByName: getByNameCore,

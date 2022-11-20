@@ -32,14 +32,14 @@ const createModel = ({ config }) => ({
   },
 });
 
-const findId = pipe([
-  get("live"),
-  unless(
-    isEmpty,
-    ({ VpcId, InternetGatewayId }) =>
-      `ig-attach::${InternetGatewayId}::${VpcId}`
-  ),
-]);
+const findId = () =>
+  pipe([
+    unless(
+      isEmpty,
+      ({ VpcId, InternetGatewayId }) =>
+        `ig-attach::${InternetGatewayId}::${VpcId}`
+    ),
+  ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html
 exports.EC2InternetGatewayAttachment = ({ spec, config }) =>
@@ -47,36 +47,38 @@ exports.EC2InternetGatewayAttachment = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        fork({
-          vpc: pipe([
-            () =>
-              lives.getById({
-                id: live.VpcId,
-                type: "Vpc",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
-          ]),
-          internetGateway: pipe([
-            () =>
-              lives.getById({
-                id: live.InternetGatewayId,
-                type: "InternetGateway",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            get("name"),
-          ]),
-        }),
-        tap(({ vpc, internetGateway }) => {
-          assert(vpc);
-          assert(internetGateway);
-        }),
-        ({ vpc, internetGateway }) => `ig-attach::${internetGateway}::${vpc}`,
-      ])(),
+    findName:
+      ({ lives, config }) =>
+      (live) =>
+        pipe([
+          fork({
+            vpc: pipe([
+              () =>
+                lives.getById({
+                  id: live.VpcId,
+                  type: "Vpc",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name"),
+            ]),
+            internetGateway: pipe([
+              () =>
+                lives.getById({
+                  id: live.InternetGatewayId,
+                  type: "InternetGateway",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              get("name"),
+            ]),
+          }),
+          tap(({ vpc, internetGateway }) => {
+            assert(vpc);
+            assert(internetGateway);
+          }),
+          ({ vpc, internetGateway }) => `ig-attach::${internetGateway}::${vpc}`,
+        ])(),
     findId,
     pickId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeTransitGatewayAttachments-property

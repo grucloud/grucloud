@@ -30,7 +30,7 @@ exports.EC2NatGateway = ({ spec, config }) => {
   const ec2 = createEC2(config);
   const client = AwsClient({ spec, config })(ec2);
 
-  const findId = get("live.NatGatewayId");
+  const findId = () => get("NatGatewayId");
   const pickId = pick(["NatGatewayId"]);
 
   const findName = findNameInTagsOrId({ findId });

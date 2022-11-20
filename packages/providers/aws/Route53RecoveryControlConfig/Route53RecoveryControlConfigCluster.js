@@ -10,7 +10,8 @@ const {
   assignTags,
 } = require("./Route53RecoveryControlConfigCommon");
 
-const findId = pipe([get("live.ClusterArn")]);
+const findId = () => pipe([get("ClusterArn")]);
+
 const pickId = pipe([
   pick(["ClusterArn"]),
   tap(({ ClusterArn }) => {
@@ -20,13 +21,7 @@ const pickId = pipe([
 
 const decorate = ({ endpoint }) =>
   pipe([
-    tap((params) => {
-      assert(true);
-    }),
-    assignTags({ endpoint, findId }),
-    tap((params) => {
-      assert(true);
-    }),
+    assignTags({ endpoint, findId: findId() }),
     ({ Name, ...other }) => ({ ClusterName: Name, ...other }),
   ]);
 
@@ -70,11 +65,11 @@ exports.Route53RecoveryControlConfigCluster = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ClusterName")]),
+    findName: () => pipe([get("ClusterName")]),
     findId,
     getByName: getByNameCore,
-    tagResource: tagResource({ findId }),
-    untagResource: untagResource({ findId }),
+    tagResource: tagResource({ findId: findId() }),
+    untagResource: untagResource({ findId: findId() }),
     configDefault: ({ name, namespace, properties: { Tags, ...otherProps } }) =>
       pipe([
         () => otherProps,

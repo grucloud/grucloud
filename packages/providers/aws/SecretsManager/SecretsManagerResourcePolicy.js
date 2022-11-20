@@ -56,8 +56,8 @@ exports.SecretsManagerResourcePolicy = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.ARN")]),
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("ARN")]),
     getByName: getByNameCore,
     configDefault: ({
       namespace,

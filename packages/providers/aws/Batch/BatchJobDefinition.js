@@ -27,7 +27,7 @@ const pickId = pipe([
   }),
 ]);
 
-const cannotBeDeleted = pipe([get("live"), eq(get("status"), "INACTIVE")]);
+const cannotBeDeleted = () => pipe([eq(get("status"), "INACTIVE")]);
 
 const decorate = () =>
   pipe([
@@ -91,17 +91,19 @@ exports.BatchJobDefinition = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.jobDefinitionName")]),
-    findName: ({ live, lives }) =>
-      pipe([
-        () => live,
-        get("jobDefinitionName"),
-        unless(
-          eq(() => live.status, "ACTIVE"),
-          append(`::${live.revision}`)
-        ),
-      ])(),
-    findId: pipe([get("live.jobDefinitionArn")]),
+    findName: () => pipe([get("jobDefinitionName")]),
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          () => live,
+          get("jobDefinitionName"),
+          unless(
+            eq(() => live.status, "ACTIVE"),
+            append(`::${live.revision}`)
+          ),
+        ])(),
+    findId: () => pipe([get("jobDefinitionArn")]),
     cannotBeDeleted,
     getByName: getByNameCore,
     tagResource: tagResource({

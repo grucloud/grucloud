@@ -86,20 +86,20 @@ exports.LightsailLoadBalancer = () => ({
       model: model({ config }),
       spec,
       config,
-      findName: pipe([
-        get("live"),
-        get("loadBalancerName"),
-        tap((name) => {
-          assert(name);
-        }),
-      ]),
-      findId: pipe([
-        get("live"),
-        get("loadBalancerName"),
-        tap((id) => {
-          assert(id);
-        }),
-      ]),
+      findName: () =>
+        pipe([
+          get("loadBalancerName"),
+          tap((name) => {
+            assert(name);
+          }),
+        ]),
+      findId: () =>
+        pipe([
+          get("loadBalancerName"),
+          tap((id) => {
+            assert(id);
+          }),
+        ]),
       getByName: getByNameCore,
       ...Tagger({ buildArn: buildArn({ config }) }),
       update:

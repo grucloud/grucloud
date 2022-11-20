@@ -27,7 +27,7 @@ const stringifyContent = assign({
   Content: pipe([get("Content"), JSON.stringify]),
 });
 
-const cannotBeDeleted = pipe([get("live"), eq(get("AwsManaged"), true)]);
+const cannotBeDeleted = () => pipe([eq(get("AwsManaged"), true)]);
 
 const decorate = ({ endpoint }) =>
   pipe([
@@ -92,8 +92,8 @@ exports.OrganisationsPolicy = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.PolicyId")]),
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("PolicyId")]),
     managedByOther: cannotBeDeleted,
     cannotBeDeleted,
     getByName: getByNameCore,

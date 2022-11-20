@@ -47,9 +47,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 
-  const findName = get("live.Name");
+  const findName = () => get("Name");
   const findId = findName;
-  const findNamespace = findNamespaceInTags(config);
+  const findNamespace = findNamespaceInTags;
 
   const getAccelerateConfiguration = ({ name, params }) =>
     tryCatch(

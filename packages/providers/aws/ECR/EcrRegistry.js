@@ -26,8 +26,8 @@ const { throwIfNotAwsError } = require("../AwsCommon");
 
 const { createECR, tagResource, untagResource } = require("./ECRCommon");
 
-const findName = () => "default";
-const findId = pipe([get("live.registryId"), prepend("arn::aws::")]);
+const findName = () => () => "default";
+const findId = () => pipe([get("registryId"), prepend("arn::aws::")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 exports.EcrRegistry = ({ spec, config }) => {
@@ -191,7 +191,7 @@ exports.EcrRegistry = ({ spec, config }) => {
     update,
     getList,
     configDefault,
-    cannotBeDeleted: () => true,
+    cannotBeDeleted: () => () => true,
     tagResource: tagResource({ ecr }),
     untagResource: untagResource({ ecr }),
   };

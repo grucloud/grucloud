@@ -137,8 +137,9 @@ exports.inferNameSecurityGroupRule =
     ])();
 
 const findName =
-  ({ kind, config }) =>
-  ({ live, lives }) =>
+  ({ kind }) =>
+  ({ lives, config }) =>
+  (live) =>
     pipe([
       tap(() => {
         //assert(live.IpPermission, `no IpPermission in ${tos(live)}`);
@@ -162,7 +163,8 @@ const SecurityGroupRuleBase = ({ config }) => {
   const ec2 = createEC2(config);
   const isDefault =
     ({ IsEgress }) =>
-    ({ live, lives }) =>
+    ({ lives, config }) =>
+    (live) =>
       pipe([
         tap(() => {
           assert(live.GroupId);
@@ -269,17 +271,19 @@ const SecurityGroupRuleBase = ({ config }) => {
         ])(),
     ])();
 
-  const findNamespace = ({ live, lives }) =>
-    pipe([
-      () =>
-        lives.getById({
-          id: live.GroupId,
-          type: "SecurityGroup",
-          group: "EC2",
-          providerName: config.providerName,
-        }),
-      get("namespace"),
-    ])();
+  const findNamespace =
+    ({ lives, config }) =>
+    (live) =>
+      pipe([
+        () =>
+          lives.getById({
+            id: live.GroupId,
+            type: "SecurityGroup",
+            group: "EC2",
+            providerName: config.providerName,
+          }),
+        get("namespace"),
+      ])();
 
   const securityGroupToRules = ({ IsEgress }) =>
     pipe([
@@ -498,18 +502,12 @@ exports.EC2SecurityGroupRuleIngress = ({ spec, config }) => {
   return {
     type: "SecurityGroupRuleIngress",
     spec,
-    findId: pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      get("live"),
-      ({ GroupId, ...IpPermission }) =>
-        `ingress::${GroupId}::${JSON.stringify(IpPermission)}`,
-      tap((params) => {
-        assert(true);
-      }),
-    ]),
-    findName: findName({ kind: "ingress", config }),
+    findId: () =>
+      pipe([
+        ({ GroupId, ...IpPermission }) =>
+          `ingress::${GroupId}::${JSON.stringify(IpPermission)}`,
+      ]),
+    findName: findName({ kind: "ingress" }),
     findNamespace,
     getByName: getByName({ kind: "ingress", IsEgress: false, config }),
     getList: getList({ kind: "ingress", IsEgress: false }),
@@ -551,15 +549,15 @@ exports.EC2SecurityGroupRuleEgress = ({ spec, config }) => {
   return {
     spec,
     findNamespace,
-    findId: pipe([
-      get("live"),
-      tap((params) => {
-        assert(true);
-      }),
-      ({ GroupId, ...IpPermission }) =>
-        `egress::${GroupId}::${JSON.stringify(IpPermission)}`,
-    ]),
-    findName: findName({ kind: "egress", config }),
+    findId: () =>
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        ({ GroupId, ...IpPermission }) =>
+          `egress::${GroupId}::${JSON.stringify(IpPermission)}`,
+      ]),
+    findName: findName({ kind: "egress" }),
     getByName: getByName({ kind: "egress", IsEgress: true, config }),
     getList: getList({ kind: "egress", IsEgress: true }),
     create: create({

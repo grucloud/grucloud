@@ -12,11 +12,11 @@ const {
   untagResource,
 } = require("./CloudWatchEventCommon");
 
-const findId = get("live.Arn");
+const findId = () => get("Arn");
 const pickId = pick(["Name", "EventBusName"]);
-const findName = get("live.Name");
+const findName = () => get("Name");
 
-const cannotBeDeleted = get("live.ManagedBy");
+const cannotBeDeleted = () => get("ManagedBy");
 
 const buildArn =
   ({ config }) =>

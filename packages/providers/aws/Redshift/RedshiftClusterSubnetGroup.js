@@ -63,8 +63,8 @@ exports.RedshiftClusterSubnetGroup = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ClusterSubnetGroupName")]),
-    findId: pipe([get("live.ClusterSubnetGroupName")]),
+    findName: () => pipe([get("ClusterSubnetGroupName")]),
+    findId: () => pipe([get("ClusterSubnetGroupName")]),
     getByName: ({ getList, endpoint, getById }) =>
       pipe([
         ({ name }) => ({

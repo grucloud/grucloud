@@ -20,7 +20,7 @@ const isDefaultParameterGroup = pipe([
   callProp("startsWith", "default"),
 ]);
 
-const managedByOther = pipe([get("live"), isDefaultParameterGroup]);
+const managedByOther = () => pipe([isDefaultParameterGroup]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Redshift.html#describeClusterParameters-property
 const decorate = ({ endpoint }) =>
@@ -87,8 +87,8 @@ exports.RedshiftClusterParameterGroup = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.ParameterGroupName")]),
-    findId: pipe([get("live.ParameterGroupName")]),
+    findName: () => pipe([get("ParameterGroupName")]),
+    findId: () => pipe([get("ParameterGroupName")]),
     managedByOther,
     cannotBeDeleted: managedByOther,
     getByName: ({ getList, endpoint, getById }) =>

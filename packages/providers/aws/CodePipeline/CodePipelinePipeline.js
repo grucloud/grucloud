@@ -67,8 +67,8 @@ exports.CodePipelinePipeline = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.pipeline.name")]),
-    findId: pipe([get("live.metadata.pipelineArn")]),
+    findName: () => pipe([get("pipeline.name")]),
+    findId: () => pipe([get("metadata.pipelineArn")]),
     getByName: ({ getById }) =>
       pipe([({ name }) => ({ pipeline: { name } }), getById({})]),
     tagResource: tagResource({ property: "metadata.pipelineArn" }),

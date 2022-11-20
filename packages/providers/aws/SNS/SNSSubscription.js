@@ -53,17 +53,17 @@ exports.SNSSubscription = ({ spec, config }) =>
     model,
     spec,
     config,
-    findName: pipe([
-      get("live"),
-      fork({
-        topic: pipe([get("TopicArn"), callProp("split", ":"), last]),
-        endpoint: pipe([get("Endpoint"), callProp("split", ":"), last]),
-        protocol: get("Protocol"),
-      }),
-      ({ topic, protocol, endpoint }) =>
-        `subscription::${topic}::${protocol}::${endpoint}`,
-    ]),
-    findId: pipe([get("live.SubscriptionArn")]),
+    findName: () =>
+      pipe([
+        fork({
+          topic: pipe([get("TopicArn"), callProp("split", ":"), last]),
+          endpoint: pipe([get("Endpoint"), callProp("split", ":"), last]),
+          protocol: get("Protocol"),
+        }),
+        ({ topic, protocol, endpoint }) =>
+          `subscription::${topic}::${protocol}::${endpoint}`,
+      ]),
+    findId: () => pipe([get("SubscriptionArn")]),
     getByName: getByNameCore,
     configDefault: ({
       name,
@@ -93,5 +93,5 @@ exports.SNSSubscription = ({ spec, config }) =>
           })
         ),
       ])(),
-    cannotBeDeleted: eq(get("live.SubscriptionArn"), "PendingConfirmation"),
+    cannotBeDeleted: () => eq(get("SubscriptionArn"), "PendingConfirmation"),
   });

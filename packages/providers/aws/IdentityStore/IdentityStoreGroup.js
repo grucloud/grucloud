@@ -33,21 +33,20 @@ exports.IdentityStoreGroup = ({}) => ({
       assert(GroupName);
     }),
   ]),
-  findName: pipe([
-    get("live"),
-    get("DisplayName"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]),
-  findId: pipe([
-    get("live"),
-    get("GroupId"),
-    tap((id) => {
-      assert(id);
-    }),
-  ]),
-
+  findName: () =>
+    pipe([
+      get("DisplayName"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("GroupId"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
   dependencies: {
     identityStore: {
       type: "Instance",

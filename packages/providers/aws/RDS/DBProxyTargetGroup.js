@@ -50,7 +50,7 @@ const model = {
   destroy: { method: "deregisterDBProxyTargets", pickId },
 };
 
-const managedByOther = pipe([get("live.IsDefault")]);
+const managedByOther = () => pipe([get("IsDefault")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html
 exports.DBProxyTargetGroup = ({ spec, config }) =>
@@ -61,12 +61,12 @@ exports.DBProxyTargetGroup = ({ spec, config }) =>
     managedByOther,
     isDefault: managedByOther,
     cannotBeDeleted: managedByOther,
-    findName: pipe([
-      get("live"),
-      ({ DBProxyName, TargetGroupName }) =>
-        `${DBProxyName}::${TargetGroupName}`,
-    ]),
-    findId: get("live.TargetGroupArn"),
+    findName: () =>
+      pipe([
+        ({ DBProxyName, TargetGroupName }) =>
+          `${DBProxyName}::${TargetGroupName}`,
+      ]),
+    findId: () => get("TargetGroupArn"),
     getList: ({ client, endpoint, getById, config }) =>
       pipe([
         () =>

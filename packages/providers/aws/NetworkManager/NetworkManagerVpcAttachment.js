@@ -8,12 +8,13 @@ const { buildTags } = require("../AwsCommon");
 
 const { createAwsResource } = require("../AwsClient");
 
-const findId = pipe([
-  get("live.AttachmentId"),
-  tap((AttachmentId) => {
-    assert(AttachmentId);
-  }),
-]);
+const findId = () =>
+  pipe([
+    get("AttachmentId"),
+    tap((AttachmentId) => {
+      assert(AttachmentId);
+    }),
+  ]);
 
 const createModel = ({ config }) => ({
   package: "networkmanager",
@@ -76,36 +77,39 @@ exports.NetworkManagerVpcAttachment = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        fork({
-          coreNetworkName: pipe([
-            tap(() => {
-              assert(live.CoreNetworkId);
-            }),
-            () =>
-              lives.getById({
-                id: live.CoreNetworkId,
-                type: "CoreNetwork",
-                group: "NetworkManager",
-                providerName: config.providerName,
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          () => live,
+          fork({
+            coreNetworkName: pipe([
+              tap(() => {
+                assert(live.CoreNetworkId);
               }),
-            get("name", live.CoreNetworkId),
-          ]),
-          vpcName: pipe([
-            () =>
-              lives.getByType({
-                type: "Vpc",
-                group: "EC2",
-                providerName: config.providerName,
-              }),
-            find(pipe([eq(get("live.VpcArn"), live.ResourceArn)])),
-            get("name", live.ResourceArn),
-          ]),
-        }),
-        ({ coreNetworkName, vpcName }) =>
-          `vpc-attach::${coreNetworkName}::${vpcName}`,
-      ])(),
+              () =>
+                lives.getById({
+                  id: live.CoreNetworkId,
+                  type: "CoreNetwork",
+                  group: "NetworkManager",
+                  providerName: config.providerName,
+                }),
+              get("name", live.CoreNetworkId),
+            ]),
+            vpcName: pipe([
+              () =>
+                lives.getByType({
+                  type: "Vpc",
+                  group: "EC2",
+                  providerName: config.providerName,
+                }),
+              find(pipe([eq(get("live.VpcArn"), live.ResourceArn)])),
+              get("name", live.ResourceArn),
+            ]),
+          }),
+          ({ coreNetworkName, vpcName }) =>
+            `vpc-attach::${coreNetworkName}::${vpcName}`,
+        ])(),
     findId,
     getByName: getByNameCore,
     configDefault: ({

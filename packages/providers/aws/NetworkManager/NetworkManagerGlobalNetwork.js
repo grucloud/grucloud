@@ -34,7 +34,7 @@ const createModel = ({ config }) => ({
     pickId: pipe([pick(["GlobalNetworkId"])]),
   },
 });
-const findId = pipe([get("live.GlobalNetworkId")]);
+const findId = () => pipe([get("GlobalNetworkId")]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/NetworkManager.html
 exports.NetworkManagerGlobalNetwork = ({ spec, config }) =>

@@ -60,8 +60,8 @@ exports.ConfigDeliveryChannel = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    findName: pipe([get("live.name")]),
-    findId: pipe([get("live.name")]),
+    findName: () => pipe([get("name")]),
+    findId: () => pipe([get("name")]),
     getByName: getByNameCore,
     configDefault: ({
       name,

@@ -10,11 +10,11 @@ const logger = require("@grucloud/core/logger")({
   prefix: "ClientVpnAuthorizationRule",
 });
 
-const findId = pipe([
-  get("live"),
-  ({ ClientVpnEndpointId, TargetNetworkCidr }) =>
-    `${ClientVpnEndpointId}::${TargetNetworkCidr}`,
-]);
+const findId = () =>
+  pipe([
+    ({ ClientVpnEndpointId, TargetNetworkCidr }) =>
+      `${ClientVpnEndpointId}::${TargetNetworkCidr}`,
+  ]);
 
 const decorate = () =>
   pipe([
@@ -78,23 +78,25 @@ exports.EC2ClientVpnAuthorizationRule = ({ spec, config }) =>
     model: createModel({ config }),
     spec,
     config,
-    findName: ({ live, lives }) =>
-      pipe([
-        tap(() => {
-          assert(live.TargetNetworkCidr);
-          assert(live.ClientVpnEndpointId);
-        }),
-        () =>
-          lives.getById({
-            id: live.ClientVpnEndpointId,
-            type: "ClientVpnEndpoint",
-            group: "EC2",
-            providerName: config.providerName,
+    findName:
+      ({ lives }) =>
+      (live) =>
+        pipe([
+          tap(() => {
+            assert(live.TargetNetworkCidr);
+            assert(live.ClientVpnEndpointId);
           }),
-        get("name", live.ClientVpnEndpointId),
-        (clientVpnEndpoint) =>
-          `client-vpn-rule-assoc::${clientVpnEndpoint}::${live.TargetNetworkCidr}`,
-      ])(),
+          () =>
+            lives.getById({
+              id: live.ClientVpnEndpointId,
+              type: "ClientVpnEndpoint",
+              group: "EC2",
+              providerName: config.providerName,
+            }),
+          get("name", live.ClientVpnEndpointId),
+          (clientVpnEndpoint) =>
+            `client-vpn-rule-assoc::${clientVpnEndpoint}::${live.TargetNetworkCidr}`,
+        ])(),
     findId,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeClientVpnAuthorizationRules-property
     getList: ({ client, endpoint, getById, config }) =>

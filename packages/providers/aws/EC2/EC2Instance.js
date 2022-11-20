@@ -155,14 +155,15 @@ exports.EC2Instance = ({ spec, config }) => {
   const { providerName } = config;
   assert(providerName);
 
-  const managedByOther = or([
-    hasKeyInTags({
-      key: "eks:cluster-name",
-    }),
-    hasKeyInTags({
-      key: "aws:autoscaling:groupName",
-    }),
-  ]);
+  const managedByOther = ({ lives, config }) =>
+    or([
+      hasKeyInTags({
+        key: "eks:cluster-name",
+      }),
+      hasKeyInTags({
+        key: "aws:autoscaling:groupName",
+      }),
+    ]);
 
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,
@@ -180,15 +181,15 @@ exports.EC2Instance = ({ spec, config }) => {
       ]),
     ])();
 
-  const findId = get("live.InstanceId");
+  const findId = () => get("InstanceId");
 
-  const findName = (params) => {
-    assert(params.live);
+  const findName = (params) => (live) => {
+    assert(live);
     assert(params.lives);
 
-    const fns = [findNameInTags(), ({ live }) => findEksName(live), findId];
+    const fns = [findNameInTags(), findEksName, findId(params)];
     for (fn of fns) {
-      const name = fn(params);
+      const name = fn(live);
       if (!isEmpty(name)) {
         return name;
       }
@@ -446,25 +447,24 @@ exports.EC2Instance = ({ spec, config }) => {
   };
 };
 
-const isInOurCluster =
-  ({ config }) =>
-  ({ live, lives }) =>
+const isInOurCluster = ({ config, lives }) =>
+  pipe([
+    findEksCluster({ lives, config, key: "eks:cluster-name" }),
+    tap((cluster) => {
+      assert(true);
+    }),
+  ]);
+
+exports.isOurMinionEC2Instance =
+  ({ lives, config }) =>
+  (live) =>
     pipe([
-      () => ({ live, lives }),
-      findEksCluster({ config, key: "eks:cluster-name" }),
-      tap((cluster) => {
-        assert(true);
+      () => live,
+      or([isInOurCluster({ lives, config }), isOurMinion({ lives, config })]),
+      tap((isOurMinion) => {
+        //logger.debug(`isOurMinionEC2Instance ${isOurMinion}`);
       }),
     ])();
-
-exports.isOurMinionEC2Instance = (item) =>
-  pipe([
-    () => item,
-    or([isInOurCluster({ config: item.config }), isOurMinion]),
-    tap((isOurMinion) => {
-      //logger.debug(`isOurMinionEC2Instance ${isOurMinion}`);
-    }),
-  ])();
 
 exports.compareEC2Instance = pipe([
   tap((params) => {

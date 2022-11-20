@@ -25,8 +25,8 @@ exports.OrganisationsRoot = ({ spec, config }) =>
     model: model({ config }),
     spec,
     config,
-    managedByOther: () => true,
-    cannotBeDeleted: () => true,
-    findName: pipe([get("live.Name")]),
-    findId: pipe([get("live.Id")]),
+    managedByOther: () => () => true,
+    cannotBeDeleted: () => () => true,
+    findName: () => pipe([get("Name")]),
+    findId: () => pipe([get("Id")]),
   });
