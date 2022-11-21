@@ -8,6 +8,7 @@ const GROUPS = [
   ["AccessAnalyzer", "accessanalyzer"],
   ["ACM", "acm"],
   ["ACMPCA", "acm-pca"],
+  ["Amplify", "amplify"],
   ["ApiGateway", "apigateway"],
   ["ApiGatewayV2", "apigatewayv2"],
   ["AppConfig", "appconfig"],
