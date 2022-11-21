@@ -26,6 +26,7 @@ exports.createAwsService = ({
   getByName,
   configDefault,
   compare,
+  environmentVariables,
   tagger = () => ({}),
   ...other
 }) =>
@@ -41,6 +42,7 @@ exports.createAwsService = ({
       dependencies,
       filterLive,
       compare,
+      environmentVariables,
       Client: ({ spec, config }) =>
         createAwsResource({
           model: {

@@ -59,7 +59,7 @@
     "test-networkfirewall": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/NetworkFirewall/**/iac.test.js' ",
     "test-networkmanager": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/NetworkManager/**/iac.test.js' ",
     "test-opensearch": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/OpenSearch/**/iac.test.js' ",
-    "test-organisations": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Organisations/**/iac.test.js' ",
+    "test-organisations": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Organisation/**/iac.test.js' ",
     "test-ram": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/RAM/**/iac.test.js' ",
     "test-redshift": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/Redshift/**/iac.test.js' ",
     "test-rds": "dotenv -e ../../../secrets/default.env -- mocha  '../../../examples/aws/RDS/**/iac.test.js' ",

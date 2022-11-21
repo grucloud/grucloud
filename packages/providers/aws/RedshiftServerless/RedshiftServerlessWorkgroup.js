@@ -34,7 +34,38 @@ exports.RedshiftServerlessWorkgroup = () => ({
   type: "Workgroup",
   package: "redshift-serverless",
   client: "RedshiftServerless",
-  propertiesDefault: {},
+  propertiesDefault: {
+    configParameters: [
+      {
+        parameterKey: "auto_mv",
+        parameterValue: "true",
+      },
+      {
+        parameterKey: "datestyle",
+        parameterValue: "ISO, MDY",
+      },
+      {
+        parameterKey: "enable_case_sensitive_identifier",
+        parameterValue: "false",
+      },
+      {
+        parameterKey: "enable_user_activity_logging",
+        parameterValue: "true",
+      },
+      {
+        parameterKey: "query_group",
+        parameterValue: "default",
+      },
+      {
+        parameterKey: "search_path",
+        parameterValue: "$user, public",
+      },
+      {
+        parameterKey: "max_query_execution_time",
+        parameterValue: "14400",
+      },
+    ],
+  },
   omitProperties: [
     "workgroupArn",
     "creationDate",

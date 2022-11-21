@@ -78,42 +78,27 @@ exports.RedshiftServerlessUsageLimit = () => ({
     pickId,
     decorate,
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#listUsageLimits-property
   getList:
     ({ endpoint }) =>
     ({ lives, config }) =>
       pipe([
-        tap((params) => {
-          assert(config);
-        }),
         () =>
           lives.getByType({
             type: "Workgroup",
             group: "RedshiftServerless",
             providerName: config.providerName,
           }),
-        tap((params) => {
-          assert(true);
-        }),
-
         flatMap(({ live }) =>
           pipe([
-            () => ["serverless-compute", "cross-region-datasharing"],
             tap((params) => {
-              assert(true);
+              assert(live.workgroupArn);
             }),
-            map(
-              pipe([
-                tap((params) => {
-                  assert(live.workspaceArn);
-                }),
-                (usageType) => ({
-                  usageType,
-                  resourceArn: live.workspaceArn,
-                }),
-                endpoint().listUsageLimit,
-                get("usageLimits"),
-              ])
-            ),
+            () => ({
+              resourceArn: live.workgroupArn,
+            }),
+            endpoint().listUsageLimits,
+            get("usageLimits"),
           ])()
         ),
       ])(),
