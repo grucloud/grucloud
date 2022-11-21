@@ -7,8 +7,8 @@ const { createAwsService } = require("../AwsService");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html
 
-//const { AmplifyApplication } = require("./AmplifyApplication");
-//const { AmplifyBackendEnvironment } = require("./AmplifyBackendEnvironment");
+const { AmplifyApp } = require("./AmplifyApp");
+const { AmplifyBackendEnvironment } = require("./AmplifyBackendEnvironment");
 //const { AmplifyBranch } = require("./AmplifyBranch");
 //const { AmplifyDomainAssociation } = require("./AmplifyDomainAssociation");
 //const { AmplifyWebhook } = require("./AmplifyWebhook");
@@ -19,8 +19,8 @@ const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
-    // AmplifyApplication({})
-    // AmplifyBackendEnvironment({})
+    AmplifyApp({}),
+    AmplifyBackendEnvironment({}),
     // AmplifyBranch({})
     // AmplifyDomainAssociation({})
     // AmplifyWebhook({})

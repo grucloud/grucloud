@@ -4,19 +4,21 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Amplify", async function () {
-  it.skip("Application", () =>
+  it("Application", () =>
     pipe([
       () => ({
         groupType: "Amplify::Application",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ appId: "d123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("BackendEnvironment", () =>
+  it("BackendEnvironment", () =>
     pipe([
       () => ({
         groupType: "Amplify::BackendEnvironment",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { appId: "d123", environmentName: "e123" },
+        ],
       }),
       awsResourceTest,
     ])());
