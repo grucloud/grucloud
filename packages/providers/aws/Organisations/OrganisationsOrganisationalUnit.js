@@ -6,8 +6,7 @@ const { getByNameCore } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
-const { tagResource, untagResource } = require("./OrganisationsCommon");
+const { Tagger } = require("./OrganisationsCommon");
 
 const pickId = pipe([
   tap(({ Id }) => {
@@ -17,28 +16,6 @@ const pickId = pipe([
 ]);
 
 const buildArn = () => pipe([get("Id")]);
-
-const model = ({ config }) => ({
-  package: "organizations",
-  client: "Organizations",
-  ignoreErrorCodes: ["OrganizationalUnitNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#describeOrganizationalUnit-property
-  getById: {
-    method: "describeOrganizationalUnit",
-    getField: "OrganizationalUnit",
-    pickId,
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#createOrganizationalUnit-property
-  create: {
-    method: "createOrganizationalUnit",
-    pickCreated: ({ payload }) => pipe([get("OrganizationalUnit")]),
-  },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#deleteOrganizationalUnit-property
-  destroy: {
-    method: "deleteOrganizationalUnit",
-    pickId,
-  },
-});
 
 const listOrganizationalUnitsForParent =
   ({ endpoint }) =>
@@ -73,61 +50,91 @@ const listOrganizationalUnitsForParent =
     ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html
-exports.OrganisationsOrganisationalUnit = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
-    config,
-    findName: () => pipe([get("Name")]),
-    findId: () => pipe([get("Id")]),
-    managedByOther: () => () => true,
-    cannotBeDeleted: () => () => true,
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listOrganizationalUnitsForParent-property
-    getList:
-      ({ endpoint }) =>
-      ({ lives }) =>
-        pipe([
-          () =>
-            lives.getByType({
-              providerName: config.providerName,
-              type: "Root",
-              group: "Organisations",
-            }),
-          flatMap(
-            pipe([
-              get("live.Id"),
-              (Id) => ({ ParentId: Id }),
-              listOrganizationalUnitsForParent({ endpoint }),
-            ])
-          ),
-        ])(),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: { root, organisationalUnitParent },
-    }) =>
+exports.OrganisationsOrganisationalUnit = ({}) => ({
+  type: "OrganisationalUnit",
+  package: "organizations",
+  client: "Organizations",
+  ignoreErrorCodes: ["OrganizationalUnitNotFoundException"],
+  findName: () => pipe([get("Name")]),
+  findId: () => pipe([get("Id")]),
+  managedByOther: () => () => true,
+  cannotBeDeleted: () => () => true,
+  dependencies: {
+    root: {
+      type: "Root",
+      group: "Organisations",
+      parent: true,
+      dependencyId: ({ lives, config }) => get("ParentId"),
+    },
+    organisationalUnitParent: {
+      type: "OrganisationalUnit",
+      group: "Organisations",
+      dependencyId: ({ lives, config }) => get("ParentId"),
+    },
+  },
+  omitProperties: ["Id", "Arn", "ParentId"],
+  inferName: get("properties.Name"),
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#describeOrganizationalUnit-property
+  getById: {
+    method: "describeOrganizationalUnit",
+    getField: "OrganizationalUnit",
+    pickId,
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listOrganizationalUnitsForParent-property
+  getList:
+    ({ endpoint }) =>
+    ({ lives, config }) =>
       pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
+        () =>
+          lives.getByType({
+            providerName: config.providerName,
+            type: "Root",
+            group: "Organisations",
           }),
-        }),
-        when(() => root, defaultsDeep({ ParentId: getField(root, "Id") })),
-        when(
-          () => organisationalUnitParent,
-          defaultsDeep({ ParentId: getField(organisationalUnitParent, "Id") })
+        flatMap(
+          pipe([
+            get("live.Id"),
+            (Id) => ({ ParentId: Id }),
+            listOrganizationalUnitsForParent({ endpoint }),
+          ])
         ),
       ])(),
-  });
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#createOrganizationalUnit-property
+  create: {
+    method: "createOrganizationalUnit",
+    pickCreated: ({ payload }) => pipe([get("OrganizationalUnit")]),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#deleteOrganizationalUnit-property
+  destroy: {
+    method: "deleteOrganizationalUnit",
+    pickId,
+  },
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: { root, organisationalUnitParent },
+    config,
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
+        }),
+      }),
+      when(() => root, defaultsDeep({ ParentId: getField(root, "Id") })),
+      when(
+        () => organisationalUnitParent,
+        defaultsDeep({ ParentId: getField(organisationalUnitParent, "Id") })
+      ),
+    ])(),
+});

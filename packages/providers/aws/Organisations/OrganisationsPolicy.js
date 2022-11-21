@@ -15,9 +15,8 @@ const { defaultsDeep, unless } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags } = require("../AwsCommon");
-const { createAwsResource } = require("../AwsClient");
 
-const { tagResource, untagResource } = require("./OrganisationsCommon");
+const { Tagger } = require("./OrganisationsCommon");
 
 const pickId = pipe([pick(["PolicyId"])]);
 
@@ -48,17 +47,64 @@ const decorate = ({ endpoint }) =>
     ),
   ]);
 
-const model = ({ config }) => ({
+exports.OrganisationsPolicy = ({}) => ({
+  type: "Policy",
   package: "organizations",
   client: "Organizations",
   ignoreErrorCodes: ["PolicyNotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#describePolicy-property
+  inferName: pipe([
+    get("properties.Name"),
+    tap((name) => {
+      assert(name);
+    }),
+  ]),
+  findName: () =>
+    pipe([
+      get("Name"),
+      tap((name) => {
+        assert(name);
+      }),
+    ]),
+  findId: () =>
+    pipe([
+      get("PolicyId"),
+      tap((id) => {
+        assert(id);
+      }),
+    ]),
+  omitProperties: ["Arn", "PolicyId", "AwsManaged"],
+  managedByOther: cannotBeDeleted,
+  cannotBeDeleted,
+  getByName: getByNameCore,
   getById: {
     method: "describePolicy",
     getField: "Policy",
     pickId,
     decorate,
   },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listPolicies-property
+  getList: ({ client, endpoint, getById, config }) =>
+    pipe([
+      () => [
+        "SERVICE_CONTROL_POLICY",
+        "TAG_POLICY",
+        "BACKUP_POLICY",
+        "AISERVICES_OPT_OUT_POLICY",
+      ],
+      flatMap(
+        tryCatch(
+          pipe([
+            (Filter) => ({ Filter }),
+            endpoint().listPolicies,
+            get("Policies"),
+            map(pipe([({ Id }) => ({ PolicyId: Id }), getById({})])),
+          ]),
+          //TODO
+          // AccessDeniedException
+          (error) => undefined
+        )
+      ),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#createPolicy-property
   create: {
     method: "createPolicy",
@@ -85,62 +131,26 @@ const model = ({ config }) => ({
     method: "deletePolicy",
     pickId,
   },
-});
-
-exports.OrganisationsPolicy = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("Name")]),
-    findId: () => pipe([get("PolicyId")]),
-    managedByOther: cannotBeDeleted,
-    cannotBeDeleted,
-    getByName: getByNameCore,
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Organizations.html#listPolicies-property
-    getList: ({ client, endpoint, getById, config }) =>
-      pipe([
-        () => [
-          "SERVICE_CONTROL_POLICY",
-          "TAG_POLICY",
-          "BACKUP_POLICY",
-          "AISERVICES_OPT_OUT_POLICY",
-        ],
-        flatMap(
-          tryCatch(
-            pipe([
-              (Filter) => ({ Filter }),
-              endpoint().listPolicies,
-              get("Policies"),
-              map(pipe([({ Id }) => ({ PolicyId: Id }), getById])),
-            ]),
-            //TODO
-            // AccessDeniedException
-            (error) => undefined
-          )
-        ),
-      ]),
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
         }),
-      ])(),
-  });
+      }),
+    ])(),
+});
