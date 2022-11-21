@@ -7,11 +7,11 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
 const pickId = pipe([
-  tap(({ appId, environmentName }) => {
+  tap(({ appId, branchName }) => {
     assert(appId);
-    assert(environmentName);
+    assert(branchName);
   }),
-  pick(["appId", "environmentName"]),
+  pick(["appId", "branchName"]),
 ]);
 
 const decorate = ({ endpoint, live }) =>
@@ -24,31 +24,33 @@ const decorate = ({ endpoint, live }) =>
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html
-exports.AmplifyBackendEnvironment = () => ({
-  type: "BackendEnvironment",
+exports.AmplifyBranch = () => ({
+  type: "Branch",
   package: "amplify",
   client: "Amplify",
   propertiesDefault: {},
   omitProperties: [
-    "backendEnvironmentArn",
+    "branchArn",
     "appId",
     "createTime",
     "updateTime",
+    "activeJobId",
+    "backendEnvironmentArn",
   ],
-  inferName: ({ properties: { environmentName }, dependenciesSpec: { app } }) =>
+  inferName: ({ properties: { branchName }, dependenciesSpec: { app } }) =>
     pipe([
       tap((params) => {
         assert(app);
-        assert(environmentName);
+        assert(branchName);
       }),
-      () => `${app}::${environmentName}`,
+      () => `${app}::${branchName}`,
     ])(),
   findName:
     ({ lives, config }) =>
     (live) =>
       pipe([
         tap((params) => {
-          assert(live.environmentName);
+          assert(live.branchName);
         }),
         () => live,
         get("appId"),
@@ -65,11 +67,11 @@ exports.AmplifyBackendEnvironment = () => ({
         tap((name) => {
           assert(name);
         }),
-        append(`::${live.environmentName}`),
+        append(`::${live.branchName}`),
       ])(),
   findId: () =>
     pipe([
-      get("backendEnvironmentArn"),
+      get("branchArn"),
       tap((id) => {
         assert(id);
       }),
@@ -81,12 +83,18 @@ exports.AmplifyBackendEnvironment = () => ({
       parent: true,
       dependencyId: ({ lives, config }) => pipe([get("appId")]),
     },
+    backendEnvironment: {
+      type: "BackendEnvironment",
+      group: "Amplify",
+      parent: true,
+      dependencyId: ({ lives, config }) => pipe([get("backendEnvironmentArn")]),
+    },
   },
   ignoreErrorCodes: ["NotFoundException"],
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#getBackendEnvironment-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#getBranch-property
   getById: {
-    method: "getBackendEnvironment",
-    getField: "backendEnvironment",
+    method: "getBranch",
+    getField: "branch",
     pickId,
     decorate,
   },
@@ -96,21 +104,27 @@ exports.AmplifyBackendEnvironment = () => ({
         client.getListWithParent({
           parent: { type: "App", group: "Amplify" },
           pickKey: pipe([pick(["appId"])]),
-          method: "listBackendEnvironments",
-          getParam: "backendEnvironments",
+          method: "listBranches",
+          getParam: "branches",
           config,
           decorate: ({ parent }) =>
             pipe([defaultsDeep({ appId: parent.appId })]),
         }),
     ])(),
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#createBackendEnvironment-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#createBranch-property
   create: {
-    method: "createBackendEnvironment",
-    pickCreated: ({ payload }) => pipe([get("backendEnvironment")]),
+    method: "createBranch",
+    pickCreated: ({ payload }) => pipe([get("branch")]),
   },
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#deleteBackendEnvironment-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#updateBranch-property
+  update: {
+    method: "updateBranch",
+    filterParams: ({ pickId, payload, diff, live }) =>
+      pipe([() => payload, defaultsDeep(pickId(live))])(),
+  },
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#deleteBranch-property
   destroy: {
-    method: "deleteBackendEnvironment",
+    method: "deleteBranch",
     pickId,
   },
   getByName: getByNameCore,
@@ -118,7 +132,7 @@ exports.AmplifyBackendEnvironment = () => ({
     name,
     namespace,
     properties: { tags, ...otherProps },
-    dependencies: { app },
+    dependencies: { app, backendEnvironment },
     config,
   }) =>
     pipe([
@@ -127,8 +141,15 @@ exports.AmplifyBackendEnvironment = () => ({
       }),
       () => otherProps,
       defaultsDeep({
-        app: getField(app, "appId"),
+        appId: getField(app, "appId"),
         tags: buildTagsObject({ name, config, namespace, userTags: tags }),
       }),
+      when(
+        () => backendEnvironment,
+        assign({
+          backendEnvironmentArn: () =>
+            getField(backendEnvironment, "backendEnvironmentArn"),
+        })
+      ),
     ])(),
 });

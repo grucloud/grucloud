@@ -1,11 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, get, pick, assign } = require("rubico");
 const { defaultsDeep, when } = require("rubico/x");
+const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTagsObject } = require("@grucloud/core/Common");
 
 const { Tagger } = require("./AmplifyCommon");
+const { replaceAccountAndRegion } = require("../AwsCommon");
 
 const buildArn = () =>
   pipe([
@@ -41,6 +43,7 @@ exports.AmplifyApp = () => ({
     "createTime",
     "updateTime",
     "iamServiceRoleArn",
+    "defaultDomain",
   ],
   inferName: pipe([
     get("properties.name"),
@@ -74,7 +77,24 @@ exports.AmplifyApp = () => ({
       dependencyId: ({ lives, config }) => pipe([get("iamServiceRoleArn")]),
     },
   },
-  ignoreErrorCodes: ["ResourceNotFoundException"],
+  ignoreErrorCodes: ["NotFoundException"],
+  filterLive: ({ lives, providerConfig }) =>
+    pipe([
+      assign({
+        productionBranch: pipe([
+          get("productionBranch"),
+          assign({
+            thumbnailUrl: pipe([
+              get("thumbnailUrl"),
+              replaceAccountAndRegion({
+                providerConfig,
+                lives,
+              }),
+            ]),
+          }),
+        ]),
+      }),
+    ]),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html#getApp-property
   getById: {
     method: "getApp",
@@ -104,8 +124,7 @@ exports.AmplifyApp = () => ({
     method: "deleteApp",
     pickId,
   },
-  getByName: ({ getById }) =>
-    pipe([({ name }) => ({ name: name }), getById({})]),
+  getByName: getByNameCore,
   tagger: ({ config }) =>
     Tagger({
       buildArn: buildArn({ config }),
@@ -124,7 +143,7 @@ exports.AmplifyApp = () => ({
       }),
       when(
         () => iamRole,
-        assign({ iamServiceRoleArn: getField(iamRole, "Arn") })
+        assign({ iamServiceRoleArn: () => getField(iamRole, "Arn") })
       ),
     ])(),
 });

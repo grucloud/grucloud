@@ -1,0 +1,1 @@
+# Aws Amplify with Nextjs

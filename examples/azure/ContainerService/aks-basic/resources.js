@@ -56,9 +56,7 @@ exports.createResources = () => [
             },
           },
           natGatewayProfile: {
-            managedOutboundIPProfile: {
-              count: 1,
-            },
+            idleTimeoutInMinutes: 4,
           },
           podCidrs: ["10.244.0.0/16"],
           serviceCidrs: ["10.0.0.0/16"],

@@ -9,9 +9,9 @@ const { createAwsService } = require("../AwsService");
 
 const { AmplifyApp } = require("./AmplifyApp");
 const { AmplifyBackendEnvironment } = require("./AmplifyBackendEnvironment");
-//const { AmplifyBranch } = require("./AmplifyBranch");
-//const { AmplifyDomainAssociation } = require("./AmplifyDomainAssociation");
-//const { AmplifyWebhook } = require("./AmplifyWebhook");
+const { AmplifyBranch } = require("./AmplifyBranch");
+const { AmplifyDomainAssociation } = require("./AmplifyDomainAssociation");
+const { AmplifyWebhook } = require("./AmplifyWebhook");
 
 const GROUP = "Amplify";
 const tagsKey = "tag";
@@ -21,9 +21,9 @@ module.exports = pipe([
   () => [
     AmplifyApp({}),
     AmplifyBackendEnvironment({}),
-    // AmplifyBranch({})
-    // AmplifyDomainAssociation({})
-    // AmplifyWebhook({})
+    AmplifyBranch({}),
+    AmplifyDomainAssociation({}),
+    AmplifyWebhook({}),
   ],
   map(createAwsService),
   map(

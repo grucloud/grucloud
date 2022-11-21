@@ -4,10 +4,10 @@ const { pipe, tap } = require("rubico");
 const { awsResourceTest } = require("../../AwsResourceTester");
 
 describe("Amplify", async function () {
-  it("Application", () =>
+  it("App", () =>
     pipe([
       () => ({
-        groupType: "Amplify::Application",
+        groupType: "Amplify::App",
         livesNotFound: ({ config }) => [{ appId: "d123" }],
       }),
       awsResourceTest,
@@ -22,27 +22,29 @@ describe("Amplify", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Branch", () =>
+  it("Branch", () =>
     pipe([
       () => ({
         groupType: "Amplify::Branch",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ appId: "d123", branchName: "e123" }],
       }),
       awsResourceTest,
     ])());
-  it.skip("DomainAssociation", () =>
+  it("DomainAssociation", () =>
     pipe([
       () => ({
         groupType: "Amplify::DomainAssociation",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [
+          { appId: "d123", domainName: "pets.com" },
+        ],
       }),
       awsResourceTest,
     ])());
-  it.skip("Webhook", () =>
+  it("Webhook", () =>
     pipe([
       () => ({
         groupType: "Amplify::Webhook",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ webhookId: "11111111111111111111" }],
       }),
       awsResourceTest,
     ])());
