@@ -3,8 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-//TODO
-describe.skip("Scheduler", async function () {
+describe("Scheduler", async function () {
   it("Schedule", () =>
     pipe([
       () => ({

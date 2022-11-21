@@ -61,8 +61,8 @@ exports.createResources = () => [
     type: "HostedConfigurationVersion",
     group: "AppConfig",
     properties: ({}) => ({
-      Content: "yolo=3",
       ContentType: "text/plain",
+      Content: "yolo=3",
     }),
     dependencies: ({}) => ({
       configurationProfile: "my-appconfig::profile-freeform",

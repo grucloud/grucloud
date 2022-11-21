@@ -10,6 +10,8 @@ List of resources for provider aws:
 [AlternateAccount](./resources/Account/AlternateAccount.md)
 * ACM: 
 [Certificate](./resources/ACM/Certificate.md)
+* Amplify: 
+[App](./resources/Amplify/App.md), [BackendEnvironment](./resources/Amplify/BackendEnvironment.md), [Branch](./resources/Amplify/Branch.md), [DomainAssociation](./resources/Amplify/DomainAssociation.md), [Webhook](./resources/Amplify/Webhook.md)
 * APIGateway: 
 [Account](./resources/APIGateway/Account.md), [ApiKey](./resources/APIGateway/ApiKey.md), [RestApi](./resources/APIGateway/RestApi.md), [Stage](./resources/APIGateway/Stage.md), [Authorizer](./resources/APIGateway/Authorizer.md), [UsagePlan](./resources/APIGateway/UsagePlan.md), [UsagePlanKey](./resources/APIGateway/UsagePlanKey.md)
 * ApiGatewayV2: 
