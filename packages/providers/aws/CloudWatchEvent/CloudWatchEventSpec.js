@@ -70,12 +70,14 @@ module.exports = pipe([
         {
           path: "AuthParameters.ApiKeyAuthParameters.ApiKeyValue",
           suffix: "API_KEY_VALUE",
-          handledByResource: true,
+          rejectEnvironmentVariable: () =>
+            pipe([get("AuthParameters.ApiKeyAuthParameters")]),
         },
         {
           path: "AuthParameters.BasicAuthParameters.Password",
           suffix: "PASSWORD",
-          handledByResource: true,
+          rejectEnvironmentVariable: () =>
+            pipe([get("AuthParameters.BasicAuthParameters")]),
         },
       ],
       compare: compareCloudWatchEvent({
@@ -87,49 +89,6 @@ module.exports = pipe([
             ]),
           ]),
       }),
-      filterLive: () => (live) =>
-        pipe([
-          () => live,
-          assign({
-            AuthParameters: pipe([
-              get("AuthParameters"),
-              when(
-                get("ApiKeyAuthParameters"),
-                pipe([
-                  assign({
-                    ApiKeyAuthParameters: pipe([
-                      get("ApiKeyAuthParameters"),
-                      assign({
-                        ApiKeyValue: () => () =>
-                          `process.env.${envVarName({
-                            name: live.Name,
-                            suffix: "API_KEY_VALUE",
-                          })}`,
-                      }),
-                    ]),
-                  }),
-                ])
-              ),
-              when(
-                get("BasicAuthParameters"),
-                pipe([
-                  assign({
-                    BasicAuthParameters: pipe([
-                      get("BasicAuthParameters"),
-                      assign({
-                        Password: () => () =>
-                          `process.env.${envVarName({
-                            name: live.Name,
-                            suffix: "PASSWORD",
-                          })}`,
-                      }),
-                    ]),
-                  }),
-                ])
-              ),
-            ]),
-          }),
-        ])(),
     },
     {
       type: "EventBus",

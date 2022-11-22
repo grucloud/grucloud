@@ -500,7 +500,11 @@ module.exports = pipe([
       filterLiveExtra: () => pipe([omitUsernamePassword]),
       environmentVariables: pipe([
         () => environmentVariables,
-        defaultsDeep({ handledByResource: true }),
+        map(
+          defaultsDeep({
+            rejectEnvironmentVariable: () => pipe([get("DBClusterIdentifier")]),
+          })
+        ),
       ])(),
     },
     RDSEventSubscription({ compare: compareRDS }),

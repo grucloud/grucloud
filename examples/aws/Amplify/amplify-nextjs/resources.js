@@ -6,7 +6,7 @@ exports.createResources = () => [
   {
     type: "App",
     group: "Amplify",
-    properties: ({}) => ({
+    properties: ({ config }) => ({
       buildSpec:
         "version: 1\napplications:\n  - backend:\n      phases:\n        build:\n          commands:\n            - '# Execute Amplify CLI with the helper script'\n            - amplifyPush --simple\n    frontend:\n      phases:\n        preBuild:\n          commands:\n            - npm install\n        build:\n          commands:\n            - npm run build\n      artifacts:\n        baseDirectory: build\n        files:\n          - '**/*'\n      cache:\n        paths:\n          - node_modules/**/*\n    appRoot: samples/react/auth/authenticator\n",
       customHeaders: "",
@@ -38,20 +38,13 @@ exports.createResources = () => [
       productionBranch: {
         branchName: "main",
         status: "RUNNING",
-        thumbnailUrl:
-          "https://aws-amplify-prod-us-east-1-artifacts.s3.us-east-1.amazonaws.com/d3in7oh446lwwe/main/SCREENSHOTS/thumbnail.png?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEIn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJGMEQCIGFL4tKXWJNvZeXKhd%2F5UzsC3UU1byGUXKdXdbsG6DqcAiBUq4YED%2FeizG0%2BNcuvLJyezbE%2BbKV%2BlQiSurgKalnh9irKAwiS%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAQaDDA3MzY1MzE3MTU3NiIMjmxIp5Jyyok1t6tYKp4DDnNHG6dbbg0gEsmHqv6UMZFEhGuL64DEW28Bhs%2FHZIhNUsPnEHEdb%2BNtW8IjeuUYjgONMcgpRu%2BYemC9cfEP2bsuZ4AZw9bKRWXmLoOh8baDg%2FjoVvugxhu5j59rCIFaNzQC7ie2irZHJ3xF52IAaLTGVgZmiMEaXKYiQQyagxLKseLG8gh6YDJlH5TRdAOi83xHQALpWmx%2BUzwBjf2rCighx0XcyJLCF2APz8d0%2Ft6hsM7EOOv0yYjDxRhaAryMy9JQv8Nwz2e8vO8brDWWzWPinPwr1IdLOWV9cveJYd0YQxl6aY0cdoFkU6fMncl10pZ01RNUpsWU%2FZO4j4YfxJhkuFy66t86iW5oNXX%2FEhCHfwbe%2FU7jpktoJuJvCTEaQ0oc%2BMgub4PsNBIr9HIrJmxOuJtKy%2B75DS2UrQxFS%2BP2MVhkzNORhL1xsAt%2B%2BgTpB7rSi39KyfvOSrJECTbk8SCWrzulRUbkJ9zW0v4sGxO3Ty5f8BKwcQB%2FQy6Ow8%2FZehuSz7JoW1Yjdl1mg7jIvL6KPijKfewh00qOFk7xMPXM7psGOp8BeARqPz5L1TVBXax1g6CNHS%2Frx2brg6z%2FG%2B2Iwq8fPu2efm7MVG2SyeTIGZ13C429%2FeQLxDss31f1n4eKmkyB4qOyPW8Zowj%2Bis%2B1PSG4EXvCNw%2BAO%2Fter5pMyVud9SXCOJFkmDAmXzUnOE15rKO0zxJBnpwMHc4IdqONDsIZbU2dMRkVtIrVEt6ZnjLIxC34aQB%2F7n4aPLDHZyOWd3O%2F&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20221121T180122Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Credential=ASIARCJQSGV4NL7VLOFB%2F20221121%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=51401a1e0429364f7ffdb1525c81facbcb1f9a4c94574a52bcca9a8c2eb2efea",
+        thumbnailUrl: `https://aws-amplify-prod-${config.region}-artifacts.s3.${config.region}.amazonaws.com/d3in7oh446lwwe/main/SCREENSHOTS/thumbnail.png?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEIn%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJGMEQCIGFL4tKXWJNvZeXKhd%2F5UzsC3UU1byGUXKdXdbsG6DqcAiBUq4YED%2FeizG0%2BNcuvLJyezbE%2BbKV%2BlQiSurgKalnh9irKAwiS%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAQaDDA3MzY1MzE3MTU3NiIMjmxIp5Jyyok1t6tYKp4DDnNHG6dbbg0gEsmHqv6UMZFEhGuL64DEW28Bhs%2FHZIhNUsPnEHEdb%2BNtW8IjeuUYjgONMcgpRu%2BYemC9cfEP2bsuZ4AZw9bKRWXmLoOh8baDg%2FjoVvugxhu5j59rCIFaNzQC7ie2irZHJ3xF52IAaLTGVgZmiMEaXKYiQQyagxLKseLG8gh6YDJlH5TRdAOi83xHQALpWmx%2BUzwBjf2rCighx0XcyJLCF2APz8d0%2Ft6hsM7EOOv0yYjDxRhaAryMy9JQv8Nwz2e8vO8brDWWzWPinPwr1IdLOWV9cveJYd0YQxl6aY0cdoFkU6fMncl10pZ01RNUpsWU%2FZO4j4YfxJhkuFy66t86iW5oNXX%2FEhCHfwbe%2FU7jpktoJuJvCTEaQ0oc%2BMgub4PsNBIr9HIrJmxOuJtKy%2B75DS2UrQxFS%2BP2MVhkzNORhL1xsAt%2B%2BgTpB7rSi39KyfvOSrJECTbk8SCWrzulRUbkJ9zW0v4sGxO3Ty5f8BKwcQB%2FQy6Ow8%2FZehuSz7JoW1Yjdl1mg7jIvL6KPijKfewh00qOFk7xMPXM7psGOp8BeARqPz5L1TVBXax1g6CNHS%2Frx2brg6z%2FG%2B2Iwq8fPu2efm7MVG2SyeTIGZ13C429%2FeQLxDss31f1n4eKmkyB4qOyPW8Zowj%2Bis%2B1PSG4EXvCNw%2BAO%2Fter5pMyVud9SXCOJFkmDAmXzUnOE15rKO0zxJBnpwMHc4IdqONDsIZbU2dMRkVtIrVEt6ZnjLIxC34aQB%2F7n4aPLDHZyOWd3O%2F&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20221121T180122Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Credential=ASIARCJQSGV4NL7VLOFB%2F20221121%2F${config.region}%2Fs3%2Faws4_request&X-Amz-Signature=51401a1e0429364f7ffdb1525c81facbcb1f9a4c94574a52bcca9a8c2eb2efea`,
       },
       repository: "https://github.com/FredericHeem/amplify-js-samples",
       repositoryCloneMethod: "TOKEN",
-      oauthToken:
-        process.env
-          .AMPLIFY_JS_SAMPLES_SAMPLES_REACT_AUTH_AUTHENTICATOR_APP_OAUTHTOKEN,
       accessToken:
         process.env
           .AMPLIFY_JS_SAMPLES_SAMPLES_REACT_AUTH_AUTHENTICATOR_APP_ACCESSTOKEN,
-      basicAuthCredentials:
-        process.env
-          .AMPLIFY_JS_SAMPLES_SAMPLES_REACT_AUTH_AUTHENTICATOR_APP_BASICAUTHCREDENTIALS,
     }),
     dependencies: ({}) => ({
       iamRole: "amplifyconsole-backend-role",

@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, assign } = require("rubico");
-const { defaultsDeep, when } = require("rubico/x");
+const { pipe, tap, get, pick, assign, not } = require("rubico");
+const { defaultsDeep, when, callProp } = require("rubico/x");
 const { getByNameCore } = require("@grucloud/core/Common");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -30,6 +30,10 @@ const decorate = ({ endpoint }) =>
       assert(endpoint);
     }),
   ]);
+const isGitRepo = pipe([
+  get("repository"),
+  callProp("startsWith", "https://github.com/"),
+]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Amplify.html
 exports.AmplifyApp = () => ({
@@ -66,9 +70,22 @@ exports.AmplifyApp = () => ({
       }),
     ]),
   environmentVariables: [
-    { path: "oauthToken", suffix: "APP_OAUTHTOKEN" },
-    { path: "accessToken", suffix: "APP_ACCESSTOKEN" },
-    { path: "basicAuthCredentials", suffix: "APP_BASICAUTHCREDENTIALS" },
+    {
+      path: "oauthToken",
+      suffix: "APP_OAUTHTOKEN",
+      rejectEnvironmentVariable: () => pipe([isGitRepo]),
+    },
+    {
+      path: "accessToken",
+      suffix: "APP_ACCESSTOKEN",
+      rejectEnvironmentVariable: () => pipe([not(isGitRepo)]),
+    },
+    // enableBasicAuth
+    {
+      path: "basicAuthCredentials",
+      suffix: "APP_BASICAUTHCREDENTIALS",
+      rejectEnvironmentVariable: () => pipe([not(get("enableBasicAuth"))]),
+    },
   ],
   dependencies: {
     iamRole: {

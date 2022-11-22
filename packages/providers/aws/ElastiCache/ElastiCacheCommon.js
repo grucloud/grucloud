@@ -1,5 +1,6 @@
 const assert = require("assert");
-const { pipe, tap, assign, get, tryCatch } = require("rubico");
+const { pipe, tap, assign, get, tryCatch, map } = require("rubico");
+const { compareAws } = require("../AwsCommon");
 
 const { createTagger } = require("../AwsTagger");
 
@@ -10,6 +11,10 @@ exports.Tagger = createTagger({
   TagsKey: "Tags",
   UnTagsKey: "TagKeys",
 });
+
+const tagsKey = "Tags";
+exports.tagsKey = tagsKey;
+exports.compare = compareAws({ tagsKey, key: "Key" });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#addTagsToResource-property
 exports.tagResource =
@@ -48,3 +53,53 @@ exports.assignTags = ({ endpoint, buildArn }) =>
       ),
     }),
   ]);
+
+exports.cloudWatchLogGroupsDeps = {
+  cloudWatchLogGroups: {
+    type: "LogGroup",
+    group: "CloudWatchLogs",
+    list: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([
+        get("LogDeliveryConfigurations"),
+        map(
+          pipe([
+            get("DestinationDetails.CloudWatchLogsDetails.LogGroup"),
+            (name) =>
+              lives.getByName({
+                name,
+                providerName: config.providerName,
+                type: "LogGroup",
+                group: "CloudWatchLogs",
+              }),
+            get("id"),
+          ])
+        ),
+      ]),
+  },
+};
+
+exports.firehoseDeliveryStreamsDeps = {
+  firehoseDeliveryStreams: {
+    type: "DeliveryStream",
+    group: "Firehose",
+    list: true,
+    dependencyIds: ({ lives, config }) =>
+      pipe([
+        get("LogDeliveryConfigurations"),
+        map(
+          pipe([
+            get("DestinationDetails.KinesisFirehoseDetails.DeliveryStream"),
+            (name) =>
+              lives.getByName({
+                name,
+                type: "DeliveryStream",
+                group: "Firehose",
+                providerConfig: config.providerConfig,
+              }),
+            get("id"),
+          ])
+        ),
+      ]),
+  },
+};

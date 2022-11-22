@@ -132,7 +132,7 @@
     "@aws-sdk/client-eks": "3.208.0",
     "@aws-sdk/client-elastic-beanstalk": "3.208.0",
     "@aws-sdk/client-elastic-load-balancing-v2": "3.208.0",
-    "@aws-sdk/client-elasticache": "3.208.0",
+    "@aws-sdk/client-elasticache": "3.215.0",
     "@aws-sdk/client-emr-serverless": "3.208.0",
     "@aws-sdk/client-evidently": "3.213.0",
     "@aws-sdk/client-firehose": "3.208.0",

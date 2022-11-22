@@ -22,7 +22,6 @@ const {
   switchCase,
   assign,
   not,
-  omit,
   or,
   always,
   and,
@@ -45,7 +44,6 @@ const {
   groupBy,
   flatten,
   defaultsDeep,
-  keys,
   includes,
   isString,
   isObject,
@@ -189,9 +187,25 @@ const omitDependencyIds =
       values,
       filter(not(isEmpty)),
       filter(not(includes("[]"))),
-
       (pathIds) => pipe([() => live, deepOmit(pathIds)])(),
     ])();
+
+const rejectEnvironmentVariable = ({ resource, props }) =>
+  pipe([
+    switchCase([
+      callProp("hasOwnProperty", "rejectEnvironmentVariable"),
+      ({ rejectEnvironmentVariable }) =>
+        rejectEnvironmentVariable({ resource })(props),
+      () => false,
+    ]),
+  ]);
+
+const omitEnvInFile = ({ resource, props }) =>
+  switchCase([
+    callProp("hasOwnProperty", "writeInEnvFile"),
+    ({ writeInEnvFile }) => writeInEnvFile({ resource })(props),
+    callProp("hasOwnProperty", "rejectEnvironmentVariable"),
+  ]);
 
 const addEnvironmentVariables =
   ({ resource, environmentVariables }) =>
@@ -201,10 +215,7 @@ const addEnvironmentVariables =
         assert(props);
       }),
       () => environmentVariables,
-      filter(not(get("handledByResource"))),
-      tap((params) => {
-        assert(true);
-      }),
+      filter(not(rejectEnvironmentVariable({ resource, props }))),
       tap.if(not(isEmpty), (params) => {
         assert(true);
       }),
@@ -427,6 +438,12 @@ exports.hasDependency = ({ type, group }) =>
 const envTpl = ({ resource, environmentVariables = [] }) =>
   pipe([
     () => environmentVariables,
+    filter(
+      or([
+        not(rejectEnvironmentVariable({ resource, props: resource.live })),
+        omitEnvInFile({ resource, props: resource.live }),
+      ])
+    ),
     map(({ suffix }) => `${envVarName({ name: resource.name, suffix })}=\n`),
     callProp("join", ""),
   ])();

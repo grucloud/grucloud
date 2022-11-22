@@ -5,8 +5,8 @@ const { getByNameCore } = require("@grucloud/core/Common");
 
 const { buildTags } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
 const {
+  Tagger,
   tagResource,
   untagResource,
   assignTags,
@@ -18,10 +18,29 @@ const buildArn = () => pipe([get("ARN")]);
 const decorate = ({ endpoint }) =>
   pipe([assignTags({ endpoint, buildArn: buildArn() })]);
 
-const model = ({ config }) => ({
+exports.ElastiCacheUserGroup = () => ({
+  type: "UserGroup",
   package: "elasticache",
   client: "ElastiCache",
   ignoreErrorCodes: ["UserGroupNotFound", "UserGroupNotFoundFault"],
+  omitProperties: [
+    "ARN",
+    "Status",
+    "MinimumEngineVersion",
+    "ReplicationGroups",
+  ],
+  inferName: get("properties.UserGroupId"),
+  findName: () => pipe([get("UserGroupId")]),
+  findId: () => pipe([get("UserGroupId")]),
+  dependencies: {
+    users: {
+      type: "User",
+      group: "ElastiCache",
+      list: true,
+      excludeDefaultDependencies: true,
+      dependencyIds: () => pipe([get(["UserIds"])]),
+    },
+  },
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#describeUserGroups-property
   getById: {
     method: "describeUserGroups",
@@ -52,37 +71,27 @@ const model = ({ config }) => ({
     method: "deleteUserGroup",
     pickId,
   },
-});
-
-exports.ElastiCacheUserGroup = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("UserGroupId")]),
-    findId: () => pipe([get("UserGroupId")]),
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
         }),
-      ])(),
-  });
+      }),
+    ])(),
+});

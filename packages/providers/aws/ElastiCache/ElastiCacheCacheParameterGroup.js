@@ -5,12 +5,7 @@ const { getByNameCore, omitIfEmpty } = require("@grucloud/core/Common");
 
 const { buildTags } = require("../AwsCommon");
 
-const { createAwsResource } = require("../AwsClient");
-const {
-  tagResource,
-  untagResource,
-  assignTags,
-} = require("./ElastiCacheCommon");
+const { assignTags, Tagger } = require("./ElastiCacheCommon");
 
 const pickId = pipe([pick(["CacheParameterGroupName"])]);
 const buildArn = () => pipe([get("ARN")]);
@@ -39,13 +34,20 @@ const isDefaultParameterGroup = pipe([
 
 const managedByOther = () => pipe([isDefaultParameterGroup]);
 
-const model = ({ config }) => ({
+exports.ElastiCacheCacheParameterGroup = () => ({
+  type: "CacheParameterGroup",
   package: "elasticache",
   client: "ElastiCache",
   ignoreErrorCodes: [
     "CacheParameterGroupNotFound",
     "CacheParameterGroupNotFoundFault",
   ],
+  findName: () => pipe([get("CacheParameterGroupName")]),
+  findId: () => pipe([get("CacheParameterGroupName")]),
+  omitProperties: ["ARN", "IsGlobal"],
+  inferName: get("properties.CacheParameterGroupName"),
+  managedByOther,
+  cannotBeDeleted: managedByOther,
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElastiCache.html#describeCacheParameterGroups-property
   getById: {
     // TODO use describeCacheParameters
@@ -109,39 +111,27 @@ const model = ({ config }) => ({
     method: "deleteCacheParameterGroup",
     pickId,
   },
-});
-
-exports.ElastiCacheCacheParameterGroup = ({ spec, config }) =>
-  createAwsResource({
-    model: model({ config }),
-    spec,
+  getByName: getByNameCore,
+  tagger: ({ config }) =>
+    Tagger({
+      buildArn: buildArn({ config }),
+    }),
+  configDefault: ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+    dependencies: {},
     config,
-    findName: () => pipe([get("CacheParameterGroupName")]),
-    findId: () => pipe([get("CacheParameterGroupName")]),
-    managedByOther,
-    cannotBeDeleted: managedByOther,
-    getByName: getByNameCore,
-    tagResource: tagResource({
-      buildArn: buildArn(config),
-    }),
-    untagResource: untagResource({
-      buildArn: buildArn(config),
-    }),
-    configDefault: ({
-      name,
-      namespace,
-      properties: { Tags, ...otherProps },
-      dependencies: {},
-    }) =>
-      pipe([
-        () => otherProps,
-        defaultsDeep({
-          Tags: buildTags({
-            name,
-            config,
-            namespace,
-            UserTags: Tags,
-          }),
+  }) =>
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        Tags: buildTags({
+          name,
+          config,
+          namespace,
+          UserTags: Tags,
         }),
-      ])(),
-  });
+      }),
+    ])(),
+});
