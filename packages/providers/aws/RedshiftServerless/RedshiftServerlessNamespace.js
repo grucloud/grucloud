@@ -1,11 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, get, pick, eq, map } = require("rubico");
+const { pipe, tap, get, pick, eq, map, omit } = require("rubico");
 const { defaultsDeep, pluck, when } = require("rubico/x");
 
+const { omitIfEmpty } = require("@grucloud/core/Common");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./RedshiftServerlessCommon");
+const { Tagger, assignTags } = require("./RedshiftServerlessCommon");
 
 const buildArn = () =>
   pipe([
@@ -16,9 +17,6 @@ const buildArn = () =>
   ]);
 
 const pickId = pipe([
-  tap((params) => {
-    assert(true);
-  }),
   tap(({ namespaceName }) => {
     assert(namespaceName);
   }),
@@ -30,10 +28,12 @@ const decorate = ({ endpoint }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    omitIfEmpty(["logExports"]),
+    assignTags({ endpoint, buildArn }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html
-exports.RedshiftServerlessNamespace = () => ({
+exports.RedshiftServerlessNamespace = ({ compare }) => ({
   type: "Namespace",
   package: "redshift-serverless",
   client: "RedshiftServerless",
@@ -46,7 +46,7 @@ exports.RedshiftServerlessNamespace = () => ({
     "namespaceArn",
     "namespaceId",
     "status",
-    "adminUserPassword",
+    //"adminUserPassword",
   ],
   inferName: pipe([
     get("properties.namespaceName"),
@@ -93,6 +93,7 @@ exports.RedshiftServerlessNamespace = () => ({
     },
   },
   ignoreErrorCodes: ["ResourceNotFoundException"],
+  compare: compare({ filterTarget: () => pipe([omit(["adminUserPassword"])]) }),
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html#getNamespace-property
   getById: {
     method: "getNamespace",

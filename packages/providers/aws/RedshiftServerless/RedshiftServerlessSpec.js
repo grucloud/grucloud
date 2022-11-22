@@ -13,7 +13,9 @@ const {
 const {
   RedshiftServerlessNamespace,
 } = require("./RedshiftServerlessNamespace");
-//const { RedshiftServerlessSnapshot } = require("./RedshiftServerlessSnapshot");
+const { RedshiftServerlessSnapshot } = require("./RedshiftServerlessSnapshot");
+//const { RedshiftServerlessResourcePolicy } = require("./RedshiftServerlessResourcePolicy");
+
 const {
   RedshiftServerlessUsageLimit,
 } = require("./RedshiftServerlessUsageLimit");
@@ -23,14 +25,15 @@ const {
 
 const GROUP = "RedshiftServerless";
 
-const tagKeys = "tags";
-const compare = compareAws({ tagKeys, key: "key" });
+const tagsKey = "tags";
+const compare = compareAws({ tagsKey, key: "key" });
 
 module.exports = pipe([
   () => [
     RedshiftServerlessEndpointAccess({}),
-    RedshiftServerlessNamespace({}),
-    // RedshiftServerlessSnapshot({})
+    RedshiftServerlessNamespace({ compare }),
+    RedshiftServerlessSnapshot({}),
+    // RedshiftServerlessResourcePolicy({})
     RedshiftServerlessUsageLimit({}),
     RedshiftServerlessWorkgroup({}),
   ],
@@ -38,7 +41,7 @@ module.exports = pipe([
   map(
     defaultsDeep({
       group: GROUP,
-      tagKeys,
+      tagsKey,
       compare: compare({}),
     })
   ),

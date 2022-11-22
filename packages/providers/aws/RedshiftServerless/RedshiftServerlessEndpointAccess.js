@@ -5,7 +5,7 @@ const { defaultsDeep, pluck, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./RedshiftServerlessCommon");
+const { Tagger, assignTags } = require("./RedshiftServerlessCommon");
 
 const buildArn = () =>
   pipe([
@@ -27,6 +27,7 @@ const decorate = ({ endpoint }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ endpoint, buildArn }),
     ({ vpcSecurityGroups, ...other }) => ({
       ...other,
       vpcSecurityGroupIds: pluck("vpcSecurityGroupId")(vpcSecurityGroups),

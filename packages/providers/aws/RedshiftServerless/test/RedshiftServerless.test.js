@@ -3,7 +3,7 @@ const { pipe, tap } = require("rubico");
 
 const { awsResourceTest } = require("../../AwsResourceTester");
 
-describe.skip("RedshiftServerless", async function () {
+describe("RedshiftServerless", async function () {
   it("EndpointAccess", () =>
     pipe([
       () => ({
@@ -28,11 +28,11 @@ describe.skip("RedshiftServerless", async function () {
       }),
       awsResourceTest,
     ])());
-  it.skip("Snapshot", () =>
+  it("Snapshot", () =>
     pipe([
       () => ({
         groupType: "RedshiftServerless::Snapshot",
-        livesNotFound: ({ config }) => [{}],
+        livesNotFound: ({ config }) => [{ snapshotName: "s123" }],
       }),
       awsResourceTest,
     ])());

@@ -5,7 +5,7 @@ const { defaultsDeep, when } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { buildTags } = require("../AwsCommon");
 
-const { Tagger } = require("./RedshiftServerlessCommon");
+const { Tagger, assignTags } = require("./RedshiftServerlessCommon");
 
 const buildArn = () =>
   pipe([
@@ -27,6 +27,7 @@ const decorate = ({ endpoint }) =>
     tap((params) => {
       assert(endpoint);
     }),
+    assignTags({ endpoint, buildArn }),
   ]);
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RedshiftServerless.html

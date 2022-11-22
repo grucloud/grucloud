@@ -71,10 +71,22 @@ exports.createResources = () => [
     type: "Namespace",
     group: "RedshiftServerless",
     properties: ({}) => ({
-      adminUsername: "admin",
+      adminUsername: process.env.DEFAULT_ADMIN_USERNAME,
       dbName: "dev",
       logExports: [],
       namespaceName: "default",
+      adminUserPassword: process.env.DEFAULT_ADMIN_USER_PASSWORD,
+    }),
+  },
+  {
+    type: "Snapshot",
+    group: "RedshiftServerless",
+    properties: ({}) => ({
+      snapshotName: "my-snapshot",
+      retentionPeriod: 1,
+    }),
+    dependencies: ({}) => ({
+      namespace: "default",
     }),
   },
   {
